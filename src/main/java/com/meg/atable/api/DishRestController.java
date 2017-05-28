@@ -1,7 +1,6 @@
 package com.meg.atable.api;
 
 import com.meg.atable.model.Dish;
-import com.meg.atable.model.User;
 import com.meg.atable.service.DishService;
 import com.meg.atable.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +9,9 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +46,7 @@ public class DishRestController {
     }
 
     @RequestMapping(method = RequestMethod.POST,produces = "application/json",consumes = "application/json")
-    ResponseEntity<?> createDish(@PathVariable String userId, @RequestBody Dish input) {
+    ResponseEntity<Object> createDish(@PathVariable String userId, @RequestBody Dish input) {
         this.validateUser(userId);
 
         return this.userService
@@ -68,7 +64,7 @@ public class DishRestController {
 
 
     @RequestMapping(value = "/{dishId}",method = RequestMethod.PUT,consumes = "application/json")
-    ResponseEntity<?> updateDish(@PathVariable String userId, @PathVariable Long dishId, @RequestBody Dish input) {
+    ResponseEntity<Object> updateDish(@PathVariable String userId, @PathVariable Long dishId, @RequestBody Dish input) {
         this.validateUser(userId);
 
         // MM
@@ -93,11 +89,21 @@ public class DishRestController {
 
 
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{dishId}")
-    public Dish readDish(@PathVariable String userId, @PathVariable Long dishId) {
+    @RequestMapping(method = RequestMethod.GET, value = "/{dishId}",produces = "application/json")
+    public ResponseEntity<Dish> readDish(@PathVariable String userId, @PathVariable Long dishId) {
         this.validateUser(userId);
 
-        return dishService.getDishById(dishId).get();
+        // MM
+        // invalid dishId - returns invalid id supplied - 400
+
+        return this.dishService
+                .getDishById(dishId)
+                .map(dish -> {
+                    DishResource dishResource = new DishResource(dish);
+
+                    return new ResponseEntity(dishResource,HttpStatus.OK);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     private void validateUser(String userId) {

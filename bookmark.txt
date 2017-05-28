@@ -1,0 +1,17 @@
+Dish - test / api / postman
+    done -  /tag/id
+    done - not implementing - delete
+
+Tag - begin wiring into api
+      cruds first
+
+      done - post: tag
+      done - 		create tag in root tag level
+=>      put:  tag/{tagId}
+      		update / edit tag
+      get: tag
+      		list all tags
+      get: tag/{tagId}
+      		list single tag
+
+      then the relationships

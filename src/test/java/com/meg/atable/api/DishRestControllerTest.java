@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @WebAppConfiguration
 public class DishRestControllerTest {
 
-    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
+    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
 
@@ -53,7 +53,7 @@ public class DishRestControllerTest {
 
     private MockMvc mockMvc;
 
-    private String userName = "testname";
+    private final String userName = "testname";
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
@@ -61,7 +61,7 @@ public class DishRestControllerTest {
 
     private Dish dish;
 
-    private List<Dish> dishList = new ArrayList<>();
+    private final List<Dish> dishList = new ArrayList<>();
 
     @Autowired
     private DishService dishService;
@@ -74,7 +74,7 @@ public class DishRestControllerTest {
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream()
+        this.mappingJackson2HttpMessageConverter = Arrays.stream(converters)
                 .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
                 .findAny()
                 .orElse(null);
@@ -106,21 +106,21 @@ public class DishRestControllerTest {
 
     @Test
     public void readSingleDish() throws Exception {
-        Long testId = new Long(this.dishList.get(0).getId());
+        Long testId = this.dishList.get(0).getId();
         Class<Number> targetType = Number.class;
         mockMvc.perform(get("/" + this.userName + "/dish/"
                 + this.dishList.get(0).getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("id").value(testId));
+                .andExpect(jsonPath("$.dish.id", Matchers.isA(Number.class)))
+                .andExpect(jsonPath("$.dish.id").value(testId));
 
     }
 
     @Test
     public void readDishes() throws Exception {
-        Long testId = this.dishList.get(0).getId().longValue();
-        Long testId2 = this.dishList.get(1).getId().longValue();
+        Long testId = this.dishList.get(0).getId();
+        Long testId2 = this.dishList.get(1).getId();
         mockMvc.perform(get("/" + userName + "/dish"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
@@ -147,7 +147,7 @@ public class DishRestControllerTest {
     public void updateDish() throws Exception {
         Dish toUpdate = this.dishList.get(0);
         String updateName = "updated:" + toUpdate.getDishName();
-        String updateDescription = "updated:" + toUpdate.getDescription()==null?"":toUpdate.getDescription();
+        String updateDescription = "updated:" + (toUpdate.getDescription()==null?"":toUpdate.getDescription());
         toUpdate.setDishName(updateName);
         toUpdate.setDishName(updateDescription);
 
@@ -160,7 +160,7 @@ public class DishRestControllerTest {
     }
 
 
-    protected String json(Object o) throws IOException {
+    private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();
