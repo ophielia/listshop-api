@@ -7,11 +7,12 @@ Tag - begin wiring into api
 
       done - post: tag
       done - 		create tag in root tag level
-=>      put:  tag/{tagId}
-      		update / edit tag
-      get: tag
+      done - put:tag
+        done -  update / edit tag
+      done - get: tag/{tagId}
+      done - 		list single tag
+=>      get: tag
       		list all tags
-      get: tag/{tagId}
-      		list single tag
 
       then the relationships
+      then the tag to dish assignment

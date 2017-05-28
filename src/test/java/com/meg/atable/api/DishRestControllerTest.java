@@ -149,7 +149,7 @@ public class DishRestControllerTest {
         String updateName = "updated:" + toUpdate.getDishName();
         String updateDescription = "updated:" + (toUpdate.getDescription()==null?"":toUpdate.getDescription());
         toUpdate.setDishName(updateName);
-        toUpdate.setDishName(updateDescription);
+        toUpdate.setDescription(updateDescription);
 
         String dishJson = json(toUpdate);
 

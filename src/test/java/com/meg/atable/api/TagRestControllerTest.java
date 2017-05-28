@@ -29,6 +29,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -78,6 +79,9 @@ public class TagRestControllerTest {
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
+        this.tagService.deleteAllRelationships();
+        this.tagService.deleteAll();
+
         this.parentTag = tagService.save(new Tag("name", "description"));
         this.tagList.add(tagService.createTag(parentTag,"tag1", "desc"));
         this.tagList.add(tagService.createTag(parentTag,"tag2", "desc"));
@@ -86,14 +90,14 @@ public class TagRestControllerTest {
 
     @Test
     public void readSingleTag() throws Exception {
-        Long testId = new Long(this.tagList.get(0).getId());
+        Long testId = this.tagList.get(0).getId();
         String url = "/tag/" + testId;
         Class<Number> targetType = Number.class;
         mockMvc.perform(get(url))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("id").value(testId));
+                .andExpect(jsonPath("$.tag.id", Matchers.isA(Number.class)))
+                .andExpect(jsonPath("$.tag.id").value(testId));
 
     }
 
@@ -122,6 +126,24 @@ public class TagRestControllerTest {
                 .content(tagJson))
                 .andExpect(status().isCreated());
     }
+
+    @Test
+    public void updateTag() throws Exception {
+        Tag toUpdate = this.tagList.get(0);
+        String updateName = "updated:" + toUpdate.getName();
+        String updateDescription = "updated:" + (toUpdate.getDescription()==null?"":toUpdate.getDescription());
+        toUpdate.setName(updateName);
+        toUpdate.setDescription(updateDescription);
+
+        String tagJson = json(toUpdate);
+
+        this.mockMvc.perform(put("/tag/" + toUpdate.getId())
+                .contentType(contentType)
+                .content(tagJson))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+
 
     protected String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

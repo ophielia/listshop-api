@@ -4,6 +4,7 @@ import com.meg.atable.model.Tag;
 import com.meg.atable.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,9 +45,42 @@ public class TagRestController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{tagId}")
-    Tag readTag( @PathVariable Long tagId) {
-        return tagService.getTagById(tagId);
+    @RequestMapping(method = RequestMethod.GET, value = "/{tagId}",produces = "application/json")
+    ResponseEntity<Tag> readTag(@PathVariable Long tagId) {
+        // MM
+        // invalid dishId - returns invalid id supplied - 400
+
+        return this.tagService
+                .getTagById(tagId)
+                .map(tag -> {
+                    TagResource tagResource = new TagResource(tag);
+
+                    return new ResponseEntity(tagResource, HttpStatus.OK);
+                })
+                .orElse(ResponseEntity.notFound().build());
+
+    }
+
+    @RequestMapping(method = RequestMethod.PUT,value = "/{tagId}",consumes = "application/json")
+    ResponseEntity<Object> updateTag(@PathVariable Long tagId,@RequestBody Tag input) {
+        // MM
+        // invalid tagId - returns invalid id supplied - 400
+
+        // MM
+        // invalid contents of input - returns 405 validation exception
+
+        return this.tagService
+                .getTagById(tagId)
+                .map(tag -> {
+                    tag.setDescription(input.getDescription());
+                    tag.setName(input.getName());
+
+                    tagService.save(tag);
+
+                    return ResponseEntity.noContent().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
+
     }
 
 }

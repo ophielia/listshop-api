@@ -21,6 +21,10 @@ public class TagRelation {
     @OneToOne
     private Tag child;
 
+    public TagRelation() {
+        // no-arg constructor necessary
+    }
+
     public TagRelation(Tag parent, Tag child) {
         this.parent = parent;
         this.child = child;

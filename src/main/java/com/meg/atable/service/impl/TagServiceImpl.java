@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -30,8 +31,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag getTagById(Long tagId) {
-        return tagRepository.findOne(tagId);
+    public Optional<Tag> getTagById(Long tagId) {
+        return Optional.of(tagRepository.findOne(tagId));
     }
 
     @Override
