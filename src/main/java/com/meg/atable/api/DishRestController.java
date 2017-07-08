@@ -2,6 +2,7 @@ package com.meg.atable.api;
 
 import com.meg.atable.model.Dish;
 import com.meg.atable.service.DishService;
+import com.meg.atable.service.TagService;
 import com.meg.atable.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -23,17 +24,20 @@ import java.util.stream.Collectors;
 public class DishRestController {
 
     private final DishService dishService;
+    private final TagService tagService;
     private final UserService userService;
 
     @Autowired
     DishRestController(DishService dishService,
-                       UserService userService) {
+                       UserService userService,
+                       TagService tagService) {
         this.dishService = dishService;
         this.userService = userService;
+        this.tagService = tagService;
     }
 
 
-    @RequestMapping(method = RequestMethod.GET,produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     ResponseEntity<Resources<DishResource>> retrieveDishes(@PathVariable String userId) {
         this.validateUser(userId);
 
@@ -42,10 +46,10 @@ public class DishRestController {
                 .collect(Collectors.toList());
 
         Resources<DishResource> dishResourceList = new Resources<>(dishList);
-        return new ResponseEntity(dishResourceList,HttpStatus.OK);
+        return new ResponseEntity(dishResourceList, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST,produces = "application/json",consumes = "application/json")
+    @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createDish(@PathVariable String userId, @RequestBody Dish input) {
         this.validateUser(userId);
 
@@ -56,14 +60,14 @@ public class DishRestController {
                             input.getDishName(),
                             input.getDescription()));
 
-                    Link forOneDish= new DishResource(result).getLink("self");
+                    Link forOneDish = new DishResource(result).getLink("self");
                     return ResponseEntity.created(URI.create(forOneDish.getHref())).build();
                 })
                 .orElse(ResponseEntity.noContent().build());
     }
 
 
-    @RequestMapping(value = "/{dishId}",method = RequestMethod.PUT,consumes = "application/json")
+    @RequestMapping(value = "/{dishId}", method = RequestMethod.PUT, consumes = "application/json")
     ResponseEntity<Object> updateDish(@PathVariable String userId, @PathVariable Long dishId, @RequestBody Dish input) {
         this.validateUser(userId);
 
@@ -87,9 +91,7 @@ public class DishRestController {
     }
 
 
-
-
-    @RequestMapping(method = RequestMethod.GET, value = "/{dishId}",produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "/{dishId}", produces = "application/json")
     public ResponseEntity<Dish> readDish(@PathVariable String userId, @PathVariable Long dishId) {
         this.validateUser(userId);
 
@@ -101,10 +103,28 @@ public class DishRestController {
                 .map(dish -> {
                     DishResource dishResource = new DishResource(dish);
 
-                    return new ResponseEntity(dishResource,HttpStatus.OK);
+                    return new ResponseEntity(dishResource, HttpStatus.OK);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{dishId}/tag", produces = "application/json")
+    public ResponseEntity<Resources<TagResource>> getTagsByDishId(@PathVariable Long dishId) {
+        List<TagResource> tagList = tagService
+                .getTagsForDish(dishId)
+                .stream().map(TagResource::new)
+                .collect(Collectors.toList());
+        return new ResponseEntity(tagList, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/{dishId}/tag/{tagId}", produces = "application/json")
+    public ResponseEntity<Object> addTagToDish(@PathVariable Long dishId, @PathVariable Long tagId) {
+        this.tagService.addTagToDish(dishId, tagId);
+
+        return ResponseEntity.noContent().build();
+
+    }
+
 
     private void validateUser(String userId) {
         this.userService.getUserByUserName(userId).orElseThrow(

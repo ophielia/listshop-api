@@ -21,4 +21,6 @@ public interface DishService {
     Dish save(Dish dish);
 
     void deleteAll();
+
+
 }

@@ -19,6 +19,8 @@ public class DishResource extends ResourceSupport {
         this.add(linkTo(DishRestController.class, username).withRel("dish"));
         this.add(linkTo(methodOn(DishRestController.class, username)
                 .readDish(username, dish.getId())).withSelfRel());
+        this.add(linkTo(methodOn(DishRestController.class, username)
+                .getTagsByDishId(dish.getId())).withRel("tags"));
     }
 
     public Dish getDish() {

@@ -50,9 +50,9 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         Tag main2 = new Tag("main2","main2");
         Tag main3 = new Tag("main3","main3");
 
-        main1 = tagService.save(main1);
-        main2 = tagService.save(main2);
-        main3 = tagService.save(main3);
+        main1 = tagService.createTag(null,main1.getName());
+        main2 = tagService.createTag(null,main2.getName());
+        main3 = tagService.createTag(null,main3.getName());
 
         Tag sub1 = tagService.createTag(main1,"sub1_1");
         Tag sub2 = tagService.createTag(main1,"sub1_2");

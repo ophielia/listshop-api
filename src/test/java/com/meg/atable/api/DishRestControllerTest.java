@@ -47,9 +47,6 @@ public class DishRestControllerTest {
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
 
-    private MediaType contentTypeWithHal = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            "hal+json",
-            Charset.forName("utf8"));
 
     private MockMvc mockMvc;
 

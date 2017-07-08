@@ -3,6 +3,8 @@ package com.meg.atable.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Tag {
@@ -14,6 +16,9 @@ public class Tag {
     private String name;
 
     private String description;
+
+    @ManyToMany(mappedBy = "tags",fetch = FetchType.LAZY)
+    private List<Dish> dishes= new ArrayList<>();
 
 
 
@@ -50,4 +55,12 @@ public class Tag {
         this.description = description;
     }
 
+    @JsonIgnore
+    public List<Dish> getDishes() {
+        return dishes;
+    }
+
+    public void setDishes(List<Dish> dishes) {
+        this.dishes = dishes;
+    }
 }

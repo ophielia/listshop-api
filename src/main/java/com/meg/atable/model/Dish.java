@@ -21,7 +21,8 @@ public class Dish {
 
     private String description;
 
-    @OneToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name="DISH_TAGS")
     private List<Tag> tags= new ArrayList<>();
 
 
@@ -61,6 +62,7 @@ public class Dish {
         this.dishName = dishName;
     }
 
+    @JsonIgnore
     public List<Tag> getTags() {
         return tags;
     }

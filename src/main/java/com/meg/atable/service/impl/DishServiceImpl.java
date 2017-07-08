@@ -49,4 +49,6 @@ public class DishServiceImpl implements DishService {
     public void deleteAll() {
         dishRepository.deleteAllInBatch();
     }
+
+    
 }

@@ -28,9 +28,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -41,7 +39,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class TagRestControllerTest {
+public class TagInfoRestControllerTest {
 
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
@@ -103,13 +101,13 @@ public class TagRestControllerTest {
     @Test
     public void readSingleTag() throws Exception {
         Long testId = this.tagList.get(0).getId();
-        String url = "/tag/" + testId;
+        String url = "/taginfo/" + testId;
         Class<Number> targetType = Number.class;
         mockMvc.perform(get(url))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.tag.id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.tag.id").value(testId));
+                .andExpect(jsonPath("$.tagInfo.id", Matchers.isA(Number.class)))
+                .andExpect(jsonPath("$.tagInfo.id").value(testId));
 
     }
 
@@ -130,51 +128,16 @@ public class TagRestControllerTest {
     }
 
     @Test
-    public void createTag() throws Exception {
+    public void createTagAsChild() throws Exception {
         String tagJson = json(new Tag("created tag"));
+        Tag parent = this.tagList.get(0);
 
-        this.mockMvc.perform(post("/tag")
+        String postUrl = "/tag/" + parent.getId() + "/child";
+        this.mockMvc.perform(post(postUrl)
                 .contentType(contentType)
                 .content(tagJson))
                 .andExpect(status().isCreated());
     }
-
-
-
-    @Test
-    public void updateTag() throws Exception {
-        Tag toUpdate = this.tagList.get(0);
-        String updateName = "updated:" + toUpdate.getName();
-        String updateDescription = "updated:" + (toUpdate.getDescription()==null?"":toUpdate.getDescription());
-        toUpdate.setName(updateName);
-        toUpdate.setDescription(updateDescription);
-
-        String tagJson = json(toUpdate);
-
-        this.mockMvc.perform(put("/tag/" + toUpdate.getId())
-                .contentType(contentType)
-                .content(tagJson))
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
-    public void moveTag() throws Exception {
-        // move level2 to belong to parent instead of level1
-        String url = "/taginfo/" + parentTag.getId()
-                + "/child/" + level2.getId();
-
-        Tag toUpdate = this.tagList.get(0);
-        String updateName = "updated:" + toUpdate.getName();
-        String updateDescription = "updated:" + (toUpdate.getDescription()==null?"":toUpdate.getDescription());
-        toUpdate.setName(updateName);
-        toUpdate.setDescription(updateDescription);
-
-        String tagJson = json(toUpdate);
-
-        this.mockMvc.perform(put(url))
-                .andExpect(status().is2xxSuccessful());
-    }
-
 
     protected String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
