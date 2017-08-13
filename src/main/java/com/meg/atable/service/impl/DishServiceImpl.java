@@ -1,7 +1,7 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.model.Dish;
-import com.meg.atable.model.User;
+import com.meg.atable.model.UserAccount;
 import com.meg.atable.repository.DishRepository;
 import com.meg.atable.repository.UserRepository;
 import com.meg.atable.service.DishService;
@@ -26,13 +26,13 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<Dish> getDishesForUserId(Long userId) {
-        User user = this.userRepository.findOne(userId);
-        return dishRepository.findByUser(user);
+        UserAccount user = this.userRepository.findOne(userId);
+        return dishRepository.findByUserAccount(user);
     }
 
     @Override
     public Collection<Dish> getDishesForUserName(String userName) {
-        return dishRepository.findByUserUserName(userName);
+        return dishRepository.findByUserAccountUserName(userName);
     }
 
     @Override

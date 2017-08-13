@@ -2,7 +2,7 @@ package com.meg.atable.api;
 
 import com.meg.atable.Application;
 import com.meg.atable.model.Dish;
-import com.meg.atable.model.User;
+import com.meg.atable.model.UserAccount;
 import com.meg.atable.service.DishService;
 import com.meg.atable.service.UserService;
 import org.hamcrest.Matchers;
@@ -29,9 +29,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -54,7 +52,7 @@ public class DishRestControllerTest {
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
-    private User user;
+    private UserAccount userAccount;
 
     private Dish dish;
 
@@ -86,9 +84,9 @@ public class DishRestControllerTest {
         this.dishService.deleteAll();
         this.userService.deleteAll();
 
-        this.user = userService.save(new User(userName, "password"));
-        this.dishList.add(dishService.save(new Dish(user, "dish1")));
-        this.dishList.add(dishService.save(new Dish(user, "dish2")));
+        this.userAccount = userService.save(new UserAccount(userName, "password"));
+        this.dishList.add(dishService.save(new Dish(userAccount, "dish1")));
+        this.dishList.add(dishService.save(new Dish(userAccount, "dish2")));
     }
 
     @Test
@@ -131,7 +129,7 @@ public class DishRestControllerTest {
     @Test
     public void createDish() throws Exception {
         String dishJson = json(new Dish(
-                this.user, "created dish"));
+                this.userAccount, "created dish"));
 
         this.mockMvc.perform(post("/" + userName + "/dish")
                 .contentType(contentType)

@@ -1,6 +1,6 @@
 package com.meg.atable.service.impl;
 
-import com.meg.atable.model.User;
+import com.meg.atable.model.UserAccount;
 import com.meg.atable.repository.UserRepository;
 import com.meg.atable.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +18,17 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public User getUserById(Long userId) {
+    public UserAccount getUserById(Long userId) {
         return userRepository.findOne(userId);
     }
 
     @Override
-    public Optional<User> getUserByUserName(String userName) {
+    public Optional<UserAccount> getUserByUserName(String userName) {
         return userRepository.findByUserName(userName);
     }
 
     @Override
-    public User save(User user) {
+    public UserAccount save(UserAccount user) {
         return userRepository.save(user);
     }
 

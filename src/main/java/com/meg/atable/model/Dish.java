@@ -11,28 +11,32 @@ public class Dish {
 
     @JsonIgnore
     @ManyToOne
-    private User user;
+    @JoinColumn(name = "USER_ACCOUNT_ID")
+    private UserAccount userAccount;
 
     @Id
     @GeneratedValue
-    private Long id;
+    @Column(name = "dish_id")
+    private Long dish_id;
 
     private String dishName;
 
     private String description;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="DISH_TAGS")
+    @JoinTable(name = "DISH_TAGS",
+            joinColumns = @JoinColumn(name = "DISH_ID"),
+            inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
     private List<Tag> tags= new ArrayList<>();
 
 
-    public Dish(User user, String dishName) {
-        this.user=user;
+    public Dish(UserAccount user, String dishName) {
+        this.userAccount = user;
         this.dishName = dishName;
     }
 
-    public Dish(User user, String dishName, String description) {
-        this.user=user;
+    public Dish(UserAccount user, String dishName, String description) {
+        this.userAccount = user;
         this.dishName = dishName;
         this.description = description;
     }
@@ -41,16 +45,16 @@ public class Dish {
         // jpa empty constructor
     }
 
-    public User getUser() {
-        return user;
+    public UserAccount getUserAccount() {
+        return userAccount;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserAccount(UserAccount userAccount) {
+        this.userAccount = userAccount;
     }
 
     public Long getId() {
-        return id;
+        return dish_id;
     }
 
 

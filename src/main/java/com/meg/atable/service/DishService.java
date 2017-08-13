@@ -1,7 +1,6 @@
 package com.meg.atable.service;
 
 import com.meg.atable.model.Dish;
-import com.meg.atable.model.User;
 
 import java.util.Collection;
 import java.util.List;

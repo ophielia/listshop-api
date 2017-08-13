@@ -11,7 +11,8 @@ public class Tag {
 
     @Id
     @GeneratedValue
-    private Long id;
+    @Column(name = "tag_id")
+    private Long tag_id;
 
     private String name;
 
@@ -36,7 +37,7 @@ public class Tag {
     }
 
     public Long getId() {
-        return id;
+        return tag_id;
     }
 
     public String getName() {

@@ -14,12 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -186,7 +186,14 @@ public class TagServiceImplTest {
     @Test
     public void testGetTagInfoFullList() {
         List<TagInfo> allTags = tagService.getTagInfoList(false);
-        Assert.assertEquals(8,allTags.size());
+
+        // test that each tag only exists once in list
+        List<Long> idCheck = new ArrayList<>();
+        for (TagInfo tag : allTags) {
+            Long id = tag.getId();
+            assertFalse(idCheck.contains(id));
+            idCheck.add(id);
+        }
     }
 
     private List<Tag> getTagList(List<Long> tagids) {

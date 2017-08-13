@@ -1,9 +1,6 @@
 package com.meg.atable.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 /**
  * Created by margaretmartin on 22/05/2017.
@@ -13,6 +10,7 @@ public class TagRelation {
 
     @Id
     @GeneratedValue
+    @Column(name = "tag_relation_id")
     Long id;
 
     @OneToOne

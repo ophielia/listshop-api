@@ -1,6 +1,6 @@
 package com.meg.atable.service;
 
-import com.meg.atable.model.User;
+import com.meg.atable.model.UserAccount;
 
 import java.util.Optional;
 
@@ -9,11 +9,11 @@ import java.util.Optional;
  */
 public interface UserService {
 
-    public User getUserById(Long userId);
+    public UserAccount getUserById(Long userId);
 
-    public Optional<User> getUserByUserName(String userName);
+    public Optional<UserAccount> getUserByUserName(String userName);
 
-    public User save(User user);
+    public UserAccount save(UserAccount user);
 
     void deleteAll();
 }

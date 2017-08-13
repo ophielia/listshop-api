@@ -1,33 +1,31 @@
 package com.meg.atable.model;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class User {
+public class UserAccount {
 
     @Id
     @GeneratedValue
+    @Column(name = "user_account_id")
     private Long id;
 
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy = "userAccount")
     private Set<Dish> dishes = new HashSet<>();
 
     public String userName;
 
     private String password;
 
-    public User(String userName, String password) {
+    public UserAccount(String userName, String password) {
         this.userName = userName;
         this.password = password;
     }
 
-    User() {
+    UserAccount() {
         // jpa empty constructor
     }
 
