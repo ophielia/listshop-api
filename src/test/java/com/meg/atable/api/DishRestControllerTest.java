@@ -1,10 +1,11 @@
 package com.meg.atable.api;
 
 import com.meg.atable.Application;
-import com.meg.atable.model.Dish;
-import com.meg.atable.model.UserAccount;
+import com.meg.atable.api.model.Dish;
+import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.service.DishService;
-import com.meg.atable.service.UserService;
+import com.meg.atable.auth.service.UserService;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,11 +53,11 @@ public class DishRestControllerTest {
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
-    private UserAccount userAccount;
+    private UserAccountEntity userAccount;
 
-    private Dish dish;
+    private DishEntity dish;
 
-    private final List<Dish> dishList = new ArrayList<>();
+    private final List<DishEntity> dishList = new ArrayList<>();
 
     @Autowired
     private DishService dishService;
@@ -84,9 +85,9 @@ public class DishRestControllerTest {
         this.dishService.deleteAll();
         this.userService.deleteAll();
 
-        this.userAccount = userService.save(new UserAccount(userName, "password"));
-        this.dishList.add(dishService.save(new Dish(userAccount, "dish1")));
-        this.dishList.add(dishService.save(new Dish(userAccount, "dish2")));
+        this.userAccount = userService.save(new UserAccountEntity(userName, "password"));
+        this.dishList.add(dishService.save(new DishEntity(userAccount, "dish1")));
+        this.dishList.add(dishService.save(new DishEntity(userAccount, "dish2")));
     }
 
     @Test
@@ -129,7 +130,7 @@ public class DishRestControllerTest {
     @Test
     public void createDish() throws Exception {
         String dishJson = json(new Dish(
-                this.userAccount, "created dish"));
+                this.userAccount.getId(), "created dish"));
 
         this.mockMvc.perform(post("/" + userName + "/dish")
                 .contentType(contentType)
@@ -140,7 +141,7 @@ public class DishRestControllerTest {
 
     @Test
     public void updateDish() throws Exception {
-        Dish toUpdate = this.dishList.get(0);
+        DishEntity toUpdate = this.dishList.get(0);
         String updateName = "updated:" + toUpdate.getDishName();
         String updateDescription = "updated:" + (toUpdate.getDescription()==null?"":toUpdate.getDescription());
         toUpdate.setDishName(updateName);

@@ -1,21 +1,28 @@
 -- data for user_account
-INSERT INTO user_account (user_account_id, password, user_name) VALUES (1, 'password', 'rufus');
-INSERT INTO user_account (user_account_id, password, user_name) VALUES (20, 'password', 'me');
-INSERT INTO user_account (user_account_id, password, user_name) VALUES (23, 'password', 'carrie');
-INSERT INTO user_account (user_account_id, password, user_name) VALUES (26, 'password', 'mom');
-INSERT INTO user_account (user_account_id, password, user_name) VALUES (29, 'password', 'michelle');
+INSERT INTO users (user_id, password, username, enabled) VALUES (1, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'rufus',true);
+INSERT INTO users (user_id, password, username, enabled) VALUES (20, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'me',true);
+INSERT INTO users (user_id, password, username, enabled) VALUES (23, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'carrie',true);
+INSERT INTO users (user_id, password, username, enabled) VALUES (26, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'mom',true);
+INSERT INTO users (user_id, password, username, enabled) VALUES (29, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'michelle',true);
+
+-- authorities for users
+INSERT INTO public.authority(	authority_id, name, user_id)	VALUES (1, 'ROLE_USER', 1);
+INSERT INTO public.authority(	authority_id, name, user_id)	VALUES (2, 'ROLE_USER', 20);
+INSERT INTO public.authority(	authority_id, name, user_id)	VALUES (3, 'ROLE_USER', 23);
+INSERT INTO public.authority(	authority_id, name, user_id)	VALUES (4, 'ROLE_USER', 26);
+INSERT INTO public.authority(	authority_id, name, user_id)	VALUES (5, 'ROLE_USER', 29);
 
 -- data for dish
-INSERT INTO dish (dish_id, description, dish_name, user_account_id) VALUES (18, NULL, 'yummy dish', 1);
-INSERT INTO dish (dish_id, description, dish_name, user_account_id) VALUES (19, NULL, 'not so yummy', 1);
-INSERT INTO dish (dish_id, description, dish_name, user_account_id) VALUES (21, NULL, 'dishname-me', 20);
-INSERT INTO dish (dish_id, description, dish_name, user_account_id) VALUES (22, NULL, 'dishname2-me', 20);
-INSERT INTO dish (dish_id, description, dish_name, user_account_id) VALUES (24, NULL, 'dishname-carrie', 23);
-INSERT INTO dish (dish_id, description, dish_name, user_account_id) VALUES (25, NULL, 'dishname2-carrie', 23);
-INSERT INTO dish (dish_id, description, dish_name, user_account_id) VALUES (27, NULL, 'dishname-mom', 26);
-INSERT INTO dish (dish_id, description, dish_name, user_account_id) VALUES (28, NULL, 'dishname2-mom', 26);
-INSERT INTO dish (dish_id, description, dish_name, user_account_id) VALUES (30, NULL, 'dishname-michelle', 29);
-INSERT INTO dish (dish_id, description, dish_name, user_account_id) VALUES (31, NULL, 'dishname2-michelle', 29);
+INSERT INTO dish (dish_id, description, dish_name, user_id) VALUES (18, NULL, 'yummy dish', 1);
+INSERT INTO dish (dish_id, description, dish_name, user_id) VALUES (19, NULL, 'not so yummy', 1);
+INSERT INTO dish (dish_id, description, dish_name, user_id) VALUES (21, NULL, 'dishname-me', 20);
+INSERT INTO dish (dish_id, description, dish_name, user_id) VALUES (22, NULL, 'dishname2-me', 20);
+INSERT INTO dish (dish_id, description, dish_name, user_id) VALUES (24, NULL, 'dishname-carrie', 23);
+INSERT INTO dish (dish_id, description, dish_name, user_id) VALUES (25, NULL, 'dishname2-carrie', 23);
+INSERT INTO dish (dish_id, description, dish_name, user_id) VALUES (27, NULL, 'dishname-mom', 26);
+INSERT INTO dish (dish_id, description, dish_name, user_id) VALUES (28, NULL, 'dishname2-mom', 26);
+INSERT INTO dish (dish_id, description, dish_name, user_id) VALUES (30, NULL, 'dishname-michelle', 29);
+INSERT INTO dish (dish_id, description, dish_name, user_id) VALUES (31, NULL, 'dishname2-michelle', 29);
 
 -- data for tag
 INSERT INTO tag (tag_id, description, name) VALUES (2, NULL, 'main1');

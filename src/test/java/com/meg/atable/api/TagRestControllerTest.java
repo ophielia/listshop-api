@@ -1,7 +1,8 @@
 package com.meg.atable.api;
 
 import com.meg.atable.Application;
-import com.meg.atable.model.Tag;
+import com.meg.atable.api.model.Tag;
+import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.TagService;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -58,13 +59,13 @@ public class TagRestControllerTest {
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
-    private Tag parentTag;
-    private Tag level1;
-    private Tag level2;
+    private TagEntity parentTag;
+    private TagEntity level1;
+    private TagEntity level2;
 
-    private Tag tag;
+    private TagEntity tag;
 
-    private List<Tag> tagList = new ArrayList<>();
+    private List<TagEntity> tagList = new ArrayList<>();
 
     @Autowired
     private TagService tagService;
@@ -89,7 +90,7 @@ public class TagRestControllerTest {
         this.tagService.deleteAllRelationships();
         this.tagService.deleteAll();
 
-        this.parentTag = tagService.save(new Tag("name", "description"));
+        this.parentTag = tagService.save(new TagEntity("name", "description"));
         level1 = tagService.createTag(parentTag,"tag1", "desc");
         this.tagList.add(level1);
         this.tagList.add(tagService.createTag(parentTag,"tag2", "desc"));
@@ -143,7 +144,7 @@ public class TagRestControllerTest {
 
     @Test
     public void updateTag() throws Exception {
-        Tag toUpdate = this.tagList.get(0);
+        TagEntity toUpdate = this.tagList.get(0);
         String updateName = "updated:" + toUpdate.getName();
         String updateDescription = "updated:" + (toUpdate.getDescription()==null?"":toUpdate.getDescription());
         toUpdate.setName(updateName);
@@ -163,7 +164,7 @@ public class TagRestControllerTest {
         String url = "/taginfo/" + parentTag.getId()
                 + "/child/" + level2.getId();
 
-        Tag toUpdate = this.tagList.get(0);
+        TagEntity toUpdate = this.tagList.get(0);
         String updateName = "updated:" + toUpdate.getName();
         String updateDescription = "updated:" + (toUpdate.getDescription()==null?"":toUpdate.getDescription());
         toUpdate.setName(updateName);

@@ -1,1 +1,22 @@
-next - add dev fill script
+tag_relation_entity table rename
+fire up security
+done - next - fix failing test - TagRestControllerTest
+
+
+sketch for menu finding algorithm
+
+TagTypes
+
+ingredient
+starascending
+stardescending
+type
+dishtype
+
+create list of all tags - slots (and proposal)
+do count of dishes per tag
+tally tag count per slot
+start with slot with lowest count
+
+outer join for each tag in slot - count and total
+  order by total, desc.

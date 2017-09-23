@@ -1,9 +1,9 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.Application;
-import com.meg.atable.model.Dish;
-import com.meg.atable.model.Tag;
-import com.meg.atable.model.TagInfo;
+import com.meg.atable.api.model.TagInfo;
+import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.DishService;
 import com.meg.atable.service.TagService;
 import org.junit.Assert;
@@ -31,36 +31,36 @@ public class TagServiceImplTest {
     @Autowired
     private DishService dishService;
 
-    private Tag testTag;
-    private Tag a;
-    private Tag b;
-    private Tag c;
+    private TagEntity testTag;
+    private TagEntity a;
+    private TagEntity b;
+    private TagEntity c;
 
-    private Dish dish;
+    private DishEntity dish;
 
     @Before
     public void setUp() {
         // setting up for taginfo
-        Tag parent = new Tag("parent","main1");
+        TagEntity parent = new TagEntity("parent","main1");
 
         parent = tagService.save(parent);
 
         testTag = tagService.createTag(parent,"testTag");
-        Tag sub2 = tagService.createTag(parent,"testTagSibling");
-        Tag sub3 = tagService.createTag(parent,"testTagSibling2");
+        TagEntity sub2 = tagService.createTag(parent,"testTagSibling");
+        TagEntity sub3 = tagService.createTag(parent,"testTagSibling2");
 
-        Tag sub4 = tagService.createTag(testTag,"testTagChild");
-        Tag sub5 = tagService.createTag(testTag,"testTagAnotherChild");
+        TagEntity sub4 = tagService.createTag(testTag,"testTagChild");
+        TagEntity sub5 = tagService.createTag(testTag,"testTagAnotherChild");
 
         // setting up for error assign tag
-        a = new Tag("a","a");
+        a = new TagEntity("a","a");
         a = tagService.createTag(null,a.getName());
 
         b = tagService.createTag(a,"b");
         c = tagService.createTag(b, "c");
 
         // setting up dish
-        dish = new Dish();
+        dish = new DishEntity();
         dish.setDishName("tagTest");
         dish.getTags().add(b);
         dish.getTags().add(c);
@@ -70,14 +70,14 @@ public class TagServiceImplTest {
 
     @Test
     public void save() throws Exception {
-        Tag testSave = new Tag();
+        TagEntity testSave = new TagEntity();
         testSave.setName("testname");
         testSave.setDescription("testdescription");
 
         testSave = tagService.save(testSave);
         Long id = testSave.getId();
 
-        Tag check = tagService.getTagById(id).get();
+        TagEntity check = tagService.getTagById(id).get();
         Assert.assertNotNull(check);
         Assert.assertEquals(testSave.getName(),check.getName());
         Assert.assertEquals(testSave.getDescription(), check.getDescription());
@@ -111,19 +111,19 @@ public class TagServiceImplTest {
         Assert.assertEquals(testTag.getDescription(),tagInfo.getDescription());
 
         Assert.assertNotNull(tagInfo.getParentId());
-        Tag parent = tagService.getTagById(tagInfo.getParentId()).get();
+        TagEntity parent = tagService.getTagById(tagInfo.getParentId()).get();
         Assert.assertEquals(parent.getId().longValue(),tagInfo.getParentId().longValue());
 
         Assert.assertNotNull(tagInfo.getSiblingIds());
         List<Long> siblingids = tagInfo.getSiblingIds();
-        List <Tag> siblingtags = getTagList(siblingids);
+        List <TagInfo> siblingtags = getTagList(siblingids);
         Assert.assertNotNull(siblingtags);
         Assert.assertTrue(siblingtags.size()>1);
         Assert.assertTrue(siblingtags.get(0).getName().toLowerCase().contains("sibling"));
 
         Assert.assertNotNull(tagInfo.getChildrenIds());
         List<Long> childrenids = tagInfo.getChildrenIds();
-        List <Tag> childrentags = getTagList(childrenids);
+        List <TagInfo> childrentags = getTagList(childrenids);
         Assert.assertNotNull(childrentags);
         Assert.assertTrue(childrentags.size()>1);
         Assert.assertTrue(childrentags.get(0).getName().toLowerCase().contains("child"));
@@ -131,7 +131,7 @@ public class TagServiceImplTest {
 
     @Test
     public void testGetTagsForDish() throws Exception {
-        List<Tag> tags = tagService.getTagsForDish(dish.getId());
+        List<TagEntity> tags = tagService.getTagsForDish(dish.getId());
 
         Assert.assertNotNull(tags);
         Assert.assertTrue(tags.size() > 0);
@@ -143,12 +143,12 @@ public class TagServiceImplTest {
     public void testAddTagToDish() throws Exception {
         tagService.addTagToDish(dish.getId(),a.getId());
 
-        List<Tag> tags = tagService.getTagsForDish(dish.getId());
+        List<TagEntity> tags = tagService.getTagsForDish(dish.getId());
 
         Assert.assertNotNull(tags);
         Assert.assertTrue(tags.size()==3);
         boolean containsTagA = false;
-        for (Tag testTag:tags) {
+        for (TagEntity testTag:tags) {
             if (testTag.getId()==a.getId()) {
                 containsTagA=true;
                 break;
@@ -196,10 +196,11 @@ public class TagServiceImplTest {
         }
     }
 
-    private List<Tag> getTagList(List<Long> tagids) {
+    private List<TagInfo> getTagList(List<Long> tagids) {
         return tagService.getTagList()
                 .stream()
                 .filter(t -> tagids.contains(t.getId()))
+                .map(TagInfo::new)
                 .collect(Collectors.toList());
 
     }

@@ -1,8 +1,7 @@
 package com.meg.atable.service;
 
-import com.meg.atable.model.Dish;
-import com.meg.atable.model.Tag;
-import com.meg.atable.model.TagInfo;
+import com.meg.atable.api.model.TagInfo;
+import com.meg.atable.data.entity.TagEntity;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,23 +11,23 @@ import java.util.Optional;
  * Created by margaretmartin on 13/05/2017.
  */
 public interface TagService {
-    Tag save(Tag tag);
+    TagEntity save(TagEntity tag);
 
-    Optional<Tag> getTagById(Long dishId);
+    Optional<TagEntity> getTagById(Long dishId);
 
-    Collection<Tag> getTagList();
+    Collection<TagEntity> getTagList();
 
     void deleteAll();
 
     void deleteAllRelationships();
 
-    Tag createTag(Tag parent, String name);
+    TagEntity createTag(TagEntity parent, String name);
 
-    Tag createTag(Tag parent, String name, String description);
+    TagEntity createTag(TagEntity parent, String name, String description);
 
     TagInfo getTagInfo(Long tagId);
 
-    List<Tag> getTagsForDish(Long dishId);
+    List<TagEntity> getTagsForDish(Long dishId);
 
     boolean assignTagToParent(Long tagId, Long parentId);
 

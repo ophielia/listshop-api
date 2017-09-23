@@ -1,6 +1,6 @@
 package com.meg.atable.service;
 
-import com.meg.atable.model.Dish;
+import com.meg.atable.data.entity.DishEntity;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,13 +11,13 @@ import java.util.Optional;
  */
 public interface DishService {
 
-    public List<Dish> getDishesForUserId(Long userId);
+    public List<DishEntity> getDishesForUserId(Long userId);
 
-    Collection<Dish> getDishesForUserName(String userId);
+    Collection<DishEntity> getDishesForUserName(String userId);
 
-    Optional<Dish> getDishById(Long dishId);
+    Optional<DishEntity> getDishById(Long dishId);
 
-    Dish save(Dish dish);
+    DishEntity save(DishEntity dish);
 
     void deleteAll();
 
