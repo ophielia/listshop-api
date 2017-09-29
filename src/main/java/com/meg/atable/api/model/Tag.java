@@ -1,19 +1,19 @@
 package com.meg.atable.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Tag {
 
-    private Long tag_id;
+    private String tag_id;
 
     private String name;
 
     private String description;
 
-    private List<Dish> dishes = new ArrayList<>();
-
-    public Tag() {
+    Tag() {
     }
 
     public Tag(String name) {
@@ -21,15 +21,17 @@ public class Tag {
     }
 
     public Tag(Long id) {
-        this.tag_id = id;
+        this.tag_id = String.valueOf(id);
     }
 
-    public Tag(String name, String description) {
+    Tag(Long id, String name, String description) {
+        this.tag_id = String.valueOf(id);
         this.name = name;
         this.description = description;
     }
 
-    public Long getId() {
+    @JsonProperty("tag_id")
+    public String getId() {
         return tag_id;
     }
 

@@ -1,5 +1,8 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.DishNotFoundException;
+import com.meg.atable.api.UnauthorizedAccessException;
+import com.meg.atable.api.UserNotFoundException;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.data.repository.DishRepository;
@@ -27,17 +30,34 @@ public class DishServiceImpl implements DishService {
     @Override
     public List<DishEntity> getDishesForUserId(Long userId) {
         UserAccountEntity user = this.userRepository.findOne(userId);
-        return dishRepository.findByUserAccount(user);
+        return dishRepository.findByUserId(user.getId());
     }
 
     @Override
-    public Collection<DishEntity> getDishesForUserName(String userName) {
-        return dishRepository.findByUserAccountUsername(userName);
+    public Collection<DishEntity> getDishesForUserName(String userName) throws UserNotFoundException {
+        UserAccountEntity user = userRepository.findByUsername(userName);
+        if (user == null) {
+            throw new UserNotFoundException(userName);
+        }
+        return dishRepository.findByUserId(user.getId());
     }
 
     @Override
     public Optional<DishEntity> getDishById(Long dishId) {
         return Optional.of(dishRepository.findOne(dishId));
+    }
+
+
+    @Override
+    public Optional<DishEntity> getDishForUserById(Long userId,Long dishId) {
+        DishEntity dish =  dishRepository.findOne(dishId);
+        if (dish==null) {
+            throw new DishNotFoundException(dishId);
+        }
+        if (dish.getUserId() != userId) {
+            throw new UnauthorizedAccessException("Dish [" + dishId + "] doesn't belong to user [" + userId + "].");
+        }
+        return Optional.of(dish);
     }
 
     @Override

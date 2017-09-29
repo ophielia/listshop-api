@@ -21,7 +21,11 @@ public class TagEntity {
 
     @ManyToMany(mappedBy = "tags",fetch = FetchType.LAZY)
     private List<DishEntity> dishes= new ArrayList<>();
-    
+    @Transient
+    private List<Long> childrenIds;
+    @Transient
+    private Long parentId;
+
     public TagEntity() {
         // jpa empty constructor
     }
@@ -58,4 +62,27 @@ public class TagEntity {
     public void setDishes(List<DishEntity> dishes) {
         this.dishes = dishes;
     }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+    public List<Long> getChildrenIds() {
+        return childrenIds;
+    }
+
+    public void setChildrenIds(List<Long> childrenIds) {
+        this.childrenIds = childrenIds;
+    }
+
+    public Long getTag_id() {
+        return tag_id;
+    }
+
+
+
 }

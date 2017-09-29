@@ -80,17 +80,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagInfo getTagInfo(Long tagId) {
-        Optional<TagEntity> tagO = getTagById(tagId);
-        if (!tagO.isPresent()) {
-            return null;
-        }
-        TagEntity tag = tagO.get();
-
-        return getTagInfo(tag);
-    }
-
-    @Override
     public List<TagEntity> getTagsForDish(Long dishId) {
         List<TagEntity> results = new ArrayList<>();
         DishEntity dish = dishRepository.findOne(dishId);
@@ -129,16 +118,22 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagInfo> getTagInfoList(boolean rootOnly) {
-        // get the targeted tags (root only, or all tags)
-        List<TagEntity> targetedTags = retrieveAllTags();
-        // for each of the targeted tags, get the TagInfo for the tag
-        List<TagInfo> tagInfos = new ArrayList<>();
-        for (TagEntity tag : targetedTags) {
-            TagInfo info = getTagInfo(tag);
-            tagInfos.add(info);
+    public List<TagEntity> fillInRelationshipInfo(List<TagEntity> tags) {
+        for (TagEntity tag : tags) {
+            // find parent for tag
+            TagEntity parent = getParentTag(tag);
+            // find direct descendants of tag
+            List<TagEntity> children = getDescendantTags(tag);
+            List<Long> childrenids = children
+                    .stream()
+                    .map(TagEntity::getId)
+                    .collect(Collectors.toList());
+            // add info to entity
+            tag.setParentId(parent != null ? parent.getId() : null);
+            tag.setChildrenIds(childrenids);
+
         }
-        return tagInfos;
+        return tags;
     }
 
     @Override
@@ -155,39 +150,13 @@ public class TagServiceImpl implements TagService {
     }
 
 
-    private TagInfo getTagInfo(TagEntity tag) {
-        // get parent
-        TagEntity parent = getParentTag(tag);
-        // get siblings
-        List<TagEntity> siblings = getChildren(parent);
-        // get children
-        List<TagEntity> children = getChildren(tag);
-
-        // put TagInfo together
-        TagInfo tagInfo = new TagInfo(tag);
-        if (parent != null && parent.getId() != null) {
-            tagInfo.setParentId(parent.getId());
-        } else {
-            tagInfo.setParentId(0L);
-        }
-        tagInfo.setChildrenIds(children.stream()
-                .map(TagEntity::getId)
-                .collect(Collectors.toList()));
-        tagInfo.setSiblingIds(siblings.stream()
-                .filter(t -> t.getId() != tag.getId())
-                .map(TagEntity::getId)
-                .collect(Collectors.toList()));
-
-        return tagInfo;
-    }
 
     private List<TagEntity> retrieveAllTags() {
         // note - this means all tags which have a relationship.  orphans are left out
         List<TagRelationEntity> relations = tagRelationRepository.findAll();
-        List<TagEntity> alltags = relations.stream()
+        return relations.stream()
                 .map(TagRelationEntity::getChild)
                 .collect(Collectors.toList());
-        return alltags;
     }
 
     private boolean hasCircularReference(TagEntity parentTag, TagEntity tag) {

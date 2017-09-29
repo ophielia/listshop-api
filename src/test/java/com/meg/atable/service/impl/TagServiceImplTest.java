@@ -31,7 +31,6 @@ public class TagServiceImplTest {
     @Autowired
     private DishService dishService;
 
-    private TagEntity testTag;
     private TagEntity a;
     private TagEntity b;
     private TagEntity c;
@@ -45,7 +44,7 @@ public class TagServiceImplTest {
 
         parent = tagService.save(parent);
 
-        testTag = tagService.createTag(parent,"testTag");
+        TagEntity testTag = tagService.createTag(parent, "testTag");
         TagEntity sub2 = tagService.createTag(parent,"testTagSibling");
         TagEntity sub3 = tagService.createTag(parent,"testTagSibling2");
 
@@ -101,35 +100,6 @@ public class TagServiceImplTest {
     }
 
     @Test
-    public void getTagInfo() throws Exception {
-
-        TagInfo tagInfo = tagService.getTagInfo(testTag.getId());
-
-        // check that everything was retrieved correctly
-        Assert.assertNotNull(tagInfo);
-        Assert.assertEquals(testTag.getName(),tagInfo.getName());
-        Assert.assertEquals(testTag.getDescription(),tagInfo.getDescription());
-
-        Assert.assertNotNull(tagInfo.getParentId());
-        TagEntity parent = tagService.getTagById(tagInfo.getParentId()).get();
-        Assert.assertEquals(parent.getId().longValue(),tagInfo.getParentId().longValue());
-
-        Assert.assertNotNull(tagInfo.getSiblingIds());
-        List<Long> siblingids = tagInfo.getSiblingIds();
-        List <TagInfo> siblingtags = getTagList(siblingids);
-        Assert.assertNotNull(siblingtags);
-        Assert.assertTrue(siblingtags.size()>1);
-        Assert.assertTrue(siblingtags.get(0).getName().toLowerCase().contains("sibling"));
-
-        Assert.assertNotNull(tagInfo.getChildrenIds());
-        List<Long> childrenids = tagInfo.getChildrenIds();
-        List <TagInfo> childrentags = getTagList(childrenids);
-        Assert.assertNotNull(childrentags);
-        Assert.assertTrue(childrentags.size()>1);
-        Assert.assertTrue(childrentags.get(0).getName().toLowerCase().contains("child"));
-    }
-
-    @Test
     public void testGetTagsForDish() throws Exception {
         List<TagEntity> tags = tagService.getTagsForDish(dish.getId());
 
@@ -169,40 +139,8 @@ public class TagServiceImplTest {
 
     }
 
-    @Test
-    public void testAssignTagToParent_noError() {
-        // tags a, b, c
-        // assign a as child of c
 
-        // service call
-        boolean result = tagService.assignTagToParent(c.getId(),a.getId());
 
-        Assert.assertTrue(result);
-        TagInfo resultInfo = tagService.getTagInfo(c.getId());
-        Assert.assertNotNull(resultInfo);
-        Assert.assertEquals(a.getId(),resultInfo.getParentId());
-    }
 
-    @Test
-    public void testGetTagInfoFullList() {
-        List<TagInfo> allTags = tagService.getTagInfoList(false);
-
-        // test that each tag only exists once in list
-        List<Long> idCheck = new ArrayList<>();
-        for (TagInfo tag : allTags) {
-            Long id = tag.getId();
-            assertFalse(idCheck.contains(id));
-            idCheck.add(id);
-        }
-    }
-
-    private List<TagInfo> getTagList(List<Long> tagids) {
-        return tagService.getTagList()
-                .stream()
-                .filter(t -> tagids.contains(t.getId()))
-                .map(TagInfo::new)
-                .collect(Collectors.toList());
-
-    }
 
 }

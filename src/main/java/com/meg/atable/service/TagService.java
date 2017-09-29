@@ -25,13 +25,11 @@ public interface TagService {
 
     TagEntity createTag(TagEntity parent, String name, String description);
 
-    TagInfo getTagInfo(Long tagId);
+    List<TagEntity> fillInRelationshipInfo(List<TagEntity> tags);
 
     List<TagEntity> getTagsForDish(Long dishId);
 
     boolean assignTagToParent(Long tagId, Long parentId);
-
-    List<TagInfo> getTagInfoList(boolean rootOnly);
 
     void addTagToDish(Long dishId, Long tagId);
 

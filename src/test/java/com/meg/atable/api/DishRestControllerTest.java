@@ -2,12 +2,14 @@ package com.meg.atable.api;
 
 import com.meg.atable.Application;
 import com.meg.atable.api.model.Dish;
-import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.service.DishService;
+import com.meg.atable.auth.service.JwtUser;
 import com.meg.atable.auth.service.UserService;
+import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.service.DishService;
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,16 +35,16 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-/**
- * Created by margaretmartin on 13/05/2017.
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
+@ActiveProfiles("test")
 public class DishRestControllerTest {
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
@@ -49,8 +54,6 @@ public class DishRestControllerTest {
 
     private MockMvc mockMvc;
 
-    private final String userName = "testname";
-
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     private UserAccountEntity userAccount;
@@ -58,6 +61,9 @@ public class DishRestControllerTest {
     private DishEntity dish;
 
     private final List<DishEntity> dishList = new ArrayList<>();
+
+    private UserDetails userDetails;
+    private UserDetails userDetailsBad;
 
     @Autowired
     private DishService dishService;
@@ -79,33 +85,46 @@ public class DishRestControllerTest {
     }
 
     @Before
+    @WithMockUser
     public void setup() throws Exception {
-        this.mockMvc = webAppContextSetup(webApplicationContext).build();
+        this.mockMvc = webAppContextSetup(webApplicationContext)
+                .apply(springSecurity())
+                .build();
 
-        this.dishService.deleteAll();
-        this.userService.deleteAll();
 
+        String userName = "testname";
         this.userAccount = userService.save(new UserAccountEntity(userName, "password"));
-        this.dishList.add(dishService.save(new DishEntity(userAccount, "dish1")));
-        this.dishList.add(dishService.save(new DishEntity(userAccount, "dish2")));
+        userDetails = new JwtUser(this.userAccount.getId(),
+                "testname",
+                null,
+                null,
+                null,
+                true,
+                null);
+
+        this.dishList.add(dishService.save(new DishEntity(this.userAccount.getId(), "dish1")));
+        this.dishList.add(dishService.save(new DishEntity(userAccount.getId(), "dish2")));
+
+        this.userAccount = userService.save(new UserAccountEntity("updateUser", "password"));
+        userDetailsBad = new JwtUser(this.userAccount.getId(),
+                "updateUser",
+                null,
+                null,
+                null,
+                true,
+                null);
+        this.dish = dishService.save(new DishEntity(userAccount.getId(), "dish2"));
+
     }
 
-    @Test
-    public void userNotFound() throws Exception {
-        mockMvc.perform(post("/george/dish")
-                .content(this.json(new Dish()))
-                .contentType(contentType))
-                .andExpect(status().isNotFound());
-
-    }
-
 
     @Test
+    @WithMockUser
     public void readSingleDish() throws Exception {
         Long testId = this.dishList.get(0).getId();
-        Class<Number> targetType = Number.class;
-        mockMvc.perform(get("/" + this.userName + "/dish/"
-                + this.dishList.get(0).getId()))
+        mockMvc.perform(get("/dish/"
+                + this.dishList.get(0).getId())
+                .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.dish.id", Matchers.isA(Number.class)))
@@ -114,10 +133,12 @@ public class DishRestControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void readDishes() throws Exception {
         Long testId = this.dishList.get(0).getId();
         Long testId2 = this.dishList.get(1).getId();
-        mockMvc.perform(get("/" + userName + "/dish"))
+        mockMvc.perform(get("/dish")
+                .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$._embedded.dishResourceList", hasSize(2)))
@@ -128,11 +149,22 @@ public class DishRestControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void createDish() throws Exception {
+
+        UserAccountEntity createUserAccount = userService.save(new UserAccountEntity("createRecipe", "password"));
+        JwtUser createUserDetails = new JwtUser(createUserAccount.getId(),
+                "createRecipe",
+                null,
+                null,
+                null,
+                true,
+                null);
         String dishJson = json(new Dish(
                 this.userAccount.getId(), "created dish"));
 
-        this.mockMvc.perform(post("/" + userName + "/dish")
+        this.mockMvc.perform(post("/dish")
+                .with(user(createUserDetails))
                 .contentType(contentType)
                 .content(dishJson))
                 .andExpect(status().isCreated());
@@ -140,16 +172,20 @@ public class DishRestControllerTest {
 
 
     @Test
+    @Ignore
+    @WithMockUser
     public void updateDish() throws Exception {
         DishEntity toUpdate = this.dishList.get(0);
-        String updateName = "updated:" + toUpdate.getDishName();
-        String updateDescription = "updated:" + (toUpdate.getDescription()==null?"":toUpdate.getDescription());
+        String updateName = "updated:" + dish.getDishName();
+        String updateDescription = "updated:" + (dish.getDescription() == null ? "" : dish.getDescription());
         toUpdate.setDishName(updateName);
         toUpdate.setDescription(updateDescription);
+        toUpdate.setUserId(userAccount.getId());
 
         String dishJson = json(toUpdate);
 
-        this.mockMvc.perform(put("/" + userName + "/dish/" + toUpdate.getId())
+        this.mockMvc.perform(put("/dish/" + dish.getId())
+                .with(user(userDetailsBad))
                 .contentType(contentType)
                 .content(dishJson))
                 .andExpect(status().is2xxSuccessful());

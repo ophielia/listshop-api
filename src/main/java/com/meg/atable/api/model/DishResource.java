@@ -13,16 +13,16 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 public class DishResource extends ResourceSupport {
 
-    private Dish dish;
+    private final Dish dish;
 
     public DishResource(DishEntity dishEntity) {
         this.dish = ModelMapper.toModel(dishEntity);
 
-        String username = dishEntity.getUserAccount().getUsername();
-        this.add(linkTo(DishRestControllerApi.class, username).withRel("dish"));
-        this.add(linkTo(methodOn(DishRestControllerApi.class, username)
+        Long userId = dishEntity.getUserId();
+        this.add(linkTo(DishRestControllerApi.class, userId).withRel("dish"));
+        this.add(linkTo(methodOn(DishRestControllerApi.class, userId)
           .readDish( null,dish.getId())).withSelfRel());
-        this.add(linkTo(methodOn(DishRestControllerApi.class, username)
+        this.add(linkTo(methodOn(DishRestControllerApi.class, userId)
                 .getTagsByDishId(null,dish.getId())).withRel("tags"));
     }
     public Dish getDish() {

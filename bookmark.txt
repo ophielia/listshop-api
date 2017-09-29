@@ -1,7 +1,10 @@
-tag_relation_entity table rename
-fire up security
+done - tag_relation_entity table rename
+done - fire up security
 done - next - fix failing test - TagRestControllerTest
 
+clean up test for dish controller
+    https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-initialize-a-database-using-spring-jdbc
+make test for security
 
 sketch for menu finding algorithm
 

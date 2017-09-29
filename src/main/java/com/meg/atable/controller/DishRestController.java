@@ -24,9 +24,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by margaretmartin on 13/05/2017.
- */
 @Controller
 public class DishRestController implements DishRestControllerApi {
 
@@ -45,7 +42,6 @@ public class DishRestController implements DishRestControllerApi {
 
     @Override
     public ResponseEntity<Resources<DishResource>> retrieveDishes(Principal principal) {
-        this.validateUser(principal);
 
         List<DishResource> dishList = dishService.getDishesForUserName(principal.getName())
                 .stream().map(DishResource::new)
@@ -56,10 +52,10 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     public ResponseEntity<Object> createDish(Principal principal, @RequestBody Dish input) {
-        this.validateUser(principal);
+        //this.getUserForPrincipal(principal);
 
         UserAccountEntity user = userService.getUserByUserName(principal.getName());
-        DishEntity result = dishService.save(new DishEntity(user,
+        DishEntity result = dishService.save(new DishEntity(user.getId(),
                 input.getDishName(),
                 input.getDescription()));
 
@@ -69,16 +65,10 @@ public class DishRestController implements DishRestControllerApi {
 
 
     public ResponseEntity<Object> updateDish(Principal principal, @PathVariable Long dishId, @RequestBody Dish input) {
-        this.validateUser(principal);
-
-        // MM
-        // invalid dishId - returns invalid id supplied - 400
-
-        // MM
-        // invalid contents of input - returns 405 validation exception
+        UserAccountEntity user = this.getUserForPrincipal(principal);
 
         return this.dishService
-                .getDishById(dishId)
+                .getDishForUserById(user.getId(), dishId)
                 .map(dish -> {
                     dish.setDescription(input.getDescription());
                     dish.setDishName(input.getDishName());
@@ -92,11 +82,6 @@ public class DishRestController implements DishRestControllerApi {
 
 
     public ResponseEntity<Dish> readDish(Principal principal, @PathVariable Long dishId) {
-        this.validateUser(principal);
-
-        // MM
-        // invalid dishId - returns invalid id supplied - 400
-
         return this.dishService
                 .getDishById(dishId)
                 .map(dish -> {
@@ -107,32 +92,7 @@ public class DishRestController implements DishRestControllerApi {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    private void validateUser(UserAccountEntity principal) {
-        if (principal == null) {
-            throw new UserNotFoundException("principal is null");
-        }
-        String username = principal.getUsername();
-        UserAccountEntity user = this.userService
-                .getUserByUserName(username);
-        if (user == null) {
-            throw new UserNotFoundException("username");
-        }
-
-    }
-
-    private void validateUser(Principal principal) {
-
-        String username = principal.getName();
-        UserAccountEntity user = this.userService
-                .getUserByUserName(username);
-        if (user == null) {
-            throw new UserNotFoundException("username");
-        }
-
-    }
-
-    public ResponseEntity<Resources<TagResource>> getTagsByDishId(Principal principal, @PathVariable  Long dishId) {
-        validateUser(principal);
+    public ResponseEntity<Resources<TagResource>> getTagsByDishId(Principal principal, @PathVariable Long dishId) {
 
         List<TagResource> tagList = tagService
                 .getTagsForDish(dishId)
@@ -141,8 +101,8 @@ public class DishRestController implements DishRestControllerApi {
         return new ResponseEntity(tagList, HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> addTagToDish(Principal principal,@PathVariable Long dishId, @PathVariable Long tagId) {
-        validateUser(principal);
+    public ResponseEntity<Object> addTagToDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId) {
+        getUserForPrincipal(principal);
 
         this.tagService.addTagToDish(dishId, tagId);
 
@@ -151,10 +111,15 @@ public class DishRestController implements DishRestControllerApi {
     }
 
 
-    private void validateUser(String userId) {
-        if (this.userService.getUserByUserName(userId) == null) {
-            throw new UserNotFoundException(userId);
+    private UserAccountEntity getUserForPrincipal(Principal principal) {
+
+        String username = principal.getName();
+        UserAccountEntity user = this.userService
+                .getUserByUserName(username);
+        if (user == null) {
+            throw new UserNotFoundException("username");
         }
+        return user;
     }
 
 }

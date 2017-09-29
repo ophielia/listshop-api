@@ -3,6 +3,7 @@ package com.meg.atable.controller;
 import com.meg.atable.api.controller.TagInfoRestControllerApi;
 import com.meg.atable.api.model.TagInfo;
 import com.meg.atable.api.model.TagInfoResource;
+import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,40 +33,16 @@ public class TagInfoRestController implements TagInfoRestControllerApi {
     public ResponseEntity<TagInfoResource> retrieveTagList(@RequestParam(value="filter",required=false) String filter) {
         // ignoring filter for now
         boolean rootOnly=false;
-        List<TagInfoResource> tagList = tagService.getTagInfoList( rootOnly)
-                .stream().map(TagInfoResource::new)
-                .collect(Collectors.toList());
+        // get tag list
+        List<TagEntity> entities = (List)tagService.getTagList(); //MM todo - fix method signatures to avoid cast
 
-        Resources<TagInfoResource> tagResourceList = new Resources<>(tagList);
-        return new ResponseEntity(tagResourceList, HttpStatus.OK);
+        // fill in relationship info
+        entities = tagService.fillInRelationshipInfo(entities);
+
+        // create taginforesource
+        TagInfoResource tagInfo = new TagInfoResource(entities);
+
+        return new ResponseEntity(tagInfo, HttpStatus.OK);
     }
 
-
-    public ResponseEntity<TagInfoResource> readTag(@PathVariable Long tagId) {
-        // MM
-        // invalid dishId - returns invalid id supplied - 400
-        TagInfo tagInfo = tagService.getTagInfo(tagId);
-        if (tagInfo != null) {
-            TagInfoResource tagInfoResource = new TagInfoResource(tagInfo);
-            return new ResponseEntity(tagInfoResource,HttpStatus.OK);
-        }
-        return ResponseEntity.notFound().build();
-    }
-
-    public ResponseEntity<Object> addTagAsChild(@PathVariable Long tagId, @PathVariable Long parentId) {
-        // MM
-        // invalid tagId - returns invalid id supplied - 400
-
-        // MM
-        // invalid contents of input - returns 405 validation exception
-
-        boolean success = this.tagService.assignTagToParent( tagId,  parentId);
-
-        if (success) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-
-    }
 }

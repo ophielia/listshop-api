@@ -12,16 +12,19 @@ import java.util.List;
 public class ModelMapper {
     public static Dish toModel(DishEntity dishEntity) {
         List<Tag> tags = toModel(dishEntity.getTags());
-        Dish dish = new Dish(dishEntity.getId())
+        return new Dish(dishEntity.getId())
                 .description(dishEntity.getDescription())
                 .dishName(dishEntity.getDishName())
                 .tags(tags)
-                .userId(dishEntity.getUserAccount().getId());
-        return dish;
+                .userId(dishEntity.getUserId());
+    }
+
+    private ModelMapper() {
+        throw new IllegalAccessError("Utility class");
     }
 
     private static List<Tag> toModel(List<TagEntity> tagEntities) {
-        List<Tag> tags = new ArrayList<Tag>();
+        List<Tag> tags = new ArrayList<>();
         if (tagEntities == null) {
             return tags;
         }
@@ -32,9 +35,16 @@ public class ModelMapper {
     }
 
     public static Tag toModel(TagEntity tagEntity) {
-        Tag tag = new Tag(tagEntity.getId())
+        return new Tag(tagEntity.getId())
                 .name(tagEntity.getName())
                 .description(tagEntity.getDescription());
-        return tag;
+    }
+
+    public static TagExtended toExtendedModel(TagEntity tagEntity) {
+        return new TagExtended(tagEntity.getId(),
+                tagEntity.getName(),
+                tagEntity.getDescription(),
+                tagEntity.getParentId(),
+                tagEntity.getChildrenIds());
     }
 }

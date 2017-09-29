@@ -16,11 +16,4 @@ public interface TagInfoRestControllerApi {
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     ResponseEntity<TagInfoResource> retrieveTagList(@RequestParam(value = "filter", required = false) String filter);
 
-
-    @RequestMapping(method = RequestMethod.GET, value = "/{tagId}", produces = "application/json")
-    ResponseEntity<TagInfoResource> readTag(@PathVariable("tagId") Long tagId);
-
-    @RequestMapping(method = RequestMethod.PUT, value = "/{parentId}/child/{tagId}")
-    ResponseEntity<Object> addTagAsChild(@PathVariable Long tagId, @PathVariable Long parentId);
-
 }

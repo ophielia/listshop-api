@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface DishRepository extends JpaRepository<DishEntity, Long> {
 
-    List<DishEntity> findByUserAccount(UserAccountEntity user);
+    List<DishEntity> findByUserId(Long userid);
 
-    Collection<DishEntity> findByUserAccountUsername(String userName);
 }

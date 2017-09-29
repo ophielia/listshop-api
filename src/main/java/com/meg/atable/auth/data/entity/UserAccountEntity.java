@@ -18,10 +18,9 @@ public class UserAccountEntity {
     @Column(name = "user_id")
     private Long id;
 
-    @OneToMany(mappedBy = "userAccount")
-    private Set<DishEntity> dishes = new HashSet<>();
 
-    public String username;
+
+    private String username;
 
     private String password;
 
@@ -48,14 +47,6 @@ public class UserAccountEntity {
         return id;
     }
 
-
-    public Set<DishEntity> getDishes() {
-        return dishes;
-    }
-
-    public void setDishes(Set<DishEntity> dishes) {
-        this.dishes = dishes;
-    }
 
     public String getUsername() {
         return username;

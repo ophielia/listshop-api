@@ -2,6 +2,7 @@ package com.meg.atable.api.model;
 
 import com.meg.atable.data.entity.TagEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,52 +10,33 @@ import java.util.List;
  */
 public class TagInfo {
 
-    private Long id;
-    private String name;
-    private String description;
-    private Long parentId;
-    private List<Long> siblingIds;
-    private List<Long> childrenIds;
+    private List<Long> baseIds;
+    private List<Tag> tagList;
 
-    public TagInfo(TagEntity tag) {
-        this.id = tag.getId();
-        this.name = tag.getName();
-        this.description = tag.getDescription();
+
+    public TagInfo(List<TagEntity> tags) {
+        if (tags == null) {
+            // shouldn't happen
+            return;
+        }
+        baseIds = new ArrayList<>();
+        tagList = new ArrayList<>();
+        for (TagEntity tag : tags) {
+            if (tag.getParentId() == null || tag.getParentId() == 0L) {
+                baseIds.add(tag.getId());
+            }
+            tagList.add(ModelMapper.toExtendedModel(tag));
+        }
     }
 
-    public Long getId() {
-        return id;
+    public List<Long> getBaseIds() {
+        return baseIds;
     }
 
-    public String getName() {
-        return name;
+
+    public List<Tag> getTagList() {
+        return tagList;
     }
 
-    public String getDescription() {
-        return description;
-    }
 
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
-
-    public List<Long> getSiblingIds() {
-        return siblingIds;
-    }
-
-    public void setSiblingIds(List<Long> siblingIds) {
-        this.siblingIds = siblingIds;
-    }
-
-    public List<Long> getChildrenIds() {
-        return childrenIds;
-    }
-
-    public void setChildrenIds(List<Long> childrenIds) {
-        this.childrenIds = childrenIds;
-    }
 }

@@ -10,9 +10,8 @@ import java.util.List;
 @Table(name = "dish")
 public class DishEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "USER_ID")
-    private UserAccountEntity userAccount;
+    @Column(name = "USER_ID")
+    private Long userId;
 
     @Id
     @GeneratedValue
@@ -30,13 +29,13 @@ public class DishEntity {
     private List<TagEntity> tags= new ArrayList<>();
 
 
-    public DishEntity(UserAccountEntity user, String dishName) {
-        this.userAccount = user;
+    public DishEntity(Long userId, String dishName) {
+        this.userId = userId;
         this.dishName = dishName;
     }
 
-    public DishEntity(UserAccountEntity user, String dishName, String description) {
-        this.userAccount = user;
+    public DishEntity(Long userId, String dishName, String description) {
+        this.userId = userId;
         this.dishName = dishName;
         this.description = description;
     }
@@ -45,13 +44,7 @@ public class DishEntity {
         // jpa empty constructor
     }
 
-    public UserAccountEntity getUserAccount() {
-        return userAccount;
-    }
 
-    public void setUserAccount(UserAccountEntity userAccount) {
-        this.userAccount = userAccount;
-    }
 
     public Long getId() {
         return dish_id;
@@ -80,5 +73,13 @@ public class DishEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
