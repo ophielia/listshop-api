@@ -1,5 +1,6 @@
 package com.meg.atable.service;
 
+import com.meg.atable.api.model.TagFilterType;
 import com.meg.atable.api.model.TagInfo;
 import com.meg.atable.data.entity.TagEntity;
 
@@ -15,7 +16,10 @@ public interface TagService {
 
     Optional<TagEntity> getTagById(Long dishId);
 
+    @Deprecated
     Collection<TagEntity> getTagList();
+
+    Collection<TagEntity> getTagList(TagFilterType filter);
 
     void deleteAll();
 

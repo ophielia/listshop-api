@@ -2,6 +2,7 @@ package com.meg.atable.controller;
 
 import com.meg.atable.api.controller.TagRestControllerApi;
 import com.meg.atable.api.model.Tag;
+import com.meg.atable.api.model.TagFilterType;
 import com.meg.atable.api.model.TagResource;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.TagService;
@@ -33,8 +34,11 @@ public class TagRestController implements TagRestControllerApi {
     }
 
 
-    public ResponseEntity<TagResource> retrieveTagList() {
-        List<TagResource> tagList = tagService.getTagList()
+    public ResponseEntity<TagResource> retrieveTagList(String filter) {
+        if (filter == null) {
+            filter = "All";
+        }
+        List<TagResource> tagList = tagService.getTagList( TagFilterType.valueOf(filter))
                 .stream().map(TagResource::new)
                 .collect(Collectors.toList());
 

@@ -1,5 +1,6 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.model.TagFilterType;
 import com.meg.atable.api.model.TagInfo;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.TagEntity;
@@ -43,6 +44,18 @@ public class TagServiceImpl implements TagService {
     public Optional<TagEntity> getTagById(Long tagId) {
         return Optional.ofNullable(tagRepository.findOne(tagId));
     }
+
+    @Override
+    public Collection<TagEntity> getTagList(TagFilterType filter) {
+        if (filter == null || TagFilterType.All.equals(filter)) {
+            return getTagList();
+        }
+        return tagRelationRepository.findByParentIsNull()
+                .stream()
+                .map(TagRelationEntity::getChild)
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public Collection<TagEntity> getTagList() {
