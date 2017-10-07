@@ -22,6 +22,9 @@ public interface TagRestControllerApi {
     @RequestMapping(value = "{tagId}/child", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<TagResource> addAsChild(@PathVariable Long tagId, @RequestBody Tag input);
 
+    @RequestMapping(value = "{parentId}/child/{childId}", method = RequestMethod.PUT, produces = "application/json")
+    ResponseEntity assignChildToParent(@PathVariable("parentId") Long parentId, @PathVariable("childId") Long childId);
+
     @RequestMapping(method = RequestMethod.GET, value = "/{tagId}", produces = "application/json")
     ResponseEntity<Tag> readTag(@PathVariable("tagId") Long tagId);
 

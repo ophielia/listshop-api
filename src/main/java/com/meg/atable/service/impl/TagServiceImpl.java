@@ -108,8 +108,13 @@ public class TagServiceImpl implements TagService {
     @Override
     public boolean assignTagToParent(Long tagId, Long parentId) {
         // get tag and parent
-        TagEntity tag = getTagById(tagId).get();
-        TagEntity parentTag = getTagById(parentId).get();
+        Optional<TagEntity> tagOptional = getTagById(tagId);
+        TagEntity tag = tagOptional.isPresent()?tagOptional.get():null;
+
+
+        Optional<TagEntity> parentTagOptional = getTagById(parentId);
+        TagEntity parentTag = parentTagOptional.isPresent()?parentTagOptional.get():null;
+
         if (tag == null || parentTag == null) {
             return false;
         }
@@ -136,7 +141,7 @@ public class TagServiceImpl implements TagService {
             // find parent for tag
             TagEntity parent = getParentTag(tag);
             // find direct descendants of tag
-            List<TagEntity> children = getDescendantTags(tag);
+            List<TagEntity> children = getChildren(tag);
             List<Long> childrenids = children
                     .stream()
                     .map(TagEntity::getId)

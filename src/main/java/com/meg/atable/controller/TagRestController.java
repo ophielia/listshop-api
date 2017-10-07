@@ -35,10 +35,8 @@ public class TagRestController implements TagRestControllerApi {
 
 
     public ResponseEntity<TagResource> retrieveTagList(String filter) {
-        if (filter == null) {
-            filter = "All";
-        }
-        List<TagResource> tagList = tagService.getTagList( TagFilterType.valueOf(filter))
+        String tagFilter = filter == null? "All" : filter;
+        List<TagResource> tagList = tagService.getTagList( TagFilterType.valueOf(tagFilter))
                 .stream().map(TagResource::new)
                 .collect(Collectors.toList());
 
@@ -61,16 +59,29 @@ public class TagRestController implements TagRestControllerApi {
     public ResponseEntity<TagResource> addAsChild(@PathVariable Long tagId, @RequestBody Tag input) {
         Optional<TagEntity> parent = this.tagService.getTagById(tagId);
 
+        if (parent.isPresent()) {
         TagEntity result = this.tagService.createTag(parent.get(), input.getName(), input.getDescription());
+            if (result != null) {
+                Link forOneTag = new TagResource(result).getLink("self");
+                return ResponseEntity.created(URI.create(forOneTag.getHref())).build();
 
-        if (result != null) {
-            Link forOneTag = new TagResource(result).getLink("self");
-            return ResponseEntity.created(URI.create(forOneTag.getHref())).build();
+            } else {
+                return ResponseEntity.noContent().build();
+            }
+        }
+        return ResponseEntity.badRequest().build();
 
+    }
+
+    @Override
+    public ResponseEntity assignChildToParent(@PathVariable Long parentId,@PathVariable Long childId) {
+        if (this.tagService.assignTagToParent(childId, parentId)) {
+            return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.badRequest().build();
         }
     }
+
 
     public ResponseEntity<Tag> readTag(@PathVariable Long tagId) {
         // MM
