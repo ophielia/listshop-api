@@ -37,13 +37,15 @@ public class ModelMapper {
     public static Tag toModel(TagEntity tagEntity) {
         return new Tag(tagEntity.getId())
                 .name(tagEntity.getName())
-                .description(tagEntity.getDescription());
+                .description(tagEntity.getDescription())
+                .tagType(tagEntity.getTagType().name());
     }
 
     public static TagExtended toExtendedModel(TagEntity tagEntity) {
         return new TagExtended(tagEntity.getId(),
                 tagEntity.getName(),
                 tagEntity.getDescription(),
+                tagEntity.getTagType(),
                 tagEntity.getParentId(),
                 tagEntity.getChildrenIds());
     }

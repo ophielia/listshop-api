@@ -2,6 +2,7 @@ package com.meg.atable.service;
 
 import com.meg.atable.api.model.TagFilterType;
 import com.meg.atable.api.model.TagInfo;
+import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
 
 import java.util.Collection;
@@ -15,11 +16,6 @@ public interface TagService {
     TagEntity save(TagEntity tag);
 
     Optional<TagEntity> getTagById(Long dishId);
-
-    @Deprecated
-    Collection<TagEntity> getTagList();
-
-    Collection<TagEntity> getTagList(TagFilterType filter);
 
     void deleteAll();
 
@@ -36,5 +32,12 @@ public interface TagService {
     boolean assignTagToParent(Long tagId, Long parentId);
 
     void addTagToDish(Long dishId, Long tagId);
+
+    List<TagEntity> getTagList(TagFilterType baseTags, TagType tagType);
+
+    List<TagEntity> getTagList(TagType tagTypeFilter);
+
+    @Deprecated
+    List<TagEntity> getTagList();
 
 }

@@ -1,5 +1,7 @@
 package com.meg.atable.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,11 +36,12 @@ public class Dish {
         this.dish_id = id;
     }
 
+    @JsonProperty("dish_id")
     public Long getId() {
         return dish_id;
     }
 
-
+    @JsonProperty("name")
     public String getDishName() {
         return dishName;
     }
@@ -61,6 +64,7 @@ public class Dish {
         return userId;
     }
 
+    @JsonProperty("user_id")
     public Dish userId(Long userId) {
         this.userId = userId;
         return this;

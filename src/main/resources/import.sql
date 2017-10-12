@@ -25,14 +25,14 @@ INSERT INTO dish (dish_id, description, dish_name, user_id) VALUES (30, NULL, 'd
 INSERT INTO dish (dish_id, description, dish_name, user_id) VALUES (31, NULL, 'dishname2-michelle', 29);
 
 -- data for tag
-INSERT INTO tag (tag_id, description, name) VALUES (2, NULL, 'main1');
-INSERT INTO tag (tag_id, description, name) VALUES (4, NULL, 'main2');
-INSERT INTO tag (tag_id, description, name) VALUES (6, NULL, 'main3');
-INSERT INTO tag (tag_id, description, name) VALUES (8, NULL, 'sub1_1');
-INSERT INTO tag (tag_id, description, name) VALUES (10, NULL, 'sub1_2');
-INSERT INTO tag (tag_id, description, name) VALUES (12, NULL, 'sub1_3');
-INSERT INTO tag (tag_id, description, name) VALUES (14, NULL, 'sub2_1');
-INSERT INTO tag (tag_id, description, name) VALUES (16, NULL, 'sub2_2');
+INSERT INTO tag (tag_id, description, name, tag_type) VALUES (2, NULL, 'main1', 'TagType');
+INSERT INTO tag (tag_id, description, name, tag_type) VALUES (4, NULL, 'main2', 'TagType');
+INSERT INTO tag (tag_id, description, name, tag_type) VALUES (6, NULL, 'main3', 'TagType');
+INSERT INTO tag (tag_id, description, name, tag_type) VALUES (8, NULL, 'sub1_1', 'TagType');
+INSERT INTO tag (tag_id, description, name, tag_type) VALUES (10, NULL, 'sub1_2', 'TagType');
+INSERT INTO tag (tag_id, description, name, tag_type) VALUES (12, NULL, 'sub1_3', 'TagType');
+INSERT INTO tag (tag_id, description, name, tag_type) VALUES (14, NULL, 'sub2_1', 'TagType');
+INSERT INTO tag (tag_id, description, name, tag_type) VALUES (16, NULL, 'sub2_2', 'TagType');
 
 -- data for dish_tags
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (18, 8);

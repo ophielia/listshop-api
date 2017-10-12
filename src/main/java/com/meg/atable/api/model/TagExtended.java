@@ -11,12 +11,11 @@ public class TagExtended extends Tag {
 
     private List<String> childrenIds;
 
-
     public TagExtended() {
     }
 
-    public TagExtended(Long id,String name, String description, Long parentId, List<Long> childrenIds) {
-        super(id,name,description);
+    public TagExtended(Long id,String name, String description, TagType tagType,Long parentId, List<Long> childrenIds) {
+        super(id,name,description, tagType);
 
         if (parentId != null) {
             this.parentId = String.valueOf(parentId);
@@ -30,6 +29,7 @@ public class TagExtended extends Tag {
         }
     }
 
+    @JsonProperty("parent_id")
     public String getParentId() {
         return parentId;
     }
@@ -38,6 +38,7 @@ public class TagExtended extends Tag {
         this.parentId = parentId;
     }
 
+    @JsonProperty("children_ids")
     public List<String> getChildrenIds() {
         return childrenIds;
     }
@@ -45,4 +46,6 @@ public class TagExtended extends Tag {
     public void setChildrenIds(List<String> childrenIds) {
         this.childrenIds = childrenIds;
     }
+
+
 }

@@ -1,5 +1,6 @@
 package com.meg.atable.data.repository;
 
+import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.entity.TagRelationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,7 @@ public interface TagRelationRepository extends JpaRepository<TagRelationEntity,L
 
     @Query("select e from TagRelationEntity e join fetch e.child where e.parent is null")
     List<TagRelationEntity> findByParentIsNull();
+
+    @Query("select te FROM TagRelationEntity AS te join fetch te.child AS ch WHERE ch.tagType = ?1")
+    List<TagRelationEntity> findByParentIsNullAndTagType(TagType tagType);
 }

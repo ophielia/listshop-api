@@ -1,7 +1,7 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.api.model.TagFilterType;
-import com.meg.atable.api.model.TagInfo;
+import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.entity.TagRelationEntity;
@@ -10,11 +10,11 @@ import com.meg.atable.data.repository.TagRelationRepository;
 import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,21 +45,45 @@ public class TagServiceImpl implements TagService {
         return Optional.ofNullable(tagRepository.findOne(tagId));
     }
 
+
     @Override
-    public Collection<TagEntity> getTagList(TagFilterType filter) {
-        if (filter == null || TagFilterType.All.equals(filter)) {
-            return getTagList();
+    public List<TagEntity> getTagList() {
+        return getTagList(TagFilterType.All, null);
+    }
+
+
+    @Override
+    public List<TagEntity> getTagList(TagFilterType tagFilterType, TagType tagType) {
+
+        // skim off base tag requests
+        if (tagFilterType != null && TagFilterType.BaseTags.equals(tagFilterType)) {
+            return getBaseTagList(tagType);
+        }
+        // get by tag type
+        if (tagType != null) {
+            return tagRepository.findTagsByTagTypeOrderByName(tagType);
+        }
+        return tagRepository.findAll(new Sort(Sort.Direction.ASC,"name"));
+    }
+
+    private List<TagEntity> getBaseTagList(TagType tagType) {
+
+        if (tagType != null) {
+            return  tagRelationRepository.findByParentIsNullAndTagType(tagType)
+                    .stream()
+                    .map(TagRelationEntity::getChild)
+                    .collect(Collectors.toList());
         }
         return tagRelationRepository.findByParentIsNull()
                 .stream()
                 .map(TagRelationEntity::getChild)
                 .collect(Collectors.toList());
+
     }
 
-
     @Override
-    public Collection<TagEntity> getTagList() {
-        return tagRepository.findAll();
+    public List<TagEntity> getTagList(TagType tagTypeFilter) {
+        return getTagList(TagFilterType.All,tagTypeFilter);
     }
 
     @Override
@@ -166,7 +190,6 @@ public class TagServiceImpl implements TagService {
         dish.setTags(dishTags);
         dishRepository.save(dish);
     }
-
 
 
     private List<TagEntity> retrieveAllTags() {

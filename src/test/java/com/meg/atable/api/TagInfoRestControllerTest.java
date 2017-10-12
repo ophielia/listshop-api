@@ -2,6 +2,7 @@ package com.meg.atable.api;
 
 import com.meg.atable.Application;
 import com.meg.atable.api.model.Tag;
+import com.meg.atable.api.model.TagInfo;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.TagService;
 import org.hamcrest.Matchers;
@@ -99,44 +100,24 @@ public class TagInfoRestControllerTest {
     }
 
 
-    @Test
-    public void readSingleTag() throws Exception {
-        Long testId = this.tagList.get(0).getId();
-        String url = "/taginfo/" + testId;
-        Class<Number> targetType = Number.class;
-        mockMvc.perform(get(url))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.tagInfo.id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.tagInfo.id").value(testId));
-
-    }
 
     @Test
-    public void readTags() throws Exception {
+    public void readTagInfo() throws Exception {
         Long testId = this.tagList.get(0).getId().longValue();
         Long testId2 = this.tagList.get(1).getId().longValue();
-        mockMvc.perform(get("/tag"))
+        mockMvc.perform(get("/taginfo"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(contentTypeWithHal))
-                .andExpect(jsonPath("$._embedded.tagResourceList", hasSize(4)))
-                .andExpect(jsonPath("$._embedded.tagResourceList[1].tag.id").value(testId))
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.tagInfo.baseIds",hasSize(1)))
+                .andExpect(jsonPath("$.tagInfo.tagList",hasSize(4)));
+                /*.andExpect(jsonPath("$.tagInfo.tagList").value(testId))
                 .andExpect(jsonPath("$._embedded.tagResourceList[1].tag.name", is("tag1")))
                 .andExpect(jsonPath("$._embedded.tagResourceList[2].tag.id").value(testId2))
                 .andExpect(jsonPath("$._embedded.tagResourceList[2].tag.name", is("tag2")))
                 .andExpect(jsonPath("$._embedded.tagResourceList[0].tag.id").value(parentTag.getId()))
-                .andExpect(jsonPath("$._embedded.tagResourceList[0].tag.name", is(parentTag.getName())));
+                .andExpect(jsonPath("$._embedded.tagResourceList[0].tag.name", is(parentTag.getName())));*/
     }
 
-    @Test
-    public void createTagAsChild() throws Exception {
-        String tagJson = json(new Tag("created tag"));
-        TagEntity parent = this.tagList.get(0);
-
-        String postUrl = "/taginfo/" + parent.getId() + "/child/" + level2.getId();
-        this.mockMvc.perform(put(postUrl))
-                .andExpect(status().isNoContent());
-    }
 
     protected String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

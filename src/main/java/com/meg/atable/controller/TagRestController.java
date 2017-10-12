@@ -4,6 +4,7 @@ import com.meg.atable.api.controller.TagRestControllerApi;
 import com.meg.atable.api.model.Tag;
 import com.meg.atable.api.model.TagFilterType;
 import com.meg.atable.api.model.TagResource;
+import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,8 @@ public class TagRestController implements TagRestControllerApi {
 
 
     public ResponseEntity<TagResource> retrieveTagList(String filter) {
-        String tagFilter = filter == null? "All" : filter;
-        List<TagResource> tagList = tagService.getTagList( TagFilterType.valueOf(tagFilter))
+        TagType tagTypeFilter = filter != null? TagType.valueOf(filter) : null;
+        List<TagResource> tagList = tagService.getTagList( tagTypeFilter)
                 .stream().map(TagResource::new)
                 .collect(Collectors.toList());
 
@@ -110,7 +111,7 @@ public class TagRestController implements TagRestControllerApi {
                 .map(tag -> {
                     tag.setDescription(input.getDescription());
                     tag.setName(input.getName());
-
+                    tag.setTagType(TagType.valueOf(input.getTagType()));
                     tagService.save(tag);
 
                     return ResponseEntity.noContent().build();
