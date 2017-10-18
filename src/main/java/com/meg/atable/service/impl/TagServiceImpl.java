@@ -45,10 +45,24 @@ public class TagServiceImpl implements TagService {
         return Optional.ofNullable(tagRepository.findOne(tagId));
     }
 
-
     @Override
-    public List<TagEntity> getTagList() {
-        return getTagList(TagFilterType.All, null);
+    public void deleteTagFromDish(Long dishId, Long tagId) {
+        if (tagId == null) {
+            return;
+        }
+        // get dish
+        DishEntity dish = dishRepository.findOne(dishId);
+        if (dish == null ) {
+            return;
+        }
+        // filter tag to be deleted from dish
+        List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
+        List<TagEntity> dishTagsDeletedTag = dishTags.stream()
+                .filter(t -> t.getTag_id() != tagId)
+                .collect(Collectors.toList());
+        // add tags to dish
+        dish.setTags(dishTagsDeletedTag);
+        dishRepository.save(dish);
     }
 
 

@@ -16,6 +16,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
+@CrossOrigin
 public class DishRestController implements DishRestControllerApi {
 
     private final DishService dishService;
@@ -108,6 +110,15 @@ public class DishRestController implements DishRestControllerApi {
 
         return ResponseEntity.noContent().build();
 
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteTagToDish( Principal principal,@PathVariable Long dishId, @PathVariable Long tagId) {
+        getUserForPrincipal(principal);
+
+        this.tagService.deleteTagFromDish(dishId, tagId);
+
+        return ResponseEntity.noContent().build();
     }
 
 

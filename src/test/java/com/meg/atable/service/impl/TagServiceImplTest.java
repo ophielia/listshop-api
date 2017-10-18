@@ -139,7 +139,17 @@ public class TagServiceImplTest {
 
     }
 
-
+    @Test
+    public void testDeleteTag() {
+        // delete tag c from dish
+        tagService.deleteTagFromDish(dish.getId(),c.getTag_id());
+        // get tags from dish
+        List<TagEntity> tags = tagService.getTagsForDish(dish.getId());
+        // check dish tags for c
+        boolean found = tags.stream().anyMatch(t -> t.getTag_id() == c.getTag_id());
+        // assert not found
+        Assert.assertFalse(found);
+    }
 
 
 

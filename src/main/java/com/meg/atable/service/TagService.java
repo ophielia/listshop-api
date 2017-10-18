@@ -37,7 +37,5 @@ public interface TagService {
 
     List<TagEntity> getTagList(TagType tagTypeFilter);
 
-    @Deprecated
-    List<TagEntity> getTagList();
-
+    void deleteTagFromDish(Long dishId, Long tagId);
 }

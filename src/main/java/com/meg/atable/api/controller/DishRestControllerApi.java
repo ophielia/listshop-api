@@ -15,6 +15,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/dish")
+@CrossOrigin
 public interface DishRestControllerApi {
 
 
@@ -36,5 +37,7 @@ public interface DishRestControllerApi {
     @RequestMapping(method = RequestMethod.POST, value = "/{dishId}/tag/{tagId}", produces = "application/json")
     public ResponseEntity<Object> addTagToDish(Principal principal,@PathVariable Long dishId, @PathVariable Long tagId);
 
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{dishId}/tag/{tagId}", produces = "application/json")
+    public ResponseEntity<Object> deleteTagToDish(Principal principal,@PathVariable Long dishId, @PathVariable Long tagId);
 
 }
