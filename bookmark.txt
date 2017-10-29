@@ -2,7 +2,7 @@ done - tag_relation_entity table rename
 done - fire up security
 done - next - fix failing test - TagRestControllerTest
 
-======== >FILLING OUT MEAL PLAN SERVICE
+======== >in SLOT - selectedby tags
 
 failing tests - seems to be db / test issue
     try making script to load test state before running.

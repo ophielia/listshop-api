@@ -67,7 +67,7 @@ public class ModelMapper {
     }
 
     public static MealPlanEntity toEntity(MealPlan mealPlan) {
-        Long mealPlanId = mealPlan != null && mealPlan.getMealPlanId() != null ? new Long(mealPlan.getMealPlanId()) : null;
+        Long mealPlanId = mealPlan != null && mealPlan.getMealPlanId() != null ? Long.valueOf(mealPlan.getMealPlanId()) : null;
         MealPlanEntity mealPlanEntity = new MealPlanEntity(mealPlanId);
 
         mealPlanEntity.setName(mealPlan.getName());
@@ -81,17 +81,17 @@ public class ModelMapper {
 
     public static MealPlan toModel(MealPlanEntity mealPlanEntity) {
         List<Slot> slots = slotsToModel(mealPlanEntity.getSlots());
-        MealPlan mealPlan = new MealPlan(mealPlanEntity.getId())
+        return new MealPlan(mealPlanEntity.getId())
                 .name(mealPlanEntity.getName())
                 .mealPlanType(mealPlanEntity.getMealPlanType().name())
                 .userId(mealPlanEntity.getUserId().toString())
                 .slots(slots);
 
-        return mealPlan;
     }
 
     public static Slot toModel(SlotEntity slotEntity) {
         return new Slot(slotEntity.getMealPlanSlotId())
+                .mealPlanId(slotEntity.getMealPlan().getId())
                 .dish(toModel(slotEntity.getDish()));
     }
 

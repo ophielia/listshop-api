@@ -1,5 +1,7 @@
 package com.meg.atable.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by margaretmartin on 20/10/2017.
  */
@@ -18,6 +20,7 @@ public class Slot {
         this.mealPlanSlotId = mealPlanSlotId;
     }
 
+    @JsonProperty("slot_id")
     public Long getMealPlanSlotId() {
         return mealPlanSlotId;
     }
@@ -27,6 +30,7 @@ public class Slot {
         return this;
     }
 
+    @JsonProperty("meal_plan_id")
     public Long getMealPlanId() {
         return mealPlanId;
     }

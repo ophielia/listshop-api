@@ -1,6 +1,7 @@
 package com.meg.atable.api.model;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meg.atable.controller.MealPlanRestController;
 import com.meg.atable.data.entity.MealPlanEntity;
 import org.springframework.hateoas.ResourceSupport;
@@ -10,6 +11,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 public class MealPlanResource extends ResourceSupport {
 
+    @JsonProperty("meal_plan")
     private final MealPlan mealPlan;
 
     // MM correct this
