@@ -1,11 +1,9 @@
 package com.meg.atable.service;
 
 import com.meg.atable.api.model.TagFilterType;
-import com.meg.atable.api.model.TagInfo;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +22,8 @@ public interface TagService {
     TagEntity createTag(TagEntity parent, String name);
 
     TagEntity createTag(TagEntity parent, String name, String description);
+
+    TagEntity createTag(TagEntity parent, TagEntity newTag);
 
     List<TagEntity> fillInRelationshipInfo(List<TagEntity> tags);
 

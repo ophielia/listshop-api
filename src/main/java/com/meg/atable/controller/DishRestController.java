@@ -70,7 +70,7 @@ public class DishRestController implements DishRestControllerApi {
         UserAccountEntity user = this.getUserForPrincipal(principal);
 
         return this.dishService
-                .getDishForUserById(user.getId(), dishId)
+                .getDishForUserById(user.getUsername(), dishId)
                 .map(dish -> {
                     dish.setDescription(input.getDescription());
                     dish.setDishName(input.getDishName());

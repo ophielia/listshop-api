@@ -1,13 +1,9 @@
 package com.meg.atable.auth.data.entity;
 
 
-import com.meg.atable.data.entity.DishEntity;
-
 import javax.persistence.*;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -17,7 +13,6 @@ public class UserAccountEntity {
     @GeneratedValue
     @Column(name = "user_id")
     private Long id;
-
 
 
     private String username;

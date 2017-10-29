@@ -2,9 +2,11 @@ done - tag_relation_entity table rename
 done - fire up security
 done - next - fix failing test - TagRestControllerTest
 
-clean up test for dish controller
-    https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-initialize-a-database-using-spring-jdbc
-make test for security
+======== >FILLING OUT MEAL PLAN SERVICE
+
+failing tests - seems to be db / test issue
+    try making script to load test state before running.
+    note - try the setup - it runs before each test
 
 sketch for menu finding algorithm
 
@@ -14,12 +16,37 @@ ingredient
 starascending
 stardescending
 type
-dishtype
+mealplantype
 
 create list of all tags - slots (and proposal)
-do count of dishes per tag
+do count of mealplanes per tag
 tally tag count per slot
 start with slot with lowest count
 
 outer join for each tag in slot - count and total
   order by total, desc.
+
+
+
+rest calls for lists
+
+user creates a base list / pick up list
+    POST list?type=BaseList|PickUpList
+
+user adds / deletes tags to a base list / pick up list
+    POST list/id/tag/tag_id
+    DELETE list/id/tag/tag_id
+
+user generates an active list
+    POST list?generateType=replace|add&type=Active
+
+user crosses off items from an active list
+    PUT list/id/tag/tag_id
+
+
+general note
+
+    clean up - not much checking for null userids, null values in calls, etc.
+        needs a pass through with tests trying to break.
+
+

@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 public interface TagRestControllerApi {
 
     @RequestMapping(method = RequestMethod.GET)
-    ResponseEntity<TagResource> retrieveTagList(@RequestParam(value="filter", required=false) String filter);
+    ResponseEntity<TagResource> retrieveTagList(@RequestParam(value = "filter", required = false) String filter,
+                                                @RequestParam(value = "tag_type", required = false) String tagType);
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<TagResource> add(@RequestBody Tag input);

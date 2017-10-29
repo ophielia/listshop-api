@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface TagRelationRepository extends JpaRepository<TagRelationEntity,Long> {
+public interface TagRelationRepository extends JpaRepository<TagRelationEntity, Long> {
 
     Optional<TagRelationEntity> findByChild(TagEntity tag);
 
@@ -20,4 +20,6 @@ public interface TagRelationRepository extends JpaRepository<TagRelationEntity,L
 
     @Query("select te FROM TagRelationEntity AS te join fetch te.child AS ch WHERE ch.tagType = ?1")
     List<TagRelationEntity> findByParentIsNullAndTagType(TagType tagType);
+
+
 }

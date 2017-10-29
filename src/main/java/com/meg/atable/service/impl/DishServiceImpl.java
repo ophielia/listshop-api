@@ -3,16 +3,15 @@ package com.meg.atable.service.impl;
 import com.meg.atable.api.DishNotFoundException;
 import com.meg.atable.api.UnauthorizedAccessException;
 import com.meg.atable.api.UserNotFoundException;
-import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.data.repository.DishRepository;
 import com.meg.atable.auth.data.repository.UserRepository;
+import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.data.repository.DishRepository;
 import com.meg.atable.service.DishService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -26,12 +25,6 @@ public class DishServiceImpl implements DishService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Override
-    public List<DishEntity> getDishesForUserId(Long userId) {
-        UserAccountEntity user = this.userRepository.findOne(userId);
-        return dishRepository.findByUserId(user.getId());
-    }
 
     @Override
     public Collection<DishEntity> getDishesForUserName(String userName) throws UserNotFoundException {
@@ -49,13 +42,14 @@ public class DishServiceImpl implements DishService {
 
 
     @Override
-    public Optional<DishEntity> getDishForUserById(Long userId,Long dishId) {
-        DishEntity dish =  dishRepository.findOne(dishId);
-        if (dish==null) {
+    public Optional<DishEntity> getDishForUserById(String username, Long dishId) {
+        UserAccountEntity user = userRepository.findByUsername(username);
+        DishEntity dish = dishRepository.findOne(dishId);
+        if (dish == null) {
             throw new DishNotFoundException(dishId);
         }
-        if (dish.getUserId() != userId) {
-            throw new UnauthorizedAccessException("Dish [" + dishId + "] doesn't belong to user [" + userId + "].");
+        if (dish.getUserId() != user.getId()) {
+            throw new UnauthorizedAccessException("Dish [" + dishId + "] doesn't belong to user [" + username + "].");
         }
         return Optional.of(dish);
     }
@@ -64,11 +58,5 @@ public class DishServiceImpl implements DishService {
     public DishEntity save(DishEntity dish) {
         return dishRepository.save(dish);
     }
-
-    @Override
-    public void deleteAll() {
-        dishRepository.deleteAllInBatch();
-    }
-
 
 }

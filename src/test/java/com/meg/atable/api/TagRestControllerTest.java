@@ -1,7 +1,10 @@
 package com.meg.atable.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.meg.atable.Application;
 import com.meg.atable.api.model.Tag;
+import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.TagService;
 import org.hamcrest.Matchers;
@@ -9,11 +12,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -29,9 +32,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -41,6 +42,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
+@AutoConfigureJsonTesters
 @ActiveProfiles("test")
 public class TagRestControllerTest {
 
@@ -55,8 +57,12 @@ public class TagRestControllerTest {
 
     private MockMvc mockMvc;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     private String userName = "testname";
 
+    @Autowired
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     private TagEntity parentTag;
@@ -80,6 +86,7 @@ public class TagRestControllerTest {
                 .findAny()
                 .orElse(null);
 
+
         assertNotNull("the JSON message converter must not be null");
     }
 
@@ -90,12 +97,13 @@ public class TagRestControllerTest {
         this.tagService.deleteAllRelationships();
         this.tagService.deleteAll();
 
-        this.parentTag = tagService.save(new TagEntity("name", "description"));
-        level1 = tagService.createTag(parentTag,"tag1", "desc");
-        this.tagList.add(level1);
-        this.tagList.add(tagService.createTag(parentTag,"tag2", "desc"));
+        this.parentTag = buildTag(null, "name", "description", TagType.TagType);
 
-        level2 = tagService.createTag(level1,"tag2l", "desc");
+        level1 = buildTag(parentTag, "tag1", "desc", TagType.TagType);
+        this.tagList.add(level1);
+        this.tagList.add(buildTag(parentTag, "tag2", "desc", TagType.TagType));
+
+        level2 = buildTag(level1, "tag2l", "desc", TagType.TagType);
         this.tagList.add(level2);
 
     }
@@ -109,8 +117,8 @@ public class TagRestControllerTest {
         mockMvc.perform(get(url))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.tag.id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.tag.id").value(testId));
+                .andExpect(jsonPath("$.tag.tag_id", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.tag.tag_id").value(testId));
 
     }
 
@@ -122,17 +130,19 @@ public class TagRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentTypeWithHal))
                 .andExpect(jsonPath("$._embedded.tagResourceList", hasSize(4)))
-                .andExpect(jsonPath("$._embedded.tagResourceList[1].tag.id").value(testId))
+                .andExpect(jsonPath("$._embedded.tagResourceList[1].tag.tag_id").value(testId))
                 .andExpect(jsonPath("$._embedded.tagResourceList[1].tag.name", is("tag1")))
-                .andExpect(jsonPath("$._embedded.tagResourceList[2].tag.id").value(testId2))
+                .andExpect(jsonPath("$._embedded.tagResourceList[2].tag.tag_id").value(testId2))
                 .andExpect(jsonPath("$._embedded.tagResourceList[2].tag.name", is("tag2")))
-                .andExpect(jsonPath("$._embedded.tagResourceList[0].tag.id").value(parentTag.getId()))
+                .andExpect(jsonPath("$._embedded.tagResourceList[0].tag.tag_id").value(parentTag.getId()))
                 .andExpect(jsonPath("$._embedded.tagResourceList[0].tag.name", is(parentTag.getName())));
     }
 
     @Test
     public void createTag() throws Exception {
-        String tagJson = json(new Tag("created tag"));
+        Tag newtag = new Tag("created tag");
+        newtag.tagType(TagType.Rating.name());
+        String tagJson = json(newtag);
 
         this.mockMvc.perform(post("/tag")
                 .contentType(contentType)
@@ -141,12 +151,11 @@ public class TagRestControllerTest {
     }
 
 
-
     @Test
     public void updateTag() throws Exception {
         TagEntity toUpdate = this.tagList.get(0);
         String updateName = "updated:" + toUpdate.getName();
-        String updateDescription = "updated:" + (toUpdate.getDescription()==null?"":toUpdate.getDescription());
+        String updateDescription = "updated:" + (toUpdate.getDescription() == null ? "" : toUpdate.getDescription());
         toUpdate.setName(updateName);
         toUpdate.setDescription(updateDescription);
 
@@ -161,12 +170,12 @@ public class TagRestControllerTest {
     @Test
     public void moveTag() throws Exception {
         // move level2 to belong to parent instead of level1
-        String url = "/taginfo/" + parentTag.getId()
+        String url = "/tag/" + parentTag.getId()
                 + "/child/" + level2.getId();
 
         TagEntity toUpdate = this.tagList.get(0);
         String updateName = "updated:" + toUpdate.getName();
-        String updateDescription = "updated:" + (toUpdate.getDescription()==null?"":toUpdate.getDescription());
+        String updateDescription = "updated:" + (toUpdate.getDescription() == null ? "" : toUpdate.getDescription());
         toUpdate.setName(updateName);
         toUpdate.setDescription(updateDescription);
 
@@ -178,9 +187,21 @@ public class TagRestControllerTest {
 
 
     protected String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+        String test = objectMapper.writeValueAsString(o);
+
+        return test;
+        /*    MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
+        return mockHttpOutputMessage.getBodyAsString();*/
+    }
+
+    private TagEntity buildTag(TagEntity parent, String name, String description, TagType tagType) {
+        TagEntity tagEntity = new TagEntity();
+        tagEntity.setName(name);
+        tagEntity.setDescription(description);
+        tagEntity.setTagType(tagType);
+        return tagService.createTag(parent, tagEntity);
     }
 
 }

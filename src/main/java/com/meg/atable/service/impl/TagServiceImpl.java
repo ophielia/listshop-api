@@ -52,7 +52,7 @@ public class TagServiceImpl implements TagService {
         }
         // get dish
         DishEntity dish = dishRepository.findOne(dishId);
-        if (dish == null ) {
+        if (dish == null) {
             return;
         }
         // filter tag to be deleted from dish
@@ -73,17 +73,21 @@ public class TagServiceImpl implements TagService {
         if (tagFilterType != null && TagFilterType.BaseTags.equals(tagFilterType)) {
             return getBaseTagList(tagType);
         }
+        // this is by selectable tags
+        if (tagFilterType != null && TagFilterType.ForSelect.equals(tagFilterType)) {
+            return getSelectableTagList(tagType);
+        }
         // get by tag type
         if (tagType != null) {
             return tagRepository.findTagsByTagTypeOrderByName(tagType);
         }
-        return tagRepository.findAll(new Sort(Sort.Direction.ASC,"name"));
+        return tagRepository.findAll(new Sort(Sort.Direction.ASC, "name"));
     }
 
     private List<TagEntity> getBaseTagList(TagType tagType) {
 
         if (tagType != null) {
-            return  tagRelationRepository.findByParentIsNullAndTagType(tagType)
+            return tagRelationRepository.findByParentIsNullAndTagType(tagType)
                     .stream()
                     .map(TagRelationEntity::getChild)
                     .collect(Collectors.toList());
@@ -95,9 +99,20 @@ public class TagServiceImpl implements TagService {
 
     }
 
+
+    private List<TagEntity> getSelectableTagList(TagType tagType) {
+        List<TagEntity> testList = tagRepository.findTagsWithoutChildren();
+       /* if (tagType != null) {
+            return testList.stream().filter(t -> t.getTagType() == tagType).collect(Collectors.toList());
+        }*/
+        return testList;
+        //return testList.stream().map(tr -> tr.getChild()).collect(Collectors.toList());
+    }
+
+
     @Override
     public List<TagEntity> getTagList(TagType tagTypeFilter) {
-        return getTagList(TagFilterType.All,tagTypeFilter);
+        return getTagList(TagFilterType.All, tagTypeFilter);
     }
 
     @Override
@@ -122,12 +137,38 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagEntity createTag(TagEntity parent, String name, String description) {
-        TagEntity newtag = new TagEntity(name, description);
+        TagEntity tagEntity = new TagEntity();
+        tagEntity.setName(name);
+        tagEntity.setDescription(description);
+        tagRepository.save(tagEntity);
+        return tagEntity;
+    }
+
+    @Override
+    public TagEntity createTag(TagEntity parent, TagEntity newtag) {
+        TagEntity parentTag = getParentForNewTag(parent, newtag);
+
         newtag = tagRepository.save(newtag);
 
-        TagRelationEntity relation = new TagRelationEntity(parent, newtag);
+
+        TagRelationEntity relation = new TagRelationEntity(parentTag, newtag);
         tagRelationRepository.save(relation);
         return newtag;
+    }
+
+    private TagEntity getParentForNewTag(TagEntity parent, TagEntity newtag) {
+        if (parent != null) {
+            return parent;
+        }
+        TagType tagType = newtag.getTagType();
+        if (tagType == null) {
+            tagType = TagType.TagType;
+        }
+        List<TagEntity> defaults = tagRepository.findTagsByTagTypeAndTagTypeDefault(tagType, true);
+        if (defaults != null && defaults.size() > 0) {
+            return defaults.get(0);
+        }
+        return null;
     }
 
     @Override
@@ -147,11 +188,11 @@ public class TagServiceImpl implements TagService {
     public boolean assignTagToParent(Long tagId, Long parentId) {
         // get tag and parent
         Optional<TagEntity> tagOptional = getTagById(tagId);
-        TagEntity tag = tagOptional.isPresent()?tagOptional.get():null;
+        TagEntity tag = tagOptional.isPresent() ? tagOptional.get() : null;
 
 
         Optional<TagEntity> parentTagOptional = getTagById(parentId);
-        TagEntity parentTag = parentTagOptional.isPresent()?parentTagOptional.get():null;
+        TagEntity parentTag = parentTagOptional.isPresent() ? parentTagOptional.get() : null;
 
         if (tag == null || parentTag == null) {
             return false;
@@ -269,6 +310,14 @@ public class TagServiceImpl implements TagService {
         return parentId
                 .map(TagRelationEntity::getParent)
                 .orElse(null);
+    }
+
+    private TagEntity getDefaultGroup(TagType tagType) {
+        List<TagEntity> defaults = tagRepository.findTagsByTagTypeAndTagTypeDefault(tagType, true);
+        if (defaults != null && defaults.size() > 0) {
+            return defaults.get(0);
+        }
+        return null;
     }
 
 }

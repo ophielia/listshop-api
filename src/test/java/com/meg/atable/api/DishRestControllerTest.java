@@ -38,6 +38,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -50,18 +51,11 @@ public class DishRestControllerTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
-
-
-    private MockMvc mockMvc;
-
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-
-    private UserAccountEntity userAccount;
-
-    private DishEntity dish;
-
     private final List<DishEntity> dishList = new ArrayList<>();
-
+    private MockMvc mockMvc;
+    private HttpMessageConverter mappingJackson2HttpMessageConverter;
+    private UserAccountEntity userAccount;
+    private DishEntity dish;
     private UserDetails userDetails;
     private UserDetails userDetailsBad;
 
@@ -127,8 +121,8 @@ public class DishRestControllerTest {
                 .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.dish.id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.dish.id").value(testId));
+                .andExpect(jsonPath("$.dish.dish_id", Matchers.isA(Number.class)))
+                .andExpect(jsonPath("$.dish.dish_id").value(testId));
 
     }
 
@@ -140,12 +134,13 @@ public class DishRestControllerTest {
         mockMvc.perform(get("/dish")
                 .with(user(userDetails)))
                 .andExpect(status().isOk())
+                .andDo(print())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$._embedded.dishResourceList", hasSize(2)))
-                .andExpect(jsonPath("$._embedded.dishResourceList[0].dish.id").value(testId))
-                .andExpect(jsonPath("$._embedded.dishResourceList[0].dish.dishName", is("dish1")))
-                .andExpect(jsonPath("$._embedded.dishResourceList[1].dish.id").value(testId2))
-                .andExpect(jsonPath("$._embedded.dishResourceList[1].dish.dishName", is("dish2")));
+                .andExpect(jsonPath("$._embedded.dishResourceList[0].dish.dish_id").value(testId))
+                .andExpect(jsonPath("$._embedded.dishResourceList[0].dish.name", is("dish1")))
+                .andExpect(jsonPath("$._embedded.dishResourceList[1].dish.dish_id").value(testId2))
+                .andExpect(jsonPath("$._embedded.dishResourceList[1].dish.name", is("dish2")));
     }
 
     @Test

@@ -14,8 +14,8 @@ public class TagExtended extends Tag {
     public TagExtended() {
     }
 
-    public TagExtended(Long id,String name, String description, TagType tagType,Long parentId, List<Long> childrenIds) {
-        super(id,name,description, tagType);
+    public TagExtended(Long id, String name, String description, TagType tagType, String ratingFamily, Long parentId, List<Long> childrenIds) {
+        super(id, name, description, tagType, ratingFamily);
 
         if (parentId != null) {
             this.parentId = String.valueOf(parentId);

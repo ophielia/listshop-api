@@ -4,7 +4,6 @@ import com.meg.atable.api.UserNotFoundException;
 import com.meg.atable.data.entity.DishEntity;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,17 +11,12 @@ import java.util.Optional;
  */
 public interface DishService {
 
-    List<DishEntity> getDishesForUserId(Long userId);
-
     Collection<DishEntity> getDishesForUserName(String userId) throws UserNotFoundException;
 
     Optional<DishEntity> getDishById(Long dishId);
 
-    Optional<DishEntity> getDishForUserById(Long userId,Long dishId);
+    Optional<DishEntity> getDishForUserById(String username, Long dishId);
 
     DishEntity save(DishEntity dish);
-
-    void deleteAll();
-
 
 }

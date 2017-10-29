@@ -1,6 +1,5 @@
 package com.meg.atable.data.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meg.atable.api.model.TagType;
 
 import javax.persistence.*;
@@ -23,8 +22,14 @@ public class TagEntity {
     @Enumerated(EnumType.STRING)
     private TagType tagType;
 
-    @ManyToMany(mappedBy = "tags",fetch = FetchType.LAZY)
-    private List<DishEntity> dishes= new ArrayList<>();
+    private Boolean tagTypeDefault;
+
+    private String ratingFamily;
+
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    private List<DishEntity> dishes = new ArrayList<>();
+
+
     @Transient
     private List<Long> childrenIds;
     @Transient
@@ -37,6 +42,10 @@ public class TagEntity {
     public TagEntity(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public TagEntity(Long tag_id) {
+        this.tag_id = tag_id;
     }
 
     public Long getId() {
@@ -93,5 +102,21 @@ public class TagEntity {
 
     public void setTagType(TagType tagType) {
         this.tagType = tagType;
+    }
+
+    public Boolean getTagTypeDefault() {
+        return tagTypeDefault;
+    }
+
+    public void setTagTypeDefault(Boolean tagTypeDefault) {
+        this.tagTypeDefault = tagTypeDefault;
+    }
+
+    public String getRatingFamily() {
+        return ratingFamily;
+    }
+
+    public void setRatingFamily(String ratingFamily) {
+        this.ratingFamily = ratingFamily;
     }
 }

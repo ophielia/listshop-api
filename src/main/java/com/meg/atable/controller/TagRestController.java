@@ -1,10 +1,7 @@
 package com.meg.atable.controller;
 
 import com.meg.atable.api.controller.TagRestControllerApi;
-import com.meg.atable.api.model.Tag;
-import com.meg.atable.api.model.TagFilterType;
-import com.meg.atable.api.model.TagResource;
-import com.meg.atable.api.model.TagType;
+import com.meg.atable.api.model.*;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +10,8 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.net.URI;
 import java.util.List;
@@ -35,9 +33,10 @@ public class TagRestController implements TagRestControllerApi {
     }
 
 
-    public ResponseEntity<TagResource> retrieveTagList(String filter) {
-        TagType tagTypeFilter = filter != null? TagType.valueOf(filter) : null;
-        List<TagResource> tagList = tagService.getTagList( tagTypeFilter)
+    public ResponseEntity<TagResource> retrieveTagList(String filter, String tag_type) {
+        TagType tagTypeFilter = tag_type != null ? TagType.valueOf(tag_type) : null;
+        TagFilterType tagFilterTypeFilter = filter != null ? TagFilterType.valueOf(filter) : null;
+        List<TagResource> tagList = tagService.getTagList(tagFilterTypeFilter, tagTypeFilter)
                 .stream().map(TagResource::new)
                 .collect(Collectors.toList());
 
@@ -46,22 +45,23 @@ public class TagRestController implements TagRestControllerApi {
     }
 
     public ResponseEntity<TagResource> add(@RequestBody Tag input) {
-        TagEntity result = this.tagService.createTag(null, input.getName(), input.getDescription());
+        TagEntity tagEntity = ModelMapper.toEntity(input);
+        TagEntity result = this.tagService.createTag(null, tagEntity);
 
         if (result != null) {
             Link forOneTag = new TagResource(result).getLink("self");
             return ResponseEntity.created(URI.create(forOneTag.getHref())).build();
 
-        } else {
-            return ResponseEntity.noContent().build();
         }
+        return ResponseEntity.noContent().build();
     }
 
     public ResponseEntity<TagResource> addAsChild(@PathVariable Long tagId, @RequestBody Tag input) {
         Optional<TagEntity> parent = this.tagService.getTagById(tagId);
 
         if (parent.isPresent()) {
-        TagEntity result = this.tagService.createTag(parent.get(), input.getName(), input.getDescription());
+            TagEntity tagEntity = ModelMapper.toEntity(input);
+            TagEntity result = this.tagService.createTag(parent.get(), tagEntity);
             if (result != null) {
                 Link forOneTag = new TagResource(result).getLink("self");
                 return ResponseEntity.created(URI.create(forOneTag.getHref())).build();
@@ -75,7 +75,7 @@ public class TagRestController implements TagRestControllerApi {
     }
 
     @Override
-    public ResponseEntity assignChildToParent(@PathVariable Long parentId,@PathVariable Long childId) {
+    public ResponseEntity assignChildToParent(@PathVariable Long parentId, @PathVariable Long childId) {
         if (this.tagService.assignTagToParent(childId, parentId)) {
             return ResponseEntity.ok().build();
         } else {
@@ -85,7 +85,6 @@ public class TagRestController implements TagRestControllerApi {
 
 
     public ResponseEntity<Tag> readTag(@PathVariable Long tagId) {
-        // MM
         // invalid dishId - returns invalid id supplied - 400
 
         return this.tagService
@@ -100,10 +99,8 @@ public class TagRestController implements TagRestControllerApi {
     }
 
     public ResponseEntity<Object> updateTag(@PathVariable Long tagId, @RequestBody Tag input) {
-        // MM
         // invalid tagId - returns invalid id supplied - 400
 
-        // MM
         // invalid contents of input - returns 405 validation exception
 
         return this.tagService
@@ -119,7 +116,6 @@ public class TagRestController implements TagRestControllerApi {
                 .orElse(ResponseEntity.notFound().build());
 
     }
-
 
 
 }

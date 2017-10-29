@@ -10,7 +10,10 @@ public class Tag {
 
     private String description;
 
+    @JsonProperty("tag_type")
     private String tagType;
+
+    private String ratingFamily;
 
     Tag() {
     }
@@ -23,11 +26,12 @@ public class Tag {
         this.tag_id = String.valueOf(id);
     }
 
-    Tag(Long id, String name, String description, TagType tagType) {
+    Tag(Long id, String name, String description, TagType tagType, String ratingFamily) {
         this.tag_id = String.valueOf(id);
         this.name = name;
         this.description = description;
-        this.tagType = tagType!=null?tagType.name():TagType.TagType.name();
+        this.tagType = tagType != null ? tagType.name() : TagType.TagType.name();
+        this.ratingFamily = ratingFamily;
     }
 
     @JsonProperty("tag_id")
@@ -61,6 +65,16 @@ public class Tag {
 
     public Tag tagType(String tagType) {
         this.tagType = tagType;
+        return this;
+    }
+
+    @JsonProperty("rating_family")
+    public String getRatingFamily() {
+        return ratingFamily;
+    }
+
+    public Tag ratingFamily(String ratingFamily) {
+        this.ratingFamily = ratingFamily;
         return this;
     }
 }

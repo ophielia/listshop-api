@@ -1,7 +1,5 @@
 package com.meg.atable.data.entity;
 
-import com.meg.atable.auth.data.entity.UserAccountEntity;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +41,6 @@ public class DishEntity {
     public DishEntity() {
         // jpa empty constructor
     }
-
-
 
     public Long getId() {
         return dish_id;

@@ -1,23 +1,23 @@
 package com.meg.atable.api.model;
 
 /**
- * Created by margaretmartin on 06/10/2017.
+ * Created by margaretmartin on 09/10/2017.
  */
-public enum TagFilterType {
+public enum MealPlanType {
 
-    All("All"),
-    ForSelect("ForSelect"),
-    BaseTags("Base");
+    Manual("Manual"),
+    Targeted("Targeted");
 
     private final String display;
 
 
-    TagFilterType(String displayName) {
+    MealPlanType(String displayName) {
         this.display = displayName;
     }
 
     public String getDisplayName() {
         return display;
     }
+
 
 }

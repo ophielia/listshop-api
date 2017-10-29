@@ -1,23 +1,22 @@
 package com.meg.atable.api.model;
 
 /**
- * Created by margaretmartin on 06/10/2017.
+ * Created by margaretmartin on 26/10/2017.
  */
-public enum TagFilterType {
+public enum ListLayoutType {
 
     All("All"),
-    ForSelect("ForSelect"),
-    BaseTags("Base");
+    RoughGrained("RoughGrained"),
+    FineGrained("FineGrained");
 
     private final String display;
 
 
-    TagFilterType(String displayName) {
+    ListLayoutType(String displayName) {
         this.display = displayName;
     }
 
     public String getDisplayName() {
         return display;
     }
-
 }
