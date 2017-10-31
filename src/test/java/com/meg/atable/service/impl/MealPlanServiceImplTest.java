@@ -49,11 +49,6 @@ public class MealPlanServiceImplTest {
     @Autowired
     private DishRepository dishRepository;
 
-    private MealPlanEntity a;
-    private MealPlanEntity b;
-    private MealPlanEntity c;
-
-
     @Before
     public void setUp() {
         if (setUpComplete) {

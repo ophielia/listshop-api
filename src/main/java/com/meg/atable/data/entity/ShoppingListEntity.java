@@ -1,5 +1,6 @@
 package com.meg.atable.data.entity;
 
+import com.meg.atable.api.model.ListLayoutType;
 import com.meg.atable.api.model.ListType;
 
 import javax.persistence.*;
@@ -11,7 +12,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "list")
-public class ListEntity {
+public class ShoppingListEntity {
 
     @Id
     @GeneratedValue
@@ -21,15 +22,22 @@ public class ListEntity {
 
     private Date createdOn;
 
+
+    @Column(name = "list_types")
+    @Enumerated(EnumType.STRING)
     private ListType listType;
 
-    @OneToMany
+    @OneToMany(fetch=FetchType.EAGER)
     @JoinColumn(name = "list_id", referencedColumnName = "list_id")
     private List<ItemEntity> items;
 
     @Column(name = "user_id")
     private Long userId;
 
+
+    @Column(name = "list_layout_type")
+    @Enumerated(EnumType.STRING)
+    private ListLayoutType listLayoutType;
 
     public Long getId() {
         return list_id;
@@ -65,5 +73,13 @@ public class ListEntity {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public ListLayoutType getListLayoutType() {
+        return listLayoutType;
+    }
+
+    public void setListLayoutType(ListLayoutType listLayoutType) {
+        this.listLayoutType = listLayoutType;
     }
 }

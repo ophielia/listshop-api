@@ -1,9 +1,6 @@
 package com.meg.atable.api.model;
 
-import com.meg.atable.data.entity.DishEntity;
-import com.meg.atable.data.entity.MealPlanEntity;
-import com.meg.atable.data.entity.SlotEntity;
-import com.meg.atable.data.entity.TagEntity;
+import com.meg.atable.data.entity.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,5 +101,15 @@ public class ModelMapper {
             slotList.add(toModel(entity));
         }
         return slotList;
+    }
+
+    public static ItemEntity toEntity(Item input) {
+        //MM implement this
+        return null;
+    }
+
+    public static ShoppingListEntity toEntity(ShoppingList shoppingList) {
+       // MM implement this
+        return null;
     }
 }

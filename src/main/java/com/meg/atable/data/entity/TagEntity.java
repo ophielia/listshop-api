@@ -29,6 +29,8 @@ public class TagEntity {
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<DishEntity> dishes = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    private List<ListCategoryEntity> categories = new ArrayList<>();
 
     @Transient
     private List<Long> childrenIds;

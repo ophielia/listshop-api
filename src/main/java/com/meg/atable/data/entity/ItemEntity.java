@@ -26,7 +26,7 @@ public class ItemEntity {
     private ItemSourceType itemSource;
 
     @Column(name = "list_id")
-    private Long list;
+    private Long listId;
 
     private Date addedOn;
 
@@ -87,5 +87,13 @@ public class ItemEntity {
 
     public void setListCategory(String listCategory) {
         this.listCategory = listCategory;
+    }
+
+    public Long getListId() {
+        return listId;
+    }
+
+    public void setListId(Long listId) {
+        this.listId = listId;
     }
 }

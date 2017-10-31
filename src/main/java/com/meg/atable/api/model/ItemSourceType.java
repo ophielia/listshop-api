@@ -6,7 +6,7 @@ package com.meg.atable.api.model;
 public enum ItemSourceType {
     MealPlan("MealPlan"),
     BaseList("BaseList"),
-    PickUpList("PickUpList");
+    PickUpList("PickUpList"), Manual("Manual");
 
     private final String display;
 
