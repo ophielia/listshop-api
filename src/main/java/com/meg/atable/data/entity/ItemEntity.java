@@ -36,6 +36,16 @@ public class ItemEntity {
 
     private String listCategory;
 
+    @Transient
+    private Long tag_id;
+
+    public ItemEntity(Long id) {
+        item_id = id;
+    }
+
+    public ItemEntity() {
+        // necessary for jpa construction
+    }
 
     public Long getId() {
         return item_id;
@@ -95,5 +105,14 @@ public class ItemEntity {
 
     public void setListId(Long listId) {
         this.listId = listId;
+    }
+
+    public Long getTagId() {
+        return tag_id;
+
+    }
+
+    public void setTagId(Long tag_id) {
+        this.tag_id = tag_id;
     }
 }

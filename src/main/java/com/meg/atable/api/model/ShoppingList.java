@@ -1,12 +1,7 @@
 package com.meg.atable.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.atable.data.entity.ItemEntity;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class ShoppingList {
@@ -17,7 +12,10 @@ public class ShoppingList {
     private Date createdOn;
 
     @JsonProperty("list_type")
-    private ListType listType;
+    private String listType;
+
+    @JsonProperty("layout_type")
+    private String layoutType;
 
     private java.util.List<Category>
             categories;
@@ -37,39 +35,48 @@ public class ShoppingList {
         return list_id;
     }
 
-    public void setList_id(Long list_id) {
-        this.list_id = list_id;
-    }
-
     public Date getCreatedOn() {
         return createdOn;
     }
 
-    public void setCreatedOn(Date createdOn) {
+    public ShoppingList createdOn(Date createdOn) {
         this.createdOn = createdOn;
+        return this;
     }
 
-    public ListType getListType() {
+    public String getListType() {
         return listType;
     }
 
-    public void setListType(ListType listType) {
+    public ShoppingList listType(String listType) {
         this.listType = listType;
+        return this;
     }
 
     public java.util.List<Category> getCategories() {
         return categories;
     }
 
-    public void setCategories(java.util.List<Category> categories) {
+    public ShoppingList categories(java.util.List<Category> categories) {
         this.categories = categories;
+        return this;
     }
 
     public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public ShoppingList userId(Long userId) {
         this.userId = userId;
+        return this;
+    }
+
+    public String getLayoutType() {
+        return layoutType;
+    }
+
+    public ShoppingList layoutType(String layoutType) {
+        this.layoutType = layoutType;
+        return this;
     }
 }

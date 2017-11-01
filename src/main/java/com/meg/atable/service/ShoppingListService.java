@@ -10,10 +10,10 @@ import java.util.List;
  * Created by margaretmartin on 30/10/2017.
  */
 public interface ShoppingListService {
-    
+
     List<ShoppingListEntity> getListsByUsername(String userName);
 
-    ShoppingListEntity createList(String userName, ShoppingListEntity listTypeEnum);
+    ShoppingListEntity createList(String userName, ShoppingListEntity shoppingListEntity);
 
     ShoppingListEntity getListByUsernameAndType(String userName, ListType listType);
 

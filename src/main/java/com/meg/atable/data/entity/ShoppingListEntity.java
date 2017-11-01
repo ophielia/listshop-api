@@ -27,7 +27,7 @@ public class ShoppingListEntity {
     @Enumerated(EnumType.STRING)
     private ListType listType;
 
-    @OneToMany(fetch=FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "list_id", referencedColumnName = "list_id")
     private List<ItemEntity> items;
 
@@ -38,6 +38,15 @@ public class ShoppingListEntity {
     @Column(name = "list_layout_type")
     @Enumerated(EnumType.STRING)
     private ListLayoutType listLayoutType;
+
+    public ShoppingListEntity(Long id) {
+        this.list_id = id;
+    }
+
+    public ShoppingListEntity() {
+        // empty constructor for jpa
+    }
+
 
     public Long getId() {
         return list_id;

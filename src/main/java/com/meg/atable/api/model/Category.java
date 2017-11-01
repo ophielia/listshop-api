@@ -1,14 +1,15 @@
 package com.meg.atable.api.model;
 
-import java.util.*;
 import java.util.List;
 
 /**
  * Created by margaretmartin on 29/10/2017.
  */
-public class Category {
 
-    private String categoryId;
+/**
+ * Part of display of ShoppingList
+ */
+public class Category {
 
     private String name;
 
@@ -16,15 +17,6 @@ public class Category {
 
     public Category(String name) {
         this.name = name;
-    }
-
-    public String getCategoryId() {
-        return categoryId;
-    }
-
-    public Category categoryId(String categoryId) {
-        this.categoryId = categoryId;
-        return this;
     }
 
     public String getName() {

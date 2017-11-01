@@ -32,14 +32,14 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     @Autowired
     private UserService userService;
 
-    public ResponseEntity<Resources<ListResource>> retrieveLists(Principal principal) {
+    public ResponseEntity<Resources<ShoppingListResource>> retrieveLists(Principal principal) {
 
-        List<ListResource> listResources = shoppingListService
+        List<ShoppingListResource> shoppingListResources = shoppingListService
                 .getListsByUsername(principal.getName())
                 .stream()
-                .map(ListResource::new)
+                .map(ShoppingListResource::new)
                 .collect(Collectors.toList());
-        Resources<ListResource> listResourceList = new Resources<>(listResources);
+        Resources<ShoppingListResource> listResourceList = new Resources<>(shoppingListResources);
         return new ResponseEntity(listResourceList, HttpStatus.OK);
     }
 
@@ -47,10 +47,10 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<Object> createList(Principal principal, @RequestBody ShoppingList shoppingList) {
         ShoppingListEntity shoppingListEntity = ModelMapper.toEntity(shoppingList);
 
-        ShoppingListEntity result = shoppingListService.createList(principal.getName(),shoppingListEntity);
+        ShoppingListEntity result = shoppingListService.createList(principal.getName(), shoppingListEntity);
 
         if (result != null) {
-            Link oneList = new ListResource(result).getLink("self");
+            Link oneList = new ShoppingListResource(result).getLink("self");
             return ResponseEntity.created(URI.create(oneList.getHref())).build();
         }
         return ResponseEntity.badRequest().build();
@@ -58,17 +58,17 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     //@RequestMapping(method = RequestMethod.GET, value="/type/{listType}", produces = "application/json")
-    public ResponseEntity<ListResource> retrieveListByType(Principal principal,@PathVariable("listType") String listTypeString) {
+    public ResponseEntity<ShoppingListResource> retrieveListByType(Principal principal, @PathVariable("listType") String listTypeString) {
         ListType listType = ListType.valueOf(listTypeString);
-        ShoppingListEntity result = shoppingListService.getListByUsernameAndType(principal.getName(),listType);
+        ShoppingListEntity result = shoppingListService.getListByUsernameAndType(principal.getName(), listType);
 
         return singleResult(result);
 
     }
 
     //@RequestMapping(method = RequestMethod.GET, value = "/{listId}", produces = "application/json")
-    public ResponseEntity<ListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId) {
-        ShoppingListEntity result = shoppingListService.getListById(principal.getName(),listId);
+    public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId) {
+        ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
 
         return singleResult(result);
     }
@@ -83,29 +83,29 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     //@RequestMapping(method = RequestMethod.POST, value = "/{listId}/item", produces = "application/json")
-    public ResponseEntity<Object> addItemToList(Principal principal, @PathVariable Long listId,@RequestBody Item input) {
+    public ResponseEntity<Object> addItemToList(Principal principal, @PathVariable Long listId, @RequestBody Item input) {
         ItemEntity itemEntity = ModelMapper.toEntity(input);
 
-        this.shoppingListService.addItemToList(principal.getName(),listId,itemEntity);
+        this.shoppingListService.addItemToList(principal.getName(), listId, itemEntity);
 
         return ResponseEntity.noContent().build();
     }
 
     // @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/item/{itemId}", produces = "application/json")
     public ResponseEntity<Object> deleteItemFromList(Principal principal, @PathVariable Long listId, @PathVariable Long itemId) {
-        this.shoppingListService.deleteItemFromList(principal.getName(),listId,itemId);
+        this.shoppingListService.deleteItemFromList(principal.getName(), listId, itemId);
 
         return ResponseEntity.noContent().build();
     }
 
-    private ResponseEntity<ListResource> singleResult(ShoppingListEntity result) {
+    private ResponseEntity<ShoppingListResource> singleResult(ShoppingListEntity result) {
         if (result != null) {
-            Link oneList = new ListResource(result).getLink("self");
-            return ResponseEntity.created(URI.create(oneList.getHref())).build();
+            ShoppingListResource shoppingListResource = new ShoppingListResource(result);
+
+            return new ResponseEntity(shoppingListResource, HttpStatus.OK);
         }
         return ResponseEntity.badRequest().build();
     }
-
 
 
 }
