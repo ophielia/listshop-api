@@ -20,6 +20,7 @@ public class ShoppingList {
     private java.util.List<Category>
             categories;
 
+    @JsonProperty("user_id")
     private Long userId;
 
     public ShoppingList() {

@@ -27,8 +27,10 @@ public class Item {
     @JsonProperty("crossed_off")
     private Date crossedOff;
 
+    @JsonProperty("list_category")
     private String listCategory;
 
+    @JsonProperty("list_id")
     private String listId;
 
     @JsonProperty("tag_id")
