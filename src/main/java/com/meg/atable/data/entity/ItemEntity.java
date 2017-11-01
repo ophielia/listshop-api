@@ -10,7 +10,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "list_item")
-public class ItemEntity {
+public class ItemEntity  {
 
     @Id
     @GeneratedValue
@@ -27,6 +27,9 @@ public class ItemEntity {
 
     @Column(name = "list_id")
     private Long listId;
+
+    @Column(name="used_count")
+    private Integer usedCount;
 
     private Date addedOn;
 
@@ -107,6 +110,14 @@ public class ItemEntity {
         this.listId = listId;
     }
 
+    public Integer getUsedCount() {
+        return usedCount;
+    }
+
+    public void setUsedCount(Integer usedCount) {
+        this.usedCount = usedCount;
+    }
+
     public Long getTagId() {
         return tag_id;
 
@@ -115,4 +126,6 @@ public class ItemEntity {
     public void setTagId(Long tag_id) {
         this.tag_id = tag_id;
     }
+
+
 }

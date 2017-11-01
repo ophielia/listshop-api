@@ -9,7 +9,7 @@ import com.meg.atable.data.entity.MealPlanEntity;
 import com.meg.atable.data.entity.SlotEntity;
 import com.meg.atable.data.repository.DishRepository;
 import com.meg.atable.data.repository.MealPlanRepository;
-import com.meg.atable.data.repository.MealPlanSlotRepository;
+import com.meg.atable.data.repository.SlotRepository;
 import com.meg.atable.service.MealPlanService;
 import io.jsonwebtoken.lang.Collections;
 import org.junit.Assert;
@@ -39,7 +39,7 @@ public class MealPlanServiceImplTest {
     private MealPlanRepository mealPlanRepository;
 
     @Autowired
-    private MealPlanSlotRepository slotRepository;
+    private SlotRepository slotRepository;
 
     private static boolean setUpComplete = false;
     private static UserAccountEntity userAccount;
@@ -55,15 +55,15 @@ public class MealPlanServiceImplTest {
             return;
         }
         String userName = "mealPlanTest";
-        this.userAccount = userService.save(new UserAccountEntity(userName, "password"));
+        userAccount = userService.save(new UserAccountEntity(userName, "password"));
 
         noseyUserName = "noseyUser";
         userService.save(new UserAccountEntity(noseyUserName, "password"));
 
-        retrieve = buildMealPlan("for retrieve", this.userAccount.getId());
+        retrieve = buildMealPlan("for retrieve", userAccount.getId());
         retrieve = mealPlanRepository.save(retrieve);
 
-        MealPlanEntity listPlan = buildMealPlan("list plan", this.userAccount.getId());
+        MealPlanEntity listPlan = buildMealPlan("list plan", userAccount.getId());
         mealPlanRepository.save(listPlan);
 
         SlotEntity slot1 = buildDishSlot(retrieve, "testDish1");
@@ -193,8 +193,8 @@ public class MealPlanServiceImplTest {
     private MealPlanEntity buildMealPlan(String mealPlanName, Long userId) {
         MealPlanEntity testMealPlan = new MealPlanEntity();
         testMealPlan.setCreated(new Date());
-        testMealPlan.setName("for retrieve");
-        testMealPlan.setUserId(this.userAccount.getId());
+        testMealPlan.setName(mealPlanName);
+        testMealPlan.setUserId(userId);
         return testMealPlan;
     }
 

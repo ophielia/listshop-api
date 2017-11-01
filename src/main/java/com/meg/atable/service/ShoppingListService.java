@@ -24,4 +24,6 @@ public interface ShoppingListService {
     void addItemToList(String name, Long listId, ItemEntity itemEntity);
 
     void deleteItemFromList(String name, Long listId, Long itemId);
+
+    ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId);
 }

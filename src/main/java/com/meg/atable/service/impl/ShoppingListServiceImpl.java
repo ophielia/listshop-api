@@ -6,17 +6,22 @@ import com.meg.atable.api.model.ListType;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.ItemEntity;
+import com.meg.atable.data.entity.MealPlanEntity;
 import com.meg.atable.data.entity.ShoppingListEntity;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.ItemRepository;
 import com.meg.atable.data.repository.ShoppingListRepository;
 import com.meg.atable.data.repository.TagRepository;
+import com.meg.atable.service.MealPlanService;
 import com.meg.atable.service.ShoppingListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -25,16 +30,26 @@ import java.util.stream.Collectors;
 @Service
 public class ShoppingListServiceImpl implements ShoppingListService {
     @Autowired
+    private
     UserService userService;
 
     @Autowired
+    private
     ShoppingListRepository shoppingListRepository;
 
     @Autowired
+    private
+    MealPlanService mealPlanService;
+
+    @Autowired
+    private
     ItemRepository itemRepository;
 
     @Autowired
+    private
     TagRepository tagRepository;
+
+    private final ListLayoutType listlayoutdefault = ListLayoutType.All;
 
     @Override
     public List<ShoppingListEntity> getListsByUsername(String userName) {
@@ -126,6 +141,63 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // save shopping list
         shoppingListRepository.save(shoppingListEntity);
+    }
+
+    @Override
+    public ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) {
+        // get existing inprocess list, and delete it
+        ShoppingListEntity inProcess = getListByUsernameAndType(name,ListType.InProcess);
+        if (inProcess != null) {
+            shoppingListRepository.delete(inProcess);
+        }
+        // get the mealplan
+        MealPlanEntity mealPlan = mealPlanService.getMealPlanById(name,mealPlanId);
+        if (mealPlan==null) {
+            return null;
+        }
+        mealPlanService.fillInDishTags(mealPlan);
+        // create new inprocess list
+        ShoppingListEntity newList = new ShoppingListEntity();
+        newList.setListLayoutType(listlayoutdefault);
+        newList.setListType(ListType.InProcess);
+        ShoppingListEntity savedNewList = createList(name,newList);
+
+        // get the tagcategorykey for the mealplan
+        Map<Long,String> categoryDictionary = getCategoryDictionary(mealPlan);
+        // create list of items, categorizing as you go
+        Map<TagEntity,Long> tagCount = mealPlan.getAllTags()
+                .stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+
+        List<ItemEntity> items = tagCount.entrySet()
+                .stream()
+                .map(e -> {
+                    ItemEntity item = new ItemEntity();
+                    item.setTag(e.getKey());
+                    item.setListId(savedNewList.getId());
+                    item.setItemSource(ItemSourceType.MealPlan);
+                    item.setUsedCount(e.getValue().intValue());
+                    item.setListCategory(categoryDictionary.get(e.getKey().getId()));
+                    return item;
+        })
+                .collect(Collectors.toList());
+
+        // add items to in process list
+        List<ItemEntity> savedItems = itemRepository.save(items);
+        savedNewList.setItems(savedItems);
+        // save in process list
+        return shoppingListRepository.save(savedNewList);
+    }
+
+    private Map<Long, String> getCategoryDictionary(MealPlanEntity mealPlan) {
+        // MM dummy method until list layouts are implemented
+
+        Map<Long, String> dictionary = new HashMap<>();
+        mealPlan.getAllTags()
+                .stream()
+                .forEach(t -> dictionary.put(t.getId(),"ALL"));
+           return dictionary;
     }
 
     private String getCategoryForItem(ItemEntity itemEntity, ListLayoutType listLayoutType) {

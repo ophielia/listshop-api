@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 15/09/2017.
@@ -67,7 +68,7 @@ public class ModelMapper {
 
     }
 
-    public static Slot toModel(SlotEntity slotEntity) {
+    private static Slot toModel(SlotEntity slotEntity) {
         return new Slot(slotEntity.getMealPlanSlotId())
                 .mealPlanId(slotEntity.getMealPlan().getId())
                 .dish(toModel(slotEntity.getDish()));
@@ -113,9 +114,10 @@ public class ModelMapper {
             sortedByCategories.get(key).add(item);
         }
 
+
         for (Map.Entry<String, List<Item>> entry : sortedByCategories.entrySet()) {
             Category category = new Category(entry.getKey())
-                    .items(entry.getValue());
+                    .items(entry.getValue().stream().sorted().collect(Collectors.toList()));
             categories.add(category);
         }
         return categories;
@@ -130,6 +132,7 @@ public class ModelMapper {
                 .listId(itemEntity.getListId().toString())
                 .addedOn(itemEntity.getAddedOn())
                 .crossedOff(itemEntity.getCrossedOff())
+                .usedCount(itemEntity.getUsedCount())
                 .freeText(itemEntity.getFreeText())
                 .listCategory(itemEntity.getListCategory());
     }
@@ -138,7 +141,7 @@ public class ModelMapper {
         if (tag == null) {
             return null;
         }
-        Long tagId = tag != null && tag.getId() != null ? new Long(tag.getId()) : null;
+        Long tagId = tag.getId() != null ? new Long(tag.getId()) : null;
         TagEntity tagEntity = new TagEntity(tagId);
 
         tagEntity.setName(tag.getName());
@@ -153,7 +156,7 @@ public class ModelMapper {
         if (mealPlan == null) {
             return null;
         }
-        Long mealPlanId = mealPlan != null && mealPlan.getMealPlanId() != null ? Long.valueOf(mealPlan.getMealPlanId()) : null;
+        Long mealPlanId = mealPlan != null && mealPlan.getMealPlanId() != null ? mealPlan.getMealPlanId() : null;
         MealPlanEntity mealPlanEntity = new MealPlanEntity(mealPlanId);
 
         mealPlanEntity.setName(mealPlan.getName());
@@ -167,7 +170,7 @@ public class ModelMapper {
 
     public static ItemEntity toEntity(Item input) {
         Long id = input.getId() != null ?
-                Long.valueOf(input.getId()) : null;
+                input.getId() : null;
         ItemSourceType sourceType = input.getItemSource() != null ?
                 ItemSourceType.valueOf(input.getItemSource()) : null;
         Long listId = input.getListId() != null ?

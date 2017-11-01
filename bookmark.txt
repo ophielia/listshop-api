@@ -1,18 +1,13 @@
-done - tag_relation_entity table rename
-done - fire up security
-done - next - fix failing test - TagRestControllerTest
+defaults -
+    need default for listlayouttype
 
-======== >in SLOT - selectedby tags
 
-failing tests - seems to be db / test issue
-    try making script to load test state before running.
-    note - try the setup - it runs before each test
 
 sketch for menu finding algorithm
 
 TagTypes
 
-ingredient
+ingredientn
 starascending
 stardescending
 type

@@ -27,6 +27,9 @@ public class MealPlanEntity {
     @OneToMany(mappedBy = "mealPlan", fetch = FetchType.EAGER)
     private List<SlotEntity> slots;
 
+    @Transient
+    private List<TagEntity> allTags;
+
     public MealPlanEntity() {
         // jpa empty constructor
     }
@@ -77,5 +80,13 @@ public class MealPlanEntity {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public void setAllTags(List<TagEntity> allTags) {
+        this.allTags = allTags;
+    }
+
+    public List<TagEntity> getAllTags() {
+        return this.allTags;
     }
 }

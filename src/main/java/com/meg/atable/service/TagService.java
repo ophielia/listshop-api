@@ -35,7 +35,7 @@ public interface TagService {
 
     List<TagEntity> getTagList(TagFilterType baseTags, TagType tagType);
 
-    List<TagEntity> getTagList(TagType tagTypeFilter);
 
     void deleteTagFromDish(Long dishId, Long tagId);
+
 }

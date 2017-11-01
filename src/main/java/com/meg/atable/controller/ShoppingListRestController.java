@@ -29,9 +29,6 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     @Autowired
     private ShoppingListService shoppingListService;
 
-    @Autowired
-    private UserService userService;
-
     public ResponseEntity<Resources<ShoppingListResource>> retrieveLists(Principal principal) {
 
         List<ShoppingListResource> shoppingListResources = shoppingListService
@@ -98,13 +95,23 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.noContent().build();
     }
 
+    public ResponseEntity<Object> generateListFromMealPlan(Principal principal,  @PathVariable Long mealPlanId) {
+        ShoppingListEntity shoppingListEntity = this.shoppingListService.generateListFromMealPlan(principal.getName(),mealPlanId);
+        if (shoppingListEntity != null) {
+            Link listLink = new ShoppingListResource(shoppingListEntity).getLink("self");
+            return ResponseEntity.created(URI.create(listLink.getHref())).build();
+
+        }
+        return ResponseEntity.noContent().build();
+    }
+
     private ResponseEntity<ShoppingListResource> singleResult(ShoppingListEntity result) {
         if (result != null) {
             ShoppingListResource shoppingListResource = new ShoppingListResource(result);
 
             return new ResponseEntity(shoppingListResource, HttpStatus.OK);
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.noContent().build();
     }
 
 

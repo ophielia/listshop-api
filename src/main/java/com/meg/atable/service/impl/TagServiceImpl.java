@@ -110,10 +110,6 @@ public class TagServiceImpl implements TagService {
     }
 
 
-    @Override
-    public List<TagEntity> getTagList(TagType tagTypeFilter) {
-        return getTagList(TagFilterType.All, tagTypeFilter);
-    }
 
     @Override
     @Transactional

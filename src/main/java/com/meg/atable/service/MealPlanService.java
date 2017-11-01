@@ -20,4 +20,7 @@ public interface MealPlanService {
     void addDishToMealPlan(String username, Long mealPlanId, Long dishId);
 
     void deleteDishFromMealPlan(String username, Long mealPlanId, Long dishId);
+
+
+    void fillInDishTags(MealPlanEntity mealPlan);
 }

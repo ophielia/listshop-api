@@ -7,6 +7,7 @@ import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.data.repository.UserRepository;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.repository.DishRepository;
+import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.DishService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class DishServiceImpl implements DishService {
 
     @Autowired
     private UserRepository userRepository;
+
 
     @Override
     public Collection<DishEntity> getDishesForUserName(String userName) throws UserNotFoundException {

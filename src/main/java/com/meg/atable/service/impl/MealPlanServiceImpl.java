@@ -5,8 +5,10 @@ import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.MealPlanEntity;
 import com.meg.atable.data.entity.SlotEntity;
+import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.MealPlanRepository;
-import com.meg.atable.data.repository.MealPlanSlotRepository;
+import com.meg.atable.data.repository.SlotRepository;
+import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.DishService;
 import com.meg.atable.service.MealPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 20/10/2017.
@@ -23,25 +26,25 @@ import java.util.List;
 public class MealPlanServiceImpl implements MealPlanService {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    MealPlanRepository mealPlanRepository;
+    private MealPlanRepository mealPlanRepository;
 
     @Autowired
-    MealPlanSlotRepository slotRepository;
+    private SlotRepository slotRepository;
 
     @Autowired
-    DishService dishService;
+    private DishService dishService;
 
+    @Autowired
+    private TagRepository tagRepository;
 
     public List<MealPlanEntity> getMealPlansForUserName(String username) {
         // get user
         UserAccountEntity user = userService.getUserByUserName(username);
 
-        List<MealPlanEntity> list = mealPlanRepository.findByUserId(user.getId());
-
-        return list;
+        return mealPlanRepository.findByUserId(user.getId());
     }
 
     public MealPlanEntity createMealPlan(String username, MealPlanEntity mealPlanEntity) {
@@ -59,13 +62,13 @@ public class MealPlanServiceImpl implements MealPlanService {
         UserAccountEntity user = userService.getUserByUserName(userName);
 
         MealPlanEntity mealPlanEntity = mealPlanRepository.findOne(mealPlanId);
-
         // ensure that this meal plan belongs to the user
         if (mealPlanEntity != null && mealPlanEntity.getUserId() == user.getId()) {
             return mealPlanEntity;
         }
         return null;
     }
+
 
     public void addDishToMealPlan(String username, Long mealPlanId, Long dishId) {
         // get meal plan
@@ -97,7 +100,7 @@ public class MealPlanServiceImpl implements MealPlanService {
         SlotEntity toDelete = null;
         List<SlotEntity> toSave = new ArrayList<>();
         for (SlotEntity slot : slotList) {
-            if (slot.getDish().getId() == dishId) {
+            if (slot.getDish().getId().longValue() == dishId.longValue()) {
                 toDelete = slot;
             } else {
                 toSave.add(slot);
@@ -113,6 +116,7 @@ public class MealPlanServiceImpl implements MealPlanService {
 
     }
 
+
     public boolean deleteMealPlan(String name, Long mealPlanId) {
         MealPlanEntity toDelete = getMealPlanById(name, mealPlanId);
 
@@ -126,4 +130,14 @@ public class MealPlanServiceImpl implements MealPlanService {
         }
         return false;
     }
+
+    public void fillInDishTags(MealPlanEntity mealPlan) {
+        List<Long> dishIds = mealPlan.getSlots().stream()
+                .map(s -> s.getDish().getId())
+                .collect(Collectors.toList());
+
+        List<TagEntity> alltags = tagRepository.getIngredientTagsForDishes(dishIds);
+        mealPlan.setAllTags(alltags);
+    }
+
 }

@@ -9,6 +9,6 @@ import java.util.List;
 /**
  * Created by margaretmartin on 21/10/2017.
  */
-public interface MealPlanSlotRepository extends JpaRepository<SlotEntity, Long> {
+public interface SlotRepository extends JpaRepository<SlotEntity, Long> {
     List<SlotEntity> findByMealPlan(MealPlanEntity mealPlanEntity);
 }

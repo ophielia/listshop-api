@@ -10,4 +10,6 @@ import java.util.List;
  */
 public interface MealPlanRepository extends JpaRepository<MealPlanEntity, Long> {
     List<MealPlanEntity> findByUserId(Long id);
+
+
 }

@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Created by margaretmartin on 29/10/2017.
  */
-public class Item {
+public class Item implements Comparable {
 
     @JsonProperty("item_id")
     private Long item_id;
@@ -35,6 +35,9 @@ public class Item {
 
     @JsonProperty("tag_id")
     private String tagId;
+
+    @JsonProperty("used_count")
+    private Integer usedCount;
 
     public Item(Long id) {
         this.item_id = id;
@@ -122,5 +125,27 @@ public class Item {
     public Item tagId(String tagId) {
         this.tagId = tagId;
         return this;
+    }
+
+    public Integer getUsedCount() {
+        return usedCount;
+    }
+
+    public Item usedCount(Integer usedCount) {
+        this.usedCount = usedCount;
+        return this;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        String name = this.tag != null ? this.tag.getName() : freeText;
+        String comparename = ((Item) o).tag != null ? ((Item) o).getTag().getName() : ((Item) o).getFreeText();
+        if (name == null) {
+            name = "";
+        }
+        if (comparename == null) {
+            comparename = "";
+        }
+        return name.toLowerCase().compareTo(comparename.toLowerCase());
     }
 }
