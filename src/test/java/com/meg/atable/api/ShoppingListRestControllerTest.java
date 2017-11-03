@@ -139,7 +139,7 @@ public class ShoppingListRestControllerTest {
         baseShoppingList.setListType(ListType.BaseList);
         baseShoppingList = shoppingListService.createList(userName, baseShoppingList);
         ItemEntity itemEntity = new ItemEntity();
-        itemEntity.setItemSource(ItemSourceType.Manual);
+        itemEntity.addItemSource(ItemSourceType.Manual);
         itemEntity.setTag(tag2);
         shoppingListService.addItemToList(userName, baseShoppingList.getId(), itemEntity);
         // now - find the item id of the added item (so it can be deleted

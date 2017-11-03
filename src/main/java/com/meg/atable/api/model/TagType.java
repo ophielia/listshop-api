@@ -8,6 +8,7 @@ public enum TagType {
     DishType("DishType"),
     Rating("Rating"),
     TagType("TagType"),
+    NonEdible("NonEdible"),
     Ingredient("Ingredient");
 
     private final String display;

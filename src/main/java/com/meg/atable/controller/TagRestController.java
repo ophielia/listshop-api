@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,7 +36,7 @@ public class TagRestController implements TagRestControllerApi {
 
 
     public ResponseEntity<TagResource> retrieveTagList(String filter, String tag_type) {
-        TagType tagTypeFilter = tag_type != null ? TagType.valueOf(tag_type) : null;
+        List<TagType> tagTypeFilter = processTagTypeInput(tag_type);
         TagFilterType tagFilterTypeFilter = filter != null ? TagFilterType.valueOf(filter) : null;
         List<TagResource> tagList = tagService.getTagList(tagFilterTypeFilter, tagTypeFilter)
                 .stream().map(TagResource::new)
@@ -43,6 +45,8 @@ public class TagRestController implements TagRestControllerApi {
         Resources<TagResource> tagResourceList = new Resources<>(tagList);
         return new ResponseEntity(tagResourceList, HttpStatus.OK);
     }
+
+
 
     public ResponseEntity<TagResource> add(@RequestBody Tag input) {
         TagEntity tagEntity = ModelMapper.toEntity(input);
@@ -118,4 +122,15 @@ public class TagRestController implements TagRestControllerApi {
     }
 
 
+    private List<TagType> processTagTypeInput(String tag_type) {
+        if (tag_type == null) {
+            return null;
+        } else if (tag_type.contains(",")) {
+            return Arrays.asList(tag_type.split(",")).stream()
+                    .map(t -> TagType.valueOf(t.trim()))
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.singletonList(TagType.valueOf(tag_type));
+        }
+    }
 }

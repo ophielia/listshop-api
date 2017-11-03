@@ -33,7 +33,7 @@ public interface TagService {
 
     void addTagToDish(Long dishId, Long tagId);
 
-    List<TagEntity> getTagList(TagFilterType baseTags, TagType tagType);
+    List<TagEntity> getTagList(TagFilterType baseTags, List<TagType> tagType);
 
 
     void deleteTagFromDish(Long dishId, Long tagId);

@@ -1,5 +1,6 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.model.Dish;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.DishEntity;
@@ -131,13 +132,28 @@ public class MealPlanServiceImpl implements MealPlanService {
         return false;
     }
 
-    public void fillInDishTags(MealPlanEntity mealPlan) {
+    public List<TagEntity> fillInDishTags(MealPlanEntity mealPlan) {
         List<Long> dishIds = mealPlan.getSlots().stream()
                 .map(s -> s.getDish().getId())
                 .collect(Collectors.toList());
 
-        List<TagEntity> alltags = tagRepository.getIngredientTagsForDishes(dishIds);
-        mealPlan.setAllTags(alltags);
+        return tagRepository.getIngredientTagsForDishes(dishIds);
     }
 
+    public      void updateLastAddedDateForDishes(MealPlanEntity mealPlan) {
+        if (mealPlan == null || mealPlan.getSlots() == null) {
+            return;
+        }
+        // get ids for dishes
+        List<Long> dishIds = mealPlan.getSlots().stream()
+                .map(s -> s.getDish().getId())
+                .collect(Collectors.toList());
+        // update lastAdded date
+        List<DishEntity> dishes = dishService.getDishes(dishIds);
+        for (DishEntity dish : dishes) {
+            dish.setLastAdded(new Date());
+        }
+        // save dishes
+        dishService.save(dishes);
+    }
 }

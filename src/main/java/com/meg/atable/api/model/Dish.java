@@ -3,6 +3,7 @@ package com.meg.atable.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Dish {
@@ -16,6 +17,9 @@ public class Dish {
     private List<Tag> tags = new ArrayList<>();
 
     private Long userId;
+
+    @JsonProperty("last_added")
+    private Date lastAdded;
 
     public Dish(Long userId, String dishName) {
         this.userId = userId;
@@ -79,4 +83,12 @@ public class Dish {
         return this;
     }
 
+    public Date getLastAdded() {
+        return lastAdded;
+    }
+
+    public Dish lastAdded(Date date) {
+            this.lastAdded = date;
+            return this;
+    }
 }

@@ -1,6 +1,7 @@
 package com.meg.atable.service;
 
 import com.meg.atable.data.entity.MealPlanEntity;
+import com.meg.atable.data.entity.TagEntity;
 
 import java.util.List;
 
@@ -22,5 +23,7 @@ public interface MealPlanService {
     void deleteDishFromMealPlan(String username, Long mealPlanId, Long dishId);
 
 
-    void fillInDishTags(MealPlanEntity mealPlan);
+    List<TagEntity> fillInDishTags(MealPlanEntity mealPlan);
+
+    void updateLastAddedDateForDishes(MealPlanEntity mealPlan);
 }

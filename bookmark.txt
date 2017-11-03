@@ -1,5 +1,34 @@
 defaults -
     need default for listlayouttype
+    default / switch for add lists upon generate
+
+bigger todo list
+    set in process list active
+        "page" for active list (only cross out, not delete)
+        back end "set active" generateStrategy=replace|add
+
+    statistics for what's crossed out often
+
+    done - non-grocery items
+
+    list layouts
+
+    bulk organizing tools -
+        tags to tag structure (dnd)
+        tags to layouts
+        mass dishes to tags
+
+    done - implement last added to list for dishes
+
+    target
+
+    recipe
+
+    smoothing front end
+
+
+little things
+    add created on to dish entity
 
 
 
@@ -14,7 +43,7 @@ type
 mealplantype
 
 create list of all tags - slots (and proposal)
-do count of mealplanes per tag
+do count of dishes per tag
 tally tag count per slot
 start with slot with lowest count
 

@@ -2,6 +2,7 @@ package com.meg.atable.data.entity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -25,6 +26,8 @@ public class DishEntity {
             joinColumns = @JoinColumn(name = "DISH_ID"),
             inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
     private List<TagEntity> tags= new ArrayList<>();
+
+    private Date lastAdded;
 
 
     public DishEntity(Long userId, String dishName) {
@@ -77,5 +80,13 @@ public class DishEntity {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Date getLastAdded() {
+        return lastAdded;
+    }
+
+    public void setLastAdded(Date lastAdded) {
+        this.lastAdded = lastAdded;
     }
 }

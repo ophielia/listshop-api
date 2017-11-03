@@ -22,6 +22,7 @@ public class ModelMapper {
                 .description(dishEntity.getDescription())
                 .dishName(dishEntity.getDishName())
                 .tags(tags)
+                .lastAdded(dishEntity.getLastAdded())
                 .userId(dishEntity.getUserId());
     }
 
@@ -124,11 +125,9 @@ public class ModelMapper {
     }
 
     private static Item toModel(ItemEntity itemEntity) {
-        String itemSource = itemEntity.getItemSource() != null ?
-                itemEntity.getItemSource().name() : null;
         return new Item(itemEntity.getId())
                 .tag(toModel(itemEntity.getTag()))
-                .itemSource(itemSource)
+                .itemSource(itemEntity.getItemSource())
                 .listId(itemEntity.getListId().toString())
                 .addedOn(itemEntity.getAddedOn())
                 .crossedOff(itemEntity.getCrossedOff())
@@ -144,7 +143,7 @@ public class ModelMapper {
         Long tagId = tag.getId() != null ? new Long(tag.getId()) : null;
         TagEntity tagEntity = new TagEntity(tagId);
 
-        tagEntity.setName(tag.getName());
+        tagEntity.setName(tag.getName().trim());
         tagEntity.setDescription(tag.getDescription());
         tagEntity.setTagType(TagType.valueOf(tag.getTagType()));
         tagEntity.setRatingFamily(tag.getRatingFamily());
@@ -171,8 +170,6 @@ public class ModelMapper {
     public static ItemEntity toEntity(Item input) {
         Long id = input.getId() != null ?
                 input.getId() : null;
-        ItemSourceType sourceType = input.getItemSource() != null ?
-                ItemSourceType.valueOf(input.getItemSource()) : null;
         Long listId = input.getListId() != null ?
                 Long.valueOf(input.getListId()) : null;
         Long tagId = input.getTagId() != null ?
@@ -180,7 +177,7 @@ public class ModelMapper {
         ItemEntity itemEntity = new ItemEntity(id);
         itemEntity.setTag(toEntity(input.getTag()));
         itemEntity.setFreeText(input.getFreeText());
-        itemEntity.setItemSource(sourceType);
+        itemEntity.setItemSource(input.getItemSource());
         itemEntity.setListId(listId);
         itemEntity.setTagId(tagId);
         return itemEntity;

@@ -21,5 +21,6 @@ public interface TagRelationRepository extends JpaRepository<TagRelationEntity, 
     @Query("select te FROM TagRelationEntity AS te join fetch te.child AS ch WHERE ch.tagType = ?1")
     List<TagRelationEntity> findByParentIsNullAndTagType(TagType tagType);
 
-
+    @Query("select te FROM TagRelationEntity AS te join fetch te.child AS ch WHERE ch.tagType = ?1")
+    List<TagRelationEntity> findByParentIsNullAndTagTypeIn(List<TagType> tagType);
 }

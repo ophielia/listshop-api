@@ -13,7 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -30,10 +33,9 @@ public class TagInfoRestController implements TagInfoRestControllerApi {
 
 
     public ResponseEntity<TagInfoResource> retrieveTagList(@RequestParam(value = "tag_type", required = false) String tag_type) {
-        TagType tagType = tag_type == null ? null : TagType.valueOf(tag_type);
-
+        List<TagType> tagTypes = processTagTypeInput(tag_type);
         // get tag list
-        List<TagEntity> tagList = (List) tagService.getTagList(TagFilterType.All,tagType);
+        List<TagEntity> tagList = (List) tagService.getTagList(TagFilterType.All,tagTypes);
 
         // fill in relationship info
         tagList = tagService.fillInRelationshipInfo(tagList);
@@ -42,6 +44,19 @@ public class TagInfoRestController implements TagInfoRestControllerApi {
         TagInfoResource tagInfo = new TagInfoResource(tagList);
 
         return new ResponseEntity(tagInfo, HttpStatus.OK);
+    }
+
+
+    private List<TagType> processTagTypeInput(String tag_type) {
+        if (tag_type == null) {
+            return null;
+        } else if (tag_type.contains(",")) {
+            return Arrays.asList(tag_type.split(",")).stream()
+                    .map(t -> TagType.valueOf(t.trim()))
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.singletonList(TagType.valueOf(tag_type));
+        }
     }
 
 }

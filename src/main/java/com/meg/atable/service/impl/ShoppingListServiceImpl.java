@@ -12,6 +12,7 @@ import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.ItemRepository;
 import com.meg.atable.data.repository.ShoppingListRepository;
 import com.meg.atable.data.repository.TagRepository;
+import com.meg.atable.service.ListItemCollector;
 import com.meg.atable.service.MealPlanService;
 import com.meg.atable.service.ShoppingListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +107,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
         // prepare item
         itemEntity.setAddedOn(new Date());
-        itemEntity.setItemSource(ItemSourceType.Manual);
+        itemEntity.addItemSource(ItemSourceType.Manual);
         itemEntity.setListId(listId);
         String listCategory = getCategoryForItem(itemEntity, shoppingListEntity.getListLayoutType());
         itemEntity.setListCategory(listCategory);
@@ -155,49 +156,59 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (mealPlan==null) {
             return null;
         }
-        mealPlanService.fillInDishTags(mealPlan);
+
+        List<TagEntity> allMealPlanTags = mealPlanService.fillInDishTags(mealPlan);
+        // get the tagcategorykey for the mealplan
+        Map<Long,String> categoryDictionary = getCategoryDictionary(allMealPlanTags);
         // create new inprocess list
         ShoppingListEntity newList = new ShoppingListEntity();
         newList.setListLayoutType(listlayoutdefault);
         newList.setListType(ListType.InProcess);
         ShoppingListEntity savedNewList = createList(name,newList);
+        // create the collector
+        ListItemCollector collector = new ListItemCollector(savedNewList.getId(),categoryDictionary);
 
-        // get the tagcategorykey for the mealplan
-        Map<Long,String> categoryDictionary = getCategoryDictionary(mealPlan);
-        // create list of items, categorizing as you go
-        Map<TagEntity,Long> tagCount = mealPlan.getAllTags()
-                .stream()
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        // add all tags
+        collector.addTags(allMealPlanTags);
 
+        // This is where statistics should be called / collected
 
-        List<ItemEntity> items = tagCount.entrySet()
-                .stream()
-                .map(e -> {
-                    ItemEntity item = new ItemEntity();
-                    item.setTag(e.getKey());
-                    item.setListId(savedNewList.getId());
-                    item.setItemSource(ItemSourceType.MealPlan);
-                    item.setUsedCount(e.getValue().intValue());
-                    item.setListCategory(categoryDictionary.get(e.getKey().getId()));
-                    return item;
-        })
-                .collect(Collectors.toList());
+        // add Items from PickUpList
+        ShoppingListEntity pickupList = getListByUsernameAndType(name,ListType.PickUpList);
+        if (pickupList != null) {
+            collector.addListItems(ListType.PickUpList,ItemSourceType.PickUpList,pickupList.getItems());
+        }
 
-        // add items to in process list
-        List<ItemEntity> savedItems = itemRepository.save(items);
+        // add Items from BaseList
+        ShoppingListEntity baseList = getListByUsernameAndType(name,ListType.BaseList);
+        if (baseList != null) {
+            collector.addListItems(ListType.BaseList,ItemSourceType.BaseList,baseList.getItems());
+        }
+
+        // check categorization of other list items
+        List<TagEntity> uncategorized = collector.getUncategorizedTags();
+        if (uncategorized != null && uncategorized.size() > 0) {
+        Map<Long, String> dictionary = getCategoryDictionary(uncategorized);
+            collector.categorizeUncategorized(dictionary);
+        }
+
+        // update the last added date for dishes
+        mealPlanService.updateLastAddedDateForDishes(mealPlan);
+        // get the collected items, and save them
+        List<ItemEntity> savedItems = itemRepository.save(collector.getItems());
+        // add items to the list, and save the list
         savedNewList.setItems(savedItems);
-        // save in process list
         return shoppingListRepository.save(savedNewList);
+
     }
 
-    private Map<Long, String> getCategoryDictionary(MealPlanEntity mealPlan) {
+    private Map<Long, String> getCategoryDictionary(List<TagEntity> tagList) {
         // MM dummy method until list layouts are implemented
 
         Map<Long, String> dictionary = new HashMap<>();
-        mealPlan.getAllTags()
-                .stream()
+        tagList.stream()
                 .forEach(t -> dictionary.put(t.getId(),"ALL"));
-           return dictionary;
+        return dictionary;
     }
 
     private String getCategoryForItem(ItemEntity itemEntity, ListLayoutType listLayoutType) {

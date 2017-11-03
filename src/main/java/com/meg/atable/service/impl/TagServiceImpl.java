@@ -67,27 +67,27 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public List<TagEntity> getTagList(TagFilterType tagFilterType, TagType tagType) {
+    public List<TagEntity> getTagList(TagFilterType tagFilterType, List<TagType> tagTypes) {
 
         // skim off base tag requests
         if (tagFilterType != null && TagFilterType.BaseTags.equals(tagFilterType)) {
-            return getBaseTagList(tagType);
+            return getBaseTagList(tagTypes);
         }
         // this is by selectable tags
         if (tagFilterType != null && TagFilterType.ForSelect.equals(tagFilterType)) {
-            return getSelectableTagList(tagType);
+            return getSelectableTagList(tagTypes);
         }
         // get by tag type
-        if (tagType != null) {
-            return tagRepository.findTagsByTagTypeOrderByName(tagType);
+        if (tagTypes != null) {
+            return tagRepository.findTagsByTagTypeInOrderByName(tagTypes);
         }
         return tagRepository.findAll(new Sort(Sort.Direction.ASC, "name"));
     }
 
-    private List<TagEntity> getBaseTagList(TagType tagType) {
+    private List<TagEntity> getBaseTagList(List<TagType> tagTypes) {
 
-        if (tagType != null) {
-            return tagRelationRepository.findByParentIsNullAndTagType(tagType)
+        if (tagTypes != null) {
+            return tagRelationRepository.findByParentIsNullAndTagTypeIn(tagTypes)
                     .stream()
                     .map(TagRelationEntity::getChild)
                     .collect(Collectors.toList());
@@ -100,15 +100,15 @@ public class TagServiceImpl implements TagService {
     }
 
 
-    private List<TagEntity> getSelectableTagList(TagType tagType) {
-        List<TagEntity> testList = tagRepository.findTagsWithoutChildren();
-       /* if (tagType != null) {
-            return testList.stream().filter(t -> t.getTagType() == tagType).collect(Collectors.toList());
-        }*/
-        return testList;
-        //return testList.stream().map(tr -> tr.getChild()).collect(Collectors.toList());
-    }
+    private List<TagEntity> getSelectableTagList(List<TagType> tagTypes) {
+        if (tagTypes != null) {
+            List<String> tagTypeStrings = tagTypes.stream().map(t -> t.name()).collect(Collectors.toList());
+            return tagRepository.findTagsWithoutChildrenByTagTypes(tagTypeStrings);
+        } else {
+             return tagRepository.findTagsWithoutChildren();
+        }
 
+    }
 
 
     @Override

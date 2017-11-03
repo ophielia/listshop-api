@@ -22,8 +22,7 @@ public class ItemEntity  {
     private TagEntity tag;
 
     @Column(name = "source")
-    @Enumerated(EnumType.STRING)
-    private ItemSourceType itemSource;
+    private String itemSource;
 
     @Column(name = "list_id")
     private Long listId;
@@ -62,11 +61,11 @@ public class ItemEntity  {
         this.tag = tag;
     }
 
-    public ItemSourceType getItemSource() {
+    public String getItemSource() {
         return itemSource;
     }
 
-    public void setItemSource(ItemSourceType itemSource) {
+    public void setItemSource(String itemSource) {
         this.itemSource = itemSource;
     }
 
@@ -128,4 +127,14 @@ public class ItemEntity  {
     }
 
 
+    public void addItemSource(ItemSourceType sourceType) {
+        if (this.itemSource == null) {
+            this.itemSource = sourceType.name();
+            return;
+        }
+        if (this.itemSource.contains(sourceType.name())) {
+            return;
+        }
+        this.itemSource = this.itemSource + ";" + sourceType.name();
+    }
 }
