@@ -12,7 +12,7 @@ public class ListCategoryEntity {
 
     @Id
     @GeneratedValue
-    @Column(name="category_id")
+    @Column(name = "category_id")
     private Long categoryId;
 
     private String name;
@@ -22,4 +22,25 @@ public class ListCategoryEntity {
             joinColumns = @JoinColumn(name = "CATEGORY_ID"),
             inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
     private List<TagEntity> tags;
+
+
+    public Long getId() {
+        return categoryId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<TagEntity> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<TagEntity> tags) {
+        this.tags = tags;
+    }
 }

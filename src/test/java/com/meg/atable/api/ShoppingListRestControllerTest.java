@@ -246,7 +246,7 @@ public class ShoppingListRestControllerTest {
                 + "/item";
 
         Item item = new Item()
-                .tagId(tag1.getTag_id().toString())
+                .tagId(tag1.getId().toString())
                 .itemSource("Manual");
 
         String itemJson = json(item);
@@ -268,17 +268,17 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-@Test
-@WithMockUser
-public void testGenerateFromMealPlan() throws Exception {
+    @Test
+    @WithMockUser
+    public void testGenerateFromMealPlan() throws Exception {
         Long mealPlanId = finalMealPlan.getId();
-    String url = "/shoppinglist/mealplan/" + mealPlanId;
+        String url = "/shoppinglist/mealplan/" + mealPlanId;
 
-    this.mockMvc.perform(post(url)
-            .with(user(userDetails))
-            .contentType(contentType))
-            .andExpect(status().isNoContent());
-}
+        this.mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+    }
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
@@ -292,22 +292,22 @@ public void testGenerateFromMealPlan() throws Exception {
         TagEntity tag3 = ServiceTestUtils.buildTag("tag3", TagType.TagType);
         TagEntity tag4 = ServiceTestUtils.buildTag("tag4", TagType.TagType);
         TagEntity tag5 = ServiceTestUtils.buildTag("tag5", TagType.TagType);
-        List<TagEntity> tags = Arrays.asList(tag1,tag2,tag3,tag4,tag5);
-        List<TagEntity> savedTags =tagRepository.save(tags);
+        List<TagEntity> tags = Arrays.asList(tag1, tag2, tag3, tag4, tag5);
+        List<TagEntity> savedTags = tagRepository.save(tags);
 
-        DishEntity dish1 = ServiceTestUtils.buildDish(userAccount.getId(),"dish1",savedTags.subList(0,2));
-        DishEntity dish2 = ServiceTestUtils.buildDish(userAccount.getId(),"dish2",savedTags.subList(2,3));
-        DishEntity dish3 = ServiceTestUtils.buildDish(userAccount.getId(),"dish3",savedTags.subList(3,5));
-        List<DishEntity> dishes = Arrays.asList(dish1,dish2,dish3);
+        DishEntity dish1 = ServiceTestUtils.buildDish(userAccount.getId(), "dish1", savedTags.subList(0, 2));
+        DishEntity dish2 = ServiceTestUtils.buildDish(userAccount.getId(), "dish2", savedTags.subList(2, 3));
+        DishEntity dish3 = ServiceTestUtils.buildDish(userAccount.getId(), "dish3", savedTags.subList(3, 5));
+        List<DishEntity> dishes = Arrays.asList(dish1, dish2, dish3);
         List<DishEntity> savedDishes = dishRepository.save(dishes);
 
-        MealPlanEntity mealPlanEntity = ServiceTestUtils.buildMealPlan("testMealPlan",userAccount.getId());
+        MealPlanEntity mealPlanEntity = ServiceTestUtils.buildMealPlan("testMealPlan", userAccount.getId());
         MealPlanEntity savedMealPlan = mealPlanRepository.save(mealPlanEntity);
 
-        SlotEntity slot1 = ServiceTestUtils.buildDishSlot(savedMealPlan,savedDishes.get(0));
-        SlotEntity slot2 = ServiceTestUtils.buildDishSlot(savedMealPlan,savedDishes.get(1));
-        SlotEntity slot3 = ServiceTestUtils.buildDishSlot(savedMealPlan,savedDishes.get(2));
-        List<SlotEntity> slots = Arrays.asList(slot1,slot2,slot3);
+        SlotEntity slot1 = ServiceTestUtils.buildDishSlot(savedMealPlan, savedDishes.get(0));
+        SlotEntity slot2 = ServiceTestUtils.buildDishSlot(savedMealPlan, savedDishes.get(1));
+        SlotEntity slot3 = ServiceTestUtils.buildDishSlot(savedMealPlan, savedDishes.get(2));
+        List<SlotEntity> slots = Arrays.asList(slot1, slot2, slot3);
         List<SlotEntity> savedSlots = slotRepository.save(slots);
 
         savedMealPlan.setSlots(savedSlots);

@@ -13,6 +13,7 @@ import com.meg.atable.data.repository.ItemRepository;
 import com.meg.atable.data.repository.ShoppingListRepository;
 import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.ListItemCollector;
+import com.meg.atable.service.ListTagStatisticService;
 import com.meg.atable.service.MealPlanService;
 import com.meg.atable.service.ShoppingListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +33,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Autowired
     private
     UserService userService;
+
+    @Autowired
+    private ListTagStatisticService listTagStatisticService;
 
     @Autowired
     private
@@ -50,7 +53,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private
     TagRepository tagRepository;
 
-    private final ListLayoutType listlayoutdefault = ListLayoutType.All;
+    // MM need to handle this in application settings /user settings
+    private final static ListLayoutType listlayoutdefault = ListLayoutType.All;
 
     @Override
     public List<ShoppingListEntity> getListsByUsername(String userName) {
@@ -104,6 +108,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (itemEntity.getTagId() != null) {
             TagEntity tag = tagRepository.findOne(itemEntity.getTagId());
             itemEntity.setTag(tag);
+
+            // increment stats
+            UserAccountEntity user = userService.getUserByUserName(name);
+            listTagStatisticService.itemAddedToList(user.getId(), tag.getId(), shoppingListEntity.getListType());
         }
         // prepare item
         itemEntity.setAddedOn(new Date());
@@ -126,6 +134,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (shoppingListEntity == null) {
             return;
         }
+
+        // increment stats
+        ItemEntity itemforstats = itemRepository.findOne(itemId);
+        if (itemforstats.getTag() != null) {
+            UserAccountEntity user = userService.getUserByUserName(name);
+
+            listTagStatisticService.itemRemovedFromList(user.getId(), itemforstats.getTag().getId(), shoppingListEntity.getListType());
+        }
+
         // get items for shopping list
         List<ItemEntity> listItems = itemRepository.findByListId(listId);
 
@@ -146,49 +163,51 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) {
+        UserAccountEntity user = userService.getUserByUserName(name);
         // get existing inprocess list, and delete it
-        ShoppingListEntity inProcess = getListByUsernameAndType(name,ListType.InProcess);
+        ShoppingListEntity inProcess = getListByUsernameAndType(name, ListType.InProcess);
         if (inProcess != null) {
             shoppingListRepository.delete(inProcess);
         }
         // get the mealplan
-        MealPlanEntity mealPlan = mealPlanService.getMealPlanById(name,mealPlanId);
-        if (mealPlan==null) {
+        MealPlanEntity mealPlan = mealPlanService.getMealPlanById(name, mealPlanId);
+        if (mealPlan == null) {
             return null;
         }
 
         List<TagEntity> allMealPlanTags = mealPlanService.fillInDishTags(mealPlan);
         // get the tagcategorykey for the mealplan
-        Map<Long,String> categoryDictionary = getCategoryDictionary(allMealPlanTags);
+        Map<Long, String> categoryDictionary = getCategoryDictionary(allMealPlanTags);
         // create new inprocess list
         ShoppingListEntity newList = new ShoppingListEntity();
         newList.setListLayoutType(listlayoutdefault);
         newList.setListType(ListType.InProcess);
-        ShoppingListEntity savedNewList = createList(name,newList);
+        ShoppingListEntity savedNewList = createList(name, newList);
         // create the collector
-        ListItemCollector collector = new ListItemCollector(savedNewList.getId(),categoryDictionary);
+        ListItemCollector collector = new ListItemCollector(savedNewList.getId(), categoryDictionary);
 
         // add all tags
         collector.addTags(allMealPlanTags);
 
-        // This is where statistics should be called / collected
-
-        // add Items from PickUpList
-        ShoppingListEntity pickupList = getListByUsernameAndType(name,ListType.PickUpList);
-        if (pickupList != null) {
-            collector.addListItems(ListType.PickUpList,ItemSourceType.PickUpList,pickupList.getItems());
+        // add Items from BaseList
+        ShoppingListEntity baseList = getListByUsernameAndType(name, ListType.BaseList);
+        if (baseList != null) {
+            collector.addListItems(ListType.BaseList, ItemSourceType.BaseList, baseList.getItems());
         }
 
-        // add Items from BaseList
-        ShoppingListEntity baseList = getListByUsernameAndType(name,ListType.BaseList);
-        if (baseList != null) {
-            collector.addListItems(ListType.BaseList,ItemSourceType.BaseList,baseList.getItems());
+        // process statistics (don't want to include pickup in statistics)
+        listTagStatisticService.processStatistics(user.getId(), collector);
+
+        // add Items from PickUpList
+        ShoppingListEntity pickupList = getListByUsernameAndType(name, ListType.PickUpList);
+        if (pickupList != null) {
+            collector.addListItems(ListType.PickUpList, ItemSourceType.PickUpList, pickupList.getItems());
         }
 
         // check categorization of other list items
         List<TagEntity> uncategorized = collector.getUncategorizedTags();
-        if (uncategorized != null && uncategorized.size() > 0) {
-        Map<Long, String> dictionary = getCategoryDictionary(uncategorized);
+        if (uncategorized != null && !uncategorized.isEmpty()) {
+            Map<Long, String> dictionary = getCategoryDictionary(uncategorized);
             collector.categorizeUncategorized(dictionary);
         }
 
@@ -207,7 +226,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         Map<Long, String> dictionary = new HashMap<>();
         tagList.stream()
-                .forEach(t -> dictionary.put(t.getId(),"ALL"));
+                .forEach(t -> dictionary.put(t.getId(), "ALL"));
         return dictionary;
     }
 

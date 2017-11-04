@@ -94,10 +94,6 @@ public class TagEntity {
         this.childrenIds = childrenIds;
     }
 
-    public Long getTag_id() {
-        return tag_id;
-    }
-
     public TagType getTagType() {
         return tagType;
     }

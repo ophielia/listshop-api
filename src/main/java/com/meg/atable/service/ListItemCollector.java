@@ -37,13 +37,19 @@ public class ListItemCollector {
 
     public List<ItemEntity> getItems() {
         return Stream.concat(tagToItem.values().stream(), freeTextItems.stream())
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     public List<TagEntity> getUncategorizedTags() {
         return tagToItem.values().stream()
-                .filter(i -> i.getTag()!=null && i.getListCategory() == null)
+                .filter(i -> i.getTag() != null && i.getListCategory() == null)
                 .map(ItemEntity::getTag)
+                .collect(Collectors.toList());
+    }
+
+    public List<Long> getAllTagIds() {
+        return tagToItem.values().stream()
+                .map(i -> i.getTag().getId())
                 .collect(Collectors.toList());
     }
 
@@ -52,7 +58,7 @@ public class ListItemCollector {
                 .forEach(e -> {
                     ItemEntity item = tagToItem.get(e.getKey());
                     item.setListCategory(e.getValue());
-                    tagToItem.put(e.getKey(),item);
+                    tagToItem.put(e.getKey(), item);
                 });
     }
 
@@ -63,40 +69,40 @@ public class ListItemCollector {
         item.addItemSource(sourceType);
         item.setUsedCount(1);
         item.setListCategory(categoryDictionary.get(tag.getId()));
-        tagToItem.put(tag.getId(),item);
+        tagToItem.put(tag.getId(), item);
     }
 
     private void addTagToItem(Long tagid, ItemSourceType sourceType) {
         ItemEntity item = tagToItem.get(tagid);
         item.setUsedCount(item.getUsedCount() + 1);
         item.addItemSource(sourceType);
-        tagToItem.put(tagid,item);
+        tagToItem.put(tagid, item);
     }
 
-    public void addListItems(ListType listType,ItemSourceType sourceType, List<ItemEntity> items) {
-        if (items == null ) {
+    public void addListItems(ListType listType, ItemSourceType sourceType, List<ItemEntity> items) {
+        if (items == null) {
             return;
         }
-        items.stream().forEach(item -> addOrUpdateItem(listType,sourceType,item));
+        items.stream().forEach(item -> addOrUpdateItem(listType, sourceType, item));
     }
 
-    private void addOrUpdateItem(ListType listType,ItemSourceType itemType,ItemEntity item) {
+    private void addOrUpdateItem(ListType listType, ItemSourceType itemType, ItemEntity item) {
         if (item.getTag() == null) {
-            ItemEntity copied = copyItem(item,listType);
+            ItemEntity copied = copyItem(item, listType);
             // free text item
             freeTextItems.add(copied);
-        } else if (tagToItem.containsKey(item.getTag().getId())){
+        } else if (tagToItem.containsKey(item.getTag().getId())) {
             ItemEntity update = tagToItem.get(item.getTag().getId());
-            int count = item.getUsedCount() != null ? item.getUsedCount():0;
+            int count = item.getUsedCount() != null ? item.getUsedCount() : 0;
             update.setUsedCount(count + 1);
             update.addItemSource(itemType);
-            tagToItem.put(item.getTag().getId(),update);
+            tagToItem.put(item.getTag().getId(), update);
         } else {
-            ItemEntity copied = copyItem(item,listType);
-            int count = item.getUsedCount() != null ? item.getUsedCount():0;
+            ItemEntity copied = copyItem(item, listType);
+            int count = item.getUsedCount() != null ? item.getUsedCount() : 0;
             copied.setUsedCount(count + 1);
             copied.addItemSource(itemType);
-            tagToItem.put(item.getTag().getId(),copied);
+            tagToItem.put(item.getTag().getId(), copied);
         }
     }
 

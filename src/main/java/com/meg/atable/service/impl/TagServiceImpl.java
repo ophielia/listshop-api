@@ -58,7 +58,7 @@ public class TagServiceImpl implements TagService {
         // filter tag to be deleted from dish
         List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
         List<TagEntity> dishTagsDeletedTag = dishTags.stream()
-                .filter(t -> t.getTag_id() != tagId)
+                .filter(t -> t.getId() != tagId)
                 .collect(Collectors.toList());
         // add tags to dish
         dish.setTags(dishTagsDeletedTag);
@@ -102,10 +102,10 @@ public class TagServiceImpl implements TagService {
 
     private List<TagEntity> getSelectableTagList(List<TagType> tagTypes) {
         if (tagTypes != null) {
-            List<String> tagTypeStrings = tagTypes.stream().map(t -> t.name()).collect(Collectors.toList());
+            List<String> tagTypeStrings = tagTypes.stream().map(TagType::name).collect(Collectors.toList());
             return tagRepository.findTagsWithoutChildrenByTagTypes(tagTypeStrings);
         } else {
-             return tagRepository.findTagsWithoutChildren();
+            return tagRepository.findTagsWithoutChildren();
         }
 
     }
@@ -144,10 +144,10 @@ public class TagServiceImpl implements TagService {
     public TagEntity createTag(TagEntity parent, TagEntity newtag) {
         TagEntity parentTag = getParentForNewTag(parent, newtag);
 
-        newtag = tagRepository.save(newtag);
+        TagEntity saved = tagRepository.save(newtag);
 
 
-        TagRelationEntity relation = new TagRelationEntity(parentTag, newtag);
+        TagRelationEntity relation = new TagRelationEntity(parentTag, saved);
         tagRelationRepository.save(relation);
         return newtag;
     }
@@ -161,7 +161,7 @@ public class TagServiceImpl implements TagService {
             tagType = TagType.TagType;
         }
         List<TagEntity> defaults = tagRepository.findTagsByTagTypeAndTagTypeDefault(tagType, true);
-        if (defaults != null && defaults.size() > 0) {
+        if (defaults != null && !defaults.isEmpty()) {
             return defaults.get(0);
         }
         return null;
@@ -310,7 +310,7 @@ public class TagServiceImpl implements TagService {
 
     private TagEntity getDefaultGroup(TagType tagType) {
         List<TagEntity> defaults = tagRepository.findTagsByTagTypeAndTagTypeDefault(tagType, true);
-        if (defaults != null && defaults.size() > 0) {
+        if (defaults != null && !defaults.isEmpty()) {
             return defaults.get(0);
         }
         return null;

@@ -24,4 +24,25 @@ public class ListLayoutEntity {
     @OneToMany
     @JoinColumn(name = "layout_id", referencedColumnName = "layout_id")
     private List<ListCategoryEntity> categories;
+
+
+    public Long getId() {
+        return layoutId;
+    }
+
+    public ListLayoutType getLayoutType() {
+        return layoutType;
+    }
+
+    public void setLayoutType(ListLayoutType layoutType) {
+        this.layoutType = layoutType;
+    }
+
+    public List<ListCategoryEntity> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<ListCategoryEntity> categories) {
+        this.categories = categories;
+    }
 }

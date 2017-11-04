@@ -15,6 +15,7 @@ public class Category {
 
     private java.util.List<Item> items;
 
+
     public Category(String name) {
         this.name = name;
     }

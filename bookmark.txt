@@ -1,6 +1,8 @@
 defaults -
     need default for listlayouttype
     default / switch for add lists upon generate
+bugs -
+    dishes with every tag added twice - I suspect tag assign tool
 
 bigger todo list
     set in process list active

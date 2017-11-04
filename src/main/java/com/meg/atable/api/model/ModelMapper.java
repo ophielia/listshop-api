@@ -1,6 +1,7 @@
 package com.meg.atable.api.model;
 
 import com.meg.atable.data.entity.*;
+import com.meg.atable.service.ListTagStatisticService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -121,7 +122,17 @@ public class ModelMapper {
                     .items(entry.getValue().stream().sorted().collect(Collectors.toList()));
             categories.add(category);
         }
-        return categories;
+        return categories.stream().sorted(
+                (o1, o2) -> {
+                    if (ListTagStatisticService.IS_FREQUENT.equals(o1.getName())) {
+                        return -1;
+                    } else if (ListTagStatisticService.IS_FREQUENT.equals(o2.getName())) {
+                        return 1;
+                    }
+                    return o1.getName().compareTo(o2.getName());
+
+                }
+        ).collect(Collectors.toList());
     }
 
     private static Item toModel(ItemEntity itemEntity) {
