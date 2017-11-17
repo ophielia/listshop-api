@@ -30,7 +30,7 @@ public class TagEntity {
     private List<DishEntity> dishes = new ArrayList<>();
 
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
-    private List<ListCategoryEntity> categories = new ArrayList<>();
+    private List<ListLayoutCategoryEntity> categories = new ArrayList<>();
 
     @Transient
     private List<Long> childrenIds;

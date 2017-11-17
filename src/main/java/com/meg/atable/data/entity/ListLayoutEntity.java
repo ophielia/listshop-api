@@ -16,15 +16,23 @@ public class ListLayoutEntity {
     @Column(name = "layout_id")
     private Long layoutId;
 
+    private String name;
 
     @Column(name = "layout_type")
     @Enumerated(EnumType.STRING)
     private ListLayoutType layoutType;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "layout_id", referencedColumnName = "layout_id")
-    private List<ListCategoryEntity> categories;
+    private List<ListLayoutCategoryEntity> categories;
 
+    public ListLayoutEntity(Long layoutId) {
+        this.layoutId = layoutId;
+    }
+
+    public ListLayoutEntity() {
+        // empty constructor for jpa
+    }
 
     public Long getId() {
         return layoutId;
@@ -38,11 +46,19 @@ public class ListLayoutEntity {
         this.layoutType = layoutType;
     }
 
-    public List<ListCategoryEntity> getCategories() {
+    public List<ListLayoutCategoryEntity> getCategories() {
         return categories;
     }
 
-    public void setCategories(List<ListCategoryEntity> categories) {
+    public void setCategories(List<ListLayoutCategoryEntity> categories) {
         this.categories = categories;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

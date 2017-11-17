@@ -246,11 +246,11 @@ public class MealPlanRestControllerTest {
         String updateDescription = "updated:" + (mealPlan.getDescription() == null ? "" : mealPlan.getDescription());
         toUpdate.setMealPlanName(updateName);
         toUpdate.setDescription(updateDescription);
-        toUpdate.setUserId(userAccount.getId());
+        toUpdate.setUserId(userAccount.getLayoutId());
 
         String mealPlanJson = json(toUpdate);
 
-        this.mockMvc.perform(put("/mealPlan/" + mealPlan.getId())
+        this.mockMvc.perform(put("/mealPlan/" + mealPlan.getLayoutId())
                 .with(user(userDetailsBad))
                 .contentType(contentType)
                 .content(mealPlanJson))

@@ -36,3 +36,28 @@ inner join tag t using(tag_id)
 where dish_id in (75, 110, 211, 200, 181, 222, 223, 224, 243)
 and t.tag_type = 'Ingredient'
 group by t.name
+
+
+--- function for copying dishes from one user to another
+﻿CREATE OR REPLACE FUNCTION public.copy_dishes(integer,integer)
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+    VOLATILE
+    COST 100
+AS $BODY$   DECLARE
+      pOrigUser ALIAS for $1;
+      pNewUser ALIAS for $2;
+      pDish	record;
+      nDish int;
+   BEGIN
+      FOR pDish IN select * from Dish where user_id = pOrigUser LOOP
+         insert into dish (dish_id,description, dish_name, user_id, last_added)
+				select nextval('hibernate_sequence'),description, dish_name, pNewUser,last_added
+				from dish where user_id = pOrigUser and dish_id = pDish.dish_id
+         returning dish_id into nDish;
+         RAISE NOTICE 'dish created(new:%, old:%)',nDish,pDish.dish_id;
+         insert into dish_tags (dish_id, tag_id)
+			select nDish, tag_id from dish_tags where dish_id = pDish.dish_id;
+      END LOOP;
+      return 1;
+   END;$BODY$

@@ -121,7 +121,7 @@ public class TagInfoRestControllerTest {
                 .andExpect(jsonPath("$._embedded.tagResourceList[1].tag.name", is("tag1")))
                 .andExpect(jsonPath("$._embedded.tagResourceList[2].tag.id").value(testId2))
                 .andExpect(jsonPath("$._embedded.tagResourceList[2].tag.name", is("tag2")))
-                .andExpect(jsonPath("$._embedded.tagResourceList[0].tag.id").value(parentTag.getId()))
+                .andExpect(jsonPath("$._embedded.tagResourceList[0].tag.id").value(parentTag.getLayoutId()))
                 .andExpect(jsonPath("$._embedded.tagResourceList[0].tag.name", is(parentTag.getName())));*/
     }
 

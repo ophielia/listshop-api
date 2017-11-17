@@ -27,6 +27,36 @@ public class ModelMapper {
                 .userId(dishEntity.getUserId());
     }
 
+    public static ListLayout toModel(ListLayoutEntity listLayoutEntity) {
+        List<ListLayoutCategory> categories = categoriesToModel(listLayoutEntity.getCategories());
+        return new ListLayout(listLayoutEntity.getId())
+                .name(listLayoutEntity.getName())
+                .layoutType(listLayoutEntity.getLayoutType().name())
+                .categories(categories);
+    }
+
+    private static List<ListLayoutCategory> categoriesToModel(List<ListLayoutCategoryEntity> categories) {
+        List<ListLayoutCategory> categoryList = new ArrayList<>();
+        if (categories != null) {
+            for (ListLayoutCategoryEntity cat : categories) {
+                categoryList.add(toModel(cat));
+            }
+        }
+        return categoryList;
+    }
+
+    public static ListLayoutCategory toModel(ListLayoutCategoryEntity cat) {
+        if (cat == null) {
+            return null;
+        }
+        return new ListLayoutCategory(cat.getId())
+                .name(cat.getName())
+                .layoutId(cat.getLayoutId())
+                .tags(toModel(cat.getTags()));
+
+    }
+
+
     private static List<Tag> toModel(List<TagEntity> tagEntities) {
         List<Tag> tags = new ArrayList<>();
         if (tagEntities == null) {
@@ -205,5 +235,19 @@ public class ModelMapper {
         return shoppingListEntity;
     }
 
+    public static ListLayoutCategoryEntity toEntity(ListLayoutCategory layoutCategory) {
+        ListLayoutCategoryEntity categoryEntity = new ListLayoutCategoryEntity(layoutCategory.getId());
+        categoryEntity.setName(layoutCategory.getName());
+        categoryEntity.setLayoutId(layoutCategory.getLayoutId());
+        // not setting tags from here
+        return categoryEntity;
+    }
 
+    public static ListLayoutEntity toEntity(ListLayout listLayout) {
+        ListLayoutType layoutType = ListLayoutType.valueOf(listLayout.getLayoutType());
+        ListLayoutEntity listLayoutEntity = new ListLayoutEntity(listLayout.getLayoutId());
+        listLayoutEntity.setLayoutType(layoutType);
+        listLayoutEntity.setName(listLayout.getName());
+        return listLayoutEntity;
+    }
 }
