@@ -2,8 +2,6 @@ package com.meg.atable.controller;
 
 import com.meg.atable.api.controller.ListLayoutRestControllerApi;
 import com.meg.atable.api.model.*;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.data.entity.ListLayoutEntity;
 import com.meg.atable.service.ListLayoutService;
@@ -34,9 +32,6 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
     @Autowired
     private ListLayoutService listLayoutService;
 
-    @Autowired
-    private UserService userService;
-
     public ResponseEntity<Resources<ListLayoutResource>> retrieveListLayouts(Principal principal) {
         List<ListLayoutResource> listLayoutList = listLayoutService
                 .getListLayouts()
@@ -48,7 +43,6 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
     }
 
-    //  @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public ResponseEntity<Object> createListLayout(Principal principal, @RequestBody ListLayout input) {
         ListLayoutEntity listLayoutEntity = ModelMapper.toEntity(input);
 
@@ -61,7 +55,6 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return ResponseEntity.badRequest().build();
     }
 
-    //    @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}", produces = "application/json")
     public ResponseEntity<ListLayout> readListLayout(Principal principal, @PathVariable("listLayoutId") Long listLayoutId) {
         ListLayoutEntity listLayout = this.listLayoutService
                 .getListLayoutById(listLayoutId);
@@ -74,7 +67,6 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return ResponseEntity.notFound().build();
     }
 
-    // @RequestMapping(method = RequestMethod.DELETE, value = "/{listLayoutId}", produces = "application/json")
     public ResponseEntity<ListLayout> deleteListLayout(Principal principal, @PathVariable("listLayoutId") Long listLayoutId) {
 
         listLayoutService.deleteListLayout(listLayoutId);
@@ -82,7 +74,6 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
     }
 
-    //@RequestMapping(method = RequestMethod.POST, value = "/{listLayoutId}/category", produces = "application/json")
     public ResponseEntity<Object> addCategoryToListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategory input) {
         ListLayoutCategoryEntity entity = ModelMapper.toEntity(input);
         this.listLayoutService.addCategoryToListLayout(listLayoutId, entity);
@@ -91,14 +82,12 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
-    // @RequestMapping(method = RequestMethod.DELETE, value = "/{listLayoutId}/dish/{dishId}", produces = "application/json")
     public ResponseEntity<Object> deleteCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) {
         this.listLayoutService.deleteCategoryFromListLayout(listLayoutId, layoutCategoryId);
 
         return ResponseEntity.noContent().build();
     }
 
-    //@RequestMapping(method = RequestMethod.PUT, value = "/{listLayoutId}/category/{layoutCategoryId}", produces = "application/json")
     public ResponseEntity<Object> updateCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategory layoutCategory) {
         ListLayoutCategoryEntity listLayoutCategory = ModelMapper.toEntity(layoutCategory);
         ListLayoutCategoryEntity result = this.listLayoutService.updateListLayoutCategory(listLayoutId, listLayoutCategory);
@@ -109,7 +98,6 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return ResponseEntity.badRequest().build();
     }
 
-    //@RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}", produces = "application/json")
     public ResponseEntity<Object> getUncategorizedTags(Principal principal, @PathVariable Long listLayoutId) {
         List<TagResource> tagResourceList = this.listLayoutService.getUncategorizedTagsForList(listLayoutId)
                 .stream()
@@ -120,7 +108,6 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return new ResponseEntity(resourceList, HttpStatus.OK);
     }
 
-    //@RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}/category/{layoutCategoryId}/tags", produces = "application/json")
     public ResponseEntity<Object> getTagsForCategory(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) {
 
         List<TagResource> tagResourceList = this.listLayoutService
@@ -133,7 +120,6 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
     }
 
-    // @RequestMapping(method = RequestMethod.POST, value = "/{listLayoutId}/category/{layoutCategoryId}", produces = "application/json")
     public ResponseEntity<Object> addTagsToCategory(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId, @RequestParam(value = "tags", required = true) String commaSeparatedIds) {
         // translate tags into list of Long ids
         List<Long> tagIdList = commaDelimitedToList(commaSeparatedIds);
@@ -145,7 +131,6 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
-    //@RequestMapping(method = RequestMethod.DELETE, value = "/{listLayoutId}/category/{layoutCategoryId}", produces = "application/json")
     public ResponseEntity<Object> deleteTagsFromCategory(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId, @RequestParam(value = "tags", required = true) String commaSeparatedIds) {
         // translate tags into list of Long ids
         List<Long> tagIdList = commaDelimitedToList(commaSeparatedIds);

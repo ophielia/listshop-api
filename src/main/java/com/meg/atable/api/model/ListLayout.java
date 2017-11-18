@@ -12,6 +12,7 @@ public class ListLayout {
 
     private String name;
 
+    @JsonProperty("list_layout_type")
     private String layoutType;
 
     private List<ListLayoutCategory> categories;
@@ -38,7 +39,7 @@ public class ListLayout {
         return this;
     }
 
-    @JsonProperty("list_layout_type")
+
     public String getLayoutType() {
         return layoutType;
     }
