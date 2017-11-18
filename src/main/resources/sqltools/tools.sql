@@ -44,13 +44,16 @@ group by t.name
     LANGUAGE 'plpgsql'
     VOLATILE
     COST 100
-AS $BODY$   DECLARE
+AS $BODY$  DECLARE
       pOrigUser ALIAS for $1;
       pNewUser ALIAS for $2;
       pDish	record;
       nDish int;
    BEGIN
-      FOR pDish IN select * from Dish where user_id = pOrigUser LOOP
+      FOR pDish IN select * from Dish o
+      				left join dish n on o.dish_name = n.dish_name and n.user_id = pNewUser
+					where o.user_id = pOrigUser
+					and n.dish_id is null LOOP
          insert into dish (dish_id,description, dish_name, user_id, last_added)
 				select nextval('hibernate_sequence'),description, dish_name, pNewUser,last_added
 				from dish where user_id = pOrigUser and dish_id = pDish.dish_id
@@ -61,3 +64,11 @@ AS $BODY$   DECLARE
       END LOOP;
       return 1;
    END;$BODY$
+
+
+-- skeleton for merge tag function
+﻿-- replace all occurrences of old with new in dish_tags
+-- replace all occurrences of old with new in list_item
+-- replace all occurrences of old with new in category_tags
+-- delete old from tag_relation
+-- delete old from tag

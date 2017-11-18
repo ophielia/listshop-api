@@ -89,7 +89,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         ListLayoutEntity layoutEntity = listLayoutRepository.findOne(listLayoutId);
         // filter category to delete from list categories
         List<ListLayoutCategoryEntity> filtered = layoutEntity.getCategories().stream()
-                .filter(c -> c.getId() != layoutCategoryId)
+                .filter(c -> c.getId().longValue() != layoutCategoryId.longValue())
                 .collect(Collectors.toList());
         // delete category
         listLayoutCategoryRepository.delete(layoutCategoryId);
@@ -110,7 +110,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
             return null;
         }
         // ensure that the list layout id is the same
-        if (layoutCategoryEntity.getLayoutId() != listLayoutId) {
+        if (layoutCategoryEntity.getLayoutId().longValue() != listLayoutId.longValue()) {
             return null;
         }
         // update layout category name
