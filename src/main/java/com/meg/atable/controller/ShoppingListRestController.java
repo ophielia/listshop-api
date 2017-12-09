@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.security.Principal;
@@ -52,6 +53,18 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         }
         return ResponseEntity.badRequest().build();
 
+    }
+
+    @Override
+    public ResponseEntity<Object> setListActive(Principal principal,@PathVariable("listId") Long listId, @RequestParam(value = "generateType", required = true)  String filter) {
+        GenerateType generateType = GenerateType.valueOf(filter);
+
+        ShoppingListEntity result = shoppingListService.setListActive(principal.getName(),listId, generateType);
+        if (result != null) {
+            Link oneList = new ShoppingListResource(result).getLink("self");
+            return ResponseEntity.created(URI.create(oneList.getHref())).build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     //@RequestMapping(method = RequestMethod.GET, value="/type/{listType}", produces = "application/json")

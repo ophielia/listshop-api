@@ -123,7 +123,7 @@ public class MealPlanRestControllerTest {
         mealPlanEntityThree.setMealPlanType(MealPlanType.Manual);
 
         dishEntity = new DishEntity(userAccount.getId(), "dishForMealplan");
-        this.dishEntity = dishService.save(dishEntity);
+        this.dishEntity = dishService.save(dishEntity, false);
         this.mealPlanService.addDishToMealPlan(userName, mealPlanEntityTwo.getId(), dishEntity.getId());
         this.mealPlanIdWithDish = mealPlanEntityTwo.getId();
 

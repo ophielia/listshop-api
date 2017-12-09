@@ -31,6 +31,10 @@ public interface TagService {
 
     boolean assignTagToParent(Long tagId, Long parentId);
 
+    boolean assignChildrenToParent(Long parentId, List<Long> childrenIds);
+
+    public boolean assignTagToTopLevel(Long tagId);
+
     void addTagToDish(Long dishId, Long tagId);
 
     List<TagEntity> getTagList(TagFilterType baseTags, List<TagType> tagType);

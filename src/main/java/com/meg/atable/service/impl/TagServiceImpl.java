@@ -77,12 +77,26 @@ public class TagServiceImpl implements TagService {
         if (tagFilterType != null && TagFilterType.ForSelect.equals(tagFilterType)) {
             return getSelectableTagList(tagTypes);
         }
+        // this is by parent tags
+        if (tagFilterType != null && TagFilterType.ParentTags.equals(tagFilterType)) {
+            return getParentTagList(tagTypes);
+        }
         // get by tag type
         if (tagTypes != null) {
             return tagRepository.findTagsByTagTypeInOrderByName(tagTypes);
         }
         return tagRepository.findAll(new Sort(Sort.Direction.ASC, "name"));
     }
+
+    private List<TagEntity> getParentTagList(List<TagType> tagTypes) {
+        if (tagTypes != null) {
+            List<String> tagTypeStrings = tagTypes.stream().map(TagType::name).collect(Collectors.toList());
+            return tagRepository.findParentTagsByTagTypes(tagTypeStrings);
+        } else {
+            return tagRepository.findParentTags();
+        }
+    }
+
 
     private List<TagEntity> getBaseTagList(List<TagType> tagTypes) {
 
@@ -143,7 +157,8 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagEntity createTag(TagEntity parent, TagEntity newtag) {
         TagEntity parentTag = getParentForNewTag(parent, newtag);
-
+        newtag.setRatingFamily(parentTag.getRatingFamily());
+        newtag.setAutoTagFlag(parentTag.getAutoTagFlag());
         TagEntity saved = tagRepository.save(newtag);
 
 
@@ -179,7 +194,6 @@ public class TagServiceImpl implements TagService {
         return tagRepository.findTagsByDishes(dish);
     }
 
-
     @Override
     public boolean assignTagToParent(Long tagId, Long parentId) {
         // get tag and parent
@@ -193,6 +207,14 @@ public class TagServiceImpl implements TagService {
         if (tag == null || parentTag == null) {
             return false;
         }
+
+        return assignTagToParent(tag,parentTag);
+    }
+
+    private boolean assignTagToParent(TagEntity tag, TagEntity parentTag) {
+        if (tag == null || parentTag == null) {
+            return false;
+        }
         // check for circular reference
         if (hasCircularReference(parentTag, tag)) {
             return false;
@@ -202,8 +224,61 @@ public class TagServiceImpl implements TagService {
         if (tagRelation == null) {
             return false;
         }
+        // check parent tag
+        if (parentTag != null && !parentTag.isParentTag()) {
+            parentTag.setParentTag(true);
+            parentTag = tagRepository.save(parentTag);
+        }
         // replace parent in tag relation
         tagRelation.setParent(parentTag);
+        tagRelation = tagRelationRepository.save(tagRelation);
+        if ((tag.isParentTag()== null || !tag.isParentTag()) ) {
+            // copy tag flag, family from parent
+            tag.setRatingFamily(parentTag.getRatingFamily());
+            tag.setAutoTagFlag(parentTag.getAutoTagFlag());
+            tagRepository.save(tag);
+        }
+        // return true
+        return tagRelation != null;
+
+    }
+
+    @Override
+    public boolean assignChildrenToParent(Long parentId, List<Long> childrenIds) {
+        // get parent id
+        Optional<TagEntity> parentTagOptional = getTagById(parentId);
+        TagEntity parentTag = parentTagOptional.isPresent() ? parentTagOptional.get() : null;
+
+        if (parentTag == null) {
+            return false;
+        }
+
+        // update tag relation
+        for (Long tagId : childrenIds) {
+            Optional<TagEntity> tagOptional = getTagById(tagId);
+            TagEntity tag = tagOptional.isPresent() ? tagOptional.get() : null;
+            assignTagToParent(tag, parentTag);
+        }
+        return true;
+    }
+
+
+    @Override
+    public boolean assignTagToTopLevel(Long tagId) {
+        // get tag and parent
+        Optional<TagEntity> tagOptional = getTagById(tagId);
+        TagEntity tag = tagOptional.isPresent() ? tagOptional.get() : null;
+
+        if (tag == null) {
+            return false;
+        }
+        // get tag relation for tag
+        TagRelationEntity tagRelation = tagRelationRepository.findByChild(tag).get();
+        if (tagRelation == null) {
+            return false;
+        }
+        // replace parent in tag relation
+        tagRelation.setParent(null);
         tagRelation = tagRelationRepository.save(tagRelation);
         // return true
         return tagRelation != null;

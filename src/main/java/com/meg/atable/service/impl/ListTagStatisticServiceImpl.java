@@ -23,20 +23,9 @@ import java.util.stream.Collectors;
 @Service
 public class ListTagStatisticServiceImpl implements ListTagStatisticService {
 
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private ListTagStatisticRepository listTagStatisticRepo;
-
-    @Autowired
-    private SlotRepository slotRepository;
-
-    @Autowired
-    private DishService dishService;
-
-    @Autowired
-    private TagRepository tagRepository;
 
     @Override
     public void itemAddedToList(Long userId, Long tagId, ListType listType) {

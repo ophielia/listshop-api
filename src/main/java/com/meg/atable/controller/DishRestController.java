@@ -8,6 +8,8 @@ import com.meg.atable.api.model.TagResource;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.service.DishSearchCriteria;
+import com.meg.atable.service.DishSearchService;
 import com.meg.atable.service.DishService;
 import com.meg.atable.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +21,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,27 +35,59 @@ import java.util.stream.Collectors;
 public class DishRestController implements DishRestControllerApi {
 
     private final DishService dishService;
+    private final DishSearchService dishSearchService;
     private final TagService tagService;
     private final UserService userService;
 
     @Autowired
     DishRestController(DishService dishService,
                        UserService userService,
+                       DishSearchService dishSearchService,
                        TagService tagService) {
         this.dishService = dishService;
         this.userService = userService;
         this.tagService = tagService;
+        this.dishSearchService = dishSearchService;
     }
 
     @Override
-    public ResponseEntity<Resources<DishResource>> retrieveDishes(Principal principal) {
-
-        List<DishResource> dishList = dishService.getDishesForUserName(principal.getName())
-                .stream().map(DishResource::new)
-                .collect(Collectors.toList());
+    public ResponseEntity<Resources<DishResource>> retrieveDishes(Principal principal,
+                                                                  @RequestParam(value = "includedTags", required = false) String includedTags,
+                                                                  @RequestParam(value = "excludedTags", required = false) String excludedTags
+    ) {
+        List<DishResource> dishList;
+        if (includedTags == null && excludedTags == null) {
+            dishList = getAllDishes(principal);
+        } else {
+            dishList = findDishes(principal, includedTags, excludedTags);
+        }
 
         Resources<DishResource> dishResourceList = new Resources<>(dishList);
         return new ResponseEntity(dishResourceList, HttpStatus.OK);
+    }
+
+    private List<DishResource> findDishes(Principal principal, String includedTags, String excludedTags) {
+
+        UserAccountEntity user = userService.getUserByUserName(principal.getName());
+        DishSearchCriteria criteria = new DishSearchCriteria(user.getId());
+        if (includedTags != null) {
+            List<Long> tagIdList = commaDelimitedToList(includedTags);
+            criteria.setIncludedTagIds(tagIdList);
+        }
+        if (excludedTags != null) {
+            List<Long> tagIdList = commaDelimitedToList(excludedTags);
+            criteria.setExcludedTagIds(tagIdList);
+        }
+        return dishSearchService.findDishes(criteria)
+                .stream().map(DishResource::new)
+                .collect(Collectors.toList());
+    }
+
+    private List<DishResource> getAllDishes(Principal principal) {
+        return dishService.getDishesForUserName(principal.getName())
+                .stream().map(DishResource::new)
+                .collect(Collectors.toList());
+
     }
 
     public ResponseEntity<Object> createDish(Principal principal, @RequestBody Dish input) {
@@ -59,7 +96,7 @@ public class DishRestController implements DishRestControllerApi {
         UserAccountEntity user = userService.getUserByUserName(principal.getName());
         DishEntity result = dishService.save(new DishEntity(user.getId(),
                 input.getDishName(),
-                input.getDescription()));
+                input.getDescription()), false);
 
         Link forOneDish = new DishResource(result).getLink("self");
         return ResponseEntity.created(URI.create(forOneDish.getHref())).build();
@@ -75,7 +112,7 @@ public class DishRestController implements DishRestControllerApi {
                     dish.setDescription(input.getDescription());
                     dish.setDishName(input.getDishName());
 
-                    dishService.save(dish);
+                    dishService.save(dish, true);
 
                     return ResponseEntity.noContent().build();
                 })
@@ -113,7 +150,7 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteTagToDish( Principal principal,@PathVariable Long dishId, @PathVariable Long tagId) {
+    public ResponseEntity<Object> deleteTagToDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId) {
         getUserForPrincipal(principal);
 
         this.tagService.deleteTagFromDish(dishId, tagId);
@@ -131,6 +168,19 @@ public class DishRestController implements DishRestControllerApi {
             throw new UserNotFoundException("username");
         }
         return user;
+    }
+
+    private List<Long> commaDelimitedToList(String commaSeparatedIds) {
+// translate tags into list of Long ids
+        if (commaSeparatedIds == null) {
+            return new ArrayList<>();
+        }
+        String[] ids = commaSeparatedIds.split(",");
+        if (ids == null || ids.length == 0) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(ids).map(Long::valueOf).collect(Collectors.toList());
+
     }
 
 }

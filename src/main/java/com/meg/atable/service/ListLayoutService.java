@@ -1,5 +1,6 @@
 package com.meg.atable.service;
 
+import com.meg.atable.api.model.ListLayoutType;
 import com.meg.atable.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.data.entity.ListLayoutEntity;
 import com.meg.atable.data.entity.TagEntity;
@@ -11,6 +12,8 @@ import java.util.List;
  */
 public interface ListLayoutService {
     List<ListLayoutEntity> getListLayouts();
+
+    ListLayoutEntity getListLayoutByType(ListLayoutType listLayoutType);
 
     ListLayoutEntity createListLayout(ListLayoutEntity listLayoutEntity);
 

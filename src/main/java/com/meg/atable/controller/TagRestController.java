@@ -12,12 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -78,6 +76,18 @@ public class TagRestController implements TagRestControllerApi {
 
     }
 
+    public ResponseEntity<TagResource> addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds") String filter) {
+        if (filter == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+            List<Long> tagIdList = commaDelimitedToList(filter);
+        this.tagService.assignChildrenToParent(tagId, tagIdList);
+        return ResponseEntity.noContent().build();
+
+    }
+
+
     @Override
     public ResponseEntity assignChildToParent(@PathVariable Long parentId, @PathVariable Long childId) {
         if (this.tagService.assignTagToParent(childId, parentId)) {
@@ -87,6 +97,14 @@ public class TagRestController implements TagRestControllerApi {
         }
     }
 
+@Override
+    public ResponseEntity assignChildToBaseTag( @PathVariable("childId") Long childId) {
+        if (this.tagService.assignTagToTopLevel(childId)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
     public ResponseEntity<Tag> readTag(@PathVariable Long tagId) {
         // invalid dishId - returns invalid id supplied - 400
@@ -132,5 +150,18 @@ public class TagRestController implements TagRestControllerApi {
         } else {
             return Collections.singletonList(TagType.valueOf(tag_type));
         }
+    }
+
+    private List<Long> commaDelimitedToList(String commaSeparatedIds) {
+// translate tags into list of Long ids
+        if (commaSeparatedIds == null) {
+            return new ArrayList<>();
+        }
+        String[] ids = commaSeparatedIds.split(",");
+        if (ids == null || ids.length == 0) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(ids).map(Long::valueOf).collect(Collectors.toList());
+
     }
 }

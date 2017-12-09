@@ -2,6 +2,7 @@ package com.meg.atable.api.model;
 
 import com.meg.atable.data.entity.*;
 import com.meg.atable.service.ListTagStatisticService;
+import com.meg.atable.service.impl.ShoppingListServiceImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -139,7 +140,7 @@ public class ModelMapper {
         //      sort out and place into Hash for categories
         for (ItemEntity itemEntity : items) {
             Item item = toModel(itemEntity);
-            String key = item.getListCategory();
+            String key = item.getListCategory()!=null?item.getListCategory(): ShoppingListServiceImpl.uncategorized;
             if (!sortedByCategories.containsKey(key)) {
                 sortedByCategories.put(key, new ArrayList<>());
             }

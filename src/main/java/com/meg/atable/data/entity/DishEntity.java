@@ -29,6 +29,7 @@ public class DishEntity {
 
     private Date lastAdded;
 
+    private Long autoTagStatus;
 
     public DishEntity(Long userId, String dishName) {
         this.userId = userId;
@@ -49,6 +50,9 @@ public class DishEntity {
         return dish_id;
     }
 
+    public void setId(Long dish_id) {
+        this.dish_id = dish_id;
+    }
 
     public String getDishName() {
         return dishName;
@@ -88,5 +92,13 @@ public class DishEntity {
 
     public void setLastAdded(Date lastAdded) {
         this.lastAdded = lastAdded;
+    }
+
+    public Long getAutoTagStatus() {
+        return autoTagStatus;
+    }
+
+    public void setAutoTagStatus(Long autoTagStatus) {
+        this.autoTagStatus = autoTagStatus;
     }
 }

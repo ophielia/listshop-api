@@ -1,5 +1,6 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.model.ListLayoutType;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.data.entity.ListLayoutEntity;
@@ -44,6 +45,15 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     @Override
     public List<ListLayoutEntity> getListLayouts() {
         return listLayoutRepository.findAll();
+    }
+
+    @Override
+    public ListLayoutEntity getListLayoutByType(ListLayoutType listLayoutType) {
+        List<ListLayoutEntity> listLayoutEntities  = listLayoutRepository.findByLayoutType(listLayoutType);
+        if (listLayoutEntities == null || listLayoutEntities.isEmpty()) {
+            return null;
+        }
+        return listLayoutEntities.get(0);
     }
 
     @Override
@@ -135,7 +145,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         // get  category
         ListLayoutCategoryEntity categoryEntity = listLayoutCategoryRepository.findOne(layoutCategoryId);
         // assure list owns category
-        if (categoryEntity.getLayoutId() != listLayoutId) {
+        if (categoryEntity.getLayoutId().longValue() != listLayoutId.longValue()) {
             return;
         }
 
@@ -173,7 +183,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         // get  category
         ListLayoutCategoryEntity categoryEntity = listLayoutCategoryRepository.findOne(layoutCategoryId);
         // assure list owns category
-        if (categoryEntity.getLayoutId() != listLayoutId) {
+        if (categoryEntity.getLayoutId().longValue() != listLayoutId.longValue()) {
             return;
         }
 

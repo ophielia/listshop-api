@@ -18,7 +18,7 @@ public interface DishService {
 
     Optional<DishEntity> getDishForUserById(String username, Long dishId);
 
-    DishEntity save(DishEntity dish);
+    DishEntity save(DishEntity dish, boolean doAutotag);
     List<DishEntity> save(List<DishEntity> dishes);
 
     List<DishEntity> getDishes(List<Long> dishIds);

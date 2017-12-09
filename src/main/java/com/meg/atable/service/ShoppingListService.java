@@ -1,5 +1,6 @@
 package com.meg.atable.service;
 
+import com.meg.atable.api.model.GenerateType;
 import com.meg.atable.api.model.ListType;
 import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.ShoppingListEntity;
@@ -26,4 +27,6 @@ public interface ShoppingListService {
     void deleteItemFromList(String name, Long listId, Long itemId);
 
     ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId);
+
+    ShoppingListEntity setListActive(String username,Long listId, GenerateType generateType);
 }

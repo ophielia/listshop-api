@@ -59,7 +59,7 @@ public class TagServiceImplTest {
         dish.getTags().add(b);
         dish.getTags().add(c);
 
-        dishService.save(dish);
+        dishService.save(dish, false);
     }
 
     @Test

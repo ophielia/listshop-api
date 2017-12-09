@@ -66,6 +66,27 @@ AS $BODY$  DECLARE
    END;$BODY$
 
 
+-- all parent tags
+﻿select distinct t.*
+from tag t
+join tag_relation r on t.tag_id = r.parent_tag_id
+
+﻿select t.tag_id, t.name, t.auto_tag_flag,c.tag_id, c.name, c.auto_tag_flag
+from tag t
+join tag_relation r on t.tag_id = r.parent_tag_id
+join tag c on r.child_tag_id = c.tag_id
+where t.auto_tag_flag is not null
+and (c.is_parent_tag is null or c.is_parent_tag = false);
+
+-- update child tags with auto tag flag
+﻿update tag as c
+set auto_tag_flag = t.auto_tag_flag
+from tag as t, tag_relation as r
+where t.tag_id = r.parent_tag_id
+and  r.child_tag_id = c.tag_id
+and t.auto_tag_flag is not null
+and (c.is_parent_tag is null or c.is_parent_tag = false)
+
 -- skeleton for merge tag function
 ﻿-- replace all occurrences of old with new in dish_tags
 -- replace all occurrences of old with new in list_item

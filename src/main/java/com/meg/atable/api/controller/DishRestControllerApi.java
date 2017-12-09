@@ -20,7 +20,10 @@ public interface DishRestControllerApi {
 
 
     @RequestMapping( method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<Resources<DishResource>> retrieveDishes(Principal principal);
+    ResponseEntity<Resources<DishResource>> retrieveDishes(Principal principal,
+                                                           @RequestParam(value = "includedTags", required = false) String includedTags,
+                                                           @RequestParam(value = "excludedTags", required = false) String excludedTags
+                                                           );
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createDish(Principal principal, @RequestBody Dish input);

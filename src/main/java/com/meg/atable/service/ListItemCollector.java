@@ -4,6 +4,7 @@ import com.meg.atable.api.model.ItemSourceType;
 import com.meg.atable.api.model.ListType;
 import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.TagEntity;
+import com.meg.atable.service.impl.ShoppingListServiceImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,15 +15,32 @@ import java.util.stream.Stream;
  */
 public class ListItemCollector {
     private final Long listId;
-    private final Map<Long, String> categoryDictionary;
-    private final Map<Long, ItemEntity> tagToItem;
-    private final List<ItemEntity> freeTextItems;
+    private  Map<Long, String> categoryDictionary;
+    private  Map<Long, ItemEntity> tagToItem;
+    private  List<ItemEntity> freeTextItems;
 
     public ListItemCollector(Long savedNewListId, Map<Long, String> categoryDictionary) {
         this.listId = savedNewListId;
         this.categoryDictionary = categoryDictionary;
         tagToItem = new HashMap<>();
         freeTextItems = new ArrayList<>();
+    }
+
+    public ListItemCollector(Long savedNewListId, List<ItemEntity> items) {
+        this.listId = savedNewListId;
+        this.categoryDictionary = new HashMap<>();
+        tagToItem = new HashMap<>();
+        freeTextItems = new ArrayList<>();
+        if (items != null) {
+            items.stream().forEach(item -> {
+                if (item.getTag()!=null) {
+                    tagToItem.put(item.getTag().getId(),item);
+                }
+                else {
+                    freeTextItems.add(item);
+                }
+            });
+        }
     }
 
     public void addTags(List<TagEntity> tagEntityList) {
@@ -43,6 +61,14 @@ public class ListItemCollector {
     public List<TagEntity> getUncategorizedTags() {
         return tagToItem.values().stream()
                 .filter(i -> i.getTag() != null && i.getListCategory() == null)
+                .map(ItemEntity::getTag)
+                .collect(Collectors.toList());
+    }
+
+    public List<TagEntity> getTagsByCategories(List<String> categories) {
+        return tagToItem.values().stream()
+                .filter(i -> i.getTag() != null && i.getListCategory() == null ||
+                        i.getTag() != null && categories.contains(i.getListCategory()))
                 .map(ItemEntity::getTag)
                 .collect(Collectors.toList());
     }
@@ -117,4 +143,16 @@ public class ListItemCollector {
         return copied;
     }
 
+
+    public List<ItemEntity> getItemsByItemSource(ItemSourceType itemSource) {
+        return tagToItem.entrySet().stream()
+            .filter(e -> e.getValue().getItemSource()!=null &&
+            e.getValue().getItemSource().contains(itemSource.name()))
+                .map(e -> e.getValue())
+                .collect(Collectors.toList());
+    }
+
+    public void setCategoryDictionary(Map<Long, String> categoryDictionary) {
+        this.categoryDictionary = categoryDictionary;
+    }
 }

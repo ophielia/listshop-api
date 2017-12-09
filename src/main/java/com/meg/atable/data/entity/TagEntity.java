@@ -32,6 +32,10 @@ public class TagEntity {
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<ListLayoutCategoryEntity> categories = new ArrayList<>();
 
+    private Integer autoTagFlag;
+
+    private Boolean isParentTag;
+
     @Transient
     private List<Long> childrenIds;
     @Transient
@@ -116,5 +120,21 @@ public class TagEntity {
 
     public void setRatingFamily(String ratingFamily) {
         this.ratingFamily = ratingFamily;
+    }
+
+    public Integer getAutoTagFlag() {
+        return autoTagFlag;
+    }
+
+    public void setAutoTagFlag(Integer autoTagFlag) {
+        this.autoTagFlag = autoTagFlag;
+    }
+
+    public Boolean isParentTag() {
+        return isParentTag;
+    }
+
+    public void setParentTag(Boolean parentTag) {
+        isParentTag = parentTag;
     }
 }

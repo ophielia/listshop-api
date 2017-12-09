@@ -96,8 +96,8 @@ public class DishRestControllerTest {
                 true,
                 null);
 
-        this.dishList.add(dishService.save(new DishEntity(this.userAccount.getId(), "dish1")));
-        this.dishList.add(dishService.save(new DishEntity(userAccount.getId(), "dish2")));
+        this.dishList.add(dishService.save(new DishEntity(this.userAccount.getId(), "dish1"), false));
+        this.dishList.add(dishService.save(new DishEntity(userAccount.getId(), "dish2"), false));
 
         this.userAccount = userService.save(new UserAccountEntity("updateUser", "password"));
         userDetailsBad = new JwtUser(this.userAccount.getId(),
@@ -107,7 +107,7 @@ public class DishRestControllerTest {
                 null,
                 true,
                 null);
-        this.dish = dishService.save(new DishEntity(userAccount.getId(), "dish2"));
+        this.dish = dishService.save(new DishEntity(userAccount.getId(), "dish2"), false);
 
     }
 

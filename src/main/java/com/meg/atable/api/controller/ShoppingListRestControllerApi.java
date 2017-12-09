@@ -25,6 +25,9 @@ public interface ShoppingListRestControllerApi {
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createList(Principal principal, @RequestBody ShoppingList shoppingList);
 
+    @RequestMapping(method = RequestMethod.PUT, value="/{listId}", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> setListActive(Principal principal,@PathVariable("listId") Long listId, @RequestParam(value = "filter", required = true) String filter);
+
     @RequestMapping(method = RequestMethod.GET, value = "/type/{listType}", produces = "application/json")
     ResponseEntity<ShoppingListResource> retrieveListByType(Principal principal, @PathVariable("listType") String listType);
 

@@ -7,7 +7,7 @@ import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.data.repository.UserRepository;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.repository.DishRepository;
-import com.meg.atable.data.repository.TagRepository;
+import com.meg.atable.service.AutoTagService;
 import com.meg.atable.service.DishService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +27,9 @@ public class DishServiceImpl implements DishService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AutoTagService autoTagService;
 
 
     @Override
@@ -58,7 +61,11 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public DishEntity save(DishEntity dish) {
+    public DishEntity save(DishEntity dish, boolean doAutotag) {
+        // autotag dish
+        if (doAutotag) {
+            autoTagService.doAutoTag(dish, true);
+        }
         return dishRepository.save(dish);
     }
 
