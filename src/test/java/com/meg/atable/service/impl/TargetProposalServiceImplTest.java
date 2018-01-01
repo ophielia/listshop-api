@@ -1,29 +1,23 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.Application;
-import com.meg.atable.api.model.TagType;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.entity.TargetEntity;
+import com.meg.atable.data.entity.TargetSlotEntity;
 import com.meg.atable.data.repository.DishRepository;
 import com.meg.atable.data.repository.TagRepository;
-import com.meg.atable.service.DishSearchCriteria;
 import com.meg.atable.service.DishSearchService;
 import com.meg.atable.service.TargetProposalService;
 import com.meg.atable.service.TargetService;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Arrays;
-import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -63,6 +57,8 @@ private DishSearchService dishSearchService;
     private static DishEntity dish3;
     private static DishEntity dish4;
     private static DishEntity dish5;
+
+    private static final String testUserName = "rufus";
 /*
     @Before
     public void setUp() {
@@ -99,7 +95,22 @@ private DishSearchService dishSearchService;
     @Test
     public void createProposal() throws Exception {
        TargetEntity target = targetService.getTargetById("rufus",9650L);
-       targetProposalService.createTargetProposal(target);
+        TargetEntity target1 = new TargetEntity();
+        target1.setTargetName("target1");
+        target1.addTargetTagId(95L);
+        target1 = targetService.createTarget(testUserName, target1);
+        TargetSlotEntity targetSlotEntity = new TargetSlotEntity();
+        targetSlotEntity.setSlotDishTagId(5L);  // Main Dish
+        targetSlotEntity.addTagId(155L);
+        targetService.addSlotToTarget(testUserName, target1.getTargetId(), targetSlotEntity);
+        targetSlotEntity = new TargetSlotEntity();
+        targetSlotEntity.setSlotDishTagId(5L);  // Main Dish - another
+        targetSlotEntity.addTagId(71L);
+        targetSlotEntity.addTagId(61L);
+        targetService.addSlotToTarget(testUserName, target1.getTargetId(), targetSlotEntity);
+        target1 = targetService.getTargetById(testUserName, target1.getTargetId());
+
+        targetProposalService.createTargetProposal(target1);
     }
 
 

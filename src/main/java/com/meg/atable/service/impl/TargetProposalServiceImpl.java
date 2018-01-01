@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -23,9 +22,16 @@ public class TargetProposalServiceImpl implements TargetProposalService {
 
     @Override
     public TargetProposalEntity createTargetProposal(TargetEntity target) {
+        if (target == null) {
+            return null;
+        }
+        if (target.getSlots() == null || target.getSlots().isEmpty()) {
+            return null;
+        }
         // determine maximum dishes returned per slot, slot count
-        int slotcount = 2;
-        int maxempties = 5;
+        int slotcount = target.getSlots().size();
+        int maxempties = Math.max(slotcount, 5);
+        int dishesPerSlot = 5;  // will be configurable
 
         // get database info for slots
         // results are sorted from least found (weakest) to most found
@@ -35,7 +41,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         List<ProposalAttempt> approaches = getProposalApproaches(slotcount);
 
         // process each proposal attempt
-        approaches = processProposal(approaches, rawResults);
+        approaches = processProposal(approaches, rawResults, dishesPerSlot);
 
         // sort for best results
         boolean byMedian = false;
@@ -43,13 +49,13 @@ public class TargetProposalServiceImpl implements TargetProposalService {
 
         // assign best approach to new proposal
         if (approaches != null) {
-        TargetProposalEntity proposal = createProposalFromAttempt(approaches.get(0));
+            TargetProposalEntity proposal = createProposalFromAttempt(approaches.get(0), target);
         return proposal;
         }
         return null;
     }
 
-    private TargetProposalEntity createProposalFromAttempt(ProposalAttempt proposalAttempt) {
+    private TargetProposalEntity createProposalFromAttempt(ProposalAttempt proposalAttempt, TargetEntity target) {
         return null;
     }
 
@@ -57,7 +63,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         return null;
     }
 
-    private List<ProposalAttempt> processProposal(List<ProposalAttempt> approaches, List<RawSlotResult> rawResults) {
+    private List<ProposalAttempt> processProposal(List<ProposalAttempt> approaches, List<RawSlotResult> rawResults, int dishesPerSlot) {
         return null;
     }
 
@@ -80,23 +86,29 @@ public class TargetProposalServiceImpl implements TargetProposalService {
 
             // query db
             List<DishTagSearchResult> dishResults = dishSearchService.retrieveDishResultsForTags(userId, slot.getSlotDishTagId(), targetTagIds.size(), tagListForSlot);
-            List<DishTagSearchResult> matches = dishResults.stream()
-                    .filter(d ->
-                        d.getTotalMatches() > 0
-                    )
-                    .collect(Collectors.toList());
-            // get either to the end of the list, or the maximum number of empties, whichever is feasible.
-            int end = maxempties + matches.size() > dishResults.size() ? dishResults.size() : maxempties + matches.size();
-            List<DishTagSearchResult> emptyMatches = dishResults.subList(matches.size(), end);
-// MM start here with RawSlotResult processing
-            RawSlotResult rawSlotResult = new RawSlotResult(slot, targetTagIds.size(),matches, emptyMatches, tagListForSlot);
+            List<DishTagSearchResult> matches = new ArrayList<>();
+            List<DishTagSearchResult> emptyMatches = new ArrayList<>();
+            dishResults.stream()
+                    .forEach(m -> {
+                        if (m.getTotalMatches() > 0) {
+                            matches.add(m);
+                        } else {
+                            emptyMatches.add(m);
+                        }
+                    });
+            int end = emptyMatches.size();
+            if (emptyMatches.size() > maxempties) {
+                end = maxempties;
+
+            }
+            // a word about sorting - the results are sorted by last_added date from the database.  Additional
+            // sorting by match counts (full and slot) is done within RawSlotResults
+            RawSlotResult rawSlotResult = new RawSlotResult(slot.getId(), targetTagIds.size(), matches, emptyMatches.subList(0, end), tagListForSlot);
             resultList.add(rawSlotResult);
         }
-        // end for each
 
         // sort results by total dishes found
-
-       resultList.sort(Comparator.comparing(RawSlotResult::getRawMatchCount));
+        resultList.sort(Comparator.comparing(RawSlotResult::getRawMatchCount));
         return resultList;
     }
 }

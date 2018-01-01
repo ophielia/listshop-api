@@ -15,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -94,13 +95,14 @@ public class DishSearchServiceImpl implements DishSearchService {
         parameters.addValue("slotTagId", slotDishTagId);
 
         List<DishTagSearchResult> rawSearchResults = this.jdbcTemplate.query(sql,parameters,new DishTagSearchResultMapper(size,tagListForSlot.size()));
+
         return rawSearchResults;
     }
 
     private String createSqlForDishTagSearchResult(List<String> tagListForSlot) {
-        StringBuffer selectClause = new StringBuffer("select dt.dish_id  ");
+        StringBuffer selectClause = new StringBuffer("select distinct dt.dish_id , d.last_added ");
         StringBuffer outerJoins = new StringBuffer();
-
+        StringBuffer orderByClause = new StringBuffer(" order by d.last_added NULLS FIRST ");
         // construct basic joins and from clause
         StringBuffer fromClause = new StringBuffer(" from dish_tags dt join dish d on d.dish_id = dt.dish_id and d.user_id = :userId and dt.tag_id = :slotTagId");
 
@@ -122,7 +124,7 @@ public class DishSearchServiceImpl implements DishSearchService {
                         .append(" ");
                 i++;
             }
-        return selectClause.append(fromClause).append(outerJoins).toString();
+        return selectClause.append(fromClause).append(outerJoins).append(orderByClause).toString();
     }
 
 
@@ -151,11 +153,12 @@ public class DishSearchServiceImpl implements DishSearchService {
 
         public DishTagSearchResult mapRow(ResultSet rs, int rowNum) throws SQLException {
             Long id = rs.getLong("dish_id");
-            DishTagSearchResult searchResult = new DishTagSearchResult(id,targetTagCount,queriedTagSize);
+            Date date = rs.getDate("last_added");
+            DishTagSearchResult searchResult = new DishTagSearchResult(id, date, targetTagCount, queriedTagSize);
 
             for (int i=1;i<=queriedTagSize;i++) {
                 // passed with i-1 to compensate for offset for initial dish_id
-                searchResult.addTagResult(i-1,rs.getInt(i));
+                searchResult.addTagResult(i - 1, rs.getInt(i + 2));
             }
 
             return searchResult;
