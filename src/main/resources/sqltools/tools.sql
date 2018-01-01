@@ -14,7 +14,7 @@ select c.* from tag_relation c left outer join tag_relation p  on c.child_tag_id
 select ct.* from selectabletags t, tag ct where ct.tag_id = t.child_tag_id
 
 
-# get all tags for list of dishes
+# get all slots for list of dishes
 ﻿select *
 from dish d
 inner join dish_tags td using(dish_id)
@@ -66,7 +66,7 @@ AS $BODY$  DECLARE
    END;$BODY$
 
 
--- all parent tags
+-- all parent slots
 ﻿select distinct t.*
 from tag t
 join tag_relation r on t.tag_id = r.parent_tag_id
@@ -78,7 +78,7 @@ join tag c on r.child_tag_id = c.tag_id
 where t.auto_tag_flag is not null
 and (c.is_parent_tag is null or c.is_parent_tag = false);
 
--- update child tags with auto tag flag
+-- update child slots with auto tag flag
 ﻿update tag as c
 set auto_tag_flag = t.auto_tag_flag
 from tag as t, tag_relation as r

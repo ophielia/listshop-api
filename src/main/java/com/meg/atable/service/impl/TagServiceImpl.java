@@ -14,9 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -63,6 +61,17 @@ public class TagServiceImpl implements TagService {
         // add tags to dish
         dish.setTags(dishTagsDeletedTag);
         dishRepository.save(dish);
+    }
+
+    @Override
+    public Map<Long, TagEntity> getDictionaryForIdList(List<Long> tagIds) {
+        List<TagEntity> tags = tagRepository.findAll(tagIds);
+       if (!tags.isEmpty()) {
+        return  tags.stream().collect(Collectors.toMap(TagEntity::getId,
+                        c -> c));
+
+       }
+       return new HashMap<Long,TagEntity>();
     }
 
 
@@ -225,7 +234,7 @@ public class TagServiceImpl implements TagService {
             return false;
         }
         // check parent tag
-        if (parentTag != null && !parentTag.isParentTag()) {
+        if (parentTag.isParentTag() == null) {
             parentTag.setParentTag(true);
             parentTag = tagRepository.save(parentTag);
         }

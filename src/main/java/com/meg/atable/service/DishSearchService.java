@@ -1,11 +1,8 @@
 package com.meg.atable.service;
 
-import com.meg.atable.api.UserNotFoundException;
 import com.meg.atable.data.entity.DishEntity;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -13,4 +10,6 @@ import java.util.Optional;
 public interface DishSearchService {
 
     List<DishEntity> findDishes(DishSearchCriteria criteria);
+
+    List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, Long slotDishTagId, int size, List<String> tagListForSlot);
 }

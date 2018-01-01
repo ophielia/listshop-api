@@ -124,7 +124,7 @@ public class DishRestController implements DishRestControllerApi {
         return this.dishService
                 .getDishById(dishId)
                 .map(dish -> {
-                    DishResource dishResource = new DishResource(dish);
+                    DishResource dishResource = new DishResource(dish, dish.getTags());
 
                     return new ResponseEntity(dishResource, HttpStatus.OK);
                 })

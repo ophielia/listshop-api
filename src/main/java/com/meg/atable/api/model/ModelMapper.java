@@ -19,7 +19,18 @@ public class ModelMapper {
     }
 
     public static Dish toModel(DishEntity dishEntity) {
-        List<Tag> tags = toModel(dishEntity.getTags());
+        List<Tag> tags = new ArrayList<>();
+        //List<Tag> tags = toModel(dishEntity.getSlots());
+        return new Dish(dishEntity.getId())
+                .description(dishEntity.getDescription())
+                .dishName(dishEntity.getDishName())
+                .tags(tags)
+                .lastAdded(dishEntity.getLastAdded())
+                .userId(dishEntity.getUserId());
+    }
+
+    public static Dish toModel(DishEntity dishEntity,List<TagEntity> tagEntities) {
+        List<Tag> tags = toModel(tagEntities);
         return new Dish(dishEntity.getId())
                 .description(dishEntity.getDescription())
                 .dishName(dishEntity.getDishName())
@@ -34,6 +45,41 @@ public class ModelMapper {
                 .name(listLayoutEntity.getName())
                 .layoutType(listLayoutEntity.getLayoutType().name())
                 .categories(categories);
+    }
+
+
+    public static Target toModel(TargetEntity targetEntity) {
+        List<TargetSlot> slots = targetSlotsToModel(targetEntity.getSlots());
+        List<Tag> tags = toModel(targetEntity.getTargetTags());
+        return new Target(targetEntity.getTargetId())
+                .userId(targetEntity.getUserId())
+                .targetName(targetEntity.getTargetName())
+                .slots(slots)
+                .created(targetEntity.getCreated())
+                .lastUsed(targetEntity.getLastUsed())
+                .targetTags(tags);
+
+    }
+
+    public static TargetSlot toModel(TargetSlotEntity targetSlotEntity) {
+        List<Tag> tags = toModel(targetSlotEntity.getTags());
+
+        return new TargetSlot(targetSlotEntity.getId())
+                .targetId(targetSlotEntity.getTargetId())
+                .slotDishTagId(targetSlotEntity.getSlotDishTagId())
+                .slotDishTag(toModel(targetSlotEntity.getSlotDishTag()))
+                .slotTags(tags)
+                .slotOrder(targetSlotEntity.getSlotOrder());
+    }
+
+    private static List<TargetSlot> targetSlotsToModel(List<TargetSlotEntity> targetSlotEntities) {
+        List<TargetSlot> targetSlots = new ArrayList<>();
+        if (targetSlotEntities != null) {
+            for (TargetSlotEntity slotEntity : targetSlotEntities) {
+                targetSlots.add(toModel(slotEntity));
+            }
+        }
+        return targetSlots;
     }
 
     private static List<ListLayoutCategory> categoriesToModel(List<ListLayoutCategoryEntity> categories) {
@@ -191,6 +237,33 @@ public class ModelMapper {
         tagEntity.setRatingFamily(tag.getRatingFamily());
 
         return tagEntity;
+    }
+
+
+    public static TargetEntity toEntity(Target target) {
+        if (target == null) {
+            return null;
+        }
+Long targetId = target.getTargetId();
+        TargetEntity targetEntity = new TargetEntity(targetId);
+
+        targetEntity.setTargetName(target.getTargetName());
+        targetEntity.setCreated(target.getCreated());
+        targetEntity.setUserId(target.getUserId());
+        targetEntity.setLastUsed(target.getLastUsed());
+return targetEntity;
+    }
+
+
+    public static TargetSlotEntity toEntity(TargetSlot targetSlot) {
+        if (targetSlot == null) {
+            return null;
+        }
+TargetSlotEntity entity = new TargetSlotEntity(targetSlot.getTargetSlotId());
+        entity.setSlotDishTagId(targetSlot.getSlotDishTagId());
+        entity.setTargetId(targetSlot.getTargetId());
+        entity.setSlotOrder(targetSlot.getSlotOrder());
+    return entity;
     }
 
     public static MealPlanEntity toEntity(MealPlan mealPlan) {

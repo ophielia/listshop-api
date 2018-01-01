@@ -77,6 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //.antMatchers(HttpMethod.OPTIONS,"/path/to/allow").permitAll()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/tag/**").permitAll()
                 .antMatchers("/taginfo/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -89,6 +90,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // disable page caching
         httpSecurity.headers().cacheControl();
+        httpSecurity.headers().frameOptions().disable();
     }
 
     @Bean

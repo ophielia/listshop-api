@@ -5,20 +5,24 @@ bugs -
     dishes with every tag added twice - I suspect tag assign tool
 
 bigger todo list
-    set in process list active
+    done set in process list active
         "page" for active list (only cross out, not delete)
         back end "set active" generateStrategy=replace|add
 
-    statistics for what's crossed out often
+    list - cross out function
+
+    dish retrieves tags only when single dish
+
+    done statistics for what's crossed out often
 
     done - non-grocery items
 
-    list layouts
+    done list layouts
 
     bulk organizing tools -
-        tags to tag structure (dnd)
-        tags to layouts
-        mass dishes to tags
+        slots to tag structure (dnd)
+        slots to layouts
+        mass dishes to slots
 
     done - implement last added to list for dishes
 
@@ -44,7 +48,7 @@ stardescending
 type
 mealplantype
 
-create list of all tags - slots (and proposal)
+create list of all slots - slots (and proposal)
 do count of dishes per tag
 tally tag count per slot
 start with slot with lowest count
@@ -59,7 +63,7 @@ rest calls for lists
 user creates a base list / pick up list
     POST list?type=BaseList|PickUpList
 
-user adds / deletes tags to a base list / pick up list
+user adds / deletes slots to a base list / pick up list
     POST list/id/tag/tag_id
     DELETE list/id/tag/tag_id
 

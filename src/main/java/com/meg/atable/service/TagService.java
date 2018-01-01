@@ -5,6 +5,7 @@ import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -42,4 +43,5 @@ public interface TagService {
 
     void deleteTagFromDish(Long dishId, Long tagId);
 
+    Map<Long,TagEntity> getDictionaryForIdList(List<Long> tagIds);
 }

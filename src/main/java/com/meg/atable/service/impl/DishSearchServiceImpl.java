@@ -3,6 +3,7 @@ package com.meg.atable.service.impl;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.service.DishSearchCriteria;
 import com.meg.atable.service.DishSearchService;
+import com.meg.atable.service.DishTagSearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -83,6 +84,47 @@ public class DishSearchServiceImpl implements DishSearchService {
         return dishEntities;
     }
 
+    @Override
+    public List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, Long slotDishTagId, int size, List<String> tagListForSlot) {
+        // create sql
+        String sql = createSqlForDishTagSearchResult(tagListForSlot);
+        // create parameters
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("userId", userId);
+        parameters.addValue("slotTagId", slotDishTagId);
+
+        List<DishTagSearchResult> rawSearchResults = this.jdbcTemplate.query(sql,parameters,new DishTagSearchResultMapper(size,tagListForSlot.size()));
+        return rawSearchResults;
+    }
+
+    private String createSqlForDishTagSearchResult(List<String> tagListForSlot) {
+        StringBuffer selectClause = new StringBuffer("select dt.dish_id  ");
+        StringBuffer outerJoins = new StringBuffer();
+
+        // construct basic joins and from clause
+        StringBuffer fromClause = new StringBuffer(" from dish_tags dt join dish d on d.dish_id = dt.dish_id and d.user_id = :userId and dt.tag_id = :slotTagId");
+
+        // construct outerJoins and add to selectClause
+            int i=0;
+            for (String id : tagListForSlot) {
+                selectClause.append(", iT")
+                        .append(i)
+                        .append(".tag_id ");
+
+                outerJoins.append(" left outer join dish_tags iT")
+                        .append(i)
+                        .append(" on d.dish_id = iT")
+                        .append(i)
+                        .append(".dish_id and iT")
+                        .append(i)
+                        .append(".tag_id = ")
+                        .append(id)
+                        .append(" ");
+                i++;
+            }
+        return selectClause.append(fromClause).append(outerJoins).toString();
+    }
+
 
     private static final class DishMapper implements RowMapper<DishEntity> {
 
@@ -96,8 +138,29 @@ public class DishSearchServiceImpl implements DishSearchService {
             return dishEntity;
         }
     }
-/*
-dish_id, description, dish_name, user_id, last_added
-     */
+
+    private static final class DishTagSearchResultMapper implements RowMapper<DishTagSearchResult> {
+
+        private final int targetTagCount;
+        private final int queriedTagSize;
+
+        public DishTagSearchResultMapper(int targetTagCount, int queriedTagSize) {
+            this.targetTagCount = targetTagCount;
+            this.queriedTagSize = queriedTagSize;
+        }
+
+        public DishTagSearchResult mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Long id = rs.getLong("dish_id");
+            DishTagSearchResult searchResult = new DishTagSearchResult(id,targetTagCount,queriedTagSize);
+
+            for (int i=1;i<=queriedTagSize;i++) {
+                // passed with i-1 to compensate for offset for initial dish_id
+                searchResult.addTagResult(i-1,rs.getInt(i));
+            }
+
+            return searchResult;
+        }
+    }
+
 
 }
