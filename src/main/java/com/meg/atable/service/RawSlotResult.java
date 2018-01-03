@@ -10,18 +10,18 @@ import java.util.List;
  */
 public class RawSlotResult {
     private final Long slotId;
-    private final int targetTagMatchLimit;
     private final int rawMatchCount;
     private final List<String> tagListForSlot;
     private HashMap<Long, DishTagSearchResult> dishResults;
     private ArrayList<DishTagSearchResult> dishSortedResults;
+    private List<Long> filteredDishes;
 
-    public RawSlotResult(Long slot_id, int size, List<DishTagSearchResult> matches, List<DishTagSearchResult> emptyMatches, List<String> tagListForSlot) {
+    public RawSlotResult(Long slot_id, List<DishTagSearchResult> matches, List<DishTagSearchResult> targetMatches, List<DishTagSearchResult> emptyMatches, List<String> tagListForSlot) {
         this.slotId = slot_id;
-        this.targetTagMatchLimit = size;
         this.rawMatchCount = matches.size();
         this.tagListForSlot = tagListForSlot;
-        initiateSortedResults(matches, emptyMatches);
+        this.filteredDishes = new ArrayList<>();
+        initiateSortedResults(matches, targetMatches, emptyMatches);
     }
 
     public int getRawMatchCount() {
@@ -33,15 +33,16 @@ public class RawSlotResult {
     }
 
 
-    private void initiateSortedResults(List<DishTagSearchResult> matches, List<DishTagSearchResult> emptyMatches) {
+    private void initiateSortedResults(List<DishTagSearchResult> slotMatches, List<DishTagSearchResult> targetMatches, List<DishTagSearchResult> emptyMatches) {
         this.dishSortedResults = new ArrayList<>();
-        // sort matches by total count, slot count and date (asc)
-        matches.sort(Comparator.comparing(DishTagSearchResult::getTotalMatches)
-                .thenComparing(DishTagSearchResult::getSlotMatches) //);
+        slotMatches.addAll(targetMatches);
+        // sort matches by slot count, total count and date (asc)
+        slotMatches.sort(Comparator.comparing(DishTagSearchResult::getSlotMatches)
+                .thenComparing(DishTagSearchResult::getTotalMatches) //);
                 .thenComparing((a, b) -> b.getLastAdded().compareTo(a.getLastAdded())).reversed());
-
-        this.dishSortedResults.addAll(matches);
+        this.dishSortedResults.addAll(slotMatches);
         this.dishSortedResults.addAll(emptyMatches);
+        System.out.println("SlotResults: " + this.dishSortedResults.toString());
 
     }
 
@@ -61,4 +62,25 @@ public class RawSlotResult {
         });
     }
 
+    public void clearFilteredDishes() {
+        this.filteredDishes = new ArrayList<>();
+    }
+
+    public List<DishTagSearchResult> getFilteredMatches(int dishesPerSlot) {
+        List<DishTagSearchResult> matches = new ArrayList<>();
+        for (DishTagSearchResult match : dishSortedResults) {
+            if (matches.size() > dishesPerSlot) {
+                break;
+            }
+            if (filteredDishes.contains(match.getDishId())) {
+                continue;
+            }
+            matches.add(match);
+        }
+        return matches;
+    }
+
+    public void addDishesToFilter(List<DishTagSearchResult> dishMatches) {
+        dishMatches.stream().forEach(m -> this.filteredDishes.add(m.getDishId()));
+    }
 }

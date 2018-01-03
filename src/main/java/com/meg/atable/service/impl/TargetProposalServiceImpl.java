@@ -1,5 +1,6 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.model.ApproachType;
 import com.meg.atable.data.entity.TargetEntity;
 import com.meg.atable.data.entity.TargetProposalEntity;
 import com.meg.atable.data.entity.TargetSlotEntity;
@@ -30,44 +31,110 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         }
         // determine maximum dishes returned per slot, slot count
         int slotcount = target.getSlots().size();
-        int maxempties = Math.max(slotcount, 5);
-        int dishesPerSlot = 5;  // will be configurable
+        TargetProposalSettings settings = determineSettings(slotcount);
+
 
         // get database info for slots
         // results are sorted from least found (weakest) to most found
-        List<RawSlotResult> rawResults = retrieveRawResults(target, maxempties);
+        List<RawSlotResult> rawResults = retrieveRawResults(target, settings.getMaximumEmpties());
 
         // get list of approaches (order in which slots are assembled)
-        List<ProposalAttempt> approaches = getProposalApproaches(slotcount);
+        //List<ProposalAttempt> approaches = getProposalApproaches(settings.getApproachType(), slotcount, settings.getProposalCount());
 
         // process each proposal attempt
-        approaches = processProposal(approaches, rawResults, dishesPerSlot);
+        List<AttemptResult> results = getAttemptResults(settings, slotcount, rawResults, settings.getDishCountPerSlot());
 
         // sort for best results
         boolean byMedian = false;
-        approaches = sortForBestResults(approaches, byMedian);
+        results = sortForBestResults(results, byMedian);
 
         // assign best approach to new proposal
-        if (approaches != null) {
-            TargetProposalEntity proposal = createProposalFromAttempt(approaches.get(0), target);
+        if (results.get(0) != null) {
+            TargetProposalEntity proposal = createProposalFromAttempt(results.get(0), target);
         return proposal;
         }
         return null;
     }
 
-    private TargetProposalEntity createProposalFromAttempt(ProposalAttempt proposalAttempt, TargetEntity target) {
+    private List<AttemptResult> getAttemptResults(TargetProposalSettings settings, int slotcount, List<RawSlotResult> rawResults, int dishCountPerSlot) {
+        List<ProposalAttempt> proposals = getProposalApproaches(settings.getApproachType(), slotcount, settings.getProposalCount());
+
+        //process each proposal, collecting results
+        List<AttemptResult> results = new ArrayList<>();
+        for (ProposalAttempt proposal : proposals) {
+            // run single proposal
+            AttemptResult result = processSingleProposal(proposal, rawResults, settings.getDishCountPerSlot());
+            results.add(result);
+        }
+
+
+        return results;
+    }
+
+    private TargetProposalSettings determineSettings(int slotcount) {
+        TargetProposalSettings settings = new TargetProposalSettings();
+        settings.setMaximumEmpties(5);
+        settings.setDishCountPerSlot(5);
+        if (slotcount < 3) {
+            settings.setApproachType(ApproachType.WHEEL);
+            settings.setProposalCount(slotcount);
+            return settings;
+        }
+        settings.setApproachType(ApproachType.WHEEL_MIXED);
+        settings.setProposalCount(Math.min(slotcount + 1, 10));
+        return settings;
+    }
+
+    private TargetProposalEntity createProposalFromAttempt(AttemptResult proposalAttempt, TargetEntity target) {
         return null;
     }
 
-    private List<ProposalAttempt> sortForBestResults(List<ProposalAttempt> approaches, boolean byMedian) {
+    private List<AttemptResult> sortForBestResults(List<AttemptResult> results, boolean byMedian) {
+
+        results.sort(Comparator.comparing(AttemptResult::getHealthIndexMedian)
+                .thenComparing(AttemptResult::getHealthIndexAverage).reversed());
+        return results;
+    }
+
+    private List<ProposalAttempt> processProposals(List<ProposalAttempt> proposals, List<RawSlotResult> rawResults, int dishesPerSlot) {
+
+
         return null;
     }
 
-    private List<ProposalAttempt> processProposal(List<ProposalAttempt> approaches, List<RawSlotResult> rawResults, int dishesPerSlot) {
-        return null;
+    private AttemptResult processSingleProposal(ProposalAttempt proposal, List<RawSlotResult> rawResults, int dishesPerSlot) {
+        // clear all filters
+        rawResults.stream().forEach(t -> t.clearFilteredDishes());
+        // cycle through proposal order
+        Integer[] cycle = proposal.getAttemptOrder();
+        for (int i = 0; i < cycle.length; i++) {
+            RawSlotResult rawResult = rawResults.get(cycle[i]);
+
+            List<DishTagSearchResult> dishMatches = rawResult.getFilteredMatches(dishesPerSlot);
+            proposal.setDishMatches(i, dishMatches);
+            for (int j = i + 1; j < cycle.length; j++) {
+                rawResults.get(cycle[j]).addDishesToFilter(dishMatches);
+            }
+        }
+        return proposal.finalizeResults();
+
     }
 
-    private List<ProposalAttempt> getProposalApproaches(int slotcount) {
+    private List<ProposalAttempt> getProposalApproaches(ApproachType approachType, int slotcount, int proposalcount) {
+
+
+        List<Integer[]> approachOrders = AttemptGenerator.getProposalOrders(approachType, slotcount, proposalcount);
+
+        List<ProposalAttempt> proposalAttempts = new ArrayList<>();
+        for (Integer[] order : approachOrders) {
+            ProposalAttempt proposalAttempt = new ProposalAttempt(order);
+            proposalAttempts.add(proposalAttempt);
+        }
+        return proposalAttempts;
+    }
+
+
+    private ApproachType getApproachType(int slotcount) {
         return null;
     }
 
@@ -87,11 +154,14 @@ public class TargetProposalServiceImpl implements TargetProposalService {
             // query db
             List<DishTagSearchResult> dishResults = dishSearchService.retrieveDishResultsForTags(userId, slot.getSlotDishTagId(), targetTagIds.size(), tagListForSlot);
             List<DishTagSearchResult> matches = new ArrayList<>();
+            List<DishTagSearchResult> targetMatches = new ArrayList<>();
             List<DishTagSearchResult> emptyMatches = new ArrayList<>();
             dishResults.stream()
                     .forEach(m -> {
-                        if (m.getTotalMatches() > 0) {
+                        if (m.getSlotMatches() > 0) {
                             matches.add(m);
+                        } else if (m.getTotalMatches() - m.getSlotMatches() > 0) {
+                            targetMatches.add(m);
                         } else {
                             emptyMatches.add(m);
                         }
@@ -103,7 +173,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
             }
             // a word about sorting - the results are sorted by last_added date from the database.  Additional
             // sorting by match counts (full and slot) is done within RawSlotResults
-            RawSlotResult rawSlotResult = new RawSlotResult(slot.getId(), targetTagIds.size(), matches, emptyMatches.subList(0, end), tagListForSlot);
+            RawSlotResult rawSlotResult = new RawSlotResult(slot.getId(), matches, targetMatches, emptyMatches.subList(0, end), tagListForSlot);
             resultList.add(rawSlotResult);
         }
 

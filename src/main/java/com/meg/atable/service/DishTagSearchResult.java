@@ -51,4 +51,19 @@ public class DishTagSearchResult {
             slotTagMatchCount += foundFlag==0?0:1;
         }
     }
+
+    public Boolean[] getTagResults() {
+        return tagResults;
+    }
+
+    public int getTargetTagLimit() {
+        return targetTagLimit;
+    }
+
+    @Override
+    public String toString() {
+        return "DishTagSearchResult{" +
+                "dishId=" + Long.toString(dishId) +
+                '}';
+    }
 }
