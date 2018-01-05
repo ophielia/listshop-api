@@ -7,6 +7,7 @@ import com.meg.atable.data.entity.ShoppingListEntity;
 import com.meg.atable.data.entity.TargetEntity;
 import com.meg.atable.data.entity.TargetProposalEntity;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -14,5 +15,17 @@ import java.util.List;
  */
 public interface TargetProposalService {
 
-    TargetProposalEntity createTargetProposal(TargetEntity target);
+    TargetProposalEntity getTargetProposalById(String name, Long proposalId);
+
+    TargetProposalEntity fillInformationForProposal(TargetProposalEntity proposalEntity);
+
+    void refreshTargetProposal(String name, Long proposalId);
+
+    void selectDishInSlot(Principal principal, Long proposalId, Long slotId, Long dishId);
+
+    void clearDishFromSlot(Principal principal, Long proposalId, Long slotId, Long dishId);
+
+    void refreshTargetProposalSlot(String name, Long proposalId, Long slotId);
+
+    TargetProposalEntity createTargetProposal(String name, Long targetId);
 }

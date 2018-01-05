@@ -3,7 +3,10 @@ package com.meg.atable.service;
 import com.meg.atable.common.DateUtils;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by margaretmartin on 01/01/2018.
@@ -65,5 +68,16 @@ public class DishTagSearchResult {
         return "DishTagSearchResult{" +
                 "dishId=" + Long.toString(dishId) +
                 '}';
+    }
+
+    public List<String> getMatchedTagIds(List<String> taglist) {
+        List<String> matches = new ArrayList<>();
+        for (int i = 0; i < tagResults.length;i++) {
+            if (tagResults[i]) {
+                matches.add(taglist.get(i));
+            }
+        }
+
+        return matches;
     }
 }

@@ -4,10 +4,7 @@ import com.meg.atable.data.entity.*;
 import com.meg.atable.service.ListTagStatisticService;
 import com.meg.atable.service.impl.ShoppingListServiceImpl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -19,6 +16,7 @@ public class ModelMapper {
     }
 
     public static Dish toModel(DishEntity dishEntity) {
+        if (dishEntity!=null ) {
         List<Tag> tags = new ArrayList<>();
         //List<Tag> tags = toModel(dishEntity.getSlots());
         return new Dish(dishEntity.getId())
@@ -27,6 +25,8 @@ public class ModelMapper {
                 .tags(tags)
                 .lastAdded(dishEntity.getLastAdded())
                 .userId(dishEntity.getUserId());
+        }
+        return null;
     }
 
     public static Dish toModel(DishEntity dishEntity,List<TagEntity> tagEntities) {
@@ -72,6 +72,46 @@ public class ModelMapper {
                 .slotOrder(targetSlotEntity.getSlotOrder());
     }
 
+    public static TargetProposal toModel(TargetProposalEntity proposalEntity) {
+        List<TargetProposalSlot> slots = targetProposalSlotsToModel(proposalEntity.getProposalSlots());
+        List<Tag> tags = toModel(proposalEntity.getTargetTags());
+        return new TargetProposal(proposalEntity.getProposalId())
+                .userId(proposalEntity.getUserId())
+                .targetName(proposalEntity.getTargetName())
+                .created(proposalEntity.getCreated())
+                .lastUsed(proposalEntity.getLastUsed())
+                .targetTags(tags)
+                .proposalSlots(slots);
+    }
+
+    private static List<TargetProposalSlot> targetProposalSlotsToModel(List<TargetProposalSlotEntity> slotEntities) {
+        List<TargetProposalSlot> targetSlots = new ArrayList<>();
+        if (slotEntities != null) {
+            for (TargetProposalSlotEntity slotEntity : slotEntities) {
+                targetSlots.add(toModel(slotEntity));
+            }
+        }
+        return targetSlots;
+    }
+
+    public static TargetProposalDish toModel(TargetProposalDishEntity dishEntity) {
+        List<Tag> tags = toModel(dishEntity.getMatchedTags());
+        return new TargetProposalDish(dishEntity.getProposalDishId())
+                .dish(toModel(dishEntity.getDish()))
+                .matchedTags(tags);
+    }
+    public static TargetProposalSlot toModel(TargetProposalSlotEntity slotEntity) {
+        List<Tag> tags = toModel(slotEntity.getTags());
+        List<TargetProposalDish> dishes = proposalDishSlotsToModel(slotEntity.getDishSlotList());
+
+        return new TargetProposalSlot(slotEntity.getSlotId())
+                .slotDishTag(toModel(slotEntity.getSlotDishTag()))
+                .tags(tags)
+                .dishSlotList(dishes)
+                .slotOrder(slotEntity.getSlotOrder());
+
+    }
+
     private static List<TargetSlot> targetSlotsToModel(List<TargetSlotEntity> targetSlotEntities) {
         List<TargetSlot> targetSlots = new ArrayList<>();
         if (targetSlotEntities != null) {
@@ -80,6 +120,16 @@ public class ModelMapper {
             }
         }
         return targetSlots;
+    }
+
+    private static List<TargetProposalDish> proposalDishSlotsToModel(List<TargetProposalDishEntity> slotDishEntities) {
+        List<TargetProposalDish> dishSlots = new ArrayList<>();
+        if (slotDishEntities != null) {
+            for (TargetProposalDishEntity dishEntity : slotDishEntities) {
+                dishSlots.add(toModel(dishEntity));
+            }
+        }
+        return dishSlots;
     }
 
     private static List<ListLayoutCategory> categoriesToModel(List<ListLayoutCategoryEntity> categories) {
@@ -324,4 +374,6 @@ TargetSlotEntity entity = new TargetSlotEntity(targetSlot.getTargetSlotId());
         listLayoutEntity.setName(listLayout.getName());
         return listLayoutEntity;
     }
+
+
 }

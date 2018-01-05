@@ -12,6 +12,8 @@ public class ProposalAttempt {
 
     private Map<Integer, List<DishTagSearchResult>> dishMatches = new HashMap<Integer, List<DishTagSearchResult>>();
     private Map<Integer, Double[]> slotResults = new HashMap<Integer, Double[]>();
+    private double healthIndexMedian;
+    private double healthIndexAverage;
 
     public ProposalAttempt(Integer[] order) {
         this.attemptOrder = order;
@@ -64,7 +66,6 @@ public class ProposalAttempt {
 
     public AttemptResult finalizeResults() {
         AttemptResult result = new AttemptResult(getAttemptOrder());
-        result.setSlotStatistics(slotResults);
 
         // just do health index
         List<Double> healthIndexList = slotResults.values().stream().map(v -> v[0]).collect(Collectors.toList());
@@ -77,32 +78,10 @@ public class ProposalAttempt {
         } else {
             median = healthIndexList.get((int) Math.ceil(healthIndexList.size() / 2));
         }
-        result.setHealthIndexMedian(median);
-        result.setHealthIndexAverage(healthIndexList.stream().mapToDouble(t -> t).average().getAsDouble());
+        setHealthIndexMedian(median);
+        setHealthIndexAverage(healthIndexList.stream().mapToDouble(t -> t).average().getAsDouble());
 
-        /*int i = 0;
-        for (List<DishTagSearchResult> slotDishes : dishMatches.values()) {
-            System.out.println("======> Slot:" + i);
-            i++;
-            System.out.print("===========> Dishes:");
-            for (DishTagSearchResult dishRes : slotDishes) {
 
-                System.out.print("," + dishRes.getDishId());
-            }
-            System.out.println();
-        }*/
- /*       result.setMaxSlotMatch(maxSlotMatch);
-        result.setMinSlotMatch(minSlotMatch);
-        result.setMaxTotalMatch(maxTotalMatch);
-        result.setMinTotalMatch(minTotalMatch);
-        List<Integer> sortedMatches = runningSlotMatch.stream().sorted().collect(Collectors.toList());
-        int index = (int) (Math.ceil(sortedMatches.size() / 2));
-        result.setMedianSlotMatch(sortedMatches.get(index));
-
-        sortedMatches = runningTotalMatch.stream().sorted().collect(Collectors.toList());
-        index = (int) (Math.ceil(sortedMatches.size() / 2));
-        result.setMedianTotalMatch(sortedMatches.get(index));
-*/
         return result;
 
 
@@ -114,5 +93,21 @@ public class ProposalAttempt {
                 "attemptOrder=" + Arrays.toString(attemptOrder) +
                 ", slotResults=" + slotResults +
                 '}';
+    }
+
+    public void setHealthIndexMedian(double healthIndexMedian) {
+        this.healthIndexMedian = healthIndexMedian;
+    }
+
+    public double getHealthIndexMedian() {
+        return healthIndexMedian;
+    }
+
+    public void setHealthIndexAverage(double healthIndexAverage) {
+        this.healthIndexAverage = healthIndexAverage;
+    }
+
+    public double getHealthIndexAverage() {
+        return healthIndexAverage;
     }
 }

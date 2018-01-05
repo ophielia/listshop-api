@@ -7,8 +7,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="Target")
 @Table(name = "target")
-public class TargetEntity {
+public class TargetEntity extends AbstractInflateAndFlatten {
 
     @Id
     @GeneratedValue
@@ -25,6 +27,8 @@ public class TargetEntity {
     private Date created;
 
     private Date lastUsed;
+
+    private Date lastUpdated;
 
     private String targetTagIds;
 
@@ -94,6 +98,14 @@ public class TargetEntity {
         this.targetTagIds = targetTagIds;
     }
 
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
     public void addSlot(TargetSlotEntity slot) {
         if (slots == null) {
             slots = new ArrayList<TargetSlotEntity>();
@@ -112,7 +124,7 @@ public class TargetEntity {
     }
 
     public void addTargetTagId(Long tagId) {
-        List<String> tagids = getTagIdsAsList();
+        List<String> tagids = inflateStringToList(getTargetTagIds(),TargetServiceConstants.TARGET_TAG_DELIMITER);
         tagids.add(tagId.toString());
         targetTagIds = flattenListToString(tagids);
     }
@@ -122,7 +134,7 @@ public class TargetEntity {
             return;
         }
 
-        List<String> tagids = getTagIdsAsList();
+        List<String> tagids = inflateStringToList(getTargetTagIds());
         tagids = tagids.stream()
                 .filter(t -> !t.equals(tagId.toString()))
                 .collect(Collectors.toList());
@@ -130,17 +142,7 @@ public class TargetEntity {
     }
 
     public List<String> getTagIdsAsList() {
-        if (targetTagIds == null || targetTagIds.isEmpty()) {
-            return new ArrayList<String>();
-        }
-
-        List<String> idList = new ArrayList<>();
-idList.addAll(Arrays.asList(targetTagIds.split(TargetServiceConstants.TARGET_TAG_DELIMITER)));
-        return idList;
-    }
-
-    private String flattenListToString(List<String> list) {
-        return String.join(TargetServiceConstants.TARGET_TAG_DELIMITER, list);
+        return inflateStringToList(getTargetTagIds());
     }
 
     public List<TagEntity> getTargetTags() {
@@ -155,10 +157,10 @@ idList.addAll(Arrays.asList(targetTagIds.split(TargetServiceConstants.TARGET_TAG
         // make list of all tagList strings for target and contained slots
         // also include dish type tags
         List<String> stringList = new ArrayList<>();
-        stringList.addAll(getTagIdsAsList());
+        stringList.addAll(inflateStringToList(getTargetTagIds(),TargetServiceConstants.TARGET_TAG_DELIMITER));
         if (slots != null && !slots.isEmpty()) {
             for (TargetSlotEntity slot : slots) {
-                stringList.addAll(slot.getTagIdsAsList());
+                stringList.addAll(inflateStringToList(slot.getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER));
                 if (slot.getSlotDishTagId() != null) {
                     stringList.add(slot.getSlotDishTagId().toString());
                 }
@@ -178,7 +180,7 @@ idList.addAll(Arrays.asList(targetTagIds.split(TargetServiceConstants.TARGET_TAG
         if (dictionary.isEmpty()) {
             return;
         }
-        targetTags =getTagIdsAsList().stream()
+        targetTags =inflateStringToList(getTargetTagIds()).stream()
                 .filter(t -> dictionary.containsKey(new Long(t)))
                 .map( t -> dictionary.get(new Long(t)))
                 .collect(Collectors.toList());

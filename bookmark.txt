@@ -36,7 +36,10 @@ bigger todo list
 little things
     add created on to dish entity
 
-
+consider -
+    filling objects in target and proposal in front end
+        pass tagdictionary once - either in same request or not.
+        use tagdictionary to fill objects in front end
 
 sketch for menu finding algorithm
 

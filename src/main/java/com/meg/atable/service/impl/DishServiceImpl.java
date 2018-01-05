@@ -6,6 +6,7 @@ import com.meg.atable.api.UserNotFoundException;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.data.repository.UserRepository;
 import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.DishRepository;
 import com.meg.atable.service.AutoTagService;
 import com.meg.atable.service.DishService;
@@ -13,9 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -77,5 +77,16 @@ return dishRepository.save(dishes);
     @Override
     public List<DishEntity> getDishes(List<Long> dishIds) {
         return dishRepository.findAll(dishIds);
+    }
+
+    @Override
+    public Map<Long, DishEntity> getDictionaryForIdList(List<Long> dishIds) {
+        List<DishEntity> tags = dishRepository.findAll(dishIds);
+        if (!tags.isEmpty()) {
+            return  tags.stream().collect(Collectors.toMap(DishEntity::getId,
+                    c -> c));
+
+        }
+        return new HashMap<Long,DishEntity>();
     }
 }

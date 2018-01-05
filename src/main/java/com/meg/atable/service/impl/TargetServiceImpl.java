@@ -179,6 +179,10 @@ public class TargetServiceImpl implements TargetService {
 
     @Override
     public TargetEntity fillTagsForTarget(TargetEntity target) {
+        if (target == null) {
+            return null;
+        }
+
         // get list of tag ids
         List<Long> tagIds = target.getAllTagIds();
         // retrieve tags for ids

@@ -32,6 +32,9 @@ public class RawSlotResult {
         return slotId;
     }
 
+    public List<String> getTagListForSlot() {
+        return tagListForSlot;
+    }
 
     private void initiateSortedResults(List<DishTagSearchResult> slotMatches, List<DishTagSearchResult> targetMatches, List<DishTagSearchResult> emptyMatches) {
         this.dishSortedResults = new ArrayList<>();

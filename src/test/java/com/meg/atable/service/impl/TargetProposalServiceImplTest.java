@@ -12,6 +12,7 @@ import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.DishSearchService;
 import com.meg.atable.service.TargetProposalService;
 import com.meg.atable.service.TargetService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,46 +60,39 @@ private DishSearchService dishSearchService;
     private static DishEntity dish5;
 
     private static final String testUserName = "rufus";
-/*
+    private static  Long targetId1;
+    private static  Long targetId2;
+    private static  Long targetId3;
+    private static  Long targetId4;
+    private static  Long targetId5;
+
     @Before
     public void setUp() {
         if (setUpComplete) {
             return;
         }
-        String userName = "mealPlanTest";
-        userAccount = userService.save(new UserAccountEntity(userName, "password"));
+        TargetEntity target1 = createTarget1();
+        TargetEntity target2 = createTarget2();
+        TargetEntity target3 = createTarget3();
+        TargetEntity target4 = createTarget4();
+        TargetEntity target5 = createTarget5();
 
-
-         tag1 = ServiceTestUtils.buildTag("tag1", TagType.Ingredient);
-
-         tag2 = ServiceTestUtils.buildTag("tag2", TagType.Ingredient);
-
-         tag3 = ServiceTestUtils.buildTag("tag3", TagType.Ingredient);
-
-         tag4 = ServiceTestUtils.buildTag("tag4", TagType.Ingredient);
-         tag5 = ServiceTestUtils.buildTag("tag5", TagType.Ingredient);
-         tagRepository.save(Arrays.asList(tag1,tag2,tag3,tag4,tag5));
-
-         dish1 = ServiceTestUtils.buildDish(userAccount.getId(),"dish1",
-                 Arrays.asList(tag1,tag2));
-        dish2 = ServiceTestUtils.buildDish(userAccount.getId(),"dish2",
-                Arrays.asList(tag3,tag4));
-        dish3 = ServiceTestUtils.buildDish(userAccount.getId(),"dish3",
-                Arrays.asList(tag1,tag3,tag5));
-        dishRepository.save(Arrays.asList(dish1,dish2,dish3));
-
+        targetId1 = target1.getTargetId();
+        targetId2 = target2.getTargetId();
+        targetId3 = target3.getTargetId();
+        targetId4 = target4.getTargetId();
+        targetId5 = target5.getTargetId();
 
         setUpComplete = true;
-
     }
-*/
+
     @Test
     public void createProposal() throws Exception {
         //TargetEntity target = targetService.getTargetById("rufus",9650L);
         TargetEntity target = createTarget3();
 
 
-        targetProposalService.createTargetProposal(target);
+        targetProposalService.createTargetProposal(testUserName,targetId1);
     }
 
     private TargetEntity createTarget1() {

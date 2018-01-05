@@ -42,6 +42,10 @@ public class AttemptResult {
         return healthIndexAverage;
     }
 
+    public Integer[] getAttemptOrder() {
+        return attemptOrder;
+    }
+
     @Override
     public String toString() {
         return "AttemptResult{" +
