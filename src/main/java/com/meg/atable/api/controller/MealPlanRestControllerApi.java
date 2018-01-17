@@ -24,16 +24,19 @@ public interface MealPlanRestControllerApi {
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createMealPlan(Principal principal, @RequestBody MealPlan input);
 
+    @RequestMapping(method = RequestMethod.POST, value = "/proposal/{proposalId}", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> createMealPlanFromTargetProposal(Principal principal, @PathVariable Long proposalId);
+
     @RequestMapping(method = RequestMethod.GET, value = "/{mealPlanId}", produces = "application/json")
-    public ResponseEntity<MealPlan> readMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId);
+    ResponseEntity<MealPlan> readMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{mealPlanId}", produces = "application/json")
-    public ResponseEntity<MealPlan> deleteMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId);
+    ResponseEntity<MealPlan> deleteMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId);
 
     @RequestMapping(method = RequestMethod.POST, value = "/{mealPlanId}/dish/{dishId}", produces = "application/json")
-    public ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId);
+    ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{mealPlanId}/dish/{dishId}", produces = "application/json")
-    public ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId);
+    ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId);
 
 }

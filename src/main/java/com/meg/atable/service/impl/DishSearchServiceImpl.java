@@ -44,23 +44,23 @@ public class DishSearchServiceImpl implements DishSearchService {
         StringBuffer fromExtension = new StringBuffer();
         StringBuffer whereClause = new StringBuffer("where d.user_id = :userId ");
         if (!criteria.getIncludedTagIds().isEmpty()) {
-            int i=0;
+            int i = 0;
             for (Long id : criteria.getIncludedTagIds()) {
 
-            fromExtension.append("join dish_tags iT")
-                .append(i)
-                .append(" on d.dish_id = iT")
-                    .append(i)
-                    .append(".dish_id and iT")
-                    .append(i)
-                    .append(".tag_id = ")
-            .append(id)
-            .append(" ");
-            i++;
+                fromExtension.append("join dish_tags iT")
+                        .append(i)
+                        .append(" on d.dish_id = iT")
+                        .append(i)
+                        .append(".dish_id and iT")
+                        .append(i)
+                        .append(".tag_id = ")
+                        .append(id)
+                        .append(" ");
+                i++;
             }
         }
         if (!criteria.getExcludedTags().isEmpty()) {
-            int i=0;
+            int i = 0;
             for (Long id : criteria.getExcludedTags()) {
 
                 fromExtension.append("left join dish_tags eT")
@@ -94,7 +94,7 @@ public class DishSearchServiceImpl implements DishSearchService {
         parameters.addValue("userId", userId);
         parameters.addValue("slotTagId", slotDishTagId);
 
-        List<DishTagSearchResult> rawSearchResults = this.jdbcTemplate.query(sql,parameters,new DishTagSearchResultMapper(size,tagListForSlot.size()));
+        List<DishTagSearchResult> rawSearchResults = this.jdbcTemplate.query(sql, parameters, new DishTagSearchResultMapper(size, tagListForSlot.size()));
 
         return rawSearchResults;
     }
@@ -105,25 +105,25 @@ public class DishSearchServiceImpl implements DishSearchService {
         StringBuffer orderByClause = new StringBuffer(" order by d.last_added NULLS FIRST ");
         // construct basic joins and from clause
         StringBuffer fromClause = new StringBuffer(" from dish_tags dt join dish d on d.dish_id = dt.dish_id and d.user_id = :userId and dt.tag_id = :slotTagId");
-
         // construct outerJoins and add to selectClause
-            int i=0;
-            for (String id : tagListForSlot) {
-                selectClause.append(", iT")
-                        .append(i)
-                        .append(".tag_id ");
+        int i = 0;
+        for (String id : tagListForSlot) {
+            selectClause.append(", iT")
+                    .append(i)
+                    .append(".tag_id ");
 
-                outerJoins.append(" left outer join dish_tags iT")
-                        .append(i)
-                        .append(" on d.dish_id = iT")
-                        .append(i)
-                        .append(".dish_id and iT")
-                        .append(i)
-                        .append(".tag_id = ")
-                        .append(id)
-                        .append(" ");
-                i++;
-            }
+            outerJoins.append(" left outer join dish_tags iT")
+                    .append(i)
+                    .append(" on d.dish_id = iT")
+                    .append(i)
+                    .append(".dish_id and iT")
+                    .append(i)
+                    .append(".tag_id = ")
+                    .append(id)
+                    .append(" ");
+            i++;
+        }
+
         return selectClause.append(fromClause).append(outerJoins).append(orderByClause).toString();
     }
 
@@ -156,7 +156,7 @@ public class DishSearchServiceImpl implements DishSearchService {
             Date date = rs.getDate("last_added");
             DishTagSearchResult searchResult = new DishTagSearchResult(id, date, targetTagCount, queriedTagSize);
 
-            for (int i=1;i<=queriedTagSize;i++) {
+            for (int i = 1; i <= queriedTagSize; i++) {
                 // passed with i-1 to compensate for offset for initial dish_id
                 searchResult.addTagResult(i - 1, rs.getInt(i + 2));
             }

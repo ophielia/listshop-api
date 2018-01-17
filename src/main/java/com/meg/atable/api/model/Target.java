@@ -1,8 +1,6 @@
 package com.meg.atable.api.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +25,7 @@ public class Target {
 
     private Date lastUsed;
 
+    private Long proposalId;
 
     private List<Tag> targetTags;
 
@@ -38,7 +37,7 @@ public class Target {
         this.targetId = targetId;
     }
 
-    @JsonProperty(value="target_id")
+    @JsonProperty(value = "target_id")
     public Long getTargetId() {
         return targetId;
     }
@@ -48,7 +47,7 @@ public class Target {
         return this;
     }
 
-    @JsonProperty(value="user_id")
+    @JsonProperty(value = "user_id")
     public Long getUserId() {
         return userId;
     }
@@ -104,6 +103,16 @@ public class Target {
     @JsonProperty("target_tags")
     public Target targetTags(List<Tag> targetTags) {
         this.targetTags = targetTags;
+        return this;
+    }
+
+    public Long getProposalId() {
+        return proposalId;
+    }
+
+    @JsonProperty("proposal_id")
+    public Target proposalId(Long proposalId) {
+        this.proposalId = proposalId;
         return this;
     }
 }

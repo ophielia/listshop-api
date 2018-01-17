@@ -24,36 +24,29 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ShoppingListServiceImpl implements ShoppingListService {
+    public final static String uncategorized = "nocat";
+    // MM need to handle this in application settings /user settings
+    private final static ListLayoutType listlayoutdefault = ListLayoutType.RoughGrained;
     @Autowired
     private
     UserService userService;
-
     @Autowired
     private ListTagStatisticService listTagStatisticService;
-
     @Autowired
     private
     ShoppingListRepository shoppingListRepository;
-
     @Autowired
     private
     ListLayoutService listLayoutService;
-
     @Autowired
     private
     MealPlanService mealPlanService;
-
     @Autowired
     private
     ItemRepository itemRepository;
-
     @Autowired
     private
     TagRepository tagRepository;
-
-    // MM need to handle this in application settings /user settings
-    private final static ListLayoutType listlayoutdefault = ListLayoutType.RoughGrained;
-    public final static String uncategorized = "nocat";
 
     @Override
     public List<ShoppingListEntity> getListsByUsername(String userName) {
@@ -241,24 +234,24 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ListItemCollector collector = new ListItemCollector(toActive.getId(), toActive.getItems());
 
         // if generatetype add, add items to current list
-        if (generateType == GenerateType.Add) {
-            collector.addListItems(null,ItemSourceType.PickUpList, oldActive.getItems());
+        if (generateType == GenerateType.Add && oldActive != null) {
+            collector.addListItems(null, ItemSourceType.PickUpList, oldActive.getItems());
         }
 
         // cross items off of pickup list
         List<ItemEntity> pickupListItems = collector.getItemsByItemSource(ItemSourceType.PickUpList);
-        deleteItemsFromPickupList(user,pickupListItems);
+        deleteItemsFromPickupList(user, pickupListItems);
 
 
         // recategorize items
-        List<TagEntity> tocategorize  = collector.getTagsByCategories(Arrays.asList(uncategorized,ListTagStatisticService.IS_FREQUENT));
+        List<TagEntity> tocategorize = collector.getTagsByCategories(Arrays.asList(uncategorized, ListTagStatisticService.IS_FREQUENT));
         if (!tocategorize.isEmpty()) {
-        ListLayoutEntity listLayout = listLayoutService.getListLayoutByType(toActive.getListLayoutType());
-        Map<Long,String> dictionary =getCategoryDictionary(listLayout.getId(),tocategorize);
-        tocategorize.stream()
-                .filter(e -> !dictionary.containsKey(e.getId()))
-                .forEach(e -> dictionary.put(e.getId(),uncategorized));
-        collector.categorizeUncategorized(dictionary);
+            ListLayoutEntity listLayout = listLayoutService.getListLayoutByType(toActive.getListLayoutType());
+            Map<Long, String> dictionary = getCategoryDictionary(listLayout.getId(), tocategorize);
+            tocategorize.stream()
+                    .filter(e -> !dictionary.containsKey(e.getId()))
+                    .forEach(e -> dictionary.put(e.getId(), uncategorized));
+            collector.categorizeUncategorized(dictionary);
         }
 
         // delete old active list
@@ -279,10 +272,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ShoppingListEntity list = getListByUsernameAndType(user.getUsername(), ListType.PickUpList);
         List<Long> tagids = pickupListItems.stream()
                 .filter(t -> t.getTag() != null)
-        .map(t-> t.getTag().getId())
+                .map(t -> t.getTag().getId())
                 .collect(Collectors.toList());
         if (!tagids.isEmpty()) {
-        shoppingListRepository.bulkDeleteFromList(user.getId(),list.getId(),tagids);
+            shoppingListRepository.bulkDeleteFromList(user.getId(), list.getId(), tagids);
         }
     }
 

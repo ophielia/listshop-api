@@ -63,6 +63,17 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
+    public ResponseEntity<Object> createMealPlanFromTargetProposal(Principal principal, @PathVariable Long proposalId) {
+        MealPlanEntity result = mealPlanService.createMealPlanFromProposal(principal.getName(), proposalId);
+
+        if (result != null) {
+            Link forOneMealPlan = new MealPlanResource(result).getLink("self");
+            return ResponseEntity.created(URI.create(forOneMealPlan.getHref())).build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @Override
     public ResponseEntity<MealPlan> readMealPlan(Principal principal, @PathVariable Long mealPlanId) {
         MealPlanEntity mealPlan = this.mealPlanService
                 .getMealPlanById(principal.getName(), mealPlanId);

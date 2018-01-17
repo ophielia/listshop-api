@@ -4,7 +4,10 @@ import com.meg.atable.data.entity.*;
 import com.meg.atable.service.ListTagStatisticService;
 import com.meg.atable.service.impl.ShoppingListServiceImpl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -16,20 +19,20 @@ public class ModelMapper {
     }
 
     public static Dish toModel(DishEntity dishEntity) {
-        if (dishEntity!=null ) {
-        List<Tag> tags = new ArrayList<>();
-        //List<Tag> tags = toModel(dishEntity.getSlots());
-        return new Dish(dishEntity.getId())
-                .description(dishEntity.getDescription())
-                .dishName(dishEntity.getDishName())
-                .tags(tags)
-                .lastAdded(dishEntity.getLastAdded())
-                .userId(dishEntity.getUserId());
+        if (dishEntity != null) {
+            List<Tag> tags = new ArrayList<>();
+            //List<Tag> tags = toModel(dishEntity.getSlots());
+            return new Dish(dishEntity.getId())
+                    .description(dishEntity.getDescription())
+                    .dishName(dishEntity.getDishName())
+                    .tags(tags)
+                    .lastAdded(dishEntity.getLastAdded())
+                    .userId(dishEntity.getUserId());
         }
         return null;
     }
 
-    public static Dish toModel(DishEntity dishEntity,List<TagEntity> tagEntities) {
+    public static Dish toModel(DishEntity dishEntity, List<TagEntity> tagEntities) {
         List<Tag> tags = toModel(tagEntities);
         return new Dish(dishEntity.getId())
                 .description(dishEntity.getDescription())
@@ -55,6 +58,7 @@ public class ModelMapper {
                 .userId(targetEntity.getUserId())
                 .targetName(targetEntity.getTargetName())
                 .slots(slots)
+                .proposalId(targetEntity.getProposalId())
                 .created(targetEntity.getCreated())
                 .lastUsed(targetEntity.getLastUsed())
                 .targetTags(tags);
@@ -100,6 +104,7 @@ public class ModelMapper {
                 .dish(toModel(dishEntity.getDish()))
                 .matchedTags(tags);
     }
+
     public static TargetProposalSlot toModel(TargetProposalSlotEntity slotEntity) {
         List<Tag> tags = toModel(slotEntity.getTags());
         List<TargetProposalDish> dishes = proposalDishSlotsToModel(slotEntity.getDishSlotList());
@@ -107,6 +112,8 @@ public class ModelMapper {
         return new TargetProposalSlot(slotEntity.getSlotId())
                 .slotDishTag(toModel(slotEntity.getSlotDishTag()))
                 .tags(tags)
+                .selectedDishId(slotEntity.getSelectedDishId())
+                .selectedDishIndex(slotEntity.getSelectedDishIndex())
                 .dishSlotList(dishes)
                 .slotOrder(slotEntity.getSlotOrder());
 
@@ -236,7 +243,7 @@ public class ModelMapper {
         //      sort out and place into Hash for categories
         for (ItemEntity itemEntity : items) {
             Item item = toModel(itemEntity);
-            String key = item.getListCategory()!=null?item.getListCategory(): ShoppingListServiceImpl.uncategorized;
+            String key = item.getListCategory() != null ? item.getListCategory() : ShoppingListServiceImpl.uncategorized;
             if (!sortedByCategories.containsKey(key)) {
                 sortedByCategories.put(key, new ArrayList<>());
             }
@@ -294,14 +301,14 @@ public class ModelMapper {
         if (target == null) {
             return null;
         }
-Long targetId = target.getTargetId();
+        Long targetId = target.getTargetId();
         TargetEntity targetEntity = new TargetEntity(targetId);
 
         targetEntity.setTargetName(target.getTargetName());
         targetEntity.setCreated(target.getCreated());
         targetEntity.setUserId(target.getUserId());
         targetEntity.setLastUsed(target.getLastUsed());
-return targetEntity;
+        return targetEntity;
     }
 
 
@@ -309,11 +316,11 @@ return targetEntity;
         if (targetSlot == null) {
             return null;
         }
-TargetSlotEntity entity = new TargetSlotEntity(targetSlot.getTargetSlotId());
+        TargetSlotEntity entity = new TargetSlotEntity(targetSlot.getTargetSlotId());
         entity.setSlotDishTagId(targetSlot.getSlotDishTagId());
         entity.setTargetId(targetSlot.getTargetId());
         entity.setSlotOrder(targetSlot.getSlotOrder());
-    return entity;
+        return entity;
     }
 
     public static MealPlanEntity toEntity(MealPlan mealPlan) {
@@ -333,8 +340,7 @@ TargetSlotEntity entity = new TargetSlotEntity(targetSlot.getTargetSlotId());
     }
 
     public static ItemEntity toEntity(Item input) {
-        Long id = input.getId() != null ?
-                input.getId() : null;
+        Long id = input.getId();
         Long listId = input.getListId() != null ?
                 Long.valueOf(input.getListId()) : null;
         Long tagId = input.getTagId() != null ?

@@ -14,33 +14,23 @@ import java.util.stream.Collectors;
 @Table(name = "target_proposal_slot")
 public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
 
-    @Id
-    @GeneratedValue
-    @Column(name="slot_id")
-    private Long slotId;
-
-    private Long targetId;
-
-    private Long slotDishTagId;
-
-    @Transient
-    private TagEntity slotDishTag;
-
-    private String targetTagIds;
-
-    private Integer slotOrder;
-
-    @Transient
-    private List<TagEntity> tags;
-
-
-    @ManyToOne
-    private  TargetProposalEntity targetProposal;
-
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "targetProposalSlot")
     @LazyCollection(LazyCollectionOption.FALSE)
     List<TargetProposalDishEntity> dishSlotList;
-
+    @Id
+    @GeneratedValue
+    @Column(name = "slot_id")
+    private Long slotId;
+    private Long targetId;
+    private Long slotDishTagId;
+    @Transient
+    private TagEntity slotDishTag;
+    private String targetTagIds;
+    private Integer slotOrder;
+    @Transient
+    private List<TagEntity> tags;
+    @ManyToOne
+    private TargetProposalEntity targetProposal;
     private Long targetSlotId;
 
     private Integer selectedDishIndex;
@@ -86,18 +76,6 @@ public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
         dishSlotList.add(dish);
     }
 
-    public void setSlotDishTagId(Long slotDishTagId) {
-        this.slotDishTagId = slotDishTagId;
-    }
-
-    public void setSlotOrder(Integer slotOrder) {
-        this.slotOrder = slotOrder;
-    }
-
-    public void setTargetTagIds(String targetTagIds) {
-        this.targetTagIds = targetTagIds;
-    }
-
     public Long getSlotId() {
         return slotId;
     }
@@ -114,6 +92,10 @@ public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
         return slotDishTagId;
     }
 
+    public void setSlotDishTagId(Long slotDishTagId) {
+        this.slotDishTagId = slotDishTagId;
+    }
+
     public TagEntity getSlotDishTag() {
         return slotDishTag;
     }
@@ -126,8 +108,16 @@ public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
         return targetTagIds;
     }
 
+    public void setTargetTagIds(String targetTagIds) {
+        this.targetTagIds = targetTagIds;
+    }
+
     public Integer getSlotOrder() {
         return slotOrder;
+    }
+
+    public void setSlotOrder(Integer slotOrder) {
+        this.slotOrder = slotOrder;
     }
 
     public List<TagEntity> getTags() {
@@ -162,12 +152,12 @@ public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
         if (dictionary.isEmpty()) {
             return;
         }
-        tags =inflateStringToList(getTargetTagIds()).stream()
+        tags = inflateStringToList(getTargetTagIds()).stream()
                 .filter(t -> dictionary.containsKey(new Long(t)))
-                .map( t -> dictionary.get(new Long(t)))
+                .map(t -> dictionary.get(new Long(t)))
                 .collect(Collectors.toList());
 
-        if (slotDishTagId!=null) {
+        if (slotDishTagId != null) {
             if (dictionary.containsKey(slotDishTagId)) {
                 slotDishTag = dictionary.get(slotDishTagId);
             }
@@ -203,11 +193,22 @@ public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
         // also include dish type tags
         if (dishSlotList != null && !dishSlotList.isEmpty()) {
             for (TargetProposalDishEntity dishslot : dishSlotList) {
-             if (dictionary.containsKey(dishslot.getDishId()))
-                dishslot.setDish(dictionary.get(dishslot.getDishId()));
+                if (dictionary.containsKey(dishslot.getDishId()))
+                    dishslot.setDish(dictionary.get(dishslot.getDishId()));
             }
         }
 
 
     }
+
+    public Long getSelectedDishId() {
+        if (selectedDishIndex > -1) {
+            if (dishSlotList != null && !dishSlotList.isEmpty() && dishSlotList.size() > selectedDishIndex) {
+                return dishSlotList.get(selectedDishIndex).getDishId();
+            }
+            return null;
+        }
+        return null;
+    }
+
 }

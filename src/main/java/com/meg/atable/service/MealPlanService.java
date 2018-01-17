@@ -18,6 +18,8 @@ public interface MealPlanService {
 
     MealPlanEntity createMealPlan(String username, MealPlanEntity mealPlanEntity);
 
+    MealPlanEntity createMealPlanFromProposal(String name, Long proposalId);
+
     void addDishToMealPlan(String username, Long mealPlanId, Long dishId);
 
     void deleteDishFromMealPlan(String username, Long mealPlanId, Long dishId);
@@ -26,4 +28,5 @@ public interface MealPlanService {
     List<TagEntity> fillInDishTags(MealPlanEntity mealPlan);
 
     void updateLastAddedDateForDishes(MealPlanEntity mealPlan);
+
 }

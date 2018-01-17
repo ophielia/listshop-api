@@ -93,3 +93,17 @@ and (c.is_parent_tag is null or c.is_parent_tag = false)
 -- replace all occurrences of old with new in category_tags
 -- delete old from tag_relation
 -- delete old from tag
+
+-- adding a new auto_tag_instruction
+﻿INSERT INTO public.auto_tag_instructions(
+	instruction_type, instruction_id, assign_tag_id, is_invert, search_terms)
+	VALUES ('Tag', nextval('hibernate_sequence'), 8428, false, 3);
+
+
+-- clear proposals
+﻿delete  from target_proposal_slot_dish_slot_list;
+delete  from target_proposal_dish;
+delete  from target_proposal_proposal_slots;
+delete  from target_proposal_slot;
+
+delete  from target_proposal;

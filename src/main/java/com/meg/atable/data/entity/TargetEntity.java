@@ -3,12 +3,15 @@ package com.meg.atable.data.entity;
 import com.meg.atable.service.TargetServiceConstants;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="Target")
+@DiscriminatorColumn(name = "Target")
 @Table(name = "target")
 public class TargetEntity extends AbstractInflateAndFlatten {
 
@@ -34,6 +37,8 @@ public class TargetEntity extends AbstractInflateAndFlatten {
 
     @Transient
     private List<TagEntity> targetTags;
+
+    private Long proposalId;
 
     public TargetEntity() {
     }
@@ -124,7 +129,7 @@ public class TargetEntity extends AbstractInflateAndFlatten {
     }
 
     public void addTargetTagId(Long tagId) {
-        List<String> tagids = inflateStringToList(getTargetTagIds(),TargetServiceConstants.TARGET_TAG_DELIMITER);
+        List<String> tagids = inflateStringToList(getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER);
         tagids.add(tagId.toString());
         targetTagIds = flattenListToString(tagids);
     }
@@ -157,7 +162,7 @@ public class TargetEntity extends AbstractInflateAndFlatten {
         // make list of all tagList strings for target and contained slots
         // also include dish type tags
         List<String> stringList = new ArrayList<>();
-        stringList.addAll(inflateStringToList(getTargetTagIds(),TargetServiceConstants.TARGET_TAG_DELIMITER));
+        stringList.addAll(inflateStringToList(getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER));
         if (slots != null && !slots.isEmpty()) {
             for (TargetSlotEntity slot : slots) {
                 stringList.addAll(inflateStringToList(slot.getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER));
@@ -180,9 +185,9 @@ public class TargetEntity extends AbstractInflateAndFlatten {
         if (dictionary.isEmpty()) {
             return;
         }
-        targetTags =inflateStringToList(getTargetTagIds()).stream()
+        targetTags = inflateStringToList(getTargetTagIds()).stream()
                 .filter(t -> dictionary.containsKey(new Long(t)))
-                .map( t -> dictionary.get(new Long(t)))
+                .map(t -> dictionary.get(new Long(t)))
                 .collect(Collectors.toList());
 
         if (slots != null && !slots.isEmpty()) {
@@ -193,5 +198,11 @@ public class TargetEntity extends AbstractInflateAndFlatten {
         return;
     }
 
+    public Long getProposalId() {
+        return proposalId;
+    }
 
+    public void setProposalId(Long proposalId) {
+        this.proposalId = proposalId;
+    }
 }

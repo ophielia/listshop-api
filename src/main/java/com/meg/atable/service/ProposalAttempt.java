@@ -64,9 +64,7 @@ public class ProposalAttempt {
     }
 
 
-    public AttemptResult finalizeResults() {
-        AttemptResult result = new AttemptResult(getAttemptOrder());
-
+    public void finalizeResults() {
         // just do health index
         List<Double> healthIndexList = slotResults.values().stream().map(v -> v[0]).collect(Collectors.toList());
         healthIndexList.stream().sorted();
@@ -82,9 +80,6 @@ public class ProposalAttempt {
         setHealthIndexAverage(healthIndexList.stream().mapToDouble(t -> t).average().getAsDouble());
 
 
-        return result;
-
-
     }
 
     @Override
@@ -95,19 +90,25 @@ public class ProposalAttempt {
                 '}';
     }
 
-    public void setHealthIndexMedian(double healthIndexMedian) {
-        this.healthIndexMedian = healthIndexMedian;
+    public String getAttemptOrderAsString(String delimiter) {
+        List<Integer> attemptOrderStringList = Arrays.asList(attemptOrder);
+        return String.join(delimiter, attemptOrderStringList.stream()
+                .map(String::valueOf).collect(Collectors.toList()));
     }
 
     public double getHealthIndexMedian() {
         return healthIndexMedian;
     }
 
-    public void setHealthIndexAverage(double healthIndexAverage) {
-        this.healthIndexAverage = healthIndexAverage;
+    public void setHealthIndexMedian(double healthIndexMedian) {
+        this.healthIndexMedian = healthIndexMedian;
     }
 
     public double getHealthIndexAverage() {
         return healthIndexAverage;
+    }
+
+    public void setHealthIndexAverage(double healthIndexAverage) {
+        this.healthIndexAverage = healthIndexAverage;
     }
 }

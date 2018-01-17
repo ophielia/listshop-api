@@ -3,17 +3,14 @@ package com.meg.atable.data.entity;
 import com.meg.atable.service.TargetServiceConstants;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 01/01/2018.
  */
 @Entity
-@Table(name="target_proposal")
+@Table(name = "target_proposal")
 public class TargetProposalEntity extends AbstractInflateAndFlatten {
     @Id
     @GeneratedValue
@@ -37,7 +34,7 @@ public class TargetProposalEntity extends AbstractInflateAndFlatten {
 
     private Long forTargetId;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "targetProposal")
     private List<TargetProposalSlotEntity> proposalSlots;
 
     private Boolean regenerateOnRefresh;
@@ -47,6 +44,7 @@ public class TargetProposalEntity extends AbstractInflateAndFlatten {
     private String slotSortOrder;
 
     private String proposalIndexList;
+    private String refreshFlag;
 
     public TargetProposalEntity(TargetEntity target) {
         this.forTargetId = target.getTargetId();
@@ -204,9 +202,9 @@ public class TargetProposalEntity extends AbstractInflateAndFlatten {
         if (dictionary.isEmpty()) {
             return;
         }
-        targetTags =inflateStringToList(getTargetTagIds()).stream()
+        targetTags = inflateStringToList(getTargetTagIds()).stream()
                 .filter(t -> dictionary.containsKey(new Long(t)))
-                .map( t -> dictionary.get(new Long(t)))
+                .map(t -> dictionary.get(new Long(t)))
                 .collect(Collectors.toList());
 
         if (proposalSlots != null && !proposalSlots.isEmpty()) {
@@ -242,4 +240,38 @@ public class TargetProposalEntity extends AbstractInflateAndFlatten {
         return;
     }
 
+    public String generateRefreshFlag() {
+        // refresh flag is made up of slotId with selected index for each slot
+        // slots are sorted by slot order
+        proposalSlots.sort(Comparator.comparing(TargetProposalSlotEntity::getSlotOrder));
+
+        StringBuffer buffer = new StringBuffer();
+        proposalSlots.stream().forEach(s ->
+                buffer.append(s.getSlotId())
+                        .append("!")
+                        .append(s.getSelectedDishId()));
+
+        return buffer.toString();
+
+    }
+
+    public String getRefreshFlag() {
+        return refreshFlag;
+    }
+
+    public void setRefreshFlag(String refreshFlag) {
+        this.refreshFlag = refreshFlag;
+    }
+
+    public Map<Long, Long> getSelectedDishIdsBySlot() {
+        Map<Long, Long> selectedDishIds = new HashMap<>();
+        if (proposalSlots != null && !proposalSlots.isEmpty()) {
+            for (TargetProposalSlotEntity slot : proposalSlots) {
+                if (slot.getSelectedDishIndex() > -1) {
+                    selectedDishIds.put(slot.getTargetSlotId(), slot.getDishSlotList().get(slot.getSelectedDishIndex()).getDishId());
+                }
+            }
+        }
+        return selectedDishIds;
+    }
 }

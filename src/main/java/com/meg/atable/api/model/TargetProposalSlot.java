@@ -1,7 +1,6 @@
 package com.meg.atable.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.atable.data.entity.TagEntity;
 
 import java.util.List;
 
@@ -17,12 +16,12 @@ public class TargetProposalSlot {
     private List<Tag> tags;
 
     private Integer selectedDishIndex;
+    private Long selectedDishId;
 
 
     public TargetProposalSlot(Long slotId) {
         this.slotId = slotId;
     }
-
 
 
     public TargetProposalSlot slotDishTag(Tag slotDishTag) {
@@ -78,5 +77,10 @@ public class TargetProposalSlot {
     @JsonProperty("selected_dish_index")
     public Integer getSelectedDishIndex() {
         return selectedDishIndex;
+    }
+
+    public TargetProposalSlot selectedDishId(Long selectedDishId) {
+        this.selectedDishId = selectedDishId;
+        return this;
     }
 }

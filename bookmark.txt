@@ -41,6 +41,17 @@ consider -
         pass tagdictionary once - either in same request or not.
         use tagdictionary to fill objects in front end
 
+
+autotag -
+
+    some sort of cache/refresh for instructions
+
+select distinct dt.dish_id , d.last_added , iT0.tag_id , iT1.tag_id
+from dish_tags dt join dish d on d.dish_id = dt.dish_id and d.user_id = 1 and dt.tag_id = 5
+left outer join dish_tags iT0 on d.dish_id = iT0.dish_id and iT0.tag_id = 169
+left outer join dish_tags iT1 on d.dish_id = iT1.dish_id and iT1.tag_id = 212  order by d.last_added NULLS FIRST
+
+
 sketch for menu finding algorithm
 
 TagTypes

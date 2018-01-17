@@ -1,17 +1,17 @@
 package com.meg.atable.controller;
 
 import com.meg.atable.api.controller.TargetProposalRestControllerApi;
-import com.meg.atable.api.model.*;
+import com.meg.atable.api.model.SortDirection;
+import com.meg.atable.api.model.TargetProposalResource;
 import com.meg.atable.data.entity.TargetProposalEntity;
 import com.meg.atable.service.TargetProposalService;
-import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.security.Principal;
@@ -27,7 +27,7 @@ public class TargetProposalRestController implements TargetProposalRestControlle
 
     @Override
     public ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId) {
-TargetProposalEntity proposalEntity = this.targetProposalService.createTargetProposal(principal.getName(),targetId);
+        TargetProposalEntity proposalEntity = this.targetProposalService.createTargetProposal(principal.getName(), targetId);
         if (proposalEntity != null) {
             Link forOneProposal = new TargetProposalResource(proposalEntity).getLink("self");
             return ResponseEntity.created(URI.create(forOneProposal.getHref())).build();
@@ -38,7 +38,7 @@ TargetProposalEntity proposalEntity = this.targetProposalService.createTargetPro
 
     @Override
     public ResponseEntity<TargetProposalResource> getProposal(Principal principal, @PathVariable("proposalId") Long proposalId) {
-        TargetProposalEntity proposalEntity = this.targetProposalService.getTargetProposalById(principal.getName(),proposalId);
+        TargetProposalEntity proposalEntity = this.targetProposalService.getTargetProposalById(principal.getName(), proposalId);
         if (proposalEntity != null) {
 
             // fill tag and dish info for proposal
@@ -51,11 +51,14 @@ TargetProposalEntity proposalEntity = this.targetProposalService.createTargetPro
     }
 
 
-
     @Override
-    public ResponseEntity<Object> refreshProposal(Principal principal, @PathVariable("proposalId") Long proposalId) {
-
-        this.targetProposalService.refreshTargetProposal(principal.getName(),proposalId);
+    public ResponseEntity<Object> refreshProposal(Principal principal, @PathVariable("proposalId") Long proposalId,
+                                                  @RequestParam(value = "direction", required = false) String direction) {
+        SortDirection sortDirection = SortDirection.UP;
+        if (direction != null) {
+            sortDirection = SortDirection.valueOf(direction);
+        }
+        this.targetProposalService.refreshTargetProposal(principal.getName(), proposalId, sortDirection);
 
 
         return ResponseEntity.noContent().build();
@@ -64,20 +67,21 @@ TargetProposalEntity proposalEntity = this.targetProposalService.createTargetPro
 
     @Override
     public ResponseEntity<Object> selectDishInSlot(Principal principal, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId) {
-        this.targetProposalService.selectDishInSlot(principal,proposalId,slotId,dishId);
+        this.targetProposalService.selectDishInSlot(principal, proposalId, slotId, dishId);
 
         return ResponseEntity.noContent().build();
     }
 
     @Override
     public ResponseEntity<Object> clearDishFromSlot(Principal principal, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId) {
-        this.targetProposalService.clearDishFromSlot(principal,proposalId,slotId,dishId);
+        this.targetProposalService.clearDishFromSlot(principal, proposalId, slotId, dishId);
 
-        return ResponseEntity.noContent().build();    }
+        return ResponseEntity.noContent().build();
+    }
 
     @Override
     public ResponseEntity<Object> refreshProposalSlot(Principal principal, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) {
-        this.targetProposalService.refreshTargetProposalSlot(principal.getName(),proposalId,slotId);
+        this.targetProposalService.showMoreProposalSlotOptions(principal.getName(), proposalId, slotId);
 
 
         return ResponseEntity.noContent().build();

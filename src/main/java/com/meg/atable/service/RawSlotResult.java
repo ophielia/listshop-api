@@ -1,9 +1,6 @@
 package com.meg.atable.service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by margaretmartin on 01/01/2018.
@@ -15,12 +12,15 @@ public class RawSlotResult {
     private HashMap<Long, DishTagSearchResult> dishResults;
     private ArrayList<DishTagSearchResult> dishSortedResults;
     private List<Long> filteredDishes;
+    private List<Long> alwaysExclude;
+    private DishTagSearchResult preselectedDish;
 
     public RawSlotResult(Long slot_id, List<DishTagSearchResult> matches, List<DishTagSearchResult> targetMatches, List<DishTagSearchResult> emptyMatches, List<String> tagListForSlot) {
         this.slotId = slot_id;
         this.rawMatchCount = matches.size();
         this.tagListForSlot = tagListForSlot;
         this.filteredDishes = new ArrayList<>();
+        this.alwaysExclude = new ArrayList<>();
         initiateSortedResults(matches, targetMatches, emptyMatches);
     }
 
@@ -71,11 +71,17 @@ public class RawSlotResult {
 
     public List<DishTagSearchResult> getFilteredMatches(int dishesPerSlot) {
         List<DishTagSearchResult> matches = new ArrayList<>();
+        if (preselectedDish != null) {
+            matches.add(preselectedDish);
+        }
         for (DishTagSearchResult match : dishSortedResults) {
-            if (matches.size() > dishesPerSlot) {
+            if (matches.size() >= dishesPerSlot) {
                 break;
             }
             if (filteredDishes.contains(match.getDishId())) {
+                continue;
+            }
+            if (alwaysExclude.contains(match.getDishId())) {
                 continue;
             }
             matches.add(match);
@@ -85,5 +91,25 @@ public class RawSlotResult {
 
     public void addDishesToFilter(List<DishTagSearchResult> dishMatches) {
         dishMatches.stream().forEach(m -> this.filteredDishes.add(m.getDishId()));
+    }
+
+
+    public void addExcludesAndPresets(Map<Long, Long> slotToSelected) {
+        if (slotToSelected != null) {
+            for (Map.Entry<Long, Long> entry : slotToSelected.entrySet()) {
+                if (slotId == entry.getKey().longValue()) {
+                    this.preselectedDish = dishSortedResults.stream()
+                            .filter(r -> r.getDishId() == entry.getValue().longValue())
+                            .findFirst().get();
+                    this.alwaysExclude.add(entry.getValue());
+                } else {
+                    this.alwaysExclude.add(entry.getValue());
+                }
+            }
+        }
+    }
+
+    public void addDishIdsToFilter(List<Long> dishIdsInProposal) {
+        this.filteredDishes.addAll(dishIdsInProposal);
     }
 }

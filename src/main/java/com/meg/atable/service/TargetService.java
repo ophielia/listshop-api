@@ -33,4 +33,6 @@ public interface TargetService {
     void addTagToTarget(String name, Long targetId, Long tagId);
 
     TargetEntity fillTagsForTarget(TargetEntity target);
+
+    TargetEntity save(TargetEntity target);
 }

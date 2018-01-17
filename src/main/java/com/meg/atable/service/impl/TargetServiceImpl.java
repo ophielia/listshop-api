@@ -95,7 +95,7 @@ public class TargetServiceImpl implements TargetService {
     @Override
     public void addSlotToTarget(String name, Long targetId, TargetSlotEntity targetSlotEntity) {
         TargetEntity targetEntity = getTargetById(name, targetId);
-
+        targetEntity.setProposalId(null);
         if (targetEntity == null) {
             return;
         }
@@ -107,7 +107,7 @@ public class TargetServiceImpl implements TargetService {
         }
         OptionalInt maxSlotOrder = slots.stream()
                 .mapToInt(TargetSlotEntity::getSlotOrder).max();
-        Integer max = maxSlotOrder.isPresent()?maxSlotOrder.getAsInt():0;
+        Integer max = maxSlotOrder.isPresent() ? maxSlotOrder.getAsInt() : 0;
         targetSlotEntity.setSlotOrder(max + 1);
 
         targetSlotEntity = targetSlotRepository.save(targetSlotEntity);
@@ -119,10 +119,11 @@ public class TargetServiceImpl implements TargetService {
 
     @Override
     public void deleteSlotFromTarget(String name, Long targetId, Long slotId) {
-        TargetEntity targetEntity = getTargetById(name,targetId);
+        TargetEntity targetEntity = getTargetById(name, targetId);
         if (targetEntity == null) {
             return;
         }
+        targetEntity.setProposalId(null);
         TargetSlotEntity targetSlotEntity = targetSlotRepository.findOne(slotId);
 
         targetEntity.removeSlot(targetSlotEntity);
@@ -134,10 +135,11 @@ public class TargetServiceImpl implements TargetService {
 
     @Override
     public void addTagToTargetSlot(String name, Long targetId, Long slotId, Long tagId) {
-        TargetEntity targetEntity = getTargetById(name,targetId);
+        TargetEntity targetEntity = getTargetById(name, targetId);
         if (targetEntity == null) {
             return;
         }
+        targetEntity.setProposalId(null);
         TargetSlotEntity targetSlotEntity = targetSlotRepository.findOne(slotId);
 
         targetSlotEntity.addTagId(tagId);
@@ -146,10 +148,11 @@ public class TargetServiceImpl implements TargetService {
 
     @Override
     public void deleteTagFromTargetSlot(String name, Long targetId, Long slotId, Long tagId) {
-        TargetEntity targetEntity = getTargetById(name,targetId);
+        TargetEntity targetEntity = getTargetById(name, targetId);
         if (targetEntity == null) {
             return;
         }
+        targetEntity.setProposalId(null);
         TargetSlotEntity targetSlotEntity = targetSlotRepository.findOne(slotId);
 
         targetSlotEntity.removeTagId(tagId);
@@ -158,22 +161,23 @@ public class TargetServiceImpl implements TargetService {
 
     @Override
     public void deleteTagFromTarget(String name, Long targetId, Long tagId) {
-        TargetEntity targetEntity = getTargetById(name,targetId);
+        TargetEntity targetEntity = getTargetById(name, targetId);
         if (targetEntity == null) {
             return;
         }
-
+        targetEntity.setProposalId(null);
         targetEntity.removeTargetTagId(tagId);
         targetRepository.save(targetEntity);
     }
 
     @Override
     public void addTagToTarget(String name, Long targetId, Long tagId) {
-        TargetEntity targetEntity = getTargetById(name,targetId);
+        TargetEntity targetEntity = getTargetById(name, targetId);
         if (targetEntity == null) {
             return;
         }
         targetEntity.addTargetTagId(tagId);
+        targetEntity.setProposalId(null);
         targetRepository.save(targetEntity);
     }
 
@@ -186,9 +190,16 @@ public class TargetServiceImpl implements TargetService {
         // get list of tag ids
         List<Long> tagIds = target.getAllTagIds();
         // retrieve tags for ids
-Map<Long,TagEntity> dictionary = tagService.getDictionaryForIdList(tagIds);
+        Map<Long, TagEntity> dictionary = tagService.getDictionaryForIdList(tagIds);
         // fill in target (and contained slots)
-target.fillInAllTags(dictionary);
+        target.fillInAllTags(dictionary);
         return target;
     }
+
+    @Override
+    public TargetEntity save(TargetEntity target) {
+        return targetRepository.save(target);
+    }
+
+
 }
