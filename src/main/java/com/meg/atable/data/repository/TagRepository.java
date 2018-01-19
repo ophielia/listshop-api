@@ -26,7 +26,11 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
     List<TagEntity> findTagsWithoutChildren();
 
     @Query(value = "select ct.* from selectabletags t, tag ct where ct.tag_id = t.child_tag_id and ct.tag_type in (:tagtypes)", nativeQuery = true)
-    List<TagEntity> findTagsWithoutChildrenByTagTypes(@Param("tagtypes") List<String> tagtypes);
+    List<TagEntity> findTagsWithoutChildrenByTagTypeIsIn(@Param("tagtypes") List<String> tagtypes);
+
+    List<TagEntity> findTagsBySearchSelectAndTagTypeIsIn(Boolean searchSelect, List<String> tagtypes);
+
+    List<TagEntity> findTagsBySearchSelect(Boolean searchSelect);
 
     @Query(value = "select t.* from dish_tags dt, " +
             "tag t where t.tag_id = dt.tag_id and  t.tag_type = 'Ingredient' and dt.dish_id in (:dishIdList) ", nativeQuery = true)

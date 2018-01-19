@@ -36,6 +36,12 @@ public class TagEntity {
 
     private Boolean isParentTag;
 
+    private Boolean assignSelect;
+
+    private Boolean searchSelect;
+
+    private Boolean isVerified;
+
     @Transient
     private List<Long> childrenIds;
     @Transient
@@ -136,5 +142,29 @@ public class TagEntity {
 
     public void setParentTag(Boolean parentTag) {
         isParentTag = parentTag;
+    }
+
+    public Boolean getAssignSelect() {
+        return assignSelect;
+    }
+
+    public void setAssignSelect(Boolean assignSelect) {
+        this.assignSelect = assignSelect;
+    }
+
+    public Boolean getSearchSelect() {
+        return searchSelect;
+    }
+
+    public void setSearchSelect(Boolean searchSelect) {
+        this.searchSelect = searchSelect;
+    }
+
+    public Boolean getVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(Boolean verified) {
+        isVerified = verified;
     }
 }

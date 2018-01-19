@@ -6,7 +6,7 @@ package com.meg.atable.api.model;
 public enum TagFilterType {
 
     All("All"),
-    ForSelect("ForSelect"),
+    ForSelectAssign("ForSelect"),
     BaseTags("Base"),
     ParentTags("ParentTags");
 

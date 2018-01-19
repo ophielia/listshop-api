@@ -44,4 +44,6 @@ public interface TagService {
     void deleteTagFromDish(Long dishId, Long tagId);
 
     Map<Long,TagEntity> getDictionaryForIdList(List<Long> tagIds);
+
+    TagEntity updateTag(Long tagId, TagEntity toUpdate);
 }

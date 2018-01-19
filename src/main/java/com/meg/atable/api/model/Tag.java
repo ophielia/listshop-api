@@ -15,6 +15,10 @@ public class Tag {
 
     private String ratingFamily;
 
+    private Boolean assignSelect;
+
+    private Boolean searchSelect;
+
     Tag() {
     }
 
@@ -75,6 +79,26 @@ public class Tag {
 
     public Tag ratingFamily(String ratingFamily) {
         this.ratingFamily = ratingFamily;
+        return this;
+    }
+
+    @JsonProperty("assign_select")
+    public Boolean getAssignSelect() {
+        return assignSelect;
+    }
+
+    public Tag assignSelect(Boolean assignSelect) {
+        this.assignSelect = assignSelect;
+        return this;
+    }
+
+    @JsonProperty("search_select")
+    public Boolean getSearchSelect() {
+        return searchSelect;
+    }
+
+    public Tag searchSelect(Boolean searchSelect) {
+        this.searchSelect = searchSelect;
         return this;
     }
 }

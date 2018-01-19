@@ -9,14 +9,12 @@ import java.util.List;
  */
 public class TargetProposalDish {
 
-    private Long proposalDishId;
-
     private Dish dish;
 
     private List<Tag> matchedTags;
 
     public TargetProposalDish(Long proposalDishId) {
-        this.proposalDishId = proposalDishId;
+
     }
 
     public Dish getDish() {

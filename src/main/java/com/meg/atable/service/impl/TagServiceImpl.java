@@ -5,9 +5,11 @@ import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.entity.TagRelationEntity;
+import com.meg.atable.data.entity.TagSearchGroupEntity;
 import com.meg.atable.data.repository.DishRepository;
 import com.meg.atable.data.repository.TagRelationRepository;
 import com.meg.atable.data.repository.TagRepository;
+import com.meg.atable.data.repository.TagSearchGroupRepository;
 import com.meg.atable.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -28,6 +30,10 @@ public class TagServiceImpl implements TagService {
 
     @Autowired
     private TagRelationRepository tagRelationRepository;
+
+
+    @Autowired
+    private TagSearchGroupRepository tagSearchGroupRepository;
 
     @Autowired
     private DishRepository dishRepository;
@@ -74,7 +80,118 @@ public class TagServiceImpl implements TagService {
        return new HashMap<Long,TagEntity>();
     }
 
+    @Transactional
+    @Override
+    public TagEntity updateTag(Long tagId, TagEntity toUpdate) {
+        // get tag from db
+        TagEntity dbTag = tagRepository.findOne(tagId);
+        if (dbTag == null) {
+            return null;
+        }
+        // compare to passed tag
+        // determine if change was made to search assign
+        boolean searchSelectChanged = toUpdate.getSearchSelect() != dbTag.getSearchSelect();
 
+        // save changes to tag
+        dbTag.setName(toUpdate.getName());
+        dbTag.setDescription(toUpdate.getDescription());
+        dbTag.setAssignSelect(toUpdate.getAssignSelect());
+        dbTag.setSearchSelect(toUpdate.getSearchSelect());
+        dbTag = tagRepository.save(dbTag);
+
+        // if change, maintain change
+        if (searchSelectChanged) {
+            maintainTagSystemUponSelectChange(dbTag);
+        }
+
+        return dbTag;
+    }
+
+    private void maintainTagSystemUponSelectChange(TagEntity updatedTag) {
+        List<TagEntity> parentTags = getAscendantTags(updatedTag,true );
+        parentTags.add(updatedTag);
+        List<TagEntity> childrenTags = getDescendantTags(updatedTag, true);
+            childrenTags.add(updatedTag);
+
+        if (!updatedTag.getSearchSelect()) {
+            List<Long> groupTagIds = parentTags.stream().map(t -> t.getId()).collect(Collectors.toList());
+            List<Long> memberTagIds = childrenTags.stream().map(t -> t.getId()).collect(Collectors.toList());
+            // delete tag groups with groups in the parenttag, and children in the children tag
+            tagSearchGroupRepository.deleteByGroupAndMember(groupTagIds,memberTagIds);
+            return;
+        }
+        // no change of parent here - just either adding to groups or subtracting from groups
+        // we'll need parent tags and direct descendant tags ( that have assign search set to true)
+
+            // this tag is now a search select.
+            // add all children tags to a group with this tag as the group
+            List<TagSearchGroupEntity> groupAssignments = buildGroupAssignments(updatedTag.getId(),childrenTags);
+            // also add all children tags to any parent groups
+            for (TagEntity parentTag: parentTags) {
+                groupAssignments.addAll(buildGroupAssignments(parentTag.getId(),childrenTags));
+            }
+            tagSearchGroupRepository.save(groupAssignments);
+            return;
+
+    }
+
+    private void maintainTagSystemUponParentChange(TagEntity origParentTag, TagEntity newParentTag, TagEntity childTag) {
+        // assignSelect - original Parent
+        // if we just removed the last child, the assign select should be set to false
+        List<TagEntity> oldParentChildren = getDescendantTags(origParentTag, false);
+        if (oldParentChildren == null || oldParentChildren.isEmpty()) {
+            // now this is a selectable tag, because it doesn't have children
+            origParentTag.setAssignSelect(false);
+        }
+
+        // assignSelect - new Parent
+        newParentTag.setAssignSelect(true);
+
+        // assignSelect - child - no changes made / necessary
+
+        // searchSelect - only interesting if the childTag is searchselectable
+        if (childTag.getSearchSelect()) {
+                List<TagEntity> childrenTags = getDescendantTags(childTag, true);
+                childrenTags.add(childTag);
+            // remove tags (and children) from oldParent
+            if (origParentTag.getSearchSelect())  {
+                // get parent tags
+                List<TagEntity> origParentTags = getAscendantTags(origParentTag,true );
+                origParentTags.add(origParentTag);
+                List<Long> groupTagIds = origParentTags.stream().map(t -> t.getId()).collect(Collectors.toList());
+                List<Long> memberTagIds = childrenTags.stream().map(t -> t.getId()).collect(Collectors.toList());
+                // delete tag groups with groups in the parenttag, and children in the children tag
+                tagSearchGroupRepository.deleteByGroupAndMember(groupTagIds,memberTagIds);
+            }
+
+            // add tags to newParent - if new Parent is SearchSelect
+            if (newParentTag.getSearchSelect()) {
+                List<TagEntity> newParentTags = getAscendantTags(newParentTag,true );
+                newParentTags.add(newParentTag);
+                // add all children tags to a group with this tag as the group
+                List<TagSearchGroupEntity> groupAssignments = new ArrayList<>();
+                // also add all children tags to any parent groups
+                for (TagEntity parentTag: newParentTags) {
+                    groupAssignments.addAll(buildGroupAssignments(parentTag.getId(),childrenTags));
+                }
+                tagSearchGroupRepository.save(groupAssignments);
+            }
+        }
+
+
+        // save origParentTag, newParentTag, childTag
+        tagRepository.save(origParentTag);
+        tagRepository.save(newParentTag);
+    }
+
+    private List<TagSearchGroupEntity> buildGroupAssignments(Long groupId, List<TagEntity> members) {
+        List<TagSearchGroupEntity> newGroupAssignments = new ArrayList<>();
+        members.forEach(t -> {
+            TagSearchGroupEntity newSearchGroup = new TagSearchGroupEntity(groupId,t.getId());
+            newGroupAssignments.add(newSearchGroup);
+        });
+        return newGroupAssignments;
+    }
     @Override
     public List<TagEntity> getTagList(TagFilterType tagFilterType, List<TagType> tagTypes) {
 
@@ -82,8 +199,8 @@ public class TagServiceImpl implements TagService {
         if (tagFilterType != null && TagFilterType.BaseTags.equals(tagFilterType)) {
             return getBaseTagList(tagTypes);
         }
-        // this is by selectable tags
-        if (tagFilterType != null && TagFilterType.ForSelect.equals(tagFilterType)) {
+        // this is by selectable tags - assign
+        if (tagFilterType != null && TagFilterType.ForSelectAssign.equals(tagFilterType)) {
             return getSelectableTagList(tagTypes);
         }
         // this is by parent tags
@@ -126,9 +243,9 @@ public class TagServiceImpl implements TagService {
     private List<TagEntity> getSelectableTagList(List<TagType> tagTypes) {
         if (tagTypes != null) {
             List<String> tagTypeStrings = tagTypes.stream().map(TagType::name).collect(Collectors.toList());
-            return tagRepository.findTagsWithoutChildrenByTagTypes(tagTypeStrings);
+            return tagRepository.findTagsBySearchSelectAndTagTypeIsIn(true,tagTypeStrings);
         } else {
-            return tagRepository.findTagsWithoutChildren();
+            return tagRepository.findTagsBySearchSelect(true);
         }
 
     }
@@ -159,8 +276,8 @@ public class TagServiceImpl implements TagService {
         TagEntity tagEntity = new TagEntity();
         tagEntity.setName(name);
         tagEntity.setDescription(description);
-        tagRepository.save(tagEntity);
-        return tagEntity;
+
+        return createTag(parent,tagEntity);
     }
 
     @Override
@@ -168,6 +285,8 @@ public class TagServiceImpl implements TagService {
         TagEntity parentTag = getParentForNewTag(parent, newtag);
         newtag.setRatingFamily(parentTag.getRatingFamily());
         newtag.setAutoTagFlag(parentTag.getAutoTagFlag());
+        newtag.setAssignSelect(true);
+        newtag.setSearchSelect(false);
         TagEntity saved = tagRepository.save(newtag);
 
 
@@ -220,37 +339,45 @@ public class TagServiceImpl implements TagService {
         return assignTagToParent(tag,parentTag);
     }
 
-    private boolean assignTagToParent(TagEntity tag, TagEntity parentTag) {
-        if (tag == null || parentTag == null) {
+    private boolean assignTagToParent(TagEntity childTag, TagEntity newParentTag) {
+        if (childTag == null || newParentTag == null) {
             return false;
         }
         // check for circular reference
-        if (hasCircularReference(parentTag, tag)) {
+        if (hasCircularReference(newParentTag, childTag)) {
             return false;
         }
         // get tag relation for tag
-        TagRelationEntity tagRelation = tagRelationRepository.findByChild(tag).get();
+        TagRelationEntity tagRelation = tagRelationRepository.findByChild(childTag).get();
         if (tagRelation == null) {
             return false;
         }
-        // check parent tag
-        if (parentTag.isParentTag() == null) {
-            parentTag.setParentTag(true);
-            parentTag = tagRepository.save(parentTag);
-        }
+
+        TagEntity origParentTag = tagRelation.getParent();
+
         // replace parent in tag relation
-        tagRelation.setParent(parentTag);
+        tagRelation.setParent(newParentTag);
         tagRelation = tagRelationRepository.save(tagRelation);
-        if ((tag.isParentTag()== null || !tag.isParentTag()) ) {
+        if ((childTag.isParentTag()== null || !childTag.isParentTag()) ) {
             // copy tag flag, family from parent
-            tag.setRatingFamily(parentTag.getRatingFamily());
-            tag.setAutoTagFlag(parentTag.getAutoTagFlag());
-            tagRepository.save(tag);
+            childTag.setRatingFamily(newParentTag.getRatingFamily());
+            childTag.setAutoTagFlag(newParentTag.getAutoTagFlag());
+            tagRepository.save(childTag);
         }
+
+        if (tagRelation == null) {
+            // some sort of error here
+            return false;
+        }
+
+        // maintain the tag system
+        maintainTagSystemUponParentChange(origParentTag,newParentTag,childTag);
         // return true
         return tagRelation != null;
 
     }
+
+
 
     @Override
     public boolean assignChildrenToParent(Long parentId, List<Long> childrenIds) {
@@ -338,7 +465,7 @@ public class TagServiceImpl implements TagService {
     private boolean hasCircularReference(TagEntity parentTag, TagEntity tag) {
         // circular reference exists if ascendants of parentTag include
         // the (new) childTag
-        List<TagEntity> grandparents = getAscendantTags(parentTag);
+        List<TagEntity> grandparents = getAscendantTags(parentTag,false );
         List<Long> exists = grandparents.stream()
                 .filter(t -> t.getId() == tag.getId())
                 .map(TagEntity::getId)
@@ -354,21 +481,23 @@ public class TagServiceImpl implements TagService {
                 .collect(Collectors.toList());
     }
 
-    private List<TagEntity> getAscendantTags(TagEntity tag) {
+    private List<TagEntity> getAscendantTags(TagEntity tag, Boolean searchSelectOnly) {
 
         // get parent of tag
         Optional<TagRelationEntity> parenttag = tagRelationRepository.findByChild(tag);
         if (parenttag.isPresent() && parenttag.get().getParent() != null) {
+            if (searchSelectOnly && parenttag.get().getParent().getSearchSelect()) {
             // if parenttag is not null, add to list, and call for parent tag
-            List<TagEntity> nextCall = getAscendantTags(parenttag.get().getParent());
+            List<TagEntity> nextCall = getAscendantTags(parenttag.get().getParent(), searchSelectOnly);
             nextCall.add(parenttag.get().getParent());
             return nextCall;
+            }
         }
 
         return new ArrayList<>();
     }
 
-    private List<TagEntity> getDescendantTags(TagEntity tag) {
+    private List<TagEntity> getDescendantTags(TagEntity tag, Boolean searchSelectOnly) {
 
         // get children of tag
         List<TagRelationEntity> childrentags = tagRelationRepository.findByParent(tag);
@@ -376,7 +505,10 @@ public class TagServiceImpl implements TagService {
             // if parenttag is not null, add to list, and call for parent tag
             List<TagEntity> nextCall = new ArrayList<>();
             for (TagRelationEntity tagRelation : childrentags) {
-                nextCall.addAll(getDescendantTags(tagRelation.getChild()));
+                if (searchSelectOnly && !tagRelation.getChild().getSearchSelect()) {
+                    continue;
+                }
+                nextCall.addAll(getDescendantTags(tagRelation.getChild(), searchSelectOnly));
                 nextCall.add(tagRelation.getChild());
             }
             return nextCall;

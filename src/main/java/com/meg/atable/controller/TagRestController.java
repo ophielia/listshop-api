@@ -124,18 +124,13 @@ public class TagRestController implements TagRestControllerApi {
         // invalid tagId - returns invalid id supplied - 400
 
         // invalid contents of input - returns 405 validation exception
+        TagEntity toUpdate = ModelMapper.toEntity(input);
+        TagEntity updatedTag = this.tagService.updateTag(tagId, toUpdate);
+        if (updatedTag != null) {
+            return ResponseEntity.noContent().build();
 
-        return this.tagService
-                .getTagById(tagId)
-                .map(tag -> {
-                    tag.setDescription(input.getDescription());
-                    tag.setName(input.getName());
-                    tag.setTagType(TagType.valueOf(input.getTagType()));
-                    tagService.save(tag);
-
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        }
+return ResponseEntity.notFound().build();
 
     }
 

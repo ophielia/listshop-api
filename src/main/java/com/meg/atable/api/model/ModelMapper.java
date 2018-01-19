@@ -180,6 +180,8 @@ public class ModelMapper {
                 .name(tagEntity.getName())
                 .description(tagEntity.getDescription())
                 .tagType(tagEntity.getTagType().name())
+                .assignSelect(tagEntity.getAssignSelect())
+                .searchSelect(tagEntity.getSearchSelect())
                 .ratingFamily(tagEntity.getRatingFamily());
     }
 
@@ -292,6 +294,8 @@ public class ModelMapper {
         tagEntity.setDescription(tag.getDescription());
         tagEntity.setTagType(TagType.valueOf(tag.getTagType()));
         tagEntity.setRatingFamily(tag.getRatingFamily());
+        tagEntity.setSearchSelect(tag.getSearchSelect());
+        tagEntity.setAssignSelect(tag.getAssignSelect());
 
         return tagEntity;
     }
