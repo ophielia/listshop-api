@@ -6,7 +6,7 @@ import com.meg.atable.Application;
 import com.meg.atable.api.model.Tag;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
-import com.meg.atable.service.TagService;
+import com.meg.atable.service.tag.TagService;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -94,8 +94,8 @@ public class TagRestControllerTest {
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        this.tagService.deleteAllRelationships();
-        this.tagService.deleteAll();
+        //this.tagService.deleteAllRelationships();
+        //this.tagService.deleteAll();
 
         this.parentTag = buildTag(null, "name", "description", TagType.TagType);
 

@@ -1,9 +1,6 @@
 package com.meg.atable.service;
 
-import com.meg.atable.data.entity.DishEntity;
-import com.meg.atable.data.entity.ShadowTags;
-
-import java.util.List;
+import com.meg.atable.service.tag.AutoTagSubject;
 
 /**
  * Created by margaretmartin on 08/12/2017.

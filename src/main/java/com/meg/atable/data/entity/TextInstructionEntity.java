@@ -1,6 +1,6 @@
 package com.meg.atable.data.entity;
 
-import com.meg.atable.service.AutoTagSubject;
+import com.meg.atable.service.tag.AutoTagSubject;
 import com.meg.atable.service.Instruction;
 
 import javax.persistence.DiscriminatorValue;
@@ -9,7 +9,6 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 08/12/2017.

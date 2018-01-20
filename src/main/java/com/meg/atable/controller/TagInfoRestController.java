@@ -5,14 +5,14 @@ import com.meg.atable.api.model.TagFilterType;
 import com.meg.atable.api.model.TagInfoResource;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
-import com.meg.atable.service.TagService;
+import com.meg.atable.service.tag.TagService;
+import com.meg.atable.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -26,9 +26,12 @@ public class TagInfoRestController implements TagInfoRestControllerApi {
 
     private final TagService tagService;
 
+    private final TagStructureService tagStructureService;
+
     @Autowired
-    TagInfoRestController(TagService tagService) {
+    TagInfoRestController(TagService tagService, TagStructureService tagStructureService) {
         this.tagService = tagService;
+        this.tagStructureService = tagStructureService;
     }
 
 
@@ -38,7 +41,7 @@ public class TagInfoRestController implements TagInfoRestControllerApi {
         List<TagEntity> tagList = (List) tagService.getTagList(TagFilterType.All,tagTypes);
 
         // fill in relationship info
-        tagList = tagService.fillInRelationshipInfo(tagList);
+        tagList = tagStructureService.fillInRelationshipInfo(tagList);
 
         // create taginforesource
         TagInfoResource tagInfo = new TagInfoResource(tagList);

@@ -107,3 +107,14 @@ delete  from target_proposal_proposal_slots;
 delete  from target_proposal_slot;
 
 delete  from target_proposal;
+
+-- check tag search groups
+﻿select tag_search_group_id,p.tag_id, p.name, m.tag_id, m.name
+from tag_search_group g
+join tag p on p.tag_id = g.group_id
+join tag m on m.tag_id = g.member_id
+order by p.name, m.name;
+
+
+
+--delete from tag_search_group where tag_search_group_id in (350, 302);

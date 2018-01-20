@@ -11,7 +11,7 @@ import com.meg.atable.data.repository.MealPlanRepository;
 import com.meg.atable.data.repository.SlotRepository;
 import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.ShoppingListService;
-import com.meg.atable.service.TagService;
+import com.meg.atable.service.tag.TagService;
 import com.meg.atable.service.impl.ServiceTestUtils;
 import org.hamcrest.Matchers;
 import org.junit.Before;

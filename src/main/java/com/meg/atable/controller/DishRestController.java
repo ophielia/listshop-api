@@ -11,7 +11,7 @@ import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.service.DishSearchCriteria;
 import com.meg.atable.service.DishSearchService;
 import com.meg.atable.service.DishService;
-import com.meg.atable.service.TagService;
+import com.meg.atable.service.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
@@ -150,7 +150,7 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteTagToDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId) {
+    public ResponseEntity<Object> deleteTagFromDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId) {
         getUserForPrincipal(principal);
 
         this.tagService.deleteTagFromDish(dishId, tagId);

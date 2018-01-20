@@ -14,9 +14,10 @@ public class TagExtended extends Tag {
     public TagExtended() {
     }
 
-    public TagExtended(Long id, String name, String description, TagType tagType, String ratingFamily, Long parentId, List<Long> childrenIds) {
+    public TagExtended(Long id, String name, String description, TagType tagType, String ratingFamily, Long parentId, List<Long> childrenIds, boolean searchSelect, boolean assignSelect) {
         super(id, name, description, tagType, ratingFamily);
-
+        super.searchSelect(searchSelect);
+        super.assignSelect((assignSelect));
         if (parentId != null) {
             this.parentId = String.valueOf(parentId);
         } else {

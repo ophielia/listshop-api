@@ -1,8 +1,9 @@
-package com.meg.atable.service;
+package com.meg.atable.service.tag;
 
 import com.meg.atable.api.model.TagFilterType;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
+import com.meg.atable.service.tag.impl.StandardTagChangeListener;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +17,6 @@ public interface TagService {
 
     Optional<TagEntity> getTagById(Long dishId);
 
-    void deleteAll();
-
-    void deleteAllRelationships();
 
     TagEntity createTag(TagEntity parent, String name);
 
@@ -26,15 +24,13 @@ public interface TagService {
 
     TagEntity createTag(TagEntity parent, TagEntity newTag);
 
-    List<TagEntity> fillInRelationshipInfo(List<TagEntity> tags);
-
     List<TagEntity> getTagsForDish(Long dishId);
 
     boolean assignTagToParent(Long tagId, Long parentId);
 
     boolean assignChildrenToParent(Long parentId, List<Long> childrenIds);
 
-    public boolean assignTagToTopLevel(Long tagId);
+    boolean assignTagToParent(TagEntity childTag, TagEntity newParentTag);
 
     void addTagToDish(Long dishId, Long tagId);
 
@@ -46,4 +42,6 @@ public interface TagService {
     Map<Long,TagEntity> getDictionaryForIdList(List<Long> tagIds);
 
     TagEntity updateTag(Long tagId, TagEntity toUpdate);
+
+    void addTagChangeListener(TagChangeListener tagChangeListener);
 }

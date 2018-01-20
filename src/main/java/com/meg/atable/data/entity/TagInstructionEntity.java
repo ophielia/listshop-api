@@ -1,6 +1,6 @@
 package com.meg.atable.data.entity;
 
-import com.meg.atable.service.AutoTagSubject;
+import com.meg.atable.service.tag.AutoTagSubject;
 import com.meg.atable.service.Instruction;
 
 import javax.persistence.DiscriminatorValue;

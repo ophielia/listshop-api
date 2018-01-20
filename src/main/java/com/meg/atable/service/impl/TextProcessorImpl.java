@@ -1,10 +1,9 @@
 package com.meg.atable.service.impl;
 
-import com.meg.atable.data.entity.TagInstructionEntity;
 import com.meg.atable.data.entity.TextInstructionEntity;
-import com.meg.atable.data.repository.TagInstructionRepository;
 import com.meg.atable.data.repository.TextInstructionRepository;
 import com.meg.atable.service.Instruction;
+import com.meg.atable.service.tag.impl.AbstractAutoTagProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,7 @@ import java.util.List;
  * Created by margaretmartin on 08/12/2017.
  */
 @Service
-public class TextProcessorImpl extends AbstractAutoTagProcessor  {
+public class TextProcessorImpl extends AbstractAutoTagProcessor {
 
     @Autowired
     TextInstructionRepository textInstructionRepository;

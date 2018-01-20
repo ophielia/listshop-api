@@ -1,13 +1,13 @@
-package com.meg.atable.service.impl;
+package com.meg.atable.service.tag.impl;
 
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.ShadowTags;
 import com.meg.atable.data.repository.ShadowTagRepository;
 import com.meg.atable.data.repository.TagRepository;
-import com.meg.atable.service.AutoTagProcessor;
-import com.meg.atable.service.AutoTagService;
-import com.meg.atable.service.AutoTagSubject;
-import com.meg.atable.service.TagService;
+import com.meg.atable.service.tag.AutoTagProcessor;
+import com.meg.atable.service.tag.AutoTagService;
+import com.meg.atable.service.tag.AutoTagSubject;
+import com.meg.atable.service.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

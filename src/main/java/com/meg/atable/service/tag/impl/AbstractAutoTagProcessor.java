@@ -1,7 +1,7 @@
-package com.meg.atable.service.impl;
+package com.meg.atable.service.tag.impl;
 
-import com.meg.atable.service.AutoTagProcessor;
-import com.meg.atable.service.AutoTagSubject;
+import com.meg.atable.service.tag.AutoTagProcessor;
+import com.meg.atable.service.tag.AutoTagSubject;
 import com.meg.atable.service.Instruction;
 import org.springframework.stereotype.Service;
 

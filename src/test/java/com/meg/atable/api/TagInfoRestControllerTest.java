@@ -3,7 +3,7 @@ package com.meg.atable.api;
 import com.meg.atable.Application;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
-import com.meg.atable.service.TagService;
+import com.meg.atable.service.tag.TagService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -84,8 +84,8 @@ public class TagInfoRestControllerTest {
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        this.tagService.deleteAllRelationships();
-        this.tagService.deleteAll();
+        //this.tagService.deleteAllRelationships();
+        //this.tagService.deleteAll();
 
         this.parentTag = buildTag(null, "name", "description", TagType.TagType);
 

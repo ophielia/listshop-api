@@ -12,8 +12,7 @@ import com.meg.atable.data.entity.TargetEntity;
 import com.meg.atable.data.entity.TargetSlotEntity;
 import com.meg.atable.data.repository.TargetRepository;
 import com.meg.atable.data.repository.TargetSlotRepository;
-import com.meg.atable.service.TagService;
-import com.meg.atable.service.TargetService;
+import com.meg.atable.service.tag.TagService;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,10 +34,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertNotNull;

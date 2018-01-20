@@ -193,7 +193,9 @@ public class ModelMapper {
                 tagEntity.getTagType(),
                 tagEntity.getRatingFamily(),
                 tagEntity.getParentId(),
-                tagEntity.getChildrenIds());
+                tagEntity.getChildrenIds(),
+                tagEntity.getSearchSelect(),
+                tagEntity.getAssignSelect());
     }
 
     public static MealPlan toModel(MealPlanEntity mealPlanEntity) {

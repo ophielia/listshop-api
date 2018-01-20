@@ -41,6 +41,6 @@ public interface DishRestControllerApi {
     public ResponseEntity<Object> addTagToDish(Principal principal,@PathVariable Long dishId, @PathVariable Long tagId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{dishId}/tag/{tagId}", produces = "application/json")
-    public ResponseEntity<Object> deleteTagToDish(Principal principal,@PathVariable Long dishId, @PathVariable Long tagId);
+    public ResponseEntity<Object> deleteTagFromDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId);
 
 }

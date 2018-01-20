@@ -1,4 +1,4 @@
-package com.meg.atable.service;
+package com.meg.atable.service.tag;
 
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.ShadowTags;

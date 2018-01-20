@@ -1,13 +1,12 @@
-package com.meg.atable.service.impl;
+package com.meg.atable.service.tag.impl;
 
 import com.meg.atable.data.entity.TagInstructionEntity;
 import com.meg.atable.data.repository.TagInstructionRepository;
-import com.meg.atable.service.AutoTagProcessor;
+import com.meg.atable.service.tag.AutoTagProcessor;
 import com.meg.atable.service.Instruction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.List;
 

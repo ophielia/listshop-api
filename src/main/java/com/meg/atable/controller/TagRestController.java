@@ -3,7 +3,8 @@ package com.meg.atable.controller;
 import com.meg.atable.api.controller.TagRestControllerApi;
 import com.meg.atable.api.model.*;
 import com.meg.atable.data.entity.TagEntity;
-import com.meg.atable.service.TagService;
+import com.meg.atable.service.tag.TagService;
+import com.meg.atable.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
@@ -27,8 +28,10 @@ public class TagRestController implements TagRestControllerApi {
 
     private final TagService tagService;
 
+    private final TagStructureService tagStructureService;
     @Autowired
-    TagRestController(TagService tagService) {
+    TagRestController(TagService tagService, TagStructureService tagStructureService) {
+this.tagStructureService = tagStructureService;
         this.tagService = tagService;
     }
 
@@ -99,7 +102,9 @@ public class TagRestController implements TagRestControllerApi {
 
 @Override
     public ResponseEntity assignChildToBaseTag( @PathVariable("childId") Long childId) {
-        if (this.tagService.assignTagToTopLevel(childId)) {
+        TagEntity tag = this.tagService.getTagById(childId).get();
+
+        if (this.tagStructureService.assignTagToTopLevel(tag)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.badRequest().build();

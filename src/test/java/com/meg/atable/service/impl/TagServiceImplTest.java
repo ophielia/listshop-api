@@ -4,7 +4,7 @@ import com.meg.atable.Application;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.DishService;
-import com.meg.atable.service.TagService;
+import com.meg.atable.service.tag.TagService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

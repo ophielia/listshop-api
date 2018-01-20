@@ -7,6 +7,7 @@ import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.*;
 import com.meg.atable.data.repository.*;
 import com.meg.atable.service.*;
+import com.meg.atable.service.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

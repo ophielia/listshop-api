@@ -7,7 +7,7 @@ import com.meg.atable.data.entity.TargetEntity;
 import com.meg.atable.data.entity.TargetSlotEntity;
 import com.meg.atable.data.repository.TargetRepository;
 import com.meg.atable.data.repository.TargetSlotRepository;
-import com.meg.atable.service.TagService;
+import com.meg.atable.service.tag.TagService;
 import com.meg.atable.service.TargetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

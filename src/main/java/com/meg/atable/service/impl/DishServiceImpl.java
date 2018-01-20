@@ -6,13 +6,11 @@ import com.meg.atable.api.UserNotFoundException;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.data.repository.UserRepository;
 import com.meg.atable.data.entity.DishEntity;
-import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.DishRepository;
-import com.meg.atable.service.AutoTagService;
+import com.meg.atable.service.tag.AutoTagService;
 import com.meg.atable.service.DishService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
