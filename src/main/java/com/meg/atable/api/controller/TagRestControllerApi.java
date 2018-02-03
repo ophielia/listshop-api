@@ -5,6 +5,8 @@ import com.meg.atable.api.model.TagResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 /**
  * Created by margaretmartin on 13/05/2017.
  */
@@ -38,5 +40,10 @@ public interface TagRestControllerApi {
     @RequestMapping(method = RequestMethod.PUT, value = "/{tagId}", consumes = "application/json")
     ResponseEntity<Object> updateTag(@PathVariable Long tagId, @RequestBody Tag input);
 
+    @RequestMapping(method = RequestMethod.GET, value = "/{tagId}/children/dish", produces = "application/json")
+    ResponseEntity<TagResource> getChildrenTagDishAssignments(Principal principal, @PathVariable("tagId") Long tagId);
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/{fromTagId}/dish/{toTagId}", produces = "application/json")
+    ResponseEntity<TagResource> replaceTagsInDishes(Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId);
 
 }

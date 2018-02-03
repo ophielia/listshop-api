@@ -85,6 +85,7 @@ public class ModelMapper {
                 .created(proposalEntity.getCreated())
                 .lastUsed(proposalEntity.getLastUsed())
                 .targetTags(tags)
+                .canBeRefreshed(proposalEntity.canBeRefreshed())
                 .proposalSlots(slots);
     }
 
@@ -176,10 +177,13 @@ public class ModelMapper {
         if (tagEntity == null) {
             return null;
         }
+
         return new Tag(tagEntity.getId())
                 .name(tagEntity.getName())
                 .description(tagEntity.getDescription())
                 .tagType(tagEntity.getTagType().name())
+                .power(tagEntity.getPower())
+                .dishes(dishesToModel(tagEntity.getDishes()))
                 .assignSelect(tagEntity.getAssignSelect())
                 .searchSelect(tagEntity.getSearchSelect())
                 .ratingFamily(tagEntity.getRatingFamily());
@@ -223,6 +227,17 @@ public class ModelMapper {
             slotList.add(toModel(entity));
         }
         return slotList;
+    }
+
+    private static List<Dish> dishesToModel(List<DishEntity> dishes) {
+        List<Dish> dishList = new ArrayList<>();
+        if (dishes == null) {
+            return dishList;
+        }
+        for (DishEntity entity : dishes) {
+            dishList.add(toModel(entity));
+        }
+        return dishList;
     }
 
     public static ShoppingList toModel(ShoppingListEntity shoppingListEntity) {
@@ -298,6 +313,7 @@ public class ModelMapper {
         tagEntity.setRatingFamily(tag.getRatingFamily());
         tagEntity.setSearchSelect(tag.getSearchSelect());
         tagEntity.setAssignSelect(tag.getAssignSelect());
+        tagEntity.setPower(tag.getPower());
 
         return tagEntity;
     }

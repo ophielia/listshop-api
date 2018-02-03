@@ -188,9 +188,9 @@ public class TargetServiceImpl implements TargetService {
         }
 
         // get list of tag ids
-        List<Long> tagIds = target.getAllTagIds();
+        Set<Long> tagIds = target.getAllTagIds();
         // retrieve tags for ids
-        Map<Long, TagEntity> dictionary = tagService.getDictionaryForIdList(tagIds);
+        Map<Long, TagEntity> dictionary = tagService.getDictionaryForIds(tagIds);
         // fill in target (and contained slots)
         target.fillInAllTags(dictionary);
         return target;

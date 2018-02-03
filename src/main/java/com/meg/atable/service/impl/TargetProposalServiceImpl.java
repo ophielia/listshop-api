@@ -8,6 +8,8 @@ import com.meg.atable.data.entity.*;
 import com.meg.atable.data.repository.*;
 import com.meg.atable.service.*;
 import com.meg.atable.service.tag.TagService;
+import com.meg.atable.service.tag.TagStructureService;
+import com.meg.atable.service.tag.TagSwapout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,10 @@ public class TargetProposalServiceImpl implements TargetProposalService {
 
     @Autowired
     private TagService tagService;
+
+
+    @Autowired
+    private TagStructureService tagStructureService;
 
     @Autowired
     private DishService dishService;
@@ -76,7 +82,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         List<ProposalAttempt> approaches = getProposalAttempts(context, slotcount);
 
         // process each proposal attempt
-        processProposals(approaches, rawResults, context);
+        approaches = processProposals(approaches, rawResults, context);
         //List<AttemptResult> results = getAttemptResults(settings, slotcount, rawResults, settings.getDishCountPerSlot());
 
         // sort for best results
@@ -87,6 +93,11 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         if (approaches.get(0) != null) {
             TargetProposalEntity proposal = createProposalFromAttempt(target, rawResults, approaches.get(0), context);
             proposal.setUserId(user.getId());
+            if (approaches.size()<=1) {
+                proposal.setCanBeRefreshed(false);
+            } else {
+                proposal.setCanBeRefreshed(true);
+            }
             proposal = targetProposalRepository.save(proposal);
 
             context = proposalContextRepository.save(context);
@@ -140,9 +151,9 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         }
 
         // get list of tag ids
-        List<Long> tagIds = proposalEntity.getAllTagIds();
+        Set<Long> tagIds = proposalEntity.getAllTagIds();
         // retrieve tags for ids
-        Map<Long, TagEntity> tagDictionary = tagService.getDictionaryForIdList(tagIds);
+        Map<Long, TagEntity> tagDictionary = tagService.getDictionaryForIds(tagIds);
         // fill in target (and contained slots)
         proposalEntity.fillInAllTags(tagDictionary);
 
@@ -405,13 +416,16 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         TargetSlotEntity targetSlot = getSlotFromTarget(target, slot.getTargetSlotId());
 
         // get raw results for slot
-        List<String> targetTagIds = target.getTagIdsAsList();
+        Set<String> targetTagIds = target.getTagIdsAsSet();
         List<String> tagListForSlot = new ArrayList<>();
         tagListForSlot.addAll(targetTagIds);
         tagListForSlot.addAll(targetSlot.getTagIdsAsList());
 
+        Set<Long> allTags = target.getAllTagIds();
+        HashMap<Long,List<Long>> searchGroups = tagStructureService.getSearchGroupsForTagIds(allTags);
+
         // query db
-        RawSlotResult rawSlotResult = retrieveSingleSlotResult(targetSlot, user.getId(), targetTagIds, context);
+        RawSlotResult rawSlotResult = retrieveSingleSlotResult(targetSlot, user.getId(), targetTagIds,searchGroups, context);
 
         // add all existing dish ids to filter
         List<Long> dishIdsInProposal = proposal.getAllDishIds();
@@ -449,6 +463,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
             TargetSlotEntity targetSlot = target.getSlots().stream().filter(s -> s.getId().longValue() == rawResult.getSlotId()).findFirst().get();
             TargetProposalSlotEntity proposalSlotEntity = new TargetProposalSlotEntity(proposalEntity, targetSlot);
             proposalSlotEntity = targetProposalSlotRepository.save(proposalSlotEntity);
+
 
             List<DishTagSearchResult> dishMatches = rawResult.getFilteredMatches(context.getDishCountPerSlot());
             setDishResultsInProposalSlot(dishMatches, proposalSlotEntity, rawResult.getTagListForSlot());
@@ -512,11 +527,28 @@ public class TargetProposalServiceImpl implements TargetProposalService {
                                               TargetProposalSlotEntity proposalSlotEntity,
                                               List<String> tagListForSlot) {
 
+        // get TagSwapout for dishes
+        List<Long> dishIds = dishMatches.stream().map(d -> d.getDishId()).collect(Collectors.toList());
+        HashMap<Long, TagSwapout> swapouts = tagStructureService.getTagSwapouts(dishIds,tagListForSlot);
+
         for (DishTagSearchResult singleDish : dishMatches) {
             TargetProposalDishEntity dish = new TargetProposalDishEntity();
             dish.setDishId(singleDish.getDishId());
             List<String> matchedIds = singleDish.getMatchedTagIds(tagListForSlot);
-            dish.setMatchedTagIds(String.join(";", matchedIds));
+
+            List<String> actualMatches =new ArrayList<>();
+            TagSwapout swapout = swapouts.containsKey(singleDish.getDishId())?swapouts.get(singleDish.getDishId()):null;
+
+            for (String tagId: matchedIds) {
+                if (swapout!= null && swapout.contains(tagId)) {
+                    actualMatches.addAll(swapout.getAssignedValues(tagId));
+                } else {
+                    actualMatches.add(tagId);
+                }
+            }
+            dish.setMatchedTagIds(String.join(";", actualMatches));
+
+
             dish.setTargetProposalSlot(proposalSlotEntity);
             dish = targetProposalDishRepository.save(dish);
             proposalSlotEntity.addDish(dish);
@@ -548,12 +580,18 @@ public class TargetProposalServiceImpl implements TargetProposalService {
     }
 
     private List<ProposalAttempt> processProposals(List<ProposalAttempt> proposals, List<RawSlotResult> rawResults, ProposalContextEntity context) {
+        Set<Integer> contentChecks = new HashSet<>();
+        List<ProposalAttempt> results = new ArrayList<>();
         for (ProposalAttempt proposal : proposals) {
             // run single proposal
             processSingleProposal(proposal, rawResults, context);
+            if (!contentChecks.contains(proposal.getProposalContentHash())) {
+                results.add(proposal);
+                contentChecks.add(proposal.getProposalContentHash());
+            }
         }
 
-        return proposals;
+        return results;
     }
 
     private void processSingleProposal(ProposalAttempt proposal, List<RawSlotResult> rawResults, ProposalContextEntity context) {
@@ -565,7 +603,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
             RawSlotResult rawResult = rawResults.get(cycle[i]);
 
             List<DishTagSearchResult> dishMatches = rawResult.getFilteredMatches(context.getDishCountPerSlot());
-            proposal.setDishMatches(i, dishMatches);
+            proposal.setDishMatches(i, rawResult.getSlotId(),dishMatches);
             for (int j = i + 1; j < cycle.length; j++) {
                 rawResults.get(cycle[j]).addDishesToFilter(dishMatches);
             }
@@ -588,15 +626,19 @@ public class TargetProposalServiceImpl implements TargetProposalService {
 
     private List<RawSlotResult> retrieveRawResults(TargetEntity target, ProposalContextEntity context, List<Long> dishExcludeList) {
         int maxempties = context.getMaximumEmpties();
+
         // get target tags
-        List<String> targetTagIds = target.getTagIdsAsList();
+        Set<String> targetTagIds = target.getTagIdsAsSet();
         List<TargetSlotEntity> targetSlots = target.getSlots();
         Long userId = target.getUserId();
 
+        // get search groups
+        Set<Long> allTags = target.getAllTagIds();
+        HashMap<Long,List<Long>> searchGroups = tagStructureService.getSearchGroupsForTagIds(allTags);
         // retrieve results for each slot
         List<RawSlotResult> resultList = new ArrayList<>();
         for (TargetSlotEntity slot : targetSlots) {
-            RawSlotResult rawSlotResult = retrieveSingleSlotResult(slot, userId, target.getTagIdsAsList(), context);
+            RawSlotResult rawSlotResult = retrieveSingleSlotResult(slot, userId, target.getTagIdsAsSet(), searchGroups,context);
             resultList.add(rawSlotResult);
         }
 
@@ -605,13 +647,13 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         return resultList;
     }
 
-    private RawSlotResult retrieveSingleSlotResult(TargetSlotEntity slot, Long userId, List<String> targetTagIds, ProposalContextEntity context) {
+    private RawSlotResult retrieveSingleSlotResult(TargetSlotEntity slot, Long userId, Set<String> targetTagIds, Map<Long, List<Long>> searchGroups, ProposalContextEntity context) {
         List<String> tagListForSlot = new ArrayList<>();
         tagListForSlot.addAll(targetTagIds);
         tagListForSlot.addAll(slot.getTagIdsAsList());
 
         // query db
-        List<DishTagSearchResult> dishResults = dishSearchService.retrieveDishResultsForTags(userId, slot.getSlotDishTagId(), targetTagIds.size(), tagListForSlot);
+        List<DishTagSearchResult> dishResults = dishSearchService.retrieveDishResultsForTags(userId, slot.getSlotDishTagId(), targetTagIds.size(), tagListForSlot,searchGroups);
         List<DishTagSearchResult> matches = new ArrayList<>();
         List<DishTagSearchResult> targetMatches = new ArrayList<>();
         List<DishTagSearchResult> emptyMatches = new ArrayList<>();

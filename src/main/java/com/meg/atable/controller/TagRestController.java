@@ -3,6 +3,7 @@ package com.meg.atable.controller;
 import com.meg.atable.api.controller.TagRestControllerApi;
 import com.meg.atable.api.model.*;
 import com.meg.atable.data.entity.TagEntity;
+import com.meg.atable.service.DishService;
 import com.meg.atable.service.tag.TagService;
 import com.meg.atable.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,10 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,12 +27,14 @@ import java.util.stream.Collectors;
 public class TagRestController implements TagRestControllerApi {
 
     private final TagService tagService;
+    private final DishService dishService;
 
     private final TagStructureService tagStructureService;
     @Autowired
-    TagRestController(TagService tagService, TagStructureService tagStructureService) {
+    TagRestController(TagService tagService, TagStructureService tagStructureService, DishService dishService) {
 this.tagStructureService = tagStructureService;
         this.tagService = tagService;
+        this.dishService = dishService;
     }
 
 
@@ -139,6 +141,22 @@ return ResponseEntity.notFound().build();
 
     }
 
+    //@RequestMapping(method = RequestMethod.GET, value = "/{tagId}/children/dish", produces = "application/json")
+    public ResponseEntity<TagResource> getChildrenTagDishAssignments(Principal principal, @PathVariable("tagId") Long tagId) {
+
+
+        List<TagResource> tagList = this.dishService.getDishesForTagChildren(tagId, principal.getName())
+                .stream().map(TagResource::new)
+                .collect(Collectors.toList());
+
+        Resources<TagResource> tagResourceList = new Resources<>(tagList);
+        return new ResponseEntity(tagResourceList, HttpStatus.OK);
+    }
+
+    public ResponseEntity<TagResource> replaceTagsInDishes(Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId) {
+        this.tagService.replaceTagInDishes(principal.getName(),tagId,toTagId);
+        return ResponseEntity.noContent().build();
+    }
 
     private List<TagType> processTagTypeInput(String tag_type) {
         if (tag_type == null) {

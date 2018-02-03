@@ -42,6 +42,8 @@ public class TagEntity {
 
     private Boolean isVerified;
 
+    private Double power;
+
     @Transient
     private List<Long> childrenIds;
     @Transient
@@ -166,5 +168,25 @@ public class TagEntity {
 
     public void setVerified(Boolean verified) {
         isVerified = verified;
+    }
+
+    public Double getPower() {
+        return power;
+    }
+
+    public void setPower(Double power) {
+        this.power = power;
+    }
+
+    public TagEntity copy() {
+        TagEntity copy = new TagEntity();
+        copy.setName(getName());
+        copy.setDescription(getDescription());
+        copy.setSearchSelect(getSearchSelect());
+        copy.setAssignSelect(getAssignSelect());
+        copy.setRatingFamily(getRatingFamily());
+        copy.setAutoTagFlag(getAutoTagFlag());
+        copy.setPower(getPower());
+            return copy;
     }
 }

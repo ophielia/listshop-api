@@ -45,6 +45,7 @@ public class TargetProposalEntity extends AbstractInflateAndFlatten {
 
     private String proposalIndexList;
     private String refreshFlag;
+    private Boolean canBeRefreshed;
 
     public TargetProposalEntity(TargetEntity target) {
         this.forTargetId = target.getTargetId();
@@ -175,14 +176,14 @@ public class TargetProposalEntity extends AbstractInflateAndFlatten {
         proposalSlots.add(proposalSlotEntity);
     }
 
-    public List<Long> getAllTagIds() {
+    public Set<Long> getAllTagIds() {
         // make list of all tagList strings for target and contained slots
         // also include dish type tags
-        List<String> stringList = new ArrayList<>();
+        Set<String> stringList = new HashSet<>();
         stringList.addAll(inflateStringToList(getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER));
         if (proposalSlots != null && !proposalSlots.isEmpty()) {
             for (TargetProposalSlotEntity slot : proposalSlots) {
-                stringList.addAll(inflateStringToList(slot.getTargetTagIds()));
+                stringList.addAll(slot.getAllTagIds());
                 if (slot.getSlotDishTagId() != null) {
                     stringList.add(slot.getSlotDishTagId().toString());
                 }
@@ -193,9 +194,9 @@ public class TargetProposalEntity extends AbstractInflateAndFlatten {
         if (!stringList.isEmpty()) {
             return stringList.stream()
                     .map(Long::new)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
         }
-        return new ArrayList<>();
+        return new HashSet<Long>();
     }
 
     public void fillInAllTags(Map<Long, TagEntity> dictionary) {
@@ -273,5 +274,13 @@ public class TargetProposalEntity extends AbstractInflateAndFlatten {
             }
         }
         return selectedDishIds;
+    }
+
+    public void setCanBeRefreshed(boolean canBeRefreshed) {
+        this.canBeRefreshed = canBeRefreshed;
+    }
+
+    public Boolean canBeRefreshed() {
+        return canBeRefreshed;
     }
 }

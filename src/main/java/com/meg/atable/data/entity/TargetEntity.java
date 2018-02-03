@@ -3,10 +3,7 @@ package com.meg.atable.data.entity;
 import com.meg.atable.service.TargetServiceConstants;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -146,8 +143,8 @@ public class TargetEntity extends AbstractInflateAndFlatten {
         targetTagIds = flattenListToString(tagids);
     }
 
-    public List<String> getTagIdsAsList() {
-        return inflateStringToList(getTargetTagIds());
+    public Set<String> getTagIdsAsSet() {
+        return inflateStringToSet(getTargetTagIds());
     }
 
     public List<TagEntity> getTargetTags() {
@@ -158,7 +155,7 @@ public class TargetEntity extends AbstractInflateAndFlatten {
         targetTags = tags;
     }
 
-    public List<Long> getAllTagIds() {
+    public Set<Long> getAllTagIds() {
         // make list of all tagList strings for target and contained slots
         // also include dish type tags
         List<String> stringList = new ArrayList<>();
@@ -176,9 +173,9 @@ public class TargetEntity extends AbstractInflateAndFlatten {
         if (!stringList.isEmpty()) {
             return stringList.stream()
                     .map(Long::new)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
         }
-        return new ArrayList<>();
+        return new HashSet<>();
     }
 
     public void fillInAllTags(Map<Long, TagEntity> dictionary) {

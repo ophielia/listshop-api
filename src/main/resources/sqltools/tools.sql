@@ -100,13 +100,21 @@ and (c.is_parent_tag is null or c.is_parent_tag = false)
 	VALUES ('Tag', nextval('hibernate_sequence'), 8428, false, 3);
 
 
--- clear proposals
-﻿delete  from target_proposal_slot_dish_slot_list;
+﻿-- clear proposals
 delete  from target_proposal_dish;
-delete  from target_proposal_proposal_slots;
 delete  from target_proposal_slot;
-
+update target set proposal_id = null;
 delete  from target_proposal;
+
+﻿-- clear targets
+delete  from target_tags;
+delete  from target_slots;
+delete  from target_slot;
+delete  from target;
+
+﻿-- clear meal_plans
+delete  from meal_plan_slot;
+delete from meal_plan;
 
 -- check tag search groups
 ﻿select tag_search_group_id,p.tag_id, p.name, m.tag_id, m.name
@@ -114,6 +122,23 @@ from tag_search_group g
 join tag p on p.tag_id = g.group_id
 join tag m on m.tag_id = g.member_id
 order by p.name, m.name;
+
+﻿-- clear proposals
+delete  from proposal_context_slot;
+delete  from proposal_context;
+
+﻿-- clear lists
+delete  from list_item;
+delete  from list;
+
+﻿-- clear autotags
+delete  from auto_tag_instructions;
+delete  from shadow_tags;
+
+
+-- move tag function
+
+﻿select movetag(100000);
 
 
 

@@ -2,6 +2,7 @@ package com.meg.atable.service;
 
 import com.meg.atable.api.UserNotFoundException;
 import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.data.entity.TagEntity;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,4 +26,6 @@ public interface DishService {
     List<DishEntity> getDishes(List<Long> dishIds);
 
     Map<Long,DishEntity> getDictionaryForIdList(List<Long> dishIds);
+
+    List<TagEntity> getDishesForTagChildren(Long tagId, String name);
 }

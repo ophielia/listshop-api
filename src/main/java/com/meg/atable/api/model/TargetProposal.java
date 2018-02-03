@@ -28,6 +28,8 @@ public class TargetProposal {
 
     private List<TargetProposalSlot> proposalSlots;
 
+    private Boolean canBeRefreshed;
+
     public TargetProposal(Long proposalId) {
         this.proposalId = proposalId;
     }
@@ -93,6 +95,16 @@ public class TargetProposal {
 
     public TargetProposal proposalSlots(List<TargetProposalSlot> proposalSlots) {
         this.proposalSlots = proposalSlots;
+        return this;
+    }
+
+    @JsonProperty("can_be_refreshed")
+    public Boolean getCanBeRefreshed() {
+        return canBeRefreshed;
+    }
+
+    public TargetProposal canBeRefreshed(Boolean canBeRefreshed) {
+        this.canBeRefreshed = canBeRefreshed;
         return this;
     }
 }

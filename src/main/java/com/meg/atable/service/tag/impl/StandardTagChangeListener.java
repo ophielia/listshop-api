@@ -48,6 +48,11 @@ public class StandardTagChangeListener implements TagChangeListener {
 
     @Override
     public void onParentChange(TagEntity origParentTag, TagEntity newParentTag, TagEntity childTag) {
+        // not for rating tags
+        if (TagType.Rating.equals(childTag.getTagType())) {
+            return;
+        }
+
         // assignSelect - original Parent
         // if we just removed the last child, the assign select should be set to false
         List<TagEntity> oldParentChildren = tagStructureService.getDescendantTags(origParentTag, false);
@@ -97,7 +102,13 @@ public class StandardTagChangeListener implements TagChangeListener {
     }
 
     @Override
-    public void onSearchSelectChange(TagEntity updatedTag) {
+    public void onTagUpdate(TagEntity beforeChange,TagEntity updatedTag) {
+        if (TagType.Rating.equals(updatedTag.getTagType())) {
+            return;
+        }
+        if (beforeChange.getSearchSelect().equals(updatedTag.getSearchSelect())) {
+            return;
+        }
         List<TagEntity> parentTags = tagStructureService.getAscendantTags(updatedTag,true );
         List<TagEntity> childrenTags = tagStructureService.getDescendantTags(updatedTag, true);
         childrenTags.add(updatedTag);

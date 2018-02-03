@@ -5,9 +5,7 @@ import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.tag.impl.StandardTagChangeListener;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -39,9 +37,13 @@ public interface TagService {
 
     void deleteTagFromDish(Long dishId, Long tagId);
 
-    Map<Long,TagEntity> getDictionaryForIdList(List<Long> tagIds);
+    Map<Long,TagEntity> getDictionaryForIds(Set<Long> tagIds);
 
     TagEntity updateTag(Long tagId, TagEntity toUpdate);
 
+    void replaceTagInDishes(String name, Long fromTagId, Long toTagId);
+
     void addTagChangeListener(TagChangeListener tagChangeListener);
+
+
 }

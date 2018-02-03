@@ -5,9 +5,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -132,20 +130,19 @@ public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
         return targetProposal;
     }
 
-    public List<Long> getAllTagIds() {
+    public Set<String> getAllTagIds() {
         // make list of all tagList strings for target and contained slots
         // also include dish type tags
-        List<String> stringList = new ArrayList<>();
-        stringList.addAll(inflateStringToList(getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER));
-        stringList.add(String.valueOf(slotDishTagId));
+        Set<String> stringSet = new HashSet<>();
+        stringSet.addAll(inflateStringToList(getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER));
+        stringSet.add(String.valueOf(slotDishTagId));
 
-        // convert list of strings to list of longs and return
-        if (!stringList.isEmpty()) {
-            return stringList.stream()
-                    .map(Long::new)
-                    .collect(Collectors.toList());
+        if (dishSlotList != null && !dishSlotList.isEmpty()) {
+            Set<String> dishTagMatches = new HashSet<>();
+            dishSlotList.stream()
+                    .forEach(ds -> {stringSet.addAll(ds.inflateStringToList(ds.getMatchedTagIds()));});
         }
-        return new ArrayList<>();
+        return stringSet;
     }
 
     public void fillInTags(Map<Long, TagEntity> dictionary) {

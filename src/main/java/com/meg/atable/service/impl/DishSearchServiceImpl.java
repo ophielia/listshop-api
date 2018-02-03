@@ -15,8 +15,7 @@ import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -75,6 +74,7 @@ public class DishSearchServiceImpl implements DishSearchService {
                 whereClause.append(" and eT")
                         .append(i)
                         .append(".tag_id is null ");
+                i++;
             }
 
         }
@@ -86,45 +86,66 @@ public class DishSearchServiceImpl implements DishSearchService {
     }
 
     @Override
-    public List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, Long slotDishTagId, int size, List<String> tagListForSlot) {
+    public List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, Long slotDishTagId, int size, List<String> tagListForSlot, Map<Long, List<Long>> searchGroups) {
         // create sql
-        String sql = createSqlForDishTagSearchResult(tagListForSlot);
+        Object[] sqlAndParams = createSqlForDishTagSearchResult(tagListForSlot,searchGroups);
+        String sql = (String)sqlAndParams[0];
+        Map<String,Object> params = (Map<String,Object>)sqlAndParams[1];
         // create parameters
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", userId);
         parameters.addValue("slotTagId", slotDishTagId);
+        params.entrySet().forEach(p -> parameters.addValue(p.getKey(), p.getValue()));
 
         List<DishTagSearchResult> rawSearchResults = this.jdbcTemplate.query(sql, parameters, new DishTagSearchResultMapper(size, tagListForSlot.size()));
 
         return rawSearchResults;
     }
 
-    private String createSqlForDishTagSearchResult(List<String> tagListForSlot) {
+    private Object[] createSqlForDishTagSearchResult(List<String> tagListForSlot,Map<Long, List<Long>> searchGroups) {
+        Object[] returnvalue = new Object[2];
+        Map<String,Object> parameters = new HashMap<>();
+
         StringBuffer selectClause = new StringBuffer("select distinct dt.dish_id , d.last_added ");
         StringBuffer outerJoins = new StringBuffer();
         StringBuffer orderByClause = new StringBuffer(" order by d.last_added NULLS FIRST ");
         // construct basic joins and from clause
         StringBuffer fromClause = new StringBuffer(" from dish_tags dt join dish d on d.dish_id = dt.dish_id and d.user_id = :userId and dt.tag_id = :slotTagId");
+        StringBuffer groupByClause = new StringBuffer(" group by dt.dish_id, d.last_added ");
         // construct outerJoins and add to selectClause
         int i = 0;
         for (String id : tagListForSlot) {
-            selectClause.append(", iT")
+            selectClause.append(", count(iT")
                     .append(i)
-                    .append(".tag_id ");
+                    .append(".tag_id )");
 
             outerJoins.append(" left outer join dish_tags iT")
                     .append(i)
                     .append(" on d.dish_id = iT")
                     .append(i)
                     .append(".dish_id and iT")
-                    .append(i)
-                    .append(".tag_id = ")
-                    .append(id)
-                    .append(" ");
+                    .append(i);
+
+            if (searchGroups.containsKey(Long.valueOf(id))) {
+                String paramname = "taglist" + i;
+                outerJoins.append(".tag_id in ")
+                        .append(" (:")
+                        .append(paramname)
+                        .append(" )");
+                parameters.put(paramname,searchGroups.get(Long.valueOf(id)));
+
+            } else {
+                    outerJoins.append(".tag_id = ")
+                        .append(id)
+                        .append(" ");
+
+            }
             i++;
         }
 
-        return selectClause.append(fromClause).append(outerJoins).append(orderByClause).toString();
+        returnvalue[0] = selectClause.append(fromClause).append(outerJoins).append(groupByClause).append(orderByClause).toString();
+        returnvalue[1] = parameters;
+        return returnvalue;
     }
 
 

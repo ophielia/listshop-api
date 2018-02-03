@@ -8,10 +8,12 @@ import com.meg.atable.data.repository.TagRelationRepository;
 import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.data.repository.TagSearchGroupRepository;
 import com.meg.atable.service.tag.TagStructureService;
+import com.meg.atable.service.tag.TagSwapout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,7 +45,15 @@ private TagSearchGroupRepository tagSearchGroupRepository;
             return null;
         }
         // get tag relation for tag
-        TagRelationEntity tagRelation = tagRelationRepository.findByChild(childTag).get();
+        Optional<TagRelationEntity> tagRelationOpt = tagRelationRepository.findByChild(childTag);
+            TagRelationEntity tagRelation = new TagRelationEntity();
+        if (tagRelationOpt.isPresent()) {
+            // no parent yet
+            tagRelation = tagRelationOpt.get();
+        } else {
+            tagRelation.setChild(childTag);
+        }
+
         if (tagRelation == null) {
             return null;
         }
@@ -60,11 +70,7 @@ private TagSearchGroupRepository tagSearchGroupRepository;
         }
 
         return tagRelation.getParent();
-        /*
-        maintainTagSystemUponParentChange(origParentTag,newParentTag,childTag);
-        // return true
-        return tagRelation != null;
-        */
+
 
     }
 
@@ -152,6 +158,23 @@ private TagSearchGroupRepository tagSearchGroupRepository;
         return new ArrayList<>();
     }
 
+    public List<TagEntity> getSiblingTags(TagEntity tag) {
+        // get parent
+        TagEntity parent = getParentTag(tag);
+        // get children for parent
+        List<TagEntity> children = getChildren(parent);
+        if (children == null) {
+            return new ArrayList<>();
+        }
+        // strip passed tag (can't be a sibling to itself)
+        // and return results
+        return children.stream()
+                .filter(t -> !t.getId().equals(tag.getId()))
+                .collect(Collectors.toList());
+
+    }
+
+
     @Override
     public TagEntity getParentTag(TagEntity tag) {
         Optional<TagRelationEntity> parentId = tagRelationRepository.findByChild(tag);
@@ -186,86 +209,6 @@ private TagSearchGroupRepository tagSearchGroupRepository;
 
     }
 
-
-    private void maintainTagSystemUponSelectChange(TagEntity updatedTag) {
-      /*  List<TagEntity> parentTags = tagStructureService.getAscendantTags(updatedTag,true );
-        parentTags.add(updatedTag);
-        List<TagEntity> childrenTags = tagStructureService.getDescendantTags(updatedTag, true);
-        childrenTags.add(updatedTag);
-
-        if (!updatedTag.getSearchSelect()) {
-            List<Long> groupTagIds = parentTags.stream().map(t -> t.getId()).collect(Collectors.toList());
-            List<Long> memberTagIds = childrenTags.stream().map(t -> t.getId()).collect(Collectors.toList());
-            // delete tag groups with groups in the parenttag, and children in the children tag
-            tagSearchGroupRepository.deleteByGroupAndMember(groupTagIds,memberTagIds);
-            return;
-        }
-        // no change of parent here - just either adding to groups or subtracting from groups
-        // we'll need parent tags and direct descendant tags ( that have assign search set to true)
-
-        // this tag is now a search select.
-        // add all children tags to a group with this tag as the group
-        List<TagSearchGroupEntity> groupAssignments = buildGroupAssignments(updatedTag.getId(),childrenTags);
-        // also add all children tags to any parent groups
-        for (TagEntity parentTag: parentTags) {
-            groupAssignments.addAll(buildGroupAssignments(parentTag.getId(),childrenTags));
-        }
-        tagSearchGroupRepository.save(groupAssignments);
-        return;*/
-
-    }
-
-    private void maintainTagSystemUponParentChange(TagEntity origParentTag, TagEntity newParentTag, TagEntity childTag) {
-        /*
-        // assignSelect - original Parent
-        // if we just removed the last child, the assign select should be set to false
-        List<TagEntity> oldParentChildren = tagStructureService.getDescendantTags(origParentTag, false);
-        if (oldParentChildren == null || oldParentChildren.isEmpty()) {
-            // now this is a selectable tag, because it doesn't have children
-            origParentTag.setAssignSelect(false);
-        }
-
-        // assignSelect - new Parent
-        newParentTag.setAssignSelect(true);
-
-        // assignSelect - child - no changes made / necessary
-
-        // searchSelect - only interesting if the childTag is searchselectable
-        if (childTag.getSearchSelect()) {
-            List<TagEntity> childrenTags = tagStructureService.getDescendantTags(childTag, true);
-            childrenTags.add(childTag);
-            // remove tags (and children) from oldParent
-            if (origParentTag.getSearchSelect())  {
-                // get parent tags
-                List<TagEntity> origParentTags = tagStructureService.getAscendantTags(origParentTag,true );
-                origParentTags.add(origParentTag);
-                List<Long> groupTagIds = origParentTags.stream().map(t -> t.getId()).collect(Collectors.toList());
-                List<Long> memberTagIds = childrenTags.stream().map(t -> t.getId()).collect(Collectors.toList());
-                // delete tag groups with groups in the parenttag, and children in the children tag
-                tagSearchGroupRepository.deleteByGroupAndMember(groupTagIds,memberTagIds);
-            }
-
-            // add tags to newParent - if new Parent is SearchSelect
-            if (newParentTag.getSearchSelect()) {
-                List<TagEntity> newParentTags = tagStructureService.getAscendantTags(newParentTag,true );
-                newParentTags.add(newParentTag);
-                // add all children tags to a group with this tag as the group
-                List<TagSearchGroupEntity> groupAssignments = new ArrayList<>();
-                // also add all children tags to any parent groups
-                for (TagEntity parentTag: newParentTags) {
-                    groupAssignments.addAll(buildGroupAssignments(parentTag.getId(),childrenTags));
-                }
-                tagSearchGroupRepository.save(groupAssignments);
-            }
-        }
-
-
-        // save origParentTag, newParentTag, childTag
-        tagRepository.save(origParentTag);
-        tagRepository.save(newParentTag);
-        */
-    }
-
     @Override
     public List<TagSearchGroupEntity> buildGroupAssignments(Long groupId, List<TagEntity> members) {
         List<TagSearchGroupEntity> newGroupAssignments = new ArrayList<>();
@@ -276,10 +219,90 @@ private TagSearchGroupRepository tagSearchGroupRepository;
         return newGroupAssignments;
     }
 
+    @Override
+    public void createGroupsForMember(Long memberId, List<Long> groupsToAdd) {
+        List<TagSearchGroupEntity> newGroups = new ArrayList<>();
+        groupsToAdd.forEach(i -> {
+            TagSearchGroupEntity newSearchGroup = new TagSearchGroupEntity(i,memberId);
+            newGroups.add(newSearchGroup);
+        });
+        tagSearchGroupRepository.save(newGroups);
+    }
+
+    @Transactional
+    @Override
+    public void removeGroupsForMember(Long memberid, List<Long> groupIds) {
+        deleteTagGroupsByGroupAndMember(groupIds,Collections.singletonList(memberid));
+    }
+
+@Override
+    public void createMembersForGroup(Long groupId, List<Long> membersToAdd) {
+    List<TagSearchGroupEntity> newGroups = new ArrayList<>();
+    membersToAdd.forEach(i -> {
+        TagSearchGroupEntity newMemberForGroup   = new TagSearchGroupEntity(groupId,i);
+        newGroups.add(newMemberForGroup);
+    });
+    tagSearchGroupRepository.save(newGroups);
+}
+
+    @Override
+    public void removeMembersForGroup(Long groupId, List<Long> membersToDelete) {
+        deleteTagGroupsByGroupAndMember(Collections.singletonList(groupId), membersToDelete);
+    }
+
     @Transactional
     @Override
     public void deleteTagGroupsByGroupAndMember(List<Long> groupTagIds, List<Long> memberTagIds) {
         tagSearchGroupRepository.deleteByGroupAndMember(groupTagIds,memberTagIds);
+    }
+
+
+
+    @Override
+    public HashMap<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags) {
+        List<TagSearchGroupEntity> rawSearchGroups = tagSearchGroupRepository.findByGroupIdIn(allTags);
+
+// put the results in a HashMap
+        HashMap<Long,List<Long>> results = new HashMap<>();
+        for (TagSearchGroupEntity result:rawSearchGroups) {
+            if (!results.containsKey(result.getGroupId())) {
+                results.put(result.getGroupId(),new ArrayList<>());
+            }
+            results.get(result.getGroupId()).add(result.getMemberId());
+        }
+        return results;
+    }
+@Override
+    public List<Long> getSearchGroupIdsByMember(Long memberid) {
+        List<TagSearchGroupEntity> groups = tagSearchGroupRepository.findByMemberId(memberid);
+        return groups.stream().map(TagSearchGroupEntity::getGroupId).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Long> getSearchMemberIdsByGroup(Long groupId) {
+        List<TagSearchGroupEntity> members = tagSearchGroupRepository.findByGroupId(groupId);
+        return members.stream().map(TagSearchGroupEntity::getMemberId).collect(Collectors.toList());
+    }
+
+    @Override
+    public HashMap<Long, TagSwapout> getTagSwapouts(List<Long> dishIds, List<String> tagListForSlot) {
+
+        List<Long> tagIdsAsLongs = tagListForSlot.stream().map(t-> Long.valueOf(t)).collect(Collectors.toList());
+        List<Object[]> rawResults = tagSearchGroupRepository.getTagSwapoutsByDishesAndGroups(dishIds, tagIdsAsLongs);
+        HashMap<Long,TagSwapout> resultMap = new HashMap<Long,TagSwapout>();
+        for (Object[] result : rawResults) {
+            Long dishId = ((BigInteger)result[0]).longValue();
+            String searchTag = ((BigInteger)result[1]).toString();
+            String foundTag = ((BigInteger)result[2]).toString();
+            if (!resultMap.containsKey(dishId)) {
+                resultMap.put(dishId,new TagSwapout());
+            }
+            TagSwapout swapoutsForDish = resultMap.get(dishId);
+            swapoutsForDish.addSearchFound(searchTag,foundTag);
+            resultMap.put(dishId,swapoutsForDish);
+        }
+
+        return resultMap;
     }
 
 }

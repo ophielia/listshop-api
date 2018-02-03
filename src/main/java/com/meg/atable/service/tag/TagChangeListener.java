@@ -15,5 +15,5 @@ public interface TagChangeListener {
 
     void onParentChange(TagEntity oldParent, TagEntity newParent, TagEntity changedTag);
 
-    void onSearchSelectChange(TagEntity changedTag);
+    void onTagUpdate(TagEntity beforeChange, TagEntity changed);
 }

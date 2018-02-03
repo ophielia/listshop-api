@@ -21,6 +21,9 @@ public class TagSearchGroupEntity {
         this.memberId = id;
     }
 
+    public TagSearchGroupEntity() {
+    }
+
     public Long getGroupId() {
         return groupId;
     }

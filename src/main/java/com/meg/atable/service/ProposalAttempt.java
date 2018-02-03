@@ -14,6 +14,7 @@ public class ProposalAttempt {
     private Map<Integer, Double[]> slotResults = new HashMap<Integer, Double[]>();
     private double healthIndexMedian;
     private double healthIndexAverage;
+    private int proposalContentHash;
 
     public ProposalAttempt(Integer[] order) {
         this.attemptOrder = order;
@@ -23,11 +24,20 @@ public class ProposalAttempt {
         return attemptOrder;
     }
 
-    public void setDishMatches(int i, List<DishTagSearchResult> dishMatches) {
+    public void setDishMatches(int i, Long slotId,List<DishTagSearchResult> dishMatches) {
         int totalTagCount = dishMatches.get(0).getTagResults().length;
         int slotTagCount = totalTagCount - dishMatches.get(0).getTargetTagLimit();
         processStatistics(i, totalTagCount, slotTagCount, dishMatches);
+        addToContentHash(slotId,dishMatches);
         this.dishMatches.put(i, dishMatches);
+    }
+
+    private void addToContentHash(Long slotId, List<DishTagSearchResult> dishMatches) {
+        Set<Long> contents = new HashSet<>();
+        contents.add(slotId);
+        contents.addAll(dishMatches.stream().map(dm -> dm.getDishId()).collect(Collectors.toList()));
+        int slothash = contents.hashCode();
+        proposalContentHash += slothash;
     }
 
     private void processStatistics(int slotNumber, int totalTagCount, int slotTagCount, List<DishTagSearchResult> dishMatches) {
@@ -94,6 +104,10 @@ public class ProposalAttempt {
         List<Integer> attemptOrderStringList = Arrays.asList(attemptOrder);
         return String.join(delimiter, attemptOrderStringList.stream()
                 .map(String::valueOf).collect(Collectors.toList()));
+    }
+
+    public int getProposalContentHash() {
+        return proposalContentHash;
     }
 
     public double getHealthIndexMedian() {

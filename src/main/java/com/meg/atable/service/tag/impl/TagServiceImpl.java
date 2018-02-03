@@ -2,10 +2,14 @@ package com.meg.atable.service.tag.impl;
 
 import com.meg.atable.api.model.TagFilterType;
 import com.meg.atable.api.model.TagType;
+import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.repository.UserRepository;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.DishRepository;
 import com.meg.atable.data.repository.TagRepository;
+import com.meg.atable.service.DishSearchCriteria;
+import com.meg.atable.service.DishSearchService;
 import com.meg.atable.service.tag.TagChangeListener;
 import com.meg.atable.service.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +27,19 @@ import java.util.stream.Collectors;
 @Service
 public class TagServiceImpl implements TagService {
 
+    private final List<TagChangeListener> listeners = new CopyOnWriteArrayList<>();
     @Autowired
     private TagRepository tagRepository;
-
     @Autowired
     private TagStructureServiceImpl tagStructureService;
-
     @Autowired
     private DishRepository dishRepository;
 
-    private final List<TagChangeListener> listeners=new CopyOnWriteArrayList<>();
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private DishSearchService dishSearchService;
 
     @Override
     public TagEntity save(TagEntity tag) {
@@ -65,14 +72,14 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Map<Long, TagEntity> getDictionaryForIdList(List<Long> tagIds) {
+    public Map<Long, TagEntity> getDictionaryForIds(Set<Long> tagIds) {
         List<TagEntity> tags = tagRepository.findAll(tagIds);
-       if (!tags.isEmpty()) {
-        return  tags.stream().collect(Collectors.toMap(TagEntity::getId,
-                        c -> c));
+        if (!tags.isEmpty()) {
+            return tags.stream().collect(Collectors.toMap(TagEntity::getId,
+                    c -> c));
 
-       }
-       return new HashMap<Long,TagEntity>();
+        }
+        return new HashMap<>();
     }
 
     @Transactional
@@ -83,25 +90,27 @@ public class TagServiceImpl implements TagService {
         if (dbTag == null) {
             return null;
         }
-        // compare to passed tag
-        // determine if change was made to search assign
-        boolean searchSelectChanged = toUpdate.getSearchSelect() != dbTag.getSearchSelect();
 
         // save changes to tag
+        TagEntity beforeChange = dbTag.copy();
         dbTag.setName(toUpdate.getName());
         dbTag.setDescription(toUpdate.getDescription());
         dbTag.setAssignSelect(toUpdate.getAssignSelect());
         dbTag.setSearchSelect(toUpdate.getSearchSelect());
+        dbTag.setPower(toUpdate.getPower());
         dbTag = tagRepository.save(dbTag);
 
         // if change, maintain change
-        if (searchSelectChanged) {
-            fireTagSelectChangedEvent(dbTag);
+        fireTagUpdatedEvent(beforeChange, dbTag);
 
-        }
-
-       // fire tag changed event
+        // fire tag changed event
         return dbTag;
+    }
+
+    private void fireTagUpdatedEvent(TagEntity beforeChange, TagEntity changed) {
+        for (TagChangeListener listener : listeners) {
+            listener.onTagUpdate(beforeChange, changed);
+        }
     }
 
 
@@ -132,9 +141,7 @@ public class TagServiceImpl implements TagService {
     }
 
 
-
-
-        private List<TagEntity> getParentTagList(List<TagType> tagTypes) {
+    private List<TagEntity> getParentTagList(List<TagType> tagTypes) {
         if (tagTypes != null) {
             List<String> tagTypeStrings = tagTypes.stream().map(TagType::name).collect(Collectors.toList());
             return tagRepository.findParentTagsByTagTypes(tagTypeStrings);
@@ -148,7 +155,7 @@ public class TagServiceImpl implements TagService {
         if (tagTypes == null) {
             return tagRepository.findTagsBySearchSelect(true);
         } else {
-            return tagRepository.findTagsBySearchSelectAndTagTypeIsIn(true,tagTypes);
+            return tagRepository.findTagsBySearchSelectAndTagTypeIsIn(true, tagTypes);
         }
 
     }
@@ -158,11 +165,10 @@ public class TagServiceImpl implements TagService {
         if (tagTypes == null) {
             return tagRepository.findTagsByAssignSelect(true);
         } else {
-            return tagRepository.findTagsByAssignSelectAndTagTypeIsIn(true,tagTypes);
+            return tagRepository.findTagsByAssignSelectAndTagTypeIsIn(true, tagTypes);
         }
 
     }
-
 
 
     @Override
@@ -177,7 +183,7 @@ public class TagServiceImpl implements TagService {
         tagEntity.setName(name);
         tagEntity.setDescription(description);
 
-        return createTag(parent,tagEntity);
+        return createTag(parent, tagEntity);
     }
 
     @Override
@@ -189,7 +195,7 @@ public class TagServiceImpl implements TagService {
         newtag.setSearchSelect(false);
         TagEntity saved = tagRepository.save(newtag);
 
-tagStructureService.createRelation(parentTag,saved);
+        tagStructureService.createRelation(parentTag, saved);
 
         return newtag;
     }
@@ -232,7 +238,7 @@ tagStructureService.createRelation(parentTag,saved);
         TagEntity parentTag = parentTagOptional.isPresent() ? parentTagOptional.get() : null;
 
 
-        return assignTagToParent(tag,parentTag);
+        return assignTagToParent(tag, parentTag);
     }
 
 
@@ -241,15 +247,15 @@ tagStructureService.createRelation(parentTag,saved);
         // get original parent (parent before reassign)
         TagEntity originalParent = tagStructureService.getParentTag(childTag);
         // assign Child tag to parent tag
-        TagEntity parentTag = tagStructureService.assignTagToParent(childTag,newParentTag);
-        if (parentTag !=null && (childTag.isParentTag()== null || !childTag.isParentTag()) ) {
+        TagEntity parentTag = tagStructureService.assignTagToParent(childTag, newParentTag);
+        if (parentTag != null && (childTag.isParentTag() == null || !childTag.isParentTag())) {
             // copy tag flag, family from parent
             childTag.setRatingFamily(parentTag.getRatingFamily());
             childTag.setAutoTagFlag(parentTag.getAutoTagFlag());
             tagRepository.save(childTag);
         }
         // fire tag changed event
-        fireTagParentChangedEvent(originalParent, parentTag,childTag);
+        fireTagParentChangedEvent(originalParent, parentTag, childTag);
 
         return true;
     }
@@ -282,18 +288,67 @@ tagStructureService.createRelation(parentTag,saved);
     }
 
 
-
     @Override
     public void addTagToDish(Long dishId, Long tagId) {
         // get dish
         DishEntity dish = dishRepository.findOne(dishId);
         // get tag
         TagEntity tag = tagRepository.findOne(tagId);
+
         List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
         dishTags.add(tag);
+        // if rating tag, remove related tags
+        if (tag.getTagType().equals(TagType.Rating)) {
+            dishTags = removeRelatedTags(dishTags, tag);
+        }
         // add tags to dish
         dish.setTags(dishTags);
         dishRepository.save(dish);
+    }
+
+    private List<TagEntity> removeRelatedTags(List<TagEntity> dishTags, TagEntity tag) {
+        // get sibling tags for dish
+        List<TagEntity> siblings = tagStructureService.getSiblingTags(tag);
+        List<TagEntity> filteredTags = dishTags.stream()
+                .filter(t -> !siblings.contains(t))
+                .collect(Collectors.toList());
+        return filteredTags;
+    }
+
+    @Override
+    public void replaceTagInDishes(String name, Long fromTagId, Long toTagId) {
+        UserAccountEntity user = userRepository.findByUsername(name);
+        List<DishEntity> dishes = new ArrayList<>();
+            TagEntity toTag = getTagById(toTagId).get();
+
+        if (fromTagId.equals(0L)) {
+            // this is a request to assign unassigned tags
+            TagEntity parent = tagStructureService.getParentTag(toTag);
+            List<TagEntity> allChildren = tagStructureService.getChildren(parent);
+            List<Long> excludeTags = allChildren.stream().map(TagEntity::getId).collect(Collectors.toList());
+            DishSearchCriteria criteria = new DishSearchCriteria(user.getId());
+            criteria.setExcludedTagIds(excludeTags);
+            dishes = dishSearchService.findDishes(criteria);
+        } else {
+            DishSearchCriteria criteria = new DishSearchCriteria(user.getId());
+            criteria.setIncludedTagIds(Collections.singletonList(fromTagId));
+            dishes = dishSearchService.findDishes(criteria);
+        }
+
+        // for each dish
+        for (DishEntity dish: dishes) {
+            List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
+            dishTags.add(toTag);
+            // if rating tag, remove related tags
+            if (!fromTagId.equals(0L)) {
+                dishTags = dishTags.stream()
+                        .filter(t -> !t.getId().equals(fromTagId))
+                        .collect(Collectors.toList());
+            }
+            // add tags to dish
+            dish.setTags(dishTags);
+            dishRepository.save(dish);
+        }
     }
 
 
@@ -303,17 +358,12 @@ tagStructureService.createRelation(parentTag,saved);
     }
 
 
-private void fireTagParentChangedEvent(TagEntity oldParent, TagEntity newParent, TagEntity changedTag) {
-        for (TagChangeListener listener: listeners) {
-            listener.onParentChange(oldParent,newParent,changedTag);
-        }
-}
 
-    private void fireTagSelectChangedEvent(TagEntity changedTag) {
-        for (TagChangeListener listener: listeners) {
-            listener.onSearchSelectChange(changedTag);
+
+    private void fireTagParentChangedEvent(TagEntity oldParent, TagEntity newParent, TagEntity changedTag) {
+        for (TagChangeListener listener : listeners) {
+            listener.onParentChange(oldParent, newParent, changedTag);
         }
     }
-
 
 }

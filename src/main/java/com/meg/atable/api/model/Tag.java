@@ -2,6 +2,8 @@ package com.meg.atable.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class Tag {
 
     private String tag_id;
@@ -19,6 +21,9 @@ public class Tag {
 
     private Boolean searchSelect;
 
+    private List<Dish> dishes;
+
+    private Double power;
     Tag() {
     }
 
@@ -99,6 +104,24 @@ public class Tag {
 
     public Tag searchSelect(Boolean searchSelect) {
         this.searchSelect = searchSelect;
+        return this;
+    }
+
+    public Double getPower() {
+        return power;
+    }
+
+    public Tag power(Double power) {
+        this.power = power;
+        return this;
+    }
+
+    public List<Dish> getDishes() {
+        return dishes;
+    }
+
+    public Tag dishes(List<Dish> dishes) {
+        this.dishes = dishes;
         return this;
     }
 }
