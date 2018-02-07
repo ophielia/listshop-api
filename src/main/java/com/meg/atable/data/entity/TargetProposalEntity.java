@@ -11,9 +11,10 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "target_proposal")
+@SequenceGenerator(name="target_proposal_sequence", sequenceName = "target_proposal_sequence")
 public class TargetProposalEntity extends AbstractInflateAndFlatten {
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="target_proposal_sequence")
     private Long proposalId;
 
     private Long userId;

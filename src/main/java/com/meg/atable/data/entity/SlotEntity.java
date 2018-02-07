@@ -4,10 +4,11 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "meal_plan_slot")
+@SequenceGenerator(name="meal_plan_slot_sequence", sequenceName = "meal_plan_slot_sequence")
 public class SlotEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="meal_plan_slot_sequence")
     @Column(name = "meal_plan_slot_id")
     private Long mealPlanSlotId;
 

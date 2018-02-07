@@ -4,10 +4,11 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "proposal_context_slot")
+@SequenceGenerator(name="proposal_context_slot_sequence", sequenceName = "proposal_context_slot_sequence")
 public class ProposalContextApproachEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="proposal_context_slot_sequence")
     @Column(name = "proposal_context_slot_id")
     private Long proposalContextSlotId;
 

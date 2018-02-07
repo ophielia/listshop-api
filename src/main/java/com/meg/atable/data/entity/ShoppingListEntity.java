@@ -12,10 +12,11 @@ import java.util.List;
  */
 @Entity
 @Table(name = "list")
+@SequenceGenerator(name="list_sequence", sequenceName = "list_sequence")
 public class ShoppingListEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="list_sequence")
     @Column(name = "list_id")
     private Long list_id;
 

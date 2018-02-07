@@ -7,10 +7,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="tag_relation")
+@SequenceGenerator(name="tag_relation_sequence", sequenceName = "tag_relation_sequence")
 public class TagRelationEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="tag_relation_sequence")
     @Column(name = "tag_relation_id")
     Long id;
 

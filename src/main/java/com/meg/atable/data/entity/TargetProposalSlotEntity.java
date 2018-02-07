@@ -10,13 +10,14 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "target_proposal_slot")
+@SequenceGenerator(name="target_proposal_slot_sequence", sequenceName = "target_proposal_slot_sequence")
 public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "targetProposalSlot")
     @LazyCollection(LazyCollectionOption.FALSE)
     List<TargetProposalDishEntity> dishSlotList;
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="target_proposal_slot_sequence")
     @Column(name = "slot_id")
     private Long slotId;
     private Long targetId;

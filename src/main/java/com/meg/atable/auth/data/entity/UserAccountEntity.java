@@ -7,10 +7,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
+@SequenceGenerator(name="user_id_sequence", sequenceName = "user_id_sequence")
 public class UserAccountEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="user_id_sequence")
     @Column(name = "user_id")
     private Long id;
 

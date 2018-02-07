@@ -10,9 +10,10 @@ import java.util.List;
  */
 @Entity
 @Table(name = "list_layout")
+@SequenceGenerator(name="list_layout_sequence", sequenceName = "list_layout_sequence")
 public class ListLayoutEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="list_layout_sequence")
     @Column(name = "layout_id")
     private Long layoutId;
 

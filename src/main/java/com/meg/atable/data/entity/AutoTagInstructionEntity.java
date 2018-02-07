@@ -12,9 +12,10 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="Instruction_Type")
 @Table(name = "auto_tag_instructions")
+@SequenceGenerator(name="auto_tag_instructions_sequence", sequenceName = "auto_tag_instructions_sequence")
 public class AutoTagInstructionEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="auto_tag_instructions_sequence")
     @Column(name = "instruction_id")
     private Long instructionId;
 

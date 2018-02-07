@@ -8,10 +8,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "meal_plan")
+@SequenceGenerator(name="meal_plan_sequence", sequenceName = "meal_plan_sequence")
 public class MealPlanEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="meal_plan_sequence")
     @Column(name = "meal_plan_id")
     private Long mealPlanId;
 

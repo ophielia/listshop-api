@@ -10,10 +10,11 @@ import java.util.stream.Collectors;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "Target")
 @Table(name = "target")
+@SequenceGenerator(name="target_sequence", sequenceName = "target_sequence")
 public class TargetEntity extends AbstractInflateAndFlatten {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="target_sequence")
     private Long targetId;
 
     private Long userId;

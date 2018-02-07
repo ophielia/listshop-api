@@ -7,13 +7,14 @@ import java.util.List;
 
 @Entity
 @Table(name = "dish")
+@SequenceGenerator(name="dish_sequence", sequenceName = "dish_sequence")
 public class DishEntity {
 
     @Column(name = "USER_ID")
     private Long userId;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="dish_sequence")
     @Column(name = "dish_id")
     private Long dish_id;
 

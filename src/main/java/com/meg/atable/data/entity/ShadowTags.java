@@ -7,10 +7,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="shadow_tags")
+@SequenceGenerator(name="shadow_tags_sequence", sequenceName = "shadow_tags_sequence")
 public class ShadowTags {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="shadow_tags_sequence")
     private Long shadowTagId;
 
     private Long tagId;

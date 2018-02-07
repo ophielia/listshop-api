@@ -8,10 +8,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "tag")
+@SequenceGenerator(name="tag_sequence", sequenceName = "tag_sequence")
 public class TagEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="tag_sequence")
     @Column(name = "tag_id")
     private Long tag_id;
 

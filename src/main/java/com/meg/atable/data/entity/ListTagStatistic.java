@@ -4,10 +4,11 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "list_tag_stats")
+@SequenceGenerator(name="list_tag_stats_sequence", sequenceName = "list_tag_stats_sequence")
 public class ListTagStatistic {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="list_tag_stats_sequence")
     @Column(name = "list_tag_stat_id")
     private Long listTagStatId;
 

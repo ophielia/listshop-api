@@ -7,10 +7,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "proposal_context")
+@SequenceGenerator(name="proposal_context_sequence", sequenceName = "proposal_context_sequence")
 public class ProposalContextEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="proposal_context_sequence")
     @Column(name = "proposal_context_id")
     private Long proposalContextId;
 

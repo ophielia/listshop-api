@@ -10,10 +10,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "list_item")
+@SequenceGenerator(name="list_item_sequence", sequenceName = "list_item_sequence")
 public class ItemEntity  {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="list_item_sequence")
     @Column(name = "item_id")
     private Long item_id;
 
