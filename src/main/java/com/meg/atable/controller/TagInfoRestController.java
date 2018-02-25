@@ -35,10 +35,15 @@ public class TagInfoRestController implements TagInfoRestControllerApi {
     }
 
 
-    public ResponseEntity<TagInfoResource> retrieveTagList(@RequestParam(value = "tag_type", required = false) String tag_type) {
+    public ResponseEntity<TagInfoResource> retrieveTagList(@RequestParam(value = "tag_type", required = false) String tag_type,
+                                                           @RequestParam(value = "filter", required = false) String filter) {
         List<TagType> tagTypes = processTagTypeInput(tag_type);
+        TagFilterType filterType = TagFilterType.All;
+        if (filter != null ) {
+            filterType = TagFilterType.valueOf(filter);
+        }
         // get tag list
-        List<TagEntity> tagList = (List) tagService.getTagList(TagFilterType.All,tagTypes);
+        List<TagEntity> tagList =  tagService.getTagList(filterType,tagTypes);
 
         // fill in relationship info
         tagList = tagStructureService.fillInRelationshipInfo(tagList);

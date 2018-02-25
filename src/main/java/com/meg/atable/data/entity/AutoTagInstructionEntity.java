@@ -26,6 +26,8 @@ public class AutoTagInstructionEntity {
 
     private Long assignTagId;
 
+    private String invertFilter;
+
     public Long getId() {
         return instructionId;
     }
@@ -56,5 +58,13 @@ public class AutoTagInstructionEntity {
 
     public void setAssignTagId(Long assignTagId) {
         this.assignTagId = assignTagId;
+    }
+
+    public String getInvertFilter() {
+        return invertFilter;
+    }
+
+    public void setInvertFilter(String invertFilter) {
+        this.invertFilter = invertFilter;
     }
 }

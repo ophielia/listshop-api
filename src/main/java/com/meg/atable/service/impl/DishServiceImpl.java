@@ -11,15 +11,13 @@ import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.DishRepository;
 import com.meg.atable.service.DishSearchCriteria;
 import com.meg.atable.service.DishSearchService;
-import com.meg.atable.service.DishTagSearchResult;
-import com.meg.atable.service.tag.AutoTagService;
 import com.meg.atable.service.DishService;
+import com.meg.atable.service.tag.AutoTagService;
 import com.meg.atable.service.tag.TagService;
 import com.meg.atable.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.Collator;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,26 +27,19 @@ import java.util.stream.Collectors;
 @Service
 public class DishServiceImpl implements DishService {
 
+    public static final Comparator<DishEntity> DISHNAME = (DishEntity o1, DishEntity o2) -> o1.getDishName().toLowerCase().compareTo(o2.getDishName().toLowerCase());
     @Autowired
     private DishRepository dishRepository;
-
     @Autowired
     private DishSearchService dishSearchService;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private AutoTagService autoTagService;
-
     @Autowired
     private TagService tagService;
-
-
     @Autowired
     private TagStructureService tagStructureService;
-
-    public static final Comparator<DishEntity> DISHNAME = (DishEntity o1, DishEntity o2) -> o1.getDishName().toLowerCase().compareTo(o2.getDishName().toLowerCase());
 
     @Override
     public Collection<DishEntity> getDishesForUserName(String userName) throws UserNotFoundException {
@@ -88,9 +79,10 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public  List<DishEntity> save(List<DishEntity> dishes) {
-return dishRepository.save(dishes);
+    public List<DishEntity> save(List<DishEntity> dishes) {
+        return dishRepository.save(dishes);
     }
+
     @Override
     public List<DishEntity> getDishes(List<Long> dishIds) {
         return dishRepository.findAll(dishIds);
@@ -100,11 +92,11 @@ return dishRepository.save(dishes);
     public Map<Long, DishEntity> getDictionaryForIdList(List<Long> dishIds) {
         List<DishEntity> tags = dishRepository.findAll(dishIds);
         if (!tags.isEmpty()) {
-            return  tags.stream().collect(Collectors.toMap(DishEntity::getId,
+            return tags.stream().collect(Collectors.toMap(DishEntity::getId,
                     c -> c));
 
         }
-        return new HashMap<Long,DishEntity>();
+        return new HashMap<Long, DishEntity>();
     }
 
     @Override
@@ -118,11 +110,11 @@ return dishRepository.save(dishes);
 
         List<TagEntity> childrenTags = tagStructureService.getChildren(tag);
         List<Long> allChildIds = new ArrayList<>();
-        for (TagEntity childTag: childrenTags) {
+        for (TagEntity childTag : childrenTags) {
             DishSearchCriteria criteria = new DishSearchCriteria(user.getId());
             criteria.setIncludedTagIds(Collections.singletonList(childTag.getId()));
             List<DishEntity> dishes = dishSearchService.findDishes(criteria);
-            Collections.sort(dishes,DISHNAME);
+            Collections.sort(dishes, DISHNAME);
             childTag.setDishes(dishes);
             allChildIds.add(childTag.getId());
         }
@@ -130,7 +122,7 @@ return dishRepository.save(dishes);
         DishSearchCriteria criteria = new DishSearchCriteria(user.getId());
         criteria.setExcludedTagIds(allChildIds);
         List<DishEntity> unassigned = dishSearchService.findDishes(criteria);
-        if (unassigned!=null && !unassigned.isEmpty()) {
+        if (unassigned != null && !unassigned.isEmpty()) {
             // make a "dummy" non categorized tag
             TagEntity noncattag = new TagEntity();
             noncattag.setName("NonCategorized");

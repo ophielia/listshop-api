@@ -183,8 +183,9 @@ public class ModelMapper {
                 .description(tagEntity.getDescription())
                 .tagType(tagEntity.getTagType().name())
                 .power(tagEntity.getPower())
-                .dishes(dishesToModel(tagEntity.getDishes()))
+                // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
                 .assignSelect(tagEntity.getAssignSelect())
+                .parentId(String.valueOf(tagEntity.getParentId()))
                 .searchSelect(tagEntity.getSearchSelect())
                 .ratingFamily(tagEntity.getRatingFamily());
     }

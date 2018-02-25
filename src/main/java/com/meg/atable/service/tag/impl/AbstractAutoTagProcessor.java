@@ -13,6 +13,10 @@ import java.util.List;
 @Service
 public abstract class AbstractAutoTagProcessor implements AutoTagProcessor {
 
+    long filledOnMilliseconds;
+
+    private static final long STALEMILLIS = 60 * 5 * 1000;
+
     @Override
     public AutoTagSubject autoTagSubject(AutoTagSubject subject) {
         // check eligibility
@@ -20,13 +24,12 @@ public abstract class AbstractAutoTagProcessor implements AutoTagProcessor {
             return subject;
         }
         // go through instructions
-        if (getInstructions() == null) {
+        if (fillInstructions() == null) {
             return subject;
         }
         for (Instruction instruction : getInstructions()) {
-
             // check if assign tag is available
-            Long tagId = instruction.getTagIdToAssign(subject);
+            Long tagId = processTagForInstruction(instruction,subject);
             // add to subject if available
             if (tagId == null) {
                 continue;
@@ -39,6 +42,8 @@ public abstract class AbstractAutoTagProcessor implements AutoTagProcessor {
         return subject;
     }
 
+    protected abstract Long processTagForInstruction(Instruction instruction, AutoTagSubject subject);
+
     private boolean isEligible(AutoTagSubject subject) {
         if (subject.isOverrideFlag()) {
             return true;
@@ -46,9 +51,19 @@ public abstract class AbstractAutoTagProcessor implements AutoTagProcessor {
         return !subject.hasBeenProcessedBy(getProcessIdentifier());
     }
 
-    protected abstract Long getProcessIdentifier();
 
 
-    protected abstract List<Instruction> getInstructions();
+    List<Instruction> getInstructions() {
+        long now = System.currentTimeMillis();
+        if (now - STALEMILLIS < filledOnMilliseconds) {
+            return currentInstructions();
+        }
+        fillInstructions();
+        filledOnMilliseconds = now;
+        return currentInstructions();
+    }
+
+    protected abstract List<Instruction> currentInstructions();
+    protected abstract List<Instruction> fillInstructions();
 
 }

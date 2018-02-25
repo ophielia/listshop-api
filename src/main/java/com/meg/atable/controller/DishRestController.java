@@ -4,6 +4,7 @@ import com.meg.atable.api.UserNotFoundException;
 import com.meg.atable.api.controller.DishRestControllerApi;
 import com.meg.atable.api.model.Dish;
 import com.meg.atable.api.model.DishResource;
+import com.meg.atable.api.model.Tag;
 import com.meg.atable.api.model.TagResource;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
@@ -25,9 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -97,7 +96,15 @@ public class DishRestController implements DishRestControllerApi {
         DishEntity result = dishService.save(new DishEntity(user.getId(),
                 input.getDishName(),
                 input.getDescription()), false);
-
+        List<Tag> tagInputs = input.getTags();
+        if (tagInputs !=null && !tagInputs.isEmpty()) {
+            Set<Long> tagIds = tagInputs.stream()
+                    .filter(t -> t.getId() != null)
+                    .map(t -> new Long(t.getId()))
+                    .collect(Collectors.toSet());
+            tagService.addTagsToDish(result.getId(),tagIds);
+            result = dishService.getDishById(result.getId()).get();
+        }
         Link forOneDish = new DishResource(result).getLink("self");
         return ResponseEntity.created(URI.create(forOneDish.getHref())).build();
     }
@@ -158,6 +165,24 @@ public class DishRestController implements DishRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
+    @Override
+    public ResponseEntity<Object> addAndRemoveTags(Principal principal, @PathVariable Long dishId,
+                                                                  @RequestParam(value = "addTags", required = false) String addTags,
+                                                                  @RequestParam(value = "removeTags", required = false) String removeTags)
+    {
+
+        if (addTags != null && !addTags.isEmpty()) {
+            Set<Long> tagIds = commaDelimitedToSet(addTags);
+            this.tagService.addTagsToDish(dishId,tagIds);
+        }
+
+        if (removeTags != null && !removeTags.isEmpty()) {
+            Set<Long> tagIds = commaDelimitedToSet(removeTags);
+            this.tagService.removeTagsFromDish(dishId,tagIds);
+        }
+
+        return ResponseEntity.noContent().build();
+    }
 
     private UserAccountEntity getUserForPrincipal(Principal principal) {
 
@@ -180,6 +205,19 @@ public class DishRestController implements DishRestControllerApi {
             return new ArrayList<>();
         }
         return Arrays.stream(ids).map(Long::valueOf).collect(Collectors.toList());
+
+    }
+
+    private Set<Long> commaDelimitedToSet(String commaSeparatedIds) {
+// translate tags into list of Long ids
+        if (commaSeparatedIds == null) {
+            return new HashSet<>();
+        }
+        String[] ids = commaSeparatedIds.split(",");
+        if (ids == null || ids.length == 0) {
+            return new HashSet<>();
+        }
+        return Arrays.stream(ids).map(Long::valueOf).collect(Collectors.toSet());
 
     }
 

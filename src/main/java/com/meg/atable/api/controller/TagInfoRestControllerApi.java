@@ -14,6 +14,6 @@ public interface TagInfoRestControllerApi {
 
 
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<TagInfoResource> retrieveTagList(@RequestParam(value="tag_type",required=false) String tag_type);
-
-    }
+    ResponseEntity<TagInfoResource> retrieveTagList(@RequestParam(value = "tag_type", required = false) String tag_type,
+                                                    @RequestParam(value = "filter", required = false) String filter);
+}

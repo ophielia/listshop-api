@@ -38,14 +38,23 @@ this.tagStructureService = tagStructureService;
     }
 
 
-    public ResponseEntity<TagResource> retrieveTagList(String filter, String tag_type) {
-        List<TagType> tagTypeFilter = processTagTypeInput(tag_type);
+    public ResponseEntity<TagResource> retrieveTagList(@RequestParam(value = "filter", required = false) String filter,
+                                                       @RequestParam(value = "tag_type", required = false) String tagType,
+                                                       @RequestParam(value = "fill_tags", required = false) Boolean fillTags) {
+        List<TagType> tagTypeFilter = processTagTypeInput(tagType);
         TagFilterType tagFilterTypeFilter = filter != null ? TagFilterType.valueOf(filter) : null;
-        List<TagResource> tagList = tagService.getTagList(tagFilterTypeFilter, tagTypeFilter)
+        if (fillTags == null) {
+            fillTags = false;
+        }
+        List<TagEntity> tagList = tagService.getTagList(tagFilterTypeFilter, tagTypeFilter);
+        if (fillTags) {
+            tagList = tagStructureService.fillInRelationshipInfo(tagList);
+        }
+        List<TagResource> tagResourceRaw = tagList
                 .stream().map(TagResource::new)
                 .collect(Collectors.toList());
 
-        Resources<TagResource> tagResourceList = new Resources<>(tagList);
+        Resources<TagResource> tagResourceList = new Resources<>(tagResourceRaw);
         return new ResponseEntity(tagResourceList, HttpStatus.OK);
     }
 

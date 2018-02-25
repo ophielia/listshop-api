@@ -24,6 +24,9 @@ public class Tag {
     private List<Dish> dishes;
 
     private Double power;
+
+    private String parentId ;
+
     Tag() {
     }
 
@@ -46,6 +49,10 @@ public class Tag {
     @JsonProperty("tag_id")
     public String getId() {
         return tag_id;
+    }
+
+    public void setTag_id(String tag_id) {
+        this.tag_id = tag_id;
     }
 
     public String getName() {
@@ -94,6 +101,16 @@ public class Tag {
 
     public Tag assignSelect(Boolean assignSelect) {
         this.assignSelect = assignSelect;
+        return this;
+    }
+
+    @JsonProperty("parent_id")
+    public String getParentId() {
+        return parentId;
+    }
+
+    public Tag parentId(String parent_id) {
+        this.parentId = parent_id;
         return this;
     }
 

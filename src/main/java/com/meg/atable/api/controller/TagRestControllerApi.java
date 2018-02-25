@@ -17,7 +17,8 @@ public interface TagRestControllerApi {
 
     @RequestMapping(method = RequestMethod.GET)
     ResponseEntity<TagResource> retrieveTagList(@RequestParam(value = "filter", required = false) String filter,
-                                                @RequestParam(value = "tag_type", required = false) String tagType);
+                                                @RequestParam(value = "tag_type", required = false) String tagType,
+                                                @RequestParam(value = "fill_tags", required = false) Boolean fillTags);
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<TagResource> add(@RequestBody Tag input);

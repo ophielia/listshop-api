@@ -32,6 +32,10 @@ public interface TagService {
 
     void addTagToDish(Long dishId, Long tagId);
 
+    void addTagsToDish(Long id, Set<Long> tagIds);
+
+    void removeTagsFromDish(Long dishId, Set<Long> tagIds);
+
     List<TagEntity> getTagList(TagFilterType baseTags, List<TagType> tagType);
 
 
@@ -44,6 +48,7 @@ public interface TagService {
     void replaceTagInDishes(String name, Long fromTagId, Long toTagId);
 
     void addTagChangeListener(TagChangeListener tagChangeListener);
+
 
 
 }

@@ -18,16 +18,16 @@ import java.util.List;
 public class TextInstructionEntity extends AutoTagInstructionEntity implements Instruction {
 
 @Transient
-    private List<String> inflatedSearchTerms;
+    private List<String> textSearchTerms;
 
     @Override
     public Long getTagIdToAssign(AutoTagSubject subject) {
-        if (inflatedSearchTerms == null) {
+        if (textSearchTerms == null) {
             inflateSearchTerms();
         }
         // determine if search term match exists
         boolean match = false;
-        for (String term: inflatedSearchTerms) {
+        for (String term: textSearchTerms) {
             match = subject.getDish().getDishName().toLowerCase().contains(term);
             if (subject.getDish().getDescription()!=null)  {
                 match |= subject.getDish().getDescription().toLowerCase().contains(term);
@@ -49,9 +49,19 @@ public class TextInstructionEntity extends AutoTagInstructionEntity implements I
         String toinflate = getSearchTerms().toLowerCase();
         String[] terms = toinflate.split(";");
         if (terms == null || terms.length == 0) {
-            inflatedSearchTerms =  new ArrayList<>();
+            textSearchTerms =  new ArrayList<>();
         }
-        inflatedSearchTerms =  Arrays.asList(terms);
+        textSearchTerms =  Arrays.asList(terms);
     }
 
+    public List<String> getTextSearchTerms() {
+        if (textSearchTerms == null) {
+            inflateSearchTerms();
+        }
+        return textSearchTerms;
+    }
+
+    public void setTextSearchTerms(List<String> textSearchTerms) {
+        this.textSearchTerms = textSearchTerms;
+    }
 }

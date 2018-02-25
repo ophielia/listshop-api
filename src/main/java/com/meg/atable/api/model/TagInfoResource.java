@@ -24,7 +24,7 @@ public class TagInfoResource extends ResourceSupport {
         this.tagInfo = new TagInfo(entities);
 
         this.add(linkTo(methodOn(TagInfoRestControllerApi.class)
-                .retrieveTagList("none")).withSelfRel());
+                .retrieveTagList("none","")).withSelfRel());
     }
 
     public TagInfo getTagInfo() {

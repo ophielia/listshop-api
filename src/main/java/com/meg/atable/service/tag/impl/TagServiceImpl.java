@@ -306,6 +306,16 @@ public class TagServiceImpl implements TagService {
         dishRepository.save(dish);
     }
 
+    @Override
+    public void addTagsToDish(Long dishId, Set<Long> tagIds) {
+        tagIds.forEach(t -> addTagToDish(dishId, t));
+    }
+
+    @Override
+    public void removeTagsFromDish(Long dishId, Set<Long> tagIds) {
+        tagIds.forEach(t -> deleteTagFromDish(dishId, t));
+    }
+
     private List<TagEntity> removeRelatedTags(List<TagEntity> dishTags, TagEntity tag) {
         // get sibling tags for dish
         List<TagEntity> siblings = tagStructureService.getSiblingTags(tag);
@@ -319,7 +329,7 @@ public class TagServiceImpl implements TagService {
     public void replaceTagInDishes(String name, Long fromTagId, Long toTagId) {
         UserAccountEntity user = userRepository.findByUsername(name);
         List<DishEntity> dishes = new ArrayList<>();
-            TagEntity toTag = getTagById(toTagId).get();
+        TagEntity toTag = getTagById(toTagId).get();
 
         if (fromTagId.equals(0L)) {
             // this is a request to assign unassigned tags
@@ -336,7 +346,7 @@ public class TagServiceImpl implements TagService {
         }
 
         // for each dish
-        for (DishEntity dish: dishes) {
+        for (DishEntity dish : dishes) {
             List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
             dishTags.add(toTag);
             // if rating tag, remove related tags
@@ -356,8 +366,6 @@ public class TagServiceImpl implements TagService {
     public void addTagChangeListener(TagChangeListener tagChangeListener) {
         listeners.add(tagChangeListener);
     }
-
-
 
 
     private void fireTagParentChangedEvent(TagEntity oldParent, TagEntity newParent, TagEntity changedTag) {

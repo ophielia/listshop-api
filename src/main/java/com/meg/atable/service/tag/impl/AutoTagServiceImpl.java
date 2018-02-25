@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 07/12/2017.
@@ -44,15 +45,15 @@ public class AutoTagServiceImpl implements AutoTagService {
             return;
         }
         // pull tagswithflags
-        List<Integer> tagFlags = tagRepository.getAutoTagsForDish(dishEntity.getId());
+        Set<Long> tagIdsForDish = tagRepository.getTagIdsForDish(dishEntity.getId());
 
         // pull autotagHistory
         List<ShadowTags> shadowTags = shadowTagRepository.findShadowTagsByDishId(dishEntity.getId());
 
         // create AutoTagSubject
         AutoTagSubject subject = new AutoTagSubject(dishEntity, overrideStatus);
-        subject.setTagFlags(tagFlags);
         subject.setShadowTags(shadowTags);
+        subject.setTagIdsForDish(tagIdsForDish);
 
         // run dishEntity through taggers
         for (AutoTagProcessor tagProcessor : processorList) {

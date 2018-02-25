@@ -5,6 +5,7 @@ import com.meg.atable.data.entity.ShadowTags;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -15,8 +16,8 @@ public class AutoTagSubject {
     private List<Long> tagsToAssign;
     private DishEntity dish;
     private List<ShadowTags> shadowTags;
-    private List<Integer> tagFlags;
     private List<Long> processedByList = new ArrayList<>();
+    private Set<Long> tagIdsForDish;
 
     public AutoTagSubject(DishEntity dishEntity, boolean overrideStatus) {
         this.dish = dishEntity;
@@ -28,13 +29,6 @@ public class AutoTagSubject {
         return overrideFlag;
     }
 
-    public List<Integer> getTagFlags() {
-        return tagFlags;
-    }
-
-    public void setTagFlags(List<Integer> tagFlags) {
-        this.tagFlags = tagFlags;
-    }
 
     public void setShadowTags(List<ShadowTags> shadowTags) {
         this.shadowTags = shadowTags;
@@ -46,6 +40,10 @@ public class AutoTagSubject {
 
 
     public List<Long> getTagsToAssign() {
+        tagsToAssign = tagsToAssign.stream()
+                .filter(t -> !shadowTags.contains(t))
+                .collect(Collectors.toList());
+
         return tagsToAssign;
     }
  public DishEntity getDish() {
@@ -53,13 +51,7 @@ public class AutoTagSubject {
     }
 
     public void addToTagIdsToAssign(Long tagId) {
-        // check if tagid exists in shadow tag
-        List<ShadowTags> match = shadowTags.stream()
-                .filter(t -> tagId.longValue() == t.getTagId().longValue())
-                .collect(Collectors.toList());
-        if (match.isEmpty()) {
-            this.tagsToAssign.add(tagId);
-        }
+        this.tagsToAssign.add(tagId);
     }
 
     public void addProcessedBy(Long processIdentifier) {
@@ -69,5 +61,13 @@ public class AutoTagSubject {
     public boolean hasBeenProcessedBy(Long processIdentifier) {
         Long dishAutotagStatus = dish.getAutoTagStatus();
         return dishAutotagStatus % processIdentifier ==0;
+    }
+
+    public Set<Long> getTagIdsForDish() {
+        return tagIdsForDish;
+    }
+
+    public void setTagIdsForDish(Set<Long> tagIdsForDish) {
+        this.tagIdsForDish = tagIdsForDish;
     }
 }

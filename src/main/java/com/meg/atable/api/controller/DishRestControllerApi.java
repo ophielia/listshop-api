@@ -32,15 +32,20 @@ public interface DishRestControllerApi {
     ResponseEntity<Object> updateDish(Principal principal, @PathVariable Long dishId, @RequestBody Dish input);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{dishId}", produces = "application/json")
-    public ResponseEntity<Dish> readDish(Principal principal, @PathVariable("dishId") Long dishId);
+     ResponseEntity<Dish> readDish(Principal principal, @PathVariable("dishId") Long dishId);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{dishId}/tag", produces = "application/json")
-    public ResponseEntity<Resources<TagResource>> getTagsByDishId(Principal principal,@PathVariable("dishId") Long dishId);
+     ResponseEntity<Resources<TagResource>> getTagsByDishId(Principal principal,@PathVariable("dishId") Long dishId);
 
     @RequestMapping(method = RequestMethod.POST, value = "/{dishId}/tag/{tagId}", produces = "application/json")
-    public ResponseEntity<Object> addTagToDish(Principal principal,@PathVariable Long dishId, @PathVariable Long tagId);
+     ResponseEntity<Object> addTagToDish(Principal principal,@PathVariable Long dishId, @PathVariable Long tagId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{dishId}/tag/{tagId}", produces = "application/json")
-    public ResponseEntity<Object> deleteTagFromDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId);
+     ResponseEntity<Object> deleteTagFromDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId);
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/{dishId}/tag", produces = "application/json")
+     ResponseEntity<Object> addAndRemoveTags(Principal principal, @PathVariable Long dishId,
+                                                                    @RequestParam(value = "addTags", required = false) String addTags,
+                                                                    @RequestParam(value = "removeTags", required = false) String removeTags);
 
 }
