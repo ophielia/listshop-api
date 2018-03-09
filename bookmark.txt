@@ -4,6 +4,10 @@ defaults -
 bugs -
     dishes with every tag added twice - I suspect tag assign tool
 
+db cols to check -
+tag.is_parent_tag
+tag.rating_family
+
 bigger todo list
     done set in process list active
         "page" for active list (only cross out, not delete)

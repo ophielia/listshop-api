@@ -120,6 +120,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     private ResponseEntity<ShoppingListResource> singleResult(ShoppingListEntity result) {
         if (result != null) {
+            
             ShoppingListResource shoppingListResource = new ShoppingListResource(result);
 
             return new ResponseEntity(shoppingListResource, HttpStatus.OK);

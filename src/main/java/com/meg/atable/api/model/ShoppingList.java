@@ -17,6 +17,9 @@ public class ShoppingList {
     @JsonProperty("layout_type")
     private String layoutType;
 
+    @JsonProperty("item_count")
+    private Integer itemCount;
+
     private java.util.List<Category>
             categories;
 
@@ -78,6 +81,15 @@ public class ShoppingList {
 
     public ShoppingList layoutType(String layoutType) {
         this.layoutType = layoutType;
+        return this;
+    }
+
+    public Integer getItemCount() {
+        return itemCount;
+    }
+
+    public ShoppingList itemCount(Integer itemCount) {
+        this.itemCount = itemCount;
         return this;
     }
 }

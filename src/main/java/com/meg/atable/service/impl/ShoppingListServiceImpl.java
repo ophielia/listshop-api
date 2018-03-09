@@ -1,9 +1,6 @@
 package com.meg.atable.service.impl;
 
-import com.meg.atable.api.model.GenerateType;
-import com.meg.atable.api.model.ItemSourceType;
-import com.meg.atable.api.model.ListLayoutType;
-import com.meg.atable.api.model.ListType;
+import com.meg.atable.api.model.*;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.*;
@@ -48,6 +45,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private
     TagRepository tagRepository;
 
+    @Autowired
+    private ShoppingListProperties shoppingListProperties;
+
     @Override
     public List<ShoppingListEntity> getListsByUsername(String userName) {
         UserAccountEntity user = userService.getUserByUserName(userName);
@@ -58,6 +58,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingListEntity createList(String userName, ShoppingListEntity shoppingList) {
         UserAccountEntity user = userService.getUserByUserName(userName);
+        //ListLayout
         shoppingList.setCreatedOn(new Date());
         shoppingList.setUserId(user.getId());
         return shoppingListRepository.save(shoppingList);
@@ -73,8 +74,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingListEntity getListById(String userName, Long listId) {
         UserAccountEntity user = userService.getUserByUserName(userName);
+        if (user == null ) {
+            return null;
+        }
         ShoppingListEntity shoppingListEntity = shoppingListRepository.findOne(listId);
-        if (shoppingListEntity != null && shoppingListEntity.getUserId() == user.getId()) {
+        if (shoppingListEntity != null && shoppingListEntity.getUserId().equals(user.getId())) {
             return shoppingListEntity;
         }
         return null;
@@ -141,7 +145,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // filter items removing item to be deleted
         List<ItemEntity> filteredItems = listItems.stream()
-                .filter(i -> i.getId().longValue() != itemId.longValue())
+                .filter(i -> !i.getId().equals(itemId.longValue()))
                 .collect(Collectors.toList());
 
         // delete item

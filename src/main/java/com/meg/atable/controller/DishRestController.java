@@ -9,6 +9,7 @@ import com.meg.atable.api.model.TagResource;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.DishSearchCriteria;
 import com.meg.atable.service.DishSearchService;
 import com.meg.atable.service.DishService;
@@ -131,7 +132,10 @@ public class DishRestController implements DishRestControllerApi {
         return this.dishService
                 .getDishById(dishId)
                 .map(dish -> {
-                    DishResource dishResource = new DishResource(dish, dish.getTags());
+                    List<TagEntity> sortedDishTags = dish.getTags();
+                    sortedDishTags.sort(Comparator.comparing(TagEntity::getTagType)
+                            .thenComparing(TagEntity::getName));
+                    DishResource dishResource = new DishResource(dish, sortedDishTags);
 
                     return new ResponseEntity(dishResource, HttpStatus.OK);
                 })

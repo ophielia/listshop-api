@@ -248,6 +248,7 @@ public class ModelMapper {
                 .listType(shoppingListEntity.getListType().name())
                 .layoutType(shoppingListEntity.getListLayoutType().name())
                 .categories(categories)
+                .itemCount(shoppingListEntity.getItems()!=null?shoppingListEntity.getItems().size():0)
                 .userId(shoppingListEntity.getUserId());
 
     }

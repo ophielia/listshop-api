@@ -3,139 +3,93 @@ package com.meg.atable.service.impl;
 import com.meg.atable.Application;
 import com.meg.atable.api.model.ListLayoutType;
 import com.meg.atable.api.model.ListType;
-import com.meg.atable.api.model.TagType;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
-import com.meg.atable.data.entity.*;
+import com.meg.atable.data.entity.ItemEntity;
+import com.meg.atable.data.entity.MealPlanEntity;
+import com.meg.atable.data.entity.ShoppingListEntity;
+import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.*;
+import com.meg.atable.service.ShoppingListProperties;
 import com.meg.atable.service.ShoppingListService;
 import com.meg.atable.service.tag.TagService;
+import org.flywaydb.test.FlywayTestExecutionListener;
+import org.flywaydb.test.annotation.FlywayTest;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public class ShoppingListServiceImplTest {
+    private final static String USER_1_NAME = "testuser";
+    private final static String USER_2_NAME = "adduser";
+    private static final Long MEAL_PLAN_1_ID = 500L;
+    private static final Long ITEM_1_ID = 500L;
+    private static final Long TAG_1_ID = 500L;
+    private static final Long LIST_1_ID = 500L;
+    private static final Long LIST_2_ID = 501L;
+    private static final Long LIST_3_ID = 502L;
     @Autowired
     private ShoppingListService shoppingListService;
-
     @Autowired
     private ShoppingListRepository shoppingListRepository;
-
     @Autowired
     private MealPlanRepository mealPlanRepository;
-
     @Autowired
     private SlotRepository slotRepository;
-
     @Autowired
     private ItemRepository itemRepository;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private TagRepository tagRepository;
-
     @Autowired
     private DishRepository dishRepository;
-
     @Autowired
     private TagService tagService;
+    @Autowired
+    private ShoppingListProperties shoppingListProperties;
+    private UserAccountEntity userAccount;  // user_id 500
+    private UserAccountEntity addUserAccount;  // user_id 501
+    private TagEntity tag1; // 500
+    private ItemEntity itemEntity; // 500
+    private ShoppingListEntity baseList;  // 500
+    private ShoppingListEntity activeList; // 501
+    private ShoppingListEntity toDelete; // 502
+    private MealPlanEntity finalMealPlan; // 500
 
-    private static boolean setUpComplete = false;
-    private static UserAccountEntity userAccount;
-    private static TagEntity tag1;
-    private static ItemEntity itemEntity;
-    private static ShoppingListEntity baseList;
-    private static ShoppingListEntity activeList;
-    private static ShoppingListEntity toDelete;
-    private static String noseyUserName;
-    private static MealPlanEntity finalMealPlan;
-
-    @Before
+@Before
     public void setUp() {
-        if (setUpComplete) {
-            return;
-        }
-// make user
-        String userName = "shoppingListTest";
-        userAccount = userService.save(new UserAccountEntity(userName, "password"));
-        noseyUserName = "noseyUser";
-
+        userAccount = userService.getUserByUserName(USER_1_NAME);
+        addUserAccount = userService.getUserByUserName(USER_2_NAME);
         // make tags
-        tag1 = new TagEntity("tag1", "main1");
-        TagEntity tag21 = new TagEntity("tag1", "main1");
-        TagEntity tag31 = new TagEntity("tag1", "main1");
-
-        tag1 = tagService.save(tag1);
-        tag21 = tagService.save(tag21);
-        tag31 = tagService.save(tag31);
+        tag1 = tagService.getTagById(TAG_1_ID).get();
 
         // make base list
-        baseList = new ShoppingListEntity();
-        baseList.setListType(ListType.BaseList);
-        baseList.setCreatedOn(new Date());
-        baseList.setUserId(userAccount.getId());
-        baseList = shoppingListRepository.save(baseList);
+        //baseList = shoppingListService.getListById(LIST_1_ID);
 
         // make active list
-        activeList = new ShoppingListEntity();
-        activeList.setListType(ListType.ActiveList);
-        activeList.setCreatedOn(new Date());
-        activeList.setUserId(userAccount.getId());
-        activeList = shoppingListRepository.save(activeList);
-        itemEntity = new ItemEntity();
-        itemEntity.setListCategory("All");
-        itemEntity.setTag(tag1);
-        itemEntity.setListId(activeList.getId());
-        itemEntity = itemRepository.save(itemEntity);
+        activeList = shoppingListRepository.getOne(LIST_2_ID);
+        itemEntity = itemRepository.getOne(ITEM_1_ID);
 
         // make list to be deleted
-        toDelete = new ShoppingListEntity();
-        toDelete.setListType(ListType.ActiveList);
-        toDelete.setCreatedOn(new Date());
-        toDelete.setUserId(userAccount.getId());
-        toDelete = shoppingListRepository.save(toDelete);
+        toDelete = shoppingListRepository.getOne(LIST_3_ID);
 
         // make a mealplan with three dishes, and five tags
-        TagEntity tag1 = ServiceTestUtils.buildTag("tag1", TagType.TagType);
-        TagEntity tag2 = ServiceTestUtils.buildTag("tag2", TagType.TagType);
-        TagEntity tag3 = ServiceTestUtils.buildTag("tag3", TagType.TagType);
-        TagEntity tag4 = ServiceTestUtils.buildTag("tag4", TagType.TagType);
-        TagEntity tag5 = ServiceTestUtils.buildTag("tag5", TagType.TagType);
-        List<TagEntity> tags = Arrays.asList(tag1,tag2,tag3,tag4,tag5);
-        List<TagEntity> savedTags =tagRepository.save(tags);
-
-        DishEntity dish1 = ServiceTestUtils.buildDish(userAccount.getId(),"dish1",savedTags.subList(0,2));
-        DishEntity dish2 = ServiceTestUtils.buildDish(userAccount.getId(),"dish2",savedTags.subList(2,3));
-        DishEntity dish3 = ServiceTestUtils.buildDish(userAccount.getId(),"dish3",savedTags.subList(3,5));
-        List<DishEntity> dishes = Arrays.asList(dish1,dish2,dish3);
-        List<DishEntity> savedDishes = dishRepository.save(dishes);
-
-        MealPlanEntity mealPlanEntity = ServiceTestUtils.buildMealPlan("testMealPlan",userAccount.getId());
-        MealPlanEntity savedMealPlan = mealPlanRepository.save(mealPlanEntity);
-
-        SlotEntity slot1 = ServiceTestUtils.buildDishSlot(savedMealPlan,savedDishes.get(0));
-        SlotEntity slot2 = ServiceTestUtils.buildDishSlot(savedMealPlan,savedDishes.get(1));
-        SlotEntity slot3 = ServiceTestUtils.buildDishSlot(savedMealPlan,savedDishes.get(2));
-        List<SlotEntity> slots = Arrays.asList(slot1,slot2,slot3);
-        List<SlotEntity> savedSlots = slotRepository.save(slots);
-
-        savedMealPlan.setSlots(savedSlots);
-        finalMealPlan = mealPlanRepository.save(savedMealPlan);
-        setUpComplete = true;
+        finalMealPlan = mealPlanRepository.getOne(MEAL_PLAN_1_ID);
     }
 
     @Test
@@ -148,18 +102,19 @@ public class ShoppingListServiceImplTest {
 
     @Test
     public void testGetListByUsername() {
-        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(),
-                baseList.getId());
+    ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(),LIST_1_ID);
+
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(baseList.getCreatedOn(), result.getCreatedOn());
+        Assert.assertEquals(ListType.BaseList, result.getListType());
+        Assert.assertEquals(LIST_1_ID,result.getId());
     }
 
 
     @Test
     public void testGetListByUsername_BadUser() {
-        ShoppingListEntity result = shoppingListService.getListById(noseyUserName,
-                baseList.getId());
+        ShoppingListEntity result = shoppingListService.getListById("noseyusername",
+                LIST_1_ID);
 
         Assert.assertNull(result);
     }
@@ -170,7 +125,7 @@ public class ShoppingListServiceImplTest {
         shoppingListEntity.setListType(ListType.BaseList);
         shoppingListEntity.setListLayoutType(ListLayoutType.All);
 
-        ShoppingListEntity result = shoppingListService.createList(userAccount.getUsername(), shoppingListEntity);
+        ShoppingListEntity result = shoppingListService.createList(addUserAccount.getUsername(), shoppingListEntity);
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getCreatedOn());
@@ -181,7 +136,7 @@ public class ShoppingListServiceImplTest {
 
     @Test
     public void testDeleteList() {
-        boolean result = shoppingListService.deleteList(userAccount.getUsername(), toDelete.getId());
+        boolean result = shoppingListService.deleteList(userAccount.getUsername(), LIST_3_ID);
 
         Assert.assertTrue(result);
     }
@@ -189,41 +144,45 @@ public class ShoppingListServiceImplTest {
     @Test
     public void testAddItemToList() {
         // make item (unsaved)
-ItemEntity itemEntity = new ItemEntity();
-itemEntity.setListCategory("All");
-itemEntity.setTag(tag1);
+        ItemEntity itemEntity = new ItemEntity();
+        itemEntity.setListCategory("All");
+        itemEntity.setTag(tag1);
 
         // add to baseList
-        shoppingListService.addItemToList(userAccount.getUsername(),baseList.getId(),itemEntity);
+        shoppingListService.addItemToList(userAccount.getUsername(), LIST_1_ID, itemEntity);
 
         // retrieve baselist
-ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(),baseList.getId());
+        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(), LIST_1_ID);
 
         // ensure item is there
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getItems());
-        Assert.assertTrue(result.getItems().size()>0);
+        Assert.assertTrue(result.getItems().size() > 0);
         Assert.assertNotNull(result.getItems().get(0).getId());
     }
 
     @Test
+    //@FlywayTest(locationsForMigrate = "classpath:db/testdata/shoppingListServiceImpl_deleteItem")
+    //@FlywayTest(invokeBaselineDB = true)
     public void testDeleteItemFromList() {
+        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(), LIST_1_ID);
+int sizeBefore = result.getItems().size();
 
         // delete from active list
-        shoppingListService.deleteItemFromList(userAccount.getUsername(),activeList.getId(),itemEntity.getId());
+        shoppingListService.deleteItemFromList(userAccount.getUsername(), LIST_1_ID, ITEM_1_ID);
 
         // retrieve active list
-        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(),activeList.getId());
+         result = shoppingListService.getListById(userAccount.getUsername(), LIST_1_ID);
 
         // ensure item is NOT there
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getItems());
-        Assert.assertTrue(result.getItems().size()==0);
+        Assert.assertEquals(sizeBefore - 1,result.getItems().size());
     }
 
     @Test
     public void testGenerateListFromMealPlan() {
-        ShoppingListEntity result = shoppingListService.generateListFromMealPlan(userAccount.getUsername(),finalMealPlan.getId());
+        ShoppingListEntity result = shoppingListService.generateListFromMealPlan(userAccount.getUsername(), MEAL_PLAN_1_ID);
         Assert.assertNotNull(result);
     }
 }

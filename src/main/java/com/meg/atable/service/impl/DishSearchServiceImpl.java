@@ -4,6 +4,7 @@ import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.service.DishSearchCriteria;
 import com.meg.atable.service.DishSearchService;
 import com.meg.atable.service.DishTagSearchResult;
+import com.meg.atable.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -26,6 +27,8 @@ public class DishSearchServiceImpl implements DishSearchService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private TagStructureService tagStructureService;
 
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -42,7 +45,11 @@ public class DishSearchServiceImpl implements DishSearchService {
         String sqlBase = "select distinct d.* from dish d ";
         StringBuffer fromExtension = new StringBuffer();
         StringBuffer whereClause = new StringBuffer("where d.user_id = :userId ");
+        HashSet<Long> allTagIds = getAllTagIdsForCriteria(criteria);
+        HashMap<Long, List<Long>> groupDictionary = tagStructureService.getSearchGroupsForTagIds(allTagIds);
         if (!criteria.getIncludedTagIds().isEmpty()) {
+            // get dictionary for tag_ids
+
             int i = 0;
             for (Long id : criteria.getIncludedTagIds()) {
 
@@ -52,9 +59,23 @@ public class DishSearchServiceImpl implements DishSearchService {
                         .append(i)
                         .append(".dish_id and iT")
                         .append(i)
-                        .append(".tag_id = ")
-                        .append(id)
-                        .append(" ");
+                        .append(".tag_id  ");
+                if (groupDictionary.containsKey(id)) {
+                    fromExtension.append(" in (");
+                    for (Long memberid : groupDictionary.get(id)) {
+                        fromExtension.append(memberid);
+                        fromExtension.append(",");
+                    }
+                    fromExtension.setLength(fromExtension.length() - 1);
+                    fromExtension.append(") ");
+                } else {
+                    fromExtension.append(" = ")
+                            .append(id)
+                            .append(" ");
+
+                }
+
+
                 i++;
             }
         }
@@ -68,12 +89,29 @@ public class DishSearchServiceImpl implements DishSearchService {
                         .append(i)
                         .append(".dish_id and eT")
                         .append(i)
-                        .append(".tag_id = ")
-                        .append(id)
-                        .append(" ");
+                        .append(".tag_id ");
+
+                if (groupDictionary.containsKey(id)) {
+                    fromExtension.append(" in (");
+                    for (Long memberid : groupDictionary.get(id)) {
+                        fromExtension.append(memberid);
+                        fromExtension.append(",");
+                    }
+                    fromExtension.setLength(fromExtension.length() - 1);
+                    fromExtension.append(") ");
+                } else {
+                    fromExtension.append(" = ")
+                            .append(id)
+                            .append(" ");
+
+                }
+
+
                 whereClause.append(" and eT")
                         .append(i)
                         .append(".tag_id is null ");
+
+
                 i++;
             }
 
@@ -85,12 +123,23 @@ public class DishSearchServiceImpl implements DishSearchService {
         return dishEntities;
     }
 
+    private HashSet<Long> getAllTagIdsForCriteria(DishSearchCriteria criteria) {
+        HashSet<Long> allTagIds = new HashSet<Long>();
+        if (criteria.getIncludedTagIds() != null) {
+            allTagIds.addAll(criteria.getIncludedTagIds());
+        }
+        if (criteria.getExcludedTags() != null) {
+            allTagIds.addAll(criteria.getExcludedTags());
+        }
+        return allTagIds;
+    }
+
     @Override
     public List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, Long slotDishTagId, int size, List<String> tagListForSlot, Map<Long, List<Long>> searchGroups) {
         // create sql
-        Object[] sqlAndParams = createSqlForDishTagSearchResult(tagListForSlot,searchGroups);
-        String sql = (String)sqlAndParams[0];
-        Map<String,Object> params = (Map<String,Object>)sqlAndParams[1];
+        Object[] sqlAndParams = createSqlForDishTagSearchResult(tagListForSlot, searchGroups);
+        String sql = (String) sqlAndParams[0];
+        Map<String, Object> params = (Map<String, Object>) sqlAndParams[1];
         // create parameters
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", userId);
@@ -102,9 +151,9 @@ public class DishSearchServiceImpl implements DishSearchService {
         return rawSearchResults;
     }
 
-    private Object[] createSqlForDishTagSearchResult(List<String> tagListForSlot,Map<Long, List<Long>> searchGroups) {
+    private Object[] createSqlForDishTagSearchResult(List<String> tagListForSlot, Map<Long, List<Long>> searchGroups) {
         Object[] returnvalue = new Object[2];
-        Map<String,Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = new HashMap<>();
 
         StringBuffer selectClause = new StringBuffer("select distinct dt.dish_id , d.last_added ");
         StringBuffer outerJoins = new StringBuffer();
@@ -132,10 +181,10 @@ public class DishSearchServiceImpl implements DishSearchService {
                         .append(" (:")
                         .append(paramname)
                         .append(" )");
-                parameters.put(paramname,searchGroups.get(Long.valueOf(id)));
+                parameters.put(paramname, searchGroups.get(Long.valueOf(id)));
 
             } else {
-                    outerJoins.append(".tag_id = ")
+                outerJoins.append(".tag_id = ")
                         .append(id)
                         .append(" ");
 

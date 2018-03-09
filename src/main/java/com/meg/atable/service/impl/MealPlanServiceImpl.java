@@ -104,7 +104,7 @@ public class MealPlanServiceImpl implements MealPlanService {
 
         MealPlanEntity mealPlanEntity = mealPlanRepository.findOne(mealPlanId);
         // ensure that this meal plan belongs to the user
-        if (mealPlanEntity != null && mealPlanEntity.getUserId() == user.getId()) {
+        if (mealPlanEntity != null && mealPlanEntity.getUserId().equals(user.getId()) ) {
             return mealPlanEntity;
         }
         return null;

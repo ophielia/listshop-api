@@ -143,3 +143,9 @@ delete  from shadow_tags;
 
 
 --delete from tag_search_group where tag_search_group_id in (350, 302);
+
+-- dump command
+pg_dump -U bank -d atable -O --column-inserts > test.sql
+
+-- dump command
+pg_dump -U bank -d atable -O --column-inserts > test.sql
