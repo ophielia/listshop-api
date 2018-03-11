@@ -1,7 +1,9 @@
 package com.meg.atable.api;
 
 import com.meg.atable.Application;
-import com.meg.atable.api.model.*;
+import com.meg.atable.api.model.Item;
+import com.meg.atable.api.model.ShoppingList;
+import com.meg.atable.api.model.TagType;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.JwtUser;
 import com.meg.atable.auth.service.UserService;
@@ -11,8 +13,9 @@ import com.meg.atable.data.repository.MealPlanRepository;
 import com.meg.atable.data.repository.SlotRepository;
 import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.ShoppingListService;
-import com.meg.atable.service.tag.TagService;
 import com.meg.atable.service.impl.ServiceTestUtils;
+import com.meg.atable.service.tag.TagService;
+import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +40,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -108,10 +110,23 @@ public class ShoppingListRestControllerTest {
     @Before
     @WithMockUser
     public void setup() throws Exception {
+
         this.mockMvc = webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
                 .build();
 
+        if (setupComplete) {
+            return;
+        }
+        userDetails = new JwtUser(TestConstants.USER_1_ID,
+                TestConstants.USER_1_NAME,
+                null,
+                null,
+                null,
+                true,
+                null);
+        setupComplete = true;
+/*
         if (setupComplete) {
             return;
         }
@@ -141,9 +156,9 @@ public class ShoppingListRestControllerTest {
         ItemEntity itemEntity = new ItemEntity();
         itemEntity.addItemSource(ItemSourceType.Manual);
         itemEntity.setTag(tag2);
-        shoppingListService.addItemToList(userName, baseShoppingList.getId(), itemEntity);
+        shoppingListService.addItemToList(userName, TestConstants.LIST_1_ID, itemEntity);
         // now - find the item id of the added item (so it can be deleted
-        baseShoppingList = shoppingListService.getListById(userName, baseShoppingList.getId());
+        baseShoppingList = shoppingListService.getListById(userName, TestConstants.LIST_1_ID);
         toDeleteItemId = baseShoppingList.getItems().get(0).getId();
 
         // Pick up list which will be deleted
@@ -155,32 +170,35 @@ public class ShoppingListRestControllerTest {
 
         finalMealPlan = createTestMealPlan();
         setupComplete = true;
+
+ */
     }
 
 
     @Test
     @WithMockUser
     public void testRetrieveLists() throws Exception {
-        Long testId = baseShoppingList.getId();
-        Long testId2 = toDeletePickup.getId();
+        JwtUser thisuserDetails = new JwtUser(TestConstants.USER_1_ID,
+                TestConstants.USER_1_NAME,
+                null,
+                null,
+                null,
+                true,
+                null);
+
         mockMvc.perform(get("/shoppinglist")
-                .with(user(userDetails)))
+                .with(user(thisuserDetails)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$._embedded.shoppingListResourceList", hasSize(2)))
-                .andExpect(jsonPath("$._embedded.shoppingListResourceList[0].shopping_list.list_id").value(testId))
-                .andExpect(jsonPath("$._embedded.shoppingListResourceList[0].shopping_list.list_type", is("BaseList")))
-                .andExpect(jsonPath("$._embedded.shoppingListResourceList[1].shopping_list.list_id").value(testId2))
-                .andExpect(jsonPath("$._embedded.shoppingListResourceList[1].shopping_list.list_type", is("PickUpList")));
-
+                .andExpect(jsonPath("$._embedded.shoppingListResourceList", hasSize(3)));
     }
 
 
     @Test
     @WithMockUser
     public void testCreateList() throws Exception {
-        JwtUser createUserDetails = new JwtUser(userAccount.getId(),
+        JwtUser createUserDetails = new JwtUser(TestConstants.USER_1_ID,
                 userName,
                 null,
                 null,
@@ -204,7 +222,7 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testRetrieveListByType() throws Exception {
-        Long testId = baseShoppingList.getId();
+        Long testId = TestConstants.LIST_1_ID;
 
         mockMvc.perform(get("/shoppinglist/type/BaseList")
                 .with(user(userDetails)))
@@ -218,9 +236,9 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testRetrieveListById() throws Exception {
-        Long testId = baseShoppingList.getId();
+        Long testId = TestConstants.LIST_1_ID;
 
-        mockMvc.perform(get("/shoppinglist/" + baseShoppingList.getId())
+        mockMvc.perform(get("/shoppinglist/" + TestConstants.LIST_1_ID)
                 .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
@@ -232,7 +250,7 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testDeleteList() throws Exception {
-        Long testId = toDeletePickup.getId();
+        Long testId = TestConstants.LIST_3_ID;
 
         mockMvc.perform(delete("/shoppinglist/" + testId)
                 .with(user(userDetails)))
@@ -242,7 +260,7 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testAddItemToList() throws Exception {
-        String url = "/shoppinglist/" + baseShoppingList.getId()
+        String url = "/shoppinglist/" + TestConstants.LIST_1_ID
                 + "/item";
 
         Item item = new Item()
@@ -261,7 +279,7 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testDeleteItemFromList() throws Exception {
-        Long listId = baseShoppingList.getId();
+        Long listId = TestConstants.LIST_1_ID;
         String url = "/shoppinglist/" + listId + "/item/" + toDeleteItemId;
         mockMvc.perform(delete(url)
                 .with(user(userDetails)))
@@ -271,7 +289,7 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testGenerateFromMealPlan() throws Exception {
-        Long mealPlanId = finalMealPlan.getId();
+        Long mealPlanId = TestConstants.MEAL_PLAN_1_ID;
         String url = "/shoppinglist/mealplan/" + mealPlanId;
 
         this.mockMvc.perform(post(url)

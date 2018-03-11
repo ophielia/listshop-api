@@ -9,32 +9,24 @@ import java.util.List;
 /**
  * Part of display of ShoppingList
  */
-public class Category {
-
-    private String name;
-
-    private java.util.List<Item> items;
+public interface Category {
 
 
-    public Category(String name) {
-        this.name = name;
-    }
+    String getName();
 
-    public String getName() {
-        return name;
-    }
+    Category name(String name);
 
-    public Category name(String name) {
-        this.name = name;
-        return this;
-    }
+    Long getId();
 
-    public List<Item> getItems() {
-        return items;
-    }
+    List<Category> getSubCategories();
 
-    public Category items(List<Item> items) {
-        this.items = items;
-        return this;
-    }
+    Category subCategories(List<Category> subCategories);
+
+    int getDisplayOrder();
+
+    Category displayOrder(Integer displayOrder);
+
+    void addSubCategory(Category subcategory);
+
+    boolean isEmpty();
 }

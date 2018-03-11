@@ -12,11 +12,11 @@ import java.util.List;
  */
 @Entity
 @Table(name = "list")
-@SequenceGenerator(name="list_sequence", sequenceName = "list_sequence")
+@SequenceGenerator(name = "list_sequence", sequenceName = "list_sequence")
 public class ShoppingListEntity {
 
     @Id
-    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="list_sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_sequence")
     @Column(name = "list_id")
     private Long list_id;
 
@@ -36,9 +36,12 @@ public class ShoppingListEntity {
     private Long userId;
 
 
-    @Column(name = "list_layout_type")
+    @Transient
     @Enumerated(EnumType.STRING)
     private ListLayoutType listLayoutType;
+
+    @JoinColumn(name = "list_layout_id")
+    private Long listLayoutId;
 
     public ShoppingListEntity(Long id) {
         this.list_id = id;
@@ -91,5 +94,13 @@ public class ShoppingListEntity {
 
     public void setListLayoutType(ListLayoutType listLayoutType) {
         this.listLayoutType = listLayoutType;
+    }
+
+    public Long getListLayoutId() {
+        return listLayoutId;
+    }
+
+    public void setListLayoutId(Long listLayoutId) {
+        this.listLayoutId = listLayoutId;
     }
 }

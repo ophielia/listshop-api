@@ -1,6 +1,7 @@
 package com.meg.atable.data.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,11 +9,11 @@ import java.util.List;
  */
 @Entity
 @Table(name = "list_category")
-@SequenceGenerator(name="list_layout_category_sequence", sequenceName = "list_layout_category_sequence")
+@SequenceGenerator(name = "list_layout_category_sequence", sequenceName = "list_layout_category_sequence")
 public class ListLayoutCategoryEntity {
 
     @Id
-    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="list_layout_category_sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_layout_category_sequence")
     @Column(name = "category_id")
     private Long categoryId;
 
@@ -26,6 +27,14 @@ public class ListLayoutCategoryEntity {
 
     @Column(name = "layout_id")
     private Long layoutId;
+
+    @Transient
+    private List<ItemEntity> items = new ArrayList<>();
+
+    @Transient
+    private List<ListLayoutCategoryEntity> subCategories = new ArrayList<>();
+
+    private Integer displayOrder;
 
     public ListLayoutCategoryEntity(Long categoryId) {
         this.categoryId = categoryId;
@@ -61,5 +70,30 @@ public class ListLayoutCategoryEntity {
 
     public void setLayoutId(Long layoutId) {
         this.layoutId = layoutId;
+    }
+
+    public void addItem(ItemEntity item) {
+        this.items.add(item);
+    }
+
+    public List<ItemEntity> getItems() {
+        return items;
+    }
+
+    public void addSubCategory(ListLayoutCategoryEntity child) {
+        this.subCategories.add(child);
+    }
+
+    public List<ListLayoutCategoryEntity> getSubCategories() {
+        return subCategories;
+    }
+
+
+    public Integer getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
     }
 }

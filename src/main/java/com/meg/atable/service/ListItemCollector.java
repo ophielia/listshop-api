@@ -4,7 +4,6 @@ import com.meg.atable.api.model.ItemSourceType;
 import com.meg.atable.api.model.ListType;
 import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.TagEntity;
-import com.meg.atable.service.impl.ShoppingListServiceImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,11 +14,11 @@ import java.util.stream.Stream;
  */
 public class ListItemCollector {
     private final Long listId;
-    private  Map<Long, String> categoryDictionary;
-    private  Map<Long, ItemEntity> tagToItem;
-    private  List<ItemEntity> freeTextItems;
+    private Map<Long, Long> categoryDictionary;
+    private Map<Long, ItemEntity> tagToItem;
+    private List<ItemEntity> freeTextItems;
 
-    public ListItemCollector(Long savedNewListId, Map<Long, String> categoryDictionary) {
+    public ListItemCollector(Long savedNewListId, Map<Long, Long> categoryDictionary) {
         this.listId = savedNewListId;
         this.categoryDictionary = categoryDictionary;
         tagToItem = new HashMap<>();
@@ -33,10 +32,9 @@ public class ListItemCollector {
         freeTextItems = new ArrayList<>();
         if (items != null) {
             items.stream().forEach(item -> {
-                if (item.getTag()!=null) {
-                    tagToItem.put(item.getTag().getId(),item);
-                }
-                else {
+                if (item.getTag() != null) {
+                    tagToItem.put(item.getTag().getId(), item);
+                } else {
                     freeTextItems.add(item);
                 }
             });
@@ -79,11 +77,11 @@ public class ListItemCollector {
                 .collect(Collectors.toList());
     }
 
-    public void categorizeUncategorized(Map<Long, String> dictionary) {
+    public void categorizeUncategorized(Map<Long, Long> dictionary) {
         dictionary.entrySet().stream()
                 .forEach(e -> {
                     ItemEntity item = tagToItem.get(e.getKey());
-                    item.setListCategory(e.getValue());
+                    item.setCategoryId(e.getValue());
                     tagToItem.put(e.getKey(), item);
                 });
     }
@@ -94,7 +92,7 @@ public class ListItemCollector {
         item.setListId(listId);
         item.addItemSource(sourceType);
         item.setUsedCount(1);
-        item.setListCategory(categoryDictionary.get(tag.getId()));
+        item.setCategoryId(categoryDictionary.get(tag.getId()));
         tagToItem.put(tag.getId(), item);
     }
 
@@ -135,7 +133,7 @@ public class ListItemCollector {
     private ItemEntity copyItem(ItemEntity item, ListType listType) {
         ItemEntity copied = new ItemEntity();
         copied.setUsedCount(0); // MM resetting count when adding from another list
-        copied.setListCategory(null);  // MM will need to revisit this - other list may have different layout
+        copied.setCategoryId(item.getCategoryId());  // MM will need to revisit this - other list may have different layout
         copied.setTag(item.getTag());
         copied.setListId(listId);
         copied.setFreeText(item.getFreeText());
@@ -146,13 +144,10 @@ public class ListItemCollector {
 
     public List<ItemEntity> getItemsByItemSource(ItemSourceType itemSource) {
         return tagToItem.entrySet().stream()
-            .filter(e -> e.getValue().getItemSource()!=null &&
-            e.getValue().getItemSource().contains(itemSource.name()))
+                .filter(e -> e.getValue().getItemSource() != null &&
+                        e.getValue().getItemSource().contains(itemSource.name()))
                 .map(e -> e.getValue())
                 .collect(Collectors.toList());
     }
 
-    public void setCategoryDictionary(Map<Long, String> categoryDictionary) {
-        this.categoryDictionary = categoryDictionary;
-    }
 }

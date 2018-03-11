@@ -1,5 +1,12 @@
 defaults -
-    need default for listlayouttype
+    add settings to application.properties for frequent and non categorized
+    Rest entry point for assign to parent (list category)
+    Rest entry point for move up / move down
+    service implementations for the rest entry points
+
+    then - to front end
+
+
     default / switch for add lists upon generate
 bugs -
     dishes with every tag added twice - I suspect tag assign tool

@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Tuple;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,6 +36,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     ListLayoutService listLayoutService;
     @Autowired
     private
+    ListSearchService listSearchService;
+    @Autowired
+    private
     MealPlanService mealPlanService;
     @Autowired
     private
@@ -58,10 +60,28 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingListEntity createList(String userName, ShoppingListEntity shoppingList) {
         UserAccountEntity user = userService.getUserByUserName(userName);
-        //ListLayout
+        // get list layout for user, list_type
+        ListLayoutEntity listLayout = getListLayout(user, shoppingList.getListType(), shoppingList.getListLayoutType());
+        shoppingList.setListLayoutId(listLayout.getId());
         shoppingList.setCreatedOn(new Date());
         shoppingList.setUserId(user.getId());
         return shoppingListRepository.save(shoppingList);
+    }
+
+    private ListLayoutEntity getListLayout(UserAccountEntity user, ListType listType, ListLayoutType listLayoutType) {
+        // nothing yet for user - eventually, we could consider user preferences / properties here
+
+        ListLayoutType resultlayout = listlayoutdefault;
+        if (listLayoutType != null) {
+            resultlayout = listLayoutType; // defaults to requested listLayoutType
+        } else if (listType != null) {
+            resultlayout = shoppingListProperties.getDefaultLayouts().get(listType);
+        }
+
+        // get layout for listtype
+        return listLayoutService.getListLayoutByType(resultlayout);
+
+
     }
 
     @Override
@@ -74,7 +94,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingListEntity getListById(String userName, Long listId) {
         UserAccountEntity user = userService.getUserByUserName(userName);
-        if (user == null ) {
+        if (user == null) {
             return null;
         }
         ShoppingListEntity shoppingListEntity = shoppingListRepository.findOne(listId);
@@ -114,8 +134,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         itemEntity.setAddedOn(new Date());
         itemEntity.addItemSource(ItemSourceType.Manual);
         itemEntity.setListId(listId);
-        String listCategory = getCategoryForItem(itemEntity, shoppingListEntity.getListLayoutType());
-        itemEntity.setListCategory(listCategory);
+        Long listCategory = getCategoryIdForItem(shoppingListEntity, itemEntity);
+        itemEntity.setCategoryId(listCategory);
         ItemEntity result = itemRepository.save(itemEntity);
         // add to shoppingListEntity
         List<ItemEntity> items = shoppingListEntity.getItems();
@@ -162,9 +182,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) {
         UserAccountEntity user = userService.getUserByUserName(name);
         // get list layout by type
+        ListLayoutType inprocessLayout = shoppingListProperties.getDefaultLayouts().get(ListType.InProcess);
         ListLayoutEntity listLayoutEntity = listLayoutService.getListLayouts()
                 .stream()
-                .filter(t -> t.getLayoutType().equals(listlayoutdefault))
+                .filter(t -> t.getLayoutType().equals(inprocessLayout))
                 .findFirst()
                 .get();
 
@@ -181,10 +202,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         List<TagEntity> allMealPlanTags = mealPlanService.fillInDishTags(mealPlan);
         // get the tagcategorykey for the mealplan
-        Map<Long, String> categoryDictionary = getCategoryDictionary(listLayoutEntity.getId(), allMealPlanTags);
+        Map<Long, Long> categoryDictionary = getCategoryDictionary(listLayoutEntity.getId(), allMealPlanTags);
         // create new inprocess list
         ShoppingListEntity newList = new ShoppingListEntity();
-        newList.setListLayoutType(listlayoutdefault);
+        newList.setListLayoutId(listLayoutEntity.getId());
         newList.setListType(ListType.InProcess);
         ShoppingListEntity savedNewList = createList(name, newList);
         // create the collector
@@ -212,7 +233,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // check categorization of other list items
         List<TagEntity> uncategorized = collector.getUncategorizedTags();
         if (uncategorized != null && !uncategorized.isEmpty()) {
-            Map<Long, String> dictionary = getCategoryDictionary(listLayoutEntity.getId(), uncategorized);
+            Map<Long, Long> dictionary = getCategoryDictionary(listLayoutEntity.getId(), uncategorized);
             collector.categorizeUncategorized(dictionary);
         }
 
@@ -251,10 +272,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<TagEntity> tocategorize = collector.getTagsByCategories(Arrays.asList(uncategorized, ListTagStatisticService.IS_FREQUENT));
         if (!tocategorize.isEmpty()) {
             ListLayoutEntity listLayout = listLayoutService.getListLayoutByType(toActive.getListLayoutType());
-            Map<Long, String> dictionary = getCategoryDictionary(listLayout.getId(), tocategorize);
+            Map<Long, Long> dictionary = getCategoryDictionary(listLayout.getId(), tocategorize);
             tocategorize.stream()
                     .filter(e -> !dictionary.containsKey(e.getId()))
-                    .forEach(e -> dictionary.put(e.getId(), uncategorized));
+                    .forEach(e -> dictionary.put(e.getId(), null));
             collector.categorizeUncategorized(dictionary);
         }
 
@@ -271,6 +292,69 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
+    public List<Category> categorizeList(ShoppingListEntity shoppingListEntity) {
+        if (shoppingListEntity.getItems() == null || shoppingListEntity.getItems().isEmpty()) {
+            return new ArrayList<Category>();
+        }
+        boolean separateFrequent = shoppingListEntity.getListType().equals(ListType.InProcess);
+        List<TagEntity> tagList = shoppingListEntity.getItems().stream().map(ItemEntity::getTag).collect(Collectors.toList());
+        // get category to item dictionary (tag key, category value)
+        Map<Long, Long> dictionary = getCategoryDictionary(shoppingListEntity.getListLayoutId(), tagList);
+        // get categories for items
+        Set<Long> categoryIds = new HashSet<>(dictionary.values());
+        List<ListLayoutCategoryEntity> categoriesEntities = listLayoutService.getListCategoriesForIds(categoryIds);
+        if (categoriesEntities == null) {
+            return null;
+        }
+        // fill categories for items (into hash)
+        Map<Long, Category> filledCategories = new HashMap<>();
+        categoriesEntities.forEach(ce -> {
+            ItemCategory cat = (ItemCategory) new ItemCategory(ce.getName(), ce.getId())
+                    .displayOrder(ce.getDisplayOrder());
+            filledCategories.put(cat.getId(), cat);
+        });
+        ItemCategory frequent = (ItemCategory) new ItemCategory(shoppingListProperties.getFrequentCategoryName(),
+                shoppingListProperties.getFrequentIdAndSortAsLong())
+                .displayOrder(shoppingListProperties.getFrequentIdAndSort());
+        ItemCategory uncategorized = (ItemCategory) new ItemCategory(shoppingListProperties.getUncategorizedCategoryName(),
+                shoppingListProperties.getUncategorizedIdAndSortAsLong())
+                .displayOrder(shoppingListProperties.getUncategorizedIdAndSort());
+        for (ItemEntity item : shoppingListEntity.getItems()) {
+            if (item.isFrequent() && separateFrequent) {
+                frequent.addItemEntity(item);
+            } else if (item.getCategoryId() == null) {
+                uncategorized.addItemEntity(item);
+            } else {
+                ItemCategory category = (ItemCategory) filledCategories.get(item.getCategoryId());
+                if (category == null) {
+                    uncategorized.addItemEntity(item);
+                } else {
+                    category.addItemEntity(item);
+                }
+
+            }
+        }
+
+        // structure categories
+        listLayoutService.structureCategories(filledCategories, shoppingListEntity.getListLayoutId());
+
+        // add frequent and uncategorized
+        if (!frequent.isEmpty()) {
+            filledCategories.put(frequent.getId(), frequent);
+        }
+        if (!uncategorized.isEmpty()) {
+            filledCategories.put(uncategorized.getId(), uncategorized);
+        }
+
+        // sort categories
+
+        // return list of categories
+        List<Category> sortedResults = new ArrayList<>(filledCategories.values());
+        sortedResults.sort(Comparator.comparing(Category::getDisplayOrder));
+        return sortedResults;
+    }
+
+
 
     private void deleteItemsFromPickupList(UserAccountEntity user, List<ItemEntity> pickupListItems) {
         ShoppingListEntity list = getListByUsernameAndType(user.getUsername(), ListType.PickUpList);
@@ -283,26 +367,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
     }
 
-    private Map<Long, String> getCategoryDictionary(Long layoutId, List<TagEntity> tagList) {
-        List<Tuple> rawKey = tagRepository.getTagCategoryKey(layoutId, tagList);
-        Map<Long, String> dictionary = new HashMap<>();
-        rawKey.stream()
-                .forEach(t -> dictionary.put((Long) t.get(0), String.valueOf(t.get(1))));
-        return dictionary;
+    private Map<Long, Long> getCategoryDictionary(Long layoutId, List<TagEntity> tagList) {
+        return listSearchService.getTagToCategoryMap(layoutId, tagList);
     }
 
-    private String getCategoryForItem(ItemEntity itemEntity, ListLayoutType listLayoutType) {
+    private Long getCategoryIdForItem(ShoppingListEntity shoppingList, ItemEntity itemEntity) {
         if (itemEntity == null || itemEntity.getTag() == null) {
-            return uncategorized; // MM make default here
+            return null;
         }
-        ListLayoutEntity listLayoutEntity = listLayoutService.getListLayouts()
-                .stream()
-                .filter(t -> t.getLayoutType().equals(listLayoutType))
-                .findFirst()
-                .get();
-        Map<Long, String> lookup = getCategoryDictionary(listLayoutEntity.getId(), Arrays.asList(itemEntity.getTag()));
+        Map<Long, Long> lookup = getCategoryDictionary(shoppingList.getListLayoutId(), Arrays.asList(itemEntity.getTag()));
         if (lookup.isEmpty()) {
-            return uncategorized;
+            return null;
         }
         return lookup.get(itemEntity.getTag().getId());
     }

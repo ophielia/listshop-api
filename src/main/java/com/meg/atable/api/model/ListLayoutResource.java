@@ -5,6 +5,8 @@ import com.meg.atable.controller.ListLayoutRestController;
 import com.meg.atable.data.entity.ListLayoutEntity;
 import org.springframework.hateoas.ResourceSupport;
 
+import java.util.List;
+
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -16,8 +18,8 @@ public class ListLayoutResource extends ResourceSupport {
     @JsonProperty("list_layout")
     private final ListLayout listLayout;
 
-    public ListLayoutResource(ListLayoutEntity listLayoutEntity) {
-        listLayout = ModelMapper.toModel(listLayoutEntity);
+    public ListLayoutResource(ListLayoutEntity listLayoutEntity, List<Category> categories) {
+        listLayout = ModelMapper.toModel(listLayoutEntity, categories);
 
         this.add(linkTo(methodOn(ListLayoutRestController.class)
                 .readListLayout(null, listLayout.getLayoutId())).withSelfRel());

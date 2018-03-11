@@ -14,7 +14,6 @@ public class MealPlanResource extends ResourceSupport {
     @JsonProperty("meal_plan")
     private final MealPlan mealPlan;
 
-    // MM correct this
     public MealPlanResource(MealPlanEntity mealPlanEntity) {
         this.mealPlan = ModelMapper.toModel(mealPlanEntity);
 

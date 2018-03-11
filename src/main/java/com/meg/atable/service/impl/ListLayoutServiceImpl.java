@@ -1,7 +1,10 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.model.Category;
+import com.meg.atable.api.model.ListLayoutCategory;
 import com.meg.atable.api.model.ListLayoutType;
 import com.meg.atable.auth.service.UserService;
+import com.meg.atable.data.entity.CategoryRelationEntity;
 import com.meg.atable.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.data.entity.ListLayoutEntity;
 import com.meg.atable.data.entity.TagEntity;
@@ -14,8 +17,7 @@ import com.meg.atable.service.ListLayoutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,19 +27,10 @@ import java.util.stream.Collectors;
 public class ListLayoutServiceImpl implements ListLayoutService {
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private ListLayoutCategoryRepository listLayoutCategoryRepository;
 
     @Autowired
     private ListLayoutRepository listLayoutRepository;
-
-    @Autowired
-    private SlotRepository slotRepository;
-
-    @Autowired
-    private DishService dishService;
 
     @Autowired
     private TagRepository tagRepository;
@@ -49,7 +42,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
     @Override
     public ListLayoutEntity getListLayoutByType(ListLayoutType listLayoutType) {
-        List<ListLayoutEntity> listLayoutEntities  = listLayoutRepository.findByLayoutType(listLayoutType);
+        List<ListLayoutEntity> listLayoutEntities = listLayoutRepository.findByLayoutType(listLayoutType);
         if (listLayoutEntities == null || listLayoutEntities.isEmpty()) {
             return null;
         }
@@ -202,6 +195,63 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
         // save category
         listLayoutCategoryRepository.save(categoryEntity);
+    }
+
+    public Map<Long, Long> getSubCategoryMappings(Long listLayoutId) {
+        List<CategoryRelationEntity> relations = listLayoutRepository.getSubCategoryMappings(listLayoutId);
+        Map<Long, Long> map = new HashMap<>();
+        relations.forEach(c -> map.put(c.getChild().getId(), c.getParent().getId()));
+        return map;
+    }
+
+    @Override
+    public List<ListLayoutCategoryEntity> getListCategoriesForIds(Set<Long> categoryIds) {
+        return listLayoutCategoryRepository.findAll(categoryIds);
+    }
+
+    @Override
+    public List<Category> getStructuredCategories(ListLayoutEntity listLayout) {
+        if (listLayout.getCategories() == null || listLayout.getCategories().isEmpty()) {
+            return new ArrayList<Category>();
+        }
+
+        // gather categories
+        Map<Long, Category> allCategories = new HashMap<>();
+        listLayout.getCategories().forEach(c -> {
+            // copy into listlayoutcategory
+            ListLayoutCategory lc = (ListLayoutCategory) new ListLayoutCategory(c.getId())
+                    .name(c.getName());
+            lc = (ListLayoutCategory) lc.layoutId(c.getLayoutId());
+            lc = (ListLayoutCategory) lc.tagEntities(c.getTags());
+            allCategories.put(c.getId(), lc);
+        });
+
+        // structure subcategories
+        structureCategories(allCategories, listLayout.getId());
+        return allCategories.values().stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public void structureCategories(Map<Long, Category> filledCategories, Long listLayoutId) {
+        Map<Long, Long> subCategoryMappings = getSubCategoryMappings(listLayoutId);
+        for (Map.Entry<Long, Long> entry : subCategoryMappings.entrySet()) {
+            Category child = filledCategories.get(entry.getKey());
+            Category parent = filledCategories.get(entry.getValue());
+            parent.addSubCategory(child);
+        }
+        for (Long childId : subCategoryMappings.keySet()) {
+            filledCategories.remove(childId);
+        }
+
+        // sort subcategories in categories
+        for (Category sortCategory : filledCategories.values()) {
+            if (sortCategory.getSubCategories().isEmpty()) {
+                continue;
+            }
+            sortCategory.getSubCategories()
+                    .sort(Comparator.comparing(Category::getDisplayOrder));
+        }
+
     }
 
 

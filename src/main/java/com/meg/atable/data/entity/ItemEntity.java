@@ -10,11 +10,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "list_item")
-@SequenceGenerator(name="list_item_sequence", sequenceName = "list_item_sequence")
-public class ItemEntity  {
+@SequenceGenerator(name = "list_item_sequence", sequenceName = "list_item_sequence")
+public class ItemEntity {
 
     @Id
-    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="list_item_sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_item_sequence")
     @Column(name = "item_id")
     private Long item_id;
 
@@ -28,7 +28,7 @@ public class ItemEntity  {
     @Column(name = "list_id")
     private Long listId;
 
-    @Column(name="used_count")
+    @Column(name = "used_count")
     private Integer usedCount;
 
     private Date addedOn;
@@ -41,6 +41,11 @@ public class ItemEntity  {
 
     @Transient
     private Long tag_id;
+
+    @Transient
+    private boolean isFrequent = false;
+
+    private Long categoryId;
 
     public ItemEntity(Long id) {
         item_id = id;
@@ -137,5 +142,21 @@ public class ItemEntity  {
             return;
         }
         this.itemSource = this.itemSource + ";" + sourceType.name();
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public boolean isFrequent() {
+        return isFrequent;
+    }
+
+    public void setFrequent(boolean frequent) {
+        isFrequent = frequent;
     }
 }

@@ -1,6 +1,8 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.Application;
+import com.meg.atable.api.model.Category;
+import com.meg.atable.api.model.ItemCategory;
 import com.meg.atable.api.model.ListLayoutType;
 import com.meg.atable.api.model.ListType;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
@@ -13,20 +15,15 @@ import com.meg.atable.data.repository.*;
 import com.meg.atable.service.ShoppingListProperties;
 import com.meg.atable.service.ShoppingListService;
 import com.meg.atable.service.tag.TagService;
-import org.flywaydb.test.FlywayTestExecutionListener;
-import org.flywaydb.test.annotation.FlywayTest;
+import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.List;
 
@@ -34,14 +31,7 @@ import java.util.List;
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public class ShoppingListServiceImplTest {
-    private final static String USER_1_NAME = "testuser";
-    private final static String USER_2_NAME = "adduser";
-    private static final Long MEAL_PLAN_1_ID = 500L;
-    private static final Long ITEM_1_ID = 500L;
-    private static final Long TAG_1_ID = 500L;
-    private static final Long LIST_1_ID = 500L;
-    private static final Long LIST_2_ID = 501L;
-    private static final Long LIST_3_ID = 502L;
+
     @Autowired
     private ShoppingListService shoppingListService;
     @Autowired
@@ -71,25 +61,25 @@ public class ShoppingListServiceImplTest {
     private ShoppingListEntity toDelete; // 502
     private MealPlanEntity finalMealPlan; // 500
 
-@Before
+    @Before
     public void setUp() {
-        userAccount = userService.getUserByUserName(USER_1_NAME);
-        addUserAccount = userService.getUserByUserName(USER_2_NAME);
+        userAccount = userService.getUserByUserName(TestConstants.USER_1_NAME);
+        addUserAccount = userService.getUserByUserName(TestConstants.USER_2_NAME);
         // make tags
-        tag1 = tagService.getTagById(TAG_1_ID).get();
+        tag1 = tagService.getTagById(TestConstants.TAG_1_ID).get();
 
         // make base list
         //baseList = shoppingListService.getListById(LIST_1_ID);
 
         // make active list
-        activeList = shoppingListRepository.getOne(LIST_2_ID);
-        itemEntity = itemRepository.getOne(ITEM_1_ID);
+        activeList = shoppingListRepository.getOne(TestConstants.LIST_2_ID);
+        itemEntity = itemRepository.getOne(TestConstants.ITEM_1_ID);
 
         // make list to be deleted
-        toDelete = shoppingListRepository.getOne(LIST_3_ID);
+        toDelete = shoppingListRepository.getOne(TestConstants.LIST_3_ID);
 
         // make a mealplan with three dishes, and five tags
-        finalMealPlan = mealPlanRepository.getOne(MEAL_PLAN_1_ID);
+        finalMealPlan = mealPlanRepository.getOne(TestConstants.MEAL_PLAN_1_ID);
     }
 
     @Test
@@ -102,19 +92,19 @@ public class ShoppingListServiceImplTest {
 
     @Test
     public void testGetListByUsername() {
-    ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(),LIST_1_ID);
+        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(), TestConstants.LIST_1_ID);
 
 
         Assert.assertNotNull(result);
         Assert.assertEquals(ListType.BaseList, result.getListType());
-        Assert.assertEquals(LIST_1_ID,result.getId());
+        Assert.assertEquals(TestConstants.LIST_1_ID, result.getId());
     }
 
 
     @Test
     public void testGetListByUsername_BadUser() {
         ShoppingListEntity result = shoppingListService.getListById("noseyusername",
-                LIST_1_ID);
+                TestConstants.LIST_1_ID);
 
         Assert.assertNull(result);
     }
@@ -136,7 +126,7 @@ public class ShoppingListServiceImplTest {
 
     @Test
     public void testDeleteList() {
-        boolean result = shoppingListService.deleteList(userAccount.getUsername(), LIST_3_ID);
+        boolean result = shoppingListService.deleteList(userAccount.getUsername(), TestConstants.LIST_3_ID);
 
         Assert.assertTrue(result);
     }
@@ -145,14 +135,13 @@ public class ShoppingListServiceImplTest {
     public void testAddItemToList() {
         // make item (unsaved)
         ItemEntity itemEntity = new ItemEntity();
-        itemEntity.setListCategory("All");
         itemEntity.setTag(tag1);
 
         // add to baseList
-        shoppingListService.addItemToList(userAccount.getUsername(), LIST_1_ID, itemEntity);
+        shoppingListService.addItemToList(userAccount.getUsername(), TestConstants.LIST_1_ID, itemEntity);
 
         // retrieve baselist
-        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(), LIST_1_ID);
+        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(), TestConstants.LIST_1_ID);
 
         // ensure item is there
         Assert.assertNotNull(result);
@@ -165,24 +154,60 @@ public class ShoppingListServiceImplTest {
     //@FlywayTest(locationsForMigrate = "classpath:db/testdata/shoppingListServiceImpl_deleteItem")
     //@FlywayTest(invokeBaselineDB = true)
     public void testDeleteItemFromList() {
-        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(), LIST_1_ID);
-int sizeBefore = result.getItems().size();
+        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(), TestConstants.LIST_1_ID);
+        int sizeBefore = result.getItems().size();
 
         // delete from active list
-        shoppingListService.deleteItemFromList(userAccount.getUsername(), LIST_1_ID, ITEM_1_ID);
+        shoppingListService.deleteItemFromList(userAccount.getUsername(), TestConstants.LIST_1_ID, TestConstants.ITEM_1_ID);
 
         // retrieve active list
-         result = shoppingListService.getListById(userAccount.getUsername(), LIST_1_ID);
+        result = shoppingListService.getListById(userAccount.getUsername(), TestConstants.LIST_1_ID);
 
         // ensure item is NOT there
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getItems());
-        Assert.assertEquals(sizeBefore - 1,result.getItems().size());
+        Assert.assertEquals(sizeBefore - 1, result.getItems().size());
     }
 
     @Test
     public void testGenerateListFromMealPlan() {
-        ShoppingListEntity result = shoppingListService.generateListFromMealPlan(userAccount.getUsername(), MEAL_PLAN_1_ID);
+        ShoppingListEntity result = shoppingListService.generateListFromMealPlan(userAccount.getUsername(), TestConstants.MEAL_PLAN_1_ID);
         Assert.assertNotNull(result);
     }
+
+    @Test
+    public void testGetProperties() {
+        Assert.assertNotNull(shoppingListProperties);
+        Assert.assertNotNull(shoppingListProperties.getTestValue());
+        Assert.assertEquals("beep", shoppingListProperties.getTestValue());
+        Assert.assertNotNull(shoppingListProperties.getDefaultLayouts());
+        Assert.assertEquals(4, shoppingListProperties.getDefaultLayouts().entrySet().size());
+    }
+
+    @Test
+    public void testCategorizeList() {
+        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(), TestConstants.MEAL_PLAN_1_ID);
+
+        List<Category> categoryEntities = shoppingListService.categorizeList(result);
+        Assert.assertNotNull(categoryEntities);
+
+        // count items and subcategories
+        int itemcount = 0;
+        int subcatcount = 0;
+        for (Category categoryResult : categoryEntities) {
+            ItemCategory cr = (ItemCategory) categoryResult;
+            itemcount += cr.getItemEntities().size();
+            if (!categoryResult.getSubCategories().isEmpty()) {
+                subcatcount += categoryResult.getSubCategories().size();
+                itemcount += categoryResult.getSubCategories()
+                        .stream()
+                        .mapToInt(sc -> ((ItemCategory) sc).getItemEntities().size())
+                        .sum();
+            }
+
+        }
+        Assert.assertEquals(5, itemcount);
+        Assert.assertEquals(2, subcatcount);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.meg.atable.service;
 
+import com.meg.atable.api.model.Category;
 import com.meg.atable.api.model.GenerateType;
 import com.meg.atable.api.model.ListType;
 import com.meg.atable.data.entity.ItemEntity;
@@ -28,5 +29,7 @@ public interface ShoppingListService {
 
     ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId);
 
-    ShoppingListEntity setListActive(String username,Long listId, GenerateType generateType);
+    ShoppingListEntity setListActive(String username, Long listId, GenerateType generateType);
+
+    List<Category> categorizeList(ShoppingListEntity shoppingListEntity);
 }

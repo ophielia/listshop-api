@@ -1,0 +1,76 @@
+Flyway Community Edition 5.0.7 by Boxfuse
+
+Usage
+=====
+
+flyway [options] command
+
+By default, the configuration will be read from conf/flyway.conf.
+Options passed from the command-line override the configuration.
+
+Commands
+--------
+migrate  : Migrates the database
+clean    : Drops all objects in the configured schemas
+info     : Prints the information about applied, current and pending migrations
+validate : Validates the applied migrations against the ones on the classpath
+undo     : Undoes the most recently applied versioned migration
+baseline : Baselines an existing database at the baselineVersion
+repair   : Repairs the schema history table
+
+Options (Format: -key=value)
+-------
+driver                       : Fully qualified classname of the JDBC driver
+url                          : Jdbc url to use to connect to the database
+user                         : User to use to connect to the database
+password                     : Password to use to connect to the database
+schemas                      : Comma-separated list of the schemas managed by Flyway
+table                        : Name of Flyway's schema history table
+locations                    : Classpath locations to scan recursively for migrations
+resolvers                    : Comma-separated list of custom MigrationResolvers
+skipDefaultResolvers         : Skips default resolvers (jdbc, sql and Spring-jdbc)
+sqlMigrationPrefix           : File name prefix for versioned SQL migrations
+undoSqlMigrationPrefix       : File name prefix for undo SQL migrations
+repeatableSqlMigrationPrefix : File name prefix for repeatable SQL migrations
+sqlMigrationSeparator        : File name separator for sql migrations
+sqlMigrationSuffixes         : Comma-separated list of file name suffixes for sql migrations
+mixed                        : Allow mixing transactional and non-transactional statements
+encoding                     : Encoding of sql migrations
+placeholderReplacement       : Whether placeholders should be replaced
+placeholders                 : Placeholders to replace in sql migrations
+placeholderPrefix            : Prefix of every placeholder
+placeholderSuffix            : Suffix of every placeholder
+installedBy                  : Username that will be recorded in the schema history table
+target                       : Target version up to which Flyway should use migrations
+outOfOrder                   : Allows migrations to be run "out of order"
+callbacks                    : Comma-separated list of FlywayCallback classes
+skipDefaultCallbacks         : Skips default callbacks (sql)
+validateOnMigrate            : Validate when running migrate
+ignoreMissingMigrations      : Allow missing migrations when validating
+ignoreFutureMigrations       : Allow future migrations when validating
+cleanOnValidationError       : Automatically clean on a validation error
+cleanDisabled                : Whether to disable clean
+baselineVersion              : Version to tag schema with when executing baseline
+baselineDescription          : Description to tag schema with when executing baseline
+baselineOnMigrate            : Baseline on migrate against uninitialized non-empty schema
+configFiles                  : Comma-separated list of config files to use
+configFileEncoding           : Encoding to use when loading the config files
+jarDirs                      : Comma-separated list of dirs for Jdbc drivers & Java migrations
+dryRunOutput                 : File where to output the SQL statements of a migration dry run
+errorHandlers                : Comma-separated list of handlers for errors and warnings
+
+Flags
+-----
+-X : Print debug output
+-q : Suppress all output, except for errors and warnings
+-n : Suppress prompting for a user and password
+-v : Print the Flyway version and exit
+-? : Print this usage info and exit
+
+Example
+-------
+flyway -user=myuser -password=s3cr3t -url=jdbc:h2:mem -placeholders.abc=def migrate
+
+
+flyway -user=bank -password=940620 -url=jdbc:postgresql://localhost:5432/dishsnap -locations=filesystem:/Users/margaretmartin/projects/myproject-atable/src/main/resources/db/migration info
+

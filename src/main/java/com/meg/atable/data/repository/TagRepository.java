@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import javax.persistence.Tuple;
 import java.util.List;
 import java.util.Set;
 
@@ -21,13 +20,6 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
 
 
     List<TagEntity> findTagsByTagTypeAndTagTypeDefault(TagType tagType, boolean isDefault);
-
-
-    @Query(value = "select ct.* from selectabletags t, tag ct where ct.tag_id = t.child_tag_id", nativeQuery = true)
-    List<TagEntity> findTagsWithoutChildren();
-
-    @Query(value = "select ct.* from selectabletags t, tag ct where ct.tag_id = t.child_tag_id and ct.tag_type in (:tagtypes)", nativeQuery = true)
-    List<TagEntity> findTagsWithoutChildrenByTagTypeIsIn(@Param("tagtypes") List<String> tagtypes);
 
     List<TagEntity> findTagsBySearchSelectAndTagTypeIsIn(Boolean searchSelect, List<TagType> tagtypes);
 
@@ -49,17 +41,15 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
     @Query(value = "select t.*  from tag t join category_tags ct on ct.tag_id = t.tag_id and ct.category_id = :layoutCategoryId", nativeQuery = true)
     List<TagEntity> getTagsForLayoutCategory(@Param("layoutCategoryId") Long layoutCategoryId);
 
-    @Query(value="select distinct t.* from tag t " +
+    @Query(value = "select distinct t.* from tag t " +
             "join tag_relation tr on tr.parent_tag_id = t.tag_id " +
-            "and t.tag_type in (:tagTypeList) ;", nativeQuery=true)
+            "and t.tag_type in (:tagTypeList) ;", nativeQuery = true)
     List<TagEntity> findParentTagsByTagTypes(@Param("tagTypeList") List<String> tagTypeList);
 
-    @Query(value="select distinct t.* from tag t " +
-            "join tag_relation tr on tr.parent_tag_id = t.tag_id;", nativeQuery=true)
+    @Query(value = "select distinct t.* from tag t " +
+            "join tag_relation tr on tr.parent_tag_id = t.tag_id;", nativeQuery = true)
     List<TagEntity> findParentTags();
 
-    @Query("select t.tag_id, l.name FROM ListLayoutCategoryEntity  l, TagEntity t where t MEMBER OF l.tags and l.layoutId = ?1 and t in (?2)")
-    List<Tuple> getTagCategoryKey(Long listLayoutId, List<TagEntity> tagEntities);
 
     @Query("select distinct t.autoTagFlag FROM TagEntity t , DishEntity d " +
             "where d member of t.dishes and d.dish_id = ?1")

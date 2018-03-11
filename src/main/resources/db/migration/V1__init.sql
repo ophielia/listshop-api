@@ -150,10 +150,10 @@ ALTER TABLE ONLY category_tags
       oldId = pCat.category_id;
       newId = pFirstId + i;
 -- update dish_tags
-update category_tags set category_id = newId where category_id = oldId;      
+update category_tags set category_id = newId where category_id = oldId;
 
 -- and now - update the dish itself
-update list_category set category_id = newId where category_id = oldId;      
+update list_category set category_id = newId where category_id = oldId;
 i=i+1;
 END LOOP;
 ALTER TABLE ONLY category_tags

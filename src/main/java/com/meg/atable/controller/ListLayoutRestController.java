@@ -35,7 +35,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
     public ResponseEntity<Resources<ListLayoutResource>> retrieveListLayouts(Principal principal) {
         List<ListLayoutResource> listLayoutList = listLayoutService
                 .getListLayouts()
-                .stream().map(ListLayoutResource::new)
+                .stream().map(ll -> new ListLayoutResource(ll, null))
                 .collect(Collectors.toList());
 
         Resources<ListLayoutResource> listLayoutResourceList = new Resources<>(listLayoutList);
@@ -49,7 +49,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         ListLayoutEntity result = listLayoutService.createListLayout(listLayoutEntity);
 
         if (result != null) {
-            Link forOneListLayout = new ListLayoutResource(result).getLink("self");
+            Link forOneListLayout = new ListLayoutResource(result, null).getLink("self");
             return ResponseEntity.created(URI.create(forOneListLayout.getHref())).build();
         }
         return ResponseEntity.badRequest().build();
@@ -60,7 +60,8 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
                 .getListLayoutById(listLayoutId);
 
         if (listLayout != null) {
-            ListLayoutResource listLayoutResource = new ListLayoutResource(listLayout);
+            List<Category> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
+            ListLayoutResource listLayoutResource = new ListLayoutResource(listLayout, structuredCategories);
 
             return new ResponseEntity(listLayoutResource, HttpStatus.OK);
         }

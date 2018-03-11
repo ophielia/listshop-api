@@ -2,7 +2,6 @@ package com.meg.atable.controller;
 
 import com.meg.atable.api.controller.ShoppingListRestControllerApi;
 import com.meg.atable.api.model.*;
-import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.ShoppingListEntity;
 import com.meg.atable.service.ShoppingListService;
@@ -35,7 +34,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         List<ShoppingListResource> shoppingListResources = shoppingListService
                 .getListsByUsername(principal.getName())
                 .stream()
-                .map(ShoppingListResource::new)
+                .map(t -> new ShoppingListResource(t, null))
                 .collect(Collectors.toList());
         Resources<ShoppingListResource> listResourceList = new Resources<>(shoppingListResources);
         return new ResponseEntity(listResourceList, HttpStatus.OK);
@@ -48,7 +47,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         ShoppingListEntity result = shoppingListService.createList(principal.getName(), shoppingListEntity);
 
         if (result != null) {
-            Link oneList = new ShoppingListResource(result).getLink("self");
+            Link oneList = new ShoppingListResource(result, null).getLink("self");
             return ResponseEntity.created(URI.create(oneList.getHref())).build();
         }
         return ResponseEntity.badRequest().build();
@@ -56,12 +55,13 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<Object> setListActive(Principal principal,@PathVariable("listId") Long listId, @RequestParam(value = "generateType", required = true)  String filter) {
+    public ResponseEntity<Object> setListActive(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value = "generateType", required = true) String filter) {
         GenerateType generateType = GenerateType.valueOf(filter);
 
-        ShoppingListEntity result = shoppingListService.setListActive(principal.getName(),listId, generateType);
+        ShoppingListEntity result = shoppingListService.setListActive(principal.getName(), listId, generateType);
         if (result != null) {
-            Link oneList = new ShoppingListResource(result).getLink("self");
+
+            Link oneList = new ShoppingListResource(result, null).getLink("self");
             return ResponseEntity.created(URI.create(oneList.getHref())).build();
         }
         return ResponseEntity.badRequest().build();
@@ -72,7 +72,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         ListType listType = ListType.valueOf(listTypeString);
         ShoppingListEntity result = shoppingListService.getListByUsernameAndType(principal.getName(), listType);
 
-        return singleResult(result);
+        return singleResult(result, null);
 
     }
 
@@ -80,7 +80,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId) {
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
 
-        return singleResult(result);
+        List<Category> categories = shoppingListService.categorizeList(result);
+        return singleResult(result, categories);
     }
 
     //@RequestMapping(method = RequestMethod.DELETE, value = "/{listId}", produces = "application/json")
@@ -108,20 +109,20 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> generateListFromMealPlan(Principal principal,  @PathVariable Long mealPlanId) {
-        ShoppingListEntity shoppingListEntity = this.shoppingListService.generateListFromMealPlan(principal.getName(),mealPlanId);
+    public ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId) {
+        ShoppingListEntity shoppingListEntity = this.shoppingListService.generateListFromMealPlan(principal.getName(), mealPlanId);
         if (shoppingListEntity != null) {
-            Link listLink = new ShoppingListResource(shoppingListEntity).getLink("self");
+            Link listLink = new ShoppingListResource(shoppingListEntity, null).getLink("self");
             return ResponseEntity.created(URI.create(listLink.getHref())).build();
 
         }
         return ResponseEntity.noContent().build();
     }
 
-    private ResponseEntity<ShoppingListResource> singleResult(ShoppingListEntity result) {
+    private ResponseEntity<ShoppingListResource> singleResult(ShoppingListEntity result, List<Category> categories) {
         if (result != null) {
-            
-            ShoppingListResource shoppingListResource = new ShoppingListResource(result);
+
+            ShoppingListResource shoppingListResource = new ShoppingListResource(result, categories);
 
             return new ResponseEntity(shoppingListResource, HttpStatus.OK);
         }

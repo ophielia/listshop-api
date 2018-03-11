@@ -1,13 +1,9 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.api.model.ListType;
-import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.ListTagStatistic;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.ListTagStatisticRepository;
-import com.meg.atable.data.repository.SlotRepository;
-import com.meg.atable.data.repository.TagRepository;
-import com.meg.atable.service.DishService;
 import com.meg.atable.service.ListItemCollector;
 import com.meg.atable.service.ListTagStatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +47,7 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
                     if (statLkup.containsKey(tag.getId())) {
                         // check frequency
                         if (checkFrequency(statLkup.get(tag.getId()))) {
-                            item.setListCategory(IS_FREQUENT);
+                            item.setFrequent(true);
                         }
                         // update statistic
                         return addCounted(statLkup.get(tag.getId()));

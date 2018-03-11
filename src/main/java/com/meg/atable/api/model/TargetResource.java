@@ -14,7 +14,6 @@ public class TargetResource extends ResourceSupport {
     @JsonProperty("target")
     private final Target target;
 
-    // MM correct this
     public TargetResource(TargetEntity targetEntity) {
         this.target = ModelMapper.toModel(targetEntity);
 

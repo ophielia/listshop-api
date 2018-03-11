@@ -1,54 +1,45 @@
 package com.meg.atable.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meg.atable.data.entity.TagEntity;
 
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import java.util.List;
 
 /**
  * Created by margaretmartin on 29/10/2017.
  */
-public class ListLayoutCategory {
-
-    @JsonProperty("category_id")
-    private Long categoryId;
-
-    private String name;
-
-    private List<Tag> tags;
+public class ListLayoutCategory extends AbstractCategory {
 
     @JsonProperty("layout_id")
     private Long layoutId;
+    private List<TagEntity> tagEntities;
+    private List<Tag> tags;
 
     public ListLayoutCategory() {
         // empty constructor for jpa
     }
 
-    public ListLayoutCategory(Long categoryId) {
-        this.categoryId = categoryId;
+    public ListLayoutCategory(Long id) {
+        super(id);
     }
 
-    public Long getId() {
-        return categoryId;
+
+    @Override
+    public boolean isEmpty() {
+        if (getSubCategories().isEmpty() &&
+                getTags().isEmpty() &&
+                getTagEntities().isEmpty()) {
+            return true;
+        }
+        return false;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public ListLayoutCategory name(String name) {
-        this.name = name;
-        return this;
-    }
 
     public List<Tag> getTags() {
         return tags;
     }
 
-    public ListLayoutCategory tags(List<Tag> tags) {
+    public Category tags(List<Tag> tags) {
         this.tags = tags;
         return this;
     }
@@ -57,8 +48,17 @@ public class ListLayoutCategory {
         return layoutId;
     }
 
-    public ListLayoutCategory layoutId(Long layoutId) {
+    public Category layoutId(Long layoutId) {
         this.layoutId = layoutId;
+        return this;
+    }
+
+    public List<TagEntity> getTagEntities() {
+        return tagEntities;
+    }
+
+    public Category tagEntities(List<TagEntity> tagEntities) {
+        this.tagEntities = tagEntities;
         return this;
     }
 }

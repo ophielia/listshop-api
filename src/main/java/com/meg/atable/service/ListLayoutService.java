@@ -1,11 +1,14 @@
 package com.meg.atable.service;
 
+import com.meg.atable.api.model.Category;
 import com.meg.atable.api.model.ListLayoutType;
 import com.meg.atable.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.data.entity.ListLayoutEntity;
 import com.meg.atable.data.entity.TagEntity;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 06/11/2017.
@@ -35,4 +38,9 @@ public interface ListLayoutService {
 
     void deleteTagsFromCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList);
 
+    List<ListLayoutCategoryEntity> getListCategoriesForIds(Set<Long> categoryIds);
+
+    List<Category> getStructuredCategories(ListLayoutEntity listLayout);
+
+    void structureCategories(Map<Long, Category> filledCategories, Long listLayoutId);
 }

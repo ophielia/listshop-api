@@ -1,14 +1,9 @@
 package com.meg.atable.api.model;
 
 import com.meg.atable.data.entity.*;
-import com.meg.atable.service.ListTagStatisticService;
-import com.meg.atable.service.impl.ShoppingListServiceImpl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 15/09/2017.
@@ -42,8 +37,9 @@ public class ModelMapper {
                 .userId(dishEntity.getUserId());
     }
 
-    public static ListLayout toModel(ListLayoutEntity listLayoutEntity) {
-        List<ListLayoutCategory> categories = categoriesToModel(listLayoutEntity.getCategories());
+    public static ListLayout toModel(ListLayoutEntity listLayoutEntity, List<Category> tagCategories) {
+        List<Category> categories = categoryItemsToModel(tagCategories);
+
         return new ListLayout(listLayoutEntity.getId())
                 .name(listLayoutEntity.getName())
                 .layoutType(listLayoutEntity.getLayoutType().name())
@@ -154,11 +150,35 @@ public class ModelMapper {
         if (cat == null) {
             return null;
         }
-        return new ListLayoutCategory(cat.getId())
-                .name(cat.getName())
-                .layoutId(cat.getLayoutId())
-                .tags(toModel(cat.getTags()));
+        ListLayoutCategory returnval = (ListLayoutCategory) new ListLayoutCategory(cat.getId())
+                .name(cat.getName());
+        returnval = (ListLayoutCategory) returnval.layoutId(cat.getLayoutId());
+        returnval = (ListLayoutCategory) returnval.tags(toModel(cat.getTags()));
+        return returnval;
 
+    }
+
+    public static Category toCategoryModel(ListLayoutCategoryEntity cat) {
+        if (cat == null) {
+            return null;
+        }
+        List<Category> subCategories = new ArrayList<>();
+        List<Item> items = simpleItemsToModel(cat.getItems());
+        return new ItemCategory(cat.getName())
+                .items(items)
+                .subCategories(subCategories);
+
+    }
+
+    private static List<Item> simpleItemsToModel(List<ItemEntity> items) {
+        List<Item> itemList = new ArrayList<>();
+        if (items == null) {
+            return itemList;
+        }
+        for (ItemEntity entity : items) {
+            itemList.add(toModel(entity));
+        }
+        return itemList;
     }
 
 
@@ -241,20 +261,74 @@ public class ModelMapper {
         return dishList;
     }
 
-    public static ShoppingList toModel(ShoppingListEntity shoppingListEntity) {
-        List<Category> categories = itemsToModel(shoppingListEntity.getItems());
+    public static ShoppingList toModel(ShoppingListEntity shoppingListEntity, List<Category> itemCategories) {
+        List<Category> categories = categoryItemsToModel(itemCategories);
+        String layoutType = shoppingListEntity.getListLayoutType() != null ? shoppingListEntity.getListLayoutType().name() : "";
         return new ShoppingList(shoppingListEntity.getId())
                 .createdOn(shoppingListEntity.getCreatedOn())
                 .listType(shoppingListEntity.getListType().name())
-                .layoutType(shoppingListEntity.getListLayoutType().name())
+                .layoutType(layoutType)
                 .categories(categories)
-                .itemCount(shoppingListEntity.getItems()!=null?shoppingListEntity.getItems().size():0)
+                .itemCount(shoppingListEntity.getItems() != null ? shoppingListEntity.getItems().size() : 0)
                 .userId(shoppingListEntity.getUserId());
 
     }
 
-    private static List<Category> itemsToModel(List<ItemEntity> items) {
-        List<Category> categories = new ArrayList<>();
+    private static List<Category> categoryItemsToModel(List<Category> filledCategories) {
+        if (filledCategories == null) {
+            return filledCategories;
+        }
+
+        // go through list, converting items in category and subcategories
+        // (category is already in model - the server needed to organize, but
+        // the item mapping is still handled here)
+        for (Category categoryModel : filledCategories) {
+            ItemCategory cm = (ItemCategory) categoryModel;
+            List<Item> items = new ArrayList<>();
+            if (cm.getItemEntities() != null && !cm.getItemEntities().isEmpty()) {
+                items = simpleItemsToModel(cm.getItemEntities());
+            }
+            cm.items(items);
+            cm.itemEntities(null);
+
+            // now - subcategories
+            if (!categoryModel.getSubCategories().isEmpty()) {
+                List<Category> filledSubCats = categoryItemsToModel(categoryModel.getSubCategories());
+                categoryModel.subCategories(filledSubCats);
+            }
+        }
+        return filledCategories;
+    }
+
+    private static List<Category> categoryTagsToModel(List<Category> filledCategories) {
+        if (filledCategories == null) {
+            return filledCategories;
+        }
+
+        // go through list, converting tags in category and subcategories
+        // (category is already in model - the server needed to organize, but
+        // the item mapping is still handled here)
+        for (Category categoryModel : filledCategories) {
+            ListLayoutCategory cm = (ListLayoutCategory) categoryModel;
+            List<Tag> tags = new ArrayList<>();
+            if (cm.getTags() != null && !cm.getTags().isEmpty()) {
+                tags = toModel(cm.getTagEntities());
+            }
+            cm.tags(tags);
+            cm.tagEntities(null);
+
+            // now - subcategories
+            if (!categoryModel.getSubCategories().isEmpty()) {
+                List<Category> filledSubCats = categoryTagsToModel(categoryModel.getSubCategories());
+                categoryModel.subCategories(filledSubCats);
+            }
+        }
+        return filledCategories;
+    }
+
+    private static List<ItemCategory> itemsToModel(List<ItemEntity> items) {
+/*
+            List<ItemCategory> categories = new ArrayList<>();
         if (items == null) {
             return categories;
         }
@@ -273,11 +347,11 @@ public class ModelMapper {
 
 
         for (Map.Entry<String, List<Item>> entry : sortedByCategories.entrySet()) {
-            Category category = new Category(entry.getKey())
+            ItemCategory category = new ItemCategory(entry.getKey())
                     .items(entry.getValue().stream().sorted().collect(Collectors.toList()));
             categories.add(category);
         }
-        return categories.stream().sorted(
+        return categories.stream().sorted( // MM need to revisit sorting for new category approach
                 (o1, o2) -> {
                     if (ListTagStatisticService.IS_FREQUENT.equals(o1.getName())) {
                         return -1;
@@ -288,6 +362,9 @@ public class ModelMapper {
 
                 }
         ).collect(Collectors.toList());
+
+     */
+        return null;
     }
 
     private static Item toModel(ItemEntity itemEntity) {

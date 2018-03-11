@@ -5,15 +5,12 @@ import com.meg.atable.api.model.*;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.JwtUser;
 import com.meg.atable.auth.service.UserService;
-import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.data.entity.ListLayoutEntity;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.ListLayoutCategoryRepository;
 import com.meg.atable.data.repository.ListLayoutRepository;
 import com.meg.atable.data.repository.TagRepository;
-import com.meg.atable.service.DishService;
-import com.meg.atable.service.ListLayoutService;
 import com.meg.atable.service.impl.ServiceTestUtils;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -283,7 +280,7 @@ public class ListLayoutRestControllerTest {
         ListLayoutEntity test = new ListLayoutEntity();
         test.setName("new list layout");
         test.setLayoutType(ListLayoutType.All);
-        ListLayout model = ModelMapper.toModel(test);
+        ListLayout model = ModelMapper.toModel(test, null);
         String url = "/listlayout";
         String listLayoutJson = json(model);
         this.mockMvc.perform(post(url)

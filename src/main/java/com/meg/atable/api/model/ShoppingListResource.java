@@ -5,6 +5,8 @@ import com.meg.atable.controller.ShoppingListRestController;
 import com.meg.atable.data.entity.ShoppingListEntity;
 import org.springframework.hateoas.ResourceSupport;
 
+import java.util.List;
+
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -16,8 +18,8 @@ public class ShoppingListResource extends ResourceSupport {
     @JsonProperty("shopping_list")
     private final ShoppingList shoppingList;
 
-    public ShoppingListResource(ShoppingListEntity shoppingListEntity) {
-        this.shoppingList = ModelMapper.toModel(shoppingListEntity);
+    public ShoppingListResource(ShoppingListEntity shoppingListEntity, List<Category> categories) {
+        this.shoppingList = ModelMapper.toModel(shoppingListEntity, categories);
 
         Long userId = shoppingListEntity.getUserId();
         // add link to all shopping lists for user

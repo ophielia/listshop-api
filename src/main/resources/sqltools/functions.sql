@@ -109,17 +109,17 @@ CREATE FUNCTION movelistcategory("pFirstId" integer) RETURNS integer
 ALTER TABLE ONLY category_tags
     DROP CONSTRAINT fkns9s1sef980caqqamoee8srdw;
       FOR pCat IN select * from list_category o LOOP
-      oldId = pCat.category_id;
+      oldId = pCat.categoryId;
       newId = pFirstId + i;
 -- update dish_tags
-update category_tags set category_id = newId where category_id = oldId;      
+update category_tags set categoryId = newId where categoryId = oldId;
 
 -- and now - update the dish itself
-update list_category set category_id = newId where category_id = oldId;      
+update list_category set categoryId = newId where categoryId = oldId;
 i=i+1;
 END LOOP;
 ALTER TABLE ONLY category_tags
-    ADD CONSTRAINT fkns9s1sef980caqqamoee8srdw FOREIGN KEY (category_id) REFERENCES list_category(category_id);
+    ADD CONSTRAINT fkns9s1sef980caqqamoee8srdw FOREIGN KEY (categoryId) REFERENCES list_category(categoryId);
 
    return 1;
    END;
