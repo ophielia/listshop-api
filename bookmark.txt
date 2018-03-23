@@ -1,8 +1,21 @@
-defaults -
+defaults - ListLayoutServiceImplTest - 12 passed 5 failed
     add settings to application.properties for frequent and non categorized
-    Rest entry point for assign to parent (list category)
-    Rest entry point for move up / move down
-    service implementations for the rest entry points
+    done - Finish category on add
+    done - Finish category on delete
+    done - Move up
+    done - Move down
+    Change layout
+    Dish highlight flag
+    Add dish
+    Remove dish
+    done - Listener to assign tag when moved from default tag
+
+do we really need to save the category ids in the item??
+    right now dictionary used in classification  before display and also in save
+    I think we can remove the save - items saved without categories, and categorized each time for display.
+    No - we need the save for the free text items - do the classification from the stored category ids
+FREE TEXT!!!
+
 
     then - to front end
 

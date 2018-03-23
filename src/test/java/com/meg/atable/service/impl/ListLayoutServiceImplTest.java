@@ -4,12 +4,15 @@ import com.meg.atable.Application;
 import com.meg.atable.api.model.Category;
 import com.meg.atable.api.model.ListLayoutCategory;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.data.entity.CategoryRelationEntity;
 import com.meg.atable.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.data.entity.ListLayoutEntity;
 import com.meg.atable.data.entity.TagEntity;
+import com.meg.atable.data.repository.CategoryRelationRepository;
 import com.meg.atable.data.repository.ListLayoutCategoryRepository;
 import com.meg.atable.data.repository.ListLayoutRepository;
 import com.meg.atable.data.repository.TagRepository;
+import com.meg.atable.service.ListLayoutException;
 import com.meg.atable.service.ListLayoutService;
 import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
@@ -20,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,35 +32,19 @@ import java.util.stream.Collectors;
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public class ListLayoutServiceImplTest {
+    private static boolean setUpComplete = true;
+    private static ListLayoutEntity retrieve;
+
     @Autowired
     private ListLayoutService listLayoutService;
-
     @Autowired
     private ListLayoutRepository listLayoutRepository;
-
     @Autowired
     private ListLayoutCategoryRepository layoutCategoryRepository;
-
-    private static boolean setUpComplete = true;
-    private static UserAccountEntity userAccount;
-    private static ListLayoutEntity retrieve;
-    private static ListLayoutEntity toDelete;
-    private static TagEntity tag1;
-    private static TagEntity tag2;
-    private static TagEntity tag3;
-    private static TagEntity tag4;
-    private static TagEntity tag5;
-    private static Long addTagsCategoryId;
-    private static Long retrieveCategoryId;
-    private static Long deleteTagsCategoryId;
-
-    private static String noseyUserName;
-
+    @Autowired
+    private CategoryRelationRepository categoryRelationRepository;
     @Autowired
     private TagRepository tagRepository;
-    private static Long entireCategoryDeleteId;
-    private static ListLayoutEntity uncategorizedCount;
-    private static ListLayoutEntity deleteACategory;
 
     //@Before
     public void setUp() {
@@ -64,7 +52,7 @@ public class ListLayoutServiceImplTest {
         if (setUpComplete) {
             return;
         }
-
+/*
         ListLayoutCategoryEntity layoutCategoryEntity = new ListLayoutCategoryEntity();
         layoutCategoryEntity.setName("addTagsCategoryId");
         List<TagEntity> assignedTags = Arrays.asList(tag1, tag2);
@@ -117,7 +105,7 @@ public class ListLayoutServiceImplTest {
         listLayoutRepository.save(deleteACategory);
 
         setUpComplete = true;
-
+*/
     }
 
     @Test
@@ -152,7 +140,7 @@ public class ListLayoutServiceImplTest {
         List<ListLayoutEntity> list = listLayoutService.getListLayouts();
 
         Assert.assertNotNull(list);
-        Assert.assertEquals(3L, list.size());
+        Assert.assertEquals(4L, list.size());
     }
 
     @Test
@@ -170,7 +158,7 @@ public class ListLayoutServiceImplTest {
     @Test
     public void testAddCategoryToListLayout() {
         // get list layout
-        Long id = TestConstants.LIST_LAYOUT_1_ID;
+        Long id = TestConstants.LIST_LAYOUT_2_ID;
 
         // get count of categories
         retrieve = listLayoutRepository.findOne(id);
@@ -192,18 +180,30 @@ public class ListLayoutServiceImplTest {
         Assert.assertEquals(categoryCount + 1, resultcategories.size());
         Long count = resultcategories.stream().filter(t -> t.getName() != null && t.getName().equals(testCategoryName)).count();
         Assert.assertTrue(count == 1);
+
+        // check disp order
+        ListLayoutCategoryEntity newCategory = resultcategories.stream()
+                .filter(t -> t.getName() != null && t.getName().equals(testCategoryName)).findFirst().get();
+        Assert.assertNotNull(newCategory.getDisplayOrder());
+        Assert.assertTrue(newCategory.getDisplayOrder()>=3);
+
+        // get category relation for new category
+        List<CategoryRelationEntity> relation = categoryRelationRepository.findCategoryRelationsByChildId(newCategory.getId());
+        Assert.assertNotNull(relation);
+        Assert.assertEquals(1,relation.size());
+        Assert.assertNull(relation.get(0).getParent());
     }
 
     @Test
-    public void testDeleteCategoryFromListLayout() {
+    public void testDeleteCategoryFromListLayout() throws ListLayoutException {
         // get list layout
-        Long id = deleteACategory.getId();
+        Long id = TestConstants.LIST_LAYOUT_2_ID;
 
         // get count of categories
-        deleteACategory = listLayoutRepository.findOne(id);
+        ListLayoutEntity deleteACategory = listLayoutRepository.findOne(id);
         Integer categoryCount = deleteACategory.getCategories().size();
         // get Categories - get first
-        ListLayoutCategoryEntity toDeleteCategory = layoutCategoryRepository.findOne(entireCategoryDeleteId);
+        ListLayoutCategoryEntity toDeleteCategory = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID4);
         final String testCategoryName = toDeleteCategory.getName();
 
         // delete category from list layout - service call
@@ -218,14 +218,17 @@ public class ListLayoutServiceImplTest {
         Assert.assertEquals(categoryCount - 1, resultcategories.size());
         Long count = resultcategories.stream().filter(t -> t.getName().equals(testCategoryName)).count();
         Assert.assertTrue(count == 0);
-
+        // get list layout 2 - and ensure that it has null as a parent
+        List<CategoryRelationEntity> subcategories = categoryRelationRepository.findCategoryRelationsByChildId(TestConstants.LIST_LAYOUT_2_CATEGORY_ID5);
+        Assert.assertNotNull(subcategories);
+        Assert.assertEquals(1L,subcategories.size());
+        Assert.assertNull(subcategories.get(0).getParent());
     }
 
     @Test
     public void testUpdateListLayoutCategory() {
         // get category from list
-        Long id = TestConstants.LIST_LAYOUT_1_ID;
-
+        ListLayoutEntity retrieve = listLayoutService.getListLayoutById(TestConstants.LIST_LAYOUT_1_ID);
         // update the name
         ListLayoutCategoryEntity layoutCategoryEntity = retrieve.getCategories().get(0);
         final Long catId = layoutCategoryEntity.getId();
@@ -234,10 +237,10 @@ public class ListLayoutServiceImplTest {
         layoutCategoryEntity.setName(testNewName);
 
         // service call
-        listLayoutService.updateListLayoutCategory(id, layoutCategoryEntity);
+        listLayoutService.updateListLayoutCategory(retrieve.getId(), layoutCategoryEntity);
 
         // retrieve the category
-        ListLayoutEntity result = listLayoutService.getListLayoutById(id);
+        ListLayoutEntity result = listLayoutService.getListLayoutById(retrieve.getId());
         List<ListLayoutCategoryEntity> resultCategories = result.getCategories()
                 .stream()
                 .filter(t -> t.getId() == catId)
@@ -253,7 +256,8 @@ public class ListLayoutServiceImplTest {
     public void testGetUncategorizedTagsForList() {
         // retrieve category 1 has tags 1 and 2 assigned
         // this method should retrieve 3 - 5
-        List<TagEntity> uncategorizedTags = listLayoutService.getUncategorizedTagsForList(uncategorizedCount.getId());
+        // MM fix this List<TagEntity> uncategorizedTags = listLayoutService.getUncategorizedTagsForList(uncategorizedCount.getId());
+        List<TagEntity> uncategorizedTags = new ArrayList<>();
 
         Assert.assertNotNull(uncategorizedTags);
         Assert.assertTrue(uncategorizedTags.size() == 3);
@@ -263,7 +267,7 @@ public class ListLayoutServiceImplTest {
     public void testGetTagsForLayoutCategory() {
         // retrieve category 1 has tags 1 and 2 assigned
         // this method should retrieve 1 and 2
-        List<TagEntity> categoryTags = listLayoutService.getTagsForLayoutCategory(retrieveCategoryId);
+        List<TagEntity> categoryTags = listLayoutService.getTagsForLayoutCategory(TestConstants.LIST_LAYOUT_2_CATEGORY_ID1);
 
         Assert.assertNotNull(categoryTags);
         Assert.assertTrue(categoryTags.size() == 2);
@@ -293,14 +297,16 @@ public class ListLayoutServiceImplTest {
 
     @Test
     public void testDeleteTagsFromCategory() {
+        // ll LIST_LAYOUT_2_ID
+        // category LIST_LAYOUT_2_CATEGORY_ID6
         // get tags from category
-        ListLayoutCategoryEntity categoryEntity = layoutCategoryRepository.findOne(deleteTagsCategoryId);
+        ListLayoutCategoryEntity categoryEntity = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID6);
         List<TagEntity> tags = tagRepository.getTagsForLayoutCategory(categoryEntity.getId());
         List<Long> ids = tags.stream().map(TagEntity::getId).collect(Collectors.toList());
         // delete all the tags from category
-        listLayoutService.deleteTagsFromCategory(TestConstants.LIST_LAYOUT_1_ID, deleteTagsCategoryId, ids);
+        listLayoutService.deleteTagsFromCategory(TestConstants.LIST_LAYOUT_2_ID, TestConstants.LIST_LAYOUT_2_CATEGORY_ID6, ids);
         // assert that category has 0 categoriex
-        ListLayoutCategoryEntity result = layoutCategoryRepository.findOne(deleteTagsCategoryId);
+        ListLayoutCategoryEntity result = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID6);
         List<TagEntity> resultTags = tagRepository.getTagsForLayoutCategory(categoryEntity.getId());
         Assert.assertNotNull(resultTags);
         Assert.assertTrue(resultTags.size() == 0);
@@ -344,13 +350,76 @@ public class ListLayoutServiceImplTest {
         Assert.assertEquals(4, totalcategorycount);
     }
 
-   /* private ListLayoutCategoryEntity getListCategoryForId(Long categoryId) {
-        Set<Long> categorySet;
-        Set<Long> categorySetId = new HashSet<>(1);
-        categorySetId.add(categoryId);
-        categorySet = listLayoutService.getListCategoriesForIds(categoryId);
-        ListLayoutCategoryEntity[] array = new ListLayoutCategoryEntity[1];
-        categorySet.toArray(array);
-        return array[0];
-    }*/
+
+    @Test
+    public void testAddCategoryToParent() throws ListLayoutException {
+        // get category one, two and three
+        ListLayoutCategoryEntity one = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID1);
+        ListLayoutCategoryEntity two = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID2);
+        ListLayoutCategoryEntity three = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID3);
+
+        // basic case - add category two to category one
+        listLayoutService.addCategoryToParent(TestConstants.LIST_LAYOUT_2_CATEGORY_ID1, TestConstants.LIST_LAYOUT_2_CATEGORY_ID2);
+        categoryRelationRepository.flush();
+
+        // check relationship
+        List<CategoryRelationEntity> relationships = categoryRelationRepository.findCategoryRelationsByChildId(TestConstants.LIST_LAYOUT_2_CATEGORY_ID1);
+        Assert.assertNotNull(relationships);
+        Assert.assertEquals(1, relationships.size());
+        CategoryRelationEntity relationship = relationships.get(0);
+        Assert.assertEquals(TestConstants.LIST_LAYOUT_2_CATEGORY_ID2.longValue(), relationship.getParent().getId().longValue());
+
+        // check order
+        ListLayoutCategoryEntity check = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID1);
+        Assert.assertNotNull(check);
+        Assert.assertEquals(5,check.getDisplayOrder().intValue());
+
+        // check order for second subcategory- add category three to category one
+        listLayoutService.addCategoryToParent(TestConstants.LIST_LAYOUT_2_CATEGORY_ID3, TestConstants.LIST_LAYOUT_2_CATEGORY_ID2);
+        categoryRelationRepository.flush();
+
+        check = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID3);
+        Assert.assertNotNull(check);
+        Assert.assertEquals(10,check.getDisplayOrder().intValue());
+
+    }
+
+    @Test(expected = ListLayoutException.class)
+    public void testAddCategoryToParent_errorDifferentLayouts() throws ListLayoutException {
+        // get category one, two and three
+
+        // basic case - add category two to category one
+        listLayoutService.addCategoryToParent(1L, TestConstants.LIST_LAYOUT_2_CATEGORY_ID2);
+    }
+
+    @Test
+    public void testMoveCategory() throws ListLayoutException {
+        // using modification list layout
+        // need one category with two subcategories
+        // parent -LIST_LAYOUT_2_CATEGORY_ID7
+        // children - LIST_LAYOUT_2_CATEGORY_ID8, LIST_LAYOUT_2_CATEGORY_ID9
+
+        // get subcategories by order
+        List<ListLayoutCategoryEntity> orderedSubcategories = layoutCategoryRepository.getSubcategoriesForOrder(TestConstants.LIST_LAYOUT_2_ID, TestConstants.LIST_LAYOUT_2_CATEGORY_ID7);
+        ListLayoutCategoryEntity first = orderedSubcategories.get(0);
+        ListLayoutCategoryEntity second = orderedSubcategories.get(1);
+
+        // call move down
+        listLayoutService.moveCategory(first.getId(),false);
+
+        // get subcategories and verify that first is now last
+        orderedSubcategories = layoutCategoryRepository.getSubcategoriesForOrder(TestConstants.LIST_LAYOUT_2_ID, TestConstants.LIST_LAYOUT_2_CATEGORY_ID7);
+        ListLayoutCategoryEntity result = orderedSubcategories.get(1);
+        Assert.assertEquals(first.getId(),result.getId());
+
+        // call move up
+        listLayoutService.moveCategory(result.getId(),true);
+        // get subcategories and verify that last is now first
+        orderedSubcategories = layoutCategoryRepository.getSubcategoriesForOrder(TestConstants.LIST_LAYOUT_2_ID, TestConstants.LIST_LAYOUT_2_CATEGORY_ID7);
+        result = orderedSubcategories.get(0);
+        Assert.assertEquals(first.getId(),result.getId());
+
+    }
+
+
 }

@@ -12,6 +12,7 @@ import com.meg.atable.data.entity.MealPlanEntity;
 import com.meg.atable.data.entity.ShoppingListEntity;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.*;
+import com.meg.atable.service.ShoppingListException;
 import com.meg.atable.service.ShoppingListProperties;
 import com.meg.atable.service.ShoppingListService;
 import com.meg.atable.service.tag.TagService;
@@ -31,6 +32,7 @@ import java.util.List;
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public class ShoppingListServiceImplTest {
+
 
     @Autowired
     private ShoppingListService shoppingListService;
@@ -208,6 +210,35 @@ public class ShoppingListServiceImplTest {
         }
         Assert.assertEquals(5, itemcount);
         Assert.assertEquals(2, subcatcount);
+    }
+
+    @Test
+    public void addDishToList() throws ShoppingListException {
+        // use test data list which contains onions
+        final Long LIST_ID = 501L;
+        final Long ONION_TAG_ID = 16L;
+        final Long HAMBURGER_TAG_ID = 435L;
+        final Long DISH_ID = 16L;
+        final String USER_NAME = "me";
+
+        // add dish cheeseburger maccoroni  // dish_id 16
+        this.shoppingListService.addDishToList(USER_NAME,LIST_ID,DISH_ID);
+
+        // get list
+        ShoppingListEntity list = this.shoppingListService.getListById(USER_NAME,LIST_ID);
+
+        boolean hasHamburger = false, hasOnion = false;
+        for (ItemEntity item : list.getItems()) {
+            if (item.getTag().getId().equals(HAMBURGER_TAG_ID)) {
+                hasHamburger = true;
+            } else if (item.getTag().getId().equals(ONION_TAG_ID)) {
+                hasOnion = true;
+                Assert.assertEquals(2L,item.getUsedCount().longValue());
+            }
+        }
+        // MM TODO - test for sources, when sources are complete
+        Assert.assertTrue(hasHamburger);
+        Assert.assertTrue(hasOnion);
     }
 
 }

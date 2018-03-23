@@ -30,15 +30,7 @@ public class ListItemCollector {
         this.categoryDictionary = new HashMap<>();
         tagToItem = new HashMap<>();
         freeTextItems = new ArrayList<>();
-        if (items != null) {
-            items.stream().forEach(item -> {
-                if (item.getTag() != null) {
-                    tagToItem.put(item.getTag().getId(), item);
-                } else {
-                    freeTextItems.add(item);
-                }
-            });
-        }
+        addItems(items);
     }
 
     public void addTags(List<TagEntity> tagEntityList) {
@@ -51,6 +43,18 @@ public class ListItemCollector {
         }
     }
 
+    public void addItems(List<ItemEntity> items) {
+        if (items != null) {
+            items.stream().forEach(item -> {
+                if (item.getTag() != null) {
+                    tagToItem.put(item.getTag().getId(), item);
+                } else {
+                    freeTextItems.add(item);
+                }
+            });
+        }
+
+    }
     public List<ItemEntity> getItems() {
         return Stream.concat(tagToItem.values().stream(), freeTextItems.stream())
                 .collect(Collectors.toList());
@@ -81,7 +85,7 @@ public class ListItemCollector {
         dictionary.entrySet().stream()
                 .forEach(e -> {
                     ItemEntity item = tagToItem.get(e.getKey());
-                    item.setCategoryId(e.getValue());
+                    //item.setCategoryId(e.getValue());
                     tagToItem.put(e.getKey(), item);
                 });
     }
@@ -92,7 +96,7 @@ public class ListItemCollector {
         item.setListId(listId);
         item.addItemSource(sourceType);
         item.setUsedCount(1);
-        item.setCategoryId(categoryDictionary.get(tag.getId()));
+        //item.setCategoryId(categoryDictionary.get(tag.getId()));
         tagToItem.put(tag.getId(), item);
     }
 
@@ -103,7 +107,7 @@ public class ListItemCollector {
         tagToItem.put(tagid, item);
     }
 
-    public void addListItems(ListType listType, ItemSourceType sourceType, List<ItemEntity> items) {
+    public void copyExistingItemsIntoList(ListType listType, ItemSourceType sourceType, List<ItemEntity> items) {
         if (items == null) {
             return;
         }
@@ -133,7 +137,7 @@ public class ListItemCollector {
     private ItemEntity copyItem(ItemEntity item, ListType listType) {
         ItemEntity copied = new ItemEntity();
         copied.setUsedCount(0); // MM resetting count when adding from another list
-        copied.setCategoryId(item.getCategoryId());  // MM will need to revisit this - other list may have different layout
+        //copied.setCategoryId(item.getCategoryId());  // MM will need to revisit this - other list may have different layout
         copied.setTag(item.getTag());
         copied.setListId(listId);
         copied.setFreeText(item.getFreeText());

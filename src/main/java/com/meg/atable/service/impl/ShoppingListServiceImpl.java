@@ -8,6 +8,7 @@ import com.meg.atable.data.repository.ItemRepository;
 import com.meg.atable.data.repository.ShoppingListRepository;
 import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.*;
+import com.meg.atable.service.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     UserService userService;
     @Autowired
     private ListTagStatisticService listTagStatisticService;
+    @Autowired
+    private TagService tagService;
+    @Autowired
+    private DishService dishService;
     @Autowired
     private
     ShoppingListRepository shoppingListRepository;
@@ -218,7 +223,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // add Items from BaseList
         ShoppingListEntity baseList = getListByUsernameAndType(name, ListType.BaseList);
         if (baseList != null) {
-            collector.addListItems(ListType.BaseList, ItemSourceType.BaseList, baseList.getItems());
+            collector.copyExistingItemsIntoList(ListType.BaseList, ItemSourceType.BaseList, baseList.getItems());
         }
 
         // process statistics (don't want to include pickup in statistics)
@@ -227,7 +232,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // add Items from PickUpList
         ShoppingListEntity pickupList = getListByUsernameAndType(name, ListType.PickUpList);
         if (pickupList != null) {
-            collector.addListItems(ListType.PickUpList, ItemSourceType.PickUpList, pickupList.getItems());
+            collector.copyExistingItemsIntoList(ListType.PickUpList, ItemSourceType.PickUpList, pickupList.getItems());
         }
 
         // check categorization of other list items
@@ -260,7 +265,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // if generatetype add, add items to current list
         if (generateType == GenerateType.Add && oldActive != null) {
-            collector.addListItems(null, ItemSourceType.PickUpList, oldActive.getItems());
+            collector.copyExistingItemsIntoList(null, ItemSourceType.PickUpList, oldActive.getItems());
         }
 
         // cross items off of pickup list
@@ -354,6 +359,41 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return sortedResults;
     }
 
+    @Override
+    public void addDishToList(String name, Long listId, Long dishId) throws ShoppingListException {
+        // MM experimental - not adding categories.  These won't be persisted, but
+        // instead will be determined on the fly upon display
+
+        // get the list
+        ShoppingListEntity list = getListById(name,listId);
+
+        // gather tags for dish to add
+        if (dishId == null) {
+            // MM TODO LOGGING HERE
+            throw new ShoppingListException("No dish found for null dishId.");
+        }
+        List<TagEntity> tagsForDish = tagService.getTagsForDish(dishId).stream()
+                .filter(t -> t.getTagType().equals(TagType.Ingredient) || t.getTagType().equals(TagType.NonEdible))
+                .collect(Collectors.toList());
+        if (tagsForDish == null || tagsForDish.isEmpty()) {
+            throw new ShoppingListException("No tags found for dishId [" + dishId + "]");
+        }
+
+        // create collector
+        ListItemCollector collector = new ListItemCollector(listId, list.getItems());
+
+        // add new dish tags to list
+        collector.addTags(tagsForDish);// will need to deal with sources
+
+        // update last added date for dish
+        dishService.updateLastAddedForDish(dishId);
+        // get the collected items, and save them
+        List<ItemEntity> savedItems = itemRepository.save(collector.getItems());
+        // add items to the list, and save the list
+        list.setItems(savedItems);
+        shoppingListRepository.save(list);
+        return;
+    }
 
 
     private void deleteItemsFromPickupList(UserAccountEntity user, List<ItemEntity> pickupListItems) {

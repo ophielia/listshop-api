@@ -3,6 +3,7 @@ package com.meg.atable.api.controller;
 import com.meg.atable.api.model.ListLayout;
 import com.meg.atable.api.model.ListLayoutCategory;
 import com.meg.atable.api.model.ListLayoutResource;
+import com.meg.atable.service.ListLayoutException;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public interface ListLayoutRestControllerApi {
     ResponseEntity<Object> addCategoryToListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategory input);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listLayoutId}/category/{layoutCategoryId}", produces = "application/json")
-    ResponseEntity<Object> deleteCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId);
+    ResponseEntity<Object> deleteCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) throws ListLayoutException;
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{listLayoutId}/category/{layoutCategoryId}", produces = "application/json")
     ResponseEntity<Object> updateCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategory layoutCategory);
@@ -51,5 +52,12 @@ public interface ListLayoutRestControllerApi {
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listLayoutId}/category/{layoutCategoryId}/tag", produces = "application/json")
     ResponseEntity<Object> deleteTagsFromCategory(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId, @RequestParam(value = "tags", required = true) String commaSeparatedIds);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/category/{layoutCategoryId}/parent/{parentCategoryId}", produces = "application/json")
+    ResponseEntity<Object> addSubcategoryToCategory(Principal principal,  @PathVariable Long layoutCategoryId,
+                                                    @PathVariable Long parentCategoryId);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/category/{categoryId}", produces = "application/json")
+    ResponseEntity<Object> moveCategory(Principal principal, @PathVariable Long categoryId, @RequestParam(value = "move", required = true) String direction);
 
 }

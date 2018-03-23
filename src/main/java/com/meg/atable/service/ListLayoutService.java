@@ -26,13 +26,15 @@ public interface ListLayoutService {
 
     void addCategoryToListLayout(Long listLayoutId, ListLayoutCategoryEntity entity);
 
-    void deleteCategoryFromListLayout(Long listLayoutId, Long layoutCategoryId);
+    void deleteCategoryFromListLayout(Long listLayoutId, Long layoutCategoryId) throws ListLayoutException;
 
     ListLayoutCategoryEntity updateListLayoutCategory(Long listLayoutId, ListLayoutCategoryEntity listLayoutCategory);
 
     List<TagEntity> getUncategorizedTagsForList(Long listLayoutId);
 
     List<TagEntity> getTagsForLayoutCategory(Long layoutCategoryId);
+
+    List<ListLayoutCategoryEntity> getCategoriesForTag(TagEntity tag);
 
     void addTagsToCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList);
 
@@ -43,4 +45,8 @@ public interface ListLayoutService {
     List<Category> getStructuredCategories(ListLayoutEntity listLayout);
 
     void structureCategories(Map<Long, Category> filledCategories, Long listLayoutId);
+
+    void addCategoryToParent(Long categoryId, Long parentId) throws ListLayoutException;
+
+    void moveCategory(Long categoryId, boolean moveUp) throws ListLayoutException;
 }

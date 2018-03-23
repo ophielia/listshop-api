@@ -28,4 +28,6 @@ public interface DishService {
     Map<Long,DishEntity> getDictionaryForIdList(List<Long> dishIds);
 
     List<TagEntity> getDishesForTagChildren(Long tagId, String name);
+
+    void updateLastAddedForDish(Long dishId);
 }

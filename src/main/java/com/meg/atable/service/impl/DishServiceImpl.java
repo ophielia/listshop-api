@@ -135,4 +135,15 @@ public class DishServiceImpl implements DishService {
         childrenTags.sort(Comparator.comparing(TagEntity::getPower));
         return childrenTags;
     }
+
+    @Override
+    public void updateLastAddedForDish(Long dishId) {
+        Optional<DishEntity> dish = getDishById(dishId);
+        if (!dish.isPresent()) {
+            return;
+        }
+        DishEntity dishEntity = dish.get();
+        dishEntity.setLastAdded(new Date());
+        dishRepository.save(dishEntity);
+    }
 }

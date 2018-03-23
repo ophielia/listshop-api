@@ -4,6 +4,7 @@ import com.meg.atable.api.controller.ShoppingListRestControllerApi;
 import com.meg.atable.api.model.*;
 import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.ShoppingListEntity;
+import com.meg.atable.service.ShoppingListException;
 import com.meg.atable.service.ShoppingListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -118,6 +119,20 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         }
         return ResponseEntity.noContent().build();
     }
+
+    //@RequestMapping(method = RequestMethod.POST, value = "/{listId}/dish/{dishId}", produces = "application/json")
+    @Override
+    public ResponseEntity<Object> addDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId) {
+        try {
+            this.shoppingListService.addDishToList(principal.getName(), listId, dishId);
+        } catch (ShoppingListException s) {
+            // MM TODO LOGGING
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
 
     private ResponseEntity<ShoppingListResource> singleResult(ShoppingListEntity result, List<Category> categories) {
         if (result != null) {
