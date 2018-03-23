@@ -158,7 +158,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
     @Override
     public List<ListLayoutCategoryEntity> getCategoriesForTag(TagEntity tag) {
-        return listLayoutCategoryRepository.findByTagEquals(tag);
+        return listLayoutCategoryRepository.findByTagsContains(tag);
     }
 
     @Override

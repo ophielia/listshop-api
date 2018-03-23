@@ -68,5 +68,5 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
             "order by display_order desc", nativeQuery = true)
     List<ListLayoutCategoryEntity> getSubcategoriesBelow(Long layoutId, Long parentId,int displayOrder);
 
-    List<ListLayoutCategoryEntity> findByTagEquals(TagEntity tagEntity);
+    List<ListLayoutCategoryEntity> findByTagsContains(TagEntity tagEntity);
 }
