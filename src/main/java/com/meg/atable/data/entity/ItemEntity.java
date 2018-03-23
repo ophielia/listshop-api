@@ -22,8 +22,11 @@ public class ItemEntity {
     @JoinColumn(name = "tag_id")
     private TagEntity tag;
 
-    @Column(name = "source")
-    private String itemSource;
+    @Column(name = "dish_sources")
+    private String dishSources;
+
+    @Column(name = "item_sources")
+    private String itemSources;
 
     @Column(name = "list_id")
     private Long listId;
@@ -67,12 +70,12 @@ public class ItemEntity {
         this.tag = tag;
     }
 
-    public String getItemSource() {
-        return itemSource;
+    public String getDishSources() {
+        return dishSources;
     }
 
-    public void setItemSource(String itemSource) {
-        this.itemSource = itemSource;
+    public void setDishSources(String dishSources) {
+        this.dishSources = dishSources;
     }
 
     public Date getAddedOn() {
@@ -134,14 +137,14 @@ public class ItemEntity {
 
 
     public void addItemSource(ItemSourceType sourceType) {
-        if (this.itemSource == null) {
-            this.itemSource = sourceType.name();
+        if (this.dishSources == null) {
+            this.dishSources = sourceType.name();
             return;
         }
-        if (this.itemSource.contains(sourceType.name())) {
+        if (this.dishSources.contains(sourceType.name())) {
             return;
         }
-        this.itemSource = this.itemSource + ";" + sourceType.name();
+        this.dishSources = this.dishSources + ";" + sourceType.name();
     }
 
     public Long getCategoryId() {
@@ -158,5 +161,13 @@ public class ItemEntity {
 
     public void setFrequent(boolean frequent) {
         isFrequent = frequent;
+    }
+
+    public String getItemSources() {
+        return itemSources;
+    }
+
+    public void setItemSources(String itemSources) {
+        this.itemSources = itemSources;
     }
 }

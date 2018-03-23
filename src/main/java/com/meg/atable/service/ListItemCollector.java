@@ -148,8 +148,8 @@ public class ListItemCollector {
 
     public List<ItemEntity> getItemsByItemSource(ItemSourceType itemSource) {
         return tagToItem.entrySet().stream()
-                .filter(e -> e.getValue().getItemSource() != null &&
-                        e.getValue().getItemSource().contains(itemSource.name()))
+                .filter(e -> e.getValue().getDishSources() != null &&
+                        e.getValue().getDishSources().contains(itemSource.name()))
                 .map(e -> e.getValue())
                 .collect(Collectors.toList());
     }
