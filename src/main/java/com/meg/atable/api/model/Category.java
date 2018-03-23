@@ -29,4 +29,6 @@ public interface Category {
     void addSubCategory(Category subcategory);
 
     boolean isEmpty();
+
+
 }

@@ -272,18 +272,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<ItemEntity> pickupListItems = collector.getItemsByItemSource(ItemSourceType.PickUpList);
         deleteItemsFromPickupList(user, pickupListItems);
 
-
-        // recategorize items
-        List<TagEntity> tocategorize = collector.getTagsByCategories(Arrays.asList(uncategorized, ListTagStatisticService.IS_FREQUENT));
-        if (!tocategorize.isEmpty()) {
-            ListLayoutEntity listLayout = listLayoutService.getListLayoutByType(toActive.getListLayoutType());
-            Map<Long, Long> dictionary = getCategoryDictionary(listLayout.getId(), tocategorize);
-            tocategorize.stream()
-                    .filter(e -> !dictionary.containsKey(e.getId()))
-                    .forEach(e -> dictionary.put(e.getId(), null));
-            collector.categorizeUncategorized(dictionary);
-        }
-
         // delete old active list
         if (oldActive != null) {
 
@@ -327,10 +315,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         for (ItemEntity item : shoppingListEntity.getItems()) {
             if (item.isFrequent() && separateFrequent) {
                 frequent.addItemEntity(item);
-            } else if (item.getCategoryId() == null) {
+            } else if (!dictionary.containsKey(item.getTag().getId())) {
                 uncategorized.addItemEntity(item);
             } else {
-                ItemCategory category = (ItemCategory) filledCategories.get(item.getCategoryId());
+                ItemCategory category = (ItemCategory) filledCategories.get(dictionary.get(item.getTag().getId()));
                 if (category == null) {
                     uncategorized.addItemEntity(item);
                 } else {
@@ -351,12 +339,19 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             filledCategories.put(uncategorized.getId(), uncategorized);
         }
 
-        // sort categories
+        // prune categories
+        List<Category> result = new ArrayList<>();
+        for (Category cat: filledCategories.values()) {
+            ItemCategory c = (ItemCategory)cat;
+            if (!c.getItemEntities().isEmpty()) {
+                result.add(c);
+            }
+        }
 
         // return list of categories
         List<Category> sortedResults = new ArrayList<>(filledCategories.values());
-        sortedResults.sort(Comparator.comparing(Category::getDisplayOrder));
-        return sortedResults;
+        result.sort(Comparator.comparing(Category::getDisplayOrder));
+        return result;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.meg.atable.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meg.atable.data.entity.ItemEntity;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class ItemCategory extends AbstractCategory {
 
     private java.util.List<Item> items = new ArrayList<>();
 
+    @JsonIgnore
     List<ItemEntity> itemEntities = new ArrayList<>();
 
 
