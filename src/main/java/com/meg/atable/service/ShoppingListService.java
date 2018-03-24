@@ -34,4 +34,6 @@ public interface ShoppingListService {
     List<Category> categorizeList(ShoppingListEntity shoppingListEntity);
 
     void addDishToList(String name, Long listId, Long dishId) throws ShoppingListException;
+
+    void fillSources(ShoppingListEntity result);
 }

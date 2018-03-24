@@ -217,6 +217,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagEntity> getTagsForDish(Long dishId) {
+        return getTagsForDish(dishId,null);
+    }
+
+    @Override
+    public List<TagEntity> getTagsForDish(Long dishId, List<TagType> tagtypes) {
         List<TagEntity> results = new ArrayList<>();
         DishEntity dish = dishRepository.findOne(dishId);
 
@@ -224,8 +229,16 @@ public class TagServiceImpl implements TagService {
             return results;
         }
 
-        return tagRepository.findTagsByDishes(dish);
+        results =  tagRepository.findTagsByDishes(dish);
+
+        if (tagtypes == null) {
+        return results;
+        }
+        return results.stream()
+                .filter(t -> tagtypes.contains(t.getTagType()))
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public boolean assignTagToParent(Long tagId, Long parentId) {

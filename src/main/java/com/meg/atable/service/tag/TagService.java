@@ -24,6 +24,8 @@ public interface TagService {
 
     List<TagEntity> getTagsForDish(Long dishId);
 
+    List<TagEntity> getTagsForDish(Long dishId, List<TagType> tagtypes);
+
     boolean assignTagToParent(Long tagId, Long parentId);
 
     boolean assignChildrenToParent(Long parentId, List<Long> childrenIds);

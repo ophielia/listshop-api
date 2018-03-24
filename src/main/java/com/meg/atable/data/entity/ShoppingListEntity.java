@@ -4,6 +4,7 @@ import com.meg.atable.api.model.ListLayoutType;
 import com.meg.atable.api.model.ListType;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,13 +36,17 @@ public class ShoppingListEntity {
     @Column(name = "user_id")
     private Long userId;
 
-
-    @Transient
-    @Enumerated(EnumType.STRING)
-    private ListLayoutType listLayoutType;
-
     @JoinColumn(name = "list_layout_id")
     private Long listLayoutId;
+
+    @Transient
+    private ListLayoutType listLayoutType;
+
+    @Transient
+    private List<DishEntity> dishSources = new ArrayList<>();
+
+    @Transient
+    private List<String> listSources= new ArrayList<>();
 
     public ShoppingListEntity(Long id) {
         this.list_id = id;
@@ -102,5 +107,21 @@ public class ShoppingListEntity {
 
     public void setListLayoutId(Long listLayoutId) {
         this.listLayoutId = listLayoutId;
+    }
+
+    public List<DishEntity> getDishSources() {
+        return dishSources;
+    }
+
+    public void setDishSources(List<DishEntity> dishSources) {
+        this.dishSources = dishSources;
+    }
+
+    public List<String> getListSources() {
+        return listSources;
+    }
+
+    public void setListSources(List<String> listSources) {
+        this.listSources = listSources;
     }
 }

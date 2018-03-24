@@ -3,6 +3,7 @@ package com.meg.atable.service.impl;
 import com.meg.atable.api.model.*;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
+import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.data.entity.*;
 import com.meg.atable.data.repository.ItemRepository;
 import com.meg.atable.data.repository.ShoppingListRepository;
@@ -48,9 +49,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Autowired
     private
     ItemRepository itemRepository;
-    @Autowired
-    private
-    TagRepository tagRepository;
+
 
     @Autowired
     private ShoppingListProperties shoppingListProperties;
@@ -128,25 +127,39 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // fill in tag, if item contains tag
         if (itemEntity.getTagId() != null) {
-            TagEntity tag = tagRepository.findOne(itemEntity.getTagId());
-            itemEntity.setTag(tag);
-
+            // get existing item, if any
+            ItemEntity existingItem = getListItemByTag(listId, itemEntity.getTagId());
+            if (existingItem != null) {
+                int count = existingItem.getUsedCount() != null ? existingItem.getUsedCount() : 0;
+                existingItem.setUsedCount(count + 1);
+                itemEntity = existingItem;
+            } else {
+                TagEntity tag = tagService.getTagById(itemEntity.getTagId()).get();
+                itemEntity.setTag(tag);
+            }
             // increment stats
             UserAccountEntity user = userService.getUserByUserName(name);
-            listTagStatisticService.itemAddedToList(user.getId(), tag.getId(), shoppingListEntity.getListType());
+            listTagStatisticService.itemAddedToList(user.getId(), itemEntity.getTag().getId(), shoppingListEntity.getListType());
         }
+
         // prepare item
         itemEntity.setAddedOn(new Date());
         itemEntity.addItemSource(ItemSourceType.Manual);
         itemEntity.setListId(listId);
-        Long listCategory = getCategoryIdForItem(shoppingListEntity, itemEntity);
-        itemEntity.setCategoryId(listCategory);
         ItemEntity result = itemRepository.save(itemEntity);
         // add to shoppingListEntity
         List<ItemEntity> items = shoppingListEntity.getItems();
         items.add(result);
         // save shoppingListEntity (also saving items)
         shoppingListRepository.save(shoppingListEntity);
+    }
+
+    private ItemEntity getListItemByTag(Long listId, Long tagId) {
+        List<ItemEntity> matches = itemRepository.getItemsForTag(listId, tagId);
+        if (matches == null || matches.isEmpty()) {
+            return null;
+        }
+        return matches.get(0);
     }
 
 
@@ -205,25 +218,28 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             return null;
         }
 
-        List<TagEntity> allMealPlanTags = mealPlanService.fillInDishTags(mealPlan);
-        // get the tagcategorykey for the mealplan
-        Map<Long, Long> categoryDictionary = getCategoryDictionary(listLayoutEntity.getId(), allMealPlanTags);
         // create new inprocess list
         ShoppingListEntity newList = new ShoppingListEntity();
         newList.setListLayoutId(listLayoutEntity.getId());
         newList.setListType(ListType.InProcess);
         ShoppingListEntity savedNewList = createList(name, newList);
         // create the collector
-        ListItemCollector collector = new ListItemCollector(savedNewList.getId(), categoryDictionary);
+        ListItemCollector collector = new ListItemCollector(savedNewList.getId());
 
 
         // add all tags
-        collector.addTags(allMealPlanTags);
+        for (SlotEntity slot : mealPlan.getSlots()) {
+            List<TagType> tagTypeList = new ArrayList<>();
+            tagTypeList.add(TagType.Ingredient);
+            tagTypeList.add(TagType.NonEdible);
+            List<TagEntity> tags = tagService.getTagsForDish(slot.getDish().getId(), tagTypeList);
+            collector.addTags(tags, slot.getDish().getId());
+        }
 
         // add Items from BaseList
         ShoppingListEntity baseList = getListByUsernameAndType(name, ListType.BaseList);
         if (baseList != null) {
-            collector.copyExistingItemsIntoList(ListType.BaseList, ItemSourceType.BaseList, baseList.getItems());
+            collector.copyExistingItemsIntoList(ItemSourceType.BaseList, baseList.getItems());
         }
 
         // process statistics (don't want to include pickup in statistics)
@@ -232,14 +248,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // add Items from PickUpList
         ShoppingListEntity pickupList = getListByUsernameAndType(name, ListType.PickUpList);
         if (pickupList != null) {
-            collector.copyExistingItemsIntoList(ListType.PickUpList, ItemSourceType.PickUpList, pickupList.getItems());
-        }
-
-        // check categorization of other list items
-        List<TagEntity> uncategorized = collector.getUncategorizedTags();
-        if (uncategorized != null && !uncategorized.isEmpty()) {
-            Map<Long, Long> dictionary = getCategoryDictionary(listLayoutEntity.getId(), uncategorized);
-            collector.categorizeUncategorized(dictionary);
+            collector.copyExistingItemsIntoList(ItemSourceType.PickUpList, pickupList.getItems());
         }
 
         // update the last added date for dishes
@@ -265,16 +274,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // if generatetype add, add items to current list
         if (generateType == GenerateType.Add && oldActive != null) {
-            collector.copyExistingItemsIntoList(null, ItemSourceType.PickUpList, oldActive.getItems());
+            collector.copyExistingItemsIntoList(ItemSourceType.PickUpList, oldActive.getItems());
         }
 
         // cross items off of pickup list
-        List<ItemEntity> pickupListItems = collector.getItemsByItemSource(ItemSourceType.PickUpList);
-        deleteItemsFromPickupList(user, pickupListItems);
+        ShoppingListEntity pickuplist = getListByUsernameAndType(user.getUsername(), ListType.PickUpList);
+        deleteAllItemsFromList(pickuplist.getId());
 
         // delete old active list
         if (oldActive != null) {
-
             deleteList(username, oldActive.getId());
         }
         // set current list active
@@ -341,8 +349,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // prune categories
         List<Category> result = new ArrayList<>();
-        for (Category cat: filledCategories.values()) {
-            ItemCategory c = (ItemCategory)cat;
+        for (Category cat : filledCategories.values()) {
+            ItemCategory c = (ItemCategory) cat;
             if (!c.getItemEntities().isEmpty()) {
                 result.add(c);
             }
@@ -360,7 +368,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // instead will be determined on the fly upon display
 
         // get the list
-        ShoppingListEntity list = getListById(name,listId);
+        ShoppingListEntity list = getListById(name, listId);
 
         // gather tags for dish to add
         if (dishId == null) {
@@ -378,7 +386,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ListItemCollector collector = new ListItemCollector(listId, list.getItems());
 
         // add new dish tags to list
-        collector.addTags(tagsForDish);// will need to deal with sources
+        collector.addTags(tagsForDish, dishId);
 
         // update last added date for dish
         dishService.updateLastAddedForDish(dishId);
@@ -390,16 +398,53 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return;
     }
 
+    @Override
+    public void fillSources(ShoppingListEntity result) {
+        // dish sources
+        // gather distinct dish sources for list
+        List<String> rawSources = itemRepository.findDishSourcesForList(result.getId());
 
-    private void deleteItemsFromPickupList(UserAccountEntity user, List<ItemEntity> pickupListItems) {
-        ShoppingListEntity list = getListByUsernameAndType(user.getUsername(), ListType.PickUpList);
-        List<Long> tagids = pickupListItems.stream()
-                .filter(t -> t.getTag() != null)
-                .map(t -> t.getTag().getId())
-                .collect(Collectors.toList());
-        if (!tagids.isEmpty()) {
-            shoppingListRepository.bulkDeleteFromList(user.getId(), list.getId(), tagids);
+        if (rawSources != null) {
+            String source;
+            if (rawSources.size() == 1) {
+                source = rawSources.get(0);
+            } else {
+                source = String.join(";",rawSources);
+            }
+            // put into set
+            Set<Long> dishIdSet =  FlatStringUtils.inflateStringToLongSet(source,";");
+            List<Long> dishIds =  new ArrayList<>();
+            dishIds.addAll(dishIdSet);
+            // retrieve dishes from database
+            List<DishEntity> dishSources = dishService.getDishes(dishIds);
+            // set in shopping list
+            result.setDishSources(dishSources);
         }
+
+        // list sources
+        List<String> listRawSources = itemRepository.findListSourcesForList(result.getId());
+
+        // gather distinct list sources for list
+        if (listRawSources != null) {
+            String source;
+            if (listRawSources.size() == 1) {
+                source = listRawSources.get(0);
+            } else {
+                source = String.join(";",listRawSources);
+            }
+            // put into set
+            Set<String> listSourceSet =  FlatStringUtils.inflateStringToSet(source,";");
+            List<String> listSources =  new ArrayList<>();
+            listSources.addAll(listSourceSet);
+            // set in shopping list
+            result.setListSources(listSources);
+        }
+        return;
+    }
+
+
+    private void deleteAllItemsFromList(Long listId) {
+        shoppingListRepository.bulkDeleteItemsFromList(listId);
     }
 
     private Map<Long, Long> getCategoryDictionary(Long layoutId, List<TagEntity> tagList) {

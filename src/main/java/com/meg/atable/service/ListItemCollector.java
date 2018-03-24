@@ -1,7 +1,6 @@
 package com.meg.atable.service;
 
 import com.meg.atable.api.model.ItemSourceType;
-import com.meg.atable.api.model.ListType;
 import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.TagEntity;
 
@@ -18,6 +17,8 @@ public class ListItemCollector {
     private Map<Long, ItemEntity> tagToItem;
     private List<ItemEntity> freeTextItems;
 
+    // MM come back and clean up
+
     public ListItemCollector(Long savedNewListId, Map<Long, Long> categoryDictionary) {
         this.listId = savedNewListId;
         this.categoryDictionary = categoryDictionary;
@@ -33,12 +34,19 @@ public class ListItemCollector {
         addItems(items);
     }
 
-    public void addTags(List<TagEntity> tagEntityList) {
+    public ListItemCollector(Long listId) {
+        this.listId = listId;
+        this.categoryDictionary = new HashMap<>();
+        tagToItem = new HashMap<>();
+        freeTextItems = new ArrayList<>();
+    }
+
+    public void addTags(List<TagEntity> tagEntityList, Long dishId) {
         for (TagEntity tag : tagEntityList) {
             if (tagToItem.containsKey(tag.getId())) {
-                addTagToItem(tag.getId(), ItemSourceType.MealPlan);
+                addTagToItem(tag.getId(), dishId);
             } else {
-                createItemFromTag(tag, ItemSourceType.MealPlan);
+                createItemFromTag(tag, dishId);
             }
         }
     }
@@ -55,6 +63,7 @@ public class ListItemCollector {
         }
 
     }
+
     public List<ItemEntity> getItems() {
         return Stream.concat(tagToItem.values().stream(), freeTextItems.stream())
                 .collect(Collectors.toList());
@@ -90,54 +99,53 @@ public class ListItemCollector {
                 });
     }
 
-    private void createItemFromTag(TagEntity tag, ItemSourceType sourceType) {
-        ItemEntity item = new ItemEntity();
-        item.setTag(tag);
-        item.setListId(listId);
-        item.addItemSource(sourceType);
-        item.setUsedCount(1);
-        //item.setCategoryId(categoryDictionary.get(tag.getId()));
-        tagToItem.put(tag.getId(), item);
-    }
-
-    private void addTagToItem(Long tagid, ItemSourceType sourceType) {
-        ItemEntity item = tagToItem.get(tagid);
-        item.setUsedCount(item.getUsedCount() + 1);
-        item.addItemSource(sourceType);
-        tagToItem.put(tagid, item);
-    }
-
-    public void copyExistingItemsIntoList(ListType listType, ItemSourceType sourceType, List<ItemEntity> items) {
+    public void copyExistingItemsIntoList(ItemSourceType sourceType, List<ItemEntity> items) {
         if (items == null) {
             return;
         }
-        items.stream().forEach(item -> addOrUpdateItem(listType, sourceType, item));
+        items.stream().forEach(item -> addOrUpdateItem(item, sourceType));
     }
 
-    private void addOrUpdateItem(ListType listType, ItemSourceType itemType, ItemEntity item) {
+    private void addOrUpdateItem(ItemEntity item, ItemSourceType sourceType) {
         if (item.getTag() == null) {
-            ItemEntity copied = copyItem(item, listType);
+            ItemEntity copied = copyItem(item);
             // free text item
             freeTextItems.add(copied);
         } else if (tagToItem.containsKey(item.getTag().getId())) {
             ItemEntity update = tagToItem.get(item.getTag().getId());
             int count = item.getUsedCount() != null ? item.getUsedCount() : 0;
             update.setUsedCount(count + 1);
-            update.addItemSource(itemType);
+            update.addRawItemSource(sourceType.name());
             tagToItem.put(item.getTag().getId(), update);
         } else {
-            ItemEntity copied = copyItem(item, listType);
+            ItemEntity copied = copyItem(item);
             int count = item.getUsedCount() != null ? item.getUsedCount() : 0;
             copied.setUsedCount(count + 1);
-            copied.addItemSource(itemType);
+            copied.addRawItemSource(sourceType.name());
             tagToItem.put(item.getTag().getId(), copied);
         }
     }
 
-    private ItemEntity copyItem(ItemEntity item, ListType listType) {
+    private void createItemFromTag(TagEntity tag, Long dishId) {
+        ItemEntity item = new ItemEntity();
+        item.setTag(tag);
+        item.setListId(listId);
+        item.addRawDishSource(dishId);
+        item.setUsedCount(1);
+        tagToItem.put(tag.getId(), item);
+    }
+
+    private void addTagToItem(Long tagid, Long dishId) {
+        ItemEntity item = tagToItem.get(tagid);
+        item.setUsedCount(item.getUsedCount() + 1);
+        item.addRawDishSource(dishId);
+        tagToItem.put(tagid, item);
+    }
+
+
+    private ItemEntity copyItem(ItemEntity item) {
         ItemEntity copied = new ItemEntity();
         copied.setUsedCount(0); // MM resetting count when adding from another list
-        //copied.setCategoryId(item.getCategoryId());  // MM will need to revisit this - other list may have different layout
         copied.setTag(item.getTag());
         copied.setListId(listId);
         copied.setFreeText(item.getFreeText());
@@ -145,13 +153,5 @@ public class ListItemCollector {
         return copied;
     }
 
-
-    public List<ItemEntity> getItemsByItemSource(ItemSourceType itemSource) {
-        return tagToItem.entrySet().stream()
-                .filter(e -> e.getValue().getDishSources() != null &&
-                        e.getValue().getDishSources().contains(itemSource.name()))
-                .map(e -> e.getValue())
-                .collect(Collectors.toList());
-    }
 
 }

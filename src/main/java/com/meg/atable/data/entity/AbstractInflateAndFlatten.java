@@ -1,5 +1,6 @@
 package com.meg.atable.data.entity;
 
+import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.service.TargetServiceConstants;
 
 import java.util.*;
@@ -18,23 +19,11 @@ public class AbstractInflateAndFlatten {
     }
 
     public List<String> inflateStringToList(String flatlist, String delimiter) {
-        if (flatlist == null || flatlist.isEmpty()) {
-            return new ArrayList<String>();
-        }
-
-        List<String> idList = new ArrayList<>();
-        idList.addAll(Arrays.asList(flatlist.split(delimiter)));
-        return idList;
+        return FlatStringUtils.inflateStringToList(flatlist,delimiter);
     }
 
     public Set<String> inflateStringToSet(String flatlist, String delimiter) {
-        if (flatlist == null || flatlist.isEmpty()) {
-            return new HashSet<String>();
-        }
-
-        Set<String> idList = new HashSet<>();
-        idList.addAll(Arrays.asList(flatlist.split(delimiter)));
-        return idList;
+        return FlatStringUtils.inflateStringToSet(flatlist,delimiter);
     }
 
     public String flattenListToString(List<String> list) {

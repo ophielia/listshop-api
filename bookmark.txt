@@ -4,17 +4,18 @@ defaults - ListLayoutServiceImplTest - 12 passed 5 failed
     done - Finish category on delete
     done - Move up
     done - Move down
+    done - Add dish
+    done - Listener to assign tag when moved from default tag
+    done - fill sources
+    fill sources through to model objects
     Change layout
     Dish highlight flag
-    Add dish
     Remove dish
-    done - Listener to assign tag when moved from default tag
 
-do we really need to save the category ids in the item??
-    right now dictionary used in classification  before display and also in save
-    I think we can remove the save - items saved without categories, and categorized each time for display.
-    No - we need the save for the free text items - do the classification from the stored category ids
 FREE TEXT!!!
+    compromise - categories will be saved for free text
+    limited categorization will be allowed
+    user will see free text separately, and be able to drag to category
 
 
     then - to front end

@@ -82,6 +82,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
 
         List<Category> categories = shoppingListService.categorizeList(result);
+        shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
 

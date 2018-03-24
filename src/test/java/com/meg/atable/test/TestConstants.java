@@ -9,6 +9,8 @@ public final class TestConstants {
     public static final Long USER_1_ID = 500L;
     public final static String USER_2_NAME = "adduser";
     public static final Long USER_2_ID = 501L;
+    public final static String USER_3_NAME = "me";
+    public static final Long USER_3_ID = 20L;
 
     public static final Long MEAL_PLAN_1_ID = 500L;
 

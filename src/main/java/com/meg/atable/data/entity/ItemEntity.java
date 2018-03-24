@@ -3,7 +3,9 @@ package com.meg.atable.data.entity;
 import com.meg.atable.api.model.ItemSourceType;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by margaretmartin on 24/10/2017.
@@ -23,10 +25,10 @@ public class ItemEntity {
     private TagEntity tag;
 
     @Column(name = "dish_sources")
-    private String dishSources;
+    private String rawDishSources;
 
-    @Column(name = "item_sources")
-    private String itemSources;
+    @Column(name = "list_sources")
+    private String rawItemSources;
 
     @Column(name = "list_id")
     private Long listId;
@@ -47,6 +49,12 @@ public class ItemEntity {
 
     @Transient
     private boolean isFrequent = false;
+
+    @Transient
+    private List<DishEntity> dishSources = new ArrayList<>();
+
+    @Transient
+    private List<ShoppingListEntity> listSources = new ArrayList<>();
 
     private Long categoryId;
 
@@ -70,12 +78,12 @@ public class ItemEntity {
         this.tag = tag;
     }
 
-    public String getDishSources() {
-        return dishSources;
+    public String getRawDishSources() {
+        return rawDishSources;
     }
 
-    public void setDishSources(String dishSources) {
-        this.dishSources = dishSources;
+    public void setRawDishSources(String rawDishSources) {
+        this.rawDishSources = rawDishSources;
     }
 
     public Date getAddedOn() {
@@ -137,14 +145,14 @@ public class ItemEntity {
 
 
     public void addItemSource(ItemSourceType sourceType) {
-        if (this.dishSources == null) {
-            this.dishSources = sourceType.name();
+        if (this.rawDishSources == null) {
+            this.rawDishSources = sourceType.name();
             return;
         }
-        if (this.dishSources.contains(sourceType.name())) {
+        if (this.rawDishSources.contains(sourceType.name())) {
             return;
         }
-        this.dishSources = this.dishSources + ";" + sourceType.name();
+        this.rawDishSources = this.rawDishSources + ";" + sourceType.name();
     }
 
     public Long getCategoryId() {
@@ -163,11 +171,43 @@ public class ItemEntity {
         isFrequent = frequent;
     }
 
-    public String getItemSources() {
-        return itemSources;
+    public String getRawItemSources() {
+        return rawItemSources;
     }
 
-    public void setItemSources(String itemSources) {
-        this.itemSources = itemSources;
+    public void setRawItemSources(String rawItemSources) {
+        this.rawItemSources = rawItemSources;
+    }
+
+    public List<DishEntity> getDishSources() {
+        return dishSources;
+    }
+
+    public void setDishSources(List<DishEntity> dishSources) {
+        this.dishSources = dishSources;
+    }
+
+    public List<ShoppingListEntity> getListSources() {
+        return listSources;
+    }
+
+    public void setListSources(List<ShoppingListEntity> listSources) {
+        this.listSources = listSources;
+    }
+
+    public void addRawDishSource(Long dishId) {
+        if (rawDishSources == null) {
+            rawDishSources = String.valueOf(dishId);
+        } else {
+            rawDishSources = rawDishSources + ";" + dishId;
+        }
+    }
+
+    public void addRawItemSource(String sourceType) {
+        if (rawItemSources == null) {
+            rawItemSources = sourceType;
+        } else {
+            rawItemSources = rawItemSources + ";" + sourceType;
+        }
     }
 }

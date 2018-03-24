@@ -16,19 +16,26 @@ insert into list (created_on, list_layout_type,list_layout_id, list_types, user_
 insert into list (created_on, list_layout_type,list_layout_id, list_types, user_id, list_id) values (current_timestamp(),'All',11, 'ActiveList', 500, 502);  -- list to be deleted - id 502
 
 -- list items - four items, for active list - id 501,502,503,500
-insert into list_item (added_on, crossed_off, free_text, source, list_category, list_id, tag_id, used_count, category_id, item_id)
-values (current_timestamp(), current_timestamp(), null, null, null, 500, 501, 1, 1,500);
-insert into list_item (added_on, crossed_off, free_text, source, list_category, list_id, tag_id, used_count, category_id,item_id)
-values (current_timestamp(), current_timestamp(), null, null, null, 500, 502, 1, 1,501);
-insert into list_item (added_on, crossed_off, free_text, source, list_category, list_id, tag_id, used_count, category_id,item_id)
-values (current_timestamp(), current_timestamp(), null, null, null, 500, 503, 1, 2,502);
-insert into list_item (added_on, crossed_off, free_text, source, list_category, list_id, tag_id, used_count, category_id,item_id)
-values (current_timestamp(), current_timestamp(), null, null, null, 500, 500, 1, 3,503);
-insert into list_item (added_on, crossed_off, free_text, source, list_category, list_id, tag_id, used_count, category_id,item_id)
-values (current_timestamp(), current_timestamp(), null, null, null, 500, 504, 1, null,504);
-insert into list_item (added_on, crossed_off, free_text, source, list_category, list_id, tag_id, used_count, category_id,item_id)
-values (current_timestamp(), current_timestamp(), null, null, null, 501, 16, 1, null,505);
-
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (500,  501, 500,current_timestamp(), null, null,    1,  null, null);
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (500,  502, 501,current_timestamp(), null, null,    1,  null, null);
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (500,  503, 502,current_timestamp(), null, null,    1,  null, null);
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (500,  500, 503,current_timestamp(), null, null,    1,  null, null);
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (500,  504, 504,current_timestamp(), null, null,    1,  null, null);
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (501,  16, 505,current_timestamp(), null, null,    1,  '16;90', null);
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (501,  18, 506,current_timestamp(), null, null,    1,  null, null);
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (501,  21, 507,current_timestamp(), null, null,    1,  '90', null);
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (501,  359, 508,current_timestamp(), null, null,    1,  null, 'PickUpList');
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (501,  470, 509,current_timestamp(), null, null,    1,  null, 'BaseList');
 
 -- dishes - 3 - ids 500-503
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish1', null, 500, 500);

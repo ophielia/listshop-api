@@ -2,7 +2,7 @@
 ADD COLUMN dish_sources varchar(255);
 
 ALTER TABLE public.list_item
-ADD COLUMN dish_sources varchar(255);
+ADD COLUMN list_sources varchar(255);
 
 
 -- no longer used
@@ -15,7 +15,7 @@ ALTER TABLE public.list_item
 DROP COLUMN dish_sources ;
 
 ALTER TABLE public.list_item
-DROP COLUMN dish_sources ;
+DROP COLUMN list_sources ;
 
 
 

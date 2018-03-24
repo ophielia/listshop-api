@@ -370,7 +370,7 @@ public class ModelMapper {
     private static Item toModel(ItemEntity itemEntity) {
         return new Item(itemEntity.getId())
                 .tag(toModel(itemEntity.getTag()))
-                .itemSource(itemEntity.getDishSources())
+                .itemSource(itemEntity.getRawDishSources())
                 .listId(itemEntity.getListId().toString())
                 .addedOn(itemEntity.getAddedOn())
                 .crossedOff(itemEntity.getCrossedOff())
@@ -449,7 +449,7 @@ public class ModelMapper {
         ItemEntity itemEntity = new ItemEntity(id);
         itemEntity.setTag(toEntity(input.getTag()));
         itemEntity.setFreeText(input.getFreeText());
-        itemEntity.setDishSources(input.getItemSource());
+        itemEntity.setRawDishSources(input.getItemSource());
         itemEntity.setListId(listId);
         itemEntity.setTagId(tagId);
         return itemEntity;

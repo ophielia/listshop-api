@@ -196,4 +196,9 @@ public class MealPlanServiceImpl implements MealPlanService {
         // save dishes
         dishService.save(dishes);
     }
+
+    public List<TagEntity> getTagsForSlot(SlotEntity slot) {
+        // MM implement this
+        return null;
+    }
 }

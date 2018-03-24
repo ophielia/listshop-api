@@ -1,6 +1,7 @@
 package com.meg.atable.service;
 
 import com.meg.atable.data.entity.MealPlanEntity;
+import com.meg.atable.data.entity.SlotEntity;
 import com.meg.atable.data.entity.TagEntity;
 
 import java.util.List;
@@ -29,4 +30,5 @@ public interface MealPlanService {
 
     void updateLastAddedDateForDishes(MealPlanEntity mealPlan);
 
+    List<TagEntity> getTagsForSlot(SlotEntity slot);    
 }

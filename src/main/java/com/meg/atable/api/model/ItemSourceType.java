@@ -7,7 +7,8 @@ public enum ItemSourceType {
     MealPlan("MealPlan"),
     BaseList("BaseList"),
     PreviousList("PreviousList"),
-    PickUpList("PickUpList"), Manual("Manual");
+    PickUpList("PickUpList"),
+    Manual("Manual");
 
     private final String display;
 

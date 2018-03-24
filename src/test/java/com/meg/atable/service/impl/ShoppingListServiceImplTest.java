@@ -1,16 +1,10 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.Application;
-import com.meg.atable.api.model.Category;
-import com.meg.atable.api.model.ItemCategory;
-import com.meg.atable.api.model.ListLayoutType;
-import com.meg.atable.api.model.ListType;
+import com.meg.atable.api.model.*;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
-import com.meg.atable.data.entity.ItemEntity;
-import com.meg.atable.data.entity.MealPlanEntity;
-import com.meg.atable.data.entity.ShoppingListEntity;
-import com.meg.atable.data.entity.TagEntity;
+import com.meg.atable.data.entity.*;
 import com.meg.atable.data.repository.*;
 import com.meg.atable.service.ShoppingListException;
 import com.meg.atable.service.ShoppingListProperties;
@@ -27,11 +21,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
+import java.util.Optional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public class ShoppingListServiceImplTest {
+
 
 
     @Autowired
@@ -41,15 +37,9 @@ public class ShoppingListServiceImplTest {
     @Autowired
     private MealPlanRepository mealPlanRepository;
     @Autowired
-    private SlotRepository slotRepository;
-    @Autowired
     private ItemRepository itemRepository;
     @Autowired
     private UserService userService;
-    @Autowired
-    private TagRepository tagRepository;
-    @Autowired
-    private DishRepository dishRepository;
     @Autowired
     private TagService tagService;
     @Autowired
@@ -57,11 +47,7 @@ public class ShoppingListServiceImplTest {
     private UserAccountEntity userAccount;  // user_id 500
     private UserAccountEntity addUserAccount;  // user_id 501
     private TagEntity tag1; // 500
-    private ItemEntity itemEntity; // 500
-    private ShoppingListEntity baseList;  // 500
-    private ShoppingListEntity activeList; // 501
-    private ShoppingListEntity toDelete; // 502
-    private MealPlanEntity finalMealPlan; // 500
+    private TagEntity cheddarTag; // 18
 
     @Before
     public void setUp() {
@@ -69,27 +55,15 @@ public class ShoppingListServiceImplTest {
         addUserAccount = userService.getUserByUserName(TestConstants.USER_2_NAME);
         // make tags
         tag1 = tagService.getTagById(TestConstants.TAG_1_ID).get();
-
-        // make base list
-        //baseList = shoppingListService.getListById(LIST_1_ID);
-
-        // make active list
-        activeList = shoppingListRepository.getOne(TestConstants.LIST_2_ID);
-        itemEntity = itemRepository.getOne(TestConstants.ITEM_1_ID);
-
-        // make list to be deleted
-        toDelete = shoppingListRepository.getOne(TestConstants.LIST_3_ID);
-
-        // make a mealplan with three dishes, and five tags
-        finalMealPlan = mealPlanRepository.getOne(TestConstants.MEAL_PLAN_1_ID);
+        cheddarTag = tagService.getTagById(18L).get(); // 18 is cheddar tag id;
     }
 
     @Test
     public void testGetListsByUsername() {
-        List<ShoppingListEntity> results = shoppingListService.getListsByUsername(userAccount.getUsername());
+        List<ShoppingListEntity> results = shoppingListService.getListsByUsername(TestConstants.USER_1_NAME);
 
         Assert.assertNotNull(results);
-        Assert.assertTrue(results.size() == 3);
+        Assert.assertTrue(results.size() == 2);
     }
 
     @Test
@@ -137,19 +111,42 @@ public class ShoppingListServiceImplTest {
     public void testAddItemToList() {
         // make item (unsaved)
         ItemEntity itemEntity = new ItemEntity();
-        itemEntity.setTag(tag1);
+        itemEntity.setTagId(tag1.getId());
 
         // add to baseList
-        shoppingListService.addItemToList(userAccount.getUsername(), TestConstants.LIST_1_ID, itemEntity);
+        shoppingListService.addItemToList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, itemEntity);
 
         // retrieve baselist
-        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(), TestConstants.LIST_1_ID);
+        ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
 
         // ensure item is there
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getItems());
         Assert.assertTrue(result.getItems().size() > 0);
-        Assert.assertNotNull(result.getItems().get(0).getId());
+
+        boolean newTagExists = false;
+        for (ItemEntity item : result.getItems()) {
+            if (item.getTag().getId().equals(tag1.getId())) {
+                newTagExists = true;
+            }
+        }
+        Assert.assertTrue(newTagExists);
+
+        // add existing item
+        // get initial item count
+        int initialCount = result.getItems().size();
+        itemEntity.setTagId(cheddarTag.getId());
+        shoppingListService.addItemToList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, itemEntity);
+
+        // retrieve baselist
+        result = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
+        Assert.assertEquals(initialCount,result.getItems().size());
+
+        for (ItemEntity item : result.getItems()) {
+            if (item.getTag().getId().equals(cheddarTag.getId())) {
+                Assert.assertEquals(2L,item.getUsedCount().longValue());
+            }
+        }
     }
 
     @Test
@@ -188,7 +185,7 @@ public class ShoppingListServiceImplTest {
 
     @Test
     public void testCategorizeList() {
-        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(), TestConstants.MEAL_PLAN_1_ID);
+        ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID);
 
         List<Category> categoryEntities = shoppingListService.categorizeList(result);
         Assert.assertNotNull(categoryEntities);
@@ -215,11 +212,11 @@ public class ShoppingListServiceImplTest {
     @Test
     public void addDishToList() throws ShoppingListException {
         // use test data list which contains onions
-        final Long LIST_ID = 501L;
+        final Long LIST_ID = TestConstants.LIST_2_ID;
         final Long ONION_TAG_ID = 16L;
         final Long HAMBURGER_TAG_ID = 435L;
         final Long DISH_ID = 16L;
-        final String USER_NAME = "me";
+        final String USER_NAME =TestConstants.USER_3_NAME;
 
         // add dish cheeseburger maccoroni  // dish_id 16
         this.shoppingListService.addDishToList(USER_NAME,LIST_ID,DISH_ID);
@@ -231,9 +228,11 @@ public class ShoppingListServiceImplTest {
         for (ItemEntity item : list.getItems()) {
             if (item.getTag().getId().equals(HAMBURGER_TAG_ID)) {
                 hasHamburger = true;
+                Assert.assertTrue(item.getRawDishSources().contains(String.valueOf(DISH_ID)));
             } else if (item.getTag().getId().equals(ONION_TAG_ID)) {
                 hasOnion = true;
                 Assert.assertEquals(2L,item.getUsedCount().longValue());
+                Assert.assertTrue(item.getRawDishSources().contains(String.valueOf(DISH_ID)));
             }
         }
         // MM TODO - test for sources, when sources are complete
@@ -241,4 +240,32 @@ public class ShoppingListServiceImplTest {
         Assert.assertTrue(hasOnion);
     }
 
+    @Test
+    public void fillSources() throws Exception {
+        // test begin state - list contains
+        //    broccoli(21) for scoozi (90)
+        //    onions(16) for cheeseburger maccaroni (16)
+        //    honey (359) for pickup list
+        //    cat food (470) for base list
+
+        // get listEntity (list 2)
+        ShoppingListEntity shoppingListEntity = shoppingListService.getListById(TestConstants.USER_3_NAME,TestConstants.LIST_2_ID);
+
+        // call fillSources
+        shoppingListService.fillSources(shoppingListEntity);
+
+        // results -
+        // dish sources should be 2 - scoozi (90) and cheeseburger maccaroni (16)
+        Assert.assertEquals(2,shoppingListEntity.getDishSources().size());
+        Optional<DishEntity> test = shoppingListEntity.getDishSources().stream().filter(d -> d.getId().equals(16L)).findFirst();
+        Assert.assertTrue(test.isPresent()); // cheeseburger maccaroni there
+        test = shoppingListEntity.getDishSources().stream().filter(d -> d.getId().equals(90L)).findFirst();
+        Assert.assertTrue(test.isPresent()); // scoozi there
+        // list sources should be 2 - pickuplist and baselist
+        Assert.assertEquals(2,shoppingListEntity.getListSources().size());
+        Optional<String> testListSource = shoppingListEntity.getListSources().stream().filter(d -> d.equals(ItemSourceType.BaseList.name())).findFirst();
+        Assert.assertTrue(testListSource.isPresent()); // base list there
+        testListSource = shoppingListEntity.getListSources().stream().filter(d -> d.equals(ItemSourceType.PickUpList.name())).findFirst();
+        Assert.assertTrue(testListSource.isPresent()); // pickup list there
+    }
 }
