@@ -21,9 +21,10 @@ public class ShoppingListProperties {
     private Map<ListType, ListLayoutType> defaultLayouts;
 
     private String frequentCategoryName = "frequent";
-    private Integer frequentIdAndSort = 0;
+    private Integer frequentIdAndSort = -2;
     private String uncategorizedCategoryName = "non-cat";
-    private Integer uncategorizedIdAndSort = 0;
+    private Integer uncategorizedIdAndSort = 999;
+    private Integer highlightIdAndSort = -1;
 
     public String getTestValue() {
         return testValue;
@@ -86,5 +87,17 @@ public class ShoppingListProperties {
 
     public Long getUncategorizedIdAndSortAsLong() {
         return new Long(getUncategorizedIdAndSort());
+    }
+
+    public Integer getHighlightIdAndSort() {
+        return highlightIdAndSort;
+    }
+
+    public Long getHighlightIdAndSortAsLong() {
+        return new Long(highlightIdAndSort);
+    }
+
+    public void setHighlightIdAndSort(Integer highlightIdAndSort) {
+        this.highlightIdAndSort = highlightIdAndSort;
     }
 }

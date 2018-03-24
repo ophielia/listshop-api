@@ -32,7 +32,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<ShoppingListResource> retrieveListByType(Principal principal, @PathVariable("listType") String listType);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{listId}", produces = "application/json")
-    ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId);
+    ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value="highlightDish", required=false) Long highlightDishId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}", produces = "application/json")
     ResponseEntity<ShoppingList> deleteList(Principal principal, @PathVariable("listId") Long listId);
@@ -48,5 +48,13 @@ public interface ShoppingListRestControllerApi {
 
     @RequestMapping(method = RequestMethod.POST, value = "/{listId}/dish/{dishId}", produces = "application/json")
     ResponseEntity<Object> addDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId);
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/dish/{dishId}", produces = "application/json")
+    ResponseEntity<Object> removeDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId);
+
+
+    @RequestMapping(method = RequestMethod.POST, value = "/{listId}/layout/{layoutId}", produces = "application/json")
+    ResponseEntity<Object> changeListLayout(Principal principal, @PathVariable Long listId, @PathVariable Long layoutId);
+
 
 }

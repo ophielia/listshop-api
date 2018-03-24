@@ -7,7 +7,6 @@ import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.data.entity.*;
 import com.meg.atable.data.repository.ItemRepository;
 import com.meg.atable.data.repository.ShoppingListRepository;
-import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.*;
 import com.meg.atable.service.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -293,13 +292,23 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    public List<Category> categorizeList(ShoppingListEntity shoppingListEntity) {
+    public List<Category> categorizeList(ShoppingListEntity shoppingListEntity, Long highlightDishId) {
+        boolean isHighlightDish = highlightDishId!=null;
+        boolean separateFrequent = shoppingListEntity.getListType().equals(ListType.InProcess);
+
+        Set<Long> dishItemIds = getDishItemIds(shoppingListEntity,highlightDishId);
+        String highlightName ="";
+        if (isHighlightDish) {
+            DishEntity dish = dishService.getDishById(highlightDishId).get();
+            highlightName = dish.getDishName();
+        }
+
         if (shoppingListEntity.getItems() == null || shoppingListEntity.getItems().isEmpty()) {
             return new ArrayList<Category>();
         }
-        boolean separateFrequent = shoppingListEntity.getListType().equals(ListType.InProcess);
-        List<TagEntity> tagList = shoppingListEntity.getItems().stream().map(ItemEntity::getTag).collect(Collectors.toList());
+
         // get category to item dictionary (tag key, category value)
+        List<TagEntity> tagList = shoppingListEntity.getItems().stream().map(ItemEntity::getTag).collect(Collectors.toList());
         Map<Long, Long> dictionary = getCategoryDictionary(shoppingListEntity.getListLayoutId(), tagList);
         // get categories for items
         Set<Long> categoryIds = new HashSet<>(dictionary.values());
@@ -320,12 +329,18 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ItemCategory uncategorized = (ItemCategory) new ItemCategory(shoppingListProperties.getUncategorizedCategoryName(),
                 shoppingListProperties.getUncategorizedIdAndSortAsLong())
                 .displayOrder(shoppingListProperties.getUncategorizedIdAndSort());
-        for (ItemEntity item : shoppingListEntity.getItems()) {
-            if (item.isFrequent() && separateFrequent) {
+        ItemCategory highlight = (ItemCategory) new ItemCategory(highlightName,
+                shoppingListProperties.getHighlightIdAndSortAsLong())
+                .displayOrder(shoppingListProperties.getHighlightIdAndSort());
+        for (ItemEntity item : shoppingListEntity.getItems() ) {
+            if (item.isFrequent() && separateFrequent && !isHighlightDish) {
                 frequent.addItemEntity(item);
             } else if (!dictionary.containsKey(item.getTag().getId())) {
                 uncategorized.addItemEntity(item);
+            } else if (isHighlightDish && dishItemIds.contains(item.getId())) {
+                highlight.addItemEntity(item);
             } else {
+
                 ItemCategory category = (ItemCategory) filledCategories.get(dictionary.get(item.getTag().getId()));
                 if (category == null) {
                     uncategorized.addItemEntity(item);
@@ -346,20 +361,32 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (!uncategorized.isEmpty()) {
             filledCategories.put(uncategorized.getId(), uncategorized);
         }
+        if (!highlight.isEmpty()) {
+            filledCategories.put(highlight.getId(), highlight);
+        }
 
         // prune categories
         List<Category> result = new ArrayList<>();
         for (Category cat : filledCategories.values()) {
             ItemCategory c = (ItemCategory) cat;
-            if (!c.getItemEntities().isEmpty()) {
+            if (!c.isEmpty()) {
                 result.add(c);
             }
         }
 
         // return list of categories
-        List<Category> sortedResults = new ArrayList<>(filledCategories.values());
         result.sort(Comparator.comparing(Category::getDisplayOrder));
         return result;
+    }
+
+    private Set<Long> getDishItemIds(ShoppingListEntity shoppingListEntity, Long dishId) {
+        Set<Long> dishItemIds = new HashSet<>();
+        List<ItemEntity> items = itemRepository.getItemsForDish(shoppingListEntity.getId(),dishId);
+        if (items == null || items.isEmpty()) {
+            return dishItemIds;
+        }
+        dishItemIds = items.stream().map(t -> t.getId()).collect(Collectors.toSet());
+        return dishItemIds;
     }
 
     @Override
@@ -440,6 +467,56 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             result.setListSources(listSources);
         }
         return;
+    }
+
+    @Override
+    public void changeListLayout(String name, Long listId, Long layoutId) {
+        // get shopping list
+        ShoppingListEntity shoppingList = getListById(name,listId);
+        // set new layout id in shopping list
+        shoppingList.setListLayoutId(layoutId);
+        // save shopping list
+        shoppingListRepository.save(shoppingList);
+
+    }
+
+    @Override
+    public void removeDishFromList(String name, Long listId, Long dishId) {
+        // get list
+        ShoppingListEntity shoppingList = getListById(name, listId);
+        // get items for dish
+        List<ItemEntity> items = itemRepository.getItemsForDish(listId,dishId);
+
+        // go through each item
+        List<ItemEntity> toUpdate = new ArrayList<>();
+        List<ItemEntity> toDelete = new ArrayList<>();
+        for (ItemEntity item: items) {
+            if (item.getUsedCount()>1) {
+            // if used count more than one, decrement, and remove dish source
+        // add to update list
+                item.setUsedCount(item.getUsedCount()-1);
+                Set<String> inflatedDishSources = FlatStringUtils.inflateStringToSet(item.getRawDishSources(),";");
+                if (inflatedDishSources.contains(String.valueOf(dishId))) {
+                    inflatedDishSources.remove(String.valueOf(dishId));
+                    String newSources = FlatStringUtils.flattenSetToString(inflatedDishSources,";");
+                    item.setRawDishSources(newSources);
+                }
+                toUpdate.add(item);
+            } else {
+        // if used count is one, add to delete list
+                toDelete.add(item);
+            }
+        }
+        // update items to update
+        itemRepository.save(toUpdate);
+        // delete items to delete
+        itemRepository.delete(toDelete);
+        // make changes in list object
+        ListItemCollector collector = new ListItemCollector(listId, shoppingList.getItems());
+        collector.updateItems(toUpdate);
+        collector.removeItems(toDelete);
+        shoppingList.setItems(collector.getItems());
+        shoppingListRepository.save(shoppingList);
     }
 
 

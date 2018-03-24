@@ -187,7 +187,7 @@ public class ShoppingListServiceImplTest {
     public void testCategorizeList() {
         ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID);
 
-        List<Category> categoryEntities = shoppingListService.categorizeList(result);
+        List<Category> categoryEntities = shoppingListService.categorizeList(result, null);
         Assert.assertNotNull(categoryEntities);
 
         // count items and subcategories
@@ -241,6 +241,52 @@ public class ShoppingListServiceImplTest {
     }
 
     @Test
+    public void removeDishFromList() throws Exception {
+        // use list 2 - modification
+        // list 2 has dish kate salad tuna, chickpeas and scallion
+        ShoppingListEntity list = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
+
+        // get total count of items (including usedcount)
+        Integer startSum = list.getItems().stream()
+                .mapToInt(t -> t.getUsedCount()).sum();
+
+        // call remove dish
+        shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID,83L);
+
+        // retrieve list
+        ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
+
+        // get total count of items (including usedcount)
+        Integer resultSum = result.getItems().stream()
+                .mapToInt(t -> t.getUsedCount()).sum();
+
+        // should be 3 items less
+        Assert.assertEquals(startSum-3,resultSum.longValue());
+
+        // go through all ensuring
+        //  no tuna (210)
+        //  no chickpeas (113)
+        //  no scallion (211)
+        // and no dish_source for kate salad (83)
+        for (ItemEntity item: result.getItems()) {
+            if (item.getTag().getId().equals(210L)) {
+                Assert.fail("tuna found");
+            }
+            if (item.getTag().getId().equals(113L)) {
+                if (item.getUsedCount()>1)
+                Assert.fail("chickpeas found, used more than once");
+            }
+            if (item.getTag().getId().equals(211L)) {
+                Assert.fail("scallion found");
+            }
+            if (item.getRawDishSources()!=null&&item.getRawDishSources().contains(";83;")) {
+                Assert.fail("dish id still found in source");
+            }
+        }
+
+    }
+
+    @Test
     public void fillSources() throws Exception {
         // test begin state - list contains
         //    broccoli(21) for scoozi (90)
@@ -267,5 +313,39 @@ public class ShoppingListServiceImplTest {
         Assert.assertTrue(testListSource.isPresent()); // base list there
         testListSource = shoppingListEntity.getListSources().stream().filter(d -> d.equals(ItemSourceType.PickUpList.name())).findFirst();
         Assert.assertTrue(testListSource.isPresent()); // pickup list there
+    }
+
+    @Test
+    public void changeListLayout() throws Exception {
+        // use modified list - which begins with layout fine grained (1)
+        // and will be changed to all
+
+        ShoppingListEntity modifiedList = shoppingListService.getListById(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID);
+        Long origLayout = modifiedList.getListLayoutId();
+
+        shoppingListService.changeListLayout(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID, TestConstants.LIST_LAYOUT_3_ID);
+
+        ShoppingListEntity check =shoppingListService.getListById(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID);
+        Assert.assertNotEquals(origLayout,check.getListLayoutId());
+    }
+
+    @Test
+    public void testHighlightDish() throws ShoppingListException {
+
+        shoppingListService.addDishToList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, 110L);
+        ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
+
+        List<Category> categoryEntities = shoppingListService.categorizeList(result, 110L);
+        Assert.assertNotNull(categoryEntities);
+
+        // should find category with category id -1
+        boolean highlightCategoryFound = false;
+        for (Category categoryResult : categoryEntities) {
+            ItemCategory cr = (ItemCategory) categoryResult;
+            if (cr.getId().toString().equals("-1")) {
+                highlightCategoryFound=true;
+            }
+        }
+        Assert.assertTrue(highlightCategoryFound);
     }
 }

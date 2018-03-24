@@ -28,7 +28,7 @@ public class ItemEntity {
     private String rawDishSources;
 
     @Column(name = "list_sources")
-    private String rawItemSources;
+    private String rawListSources;
 
     @Column(name = "list_id")
     private Long listId;
@@ -171,12 +171,12 @@ public class ItemEntity {
         isFrequent = frequent;
     }
 
-    public String getRawItemSources() {
-        return rawItemSources;
+    public String getRawListSources() {
+        return rawListSources;
     }
 
-    public void setRawItemSources(String rawItemSources) {
-        this.rawItemSources = rawItemSources;
+    public void setRawListSources(String rawListSources) {
+        this.rawListSources = rawListSources;
     }
 
     public List<DishEntity> getDishSources() {
@@ -204,10 +204,27 @@ public class ItemEntity {
     }
 
     public void addRawItemSource(String sourceType) {
-        if (rawItemSources == null) {
-            rawItemSources = sourceType;
+        if (rawListSources == null) {
+            rawListSources = sourceType;
         } else {
-            rawItemSources = rawItemSources + ";" + sourceType;
+            rawListSources = rawListSources + ";" + sourceType;
         }
+    }
+
+
+    @Override
+    public String toString() {
+        return "ItemEntity{" +
+                "item_id=" + item_id +
+                 ", rawDishSources='" + rawDishSources + '\'' +
+                ", rawListSources='" + rawListSources + '\'' +
+                ", listId=" + listId +
+                ", usedCount=" + usedCount +
+                ", addedOn=" + addedOn +
+                ", freeText='" + freeText + '\'' +
+                ", crossedOff=" + crossedOff +
+                ", tag_id=" + tag_id +
+                ", isFrequent=" + isFrequent +
+                '}';
     }
 }

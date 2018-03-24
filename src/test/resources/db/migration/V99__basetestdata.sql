@@ -37,6 +37,14 @@ INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
 	VALUES (501,  470, 509,current_timestamp(), null, null,    1,  null, 'BaseList');
 
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (501,  210, 510,current_timestamp(), null, null,    1,  null, 'BaseList');
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (501,  211, 511,current_timestamp(), null, null,    1,  null, 'BaseList');
+INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
+	VALUES (501,  113, 512,current_timestamp(), null, null,    2,  ';83;', 'BaseList');
+
+
 -- dishes - 3 - ids 500-503
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish1', null, 500, 500);
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish2', null, 500, 501);

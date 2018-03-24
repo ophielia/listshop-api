@@ -12,9 +12,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.security.Principal;
@@ -78,10 +76,11 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     //@RequestMapping(method = RequestMethod.GET, value = "/{listId}", produces = "application/json")
-    public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId) {
+    @Override
+    public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value="highlightDish", required=false) Long highlightDishId){
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
 
-        List<Category> categories = shoppingListService.categorizeList(result);
+        List<Category> categories = shoppingListService.categorizeList(result,highlightDishId );
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
@@ -130,6 +129,23 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             // MM TODO LOGGING
             return ResponseEntity.badRequest().build();
         }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/dish/{dishId}", produces = "application/json")
+    @Override
+    public ResponseEntity<Object> removeDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId) {
+            this.shoppingListService.removeDishFromList(principal.getName(), listId, dishId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+
+    //@RequestMapping(method = RequestMethod.POST, value = "/{listId}/layout/{layoutId}", produces = "application/json")
+    @Override
+    public ResponseEntity<Object> changeListLayout(Principal principal, @PathVariable Long listId, @PathVariable Long layoutId) {
+            this.shoppingListService.changeListLayout(principal.getName(), listId, layoutId);
 
         return ResponseEntity.noContent().build();
     }

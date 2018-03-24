@@ -1,5 +1,7 @@
 package com.meg.atable.common;
 
+import com.meg.atable.service.TargetServiceConstants;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,5 +49,9 @@ public  class FlatStringUtils {
         List<String> idList = new ArrayList<>();
         idList.addAll(Arrays.asList(flatlist.split(delimiter)));
         return idList.stream().map(s -> Long.valueOf(s)).collect(Collectors.toList());
+    }
+
+    public static String flattenSetToString(Set<String> set, String delimiter) {
+        return String.join(delimiter, set);
     }
 }

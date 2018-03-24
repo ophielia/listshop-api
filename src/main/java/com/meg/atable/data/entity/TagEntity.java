@@ -190,4 +190,26 @@ public class TagEntity {
         copy.setPower(getPower());
             return copy;
     }
+
+    @Override
+    public String toString() {
+        return "TagEntity{" +
+                "tag_id=" + tag_id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", tagType=" + tagType +
+                ", tagTypeDefault=" + tagTypeDefault +
+                ", ratingFamily='" + ratingFamily + '\'' +
+                ", dishes=" + dishes +
+                ", categories=" + categories +
+                ", autoTagFlag=" + autoTagFlag +
+                ", isParentTag=" + isParentTag +
+                ", assignSelect=" + assignSelect +
+                ", searchSelect=" + searchSelect +
+                ", isVerified=" + isVerified +
+                ", power=" + power +
+                ", childrenIds=" + childrenIds +
+                ", parentId=" + parentId +
+                '}';
+    }
 }

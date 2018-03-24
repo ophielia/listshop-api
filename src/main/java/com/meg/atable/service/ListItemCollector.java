@@ -122,6 +122,7 @@ public class ListItemCollector {
             int count = item.getUsedCount() != null ? item.getUsedCount() : 0;
             copied.setUsedCount(count + 1);
             copied.addRawItemSource(sourceType.name());
+            copied.setRawDishSources(item.getRawDishSources());
             tagToItem.put(item.getTag().getId(), copied);
         }
     }
@@ -154,4 +155,15 @@ public class ListItemCollector {
     }
 
 
+    public void updateItems(List<ItemEntity> items) {
+        for (ItemEntity item: items) {
+        tagToItem.put(item.getTag().getId(),item);
+        }
+    }
+
+    public void removeItems(List<ItemEntity> items) {
+        for (ItemEntity item: items) {
+            tagToItem.remove(item.getTag().getId());
+        }
+    }
 }

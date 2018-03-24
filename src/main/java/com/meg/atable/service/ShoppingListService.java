@@ -31,9 +31,13 @@ public interface ShoppingListService {
 
     ShoppingListEntity setListActive(String username, Long listId, GenerateType generateType);
 
-    List<Category> categorizeList(ShoppingListEntity shoppingListEntity);
+    List<Category> categorizeList(ShoppingListEntity shoppingListEntity, Long highlightDishId);
 
     void addDishToList(String name, Long listId, Long dishId) throws ShoppingListException;
 
     void fillSources(ShoppingListEntity result);
+
+    void changeListLayout(String name, Long listId, Long layoutId);
+
+    void removeDishFromList(String name, Long listId, Long dishId);
 }

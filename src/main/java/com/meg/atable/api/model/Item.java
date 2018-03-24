@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by margaretmartin on 29/10/2017.
@@ -38,6 +39,12 @@ public class Item implements Comparable {
 
     @JsonProperty("used_count")
     private Integer usedCount;
+
+    @JsonProperty("dish_sources")
+    private List<ItemSource> dishSources;
+
+    @JsonProperty("list_sources")
+    private List<ItemSource> listSources;
 
     public Item(Long id) {
         this.item_id = id;
@@ -148,4 +155,22 @@ public class Item implements Comparable {
         }
         return name.toLowerCase().compareTo(comparename.toLowerCase());
     }
+
+    public void setDishSources(List<ItemSource> dishSources) {
+        this.dishSources = dishSources;
+    }
+
+    public List<ItemSource> getDishSources() {
+        return dishSources;
+    }
+
+    public void setListSources(List<ItemSource> listSources) {
+        this.listSources = listSources;
+    }
+
+    public List<ItemSource> getListSources() {
+        return listSources;
+    }
+
+    
 }

@@ -26,7 +26,7 @@ public class ShoppingListResource extends ResourceSupport {
         this.add(linkTo(ShoppingListRestController.class, userId).withRel("shoppinglist"));
         // add link to this shopping list
         this.add(linkTo(methodOn(ShoppingListRestController.class, userId)
-                .retrieveListById(null, shoppingListEntity.getId())).withSelfRel());
+                .retrieveListById(null, shoppingListEntity.getId(),null)).withSelfRel());
     }
 
     public ShoppingList getShoppingList() {
