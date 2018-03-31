@@ -281,7 +281,7 @@ public class ListLayoutServiceImplTest {
         int beforeCount = beforeTags.size();
 
         // add tags 3 4 and 5 to category
-        List<Long> addTags = Arrays.asList(TestConstants.TAG_1_ID, TestConstants.TAG_2_ID, TestConstants.TAG_3_ID, TestConstants.TAG_4_ID);
+        List<Long> addTags = Arrays.asList(TestConstants.TAG_1_ID, TestConstants.TAG_4_ID);
 
         listLayoutService.addTagsToCategory(TestConstants.LIST_LAYOUT_1_ID, TestConstants.LIST_LAYOUT_1_CATEGORY_ID, addTags);
 
@@ -292,7 +292,7 @@ public class ListLayoutServiceImplTest {
         List<TagEntity> resultTags = tagRepository.getTagsForLayoutCategory(TestConstants.LIST_LAYOUT_1_CATEGORY_ID);
 
         Assert.assertNotNull(resultTags);
-        Assert.assertEquals(beforeCount + 4, resultTags.size());
+        Assert.assertEquals(beforeCount + 2, resultTags.size());
     }
 
     @Test

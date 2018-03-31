@@ -23,12 +23,12 @@ public  class FlatStringUtils {
 
     public static Set<Long> inflateStringToLongSet(String flatlist, String delimiter) {
         if (flatlist == null || flatlist.isEmpty()) {
-            return new HashSet<Long>();
+            return new HashSet<>();
         }
 
         Set<String> idList = new HashSet<>();
         idList.addAll(Arrays.asList(flatlist.split(delimiter)));
-        return idList.stream().map(i -> Long.valueOf(i)).collect(Collectors.toSet());
+        return idList.stream().filter(i->!i.isEmpty()).map(i -> Long.valueOf(i)).collect(Collectors.toSet());
     }
 
     public static List<String> inflateStringToList(String flatlist, String delimiter) {

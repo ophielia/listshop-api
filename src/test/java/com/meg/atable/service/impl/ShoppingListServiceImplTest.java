@@ -302,7 +302,19 @@ public class ShoppingListServiceImplTest {
 
         // results -
         // dish sources should be 2 - scoozi (90) and cheeseburger maccaroni (16)
-        Assert.assertEquals(2,shoppingListEntity.getDishSources().size());
+        Assert.assertTrue(shoppingListEntity.getDishSources().size()>=2);
+        boolean hasScoozi = false;
+        boolean hasCheeseMac = false;
+        for (DishEntity dish: shoppingListEntity.getDishSources()) {
+            if (dish.getId().equals(90L)) {
+hasScoozi=true;
+            }
+            else if (dish.getId().equals(16L)) {
+hasCheeseMac=true;
+            }
+        }
+        Assert.assertTrue(hasScoozi);
+        Assert.assertTrue(hasCheeseMac);
         Optional<DishEntity> test = shoppingListEntity.getDishSources().stream().filter(d -> d.getId().equals(16L)).findFirst();
         Assert.assertTrue(test.isPresent()); // cheeseburger maccaroni there
         test = shoppingListEntity.getDishSources().stream().filter(d -> d.getId().equals(90L)).findFirst();
