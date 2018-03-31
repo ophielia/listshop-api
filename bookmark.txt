@@ -7,10 +7,10 @@ defaults - ListLayoutServiceImplTest - 12 passed 5 failed
     done - Add dish
     done - Listener to assign tag when moved from default tag
     done - fill sources
-    fill sources through to model objects
-    Change layout
-    Dish highlight flag
-    Remove dish
+    done - fill sources through to model objects
+    done - Change layout
+    done - Dish highlight flag
+    done - Remove dish
 
 FREE TEXT!!!
     compromise - categories will be saved for free text
@@ -19,6 +19,15 @@ FREE TEXT!!!
 
 
     then - to front end
+
+Admin edit layout subcat page
+Legend and sources to edit page
+Remove dish to edit
+(Maybe) add dish to edit
+Change layout to edit
+Clean up list
+Quick add page
+Shop page
 
 
     default / switch for add lists upon generate

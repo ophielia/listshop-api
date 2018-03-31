@@ -38,7 +38,7 @@ public class ModelMapper {
     }
 
     public static ListLayout toModel(ListLayoutEntity listLayoutEntity, List<Category> tagCategories) {
-        List<Category> categories = categoryItemsToModel(tagCategories, null);
+        List<Category> categories = layoutCategoriesToModel(tagCategories);
 
         return new ListLayout(listLayoutEntity.getId())
                 .name(listLayoutEntity.getName())
@@ -136,14 +136,34 @@ public class ModelMapper {
         return dishSlots;
     }
 
-    private static List<ListLayoutCategory> categoriesToModel(List<ListLayoutCategoryEntity> categories) {
-        List<ListLayoutCategory> categoryList = new ArrayList<>();
-        if (categories != null) {
-            for (ListLayoutCategoryEntity cat : categories) {
-                categoryList.add(toModel(cat));
-            }
+    private static List<Category> layoutCategoriesToModel(List<Category> categories) {
+        if (categories == null) {
+            return categories;
+        }
+
+        List<Category> categoryList = new ArrayList<>();
+        for (Category cat : categories) {
+            ListLayoutCategory llc = (ListLayoutCategory) cat;
+            List<Tag> tags = toModel(llc.getTagEntities());
+
+            categoryList.add(toModel((ListLayoutCategory) llc.tags(tags)));
         }
         return categoryList;
+
+    }
+
+    public static ListLayoutCategory toModel(ListLayoutCategory cat) {
+        if (cat == null) {
+            return null;
+        }
+
+        // receive pre-filled.  Just need to check for subcategories;
+        if (cat.getSubCategories() == null || cat.getSubCategories().isEmpty()) {
+            return cat;
+        }
+
+        List<Category> subcategories = layoutCategoriesToModel(cat.getSubCategories());
+        return (ListLayoutCategory) cat.subCategories(subcategories);
     }
 
     public static ListLayoutCategory toModel(ListLayoutCategoryEntity cat) {
@@ -194,13 +214,16 @@ public class ModelMapper {
         if (rawDishSources == null) {
             return result;
         }
-        Set<String> uniqueSources = FlatStringUtils.inflateStringToSet(rawDishSources, ";");
-        for (String listsource : uniqueSources) {
-
-            ItemSource source = new ItemSource();
-            source.setDisplay(listsource);
-            source.setType("List");
-            result.add(source);
+        Set<String> uniqueDishSources = FlatStringUtils.inflateStringToSet(rawDishSources, ";");
+        for (String listsourceid : uniqueDishSources) {
+            if (dishSources.containsKey(Long.valueOf(listsourceid))) {
+                DishEntity dish = dishSources.get(Long.valueOf(listsourceid));
+                ItemSource source = new ItemSource();
+                source.setDisplay(dish.getDishName());
+                source.setId(dish.getId());
+                source.setType("Dish");
+                result.add(source);
+            }
         }
         return result;
     }
@@ -291,7 +314,7 @@ public class ModelMapper {
             shoppingListEntity.getDishSources().forEach(d -> dishSourceDictionary.put(d.getId(), d));
         }
 
-        List<Category> categories = categoryItemsToModel(itemCategories, dishSourceDictionary);
+        List<Category> categories = itemCategoriesToModel(itemCategories, dishSourceDictionary);
         String layoutType = shoppingListEntity.getListLayoutType() != null ? shoppingListEntity.getListLayoutType().name() : "";
         return new ShoppingList(shoppingListEntity.getId())
                 .createdOn(shoppingListEntity.getCreatedOn())
@@ -303,7 +326,8 @@ public class ModelMapper {
 
     }
 
-    private static List<Category> categoryItemsToModel(List<Category> filledCategories, Map<Long, DishEntity> dishSources) {
+
+    private static List<Category> itemCategoriesToModel(List<Category> filledCategories, Map<Long, DishEntity> dishSources) {
         if (filledCategories == null) {
             return filledCategories;
         }
@@ -322,7 +346,7 @@ public class ModelMapper {
 
             // now - subcategories
             if (!categoryModel.getSubCategories().isEmpty()) {
-                List<Category> filledSubCats = categoryItemsToModel(categoryModel.getSubCategories(), dishSources);
+                List<Category> filledSubCats = itemCategoriesToModel(categoryModel.getSubCategories(), dishSources);
                 categoryModel.subCategories(filledSubCats);
             }
         }
@@ -446,6 +470,17 @@ public class ModelMapper {
     }
 
 
+    private static List<ListLayoutCategory> categoriesToModel(List<ListLayoutCategoryEntity> categories) {
+        List<ListLayoutCategory> categoryList = new ArrayList<>();
+        if (categories != null) {
+            for (ListLayoutCategoryEntity cat : categories) {
+                categoryList.add(toModel(cat));
+            }
+        }
+        return categoryList;
+    }
+
+
     private static List<ItemCategory> itemsToModel(List<ItemEntity> items) {
  /*
     private static List<Category> categoryTagsToModel(List<Category> filledCategories) {
@@ -529,4 +564,15 @@ public class ModelMapper {
         return null;
     }
 
+    /*     public static Category toCategoryModel(ListLayoutCategoryEntity cat) {
+        if (cat == null) {
+            return null;
+        }
+        List<Category> subCategories = new ArrayList<>();
+        List<Item> items = simpleItemsToModel(cat.getItems());
+        return new ItemCategory(cat.getName())
+                .items(items)
+                .subCategories(subCategories);
+
+    } */
 }

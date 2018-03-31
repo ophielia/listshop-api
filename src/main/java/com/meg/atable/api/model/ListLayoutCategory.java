@@ -1,5 +1,6 @@
 package com.meg.atable.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meg.atable.data.entity.TagEntity;
 
@@ -12,7 +13,9 @@ public class ListLayoutCategory extends AbstractCategory {
 
     @JsonProperty("layout_id")
     private Long layoutId;
+    @JsonIgnore
     private List<TagEntity> tagEntities;
+    @JsonProperty("tags")
     private List<Tag> tags;
 
     public ListLayoutCategory() {

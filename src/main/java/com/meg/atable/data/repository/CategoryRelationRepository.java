@@ -1,8 +1,6 @@
 package com.meg.atable.data.repository;
 
-import com.meg.atable.api.model.ListLayoutCategory;
 import com.meg.atable.data.entity.CategoryRelationEntity;
-import com.meg.atable.data.entity.ListLayoutCategoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

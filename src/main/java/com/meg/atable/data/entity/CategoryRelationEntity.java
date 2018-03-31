@@ -31,6 +31,10 @@ public class CategoryRelationEntity {
         this.child = child;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public ListLayoutCategoryEntity getParent() {
         return parent;
     }

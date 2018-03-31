@@ -149,3 +149,68 @@ pg_dump -U bank -d atable -O --column-inserts > test.sql
 
 -- dump command
 pg_dump -U bank -d atable -O --column-inserts > test.sql
+
+
+
+
+-- working on copy tags => fine grained
+-- make sure assign select is good for everything
+update tag set assign_select = false where tag_id in (
+select distinct tag_id from tag t
+join tag_relation r on t.tag_id = r.parent_tag_id
+left join tag_relation cr on r.parent_tag_id = cr.child_tag_id
+and cr.child_tag_id is null
+where t.assign_select = true);
+
+-- select for new categories
+--base
+﻿select distinct pr.*
+from tag ch
+join tag_relation tr on tr.child_tag_id = ch.tag_id
+join tag pr on pr.tag_id = tr.parent_tag_id
+where ch.assign_select = true
+and ch.tag_type in ('Ingredient','NonEdible')
+-- prep for insert
+select distinct pr.name as name, 99 as category_id, 1 as layout_id , 1 as display_order
+from tag ch
+join tag_relation tr on tr.child_tag_id = ch.tag_id
+join tag pr on pr.tag_id = tr.parent_tag_id
+where ch.assign_select = true
+and ch.tag_type in ('Ingredient','NonEdible')
+
+insert into list_category (name, category_id, layout_id, display_order)
+select distinct pr.name as name, nextval('list_layout_category_sequence') as category_id, 1 as layout_id , 1 as display_order
+from tag ch
+join tag_relation tr on tr.child_tag_id = ch.tag_id
+join tag pr on pr.tag_id = tr.parent_tag_id
+where ch.assign_select = true
+and ch.tag_type in ('Ingredient','NonEdible')
+
+-- final (but in bad order)
+﻿insert into list_category (name, category_id, layout_id, display_order)
+select name as name, nextval('list_layout_category_sequence') as category_id, 1 as layout_id , 1 as display_order
+from george;
+
+create temporary table george as
+select distinct pr.name as name
+from tag ch
+join tag_relation tr on tr.child_tag_id = ch.tag_id
+join tag pr on pr.tag_id = tr.parent_tag_id
+where ch.assign_select = true
+and ch.tag_type in ('Ingredient','NonEdible')
+
+﻿insert into category_tags (category_id, tag_id)
+select lc.category_id as category_id,tr.child_tag_id as tag_id
+from list_category lc
+join tag t on t.name = lc.name
+join tag_relation tr on t.tag_id = tr.parent_tag_id
+and t.assign_select = false
+where lc.layout_id = 1;
+
+select * from category_tags ct
+join list_category lc using (category_id)
+--select * from list_category
+where layout_id = 1
+
+
+nextval('list_layout_category_sequence')

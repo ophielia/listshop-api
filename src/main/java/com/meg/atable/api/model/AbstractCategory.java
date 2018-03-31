@@ -19,7 +19,9 @@ public abstract class AbstractCategory implements Category {
 
     private String name;
 
+    @JsonProperty("subcategories")
     private List<Category> subCategories = new ArrayList<>();
+
 
     private Integer displayOrder;
 
