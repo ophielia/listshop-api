@@ -164,7 +164,7 @@ where t.assign_select = true);
 
 -- select for new categories
 --base
-﻿select distinct pr.*
+select distinct pr.*
 from tag ch
 join tag_relation tr on tr.child_tag_id = ch.tag_id
 join tag pr on pr.tag_id = tr.parent_tag_id
@@ -187,7 +187,7 @@ where ch.assign_select = true
 and ch.tag_type in ('Ingredient','NonEdible')
 
 -- final (but in bad order)
-﻿insert into list_category (name, category_id, layout_id, display_order)
+insert into list_category (name, category_id, layout_id, display_order)
 select name as name, nextval('list_layout_category_sequence') as category_id, 1 as layout_id , 1 as display_order
 from george;
 
@@ -199,7 +199,7 @@ join tag pr on pr.tag_id = tr.parent_tag_id
 where ch.assign_select = true
 and ch.tag_type in ('Ingredient','NonEdible')
 
-﻿insert into category_tags (category_id, tag_id)
+insert into category_tags (category_id, tag_id)
 select lc.category_id as category_id,tr.child_tag_id as tag_id
 from list_category lc
 join tag t on t.name = lc.name
