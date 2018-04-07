@@ -3,6 +3,7 @@ package com.meg.atable.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
+import java.util.List;
 
 public class ShoppingList {
 
@@ -19,6 +20,12 @@ public class ShoppingList {
 
     @JsonProperty("item_count")
     private Integer itemCount;
+
+    @JsonProperty("dish_sources")
+    private List<ItemSource> dishSources;
+
+    @JsonProperty("list_sources")
+    private List<ItemSource> listSources;
 
     private java.util.List<Category>
             categories;
@@ -90,6 +97,16 @@ public class ShoppingList {
 
     public ShoppingList itemCount(Integer itemCount) {
         this.itemCount = itemCount;
+        return this;
+    }
+
+    public ShoppingList dishSources(List<ItemSource> dishSources) {
+        this.dishSources = dishSources;
+        return this;
+    }
+
+    public ShoppingList listSources(List<ItemSource> listSources) {
+        this.listSources = listSources;
         return this;
     }
 }

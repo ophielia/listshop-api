@@ -1,6 +1,7 @@
 package com.meg.atable.service;
 
 import com.meg.atable.api.model.ItemSourceType;
+import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.TagEntity;
 
@@ -13,45 +14,14 @@ import java.util.stream.Stream;
  */
 public class ListItemCollector {
     private final Long listId;
-    private Map<Long, Long> categoryDictionary;
     private Map<Long, ItemEntity> tagToItem;
     private List<ItemEntity> freeTextItems;
 
-    // MM come back and clean up
-
-    public ListItemCollector(Long savedNewListId, Map<Long, Long> categoryDictionary) {
-        this.listId = savedNewListId;
-        this.categoryDictionary = categoryDictionary;
-        tagToItem = new HashMap<>();
-        freeTextItems = new ArrayList<>();
-    }
 
     public ListItemCollector(Long savedNewListId, List<ItemEntity> items) {
         this.listId = savedNewListId;
-        this.categoryDictionary = new HashMap<>();
         tagToItem = new HashMap<>();
         freeTextItems = new ArrayList<>();
-        addItems(items);
-    }
-
-    public ListItemCollector(Long listId) {
-        this.listId = listId;
-        this.categoryDictionary = new HashMap<>();
-        tagToItem = new HashMap<>();
-        freeTextItems = new ArrayList<>();
-    }
-
-    public void addTags(List<TagEntity> tagEntityList, Long dishId) {
-        for (TagEntity tag : tagEntityList) {
-            if (tagToItem.containsKey(tag.getId())) {
-                addTagToItem(tag.getId(), dishId);
-            } else {
-                createItemFromTag(tag, dishId);
-            }
-        }
-    }
-
-    public void addItems(List<ItemEntity> items) {
         if (items != null) {
             items.stream().forEach(item -> {
                 if (item.getTag() != null) {
@@ -61,26 +31,24 @@ public class ListItemCollector {
                 }
             });
         }
-
     }
 
-    public List<ItemEntity> getItems() {
-        return Stream.concat(tagToItem.values().stream(), freeTextItems.stream())
+    public ListItemCollector(Long listId) {
+        this.listId = listId;
+        tagToItem = new HashMap<>();
+        freeTextItems = new ArrayList<>();
+    }
+
+
+    public List<ItemEntity> getAllItems() {
+        return Stream.concat(tagToItem.values().stream()
+                .filter(i -> !i.isDeleted()), freeTextItems.stream())
                 .collect(Collectors.toList());
     }
 
-    public List<TagEntity> getUncategorizedTags() {
-        return tagToItem.values().stream()
-                .filter(i -> i.getTag() != null && i.getListCategory() == null)
-                .map(ItemEntity::getTag)
-                .collect(Collectors.toList());
-    }
-
-    public List<TagEntity> getTagsByCategories(List<String> categories) {
-        return tagToItem.values().stream()
-                .filter(i -> i.getTag() != null && i.getListCategory() == null ||
-                        i.getTag() != null && categories.contains(i.getListCategory()))
-                .map(ItemEntity::getTag)
+    public List<ItemEntity> getTagItems() {
+        return tagToItem.values()
+                .stream().filter(i -> i.getTag() != null)
                 .collect(Collectors.toList());
     }
 
@@ -90,39 +58,60 @@ public class ListItemCollector {
                 .collect(Collectors.toList());
     }
 
-    public void categorizeUncategorized(Map<Long, Long> dictionary) {
-        dictionary.entrySet().stream()
-                .forEach(e -> {
-                    ItemEntity item = tagToItem.get(e.getKey());
-                    //item.setCategoryId(e.getValue());
-                    tagToItem.put(e.getKey(), item);
-                });
+    public List<ItemEntity> getItemsToUpdate() {
+        return tagToItem.values().stream()
+                .filter(i -> i.isUpdated())
+                .collect(Collectors.toList());
     }
 
-    public void copyExistingItemsIntoList(ItemSourceType sourceType, List<ItemEntity> items) {
+    public List<ItemEntity> getItemsToDelete() {
+        return tagToItem.values().stream()
+                .filter(i -> i.isDeleted())
+                .collect(Collectors.toList());
+    }
+
+    public void addTags(List<TagEntity> tagEntityList, Long dishId, String listSource) {
+        for (TagEntity tag : tagEntityList) {
+            addItemByTag(tag, listSource, dishId);
+        }
+    }
+
+    public void copyExistingItemsIntoList(String sourceType, List<ItemEntity> items, boolean incrementStats) {
         if (items == null) {
             return;
         }
-        items.stream().forEach(item -> addOrUpdateItem(item, sourceType));
+        items.stream().forEach(item -> copyOrUpdateExistingItem(item, sourceType, incrementStats));
     }
 
-    private void addOrUpdateItem(ItemEntity item, ItemSourceType sourceType) {
+    private void copyOrUpdateExistingItem(ItemEntity item, String sourceType, boolean incrementStats) {
         if (item.getTag() == null) {
             ItemEntity copied = copyItem(item);
             // free text item
             freeTextItems.add(copied);
         } else if (tagToItem.containsKey(item.getTag().getId())) {
             ItemEntity update = tagToItem.get(item.getTag().getId());
-            int count = item.getUsedCount() != null ? item.getUsedCount() : 0;
+            int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
             update.setUsedCount(count + 1);
-            update.addRawItemSource(sourceType.name());
+            update.addRawListSource(sourceType);
+            if (incrementStats) {
+                update.incrementAddCount(Math.max(item.getUsedCount(),1));
+            } else {
+                // just mark as updated, so it will be saved
+                update.setUpdated(true);
+            }
             tagToItem.put(item.getTag().getId(), update);
         } else {
             ItemEntity copied = copyItem(item);
             int count = item.getUsedCount() != null ? item.getUsedCount() : 0;
-            copied.setUsedCount(count + 1);
-            copied.addRawItemSource(sourceType.name());
+            copied.setUsedCount(count );
+            copied.addRawListSource(sourceType);
             copied.setRawDishSources(item.getRawDishSources());
+            if (incrementStats) {
+                copied.incrementAddCount(Math.max(1,item.getUsedCount()));
+            } else {
+                // just mark as updated, so it will be saved
+                copied.setUpdated(true);
+            }
             tagToItem.put(item.getTag().getId(), copied);
         }
     }
@@ -132,7 +121,9 @@ public class ListItemCollector {
         item.setTag(tag);
         item.setListId(listId);
         item.addRawDishSource(dishId);
-        item.setUsedCount(1);
+        item.setUsedCount(0);
+        item.setAddedOn(new Date());
+
         tagToItem.put(tag.getId(), item);
     }
 
@@ -140,13 +131,21 @@ public class ListItemCollector {
         ItemEntity item = tagToItem.get(tagid);
         item.setUsedCount(item.getUsedCount() + 1);
         item.addRawDishSource(dishId);
+        item.setAddedOn(new Date());
         tagToItem.put(tagid, item);
     }
 
 
+
+    public void removeTagsForDish(Long dishId, List<TagEntity> tagsToRemove) {
+        for (TagEntity tag: tagsToRemove) {
+            removeItemByTagId(tag.getId(),dishId);
+        }
+    }
+
     private ItemEntity copyItem(ItemEntity item) {
         ItemEntity copied = new ItemEntity();
-        copied.setUsedCount(0); // MM resetting count when adding from another list
+        copied.setUsedCount(item.getUsedCount()); // MM resetting count when adding from another list
         copied.setTag(item.getTag());
         copied.setListId(listId);
         copied.setFreeText(item.getFreeText());
@@ -154,16 +153,63 @@ public class ListItemCollector {
         return copied;
     }
 
-
-    public void updateItems(List<ItemEntity> items) {
-        for (ItemEntity item: items) {
-        tagToItem.put(item.getTag().getId(),item);
+    public void removeItemByTagId(Long tagId, Long dishId) {
+        if (!tagToItem.containsKey(tagId)) {
+            return;
         }
+        ItemEntity update = tagToItem.get(tagId);
+
+        int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
+        if (count <= 1) {
+            // delete item outright
+            update.setDeleted(true);
+            update.incrementRemovedCount();
+            update.setUsedCount(0);
+            return;
+        } else {
+            if (dishId != null) {
+                Set<String> inflatedDishSources = FlatStringUtils.inflateStringToSet(update.getRawDishSources(), ";");
+                if (inflatedDishSources.contains(String.valueOf(dishId))) {
+                    inflatedDishSources.remove(String.valueOf(dishId));
+                    String newSources = FlatStringUtils.flattenSetToString(inflatedDishSources, ";");
+                    update.setRawDishSources(newSources);
+                }
+            }
+            update.setUsedCount(count - 1);
+            update.incrementRemovedCount();
+        }
+
+        tagToItem.put(tagId, update);
     }
 
-    public void removeItems(List<ItemEntity> items) {
-        for (ItemEntity item: items) {
-            tagToItem.remove(item.getTag().getId());
+    public void addItem(ItemEntity item, ItemSourceType sourceType) {
+        if (item.getTag() == null) {
+            freeTextItems.add(item);
+            return;
         }
+
+        addItemByTag(item.getTag(), null,null );
+    }
+
+    private void addItemByTag(TagEntity tag, String sourceType, Long dishId) {
+        if (!tagToItem.containsKey(tag.getId())) {
+            createItemFromTag(tag, null);
+        }
+        ItemEntity update = tagToItem.get(tag.getId());
+
+
+        int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
+        update.setUsedCount(count + 1);
+        update.addRawListSource(sourceType);
+        update.addRawDishSource(dishId);
+        update.incrementAddCount();
+        tagToItem.put(tag.getId(), update);
+
+    }
+
+
+
+    public void removeFreeTextItem(ItemEntity itemEntity) {
+        // MM implement this
     }
 }

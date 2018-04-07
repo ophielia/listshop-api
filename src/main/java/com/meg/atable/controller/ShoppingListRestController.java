@@ -77,10 +77,15 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     //@RequestMapping(method = RequestMethod.GET, value = "/{listId}", produces = "application/json")
     @Override
-    public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value="highlightDish", required=false) Long highlightDishId){
+    public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId,
+                                                                     @RequestParam(value="highlightDish", required=false,defaultValue="0") Long highlightDish,
+                                                                     @RequestParam(value="showPantry", required=false,defaultValue="false") Boolean showPantry) {
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
 
-        List<Category> categories = shoppingListService.categorizeList(result,highlightDishId );
+        if (highlightDish.equals(0)) {
+            highlightDish = null;
+        }
+        List<Category> categories = shoppingListService.categorizeList(result,highlightDish,showPantry );
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }

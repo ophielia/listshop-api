@@ -63,7 +63,7 @@ public class DishServiceImpl implements DishService {
         if (dish == null) {
             throw new DishNotFoundException(dishId);
         }
-        if (dish.getUserId() != user.getId()) {
+        if (!dish.getUserId().equals(user.getId()) ) {
             throw new UnauthorizedAccessException("Dish [" + dishId + "] doesn't belong to user [" + username + "].");
         }
         return Optional.of(dish);

@@ -17,6 +17,10 @@ FREE TEXT!!!
     limited categorization will be allowed
     user will see free text separately, and be able to drag to category
 
+HAIKUNATOR - put in a service
+
+eventually - Item - date added, And , date updated
+
 
     then - to front end
 

@@ -48,6 +48,8 @@ public class ShoppingListEntity {
     @Transient
     private List<String> listSources= new ArrayList<>();
 
+    private Date lastUpdate;
+
     public ShoppingListEntity(Long id) {
         this.list_id = id;
     }
@@ -123,5 +125,13 @@ public class ShoppingListEntity {
 
     public void setListSources(List<String> listSources) {
         this.listSources = listSources;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    public Date getLastUpdate() {
+        return lastUpdate;
     }
 }

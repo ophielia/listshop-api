@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Optional;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -32,7 +33,9 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<ShoppingListResource> retrieveListByType(Principal principal, @PathVariable("listType") String listType);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{listId}", produces = "application/json")
-    ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value="highlightDish", required=false) Long highlightDishId);
+    ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId,
+                                                          @RequestParam(value="highlightDish", required=false,defaultValue="0") Long highlightDish,
+                                                          @RequestParam(value="showPantry", required=false,defaultValue="false") Boolean showPantry);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}", produces = "application/json")
     ResponseEntity<ShoppingList> deleteList(Principal principal, @PathVariable("listId") Long listId);

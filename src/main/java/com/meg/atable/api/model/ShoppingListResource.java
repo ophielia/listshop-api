@@ -25,8 +25,9 @@ public class ShoppingListResource extends ResourceSupport {
         // add link to all shopping lists for user
         this.add(linkTo(ShoppingListRestController.class, userId).withRel("shoppinglist"));
         // add link to this shopping list
-        this.add(linkTo(methodOn(ShoppingListRestController.class, userId)
-                .retrieveListById(null, shoppingListEntity.getId(),null)).withSelfRel());
+      /*  this.add(linkTo(methodOn(ShoppingListRestController.class, userId)
+                .retrieveListById(null, shoppingListEntity.getId(),0L)).withSelfRel()); */
+        this.add(linkTo(ShoppingListRestController.class).slash(shoppingListEntity.getId()).withSelfRel());
     }
 
     public ShoppingList getShoppingList() {

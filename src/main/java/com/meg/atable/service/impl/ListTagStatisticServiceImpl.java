@@ -1,6 +1,7 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.api.model.ListType;
+import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.ListTagStatistic;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.ListTagStatisticRepository;
@@ -9,6 +10,7 @@ import com.meg.atable.service.ListTagStatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,47 +26,60 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
     private ListTagStatisticRepository listTagStatisticRepo;
 
     @Override
-    public void itemAddedToList(Long userId, Long tagId, ListType listType) {
-        addOrRemoveItem(userId, tagId, listType, true);
-    }
-
-    @Override
-    public void itemRemovedFromList(Long userId, Long tagId, ListType listType) {
-        addOrRemoveItem(userId, tagId, listType, false);
-    }
-
-    @Override
     public void processStatistics(Long userId, ListItemCollector collector) {
         // get statistics for tags - hash by tagid
         Map<Long, ListTagStatistic> statLkup = listTagStatisticRepo.findByUserIdAndTagIdIn(userId, collector.getAllTagIds()).stream()
                 .collect(Collectors.toMap(lts -> lts.getTagId(), lts -> lts));
 
         // go through list tags - return list of stats
-        List<ListTagStatistic> toUpdate = collector.getItems().stream()
-                .filter(item -> item.getTag() != null)
-                .map(item -> {
-                    TagEntity tag = item.getTag();
-                    if (statLkup.containsKey(tag.getId())) {
-                        // check frequency
-                        if (checkFrequency(statLkup.get(tag.getId()))) {
-                            item.setFrequent(true);
-                        }
-                        // update statistic
-                        return addCounted(statLkup.get(tag.getId()));
-                    } else {
-                        // create new stat
-                        ListTagStatistic newstat = new ListTagStatistic();
-                        newstat.setUserId(userId);
-                        newstat.setTagId(item.getTag().getId());
-                        newstat.setAddedCount(0);
-                        newstat.setRemovedCount(0);
-                        newstat = addCounted(newstat);
-                        return newstat;
-                    }
-                }).collect(Collectors.toList());
+        List<ListTagStatistic> statList = new ArrayList<>();
+        List<ItemEntity> itemList = collector.getTagItems();
+
+        for (ItemEntity item: itemList) {
+            if (!item.isUpdated() & !item.isDeleted()) {
+                continue;
+            }
+            TagEntity tag = item.getTag();
+            if (item.isAdded()) {
+                if (statLkup.containsKey(tag.getId())) {
+                    ListTagStatistic stat =statLkup.get(tag.getId());
+                    boolean frequentCrossOff = isFrequentCrossOff(stat);
+item.setFrequent(frequentCrossOff);
+
+
+                }
+                ListTagStatistic stat = addOrRemoveItem(statLkup,userId,tag.getId(),item.getAddCount(),0);
+                statList.add(stat);
+                continue;
+            }
+            if (item.isRemoved()) {
+                if (statLkup.containsKey(tag.getId())) {
+                    ListTagStatistic stat =statLkup.get(tag.getId());
+                    boolean frequentCrossOff = isFrequentCrossOff(stat);
+                    item.setFrequent(frequentCrossOff);
+
+
+                }
+                ListTagStatistic stat = addOrRemoveItem(statLkup,userId,tag.getId(),0,item.getRemovedCount());
+                statList.add(stat);
+                continue;
+            }
+            if (item.isDeleted()) {
+                if (statLkup.containsKey(tag.getId())) {
+                    ListTagStatistic stat =statLkup.get(tag.getId());
+                    boolean frequentCrossOff = isFrequentCrossOff(stat);
+                    item.setFrequent(frequentCrossOff);
+
+
+                }
+                ListTagStatistic stat = addOrRemoveItem(statLkup,userId,tag.getId(),0,item.getRemovedCount());
+                statList.add(stat);
+            }
+
+        }
 
         // save list of stats
-        listTagStatisticRepo.save(toUpdate);
+        listTagStatisticRepo.save(statList);
     }
 
     private ListTagStatistic addCounted(ListTagStatistic statistic) {
@@ -79,7 +94,7 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         return stat;
     }
 
-    private boolean checkFrequency(ListTagStatistic listTagStatistic) {
+    public boolean isFrequentCrossOff(ListTagStatistic listTagStatistic) {
         // return less than 3
         if (listTagStatistic.getAddedCount() < 3) {
             return false;
@@ -96,12 +111,10 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
 
     }
 
-    private void addOrRemoveItem(Long userId, Long tagId, ListType listType, boolean isAdd) {
-        if (tagId == null || listType == ListType.PickUpList) {
-            return;
-        }
+    private ListTagStatistic addOrRemoveItem(Map<Long, ListTagStatistic> statLkup, Long userId,Long tagId, int addCount, int removeCount) {
+
         // get statistic for tag
-        ListTagStatistic statistic = listTagStatisticRepo.findByUserIdAndTagId(userId, tagId);
+        ListTagStatistic statistic = statLkup.get(tagId);
         // if it doesn't exist, create it
         if (statistic == null) {
             statistic = new ListTagStatistic();
@@ -110,14 +123,17 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
             statistic.setAddedCount(0);
             statistic.setRemovedCount(0);
         }
+
         // increment added or removed
-        if (isAdd) {
+        if (addCount > 0) {
             statistic = addCounted(statistic);
-        } else {
+        } else if (removeCount > 0) {
             statistic = addRemoved(statistic);
         }
         // save statistic
-        listTagStatisticRepo.save(statistic);
+        return statistic;
     }
+
+
 
 }

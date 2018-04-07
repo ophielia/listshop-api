@@ -44,11 +44,13 @@ public class ItemEntity {
 
     private String listCategory;
 
+    @Column(name = "frequent_cross_off")
+    private Boolean isFrequent = false;
+
+
     @Transient
     private Long tag_id;
 
-    @Transient
-    private boolean isFrequent = false;
 
     @Transient
     private List<DishEntity> dishSources = new ArrayList<>();
@@ -57,6 +59,15 @@ public class ItemEntity {
     private List<ShoppingListEntity> listSources = new ArrayList<>();
 
     private Long categoryId;
+
+    @Transient
+    private int removedCount;
+    @Transient
+    private int addCount;
+    @Transient
+    private boolean isUpdated;
+    @Transient
+    private boolean deleted;
 
     public ItemEntity(Long id) {
         item_id = id;
@@ -127,7 +138,7 @@ public class ItemEntity {
     }
 
     public Integer getUsedCount() {
-        return usedCount;
+        return usedCount != null ? usedCount : 0;
     }
 
     public void setUsedCount(Integer usedCount) {
@@ -164,7 +175,8 @@ public class ItemEntity {
     }
 
     public boolean isFrequent() {
-        return isFrequent;
+
+        return isFrequent == null? false : isFrequent;
     }
 
     public void setFrequent(boolean frequent) {
@@ -196,6 +208,9 @@ public class ItemEntity {
     }
 
     public void addRawDishSource(Long dishId) {
+        if (dishId == null) {
+            return;
+        }
         if (rawDishSources == null) {
             rawDishSources = String.valueOf(dishId);
         } else {
@@ -203,7 +218,10 @@ public class ItemEntity {
         }
     }
 
-    public void addRawItemSource(String sourceType) {
+    public void addRawListSource(String sourceType) {
+        if (sourceType == null) {
+            return;
+        }
         if (rawListSources == null) {
             rawListSources = sourceType;
         } else {
@@ -226,5 +244,49 @@ public class ItemEntity {
                 ", tag_id=" + tag_id +
                 ", isFrequent=" + isFrequent +
                 '}';
+    }
+
+    public boolean isUpdated() {
+        return !isDeleted() && (isUpdated || addCount > 0 || removedCount > 0);
+    }
+
+    public void setUpdated(boolean updated) {
+        this.isUpdated = updated;
+    }
+
+    public boolean isAdded() {
+        return addCount > 0;
+    }
+
+    public int getAddCount() {
+        return addCount;
+    }
+
+    public void incrementAddCount() {
+        this.addCount++;
+    }
+
+    public void incrementAddCount(int addCount) {
+        this.addCount = this.addCount + addCount;
+    }
+
+    public boolean isRemoved() {
+            return removedCount > 0;
+    }
+
+    public int getRemovedCount() {
+        return removedCount;
+    }
+
+    public void incrementRemovedCount() {
+        this.removedCount++;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

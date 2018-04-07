@@ -98,6 +98,23 @@ public class MealPlanServiceImplTest {
 
 
     @Test
+    public void createMealPlan_EmptyName() throws Exception {
+        MealPlanEntity testSave = new MealPlanEntity();
+        testSave.setCreated(new Date());
+        testSave.setMealPlanType(MealPlanType.Manual);
+
+        testSave = mealPlanService.createMealPlan(userAccount.getUsername(), testSave);
+        Assert.assertNotNull(testSave);
+        Long id = testSave.getId();
+
+        MealPlanEntity check = mealPlanService.getMealPlanById(userAccount.getUsername(), id);
+        Assert.assertNotNull(check);
+        Assert.assertNotNull(check.getName());
+        Assert.assertEquals(testSave.getCreated(), check.getCreated());
+        Assert.assertEquals(testSave.getMealPlanType(), check.getMealPlanType());
+    }
+
+    @Test
     public void getMealPlanById() throws Exception {
         // get id for retrieve - already set up
         Long id = retrieve.getId();
@@ -134,6 +151,11 @@ public class MealPlanServiceImplTest {
         DishEntity dish = new DishEntity(userAccount.getId(), "added slot");
         dish = dishRepository.save(dish);
 
+        MealPlanEntity beginMealPlan = mealPlanService
+                .getMealPlanById(userAccount.getUsername(), retrieve.getId());
+        List<SlotEntity> beginSlots = beginMealPlan.getSlots();
+        Integer beginSlotCount = beginSlots.size();
+
         mealPlanService.addDishToMealPlan(userAccount.getUsername(), retrieve.getId(), dish.getId());
 
         MealPlanEntity testMealPlan = mealPlanService
@@ -141,7 +163,7 @@ public class MealPlanServiceImplTest {
         List<SlotEntity> testSlots = testMealPlan.getSlots();
         Integer newSlotCount = testSlots.size();
 
-        Assert.assertTrue(1 == newSlotCount);
+        Assert.assertEquals(1,newSlotCount - beginSlotCount);
         boolean dishfound = false;
         for (SlotEntity slot : testSlots) {
             if (slot.getDish().getDishName().equals("added slot")) {

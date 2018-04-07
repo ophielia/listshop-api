@@ -10,6 +10,8 @@ import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.DishService;
 import com.meg.atable.service.MealPlanService;
 import com.meg.atable.service.TargetProposalService;
+import me.atrox.haikunator.Haikunator;
+import me.atrox.haikunator.HaikunatorBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +55,12 @@ public class MealPlanServiceImpl implements MealPlanService {
         // get username
         UserAccountEntity user = userService.getUserByUserName(username);
 
+        // check name - if null or empty, autoname
+        if (mealPlanEntity.getName() == null || mealPlanEntity.getName().isEmpty())  {
+            Haikunator haikunator = new HaikunatorBuilder().setTokenLength(0).setDelimiter(" ").build();
+            String mealPlanName = haikunator.haikunate();
+            mealPlanEntity.setName(mealPlanName);
+        }
         // createMealPlan with repository and return
         mealPlanEntity.setUserId(user.getId());
         mealPlanEntity.setCreated(new Date());
