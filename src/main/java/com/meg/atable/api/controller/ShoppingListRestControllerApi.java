@@ -44,7 +44,10 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<Object> addItemToList(Principal principal, @PathVariable Long listId, @RequestBody Item input);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/item/{itemId}", produces = "application/json")
-    ResponseEntity<Object> deleteItemFromList(Principal principal, @PathVariable Long listId, @PathVariable Long itemId);
+    ResponseEntity<Object> deleteItemFromList(Principal principal, @PathVariable Long listId, @PathVariable Long itemId,
+                                              @RequestParam(value="removeEntireItem", required=false,defaultValue="false") Boolean removeEntireItem,
+                                              @RequestParam(value="sourceId", required=false,defaultValue="0") Long sourceId
+                                              );
 
     @RequestMapping(method = RequestMethod.POST, value = "/mealplan/{mealPlanId}", produces = "application/json")
     ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId);
@@ -53,7 +56,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<Object> addDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> removeDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId);
+    ResponseEntity<Object> removeDishFromList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId);
 
 
     @RequestMapping(method = RequestMethod.POST, value = "/{listId}/layout/{layoutId}", produces = "application/json")

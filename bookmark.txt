@@ -24,12 +24,33 @@ eventually - Item - date added, And , date updated
 
     then - to front end
 
-Admin edit layout subcat page
-Legend and sources to edit page
-Remove dish to edit
+done - Admin edit layout subcat page
+done - Change layout to edit
+done - fix category / parent/subcategory bug
+done - Remove dish to edit
+
+
+
+===> Legend and sources to edit page
+    done - source boxes together
+    done - styling for boxes
+
+    show legend toggle
+    source boxes _or_ count
+
+    fix tagRepository getUncategorizedTagsForList
+
+    will handle long item name with non-css concat (and hover)
+    source box needs hover with source name
+    frequent - only shows items - no number
+    highlight dish - takes color from legend
+
+Add Items to list page
+fix autotag bug
+front end - forward with showpantry true or false
 (Maybe) add dish to edit
-Change layout to edit
-Clean up list
+
+Clean up list of lists
 Quick add page
 Shop page
 

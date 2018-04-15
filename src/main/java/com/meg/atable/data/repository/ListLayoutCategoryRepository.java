@@ -69,4 +69,6 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
     List<ListLayoutCategoryEntity> getSubcategoriesBelow(Long layoutId, Long parentId,int displayOrder);
 
     List<ListLayoutCategoryEntity> findByTagsContains(TagEntity tagEntity);
+
+    List<ListLayoutCategoryEntity> findByLayoutIdEquals(Long layoutId);
 }

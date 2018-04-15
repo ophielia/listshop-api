@@ -146,7 +146,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public void deleteItemFromList(String name, Long listId, Long itemId) {
+    public void deleteItemFromList(String name, Long listId, Long itemId, Boolean removeEntireItem, Long dishSourceId) {
         ShoppingListEntity shoppingListEntity = getListById(name, listId);
         if (shoppingListEntity == null) {
             return;
@@ -164,7 +164,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             collector.removeFreeTextItem(itemEntity);
         }
 
-        collector.removeItemByTagId(itemEntity.getTag().getId(), null);
+        collector.removeItemByTagId(itemEntity.getTag().getId(), dishSourceId, removeEntireItem );
 
         saveListChanges(shoppingListEntity, collector);
     }
@@ -277,23 +277,23 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             return new ArrayList<>();
         }
         // get categories for items
-        List<ListLayoutCategoryEntity> categoriesEntities = listLayoutService.getListCategoriesForIds(new HashSet<>(dictionary.values()));
+        List<ListLayoutCategoryEntity> categoriesEntities = listLayoutService.getListCategoriesForLayout(shoppingListEntity.getListLayoutId());
 
         // fill categories for items (into hash)
         Map<Long, Category> filledCategories = new HashMap<>();
         categoriesEntities.forEach(ce -> {
-            ItemCategory cat = (ItemCategory) new ItemCategory(ce.getName(), ce.getId())
+            ItemCategory cat = (ItemCategory) new ItemCategory(ce.getName(), ce.getId(), CategoryType.Standard)
                     .displayOrder(ce.getDisplayOrder());
             filledCategories.put(cat.getId(), cat);
         });
         ItemCategory frequent = (ItemCategory) new ItemCategory(shoppingListProperties.getFrequentCategoryName(),
-                shoppingListProperties.getFrequentIdAndSortAsLong())
+                shoppingListProperties.getFrequentIdAndSortAsLong(),CategoryType.Frequent)
                 .displayOrder(shoppingListProperties.getFrequentIdAndSort());
         ItemCategory uncategorized = (ItemCategory) new ItemCategory(shoppingListProperties.getUncategorizedCategoryName(),
-                shoppingListProperties.getUncategorizedIdAndSortAsLong())
+                shoppingListProperties.getUncategorizedIdAndSortAsLong(),CategoryType.UnCategorized)
                 .displayOrder(shoppingListProperties.getUncategorizedIdAndSort());
         ItemCategory highlight = (ItemCategory) new ItemCategory(highlightName,
-                shoppingListProperties.getHighlightIdAndSortAsLong())
+                shoppingListProperties.getHighlightIdAndSortAsLong(),CategoryType.Highlight)
                 .displayOrder(shoppingListProperties.getHighlightIdAndSort());
         for (ItemEntity item : shoppingListEntity.getItems()) {
             if (item.isFrequent() && separateFrequent && !isHighlightDish) {
@@ -315,7 +315,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // structure categories
-        listLayoutService.structureCategories(filledCategories, shoppingListEntity.getListLayoutId());
+        listLayoutService.structureCategories(filledCategories, shoppingListEntity.getListLayoutId(), true );
 
         // add frequent and uncategorized
         if (!frequent.isEmpty()) {

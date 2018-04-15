@@ -139,7 +139,7 @@ public class ListItemCollector {
 
     public void removeTagsForDish(Long dishId, List<TagEntity> tagsToRemove) {
         for (TagEntity tag: tagsToRemove) {
-            removeItemByTagId(tag.getId(),dishId);
+            removeItemByTagId(tag.getId(),dishId,false );
         }
     }
 
@@ -153,17 +153,17 @@ public class ListItemCollector {
         return copied;
     }
 
-    public void removeItemByTagId(Long tagId, Long dishId) {
+    public void removeItemByTagId(Long tagId, Long dishId, Boolean removeEntireItem) {
         if (!tagToItem.containsKey(tagId)) {
             return;
         }
         ItemEntity update = tagToItem.get(tagId);
 
         int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
-        if (count <= 1) {
+        if (count <= 1 || removeEntireItem) {
             // delete item outright
             update.setDeleted(true);
-            update.incrementRemovedCount();
+            update.incrementRemovedCount(update.getUsedCount());
             update.setUsedCount(0);
             return;
         } else {

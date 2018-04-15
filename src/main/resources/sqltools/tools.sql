@@ -214,3 +214,8 @@ where layout_id = 1
 
 
 nextval('list_layout_category_sequence')
+
+
+mvn flyway:info
+mvn flyway:baseline -Dflyway.baselineVersion=5
+

@@ -86,17 +86,18 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+            <version>5.0.7</version>
         </dependency>
 
 
-        <!-- flyway test -->
+        <!-- flyway test
         <dependency>
             <groupId>org.flywaydb.flyway-test-extensions</groupId>
             <artifactId>flyway-spring-test</artifactId>
             <version>5.0.0</version>
             <scope>test</scope>
         </dependency>
-
+-->
         <!-- haiku for auto names -->
         <dependency>
             <groupId>me.atrox.haikunator</groupId>
@@ -122,6 +123,7 @@
                     <url>jdbc:postgresql://localhost:5432/dishsnap</url>
                     <user>bank</user>
                     <password>940620</password>
+                    <table>flyway_schema_history</table>
                 </configuration>
             </plugin>
         </plugins>

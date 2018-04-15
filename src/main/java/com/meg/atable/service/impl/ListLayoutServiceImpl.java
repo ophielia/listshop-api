@@ -240,6 +240,11 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     }
 
     @Override
+    public List<ListLayoutCategoryEntity> getListCategoriesForLayout(Long layoutId) {
+        return listLayoutCategoryRepository.findByLayoutIdEquals(layoutId);
+    }
+
+    @Override
     public List<Category> getStructuredCategories(ListLayoutEntity listLayout) {
         if (listLayout.getCategories() == null || listLayout.getCategories().isEmpty()) {
             return new ArrayList<>();
@@ -258,7 +263,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         });
 
         // structure subcategories
-        structureCategories(allCategories, listLayout.getId());
+        structureCategories(allCategories, listLayout.getId(), false);
         List<Category> mainCategorySort = allCategories.values().stream().collect(Collectors.toList());
         mainCategorySort
                 .sort(Comparator.comparing(Category::getDisplayOrder));
@@ -266,14 +271,19 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     }
 
     @Override
-    public void structureCategories(Map<Long, Category> filledCategories, Long listLayoutId) {
+    public void structureCategories(Map<Long, Category> filledCategories, Long listLayoutId, boolean pruneSubcategories) {
 
         Map<Long, Long> subCategoryMappings = getSubCategoryMappings(listLayoutId);
         for (Map.Entry<Long, Long> entry : subCategoryMappings.entrySet()) {
             Category child = filledCategories.get(entry.getKey());
             Category parent = filledCategories.get(entry.getValue());
-            if (parent != null && child != null) {
-
+            if (child == null) {
+                continue;
+            }
+            if (pruneSubcategories && child.isEmpty()) {
+                continue;
+            }
+            if (parent != null ) {
                 parent.addSubCategory(child);
             }
         }

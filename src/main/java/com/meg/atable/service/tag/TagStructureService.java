@@ -1,13 +1,12 @@
 package com.meg.atable.service.tag;
 
-import com.meg.atable.api.model.TagFilterType;
+import com.meg.atable.api.model.FatTag;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.entity.TagRelationEntity;
 import com.meg.atable.data.entity.TagSearchGroupEntity;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -52,4 +51,6 @@ public interface TagStructureService {
     void createMembersForGroup(Long id, List<Long> toAdd);
 
     void removeMembersForGroup(Long id, List<Long> toDelete);
+
+    List<FatTag> getTagsWithChildren(List<TagType> tagTypes);
 }

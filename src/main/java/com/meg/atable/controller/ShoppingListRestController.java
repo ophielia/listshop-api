@@ -109,8 +109,14 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     // @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/item/{itemId}", produces = "application/json")
-    public ResponseEntity<Object> deleteItemFromList(Principal principal, @PathVariable Long listId, @PathVariable Long itemId) {
-        this.shoppingListService.deleteItemFromList(principal.getName(), listId, itemId);
+    public ResponseEntity<Object> deleteItemFromList(Principal principal, @PathVariable Long listId, @PathVariable Long itemId,
+                                                     @RequestParam(value="removeEntireItem", required=false,defaultValue="false") Boolean removeEntireItem,
+                                                     @RequestParam(value="sourceId", required=false,defaultValue="0") Long sourceId) {
+        if (sourceId.equals(0)) {
+            sourceId = null;
+        }
+
+        this.shoppingListService.deleteItemFromList(principal.getName(), listId, itemId, removeEntireItem, sourceId);
 
         return ResponseEntity.noContent().build();
     }
@@ -140,7 +146,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/dish/{dishId}", produces = "application/json")
     @Override
-    public ResponseEntity<Object> removeDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId) {
+    public ResponseEntity<Object> removeDishFromList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId) {
             this.shoppingListService.removeDishFromList(principal.getName(), listId, dishId);
 
         return ResponseEntity.noContent().build();

@@ -1,9 +1,7 @@
 package com.meg.atable.controller;
 
 import com.meg.atable.api.controller.TagInfoRestControllerApi;
-import com.meg.atable.api.model.TagFilterType;
-import com.meg.atable.api.model.TagInfoResource;
-import com.meg.atable.api.model.TagType;
+import com.meg.atable.api.model.*;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.tag.TagService;
 import com.meg.atable.service.tag.TagStructureService;
@@ -47,12 +45,25 @@ public class TagInfoRestController implements TagInfoRestControllerApi {
 
         // fill in relationship info
         tagList = tagStructureService.fillInRelationshipInfo(tagList);
-
         // create taginforesource
         TagInfoResource tagInfo = new TagInfoResource(tagList);
 
         return new ResponseEntity(tagInfo, HttpStatus.OK);
     }
+
+
+    public ResponseEntity<List<TagDrilldownResource>> retrieveTagListNew(@RequestParam(value = "tag_type", required = false) String tag_type) {
+        List<TagType> tagTypes = processTagTypeInput(tag_type);
+    List<FatTag> filledTags = tagStructureService.getTagsWithChildren(tagTypes);
+
+    // create taginforesource
+        List<TagDrilldownResource> resource = filledTags.stream()
+                .map(TagDrilldownResource::new)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity(resource, HttpStatus.OK);
+    }
+
 
 
     private List<TagType> processTagTypeInput(String tag_type) {

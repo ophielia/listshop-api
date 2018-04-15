@@ -282,6 +282,10 @@ public class ItemEntity {
         this.removedCount++;
     }
 
+    public void incrementRemovedCount(int removeCount) {
+        this.removedCount = this.removedCount + removeCount;
+    }
+
     public boolean isDeleted() {
         return deleted;
     }

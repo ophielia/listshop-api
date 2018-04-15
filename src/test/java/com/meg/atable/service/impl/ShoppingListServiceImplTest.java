@@ -157,7 +157,7 @@ public class ShoppingListServiceImplTest {
         int sizeBefore = result.getItems().size();
 
         // delete from active list
-        shoppingListService.deleteItemFromList(userAccount.getUsername(), TestConstants.LIST_1_ID, TestConstants.ITEM_1_ID);
+        shoppingListService.deleteItemFromList(userAccount.getUsername(), TestConstants.LIST_1_ID, TestConstants.ITEM_1_ID, false, null);
 
         // retrieve active list
         result = shoppingListService.getListById(userAccount.getUsername(), TestConstants.LIST_1_ID);
