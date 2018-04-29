@@ -261,12 +261,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // if generatetype add, add items to current list
         if (generateType == GenerateType.Add && oldActive != null) {
-            collector.copyExistingItemsIntoList(ItemSourceType.PickUpList.name(), oldActive.getItems(), false);
+            collector.copyExistingItemsIntoList(null, oldActive.getItems(), false);
         }
-
-        // cross items off of pickup list
-        ShoppingListEntity pickuplist = getListByUsernameAndType(user.getUsername(), ListType.PickUpList);
-        deleteAllItemsFromList(pickuplist.getId());
 
         // delete old active list
         if (oldActive != null) {
@@ -275,7 +271,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // set current list active
         toActive.setListType(ListType.ActiveList);
         // save active list
-        return shoppingListRepository.save(toActive);
+        saveListChanges(toActive,collector);
+        return getListById(username,listId);
 
     }
 

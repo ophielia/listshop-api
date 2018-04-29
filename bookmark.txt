@@ -1,28 +1,63 @@
-defaults - ListLayoutServiceImplTest - 12 passed 5 failed
-    add settings to application.properties for frequent and non categorized
-    done - Finish category on add
-    done - Finish category on delete
-    done - Move up
-    done - Move down
-    done - Add dish
-    done - Listener to assign tag when moved from default tag
-    done - fill sources
-    done - fill sources through to model objects
-    done - Change layout
-    done - Dish highlight flag
-    done - Remove dish
+defaults - ListLayoutServiceImplTest - 13 passed 4 failed
 
-FREE TEXT!!!
-    compromise - categories will be saved for free text
-    limited categorization will be allowed
-    user will see free text separately, and be able to drag to category
+BIGGER TODOS -
+    FREE TEXT!!!
+        compromise - categories will be saved for free text
+        limited categorization will be allowed
+        user will see free text separately, and be able to drag to category
 
-HAIKUNATOR - put in a service
+    HAIKUNATOR - put in a service
 
-eventually - Item - date added, And , date updated
+    eventually - Item - date added, And , date updated
 
 
-    then - to front end
+CURRENT HOPPER:
+    adding logging!
+    update lastadded for dish when adding from edit list
+    set active
+        done - modal - add or replace
+        ====>  shop page
+                better layout
+                cross off instead of remove
+            print
+            cross off
+    add lists to manage-dishes
+        to existing list
+        to new list - with parameters (add from base list, add from pickup list)
+    manage list page -
+        create
+        delete
+    edit list page -
+            will handle long item name with non-css concat (and hover)
+            source box needs hover with source name
+
+    Hey - no "Shop" for PickUp and Base
+        no add Base for base
+        no add Pickup for pickup
+    Clean up list of lists
+    Quick add page
+    Shop page
+
+
+
+DB COLS TO CHECK -
+    tag.is_parent_tag
+    tag.rating_family
+
+BACKLOG -
+    add created on to dish entity
+
+    autotag -
+        some sort of cache/refresh for instructions
+
+    clean up - not much checking for null userids, null values in calls, etc.
+        needs a pass through with tests trying to break.
+
+UPCOMING FEATURES:
+    shopping drone users
+
+
+COMPLETED:
 
 done - Admin edit layout subcat page
 done - Change layout to edit
@@ -36,141 +71,29 @@ done - toggle  tag and dish add
 done - put dish select in separate component
 done - for toggle tag component - add possiblity to add a tag - to the separate component
 
-adding logging!
-update lastadded for dish when adding from edit list
-set active
-    modal - add or replace
-    shop page
-        print
-        cross off
-add lists to manage-dishes
-    to existing list
-    to new list - with parameters (add from base list, add from pickup list)
-manage page -
-    create
-    delete
 done -   inprocess always true, unless highlight (front end)
 done - fix of autotag
+done - source boxes together
+done - styling for boxes
+done - show legend toggle
+done - source boxes _or_ count
+done - fix tagRepository getUncategorizedTagsForList
+done - frequent - only shows items - no number
+done - highlight dish - takes color from legend
+done - Add Items to list page
+done - fix autotag bug
+done - front end - forward with showpantry true or false
+done -  add dish to edit
 
-===> Legend and sources to edit page
-    done - source boxes together
-    done - styling for boxes
-
-    show legend toggle
-    source boxes _or_ count
-
-    fix tagRepository getUncategorizedTagsForList
-
-    will handle long item name with non-css concat (and hover)
-    source box needs hover with source name
-    frequent - only shows items - no number
-    highlight dish - takes color from legend
-
-Add Items to list page
-fix autotag bug
-front end - forward with showpantry true or false
-(Maybe) add dish to edit
-
-Clean up list of lists
-Quick add page
-Shop page
-
-
-    default / switch for add lists upon generate
-bugs -
-    dishes with every tag added twice - I suspect tag assign tool
-
-db cols to check -
-tag.is_parent_tag
-tag.rating_family
-
-bigger todo list
-    done set in process list active
-        "page" for active list (only cross out, not delete)
-        back end "set active" generateStrategy=replace|add
-
-    list - cross out function
-
-    dish retrieves tags only when single dish
-
-    done statistics for what's crossed out often
-
-    done - non-grocery items
-
-    done list layouts
-
-    bulk organizing tools -
-        slots to tag structure (dnd)
-        slots to layouts
-        mass dishes to slots
-
-    done - implement last added to list for dishes
-
-    target
-
-    recipe
-
-    smoothing front end
-
-
-little things
-    add created on to dish entity
-
-consider -
-    filling objects in target and proposal in front end
-        pass tagdictionary once - either in same request or not.
-        use tagdictionary to fill objects in front end
-
-
-autotag -
-
-    some sort of cache/refresh for instructions
-
-select distinct dt.dish_id , d.last_added , iT0.tag_id , iT1.tag_id
-from dish_tags dt join dish d on d.dish_id = dt.dish_id and d.user_id = 1 and dt.tag_id = 5
-left outer join dish_tags iT0 on d.dish_id = iT0.dish_id and iT0.tag_id = 169
-left outer join dish_tags iT1 on d.dish_id = iT1.dish_id and iT1.tag_id = 212  order by d.last_added NULLS FIRST
-
-
-sketch for menu finding algorithm
-
-TagTypes
-
-ingredientn
-starascending
-stardescending
-type
-mealplantype
-
-create list of all slots - slots (and proposal)
-do count of dishes per tag
-tally tag count per slot
-start with slot with lowest count
-
-outer join for each tag in slot - count and total
-  order by total, desc.
-
-
-
-rest calls for lists
-
-user creates a base list / pick up list
-    POST list?type=BaseList|PickUpList
-
-user adds / deletes slots to a base list / pick up list
-    POST list/id/tag/tag_id
-    DELETE list/id/tag/tag_id
-
-user generates an active list
-    POST list?generateType=replace|add&type=Active
-
-user crosses off items from an active list
-    PUT list/id/tag/tag_id
-
-
-general note
-
-    clean up - not much checking for null userids, null values in calls, etc.
-        needs a pass through with tests trying to break.
-
-
+done - add settings to application.properties for frequent and non categorized
+done - Finish category on add
+done - Finish category on delete
+done - Move up
+done - Move down
+done - Add dish
+done - Listener to assign tag when moved from default tag
+done - fill sources
+done - fill sources through to model objects
+done - Change layout
+done - Dish highlight flag
+done - Remove dish
