@@ -12,7 +12,9 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.security.Principal;
@@ -39,7 +41,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return new ResponseEntity(listResourceList, HttpStatus.OK);
     }
 
-    //@RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @Override
     public ResponseEntity<Object> createList(Principal principal, @RequestBody ShoppingList shoppingList) {
         ShoppingListEntity shoppingListEntity = ModelMapper.toEntity(shoppingList);
 
@@ -66,7 +68,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.badRequest().build();
     }
 
-    //@RequestMapping(method = RequestMethod.GET, value="/type/{listType}", produces = "application/json")
+    @Override
     public ResponseEntity<ShoppingListResource> retrieveListByType(Principal principal, @PathVariable("listType") String listTypeString) {
         ListType listType = ListType.valueOf(listTypeString);
         ShoppingListEntity result = shoppingListService.getListByUsernameAndType(principal.getName(), listType);
@@ -75,22 +77,26 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     }
 
-    //@RequestMapping(method = RequestMethod.GET, value = "/{listId}", produces = "application/json")
     @Override
     public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId,
-                                                                     @RequestParam(value="highlightDish", required=false,defaultValue="0") Long highlightDish,
-                                                                     @RequestParam(value="showPantry", required=false,defaultValue="false") Boolean showPantry) {
+                                                                 @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
+                                                                 @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
+                                                                 @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry) {
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
 
         if (highlightDish.equals(0)) {
             highlightDish = null;
         }
-        List<Category> categories = shoppingListService.categorizeList(result,highlightDish,showPantry );
+        ListType listType = null;
+        if (!"0".equals(highlightListType)) {
+            listType = ListType.valueOf(highlightListType);
+        }
+        List<Category> categories = shoppingListService.categorizeList(result, highlightDish, showPantry, listType);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
 
-    //@RequestMapping(method = RequestMethod.DELETE, value = "/{listId}", produces = "application/json")
+    @Override
     public ResponseEntity<ShoppingList> deleteList(Principal principal, @PathVariable("listId") Long listId) {
         boolean success = shoppingListService.deleteList(principal.getName(), listId);
         if (success) {
@@ -99,7 +105,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.badRequest().build();
     }
 
-    //@RequestMapping(method = RequestMethod.POST, value = "/{listId}/item", produces = "application/json")
+    @Override
     public ResponseEntity<Object> addItemToList(Principal principal, @PathVariable Long listId, @RequestBody Item input) {
         ItemEntity itemEntity = ModelMapper.toEntity(input);
 
@@ -108,19 +114,37 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.noContent().build();
     }
 
-    // @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/item/{itemId}", produces = "application/json")
-    public ResponseEntity<Object> deleteItemFromList(Principal principal, @PathVariable Long listId, @PathVariable Long itemId,
-                                                     @RequestParam(value="removeEntireItem", required=false,defaultValue="false") Boolean removeEntireItem,
-                                                     @RequestParam(value="sourceId", required=false,defaultValue="0") Long sourceId) {
-        if (sourceId.equals(0)) {
-            sourceId = null;
-        }
-
-        this.shoppingListService.deleteItemFromList(principal.getName(), listId, itemId, removeEntireItem, sourceId);
+    @Override
+    public ResponseEntity<Object> addToListByListType(Principal principal, @PathVariable Long listId, @PathVariable String listType) {
+        ListType listTypeEnum = ListType.valueOf(listType);
+        this.shoppingListService.addListToList(principal.getName(), listId, listTypeEnum);
 
         return ResponseEntity.noContent().build();
     }
 
+    @Override
+    public ResponseEntity<Object> deleteItemFromList(Principal principal, @PathVariable Long listId, @PathVariable Long itemId,
+                                                     @RequestParam(value = "removeEntireItem", required = false, defaultValue = "false") Boolean removeEntireItem,
+                                                     @RequestParam(value = "sourceId", required = false, defaultValue = "0") String sourceId) {
+        Long serviceSourceId = null;
+        if (!sourceId.equals("0")) {
+            serviceSourceId = Long.valueOf(sourceId);
+        }
+
+        this.shoppingListService.deleteItemFromList(principal.getName(), listId, itemId, removeEntireItem, serviceSourceId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteAllItemsFromList(Principal principal, @PathVariable Long listId) {
+        this.shoppingListService.deleteAllItemsFromList(principal.getName(), listId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @Override
     public ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId) {
         ShoppingListEntity shoppingListEntity = this.shoppingListService.generateListFromMealPlan(principal.getName(), mealPlanId);
         if (shoppingListEntity != null) {
@@ -131,7 +155,6 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.noContent().build();
     }
 
-    //@RequestMapping(method = RequestMethod.POST, value = "/{listId}/dish/{dishId}", produces = "application/json")
     @Override
     public ResponseEntity<Object> addDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId) {
         try {
@@ -144,19 +167,23 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.noContent().build();
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/dish/{dishId}", produces = "application/json")
     @Override
     public ResponseEntity<Object> removeDishFromList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId) {
-            this.shoppingListService.removeDishFromList(principal.getName(), listId, dishId);
+        this.shoppingListService.removeDishFromList(principal.getName(), listId, dishId);
 
         return ResponseEntity.noContent().build();
     }
 
+    public ResponseEntity<Object> removeListItemsFromList(Principal principal, @PathVariable Long listId, @PathVariable String listType) {
+        ListType listTypeEnum = ListType.valueOf(listType);
+        this.shoppingListService.removeListItemsFromList(principal.getName(), listId, listTypeEnum);
 
-    //@RequestMapping(method = RequestMethod.POST, value = "/{listId}/layout/{layoutId}", produces = "application/json")
+        return ResponseEntity.noContent().build();
+    }
+
     @Override
     public ResponseEntity<Object> changeListLayout(Principal principal, @PathVariable Long listId, @PathVariable Long layoutId) {
-            this.shoppingListService.changeListLayout(principal.getName(), listId, layoutId);
+        this.shoppingListService.changeListLayout(principal.getName(), listId, layoutId);
 
         return ResponseEntity.noContent().build();
     }

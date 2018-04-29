@@ -55,7 +55,7 @@ public class TagInstructionEntity extends AutoTagInstructionEntity implements In
         if (terms == null || terms.length == 0) {
             inflatedSearchTerms = new HashSet<>();
         }
-        inflatedSearchTerms = Arrays.stream(terms).map(Long::valueOf).collect(Collectors.toSet());
+        inflatedSearchTerms = Arrays.stream(terms).map(String::trim).map(Long::valueOf).collect(Collectors.toSet());
 
     }
 

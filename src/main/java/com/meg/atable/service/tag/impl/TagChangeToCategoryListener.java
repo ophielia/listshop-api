@@ -2,7 +2,6 @@ package com.meg.atable.service.tag.impl;
 
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.ListLayoutCategoryEntity;
-import com.meg.atable.data.entity.ListLayoutEntity;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.ListLayoutService;
 import com.meg.atable.service.tag.TagChangeListener;
@@ -32,7 +31,7 @@ public class TagChangeToCategoryListener implements TagChangeListener {
     @Autowired
     private ListLayoutService listLayoutService;
 
-    
+
     @PostConstruct
     public void init() {
         tagService.addTagChangeListener(this);
@@ -48,7 +47,11 @@ public class TagChangeToCategoryListener implements TagChangeListener {
         }
 
         // if the original parent was not the default, return
-        if (!origParentTag.getTagTypeDefault()) {
+        if (origParentTag == null) {
+            return;
+        }
+        boolean origTagDefault = (origParentTag.getTagTypeDefault() == null) ? false : origParentTag.getTagTypeDefault();
+        if (!origTagDefault) {
             return;
         }
 
@@ -83,5 +86,15 @@ public class TagChangeToCategoryListener implements TagChangeListener {
     @Override
     public void onTagUpdate(TagEntity beforeChange, TagEntity updatedTag) {
         // no implentation for this listener
+    }
+
+    @Override
+    public void onTagAdd(TagEntity newTag) {
+        // not used in this implementation
+    }
+
+    @Override
+    public void onTagDelete(TagEntity deletedTag) {
+// not used in this implementation
     }
 }

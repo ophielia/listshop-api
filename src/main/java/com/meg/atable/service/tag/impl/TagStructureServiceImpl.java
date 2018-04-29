@@ -135,7 +135,8 @@ public class TagStructureServiceImpl implements TagStructureService {
         // get parent of tag
         Optional<TagRelationEntity> parenttag = tagRelationRepository.findByChild(tag);
         if (parenttag.isPresent() && parenttag.get().getParent() != null) {
-            if (searchSelectOnly && parenttag.get().getParent().getSearchSelect()) {
+            boolean stopForSearch = searchSelectOnly && (parenttag.get().getParent().getSearchSelect());
+            if (!stopForSearch) {
                 // if parenttag is not null, add to list, and call for parent tag
                 List<TagEntity> nextCall = getAscendantTags(parenttag.get().getParent(), searchSelectOnly);
                 nextCall.add(parenttag.get().getParent());
@@ -277,16 +278,16 @@ public class TagStructureServiceImpl implements TagStructureService {
     }
 
     private Map<Long, List<Long>> getTagRelationshipLookup(List<TagType> tagTypes) {
-        List<Object[]> rawRelations = new ArrayList<>();
+        List<Object[]> rawRelations;
         if (tagTypes == null) {
             rawRelations = tagRelationRepository.getAllTagRelationships();
         } else {
-            rawRelations = tagRelationRepository.getTagRelationshipsForTagType(tagTypes.stream().map(tt -> tt.name()).collect(Collectors.toList()));
+            rawRelations = tagRelationRepository.getTagRelationshipsForTagType(tagTypes.stream().map(TagType::name).collect(Collectors.toList()));
         }
 
         Map<Long, List<Long>> parentToChildren = new HashMap<>();
         for (Object[] result : rawRelations) {
-            Long parentId = ((BigInteger) result[0]) == null? 0L:((BigInteger) result[0]).longValue();
+            Long parentId = ((BigInteger) result[0]) == null ? 0L : ((BigInteger) result[0]).longValue();
             Long childId = ((BigInteger) result[1]).longValue();
             if (!parentToChildren.containsKey(parentId)) {
                 parentToChildren.put(parentId, new ArrayList<Long>());
@@ -299,7 +300,7 @@ public class TagStructureServiceImpl implements TagStructureService {
         return parentToChildren;
     }
 
-    private FatTag fillInTag(Long tagId, Map<Long, List<Long>> parentToChildren)  {
+    private FatTag fillInTag(Long tagId, Map<Long, List<Long>> parentToChildren) {
         // check for tag in cache
         FatTag fatTag = tagCache.get(tagId);
         if (fatTag != null) {
@@ -315,8 +316,6 @@ public class TagStructureServiceImpl implements TagStructureService {
         if (parentToChildren.containsKey(fatTag.getId())) {
             List<Long> childrenIds = parentToChildren.get(fatTag.getId());
             for (Long childId : childrenIds) {
-                // get tag
-                TagEntity child = tagRepository.findOne(childId);
                 // fill tag
                 FatTag fatChild = fillInTag(childId, parentToChildren);
                 // set parent in tag
@@ -343,7 +342,7 @@ public class TagStructureServiceImpl implements TagStructureService {
 
 
     @Override
-    public HashMap<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags) {
+    public Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags) {
         List<TagSearchGroupEntity> rawSearchGroups = tagSearchGroupRepository.findByGroupIdIn(allTags);
 
 // put the results in a HashMap
@@ -370,11 +369,11 @@ public class TagStructureServiceImpl implements TagStructureService {
     }
 
     @Override
-    public HashMap<Long, TagSwapout> getTagSwapouts(List<Long> dishIds, List<String> tagListForSlot) {
+    public Map<Long, TagSwapout> getTagSwapouts(List<Long> dishIds, List<String> tagListForSlot) {
 
         List<Long> tagIdsAsLongs = tagListForSlot.stream().map(t -> Long.valueOf(t)).collect(Collectors.toList());
         List<Object[]> rawResults = tagSearchGroupRepository.getTagSwapoutsByDishesAndGroups(dishIds, tagIdsAsLongs);
-        HashMap<Long, TagSwapout> resultMap = new HashMap<Long, TagSwapout>();
+        HashMap<Long, TagSwapout> resultMap = new HashMap<>();
         for (Object[] result : rawResults) {
             Long dishId = ((BigInteger) result[0]).longValue();
             String searchTag = ((BigInteger) result[1]).toString();

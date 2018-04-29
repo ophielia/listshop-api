@@ -63,7 +63,7 @@ public class DishServiceImpl implements DishService {
         if (dish == null) {
             throw new DishNotFoundException(dishId);
         }
-        if (!dish.getUserId().equals(user.getId()) ) {
+        if (!dish.getUserId().equals(user.getId())) {
             throw new UnauthorizedAccessException("Dish [" + dishId + "] doesn't belong to user [" + username + "].");
         }
         return Optional.of(dish);
@@ -102,7 +102,7 @@ public class DishServiceImpl implements DishService {
     @Override
     public List<TagEntity> getDishesForTagChildren(Long tagId, String name) {
         UserAccountEntity user = userRepository.findByUsername(name);
-        TagEntity tag = tagService.getTagById(tagId).get();
+        TagEntity tag = tagService.getTagById(tagId);
 
         if (!TagType.Rating.equals(tag.getTagType())) {
             return new ArrayList<>();

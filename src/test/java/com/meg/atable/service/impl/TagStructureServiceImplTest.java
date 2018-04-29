@@ -55,8 +55,8 @@ public class TagStructureServiceImplTest {
         userAccount = userService.getUserByUserName(TestConstants.USER_1_NAME);
         addUserAccount = userService.getUserByUserName(TestConstants.USER_2_NAME);
         // make tags
-        tag1 = tagService.getTagById(TestConstants.TAG_1_ID).get();
-        cheddarTag = tagService.getTagById(18L).get(); // 18 is cheddar tag id;ﬂ
+        tag1 = tagService.getTagById(TestConstants.TAG_1_ID);
+        cheddarTag = tagService.getTagById(18L); // 18 is cheddar tag id;ﬂ
     }
 
     @Test

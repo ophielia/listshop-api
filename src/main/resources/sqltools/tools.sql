@@ -97,7 +97,16 @@ and (c.is_parent_tag is null or c.is_parent_tag = false)
 -- adding a new auto_tag_instruction
 ﻿INSERT INTO public.auto_tag_instructions(
 	instruction_type, instruction_id, assign_tag_id, is_invert, search_terms)
-	VALUES ('Tag', nextval('hibernate_sequence'), 8428, false, 3);
+	VALUES ('Tag', nextval('auto_tag_instructions_sequence'), 346, false, '9,88,368, 372, 374, 375');
+
+INSERT INTO public.auto_tag_instructions(
+	instruction_type, instruction_id, assign_tag_id, is_invert, search_terms,invert_filter)
+	VALUES ('Tag', nextval('auto_tag_instructions_sequence'), 199, true, '9,88,368, 372, 374, 375','320');
+
+﻿INSERT INTO public.auto_tag_instructions(
+	instruction_type, instruction_id, assign_tag_id, is_invert, search_terms)
+	VALUES ('Text', nextval('auto_tag_instructions_sequence'), 323, false, 'crockpot,crock-pot,slow cooker,slow-cooker,slowcooker');
+
 
 
 ﻿-- clear proposals

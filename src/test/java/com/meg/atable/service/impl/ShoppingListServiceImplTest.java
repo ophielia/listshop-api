@@ -4,8 +4,13 @@ import com.meg.atable.Application;
 import com.meg.atable.api.model.*;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
-import com.meg.atable.data.entity.*;
-import com.meg.atable.data.repository.*;
+import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.data.entity.ItemEntity;
+import com.meg.atable.data.entity.ShoppingListEntity;
+import com.meg.atable.data.entity.TagEntity;
+import com.meg.atable.data.repository.ItemRepository;
+import com.meg.atable.data.repository.MealPlanRepository;
+import com.meg.atable.data.repository.ShoppingListRepository;
 import com.meg.atable.service.ShoppingListException;
 import com.meg.atable.service.ShoppingListProperties;
 import com.meg.atable.service.ShoppingListService;
@@ -27,7 +32,6 @@ import java.util.Optional;
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public class ShoppingListServiceImplTest {
-
 
 
     @Autowired
@@ -54,8 +58,8 @@ public class ShoppingListServiceImplTest {
         userAccount = userService.getUserByUserName(TestConstants.USER_1_NAME);
         addUserAccount = userService.getUserByUserName(TestConstants.USER_2_NAME);
         // make tags
-        tag1 = tagService.getTagById(TestConstants.TAG_1_ID).get();
-        cheddarTag = tagService.getTagById(18L).get(); // 18 is cheddar tag id;
+        tag1 = tagService.getTagById(TestConstants.TAG_1_ID);
+        cheddarTag = tagService.getTagById(18L); // 18 is cheddar tag id;
     }
 
     @Test
@@ -140,11 +144,11 @@ public class ShoppingListServiceImplTest {
 
         // retrieve baselist
         result = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
-        Assert.assertEquals(initialCount,result.getItems().size());
+        Assert.assertEquals(initialCount, result.getItems().size());
 
         for (ItemEntity item : result.getItems()) {
             if (item.getTag().getId().equals(cheddarTag.getId())) {
-                Assert.assertEquals(2L,item.getUsedCount().longValue());
+                Assert.assertEquals(2L, item.getUsedCount().longValue());
             }
         }
     }
@@ -187,7 +191,7 @@ public class ShoppingListServiceImplTest {
     public void testCategorizeList() {
         ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID);
 
-        List<Category> categoryEntities = shoppingListService.categorizeList(result, null, false);
+        List<Category> categoryEntities = shoppingListService.categorizeList(result, null, false, null);
         Assert.assertNotNull(categoryEntities);
 
         // count items and subcategories
@@ -216,13 +220,13 @@ public class ShoppingListServiceImplTest {
         final Long ONION_TAG_ID = 16L;
         final Long HAMBURGER_TAG_ID = 435L;
         final Long DISH_ID = 16L;
-        final String USER_NAME =TestConstants.USER_3_NAME;
+        final String USER_NAME = TestConstants.USER_3_NAME;
 
         // add dish cheeseburger maccoroni  // dish_id 16
-        this.shoppingListService.addDishToList(USER_NAME,LIST_ID,DISH_ID);
+        this.shoppingListService.addDishToList(USER_NAME, LIST_ID, DISH_ID);
 
         // get list
-        ShoppingListEntity list = this.shoppingListService.getListById(USER_NAME,LIST_ID);
+        ShoppingListEntity list = this.shoppingListService.getListById(USER_NAME, LIST_ID);
 
         boolean hasHamburger = false, hasOnion = false;
         for (ItemEntity item : list.getItems()) {
@@ -231,7 +235,7 @@ public class ShoppingListServiceImplTest {
                 Assert.assertTrue(item.getRawDishSources().contains(String.valueOf(DISH_ID)));
             } else if (item.getTag().getId().equals(ONION_TAG_ID)) {
                 hasOnion = true;
-                Assert.assertEquals(2L,item.getUsedCount().longValue());
+                Assert.assertEquals(2L, item.getUsedCount().longValue());
                 Assert.assertTrue(item.getRawDishSources().contains(String.valueOf(DISH_ID)));
             }
         }
@@ -251,7 +255,7 @@ public class ShoppingListServiceImplTest {
                 .mapToInt(t -> t.getUsedCount()).sum();
 
         // call remove dish
-        shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID,83L);
+        shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, 83L);
 
         // retrieve list
         ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
@@ -261,25 +265,25 @@ public class ShoppingListServiceImplTest {
                 .mapToInt(t -> t.getUsedCount()).sum();
 
         // should be 3 items less
-        Assert.assertTrue(startSum-resultSum.longValue() <= 4);
+        Assert.assertTrue(startSum - resultSum.longValue() <= 4);
 
         // go through all ensuring
         //  no tuna (210)
         //  no chickpeas (113)
         //  no scallion (211)
         // and no dish_source for kate salad (83)
-        for (ItemEntity item: result.getItems()) {
+        for (ItemEntity item : result.getItems()) {
             if (item.getTag().getId().equals(210L)) {
                 Assert.fail("tuna found");
             }
             if (item.getTag().getId().equals(113L)) {
-                if (item.getUsedCount()>1)
-                Assert.fail("chickpeas found, used more than once");
+                if (item.getUsedCount() > 1)
+                    Assert.fail("chickpeas found, used more than once");
             }
             if (item.getTag().getId().equals(211L)) {
                 Assert.fail("scallion found");
             }
-            if (item.getRawDishSources()!=null&&item.getRawDishSources().contains(";83;")) {
+            if (item.getRawDishSources() != null && item.getRawDishSources().contains(";83;")) {
                 Assert.fail("dish id still found in source");
             }
         }
@@ -295,22 +299,21 @@ public class ShoppingListServiceImplTest {
         //    cat food (470) for base list
 
         // get listEntity (list 2)
-        ShoppingListEntity shoppingListEntity = shoppingListService.getListById(TestConstants.USER_3_NAME,TestConstants.LIST_2_ID);
+        ShoppingListEntity shoppingListEntity = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
 
         // call fillSources
         shoppingListService.fillSources(shoppingListEntity);
 
         // results -
         // dish sources should be 2 - scoozi (90) and cheeseburger maccaroni (16)
-        Assert.assertTrue(shoppingListEntity.getDishSources().size()>=2);
+        Assert.assertTrue(shoppingListEntity.getDishSources().size() >= 2);
         boolean hasScoozi = false;
         boolean hasCheeseMac = false;
-        for (DishEntity dish: shoppingListEntity.getDishSources()) {
+        for (DishEntity dish : shoppingListEntity.getDishSources()) {
             if (dish.getId().equals(90L)) {
-hasScoozi=true;
-            }
-            else if (dish.getId().equals(16L)) {
-hasCheeseMac=true;
+                hasScoozi = true;
+            } else if (dish.getId().equals(16L)) {
+                hasCheeseMac = true;
             }
         }
         Assert.assertTrue(hasScoozi);
@@ -320,7 +323,7 @@ hasCheeseMac=true;
         test = shoppingListEntity.getDishSources().stream().filter(d -> d.getId().equals(90L)).findFirst();
         Assert.assertTrue(test.isPresent()); // scoozi there
         // list sources should be 2 - pickuplist and baselist
-        Assert.assertEquals(2,shoppingListEntity.getListSources().size());
+        Assert.assertEquals(2, shoppingListEntity.getListSources().size());
         Optional<String> testListSource = shoppingListEntity.getListSources().stream().filter(d -> d.equals(ItemSourceType.BaseList.name())).findFirst();
         Assert.assertTrue(testListSource.isPresent()); // base list there
         testListSource = shoppingListEntity.getListSources().stream().filter(d -> d.equals(ItemSourceType.PickUpList.name())).findFirst();
@@ -337,8 +340,8 @@ hasCheeseMac=true;
 
         shoppingListService.changeListLayout(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID, TestConstants.LIST_LAYOUT_3_ID);
 
-        ShoppingListEntity check =shoppingListService.getListById(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID);
-        Assert.assertNotEquals(origLayout,check.getListLayoutId());
+        ShoppingListEntity check = shoppingListService.getListById(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID);
+        Assert.assertNotEquals(origLayout, check.getListLayoutId());
     }
 
     @Test
@@ -347,7 +350,7 @@ hasCheeseMac=true;
         shoppingListService.addDishToList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, 110L);
         ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
 
-        List<Category> categoryEntities = shoppingListService.categorizeList(result, 110L, false);
+        List<Category> categoryEntities = shoppingListService.categorizeList(result, 110L, false, null);
         Assert.assertNotNull(categoryEntities);
 
         // should find category with category id -1
@@ -355,7 +358,7 @@ hasCheeseMac=true;
         for (Category categoryResult : categoryEntities) {
             ItemCategory cr = (ItemCategory) categoryResult;
             if (cr.getId().toString().equals("-1")) {
-                highlightCategoryFound=true;
+                highlightCategoryFound = true;
             }
         }
         Assert.assertTrue(highlightCategoryFound);

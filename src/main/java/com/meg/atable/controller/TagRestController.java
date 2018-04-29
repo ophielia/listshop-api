@@ -12,11 +12,16 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -30,9 +35,10 @@ public class TagRestController implements TagRestControllerApi {
     private final DishService dishService;
 
     private final TagStructureService tagStructureService;
+
     @Autowired
     TagRestController(TagService tagService, TagStructureService tagStructureService, DishService dishService) {
-this.tagStructureService = tagStructureService;
+        this.tagStructureService = tagStructureService;
         this.tagService = tagService;
         this.dishService = dishService;
     }
@@ -59,7 +65,6 @@ this.tagStructureService = tagStructureService;
     }
 
 
-
     public ResponseEntity<TagResource> add(@RequestBody Tag input) {
         TagEntity tagEntity = ModelMapper.toEntity(input);
         TagEntity result = this.tagService.createTag(null, tagEntity);
@@ -73,11 +78,11 @@ this.tagStructureService = tagStructureService;
     }
 
     public ResponseEntity<TagResource> addAsChild(@PathVariable Long tagId, @RequestBody Tag input) {
-        Optional<TagEntity> parent = this.tagService.getTagById(tagId);
+        TagEntity parent = this.tagService.getTagById(tagId);
 
-        if (parent.isPresent()) {
+        if (parent != null) {
             TagEntity tagEntity = ModelMapper.toEntity(input);
-            TagEntity result = this.tagService.createTag(parent.get(), tagEntity);
+            TagEntity result = this.tagService.createTag(parent, tagEntity);
             if (result != null) {
                 Link forOneTag = new TagResource(result).getLink("self");
                 return ResponseEntity.created(URI.create(forOneTag.getHref())).build();
@@ -95,7 +100,7 @@ this.tagStructureService = tagStructureService;
             return ResponseEntity.badRequest().build();
         }
 
-            List<Long> tagIdList = commaDelimitedToList(filter);
+        List<Long> tagIdList = commaDelimitedToList(filter);
         this.tagService.assignChildrenToParent(tagId, tagIdList);
         return ResponseEntity.noContent().build();
 
@@ -111,9 +116,9 @@ this.tagStructureService = tagStructureService;
         }
     }
 
-@Override
-    public ResponseEntity assignChildToBaseTag( @PathVariable("childId") Long childId) {
-        TagEntity tag = this.tagService.getTagById(childId).get();
+    @Override
+    public ResponseEntity assignChildToBaseTag(@PathVariable("childId") Long childId) {
+        TagEntity tag = this.tagService.getTagById(childId);
 
         if (this.tagStructureService.assignTagToTopLevel(tag)) {
             return ResponseEntity.ok().build();
@@ -124,15 +129,15 @@ this.tagStructureService = tagStructureService;
 
     public ResponseEntity<Tag> readTag(@PathVariable Long tagId) {
         // invalid dishId - returns invalid id supplied - 400
+        TagEntity tagEntity = this.tagService
+                .getTagById(tagId);
 
-        return this.tagService
-                .getTagById(tagId)
-                .map(tag -> {
-                    TagResource tagResource = new TagResource(tag);
+        if (tagEntity == null) {
+            return ResponseEntity.notFound().build();
+        }
+        TagResource tagResource = new TagResource(tagEntity);
 
-                    return new ResponseEntity(tagResource, HttpStatus.OK);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        return new ResponseEntity(tagResource, HttpStatus.OK);
 
     }
 
@@ -146,7 +151,7 @@ this.tagStructureService = tagStructureService;
             return ResponseEntity.noContent().build();
 
         }
-return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().build();
 
     }
 
@@ -163,7 +168,7 @@ return ResponseEntity.notFound().build();
     }
 
     public ResponseEntity<TagResource> replaceTagsInDishes(Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId) {
-        this.tagService.replaceTagInDishes(principal.getName(),tagId,toTagId);
+        this.tagService.replaceTagInDishes(principal.getName(), tagId, toTagId);
         return ResponseEntity.noContent().build();
     }
 

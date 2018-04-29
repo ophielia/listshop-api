@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meg.atable.data.entity.ItemEntity;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -72,5 +73,9 @@ public class ItemCategory extends AbstractCategory {
             return true;
         }
         return false;
+    }
+
+    public void sortItems() {
+        this.itemEntities.sort(Comparator.comparing(ItemEntity::getDisplay));
     }
 }

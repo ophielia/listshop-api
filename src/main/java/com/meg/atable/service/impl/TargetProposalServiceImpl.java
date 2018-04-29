@@ -93,7 +93,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         if (approaches.get(0) != null) {
             TargetProposalEntity proposal = createProposalFromAttempt(target, rawResults, approaches.get(0), context);
             proposal.setUserId(user.getId());
-            if (approaches.size()<=1) {
+            if (approaches.size() <= 1) {
                 proposal.setCanBeRefreshed(false);
             } else {
                 proposal.setCanBeRefreshed(true);
@@ -422,10 +422,10 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         tagListForSlot.addAll(targetSlot.getTagIdsAsList());
 
         Set<Long> allTags = target.getAllTagIds();
-        HashMap<Long,List<Long>> searchGroups = tagStructureService.getSearchGroupsForTagIds(allTags);
+        Map<Long, List<Long>> searchGroups = tagStructureService.getSearchGroupsForTagIds(allTags);
 
         // query db
-        RawSlotResult rawSlotResult = retrieveSingleSlotResult(targetSlot, user.getId(), targetTagIds,searchGroups, context);
+        RawSlotResult rawSlotResult = retrieveSingleSlotResult(targetSlot, user.getId(), targetTagIds, searchGroups, context);
 
         // add all existing dish ids to filter
         List<Long> dishIdsInProposal = proposal.getAllDishIds();
@@ -529,18 +529,18 @@ public class TargetProposalServiceImpl implements TargetProposalService {
 
         // get TagSwapout for dishes
         List<Long> dishIds = dishMatches.stream().map(d -> d.getDishId()).collect(Collectors.toList());
-        HashMap<Long, TagSwapout> swapouts = tagStructureService.getTagSwapouts(dishIds,tagListForSlot);
+        Map<Long, TagSwapout> swapouts = tagStructureService.getTagSwapouts(dishIds, tagListForSlot);
 
         for (DishTagSearchResult singleDish : dishMatches) {
             TargetProposalDishEntity dish = new TargetProposalDishEntity();
             dish.setDishId(singleDish.getDishId());
             List<String> matchedIds = singleDish.getMatchedTagIds(tagListForSlot);
 
-            List<String> actualMatches =new ArrayList<>();
-            TagSwapout swapout = swapouts.containsKey(singleDish.getDishId())?swapouts.get(singleDish.getDishId()):null;
+            List<String> actualMatches = new ArrayList<>();
+            TagSwapout swapout = swapouts.containsKey(singleDish.getDishId()) ? swapouts.get(singleDish.getDishId()) : null;
 
-            for (String tagId: matchedIds) {
-                if (swapout!= null && swapout.contains(tagId)) {
+            for (String tagId : matchedIds) {
+                if (swapout != null && swapout.contains(tagId)) {
                     actualMatches.addAll(swapout.getAssignedValues(tagId));
                 } else {
                     actualMatches.add(tagId);
@@ -603,7 +603,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
             RawSlotResult rawResult = rawResults.get(cycle[i]);
 
             List<DishTagSearchResult> dishMatches = rawResult.getFilteredMatches(context.getDishCountPerSlot());
-            proposal.setDishMatches(i, rawResult.getSlotId(),dishMatches);
+            proposal.setDishMatches(i, rawResult.getSlotId(), dishMatches);
             for (int j = i + 1; j < cycle.length; j++) {
                 rawResults.get(cycle[j]).addDishesToFilter(dishMatches);
             }
@@ -634,11 +634,11 @@ public class TargetProposalServiceImpl implements TargetProposalService {
 
         // get search groups
         Set<Long> allTags = target.getAllTagIds();
-        HashMap<Long,List<Long>> searchGroups = tagStructureService.getSearchGroupsForTagIds(allTags);
+        Map<Long, List<Long>> searchGroups = tagStructureService.getSearchGroupsForTagIds(allTags);
         // retrieve results for each slot
         List<RawSlotResult> resultList = new ArrayList<>();
         for (TargetSlotEntity slot : targetSlots) {
-            RawSlotResult rawSlotResult = retrieveSingleSlotResult(slot, userId, target.getTagIdsAsSet(), searchGroups,context);
+            RawSlotResult rawSlotResult = retrieveSingleSlotResult(slot, userId, target.getTagIdsAsSet(), searchGroups, context);
             resultList.add(rawSlotResult);
         }
 
@@ -653,7 +653,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         tagListForSlot.addAll(slot.getTagIdsAsList());
 
         // query db
-        List<DishTagSearchResult> dishResults = dishSearchService.retrieveDishResultsForTags(userId, slot.getSlotDishTagId(), targetTagIds.size(), tagListForSlot,searchGroups);
+        List<DishTagSearchResult> dishResults = dishSearchService.retrieveDishResultsForTags(userId, slot.getSlotDishTagId(), targetTagIds.size(), tagListForSlot, searchGroups);
         List<DishTagSearchResult> matches = new ArrayList<>();
         List<DishTagSearchResult> targetMatches = new ArrayList<>();
         List<DishTagSearchResult> emptyMatches = new ArrayList<>();

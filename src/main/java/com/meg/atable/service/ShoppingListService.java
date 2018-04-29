@@ -31,7 +31,7 @@ public interface ShoppingListService {
 
     ShoppingListEntity setListActive(String username, Long listId, GenerateType generateType);
 
-    List<Category> categorizeList(ShoppingListEntity shoppingListEntity, Long highlightDishId, Boolean showPantry);
+    List<Category> categorizeList(ShoppingListEntity shoppingListEntity, Long highlightDishId, Boolean showPantry, ListType highlightDishType);
 
     void addDishToList(String name, Long listId, Long dishId) throws ShoppingListException;
 
@@ -40,4 +40,12 @@ public interface ShoppingListService {
     void changeListLayout(String name, Long listId, Long layoutId);
 
     void removeDishFromList(String name, Long listId, Long dishId);
+
+    void removeListItemsFromList(String name, Long listId, ListType listType);
+
+    void deleteAllItemsFromList(String name, Long listId);
+
+    void addListToList(String name, Long listId, ListType listType);
+
+
 }

@@ -71,7 +71,7 @@ public class TagServiceImplTest {
         testSave = tagService.save(testSave);
         Long id = testSave.getId();
 
-        TagEntity check = tagService.getTagById(id).get();
+        TagEntity check = tagService.getTagById(id);
         Assert.assertNotNull(check);
         Assert.assertEquals(testSave.getName(), check.getName());
         Assert.assertEquals(testSave.getDescription(), check.getDescription());

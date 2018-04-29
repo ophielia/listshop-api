@@ -47,8 +47,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Optional<TagEntity> getTagById(Long tagId) {
-        return Optional.ofNullable(tagRepository.findOne(tagId));
+    public TagEntity getTagById(Long tagId) {
+        return tagRepository.findOne(tagId);
     }
 
     @Override
@@ -110,6 +110,12 @@ public class TagServiceImpl implements TagService {
     private void fireTagUpdatedEvent(TagEntity beforeChange, TagEntity changed) {
         for (TagChangeListener listener : listeners) {
             listener.onTagUpdate(beforeChange, changed);
+        }
+    }
+
+    private void fireTagAddedEvent(TagEntity changed) {
+        for (TagChangeListener listener : listeners) {
+            listener.onTagAdd(changed);
         }
     }
 
@@ -197,6 +203,7 @@ public class TagServiceImpl implements TagService {
 
         tagStructureService.createRelation(parentTag, saved);
 
+        fireTagAddedEvent(saved);
         return newtag;
     }
 
@@ -217,7 +224,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagEntity> getTagsForDish(Long dishId) {
-        return getTagsForDish(dishId,null);
+        return getTagsForDish(dishId, null);
     }
 
     @Override
@@ -229,10 +236,10 @@ public class TagServiceImpl implements TagService {
             return results;
         }
 
-        results =  tagRepository.findTagsByDishes(dish);
+        results = tagRepository.findTagsByDishes(dish);
 
         if (tagtypes == null) {
-        return results;
+            return results;
         }
         return results.stream()
                 .filter(t -> tagtypes.contains(t.getTagType()))
@@ -243,12 +250,10 @@ public class TagServiceImpl implements TagService {
     @Override
     public boolean assignTagToParent(Long tagId, Long parentId) {
         // get tag and parent
-        Optional<TagEntity> tagOptional = getTagById(tagId);
-        TagEntity tag = tagOptional.isPresent() ? tagOptional.get() : null;
+        TagEntity tag = getTagById(tagId);
 
 
-        Optional<TagEntity> parentTagOptional = getTagById(parentId);
-        TagEntity parentTag = parentTagOptional.isPresent() ? parentTagOptional.get() : null;
+        TagEntity parentTag = getTagById(parentId);
 
 
         return assignTagToParent(tag, parentTag);
@@ -276,8 +281,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public boolean assignChildrenToParent(Long parentId, List<Long> childrenIds) {
         // get parent id
-        Optional<TagEntity> parentTagOptional = getTagById(parentId);
-        TagEntity parentTag = parentTagOptional.isPresent() ? parentTagOptional.get() : null;
+        TagEntity parentTag = getTagById(parentId);
 
         if (parentTag == null) {
             return false;
@@ -285,8 +289,7 @@ public class TagServiceImpl implements TagService {
 
         // update tag relation
         for (Long tagId : childrenIds) {
-            Optional<TagEntity> tagOptional = getTagById(tagId);
-            TagEntity tag = tagOptional.isPresent() ? tagOptional.get() : null;
+            TagEntity tag = getTagById(tagId);
             assignTagToParent(tag, parentTag);
         }
         return true;
@@ -332,17 +335,16 @@ public class TagServiceImpl implements TagService {
     private List<TagEntity> removeRelatedTags(List<TagEntity> dishTags, TagEntity tag) {
         // get sibling tags for dish
         List<TagEntity> siblings = tagStructureService.getSiblingTags(tag);
-        List<TagEntity> filteredTags = dishTags.stream()
+        return dishTags.stream()
                 .filter(t -> !siblings.contains(t))
                 .collect(Collectors.toList());
-        return filteredTags;
     }
 
     @Override
     public void replaceTagInDishes(String name, Long fromTagId, Long toTagId) {
         UserAccountEntity user = userRepository.findByUsername(name);
-        List<DishEntity> dishes = new ArrayList<>();
-        TagEntity toTag = getTagById(toTagId).get();
+        List<DishEntity> dishes = null;
+        TagEntity toTag = getTagById(toTagId);
 
         if (fromTagId.equals(0L)) {
             // this is a request to assign unassigned tags

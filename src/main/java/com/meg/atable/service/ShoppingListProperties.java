@@ -17,7 +17,7 @@ public class ShoppingListProperties {
 
     private String testValue;
 
-    private final Map<String, String> rawDefaultLayouts = new HashMap<String, String>();
+    private final Map<String, String> rawDefaultLayouts = new HashMap<>();
     private Map<ListType, ListLayoutType> defaultLayouts;
 
     private String frequentCategoryName = "frequent";
@@ -25,6 +25,7 @@ public class ShoppingListProperties {
     private String uncategorizedCategoryName = "non-cat";
     private Integer uncategorizedIdAndSort = 999;
     private Integer highlightIdAndSort = -1;
+    private Integer highlightListIdAndSort = -3;
 
     public String getTestValue() {
         return testValue;
@@ -40,7 +41,7 @@ public class ShoppingListProperties {
     }
 
     public Map<ListType, ListLayoutType> getDefaultLayouts() {
-        this.defaultLayouts = new HashMap<ListType, ListLayoutType>();
+        this.defaultLayouts = new HashMap<>();
         for (Map.Entry<String, String> entry : this.rawDefaultLayouts.entrySet()) {
             ListType listType = ListType.valueOf(entry.getKey());
             ListLayoutType listLayoutType = ListLayoutType.valueOf(entry.getValue());
@@ -82,11 +83,11 @@ public class ShoppingListProperties {
     }
 
     public Long getFrequentIdAndSortAsLong() {
-        return new Long(getFrequentIdAndSort());
+        return Long.valueOf(getFrequentIdAndSort());
     }
 
     public Long getUncategorizedIdAndSortAsLong() {
-        return new Long(getUncategorizedIdAndSort());
+        return Long.valueOf(getUncategorizedIdAndSort());
     }
 
     public Integer getHighlightIdAndSort() {
@@ -94,7 +95,15 @@ public class ShoppingListProperties {
     }
 
     public Long getHighlightIdAndSortAsLong() {
-        return new Long(highlightIdAndSort);
+        return Long.valueOf(highlightIdAndSort);
+    }
+
+    public Long getHighlightListIdAndSortAsLong() {
+        return Long.valueOf(highlightListIdAndSort);
+    }
+
+    public Integer getHighlightListIdAndSort() {
+        return highlightListIdAndSort;
     }
 
     public void setHighlightIdAndSort(Integer highlightIdAndSort) {

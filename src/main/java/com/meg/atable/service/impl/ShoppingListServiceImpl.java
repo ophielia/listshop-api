@@ -25,37 +25,40 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public final static String uncategorized = "nocat";
     // MM need to handle this in application settings /user settings
     private final static ListLayoutType listlayoutdefault = ListLayoutType.RoughGrained;
-    @Autowired
-    private
+    private final
     UserService userService;
-    @Autowired
-    private ListTagStatisticService listTagStatisticService;
-    @Autowired
-    private TagService tagService;
-    @Autowired
-    private DishService dishService;
-    @Autowired
-    private
+
+    private final TagService tagService;
+    private final DishService dishService;
+    private final
     ShoppingListRepository shoppingListRepository;
-    @Autowired
-    private
+    private final
     ListLayoutService listLayoutService;
-    @Autowired
-    private
+    private final
     ListSearchService listSearchService;
-    @Autowired
-    private
+    private final
     MealPlanService mealPlanService;
-    @Autowired
-    private
+    private final
     ItemRepository itemRepository;
 
-    @Autowired
-    private
+    private final
     ItemChangeRepository itemChangeRepository;
 
+    private final ShoppingListProperties shoppingListProperties;
+
     @Autowired
-    private ShoppingListProperties shoppingListProperties;
+    public ShoppingListServiceImpl(UserService userService, TagService tagService, DishService dishService, ShoppingListRepository shoppingListRepository, ListLayoutService listLayoutService, ListSearchService listSearchService, MealPlanService mealPlanService, ItemRepository itemRepository, ItemChangeRepository itemChangeRepository, ShoppingListProperties shoppingListProperties) {
+        this.userService = userService;
+        this.tagService = tagService;
+        this.dishService = dishService;
+        this.shoppingListRepository = shoppingListRepository;
+        this.listLayoutService = listLayoutService;
+        this.listSearchService = listSearchService;
+        this.mealPlanService = mealPlanService;
+        this.itemRepository = itemRepository;
+        this.itemChangeRepository = itemChangeRepository;
+        this.shoppingListProperties = shoppingListProperties;
+    }
 
     @Override
     public List<ShoppingListEntity> getListsByUsername(String userName) {
@@ -133,16 +136,33 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // fill in tag, if item contains tag
         TagEntity tag = null;
         if (itemEntity.getTagId() != null) {
-            tag = tagService.getTagById(itemEntity.getTagId()).get();
+            tag = tagService.getTagById(itemEntity.getTagId());
             itemEntity.setTag(tag);
         }
         if (tag == null && itemEntity.getTag().getId() != null) {
-            tag = tagService.getTagById(itemEntity.getTag().getId()).get();
+            tag = tagService.getTagById(itemEntity.getTag().getId());
             itemEntity.setTag(tag);
         }
-        collector.addItem(itemEntity, null); // MM need list type to itemsource translation
+        collector.addItem(itemEntity); // MM need list type to itemsource translation
 
         saveListChanges(shoppingListEntity, collector);
+    }
+
+    @Override
+    public void deleteAllItemsFromList(String name, Long listId) {
+        ShoppingListEntity shoppingListEntity = getListById(name, listId);
+        if (shoppingListEntity == null) {
+            return;
+        }
+        List<ItemEntity> itemEntities = itemRepository.findByListId(listId);
+        if (itemEntities == null) {
+            return;
+        }
+
+        itemRepository.delete(itemEntities);
+        shoppingListEntity.setItems(null);
+        shoppingListEntity.setLastUpdate(new Date());
+        shoppingListRepository.save(shoppingListEntity);
     }
 
     @Override
@@ -164,7 +184,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             collector.removeFreeTextItem(itemEntity);
         }
 
-        collector.removeItemByTagId(itemEntity.getTag().getId(), dishSourceId, removeEntireItem );
+        collector.removeItemByTagId(itemEntity.getTag().getId(), dishSourceId, removeEntireItem);
 
         saveListChanges(shoppingListEntity, collector);
     }
@@ -173,18 +193,18 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) {
         UserAccountEntity user = userService.getUserByUserName(name);
         // get list layout by type
-        ListLayoutType inprocessLayout = shoppingListProperties.getDefaultLayouts().get(ListType.InProcess);
-        ListLayoutEntity listLayoutEntity = listLayoutService.getListLayouts()
+        ListLayoutType generalLayout = shoppingListProperties.getDefaultLayouts().get(ListType.General);
+        Optional<ListLayoutEntity> listLayoutEntityOptional = listLayoutService.getListLayouts()
                 .stream()
-                .filter(t -> t.getLayoutType().equals(inprocessLayout))
-                .findFirst()
-                .get();
+                .filter(t -> t.getLayoutType().equals(generalLayout))
+                .findFirst();
 
-        // get existing inprocess list, and delete it
-        ShoppingListEntity inProcess = getListByUsernameAndType(name, ListType.InProcess);
-        if (inProcess != null) {
-            shoppingListRepository.delete(inProcess);
+        if (!listLayoutEntityOptional.isPresent()) {
+            return null;
         }
+
+        ListLayoutEntity listLayoutEntity = listLayoutEntityOptional.get();
+
         // get the mealplan
         MealPlanEntity mealPlan = mealPlanService.getMealPlanById(name, mealPlanId);
         if (mealPlan == null) {
@@ -194,7 +214,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // create new inprocess list
         ShoppingListEntity newList = new ShoppingListEntity();
         newList.setListLayoutId(listLayoutEntity.getId());
-        newList.setListType(ListType.InProcess);
+        newList.setListType(ListType.General);
         ShoppingListEntity savedNewList = createList(name, newList);
         // create the collector
         ListItemCollector collector = new ListItemCollector(savedNewList.getId());
@@ -206,24 +226,24 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         tagTypeList.add(TagType.NonEdible);
         for (SlotEntity slot : mealPlan.getSlots()) {
             List<TagEntity> tags = tagService.getTagsForDish(slot.getDish().getId(), tagTypeList);
-            collector.addTags(tags, slot.getDish().getId(),null );
+            collector.addTags(tags, slot.getDish().getId(), null);
         }
 
         // add Items from BaseList
         ShoppingListEntity baseList = getListByUsernameAndType(name, ListType.BaseList);
         if (baseList != null) {
-            collector.copyExistingItemsIntoList(ItemSourceType.BaseList.name(), baseList.getItems(), true );
+            collector.copyExistingItemsIntoList(ItemSourceType.BaseList.name(), baseList.getItems(), true);
         }
 
         // add Items from PickUpList
         ShoppingListEntity pickupList = getListByUsernameAndType(name, ListType.PickUpList);
         if (pickupList != null) {
-            collector.copyExistingItemsIntoList(ItemSourceType.PickUpList.name(), pickupList.getItems(), true );
+            collector.copyExistingItemsIntoList(ItemSourceType.PickUpList.name(), pickupList.getItems(), true);
         }
 
         // update the last added date for dishes
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
-        saveListChanges(newList,collector);
+        saveListChanges(newList, collector);
         return shoppingListRepository.findOne(newList.getId());
 
     }
@@ -259,12 +279,16 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    public List<Category> categorizeList(ShoppingListEntity shoppingListEntity, Long highlightDishId, Boolean showPantry) {
+    public List<Category> categorizeList(ShoppingListEntity shoppingListEntity, Long highlightDishId, Boolean showPantry, ListType highlightListType) {
         boolean isHighlightDish = highlightDishId != null && !highlightDishId.equals(0L);
-        boolean separateFrequent = showPantry!=null && showPantry;//shoppingListEntity.getListType().equals(ListType.InProcess);
+        boolean isHighlightList = !isHighlightDish && highlightListType != null;
+        boolean separateFrequent = showPantry != null && showPantry;//shoppingListEntity.getListType().equals(ListType.InProcess);
 
         String highlightName = getHighlightDishName(isHighlightDish, highlightDishId);
         Set<Long> dishItemIds = getHighlightDishItemIds(isHighlightDish, shoppingListEntity, highlightDishId);
+        if (shoppingListEntity == null) {
+            return new ArrayList<>();
+        }
 
         if (shoppingListEntity.getItems() == null || shoppingListEntity.getItems().isEmpty()) {
             return new ArrayList<>();
@@ -287,14 +311,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             filledCategories.put(cat.getId(), cat);
         });
         ItemCategory frequent = (ItemCategory) new ItemCategory(shoppingListProperties.getFrequentCategoryName(),
-                shoppingListProperties.getFrequentIdAndSortAsLong(),CategoryType.Frequent)
+                shoppingListProperties.getFrequentIdAndSortAsLong(), CategoryType.Frequent)
                 .displayOrder(shoppingListProperties.getFrequentIdAndSort());
         ItemCategory uncategorized = (ItemCategory) new ItemCategory(shoppingListProperties.getUncategorizedCategoryName(),
-                shoppingListProperties.getUncategorizedIdAndSortAsLong(),CategoryType.UnCategorized)
+                shoppingListProperties.getUncategorizedIdAndSortAsLong(), CategoryType.UnCategorized)
                 .displayOrder(shoppingListProperties.getUncategorizedIdAndSort());
         ItemCategory highlight = (ItemCategory) new ItemCategory(highlightName,
-                shoppingListProperties.getHighlightIdAndSortAsLong(),CategoryType.Highlight)
+                shoppingListProperties.getHighlightIdAndSortAsLong(), CategoryType.Highlight)
                 .displayOrder(shoppingListProperties.getHighlightIdAndSort());
+        ItemCategory highlightList = (ItemCategory) new ItemCategory(highlightListType != null ? highlightListType.name() : "",
+                shoppingListProperties.getHighlightListIdAndSortAsLong(), CategoryType.Highlight)
+                .displayOrder(shoppingListProperties.getHighlightListIdAndSort());
         for (ItemEntity item : shoppingListEntity.getItems()) {
             if (item.isFrequent() && separateFrequent && !isHighlightDish) {
                 frequent.addItemEntity(item);
@@ -302,6 +329,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 uncategorized.addItemEntity(item);
             } else if (isHighlightDish && dishItemIds.contains(item.getId())) {
                 highlight.addItemEntity(item);
+            } else if (isHighlightList && item.getRawListSources().contains(highlightListType.name())) {
+                highlightList.addItemEntity(item);
             } else {
 
                 ItemCategory category = (ItemCategory) filledCategories.get(dictionary.get(item.getTag().getId()));
@@ -314,8 +343,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             }
         }
 
+        // sort items in filled categories
+        for (Map.Entry entry : filledCategories.entrySet()) {
+            ((ItemCategory) entry.getValue()).sortItems();
+        }
+
         // structure categories
-        listLayoutService.structureCategories(filledCategories, shoppingListEntity.getListLayoutId(), true );
+        listLayoutService.structureCategories(filledCategories, shoppingListEntity.getListLayoutId(), true);
 
         // add frequent and uncategorized
         if (!frequent.isEmpty()) {
@@ -326,6 +360,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
         if (!highlight.isEmpty()) {
             filledCategories.put(highlight.getId(), highlight);
+        }
+        if (!highlightList.isEmpty()) {
+            filledCategories.put(highlightList.getId(), highlightList);
         }
 
         // prune categories
@@ -378,6 +415,28 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
+    public void addListToList(String name, Long listId, ListType listType) {
+        // get the target list
+        ShoppingListEntity list = getListById(name, listId);
+
+        // get the list to add
+        ShoppingListEntity toAdd = getListByUsernameAndType(name, listType);
+        if (toAdd == null) {
+            return;
+        }
+
+        // create collector
+        ListItemCollector collector = new ListItemCollector(listId, list.getItems());
+
+        // add Items from PickUpList
+        boolean incrementStats = listType != ListType.BaseList;
+        collector.copyExistingItemsIntoList(listType.name(), toAdd.getItems(), incrementStats);
+
+        // save list
+        saveListChanges(list, collector);
+    }
+
+    @Override
     public void addDishToList(String name, Long listId, Long dishId) throws ShoppingListException {
         // MM experimental - not adding categories.  These won't be persisted, but
         // instead will be determined on the fly upon display
@@ -404,12 +463,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         collector.addTags(tagsForDish, dishId, null);
 
         // update last added date for dish
-        dishService.updateLastAddedForDish(dishId);
-        // get the collected items, and save them
-        List<ItemEntity> savedItems = itemRepository.save(collector.getAllItems());
-        // add items to the list, and save the list
-        list.setItems(savedItems);
-        shoppingListRepository.save(list);
+        saveListChanges(list, collector);
         return;
     }
 
@@ -482,6 +536,22 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         saveListChanges(shoppingList, collector);
 
+    }
+
+    @Override
+    public void removeListItemsFromList(String name, Long listId, ListType listType) {
+        // get list
+        ShoppingListEntity shoppingList = getListById(name, listId);
+
+        // get list to remove
+        ShoppingListEntity toRemove = getListByUsernameAndType(name, listType);
+
+        // make collector
+        ListItemCollector collector = new ListItemCollector(listId, shoppingList.getItems());
+
+        collector.removeItemsFromList(listType, toRemove.getItems());
+
+        saveListChanges(shoppingList, collector);
     }
 
     private void saveListChanges(ShoppingListEntity shoppingList, ListItemCollector collector) {

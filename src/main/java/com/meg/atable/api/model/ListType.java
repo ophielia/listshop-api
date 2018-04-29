@@ -8,7 +8,8 @@ public enum ListType {
     BaseList("BaseList"),
     PickUpList("PickUpList"),
     InProcess("InProcess"),
-    ActiveList("ActiveList");
+    ActiveList("ActiveList"),
+    General("General");
 
     private final String display;
 
