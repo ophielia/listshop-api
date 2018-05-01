@@ -220,7 +220,7 @@ public class ModelMapper {
     private static List<ItemSource> toDishSourceModels(String rawDishSources, Map<Long, DishEntity> dishSources) {
         List<ItemSource> result = new ArrayList<>();
         if (rawDishSources == null) {
-            return  result;
+            return result;
         }
         Set<String> uniqueDishSources = FlatStringUtils.inflateStringToSet(rawDishSources, ";");
         for (String dishId : uniqueDishSources) {
@@ -235,14 +235,14 @@ public class ModelMapper {
     }
 
 
-
     private static ItemSource toDishSourceModel(String dishId, DishEntity dish) {
-            ItemSource source = new ItemSource();
-            source.setDisplay(dish.getDishName());
-            source.setId(dish.getId());
-            source.setType("Dish");
-            return source;
+        ItemSource source = new ItemSource();
+        source.setDisplay(dish.getDishName());
+        source.setId(dish.getId());
+        source.setType("Dish");
+        return source;
     }
+
     private static List<Tag> toModel(List<TagEntity> tagEntities) {
         List<Tag> tags = new ArrayList<>();
         if (tagEntities == null) {
@@ -336,7 +336,7 @@ public class ModelMapper {
         List<ItemSource> listSources = new ArrayList<>();
         if (shoppingListEntity.getListSources() != null) {
             shoppingListEntity.getListSources().forEach(d -> {
-                listSources.add(toListSourceModel( d));
+                listSources.add(toListSourceModel(d));
 
             });
         }
@@ -477,8 +477,10 @@ public class ModelMapper {
         ListType listType = ListType.valueOf(shoppingList.getListType());
         shoppingListEntity.setListType(listType);
         shoppingListEntity.setUserId(shoppingList.getUserId());
-        ListLayoutType layoutType = ListLayoutType.valueOf(shoppingList.getLayoutType());
-        shoppingListEntity.setListLayoutType(layoutType);
+        if (shoppingList.getLayoutType() != null) {
+            ListLayoutType layoutType = ListLayoutType.valueOf(shoppingList.getLayoutType());
+            shoppingListEntity.setListLayoutType(layoutType);
+        }
         // not setting items here, since items will be updated individually from client
         return shoppingListEntity;
     }
@@ -527,7 +529,7 @@ public class ModelMapper {
 
         List<TagDrilldown> children = new ArrayList<>();
         if (fatTag.getChildren() != null) {
-         children =        childrenTagsToModel(fatTag.getChildren());
+            children = childrenTagsToModel(fatTag.getChildren());
         }
         TagDrilldown result = new TagDrilldown(fatTag.getId());
         result.name(fatTag.getName())
@@ -540,8 +542,8 @@ public class ModelMapper {
                 .searchSelect(fatTag.getSearchSelect())
                 .ratingFamily(fatTag.getRatingFamily());
 
-        ((TagDrilldown)result).parentId(String.valueOf(fatTag.getParentId()));
-        ((TagDrilldown)result).childrenList(children);
+        ((TagDrilldown) result).parentId(String.valueOf(fatTag.getParentId()));
+        ((TagDrilldown) result).childrenList(children);
 
         return result;
     }

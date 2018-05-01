@@ -271,8 +271,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // set current list active
         toActive.setListType(ListType.ActiveList);
         // save active list
-        saveListChanges(toActive,collector);
-        return getListById(username,listId);
+        saveListChanges(toActive, collector);
+        return getListById(username, listId);
 
     }
 
@@ -549,6 +549,51 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         collector.removeItemsFromList(listType, toRemove.getItems());
 
         saveListChanges(shoppingList, collector);
+    }
+
+    @Override
+    public void updateItemCrossedOff(String name, Long listId, Long itemId, Boolean crossedOff) {
+        // ensure list belongs to user
+        ShoppingListEntity shoppingListEntity = getListById(name, listId);
+        if (shoppingListEntity == null) {
+            return;
+        }
+
+        // get item
+        ItemEntity item = itemRepository.findOne(itemId);
+
+        // ensure item belongs to list
+        if (!item.getListId().equals(shoppingListEntity.getId())) {
+            return;
+        }
+
+        // set crossed off for item - by setting crossedOff date
+        if (crossedOff) {
+            item.setCrossedOff(new Date());
+        } else {
+            item.setCrossedOff(null);
+        }
+
+        itemRepository.save(item);
+
+    }
+
+    @Override
+    public void crossOffAllItems(String name, Long listId, boolean crossOff) {
+        // ensure list belongs to user
+        ShoppingListEntity shoppingListEntity = getListById(name, listId);
+        if (shoppingListEntity == null) {
+            return;
+        }
+
+        // get item
+        List<ItemEntity> items = shoppingListEntity.getItems();
+
+        Date crossOffDate = crossOff?new Date():null;
+
+        items.forEach(i -> i.setCrossedOff(crossOffDate));
+
+        itemRepository.save(items);
     }
 
     private void saveListChanges(ShoppingListEntity shoppingList, ListItemCollector collector) {

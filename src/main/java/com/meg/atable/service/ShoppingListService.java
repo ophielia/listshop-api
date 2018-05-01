@@ -43,9 +43,14 @@ public interface ShoppingListService {
 
     void removeListItemsFromList(String name, Long listId, ListType listType);
 
+    void updateItemCrossedOff(String name, Long listId, Long itemId, Boolean crossedOff);
+
+    void crossOffAllItems(String name, Long listId, boolean crossOff);
+
     void deleteAllItemsFromList(String name, Long listId);
 
     void addListToList(String name, Long listId, ListType listType);
+
 
 
 }

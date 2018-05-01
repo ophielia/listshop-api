@@ -84,6 +84,10 @@ public class ListItemCollector {
     }
 
     private void copyOrUpdateExistingItem(ItemEntity item, String sourceType, boolean incrementStats) {
+        // do not copy crossed off items
+        if (item.getCrossedOff() != null) {
+            return;
+        }
         if (item.getTag() == null) {
             ItemEntity copied = copyItem(item);
             // free text item

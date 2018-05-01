@@ -17,26 +17,37 @@ CURRENT HOPPER:
     set active
         done - modal - add or replace
         ====>  shop page
-                better layout
-                cross off instead of remove
-            print
-            cross off
+                    done -     better layout
+                    done -  bigger text
+                    done - line between category and subcategory header
+                    done - check boxes
+                    done - cross off instead of remove
+                    done - cross off
+
+                  print
+                  skinning checkboxes (minor)
+                  check off text - not green
+
     add lists to manage-dishes
         to existing list
         to new list - with parameters (add from base list, add from pickup list)
     manage list page -
-        create
+        done - create
         delete
+        active list goes straight to shop
+
     edit list page -
             will handle long item name with non-css concat (and hover)
             source box needs hover with source name
+
+
 
     Hey - no "Shop" for PickUp and Base
         no add Base for base
         no add Pickup for pickup
     Clean up list of lists
     Quick add page
-    Shop page
+    in process - Shop page
 
 
 

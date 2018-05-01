@@ -12,9 +12,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.security.Principal;
@@ -135,6 +133,24 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
         return ResponseEntity.noContent().build();
     }
+
+    //@RequestMapping(method = RequestMethod.POST, value = "/{listId}/item/{itemId}", produces = "application/json")
+    public ResponseEntity<Object> setCrossedOffForItem(Principal principal, @PathVariable Long listId, @PathVariable Long itemId,
+                                                @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff
+    ) {
+        this.shoppingListService.updateItemCrossedOff(principal.getName(), listId, itemId, crossedOff);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    //@RequestMapping(method = RequestMethod.POST, value = "/{listId}/item/shop", produces = "application/json")
+    public ResponseEntity<Object> crossOffAllItemsOnList(Principal principal, @PathVariable Long listId,
+                                                         @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff) {
+        this.shoppingListService.crossOffAllItems(principal.getName(), listId, crossedOff);
+
+        return ResponseEntity.noContent().build();
+    }
+
 
     @Override
     public ResponseEntity<Object> deleteAllItemsFromList(Principal principal, @PathVariable Long listId) {

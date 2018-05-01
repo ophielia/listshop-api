@@ -52,6 +52,15 @@ public interface ShoppingListRestControllerApi {
                                               @RequestParam(value = "sourceId", required = false, defaultValue = "0") String sourceId
     );
 
+    @RequestMapping(method = RequestMethod.POST, value = "/{listId}/item/shop/{itemId}", produces = "application/json")
+    ResponseEntity<Object> setCrossedOffForItem(Principal principal, @PathVariable Long listId, @PathVariable Long itemId,
+                                              @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff
+    );
+
+    @RequestMapping(method = RequestMethod.POST, value = "/{listId}/item/shop", produces = "application/json")
+    ResponseEntity<Object> crossOffAllItemsOnList(Principal principal, @PathVariable Long listId,
+                                                  @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff);
+
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/item", produces = "application/json")
     ResponseEntity<Object> deleteAllItemsFromList(Principal principal, @PathVariable Long listId);
 
