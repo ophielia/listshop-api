@@ -69,7 +69,7 @@ public class MealPlanServiceImplTest {
         SlotEntity slot1 = buildDishSlot(retrieve, "testDish1");
         SlotEntity slot2 = buildDishSlot(retrieve, "testDish2");
         List<SlotEntity> slots = Collections.arrayToList(new SlotEntity[]{slot1, slot2});
-        slotRepository.save(slots);
+        slotRepository.saveAll(slots);
 
         retrieve.setSlots(slots);
         mealPlanRepository.save(retrieve);

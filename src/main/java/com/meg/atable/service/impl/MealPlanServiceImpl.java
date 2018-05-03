@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -110,7 +111,11 @@ public class MealPlanServiceImpl implements MealPlanService {
     public MealPlanEntity getMealPlanById(String userName, Long mealPlanId) {
         UserAccountEntity user = userService.getUserByUserName(userName);
 
-        MealPlanEntity mealPlanEntity = mealPlanRepository.findOne(mealPlanId);
+        Optional<MealPlanEntity> mealPlanEntityOpt = mealPlanRepository.findById(mealPlanId);
+        if (!mealPlanEntityOpt.isPresent()) {
+            return null;
+        }
+        MealPlanEntity mealPlanEntity = mealPlanEntityOpt.get();
         // ensure that this meal plan belongs to the user
         if (mealPlanEntity != null && mealPlanEntity.getUserId().equals(user.getId()) ) {
             return mealPlanEntity;
@@ -171,7 +176,7 @@ public class MealPlanServiceImpl implements MealPlanService {
 
         if (toDelete != null) {
             if (toDelete.getSlots() != null && toDelete.getSlots().size() > 0) {
-                slotRepository.delete(toDelete.getSlots());
+                slotRepository.deleteAll(toDelete.getSlots());
                 toDelete.setSlots(null);
             }
             mealPlanRepository.delete(toDelete);

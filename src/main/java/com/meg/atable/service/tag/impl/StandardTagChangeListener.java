@@ -87,7 +87,7 @@ public class StandardTagChangeListener implements TagChangeListener {
                 for (TagEntity parentTag : newParentTags) {
                     groupAssignments.addAll(tagStructureService.buildGroupAssignments(parentTag.getId(), childrenTags));
                 }
-                tagSearchGroupRepository.save(groupAssignments);
+                tagSearchGroupRepository.saveAll(groupAssignments);
             }
         }
 
@@ -129,7 +129,7 @@ public class StandardTagChangeListener implements TagChangeListener {
         for (TagEntity parentTag : parentTags) {
             groupAssignments.addAll(tagStructureService.buildGroupAssignments(parentTag.getId(), childrenTags));
         }
-        tagSearchGroupRepository.save(groupAssignments);
+        tagSearchGroupRepository.saveAll(groupAssignments);
         return;
     }
 

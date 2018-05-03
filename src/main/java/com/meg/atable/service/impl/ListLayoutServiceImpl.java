@@ -17,6 +17,7 @@ import com.meg.atable.service.ListLayoutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,18 +64,24 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
     @Override
     public ListLayoutEntity getListLayoutById(Long listLayoutId) {
-        return listLayoutRepository.findOne(listLayoutId);
+
+        Optional<ListLayoutEntity> listLayoutEntityOpt =  listLayoutRepository.findById(listLayoutId);
+        return listLayoutEntityOpt.isPresent()?listLayoutEntityOpt.get():null;
     }
 
     @Override
     public void deleteListLayout(Long listLayoutId) {
-        listLayoutRepository.delete(listLayoutId);
+        listLayoutRepository.deleteById(listLayoutId);
     }
 
     @Override
     public void addCategoryToListLayout(Long listLayoutId, ListLayoutCategoryEntity entity) {
         // get list
-        ListLayoutEntity layoutEntity = listLayoutRepository.findOne(listLayoutId);
+        Optional<ListLayoutEntity> listLayoutEntityOpt =  listLayoutRepository.findById(listLayoutId);
+        if (!listLayoutEntityOpt.isPresent()) {
+            return;
+        }
+        ListLayoutEntity layoutEntity = listLayoutEntityOpt.get();
 
         // save listlayout category
         entity.setLayoutId(layoutEntity.getId());
@@ -101,7 +108,11 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     @Override
     public void deleteCategoryFromListLayout(Long listLayoutId, Long layoutCategoryId) throws ListLayoutException {
 // get list
-        ListLayoutEntity layoutEntity = listLayoutRepository.findOne(listLayoutId);
+        Optional<ListLayoutEntity> listLayoutEntityOpt =  listLayoutRepository.findById(listLayoutId);
+        if (!listLayoutEntityOpt.isPresent()) {
+            return;
+        }
+        ListLayoutEntity layoutEntity = listLayoutEntityOpt.get();
         // filter category to delete from list categories
         List<ListLayoutCategoryEntity> filtered = layoutEntity.getCategories().stream()
                 .filter(c -> c.getId().longValue() != layoutCategoryId.longValue())
@@ -116,7 +127,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         listLayoutCategoryRepository.flush();
 
         // delete category
-        listLayoutCategoryRepository.delete(layoutCategoryId);
+        listLayoutCategoryRepository.deleteById(layoutCategoryId);
 
 
         // set categories in list layout and save
@@ -130,7 +141,11 @@ public class ListLayoutServiceImpl implements ListLayoutService {
             return null;
         }
         // get layout category
-        ListLayoutCategoryEntity layoutCategoryEntity = listLayoutCategoryRepository.findOne(listLayoutCategory.getId());
+        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt =  listLayoutCategoryRepository.findById(listLayoutId);
+        if (!listLayoutEntityOpt.isPresent()) {
+            return null;
+        }
+        ListLayoutCategoryEntity layoutCategoryEntity = listLayoutEntityOpt.get();
         if (layoutCategoryEntity == null) {
             return null;
         }
@@ -163,7 +178,11 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     @Override
     public void addTagsToCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList) {
         // get  category
-        ListLayoutCategoryEntity categoryEntity = listLayoutCategoryRepository.findOne(layoutCategoryId);
+        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt =  listLayoutCategoryRepository.findById(listLayoutId);
+        if (!listLayoutEntityOpt.isPresent()) {
+            return;
+        }
+        ListLayoutCategoryEntity categoryEntity = listLayoutEntityOpt.get();
         // assure list owns category
         if (categoryEntity.getLayoutId().longValue() != listLayoutId.longValue()) {
             return;
@@ -189,7 +208,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         }
 
         // set tags in category
-        List<TagEntity> tagsToAdd = tagRepository.findAll(tagIdsToAdd);
+        List<TagEntity> tagsToAdd = tagRepository.findAllById(tagIdsToAdd);
         tagCategories.addAll(tagsToAdd);
         categoryEntity.setTags(tagCategories);
 
@@ -201,7 +220,11 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     @Override
     public void deleteTagsFromCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList) {
         // get  category
-        ListLayoutCategoryEntity categoryEntity = listLayoutCategoryRepository.findOne(layoutCategoryId);
+        Optional<ListLayoutCategoryEntity> categoryEntityOpt = listLayoutCategoryRepository.findById(layoutCategoryId);
+        if (!categoryEntityOpt.isPresent()) {
+            return;
+        }
+        ListLayoutCategoryEntity categoryEntity = categoryEntityOpt.get();
         // assure list owns category
         if (categoryEntity.getLayoutId().longValue() != listLayoutId.longValue()) {
             return;
@@ -217,7 +240,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
                 .collect(Collectors.toList());
 
         // set tags in category
-        List<TagEntity> filteredTagList = tagRepository.findAll(filteredList);
+        List<TagEntity> filteredTagList = tagRepository.findAllById(filteredList);
         categoryEntity.setTags(filteredTagList);
 
         // save category
@@ -236,7 +259,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
     @Override
     public List<ListLayoutCategoryEntity> getListCategoriesForIds(Set<Long> categoryIds) {
-        return listLayoutCategoryRepository.findAll(categoryIds);
+        return listLayoutCategoryRepository.findAllById(categoryIds);
     }
 
     @Override
@@ -309,18 +332,19 @@ public class ListLayoutServiceImpl implements ListLayoutService {
             throw new ListLayoutException("Invalid Parameters in addCategoryToParent: categoryId[" + categoryId + "] parentId[" + parentId + "]");
         }
         // get category
-        ListLayoutCategoryEntity category = listLayoutCategoryRepository.findOne(categoryId);
-        if (category == null) {
+        Optional<ListLayoutCategoryEntity> categoryOpt = listLayoutCategoryRepository.findById(categoryId);
+        if (!categoryOpt.isPresent()) {
             throw new ListLayoutException("Category not found in addCategoryToParent: categoryId[" + categoryId + "]");
-
         }
+        ListLayoutCategoryEntity category = categoryOpt.get();
         // get parent category
         ListLayoutCategoryEntity parent = null;
         if (!parentId.equals(0L)) {
-            parent = listLayoutCategoryRepository.findOne(parentId);
-            if (parent == null) {
+            Optional<ListLayoutCategoryEntity> parentOpt = listLayoutCategoryRepository.findById(parentId);
+            if (!parentOpt.isPresent()) {
                 throw new ListLayoutException("Parent not found in addCategoryToParent: parentId[" + parentId + "]");
             }
+            parent = parentOpt.get();
         }
 
         // check that both are in the same layout
@@ -331,7 +355,11 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         // pull relationship
 Long relationshipId = getCategoryRelationForCategory(category);
         // update relationship
-            CategoryRelationEntity relationship = categoryRelationRepository.findOne(relationshipId);
+            Optional<CategoryRelationEntity> relationshipOpt = categoryRelationRepository.findById(relationshipId);
+            if (!relationshipOpt.isPresent()) {
+                return;
+            }
+            CategoryRelationEntity relationship = relationshipOpt.get();
         relationship.setParent(parent);
         relationship.setChild(category);
         categoryRelationRepository.save(relationship);
@@ -367,10 +395,11 @@ Long relationshipId = getCategoryRelationForCategory(category);
             throw new ListLayoutException("Null categoryId passed to moveCategory. Can't do much");
         }
         // retrieve category
-        ListLayoutCategoryEntity category = listLayoutCategoryRepository.findOne(categoryId);
-        if (category == null) {
+        Optional<ListLayoutCategoryEntity> categoryOpt = listLayoutCategoryRepository.findById(categoryId);
+        if (!categoryOpt.isPresent()) {
             throw new ListLayoutException("No category found for categoryId [" + categoryId + "] in moveCategory. ");
         }
+        ListLayoutCategoryEntity category = categoryOpt.get();
 
         //  get category with which to swap
         ListLayoutCategoryEntity swapCategory = getCategoryForSwap(category, moveUp);

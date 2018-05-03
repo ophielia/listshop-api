@@ -48,7 +48,10 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagEntity getTagById(Long tagId) {
-        return tagRepository.findOne(tagId);
+
+        Optional<TagEntity> tagOpt =  tagRepository.findById(tagId);
+
+        return tagOpt.isPresent()?tagOpt.get():null;
     }
 
     @Override
@@ -57,10 +60,11 @@ public class TagServiceImpl implements TagService {
             return;
         }
         // get dish
-        DishEntity dish = dishRepository.findOne(dishId);
-        if (dish == null) {
+        Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
+        if (!dishOpt.isPresent()) {
             return;
         }
+        DishEntity dish = dishOpt.get();
         // filter tag to be deleted from dish
         List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
         List<TagEntity> dishTagsDeletedTag = dishTags.stream()
@@ -73,7 +77,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Map<Long, TagEntity> getDictionaryForIds(Set<Long> tagIds) {
-        List<TagEntity> tags = tagRepository.findAll(tagIds);
+        List<TagEntity> tags = tagRepository.findAllById(tagIds);
         if (!tags.isEmpty()) {
             return tags.stream().collect(Collectors.toMap(TagEntity::getId,
                     c -> c));
@@ -86,10 +90,11 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagEntity updateTag(Long tagId, TagEntity toUpdate) {
         // get tag from db
-        TagEntity dbTag = tagRepository.findOne(tagId);
-        if (dbTag == null) {
+        Optional<TagEntity> dbTagOpt = tagRepository.findById(tagId);
+        if (!dbTagOpt.isPresent()) {
             return null;
         }
+        TagEntity dbTag = dbTagOpt.get();
 
         // save changes to tag
         TagEntity beforeChange = dbTag.copy();
@@ -230,12 +235,13 @@ public class TagServiceImpl implements TagService {
     @Override
     public List<TagEntity> getTagsForDish(Long dishId, List<TagType> tagtypes) {
         List<TagEntity> results = new ArrayList<>();
-        DishEntity dish = dishRepository.findOne(dishId);
+        Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
 
-        if (dish == null) {
+        if (!dishOpt.isPresent()) {
             return results;
         }
 
+        DishEntity dish = dishOpt.get();
         results = tagRepository.findTagsByDishes(dish);
 
         if (tagtypes == null) {
@@ -307,9 +313,17 @@ public class TagServiceImpl implements TagService {
     @Override
     public void addTagToDish(Long dishId, Long tagId) {
         // get dish
-        DishEntity dish = dishRepository.findOne(dishId);
+        Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
+        if (!dishOpt.isPresent()) {
+            return;
+        }
         // get tag
-        TagEntity tag = tagRepository.findOne(tagId);
+        Optional<TagEntity> tagOpt = tagRepository.findById(tagId);
+        if (!tagOpt.isPresent()) {
+            return;
+        }
+        DishEntity dish = dishOpt.get();
+        TagEntity tag = tagOpt.get();
 
         List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
         dishTags.add(tag);

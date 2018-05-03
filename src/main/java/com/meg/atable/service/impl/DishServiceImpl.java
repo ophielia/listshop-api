@@ -52,17 +52,18 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public Optional<DishEntity> getDishById(Long dishId) {
-        return Optional.of(dishRepository.findOne(dishId));
+        return dishRepository.findById(dishId);
     }
 
 
     @Override
     public Optional<DishEntity> getDishForUserById(String username, Long dishId) {
         UserAccountEntity user = userRepository.findByUsername(username);
-        DishEntity dish = dishRepository.findOne(dishId);
-        if (dish == null) {
+        Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
+        if (!dishOpt.isPresent()) {
             throw new DishNotFoundException(dishId);
         }
+        DishEntity dish = dishOpt.get();
         if (!dish.getUserId().equals(user.getId())) {
             throw new UnauthorizedAccessException("Dish [" + dishId + "] doesn't belong to user [" + username + "].");
         }
@@ -80,17 +81,17 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<DishEntity> save(List<DishEntity> dishes) {
-        return dishRepository.save(dishes);
+        return dishRepository.saveAll(dishes);
     }
 
     @Override
     public List<DishEntity> getDishes(List<Long> dishIds) {
-        return dishRepository.findAll(dishIds);
+        return dishRepository.findAllById(dishIds);
     }
 
     @Override
     public Map<Long, DishEntity> getDictionaryForIdList(List<Long> dishIds) {
-        List<DishEntity> tags = dishRepository.findAll(dishIds);
+        List<DishEntity> tags = dishRepository.findAllById(dishIds);
         if (!tags.isEmpty()) {
             return tags.stream().collect(Collectors.toMap(DishEntity::getId,
                     c -> c));

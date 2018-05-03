@@ -68,7 +68,7 @@ public class TargetServiceImpl implements TargetService {
             return false;
         }
         List<TargetSlotEntity> slots = target.getSlots();
-        targetSlotRepository.delete(slots);
+        targetSlotRepository.deleteAll(slots);
         target.setSlots(null);
         targetRepository.delete(target);
 
@@ -124,7 +124,8 @@ public class TargetServiceImpl implements TargetService {
             return;
         }
         targetEntity.setProposalId(null);
-        TargetSlotEntity targetSlotEntity = targetSlotRepository.findOne(slotId);
+        Optional<TargetSlotEntity> targetSlotEntityOpt = targetSlotRepository.findById(slotId);
+        TargetSlotEntity targetSlotEntity = targetSlotEntityOpt.isPresent()?targetSlotEntityOpt.get():null;
 
         targetEntity.removeSlot(targetSlotEntity);
 
@@ -140,7 +141,8 @@ public class TargetServiceImpl implements TargetService {
             return;
         }
         targetEntity.setProposalId(null);
-        TargetSlotEntity targetSlotEntity = targetSlotRepository.findOne(slotId);
+        Optional<TargetSlotEntity> targetSlotEntityOpt = targetSlotRepository.findById(slotId);
+        TargetSlotEntity targetSlotEntity = targetSlotEntityOpt.isPresent()?targetSlotEntityOpt.get():null;
 
         targetSlotEntity.addTagId(tagId);
         targetSlotRepository.save(targetSlotEntity);
@@ -153,7 +155,8 @@ public class TargetServiceImpl implements TargetService {
             return;
         }
         targetEntity.setProposalId(null);
-        TargetSlotEntity targetSlotEntity = targetSlotRepository.findOne(slotId);
+        Optional<TargetSlotEntity> targetSlotEntityOpt = targetSlotRepository.findById(slotId);
+        TargetSlotEntity targetSlotEntity = targetSlotEntityOpt.isPresent()?targetSlotEntityOpt.get():null;
 
         targetSlotEntity.removeTagId(tagId);
         targetSlotRepository.save(targetSlotEntity);

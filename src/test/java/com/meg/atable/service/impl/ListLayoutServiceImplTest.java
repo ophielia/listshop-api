@@ -26,6 +26,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
@@ -99,7 +100,8 @@ public class ListLayoutServiceImplTest {
         Long id = TestConstants.LIST_LAYOUT_2_ID;
 
         // get count of categories
-        retrieve = listLayoutRepository.findOne(id);
+        Optional<ListLayoutEntity> retrieveOpt = listLayoutRepository.findById(id);
+        retrieve = retrieveOpt.get();
         Integer categoryCount = retrieve.getCategories().size();
         // build category
         final String testCategoryName = "testAddNewCategoryNamekkk";
@@ -138,10 +140,12 @@ public class ListLayoutServiceImplTest {
         Long id = TestConstants.LIST_LAYOUT_2_ID;
 
         // get count of categories
-        ListLayoutEntity deleteACategory = listLayoutRepository.findOne(id);
+        Optional<ListLayoutEntity> retrieveOpt = listLayoutRepository.findById(id);
+        ListLayoutEntity deleteACategory = retrieveOpt.get();
         Integer categoryCount = deleteACategory.getCategories().size();
         // get Categories - get first
-        ListLayoutCategoryEntity toDeleteCategory = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID4);
+        Optional<ListLayoutCategoryEntity> toDeleteCategoryOpt = layoutCategoryRepository.findById(TestConstants.LIST_LAYOUT_2_CATEGORY_ID4);
+        ListLayoutCategoryEntity toDeleteCategory = toDeleteCategoryOpt.get();
         final String testCategoryName = toDeleteCategory.getName();
 
         // delete category from list layout - service call
@@ -224,7 +228,8 @@ public class ListLayoutServiceImplTest {
         listLayoutService.addTagsToCategory(TestConstants.LIST_LAYOUT_1_ID, TestConstants.LIST_LAYOUT_1_CATEGORY_ID, addTags);
 
         // retrieve category
-        ListLayoutCategoryEntity categoryEntity = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_1_CATEGORY_ID);
+        Optional<ListLayoutCategoryEntity> categoryEntityOpt = layoutCategoryRepository.findById(TestConstants.LIST_LAYOUT_1_CATEGORY_ID);
+        ListLayoutCategoryEntity categoryEntity = categoryEntityOpt.get();
 
         // assert has tags, and size is 5
         List<TagEntity> resultTags = tagRepository.getTagsForLayoutCategory(TestConstants.LIST_LAYOUT_1_CATEGORY_ID);
@@ -238,13 +243,15 @@ public class ListLayoutServiceImplTest {
         // ll LIST_LAYOUT_2_ID
         // category LIST_LAYOUT_2_CATEGORY_ID6
         // get tags from category
-        ListLayoutCategoryEntity categoryEntity = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID6);
+        Optional<ListLayoutCategoryEntity> categoryEntityOpt = layoutCategoryRepository.findById(TestConstants.LIST_LAYOUT_2_CATEGORY_ID6);
+        ListLayoutCategoryEntity categoryEntity = categoryEntityOpt.get();
         List<TagEntity> tags = tagRepository.getTagsForLayoutCategory(categoryEntity.getId());
         List<Long> ids = tags.stream().map(TagEntity::getId).collect(Collectors.toList());
         // delete all the tags from category
         listLayoutService.deleteTagsFromCategory(TestConstants.LIST_LAYOUT_2_ID, TestConstants.LIST_LAYOUT_2_CATEGORY_ID6, ids);
         // assert that category has 0 categoriex
-        ListLayoutCategoryEntity result = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID6);
+        Optional<ListLayoutCategoryEntity> resultOpt = layoutCategoryRepository.findById(TestConstants.LIST_LAYOUT_2_CATEGORY_ID6);
+        ListLayoutCategoryEntity result = resultOpt.get();
         List<TagEntity> resultTags = tagRepository.getTagsForLayoutCategory(categoryEntity.getId());
         Assert.assertNotNull(resultTags);
         Assert.assertTrue(resultTags.size() == 0);
@@ -292,9 +299,13 @@ public class ListLayoutServiceImplTest {
     @Test
     public void testAddCategoryToParent() throws ListLayoutException {
         // get category one, two and three
-        ListLayoutCategoryEntity one = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID1);
-        ListLayoutCategoryEntity two = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID2);
-        ListLayoutCategoryEntity three = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID3);
+        Optional<ListLayoutCategoryEntity> oneOpt = layoutCategoryRepository.findById(TestConstants.LIST_LAYOUT_2_CATEGORY_ID1);
+        Optional<ListLayoutCategoryEntity> twoOpt = layoutCategoryRepository.findById(TestConstants.LIST_LAYOUT_2_CATEGORY_ID2);
+        Optional<ListLayoutCategoryEntity> threeOpt = layoutCategoryRepository.findById(TestConstants.LIST_LAYOUT_2_CATEGORY_ID3);
+
+        ListLayoutCategoryEntity one = oneOpt.get();
+        ListLayoutCategoryEntity two = twoOpt.get();
+        ListLayoutCategoryEntity three = threeOpt.get();
 
         // basic case - add category one to category two
         listLayoutService.addCategoryToParent(TestConstants.LIST_LAYOUT_2_CATEGORY_ID1, TestConstants.LIST_LAYOUT_2_CATEGORY_ID2);
@@ -308,7 +319,8 @@ public class ListLayoutServiceImplTest {
         Assert.assertEquals(TestConstants.LIST_LAYOUT_2_CATEGORY_ID2.longValue(), relationship.getParent().getId().longValue());
 
         // check order
-        ListLayoutCategoryEntity check = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID1);
+        Optional<ListLayoutCategoryEntity> checkOpt = layoutCategoryRepository.findById(TestConstants.LIST_LAYOUT_2_CATEGORY_ID1);
+        ListLayoutCategoryEntity check = checkOpt.get();
         Assert.assertNotNull(check);
         Assert.assertEquals(8,check.getDisplayOrder().intValue());
 
@@ -316,7 +328,8 @@ public class ListLayoutServiceImplTest {
         listLayoutService.addCategoryToParent(TestConstants.LIST_LAYOUT_2_CATEGORY_ID3, TestConstants.LIST_LAYOUT_2_CATEGORY_ID2);
         categoryRelationRepository.flush();
 
-        check = layoutCategoryRepository.findOne(TestConstants.LIST_LAYOUT_2_CATEGORY_ID3);
+        Optional<ListLayoutCategoryEntity> checkOptTwo = layoutCategoryRepository.findById(TestConstants.LIST_LAYOUT_2_CATEGORY_ID3);
+        check = checkOptTwo.get();
         Assert.assertNotNull(check);
         Assert.assertEquals(13,check.getDisplayOrder().intValue());
 

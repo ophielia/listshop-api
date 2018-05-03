@@ -22,7 +22,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserAccountEntity getUserById(Long userId) {
-        return userRepository.findOne(userId);
+        Optional<UserAccountEntity> userOpt =  userRepository.findById(userId);
+        return userOpt.isPresent()?userOpt.get():null;
     }
 
     @Override

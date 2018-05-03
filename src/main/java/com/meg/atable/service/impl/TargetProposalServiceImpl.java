@@ -129,13 +129,17 @@ public class TargetProposalServiceImpl implements TargetProposalService {
             i++;
         }
 
-        return proposalContextApproachRepository.save(contextApproachEntities);
+        return proposalContextApproachRepository.saveAll(contextApproachEntities);
     }
 
     @Override
     public TargetProposalEntity getTargetProposalById(String name, Long proposalId) {
         UserAccountEntity user = userService.getUserByUserName(name);
-        TargetProposalEntity proposal = targetProposalRepository.findOne(proposalId);
+        Optional<TargetProposalEntity> proposalOpt = targetProposalRepository.findById(proposalId);
+        if (!proposalOpt.isPresent()) {
+            return null;
+        }
+        TargetProposalEntity proposal = proposalOpt.get();
         if (proposal.getUserId() == null || !proposal.getUserId().equals(user.getId())) {
             return null;
         }
@@ -299,14 +303,18 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         List<Long> slotIds = proposal.getProposalSlots().stream().map(s -> s.getTargetSlotId()).collect(Collectors.toList());
         targetProposalDishRepository.deleteDishesForSlots(slotIds);
         targetProposalDishRepository.flush();
-        return targetProposalRepository.findOne(proposal.getProposalId());
+        Optional<TargetProposalEntity> proposalOpt = targetProposalRepository.findById(proposal.getProposalId());
+
+        return proposalOpt.isPresent()?proposalOpt.get():null;
     }
 
     private TargetProposalSlotEntity clearDishesFromProposalSlot(TargetProposalSlotEntity slot) {
         List<Long> slotIds = Collections.singletonList(slot.getSlotId());
         targetProposalDishRepository.deleteDishesForSlots(slotIds);
         targetProposalDishRepository.flush();
-        return targetProposalSlotRepository.findOne(slot.getSlotId());
+
+        Optional<TargetProposalSlotEntity> proposalSlotEntityOptional =  targetProposalSlotRepository.findById(slot.getSlotId());
+        return proposalSlotEntityOptional.isPresent()?proposalSlotEntityOptional.get():null;
     }
 
 
@@ -491,7 +499,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
 
             TargetProposalSlotEntity proposalSlotEntity = getSlotFromProposalByTargetId(proposal, rawResult.getSlotId());
             // clear existing dishes
-            targetProposalDishRepository.delete(proposalSlotEntity.getDishSlotList());
+            targetProposalDishRepository.deleteAll(proposalSlotEntity.getDishSlotList());
             proposalSlotEntity.setDishSlotList(null);
             proposalSlotEntity = targetProposalSlotRepository.save(proposalSlotEntity);
             proposalSlotEntity.setDishSlotList(new ArrayList<>());

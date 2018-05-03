@@ -79,7 +79,7 @@ private DishSearchService dishSearchService;
 
          tag4 = ServiceTestUtils.buildTag("tag4", TagType.Ingredient);
          tag5 = ServiceTestUtils.buildTag("tag5", TagType.Ingredient);
-         tagRepository.save(Arrays.asList(tag1,tag2,tag3,tag4,tag5));
+         tagRepository.saveAll(Arrays.asList(tag1,tag2,tag3,tag4,tag5));
 
          dish1 = ServiceTestUtils.buildDish(userAccount.getId(),"dish1",
                  Arrays.asList(tag1,tag2));
@@ -87,7 +87,7 @@ private DishSearchService dishSearchService;
                 Arrays.asList(tag3,tag4));
         dish3 = ServiceTestUtils.buildDish(userAccount.getId(),"dish3",
                 Arrays.asList(tag1,tag3,tag5));
-        dishRepository.save(Arrays.asList(dish1,dish2,dish3));
+        dishRepository.saveAll(Arrays.asList(dish1,dish2,dish3));
 
 
         setUpComplete = true;

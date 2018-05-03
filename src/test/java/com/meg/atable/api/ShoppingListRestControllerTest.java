@@ -54,18 +54,9 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @ActiveProfiles("test")
 public class ShoppingListRestControllerTest {
 
-
-    @Autowired
-    private ShoppingListService shoppingListService;
-
-    @Autowired
-    private TagService tagService;
-
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private TagRepository tagRepository;
@@ -311,13 +302,13 @@ public class ShoppingListRestControllerTest {
         TagEntity tag4 = ServiceTestUtils.buildTag("tag4", TagType.TagType);
         TagEntity tag5 = ServiceTestUtils.buildTag("tag5", TagType.TagType);
         List<TagEntity> tags = Arrays.asList(tag1, tag2, tag3, tag4, tag5);
-        List<TagEntity> savedTags = tagRepository.save(tags);
+        List<TagEntity> savedTags = tagRepository.saveAll(tags);
 
         DishEntity dish1 = ServiceTestUtils.buildDish(userAccount.getId(), "dish1", savedTags.subList(0, 2));
         DishEntity dish2 = ServiceTestUtils.buildDish(userAccount.getId(), "dish2", savedTags.subList(2, 3));
         DishEntity dish3 = ServiceTestUtils.buildDish(userAccount.getId(), "dish3", savedTags.subList(3, 5));
         List<DishEntity> dishes = Arrays.asList(dish1, dish2, dish3);
-        List<DishEntity> savedDishes = dishRepository.save(dishes);
+        List<DishEntity> savedDishes = dishRepository.saveAll(dishes);
 
         MealPlanEntity mealPlanEntity = ServiceTestUtils.buildMealPlan("testMealPlan", userAccount.getId());
         MealPlanEntity savedMealPlan = mealPlanRepository.save(mealPlanEntity);
@@ -326,7 +317,7 @@ public class ShoppingListRestControllerTest {
         SlotEntity slot2 = ServiceTestUtils.buildDishSlot(savedMealPlan, savedDishes.get(1));
         SlotEntity slot3 = ServiceTestUtils.buildDishSlot(savedMealPlan, savedDishes.get(2));
         List<SlotEntity> slots = Arrays.asList(slot1, slot2, slot3);
-        List<SlotEntity> savedSlots = slotRepository.save(slots);
+        List<SlotEntity> savedSlots = slotRepository.saveAll(slots);
 
         savedMealPlan.setSlots(savedSlots);
         return mealPlanRepository.save(savedMealPlan);

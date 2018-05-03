@@ -107,7 +107,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (user == null) {
             return null;
         }
-        ShoppingListEntity shoppingListEntity = shoppingListRepository.findOne(listId);
+        Optional<ShoppingListEntity> shoppingListEntityOpt = shoppingListRepository.findById(listId);
+        ShoppingListEntity shoppingListEntity = shoppingListEntityOpt.isPresent()?shoppingListEntityOpt.get():null;
         if (shoppingListEntity != null && shoppingListEntity.getUserId().equals(user.getId())) {
             return shoppingListEntity;
         }
@@ -159,7 +160,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             return;
         }
 
-        itemRepository.delete(itemEntities);
+        itemRepository.deleteAll(itemEntities);
         shoppingListEntity.setItems(null);
         shoppingListEntity.setLastUpdate(new Date());
         shoppingListRepository.save(shoppingListEntity);
@@ -171,20 +172,21 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (shoppingListEntity == null) {
             return;
         }
-        ItemEntity itemEntity = itemRepository.findOne(itemId);
-        if (itemEntity == null) {
+        Optional<ItemEntity> itemEntityOpt = itemRepository.findById(itemId);
+        if (!itemEntityOpt.isPresent()) {
             return;
         }
 
         List<ItemEntity> items = shoppingListEntity.getItems();
         ListItemCollector collector = new ListItemCollector(listId, items);
 
-        if (itemEntity.getTag() == null) {
+        ItemEntity item = itemEntityOpt.get();
+        if (item.getTag() == null) {
             //MM
-            collector.removeFreeTextItem(itemEntity);
+            collector.removeFreeTextItem(item);
         }
 
-        collector.removeItemByTagId(itemEntity.getTag().getId(), dishSourceId, removeEntireItem);
+        collector.removeItemByTagId(item.getTag().getId(), dishSourceId, removeEntireItem);
 
         saveListChanges(shoppingListEntity, collector);
     }
@@ -244,7 +246,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // update the last added date for dishes
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
         saveListChanges(newList, collector);
-        return shoppingListRepository.findOne(newList.getId());
+        Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.findById(newList.getId());
+        return shoppingListEntity.isPresent()?shoppingListEntity.get():null;
 
     }
 
@@ -560,7 +563,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // get item
-        ItemEntity item = itemRepository.findOne(itemId);
+        Optional<ItemEntity> itemOpt = itemRepository.findById(itemId);
+        if (!itemOpt.isPresent()) {
+            return;
+        }
+        ItemEntity item = itemOpt.get();
 
         // ensure item belongs to list
         if (!item.getListId().equals(shoppingListEntity.getId())) {
@@ -593,7 +600,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         items.forEach(i -> i.setCrossedOff(crossOffDate));
 
-        itemRepository.save(items);
+        itemRepository.saveAll(items);
     }
 
     private void saveListChanges(ShoppingListEntity shoppingList, ListItemCollector collector) {

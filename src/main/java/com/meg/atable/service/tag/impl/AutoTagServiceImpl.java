@@ -79,7 +79,7 @@ public class AutoTagServiceImpl implements AutoTagService {
             newShadow.setTagId(tagId);
             toInsert.add(newShadow);
         }
-        shadowTagRepository.save(toInsert);
+        shadowTagRepository.saveAll(toInsert);
     }
 
     private void addTagsToDish(AutoTagSubject subject) {

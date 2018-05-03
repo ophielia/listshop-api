@@ -236,7 +236,7 @@ public class TagStructureServiceImpl implements TagStructureService {
             TagSearchGroupEntity newSearchGroup = new TagSearchGroupEntity(i, memberId);
             newGroups.add(newSearchGroup);
         });
-        tagSearchGroupRepository.save(newGroups);
+        tagSearchGroupRepository.saveAll(newGroups);
     }
 
     @Transactional
@@ -252,7 +252,7 @@ public class TagStructureServiceImpl implements TagStructureService {
             TagSearchGroupEntity newMemberForGroup = new TagSearchGroupEntity(groupId, i);
             newGroups.add(newMemberForGroup);
         });
-        tagSearchGroupRepository.save(newGroups);
+        tagSearchGroupRepository.saveAll(newGroups);
     }
 
     @Override
@@ -308,7 +308,11 @@ public class TagStructureServiceImpl implements TagStructureService {
         }
 
         // create new FatTag with passed tag
-        TagEntity tag = tagRepository.findOne(tagId);
+        Optional<TagEntity> tagOpt = tagRepository.findById(tagId);
+        if (tagOpt.isPresent()) {
+            return fatTag;
+        }
+        TagEntity tag = tagOpt.get();
         fatTag = new FatTag(tag);
         // process children
 

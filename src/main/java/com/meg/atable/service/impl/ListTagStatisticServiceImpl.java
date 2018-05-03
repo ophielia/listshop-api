@@ -73,7 +73,7 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         }
 
         // save list of stats
-        listTagStatisticRepo.save(statList);
+        listTagStatisticRepo.saveAll(statList);
     }
 
     private ListTagStatistic addCounted(ListTagStatistic statistic) {
