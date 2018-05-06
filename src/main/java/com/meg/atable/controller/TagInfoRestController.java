@@ -1,8 +1,9 @@
 package com.meg.atable.controller;
 
 import com.meg.atable.api.controller.TagInfoRestControllerApi;
-import com.meg.atable.api.model.*;
-import com.meg.atable.data.entity.TagEntity;
+import com.meg.atable.api.model.FatTag;
+import com.meg.atable.api.model.TagDrilldownResource;
+import com.meg.atable.api.model.TagType;
 import com.meg.atable.service.tag.TagService;
 import com.meg.atable.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,38 +33,17 @@ public class TagInfoRestController implements TagInfoRestControllerApi {
         this.tagStructureService = tagStructureService;
     }
 
-
-    public ResponseEntity<TagInfoResource> retrieveTagList(@RequestParam(value = "tag_type", required = false) String tag_type,
-                                                           @RequestParam(value = "filter", required = false) String filter) {
+    public ResponseEntity<List<TagDrilldownResource>> retrieveTagList(@RequestParam(value = "tag_type", required = false) String tag_type) {
         List<TagType> tagTypes = processTagTypeInput(tag_type);
-        TagFilterType filterType = TagFilterType.All;
-        if (filter != null ) {
-            filterType = TagFilterType.valueOf(filter);
-        }
-        // get tag list
-        List<TagEntity> tagList =  tagService.getTagList(filterType,tagTypes);
+        List<FatTag> filledTags = tagStructureService.getTagsWithChildren(tagTypes);
 
-        // fill in relationship info
-        tagList = tagStructureService.fillInRelationshipInfo(tagList);
         // create taginforesource
-        TagInfoResource tagInfo = new TagInfoResource(tagList);
-
-        return new ResponseEntity(tagInfo, HttpStatus.OK);
-    }
-
-
-    public ResponseEntity<List<TagDrilldownResource>> retrieveTagListNew(@RequestParam(value = "tag_type", required = false) String tag_type) {
-        List<TagType> tagTypes = processTagTypeInput(tag_type);
-    List<FatTag> filledTags = tagStructureService.getTagsWithChildren(tagTypes);
-
-    // create taginforesource
         List<TagDrilldownResource> resource = filledTags.stream()
                 .map(TagDrilldownResource::new)
                 .collect(Collectors.toList());
 
         return new ResponseEntity(resource, HttpStatus.OK);
     }
-
 
 
     private List<TagType> processTagTypeInput(String tag_type) {

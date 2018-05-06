@@ -1,7 +1,6 @@
 package com.meg.atable.api.model;
 
 import com.meg.atable.api.controller.TagInfoRestControllerApi;
-import com.meg.atable.api.controller.TagRestControllerApi;
 import com.meg.atable.data.entity.TagEntity;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -24,7 +23,7 @@ public class TagInfoResource extends ResourceSupport {
         this.tagInfo = new TagInfo(entities);
 
         this.add(linkTo(methodOn(TagInfoRestControllerApi.class)
-                .retrieveTagList("none","")).withSelfRel());
+                .retrieveTagList("none")).withSelfRel());
     }
 
     public TagInfo getTagInfo() {
