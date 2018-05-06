@@ -12,8 +12,9 @@ BIGGER TODOS -
 
 
 CURRENT HOPPER:
-    adding logging!
-    update lastadded for dish when adding from edit list
+    done - configured adding logging!
+    add logging statements
+    done - update lastadded for dish when adding from edit list
     set active
         done - modal - add or replace
         ====>  shop page
@@ -35,6 +36,8 @@ CURRENT HOPPER:
         done - create
         delete
         active list goes straight to shop
+    remove detour for new create list method
+
 
     edit list page -
             will handle long item name with non-css concat (and hover)
@@ -48,12 +51,15 @@ CURRENT HOPPER:
     Clean up list of lists
     Quick add page
     in process - Shop page
-
-
+    Utility - sections in navigation - Home Dish List Plan
+    default listLayoutType - general - just in case
 
 DB COLS TO CHECK -
     tag.is_parent_tag
     tag.rating_family
+    entire table target_slotS
+    add sequence on target_slot
+
 
 BACKLOG -
     add created on to dish entity

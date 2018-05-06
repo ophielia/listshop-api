@@ -1,5 +1,7 @@
 package com.meg.atable.data.entity;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,7 +9,19 @@ import java.util.List;
 
 @Entity
 @Table(name = "dish")
-@SequenceGenerator(name="dish_sequence", sequenceName = "dish_sequence")
+@GenericGenerator(
+        name = "dish_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="dish_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "initial_value",
+                        value="57000"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class DishEntity {
 
     @Column(name = "USER_ID")

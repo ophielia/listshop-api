@@ -10,6 +10,8 @@ import com.meg.atable.data.repository.ItemRepository;
 import com.meg.atable.data.repository.ShoppingListRepository;
 import com.meg.atable.service.*;
 import com.meg.atable.service.tag.TagService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +24,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ShoppingListServiceImpl implements ShoppingListService {
-    public final static String uncategorized = "nocat";
-    // MM need to handle this in application settings /user settings
+    private static final Logger logger = LogManager.getLogger(ShoppingListServiceImpl.class);
+
+
     private final static ListLayoutType listlayoutdefault = ListLayoutType.RoughGrained;
     private final
     UserService userService;
@@ -78,18 +81,101 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return shoppingListRepository.save(shoppingList);
     }
 
+    public ShoppingListEntity createListForUser(String userName, ListType listType) {
+        UserAccountEntity user = userService.getUserByUserName(userName);
+        ShoppingListEntity newList = new ShoppingListEntity();
+        newList.setListType(listType != null ? listType : ListType.General);
+        // get list layout for user, list_type
+        ListLayoutEntity listLayout = getListLayout(user, listType, null);
+        newList.setListLayoutId(listLayout.getId());
+        newList.setCreatedOn(new Date());
+        newList.setUserId(user.getId());
+        return shoppingListRepository.save(newList);
+    }
+
+    @Override
+    public ShoppingListEntity createList(String userName, ListGenerateProperties listGenerateProperties) throws ShoppingListException {
+        // create list
+        ShoppingListEntity newList = createListForUser(userName, listGenerateProperties.getListType());
+        ListItemCollector collector = new ListItemCollector(newList.getId(), null);
+
+        // get dishes to add
+        List<Long> dishIds = new ArrayList<>();
+        if (listGenerateProperties.getDishSourcesIds() != null) {
+            dishIds = listGenerateProperties.getDishSourcesIds();
+        } else if (listGenerateProperties.getMealPlanSourceId() != null) {
+            // get dishIds for meal plan
+            MealPlanEntity mealPlan = mealPlanService.getMealPlanById(userName, listGenerateProperties.getMealPlanSourceId());
+            if (mealPlan == null) {
+                logger.error("Meal plan id passed as source, but none found for id [" +
+                        listGenerateProperties.getMealPlanSourceId() + "]");
+            } else {
+                dishIds = new ArrayList<>();
+                for (SlotEntity slot : mealPlan.getSlots()) {
+                    dishIds.add(slot.getDish().getId());
+                }
+            }
+        }
+
+        // now, add all dish ids
+        for (Long id : dishIds) {
+            addDishToList(collector, id);
+        }
+
+        // add base list - if desired
+        if (listGenerateProperties.getAddFromBase()) {
+            // add Items from BaseList
+            ShoppingListEntity baseList = getListByUsernameAndType(userName, ListType.BaseList);
+            if (baseList != null) {
+                collector.copyExistingItemsIntoList(ItemSourceType.BaseList.name(), baseList.getItems(), true);
+            }
+        }
+
+        // add pickup list - if desired
+        // add base list - if desired
+        if (listGenerateProperties.getAddFromBase()) {
+            // add Items from BaseList
+            ShoppingListEntity baseList = getListByUsernameAndType(userName, ListType.PickUpList);
+            if (baseList != null) {
+                collector.copyExistingItemsIntoList(ItemSourceType.PickUpList.name(), baseList.getItems(), true);
+            }
+        }
+
+        // check about generating a meal plan
+        if (listGenerateProperties.getGenerateMealplan() &&
+                listGenerateProperties.getMealPlanSourceId() == null &&
+                listGenerateProperties.getDishSourcesIds() != null) {
+            MealPlanEntity mp = mealPlanService.createMealPlan(userName, new MealPlanEntity());
+            listGenerateProperties.getDishSourcesIds().forEach(ds -> mealPlanService.addDishToMealPlan(userName, mp.getId(), ds));
+            // MM add link to shopping list here
+        }
+
+        // save changes
+        saveListChanges(newList, collector);
+        return newList;
+
+    }
+
+
     private ListLayoutEntity getListLayout(UserAccountEntity user, ListType listType, ListLayoutType listLayoutType) {
         // nothing yet for user - eventually, we could consider user preferences / properties here
 
-        ListLayoutType resultlayout = listlayoutdefault;
-        if (listLayoutType != null) {
-            resultlayout = listLayoutType; // defaults to requested listLayoutType
-        } else if (listType != null) {
+        ListLayoutType resultlayout = listLayoutType;
+        if (resultlayout != null) {
+            return listLayoutService.getListLayoutByType(resultlayout);
+        }
             resultlayout = shoppingListProperties.getDefaultLayouts().get(listType);
+        if (resultlayout != null) {
+            return listLayoutService.getListLayoutByType(resultlayout);
+        }
+
+        resultlayout = shoppingListProperties.getDefaultListLayoutType();
+        if (resultlayout != null) {
+            return listLayoutService.getListLayoutByType(resultlayout);
         }
 
         // get layout for listtype
-        return listLayoutService.getListLayoutByType(resultlayout);
+        return listLayoutService.getListLayoutByType(ListLayoutType.All);
 
 
     }
@@ -103,12 +189,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public ShoppingListEntity getListById(String userName, Long listId) {
+        logger.debug("Retrieving List for id [" + listId + "] and name [" + userName + "]");
         UserAccountEntity user = userService.getUserByUserName(userName);
         if (user == null) {
             return null;
         }
         Optional<ShoppingListEntity> shoppingListEntityOpt = shoppingListRepository.findById(listId);
-        ShoppingListEntity shoppingListEntity = shoppingListEntityOpt.isPresent()?shoppingListEntityOpt.get():null;
+        ShoppingListEntity shoppingListEntity = shoppingListEntityOpt.isPresent() ? shoppingListEntityOpt.get() : null;
         if (shoppingListEntity != null && shoppingListEntity.getUserId().equals(user.getId())) {
             return shoppingListEntity;
         }
@@ -247,7 +334,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
         saveListChanges(newList, collector);
         Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.findById(newList.getId());
-        return shoppingListEntity.isPresent()?shoppingListEntity.get():null;
+        return shoppingListEntity.isPresent() ? shoppingListEntity.get() : null;
 
     }
 
@@ -436,17 +523,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         saveListChanges(list, collector);
     }
 
-    @Override
-    public void addDishToList(String name, Long listId, Long dishId) throws ShoppingListException {
-        // MM experimental - not adding categories.  These won't be persisted, but
-        // instead will be determined on the fly upon display
-
-        // get the list
-        ShoppingListEntity list = getListById(name, listId);
-
+    private void addDishToList(ListItemCollector collector, Long dishId) throws ShoppingListException {
         // gather tags for dish to add
         if (dishId == null) {
-            // MM TODO LOGGING HERE
+            logger.error("No dish found for null dishId");
             throw new ShoppingListException("No dish found for null dishId.");
         }
         List<TagEntity> tagsForDish = tagService.getTagsForDish(dishId).stream()
@@ -456,13 +536,24 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             throw new ShoppingListException("No tags found for dishId [" + dishId + "]");
         }
 
-        // create collector
-        ListItemCollector collector = new ListItemCollector(listId, list.getItems());
 
         // add new dish tags to list
         collector.addTags(tagsForDish, dishId, null);
 
         // update last added date for dish
+        this.dishService.updateLastAddedForDish(dishId);
+    }
+
+    @Override
+    public void addDishToList(String name, Long listId, Long dishId) throws ShoppingListException {
+        // get the list
+        ShoppingListEntity list = getListById(name, listId);
+
+        // create collector
+        ListItemCollector collector = new ListItemCollector(listId, list.getItems());
+
+        addDishToList(collector, dishId);
+
         saveListChanges(list, collector);
         return;
     }
@@ -596,7 +687,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // get item
         List<ItemEntity> items = shoppingListEntity.getItems();
 
-        Date crossOffDate = crossOff?new Date():null;
+        Date crossOffDate = crossOff ? new Date() : null;
 
         items.forEach(i -> i.setCrossedOff(crossOffDate));
 

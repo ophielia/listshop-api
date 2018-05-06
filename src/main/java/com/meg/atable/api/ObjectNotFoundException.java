@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * Created by margaretmartin on 13/05/2017.
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class DishNotFoundException extends ObjectNotFoundException {
+public class ObjectNotFoundException extends RuntimeException {
 
-    public DishNotFoundException(Long dishId) {
-        super(dishId, "dish");
+    public ObjectNotFoundException(Long object, String type) {
+        super("couldn't find this object [" + object+"] of type [" + type + "]");
     }
 }

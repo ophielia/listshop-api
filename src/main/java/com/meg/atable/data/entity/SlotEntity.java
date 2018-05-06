@@ -1,10 +1,21 @@
 package com.meg.atable.data.entity;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "meal_plan_slot")
-@SequenceGenerator(name="meal_plan_slot_sequence", sequenceName = "meal_plan_slot_sequence")
+@GenericGenerator(
+        name = "meal_plan_slot_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="meal_plan_slot_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class SlotEntity {
 
     @Id

@@ -26,6 +26,7 @@ public class ShoppingListProperties {
     private Integer uncategorizedIdAndSort = 999;
     private Integer highlightIdAndSort = -1;
     private Integer highlightListIdAndSort = -3;
+    private String defaultListLayout = "All";
 
     public String getTestValue() {
         return testValue;
@@ -108,5 +109,9 @@ public class ShoppingListProperties {
 
     public void setHighlightIdAndSort(Integer highlightIdAndSort) {
         this.highlightIdAndSort = highlightIdAndSort;
+    }
+
+    public ListLayoutType getDefaultListLayoutType() {
+        return ListLayoutType.valueOf(this.defaultListLayout);
     }
 }

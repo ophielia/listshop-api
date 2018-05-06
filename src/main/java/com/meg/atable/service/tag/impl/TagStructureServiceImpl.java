@@ -1,5 +1,6 @@
 package com.meg.atable.service.tag.impl;
 
+import com.meg.atable.api.TagStructureException;
 import com.meg.atable.api.model.FatTag;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
@@ -300,7 +301,8 @@ public class TagStructureServiceImpl implements TagStructureService {
         return parentToChildren;
     }
 
-    private FatTag fillInTag(Long tagId, Map<Long, List<Long>> parentToChildren) {
+    private FatTag fillInTag(Long tagId, Map<Long, List<Long>> parentToChildren)
+    throws TagStructureException {
         // check for tag in cache
         FatTag fatTag = tagCache.get(tagId);
         if (fatTag != null) {
@@ -309,8 +311,8 @@ public class TagStructureServiceImpl implements TagStructureService {
 
         // create new FatTag with passed tag
         Optional<TagEntity> tagOpt = tagRepository.findById(tagId);
-        if (tagOpt.isPresent()) {
-            return fatTag;
+        if (!tagOpt.isPresent()) {
+            throw new TagStructureException(tagId);
         }
         TagEntity tag = tagOpt.get();
         fatTag = new FatTag(tag);

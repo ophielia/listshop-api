@@ -1,10 +1,21 @@
 package com.meg.atable.data.entity;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "tag_search_group")
-@SequenceGenerator(name="tag_search_group_sequence", sequenceName = "tag_search_group_sequence")
+@GenericGenerator(
+        name = "tag_search_group_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="tag_search_group_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class TagSearchGroupEntity {
 
     @Id

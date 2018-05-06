@@ -2,6 +2,7 @@ package com.meg.atable.service;
 
 import com.meg.atable.api.model.Category;
 import com.meg.atable.api.model.GenerateType;
+import com.meg.atable.api.model.ListGenerateProperties;
 import com.meg.atable.api.model.ListType;
 import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.ShoppingListEntity;
@@ -16,6 +17,8 @@ public interface ShoppingListService {
     List<ShoppingListEntity> getListsByUsername(String userName);
 
     ShoppingListEntity createList(String userName, ShoppingListEntity shoppingListEntity);
+
+    ShoppingListEntity createList(String userName, ListGenerateProperties listGeneratProperties) throws ShoppingListException;
 
     ShoppingListEntity getListByUsernameAndType(String userName, ListType listType);
 

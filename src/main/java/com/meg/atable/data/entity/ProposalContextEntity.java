@@ -1,13 +1,23 @@
 package com.meg.atable.data.entity;
 
 import com.meg.atable.api.model.ApproachType;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "proposal_context")
-@SequenceGenerator(name="proposal_context_sequence", sequenceName = "proposal_context_sequence")
+@GenericGenerator(
+        name = "proposal_context_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="proposal_context_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class ProposalContextEntity {
 
     @Id

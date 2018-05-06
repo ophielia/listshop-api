@@ -1,6 +1,7 @@
 package com.meg.atable.data.entity;
 
 import com.meg.atable.service.TargetServiceConstants;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,7 +14,16 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "target_proposal_dish")
-@SequenceGenerator(name="target_proposal_dish_sequence", sequenceName = "target_proposal_dish_sequence")
+@GenericGenerator(
+        name = "target_proposal_dish_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="target_proposal_dish_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class TargetProposalDishEntity extends AbstractInflateAndFlatten {
 
 

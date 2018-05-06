@@ -6,6 +6,8 @@ import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.ShoppingListEntity;
 import com.meg.atable.service.ShoppingListException;
 import com.meg.atable.service.ShoppingListService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
@@ -24,6 +26,9 @@ import java.util.stream.Collectors;
  */
 @Controller
 public class ShoppingListRestController implements ShoppingListRestControllerApi {
+
+    private static final Logger logger = LogManager.getLogger(ShoppingListRestController.class);
+
 
     @Autowired
     private ShoppingListService shoppingListService;
@@ -52,6 +57,25 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.badRequest().build();
 
     }
+
+//    @RequestMapping(method = RequestMethod.POST,value="/new" produces = "application/json", consumes = "application/json")
+    @Override
+    public ResponseEntity<Object> newCreateList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) {
+
+
+        ShoppingListEntity result = null;
+        try {
+            result = shoppingListService.createList(principal.getName(), listGenerateProperties);
+        } catch (ShoppingListException e) {
+            logger.error("Exception while creating List.",e);
+        }
+        if (result != null) {
+            Link oneList = new ShoppingListResource(result, null).getLink("self");
+            return ResponseEntity.created(URI.create(oneList.getHref())).build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
 
     @Override
     public ResponseEntity<Object> setListActive(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value = "generateType", required = true) String filter) {

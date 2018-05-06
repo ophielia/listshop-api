@@ -222,6 +222,21 @@ join list_category lc using (category_id)
 where layout_id = 1
 
 
+-- weird layout category bug
+﻿select ct.*,lc.category_id, lc.layout_id,lc.name,t.tag_id,t.name from tag t
+join category_tags ct using (tag_id)
+join list_category lc using (category_id)
+where layout_id =5
+and (lc.name = 'Meat' or lc.name = 'Other')
+order by t.name;
+
+delete
+from category_tags
+where category_id = 5
+and tag_id in  (select tag_id from category_tags where category_id = 10  )
+
+
+
 nextval('list_layout_category_sequence')
 
 

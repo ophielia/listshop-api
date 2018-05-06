@@ -90,7 +90,7 @@ public class ShoppingListServiceImplTest {
     }
 
     @Test
-    public void testCreateList() {
+    public void testCreateListOld() {
         ShoppingListEntity shoppingListEntity = new ShoppingListEntity();
         shoppingListEntity.setListType(ListType.BaseList);
         shoppingListEntity.setListLayoutType(ListLayoutType.All);
@@ -101,6 +101,21 @@ public class ShoppingListServiceImplTest {
         Assert.assertNotNull(result.getCreatedOn());
         Assert.assertNotNull(result.getListLayoutType());
         Assert.assertEquals(shoppingListEntity.getListType(), result.getListType());
+        Assert.assertNotNull(result.getId());
+    }
+
+    @Test
+    public void testCreateList() throws ShoppingListException {
+        ListGenerateProperties properties = new ListGenerateProperties();
+        properties.setRawListType("PickUpList");
+
+
+        ShoppingListEntity result = shoppingListService.createList(addUserAccount.getUsername(), properties);
+
+        Assert.assertNotNull(result);
+        Assert.assertNotNull(result.getCreatedOn());
+        Assert.assertNotNull(result.getListLayoutType());
+        Assert.assertEquals(ListType.PickUpList, result.getListType());
         Assert.assertNotNull(result.getId());
     }
 

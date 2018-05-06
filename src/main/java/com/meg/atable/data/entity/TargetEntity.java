@@ -1,6 +1,7 @@
 package com.meg.atable.data.entity;
 
 import com.meg.atable.service.TargetServiceConstants;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.*;
@@ -10,7 +11,16 @@ import java.util.stream.Collectors;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "Target")
 @Table(name = "target")
-@SequenceGenerator(name="target_sequence", sequenceName = "target_sequence")
+@GenericGenerator(
+        name = "target_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="target_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class TargetEntity extends AbstractInflateAndFlatten {
 
     @Id

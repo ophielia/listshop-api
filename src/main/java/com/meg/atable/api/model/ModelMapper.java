@@ -288,7 +288,7 @@ public class ModelMapper {
         List<Slot> slots = slotsToModel(mealPlanEntity.getSlots());
         return new MealPlan(mealPlanEntity.getId())
                 .name(mealPlanEntity.getName())
-                .mealPlanType(mealPlanEntity.getMealPlanType().name())
+                .mealPlanType(mealPlanEntity.getMealPlanType()!=null?mealPlanEntity.getMealPlanType().name():"")
                 .userId(mealPlanEntity.getUserId().toString())
                 .slots(slots);
 

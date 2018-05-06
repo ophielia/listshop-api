@@ -1,5 +1,7 @@
 package com.meg.atable.data.entity;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 /**
@@ -7,7 +9,16 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="tag_relation")
-@SequenceGenerator(name="tag_relation_sequence", sequenceName = "tag_relation_sequence")
+@GenericGenerator(
+        name = "tag_relation_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="tag_relation_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class TagRelationEntity {
 
     @Id

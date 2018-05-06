@@ -1,6 +1,7 @@
 package com.meg.atable.api.controller;
 
 import com.meg.atable.api.model.Item;
+import com.meg.atable.api.model.ListGenerateProperties;
 import com.meg.atable.api.model.ShoppingList;
 import com.meg.atable.api.model.ShoppingListResource;
 import org.springframework.hateoas.Resources;
@@ -24,6 +25,9 @@ public interface ShoppingListRestControllerApi {
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createList(Principal principal, @RequestBody ShoppingList shoppingList);
+
+    @RequestMapping(method = RequestMethod.POST,value="/new", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> newCreateList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties);
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{listId}", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> setListActive(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value = "filter", required = true) String filter);

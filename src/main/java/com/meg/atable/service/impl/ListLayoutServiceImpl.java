@@ -178,13 +178,13 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     @Override
     public void addTagsToCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList) {
         // get  category
-        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt =  listLayoutCategoryRepository.findById(listLayoutId);
+        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt =  listLayoutCategoryRepository.findById(layoutCategoryId);
         if (!listLayoutEntityOpt.isPresent()) {
             return;
         }
         ListLayoutCategoryEntity categoryEntity = listLayoutEntityOpt.get();
         // assure list owns category
-        if (categoryEntity.getLayoutId().longValue() != listLayoutId.longValue()) {
+        if (!categoryEntity.getLayoutId().equals(listLayoutId.longValue()) ) {
             return;
         }
 
