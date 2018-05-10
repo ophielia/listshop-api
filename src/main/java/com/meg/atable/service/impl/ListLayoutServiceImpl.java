@@ -17,7 +17,6 @@ import com.meg.atable.service.ListLayoutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -417,7 +416,6 @@ Long relationshipId = getCategoryRelationForCategory(category);
         listLayoutCategoryRepository.save(category);
 
         // return
-        return;
     }
 
     private ListLayoutCategoryEntity getCategoryForSwap(ListLayoutCategoryEntity category, boolean moveUp) throws ListLayoutException {

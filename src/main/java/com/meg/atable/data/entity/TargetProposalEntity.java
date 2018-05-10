@@ -224,7 +224,6 @@ public class TargetProposalEntity extends AbstractInflateAndFlatten {
                 slot.fillInTags(dictionary);
             }
         }
-        return;
     }
 
     public List<Long> getAllDishIds() {
@@ -249,7 +248,6 @@ public class TargetProposalEntity extends AbstractInflateAndFlatten {
                 slot.fillInDishes(dictionary);
             }
         }
-        return;
     }
 
     public String generateRefreshFlag() {

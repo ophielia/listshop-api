@@ -545,7 +545,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
             List<String> matchedIds = singleDish.getMatchedTagIds(tagListForSlot);
 
             List<String> actualMatches = new ArrayList<>();
-            TagSwapout swapout = swapouts.containsKey(singleDish.getDishId()) ? swapouts.get(singleDish.getDishId()) : null;
+            TagSwapout swapout = swapouts.getOrDefault(singleDish.getDishId(), null);
 
             for (String tagId : matchedIds) {
                 if (swapout != null && swapout.contains(tagId)) {

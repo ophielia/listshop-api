@@ -1,10 +1,8 @@
 package com.meg.atable.data.entity;
 
-import com.meg.atable.api.model.ListLayoutType;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * Created by margaretmartin on 24/10/2017.

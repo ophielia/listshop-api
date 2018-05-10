@@ -32,7 +32,7 @@ public class TextInstructionEntity extends AutoTagInstructionEntity implements I
             if (subject.getDish().getDescription()!=null)  {
                 match |= subject.getDish().getDescription().toLowerCase().contains(term);
             }
-            if (match == true) {
+            if (match) {
                 break;
             }
         }

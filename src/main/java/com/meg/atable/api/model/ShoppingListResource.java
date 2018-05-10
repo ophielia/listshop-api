@@ -8,7 +8,6 @@ import org.springframework.hateoas.ResourceSupport;
 import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * Created by margaretmartin on 30/10/2017.

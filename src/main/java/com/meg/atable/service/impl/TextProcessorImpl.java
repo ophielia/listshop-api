@@ -49,7 +49,7 @@ public class TextProcessorImpl extends AbstractAutoTagProcessor {
             if (subject.getDish().getDescription()!=null)  {
                 match |= subject.getDish().getDescription().toLowerCase().contains(term);
             }
-            if (match == true) {
+            if (match) {
                 break;
             }
         }

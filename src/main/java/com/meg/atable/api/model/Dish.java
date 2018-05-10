@@ -64,6 +64,7 @@ public class Dish {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public Long getUserId() {
         return userId;
     }
@@ -83,6 +84,7 @@ public class Dish {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public Date getLastAdded() {
         return lastAdded;
     }

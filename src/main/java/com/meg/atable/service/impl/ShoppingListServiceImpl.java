@@ -555,7 +555,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         addDishToList(collector, dishId);
 
         saveListChanges(list, collector);
-        return;
     }
 
     @Override
@@ -599,7 +598,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             // set in shopping list
             result.setListSources(listSources);
         }
-        return;
     }
 
     @Override

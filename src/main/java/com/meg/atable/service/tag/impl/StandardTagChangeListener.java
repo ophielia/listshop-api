@@ -130,7 +130,6 @@ public class StandardTagChangeListener implements TagChangeListener {
             groupAssignments.addAll(tagStructureService.buildGroupAssignments(parentTag.getId(), childrenTags));
         }
         tagSearchGroupRepository.saveAll(groupAssignments);
-        return;
     }
 
     @Override

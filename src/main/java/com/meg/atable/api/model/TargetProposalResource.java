@@ -1,7 +1,6 @@
 package com.meg.atable.api.model;
 
 
-import com.meg.atable.api.controller.TagRestControllerApi;
 import com.meg.atable.api.controller.TargetProposalRestControllerApi;
 import com.meg.atable.data.entity.TargetProposalEntity;
 import org.springframework.hateoas.ResourceSupport;

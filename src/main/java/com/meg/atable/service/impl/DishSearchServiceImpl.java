@@ -143,7 +143,7 @@ public class DishSearchServiceImpl implements DishSearchService {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", userId);
         parameters.addValue("slotTagId", slotDishTagId);
-        params.entrySet().forEach(p -> parameters.addValue(p.getKey(), p.getValue()));
+        params.forEach((key, value) -> parameters.addValue(key, value));
 
         return this.jdbcTemplate.query(sql, parameters, new DishTagSearchResultMapper(size, tagListForSlot.size()));
 

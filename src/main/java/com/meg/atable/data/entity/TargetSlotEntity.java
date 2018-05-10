@@ -1,6 +1,5 @@
 package com.meg.atable.data.entity;
 
-import com.meg.atable.service.TargetService;
 import com.meg.atable.service.TargetServiceConstants;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -153,7 +152,6 @@ public class TargetSlotEntity {
                 slotDishTag = dictionary.get(slotDishTagId);
             }
         }
-        return;
 
     }
 }

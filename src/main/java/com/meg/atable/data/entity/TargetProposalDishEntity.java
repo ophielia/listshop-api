@@ -1,10 +1,8 @@
 package com.meg.atable.data.entity;
 
-import com.meg.atable.service.TargetServiceConstants;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -106,7 +104,6 @@ public class TargetProposalDishEntity extends AbstractInflateAndFlatten {
                 .collect(Collectors.toList());
 
 
-        return;
     }
 
 

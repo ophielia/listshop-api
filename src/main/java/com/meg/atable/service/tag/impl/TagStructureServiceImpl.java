@@ -288,7 +288,7 @@ public class TagStructureServiceImpl implements TagStructureService {
 
         Map<Long, List<Long>> parentToChildren = new HashMap<>();
         for (Object[] result : rawRelations) {
-            Long parentId = ((BigInteger) result[0]) == null ? 0L : ((BigInteger) result[0]).longValue();
+            Long parentId = result[0] == null ? 0L : ((BigInteger) result[0]).longValue();
             Long childId = ((BigInteger) result[1]).longValue();
             if (!parentToChildren.containsKey(parentId)) {
                 parentToChildren.put(parentId, new ArrayList<Long>());
@@ -382,8 +382,8 @@ public class TagStructureServiceImpl implements TagStructureService {
         HashMap<Long, TagSwapout> resultMap = new HashMap<>();
         for (Object[] result : rawResults) {
             Long dishId = ((BigInteger) result[0]).longValue();
-            String searchTag = ((BigInteger) result[1]).toString();
-            String foundTag = ((BigInteger) result[2]).toString();
+            String searchTag = result[1].toString();
+            String foundTag = result[2].toString();
             if (!resultMap.containsKey(dishId)) {
                 resultMap.put(dishId, new TagSwapout());
             }

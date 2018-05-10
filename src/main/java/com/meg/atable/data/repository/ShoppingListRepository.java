@@ -1,10 +1,7 @@
 package com.meg.atable.data.repository;
 
 import com.meg.atable.api.model.ListType;
-import com.meg.atable.data.entity.DishEntity;
-import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.ShoppingListEntity;
-import com.meg.atable.data.entity.TagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

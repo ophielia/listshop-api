@@ -9,7 +9,7 @@ public interface AutoTagProcessor {
 
    Long getProcessIdentifier();
 
-    public class Type {
+    class Type {
         public static final Long Tag=3L;
         public static final Long Text=5L;
 

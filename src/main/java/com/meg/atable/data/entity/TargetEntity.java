@@ -204,7 +204,6 @@ public class TargetEntity extends AbstractInflateAndFlatten {
                 slot.fillInTags(dictionary);
             }
         }
-        return;
     }
 
     public Long getProposalId() {

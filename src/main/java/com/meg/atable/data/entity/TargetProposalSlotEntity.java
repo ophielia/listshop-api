@@ -151,7 +151,7 @@ public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
         if (dishSlotList != null && !dishSlotList.isEmpty()) {
             Set<String> dishTagMatches = new HashSet<>();
             dishSlotList.stream()
-                    .forEach(ds -> {stringSet.addAll(ds.inflateStringToList(ds.getMatchedTagIds()));});
+                    .forEach(ds -> stringSet.addAll(ds.inflateStringToList(ds.getMatchedTagIds())));
         }
         return stringSet;
     }
@@ -176,7 +176,6 @@ public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
                 slot.fillInTags(dictionary);
             }
         }
-        return;
 
     }
 

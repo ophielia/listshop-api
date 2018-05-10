@@ -310,10 +310,7 @@ public class ModelMapper {
         }
         List<ItemSource> listSources = new ArrayList<>();
         if (shoppingListEntity.getListSources() != null) {
-            shoppingListEntity.getListSources().forEach(d -> {
-                listSources.add(toListSourceModel(d));
-
-            });
+            shoppingListEntity.getListSources().forEach(d -> listSources.add(toListSourceModel(d)));
         }
 
         List<Category> categories = itemCategoriesToModel(itemCategories, dishSourceDictionary);
