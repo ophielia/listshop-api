@@ -2,6 +2,7 @@ package com.meg.atable.data.entity;
 
 import com.meg.atable.service.TargetService;
 import com.meg.atable.service.TargetServiceConstants;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,12 +15,23 @@ import java.util.stream.Collectors;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="Target")
 @Table(name = "target_slot")
+@GenericGenerator(
+        name = "target_slot_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="target_slot_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class TargetSlotEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "target_slot_sequence")
     private Long targetSlotId;
 
+    @Column(name="target_id")
     private Long targetId;
 
     private Long slotDishTagId;

@@ -35,17 +35,11 @@ public class TagEntity {
 
     private Boolean tagTypeDefault;
 
-    private String ratingFamily;
-
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<DishEntity> dishes = new ArrayList<>();
 
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<ListLayoutCategoryEntity> categories = new ArrayList<>();
-
-    private Integer autoTagFlag;
-
-    private Boolean isParentTag;
 
     private Boolean assignSelect;
 
@@ -133,30 +127,6 @@ public class TagEntity {
         this.tagTypeDefault = tagTypeDefault;
     }
 
-    public String getRatingFamily() {
-        return ratingFamily;
-    }
-
-    public void setRatingFamily(String ratingFamily) {
-        this.ratingFamily = ratingFamily;
-    }
-
-    public Integer getAutoTagFlag() {
-        return autoTagFlag;
-    }
-
-    public void setAutoTagFlag(Integer autoTagFlag) {
-        this.autoTagFlag = autoTagFlag;
-    }
-
-    public Boolean isParentTag() {
-        return isParentTag;
-    }
-
-    public void setParentTag(Boolean parentTag) {
-        isParentTag = parentTag;
-    }
-
     public Boolean getAssignSelect() {
         return assignSelect;
     }
@@ -195,8 +165,6 @@ public class TagEntity {
         copy.setDescription(getDescription());
         copy.setSearchSelect(getSearchSelect());
         copy.setAssignSelect(getAssignSelect());
-        copy.setRatingFamily(getRatingFamily());
-        copy.setAutoTagFlag(getAutoTagFlag());
         copy.setPower(getPower());
             return copy;
     }
@@ -209,11 +177,8 @@ public class TagEntity {
                 ", description='" + description + '\'' +
                 ", tagType=" + tagType +
                 ", tagTypeDefault=" + tagTypeDefault +
-                ", ratingFamily='" + ratingFamily + '\'' +
                 ", dishes=" + dishes +
                 ", categories=" + categories +
-                ", autoTagFlag=" + autoTagFlag +
-                ", isParentTag=" + isParentTag +
                 ", assignSelect=" + assignSelect +
                 ", searchSelect=" + searchSelect +
                 ", isVerified=" + isVerified +

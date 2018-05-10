@@ -1,30 +1,57 @@
-﻿ALTER TABLE public.list_item
-ADD COLUMN dish_sources varchar(255);
+﻿ALTER TABLE public.list
+ADD COLUMN meal_plan_id bigint;
 
-ALTER TABLE public.list_item
-ADD COLUMN list_sources varchar(255);
+DROP TABLE TARGET_SLOTS;
 
-ALTER TABLE list_item
-ADD COLUMN frequent_cross_off boolean;
+CREATE SEQUENCE target_slot_sequence
+    START WITH 1000
+    INCREMENT BY 2
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 ALTER TABLE list
-ADD COLUMN last_update timestamp;
+DROP COLUMN list_layout_type;
 
--- no longer used
-ALTER TABLE public.list_item
-DROP COLUMN sources varchar(255);
---itemsourcetype
+ALTER TABLE list
+DROP COLUMN list_type;
+
+ALTER TABLE tag
+DROP COLUMN rating_family;
+
+ALTER TABLE tag
+DROP COLUMN is_parent_tag;
+
+ALTER TABLE tag
+DROP COLUMN auto_tag_flag;
+
+
+
+
+
+
 =========================
+ALTER TABLE public.list
+DROP COLUMN meal_plan_id;
 
-ALTER TABLE public.list_item
-DROP COLUMN dish_sources ;
+CREATE TABLE target_slots (
+    target_entity_target_id bigint NOT NULL,
+    slots_target_slot_id bigint NOT NULL
+);
 
-ALTER TABLE public.list_item
-DROP COLUMN list_sources ;
-
-ALTER TABLE public.list_item
-DROP COLUMN frequent_cross_off ;
+DROP SEQUENCE target_slot_sequence;
 
 ALTER TABLE list
-DROP COLUMN last_update ;
+ADD COLUMN list_layout_type varchar(255);
 
+ALTER TABLE list
+ADD COLUMN list_type integer;
+
+ALTER TABLE tag
+ADD COLUMN rating_family varchar(256);
+
+ALTER TABLE tag
+ADD COLUMN is_parent_tag boolean;
+
+ALTER TABLE tag
+ADD COLUMN auto_tag_flag integer;

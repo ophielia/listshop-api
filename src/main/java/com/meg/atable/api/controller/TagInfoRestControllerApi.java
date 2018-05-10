@@ -1,7 +1,6 @@
 package com.meg.atable.api.controller;
 
 import com.meg.atable.api.model.TagDrilldownResource;
-import com.meg.atable.api.model.TagInfoResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

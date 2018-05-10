@@ -12,53 +12,30 @@ BIGGER TODOS -
 
 
 CURRENT HOPPER:
-    done - configured adding logging!
-    add logging statements
-    done - update lastadded for dish when adding from edit list
-    set active
-        done - modal - add or replace
-        ====>  shop page
-                    done -     better layout
-                    done -  bigger text
-                    done - line between category and subcategory header
-                    done - check boxes
-                    done - cross off instead of remove
-                    done - cross off
-
-                  print
-                  skinning checkboxes (minor)
-                  check off text - not green
-
-    add lists to manage-dishes
-        to existing list
-        to new list - with parameters (add from base list, add from pickup list)
-    manage list page -
-        done - create
-        delete
-        active list goes straight to shop
-    remove detour for new create list method
-
-
-    edit list page -
-            will handle long item name with non-css concat (and hover)
-            source box needs hover with source name
-
-
-
-    Hey - no "Shop" for PickUp and Base
+    Clean up
+        add lists to existing list
+        bug - legends when switching lists or adding dishes
+        shop page print
+        shop page skinning checkboxes (minor)
+        shop page check off text - not green
+        no "Shop" for PickUp and Base
         no add Base for base
         no add Pickup for pickup
-    Clean up list of lists
-    Quick add page
-    in process - Shop page
-    Utility - sections in navigation - Home Dish List Plan
-    default listLayoutType - general - just in case
+        Clean up list of lists
+        Quick add page
+        sub menus for dish, list and plan (i.e. for list - shop / add / manage / )
 
 DB COLS TO CHECK -
-    tag.is_parent_tag
-    tag.rating_family
-    entire table target_slotS
-    add sequence on target_slot
+code ok    tag.is_parent_tag
+code ok    tag.rating_family
+code ok    tag.auto_tag_flag
+done            no code    list.list_type
+done            code_ok    list.list_layout_type
+done            entire table target_slotS
+done            add sequence on target_slot
+done            add meal_plan_id
+
+
 
 
 BACKLOG -
@@ -114,3 +91,20 @@ done - fill sources through to model objects
 done - Change layout
 done - Dish highlight flag
 done - Remove dish
+
+done - configured adding logging!
+done - update lastadded for dish when adding from edit list
+done - modal - add or replace
+done - to new list - with parameters (add from base list, add from pickup list)
+done - create manage list page
+done - delete manage list page
+done - active list goes straight to shop
+done - remove detour for new create list method
+done - shop page -     better layout
+done - shop page -  bigger text
+done - shop page - line between category and subcategory header
+done - shop page - check boxes
+done - shop page - cross off instead of remove
+done - shop page - cross off
+done - Utility - sections in navigation - Home Dish List Plan
+done - default listLayoutType - general - just in case

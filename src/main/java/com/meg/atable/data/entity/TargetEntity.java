@@ -33,6 +33,7 @@ public class TargetEntity extends AbstractInflateAndFlatten {
 
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "target_id")
     private List<TargetSlotEntity> slots = new ArrayList<>();
 
     private Date created;

@@ -64,8 +64,4 @@ this.tag = tag;
         return tag.getSearchSelect();
     }
 
-    public String getRatingFamily() {
-        return tag.getRatingFamily();
-
-    }
 }

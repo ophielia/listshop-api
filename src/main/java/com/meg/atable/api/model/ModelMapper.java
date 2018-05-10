@@ -267,28 +267,14 @@ public class ModelMapper {
                 // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
                 .assignSelect(tagEntity.getAssignSelect())
                 .parentId(String.valueOf(tagEntity.getParentId()))
-                .searchSelect(tagEntity.getSearchSelect())
-                .ratingFamily(tagEntity.getRatingFamily());
-    }
-
-
-    public static TagExtended toExtendedModel(TagEntity tagEntity) {
-        return new TagExtended(tagEntity.getId(),
-                tagEntity.getName(),
-                tagEntity.getDescription(),
-                tagEntity.getTagType(),
-                tagEntity.getRatingFamily(),
-                tagEntity.getParentId(),
-                tagEntity.getChildrenIds(),
-                tagEntity.getSearchSelect(),
-                tagEntity.getAssignSelect());
+                .searchSelect(tagEntity.getSearchSelect());
     }
 
     public static MealPlan toModel(MealPlanEntity mealPlanEntity) {
         List<Slot> slots = slotsToModel(mealPlanEntity.getSlots());
         return new MealPlan(mealPlanEntity.getId())
                 .name(mealPlanEntity.getName())
-                .mealPlanType(mealPlanEntity.getMealPlanType()!=null?mealPlanEntity.getMealPlanType().name():"")
+                .mealPlanType(mealPlanEntity.getMealPlanType() != null ? mealPlanEntity.getMealPlanType().name() : "")
                 .userId(mealPlanEntity.getUserId().toString())
                 .slots(slots);
 
@@ -309,17 +295,6 @@ public class ModelMapper {
             slotList.add(toModel(entity));
         }
         return slotList;
-    }
-
-    private static List<Dish> dishesToModel(List<DishEntity> dishes) {
-        List<Dish> dishList = new ArrayList<>();
-        if (dishes == null) {
-            return dishList;
-        }
-        for (DishEntity entity : dishes) {
-            dishList.add(toModel(entity));
-        }
-        return dishList;
     }
 
     public static ShoppingList toModel(ShoppingListEntity shoppingListEntity, List<Category> itemCategories) {
@@ -356,7 +331,6 @@ public class ModelMapper {
 
     }
 
-
     private static List<Category> itemCategoriesToModel(List<Category> filledCategories, Map<Long, DishEntity> dishSources) {
         if (filledCategories == null) {
             return filledCategories;
@@ -383,7 +357,6 @@ public class ModelMapper {
         return filledCategories;
     }
 
-
     private static Item toModel(ItemEntity itemEntity) {
         return new Item(itemEntity.getId())
                 .tag(toModel(itemEntity.getTag()))
@@ -406,14 +379,12 @@ public class ModelMapper {
         tagEntity.setName(tag.getName().trim());
         tagEntity.setDescription(tag.getDescription());
         tagEntity.setTagType(TagType.valueOf(tag.getTagType()));
-        tagEntity.setRatingFamily(tag.getRatingFamily());
         tagEntity.setSearchSelect(tag.getSearchSelect());
         tagEntity.setAssignSelect(tag.getAssignSelect());
         tagEntity.setPower(tag.getPower());
 
         return tagEntity;
     }
-
 
     public static TargetEntity toEntity(Target target) {
         if (target == null) {
@@ -428,7 +399,6 @@ public class ModelMapper {
         targetEntity.setLastUsed(target.getLastUsed());
         return targetEntity;
     }
-
 
     public static TargetSlotEntity toEntity(TargetSlot targetSlot) {
         if (targetSlot == null) {
@@ -501,17 +471,6 @@ public class ModelMapper {
         return listLayoutEntity;
     }
 
-
-    private static List<ListLayoutCategory> categoriesToModel(List<ListLayoutCategoryEntity> categories) {
-        List<ListLayoutCategory> categoryList = new ArrayList<>();
-        if (categories != null) {
-            for (ListLayoutCategoryEntity cat : categories) {
-                categoryList.add(toModel(cat));
-            }
-        }
-        return categoryList;
-    }
-
     private static List<TagDrilldown> childrenTagsToModel(List<FatTag> childrenTags) {
         List<TagDrilldown> drilldownList = new ArrayList<>();
         if (childrenTags != null) {
@@ -539,8 +498,7 @@ public class ModelMapper {
                 // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
                 .assignSelect(fatTag.getAssignSelect())
                 .parentId(String.valueOf(fatTag.getParentId()))
-                .searchSelect(fatTag.getSearchSelect())
-                .ratingFamily(fatTag.getRatingFamily());
+                .searchSelect(fatTag.getSearchSelect());
 
         ((TagDrilldown) result).parentId(String.valueOf(fatTag.getParentId()));
         ((TagDrilldown) result).childrenList(children);

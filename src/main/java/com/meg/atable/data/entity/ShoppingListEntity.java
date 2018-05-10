@@ -49,6 +49,11 @@ public class ShoppingListEntity {
     @JoinColumn(name = "list_layout_id")
     private Long listLayoutId;
 
+    private Date lastUpdate;
+
+    @Column(name = "meal_plan_id")
+    private Long mealPlanId;
+
     @Transient
     private ListLayoutType listLayoutType;
 
@@ -58,7 +63,9 @@ public class ShoppingListEntity {
     @Transient
     private List<String> listSources= new ArrayList<>();
 
-    private Date lastUpdate;
+    @Transient
+    private String mealPlanName = "";
+
 
     public ShoppingListEntity(Long id) {
         this.list_id = id;
@@ -143,5 +150,38 @@ public class ShoppingListEntity {
 
     public Date getLastUpdate() {
         return lastUpdate;
+    }
+
+    public Long getMealPlanId() {
+        return mealPlanId;
+    }
+
+    public void setMealPlanId(Long mealPlanId) {
+        this.mealPlanId = mealPlanId;
+    }
+
+    public String getMealPlanName() {
+        return mealPlanName;
+    }
+
+    public void setMealPlanName(String mealPlanName) {
+        this.mealPlanName = mealPlanName;
+    }
+
+    @Override
+    public String toString() {
+        return "ShoppingListEntity{" +
+                "list_id=" + list_id +
+                ", createdOn=" + createdOn +
+                ", listType=" + listType +
+                ", userId=" + userId +
+                ", listLayoutId=" + listLayoutId +
+                ", lastUpdate=" + lastUpdate +
+                ", mealPlanId=" + mealPlanId +
+                ", listLayoutType=" + listLayoutType +
+                ", dishSources=" + dishSources +
+                ", listSources=" + listSources +
+                ", mealPlanName='" + mealPlanName + '\'' +
+                '}';
     }
 }

@@ -200,8 +200,6 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagEntity createTag(TagEntity parent, TagEntity newtag) {
         TagEntity parentTag = getParentForNewTag(parent, newtag);
-        newtag.setRatingFamily(parentTag.getRatingFamily());
-        newtag.setAutoTagFlag(parentTag.getAutoTagFlag());
         newtag.setAssignSelect(true);
         newtag.setSearchSelect(false);
         TagEntity saved = tagRepository.save(newtag);
@@ -272,12 +270,7 @@ public class TagServiceImpl implements TagService {
         TagEntity originalParent = tagStructureService.getParentTag(childTag);
         // assign Child tag to parent tag
         TagEntity parentTag = tagStructureService.assignTagToParent(childTag, newParentTag);
-        if (parentTag != null && (childTag.isParentTag() == null || !childTag.isParentTag())) {
-            // copy tag flag, family from parent
-            childTag.setRatingFamily(parentTag.getRatingFamily());
-            childTag.setAutoTagFlag(parentTag.getAutoTagFlag());
-            tagRepository.save(childTag);
-        }
+
         // fire tag changed event
         fireTagParentChangedEvent(originalParent, parentTag, childTag);
 

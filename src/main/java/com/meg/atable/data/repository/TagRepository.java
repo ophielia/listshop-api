@@ -54,11 +54,6 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
             "join tag_relation tr on tr.parent_tag_id = t.tag_id;", nativeQuery = true)
     List<TagEntity> findParentTags();
 
-
-    @Query("select distinct t.autoTagFlag FROM TagEntity t , DishEntity d " +
-            "where d member of t.dishes and d.dish_id = ?1")
-    List<Integer> getAutoTagsForDish(Long dishId);
-
     @Query("select distinct t.tag_id FROM TagEntity t , DishEntity d " +
             "where d member of t.dishes and d.dish_id = ?1")
     Set<Long> getTagIdsForDish(Long dishId);

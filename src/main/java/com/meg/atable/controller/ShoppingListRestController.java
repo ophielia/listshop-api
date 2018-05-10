@@ -95,7 +95,9 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         ListType listType = ListType.valueOf(listTypeString);
         ShoppingListEntity result = shoppingListService.getListByUsernameAndType(principal.getName(), listType);
 
-        return singleResult(result, null);
+        List<Category> categories = shoppingListService.categorizeList(result, null, false, listType);
+        shoppingListService.fillSources(result);
+        return singleResult(result, categories);
 
     }
 
