@@ -227,7 +227,7 @@ public class ModelMapper {
             if (dishSources.containsKey(Long.valueOf(dishId))) {
                 DishEntity dish = dishSources.get(Long.valueOf(dishId));
 
-                ItemSource source = toDishSourceModel(dishId, dish);
+                ItemSource source = toDishSourceModel( dish);
                 result.add(source);
             }
         }
@@ -235,7 +235,7 @@ public class ModelMapper {
     }
 
 
-    private static ItemSource toDishSourceModel(String dishId, DishEntity dish) {
+    private static ItemSource toDishSourceModel( DishEntity dish) {
         ItemSource source = new ItemSource();
         source.setDisplay(dish.getDishName());
         source.setId(dish.getId());
@@ -304,7 +304,7 @@ public class ModelMapper {
             shoppingListEntity.getDishSources().forEach(d -> {
                 Long id = d.getId();
                 dishSourceDictionary.put(id, d);
-                dishSources.add(toDishSourceModel(String.valueOf(id), d));
+                dishSources.add(toDishSourceModel( d));
 
             });
         }
@@ -323,6 +323,7 @@ public class ModelMapper {
                 .categories(categories)
                 .dishSources(dishSources)
                 .listSources(listSources)
+                .updated(shoppingListEntity.getLastUpdate())
                 .itemCount(shoppingListEntity.getItems() != null ? shoppingListEntity.getItems().size() : 0)
                 .userId(shoppingListEntity.getUserId());
 
@@ -497,8 +498,8 @@ public class ModelMapper {
                 .parentId(String.valueOf(fatTag.getParentId()))
                 .searchSelect(fatTag.getSearchSelect());
 
-        ((TagDrilldown) result).parentId(String.valueOf(fatTag.getParentId()));
-        ((TagDrilldown) result).childrenList(children);
+        result.parentId(String.valueOf(fatTag.getParentId()));
+        result.childrenList(children);
 
         return result;
     }

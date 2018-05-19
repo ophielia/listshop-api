@@ -22,13 +22,13 @@ CURRENT HOPPER:
         no add Base for base
         no add Pickup for pickup
         Clean up list of lists
-        Quick add page
+        done - Quick add page
         sub menus for dish, list and plan (i.e. for list - shop / add / manage / )
 
 DB COLS TO CHECK -
-code ok    tag.is_parent_tag
-code ok    tag.rating_family
-code ok    tag.auto_tag_flag
+done            tag.is_parent_tag
+done            tag.rating_family
+done            tag.auto_tag_flag
 done            no code    list.list_type
 done            code_ok    list.list_layout_type
 done            entire table target_slotS

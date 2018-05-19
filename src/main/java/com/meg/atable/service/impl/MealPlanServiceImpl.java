@@ -12,6 +12,8 @@ import com.meg.atable.service.MealPlanService;
 import com.meg.atable.service.TargetProposalService;
 import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class MealPlanServiceImpl implements MealPlanService {
+
+    private static final Logger logger = LogManager.getLogger(ShoppingListServiceImpl.class);
+
 
     @Autowired
     private UserService userService;
@@ -65,8 +70,7 @@ public class MealPlanServiceImpl implements MealPlanService {
         // createMealPlan with repository and return
         mealPlanEntity.setUserId(user.getId());
         mealPlanEntity.setCreated(new Date());
-        mealPlanEntity = mealPlanRepository.save(mealPlanEntity);
-        return mealPlanEntity;
+        return mealPlanRepository.save(mealPlanEntity);
     }
 
     @Override
@@ -95,10 +99,11 @@ public class MealPlanServiceImpl implements MealPlanService {
         }
         for (TargetProposalSlotEntity proposalSlot : proposalSlots) {
             Long dishId = proposalSlot.getSelectedDishId();
-            DishEntity dish = dishService.getDishForUserById(username, dishId).get();
-            if (dish == null) {
+            Optional<DishEntity> dishOpt = dishService.getDishForUserById(username, dishId);
+            if (!dishOpt.isPresent()) {
                 continue;
             }
+            DishEntity dish = dishOpt.get();
             // add new meal plan slot
             SlotEntity slot = new SlotEntity();
             slot.setMealPlan(mealPlan);
@@ -129,7 +134,12 @@ public class MealPlanServiceImpl implements MealPlanService {
         MealPlanEntity mealPlan = getMealPlanById(username, mealPlanId);
         // MM need check here for mealplan not found
         // get dish
-        DishEntity dish = dishService.getDishForUserById(username, dishId).get();
+        Optional<DishEntity> dishOpt = dishService.getDishForUserById(username, dishId);
+        if (!dishOpt.isPresent()) {
+            logger.error("Dish can't be found for id [" + dishId + "] belonging to user [" + username + "]");
+            return;
+        }
+        DishEntity dish =dishOpt.get();
 
         // add slot to dish
         List<SlotEntity> slotList = slotRepository.findByMealPlan(mealPlan);
@@ -175,7 +185,7 @@ public class MealPlanServiceImpl implements MealPlanService {
         MealPlanEntity toDelete = getMealPlanById(name, mealPlanId);
 
         if (toDelete != null) {
-            if (toDelete.getSlots() != null && toDelete.getSlots().size() > 0) {
+            if (!toDelete.getSlots().isEmpty()) {
                 slotRepository.deleteAll(toDelete.getSlots());
                 toDelete.setSlots(null);
             }
@@ -183,6 +193,12 @@ public class MealPlanServiceImpl implements MealPlanService {
             return true;
         }
         return false;
+    }
+
+    public void renameMealPlan(String userName, Long mealPlanId, String newName) {
+        MealPlanEntity mealPlan = getMealPlanById(userName,mealPlanId);
+        mealPlan.setName(newName);
+        mealPlanRepository.save(mealPlan);
     }
 
     public List<TagEntity> fillInDishTags(MealPlanEntity mealPlan) {

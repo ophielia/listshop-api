@@ -51,6 +51,8 @@ public class MealPlanServiceImplTest {
 
     @Before
     public void setUp() {
+        // MM start here for fixing tests
+
         if (setUpComplete) {
             return;
         }

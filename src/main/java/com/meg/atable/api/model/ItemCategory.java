@@ -34,6 +34,12 @@ public class ItemCategory extends AbstractCategory {
         this.categoryType = categoryType.name();
     }
 
+
+    public ItemCategory(String name,Long id,  Integer displayOrder, CategoryType categoryType) {
+        super(id, name, displayOrder);
+        this.categoryType = categoryType.name();
+    }
+
     public List<Item> getItems() {
         return items;
     }

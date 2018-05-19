@@ -30,5 +30,7 @@ public interface MealPlanService {
 
     void updateLastAddedDateForDishes(MealPlanEntity mealPlan);
 
-    List<TagEntity> getTagsForSlot(SlotEntity slot);    
+    List<TagEntity> getTagsForSlot(SlotEntity slot);
+
+    void renameMealPlan(String userName, Long mealPlanId, String newName);
 }

@@ -3,17 +3,17 @@ insert into users (email, enabled, last_password_reset_date, password, username,
 insert into users (email, enabled, last_password_reset_date, password, username, user_id) values (null, true,null, 'password', 'adduser', 501);
 
 -- tags - ids 500-504
-insert into tag (assign_select, auto_tag_flag, description, is_parent_tag, is_verified, name, power, rating_family, search_select, tag_type, tag_type_default, tag_id) values (true, null, null, false, true, 'tag1', 0, null, true, 'TagType', false, 500);
-insert into tag (assign_select, auto_tag_flag, description, is_parent_tag, is_verified, name, power, rating_family, search_select, tag_type, tag_type_default, tag_id) values (true, null, null, false, true, 'tag2', 0, null, true, 'TagType', false, 501);
-insert into tag (assign_select, auto_tag_flag, description, is_parent_tag, is_verified, name, power, rating_family, search_select, tag_type, tag_type_default, tag_id) values (true, null, null, false, true, 'tag3', 0, null, true, 'TagType', false, 502);
-insert into tag (assign_select, auto_tag_flag, description, is_parent_tag, is_verified, name, power, rating_family, search_select, tag_type, tag_type_default, tag_id) values (true, null, null, false, true, 'tag4', 0, null, true, 'TagType', false, 503);
-insert into tag (assign_select, auto_tag_flag, description, is_parent_tag, is_verified, name, power, rating_family, search_select, tag_type, tag_type_default, tag_id) values (true, null, null, false, true, 'tag5', 0, null, true, 'TagType', false, 504);
+insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag2', 0, true, 'TagType', false, 501);
+insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag3', 0, true, 'TagType', false, 502);
+insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag4', 0, true, 'TagType', false, 503);
+insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag1', 0, true, 'TagType', false, 500);
+insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag5', 0, true, 'TagType', false, 504);
 
 
 -- lists - ids 500-503
-insert into list (created_on, list_layout_type,list_layout_id, list_types, user_id, list_id) values (current_timestamp(),'All', 1, 'BaseList' , 500, 500);  -- base list - id 500
-insert into list (created_on, list_layout_type,list_layout_id, list_types, user_id, list_id) values (current_timestamp(),'All',11, 'ActiveList',  20, 501); -- active list - id 501
-insert into list (created_on, list_layout_type,list_layout_id, list_types, user_id, list_id) values (current_timestamp(),'All',11, 'ActiveList', 500, 502);  -- list to be deleted - id 502
+insert into list (created_on, list_layout_id, list_types, user_id, list_id) values (current_timestamp(), 1, 'BaseList' , 500, 500);  -- base list - id 500
+insert into list (created_on, list_layout_id, list_types, user_id, list_id) values (current_timestamp(),11, 'ActiveList',  20, 501); -- active list - id 501
+insert into list (created_on, list_layout_id, list_types, user_id, list_id) values (current_timestamp(),11, 'ActiveList', 500, 502);  -- list to be deleted - id 502
 
 -- list items - four items, for active list - id 501,502,503,500
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)

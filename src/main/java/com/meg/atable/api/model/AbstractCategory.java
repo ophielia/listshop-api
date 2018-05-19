@@ -34,6 +34,12 @@ public abstract class AbstractCategory implements Category {
         this.id = id;
     }
 
+    public AbstractCategory(Long id, String name, Integer displayOrder) {
+        this.id = id;
+        this.name = name;
+        this.displayOrder = displayOrder;
+    }
+
     protected AbstractCategory() {
     }
 

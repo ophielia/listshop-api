@@ -1,10 +1,12 @@
 package com.meg.atable.service;
 
+import com.meg.atable.api.model.CategoryType;
 import com.meg.atable.api.model.ListLayoutType;
 import com.meg.atable.api.model.ListType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +29,9 @@ public class ShoppingListProperties {
     private Integer highlightIdAndSort = -1;
     private Integer highlightListIdAndSort = -3;
     private String defaultListLayout = "All";
+    private Long defaultIdAndSort = 800L;
+    private Map<CategoryType, String> nameMapByType = null;
+    private Map<CategoryType, Long> idMapByType = null;
 
     public String getTestValue() {
         return testValue;
@@ -113,5 +118,39 @@ public class ShoppingListProperties {
 
     public ListLayoutType getDefaultListLayoutType() {
         return ListLayoutType.valueOf(this.defaultListLayout);
+    }
+
+    public String getCategoryNameByType(CategoryType categoryType) {
+        if (nameMapByType == null) {
+            createNameMapByType();
+        }
+        if (nameMapByType.containsKey(categoryType)) {
+        return nameMapByType.get(categoryType);
+        }
+        return null;
+    }
+
+    private void createNameMapByType() {
+            nameMapByType = new EnumMap<CategoryType,String>(CategoryType.class);
+            nameMapByType.put(CategoryType.Frequent,getFrequentCategoryName());
+            nameMapByType.put(CategoryType.UnCategorized,getUncategorizedCategoryName());
+    }
+
+    public Long getIdAndSortByType(CategoryType categoryType) {
+        if (idMapByType == null) {
+            createIdMapByType();
+        }
+        if (idMapByType.containsKey(categoryType)) {
+            return idMapByType.get(categoryType);
+        }
+        return defaultIdAndSort;
+    }
+
+    private void createIdMapByType() {
+        idMapByType = new EnumMap<CategoryType, Long>(CategoryType.class);
+        idMapByType.put(CategoryType.Frequent,getFrequentIdAndSortAsLong());
+        idMapByType.put(CategoryType.UnCategorized,getUncategorizedIdAndSortAsLong());
+        idMapByType.put(CategoryType.Highlight,getHighlightIdAndSortAsLong());
+        idMapByType.put(CategoryType.Highlight,getHighlightListIdAndSortAsLong());
     }
 }

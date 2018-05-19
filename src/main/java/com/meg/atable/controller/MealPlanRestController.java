@@ -96,6 +96,12 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         return ResponseEntity.badRequest().build();
     }
 
+    //@RequestMapping(method = RequestMethod.POST, value = "/{mealPlanId}/name", produces = "application/json")
+    public ResponseEntity<Object> renameMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable String newName) {
+        this.mealPlanService.renameMealPlan(principal.getName(),mealPlanId,newName );
+        return ResponseEntity.noContent().build();
+    }
+
 
     @Override
     public ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) {

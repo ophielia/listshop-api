@@ -26,8 +26,6 @@ import java.util.stream.Collectors;
 public class ShoppingListServiceImpl implements ShoppingListService {
     private static final Logger logger = LogManager.getLogger(ShoppingListServiceImpl.class);
 
-
-    private final static ListLayoutType listlayoutdefault = ListLayoutType.RoughGrained;
     private final
     UserService userService;
 
@@ -397,18 +395,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                     .displayOrder(ce.getDisplayOrder());
             filledCategories.put(cat.getId(), cat);
         });
-        ItemCategory frequent = (ItemCategory) new ItemCategory(shoppingListProperties.getFrequentCategoryName(),
-                shoppingListProperties.getFrequentIdAndSortAsLong(), CategoryType.Frequent)
-                .displayOrder(shoppingListProperties.getFrequentIdAndSort());
-        ItemCategory uncategorized = (ItemCategory) new ItemCategory(shoppingListProperties.getUncategorizedCategoryName(),
-                shoppingListProperties.getUncategorizedIdAndSortAsLong(), CategoryType.UnCategorized)
-                .displayOrder(shoppingListProperties.getUncategorizedIdAndSort());
-        ItemCategory highlight = (ItemCategory) new ItemCategory(highlightName,
-                shoppingListProperties.getHighlightIdAndSortAsLong(), CategoryType.Highlight)
-                .displayOrder(shoppingListProperties.getHighlightIdAndSort());
-        ItemCategory highlightList = (ItemCategory) new ItemCategory(highlightListType != null ? highlightListType.name() : "",
-                shoppingListProperties.getHighlightListIdAndSortAsLong(), CategoryType.Highlight)
-                .displayOrder(shoppingListProperties.getHighlightListIdAndSort());
+
+
+        ItemCategory frequent = createDefaultCategoryByType(CategoryType.Frequent,null);
+        ItemCategory uncategorized = createDefaultCategoryByType(CategoryType.UnCategorized,null);
+        ItemCategory highlight = createDefaultCategoryByType(CategoryType.Highlight, highlightName);
+        ItemCategory highlightList = createDefaultCategoryByType(CategoryType.HighlightList,null);
         for (ItemEntity item : shoppingListEntity.getItems()) {
             if (item.isFrequent() && separateFrequent && !isHighlightDish) {
                 frequent.addItemEntity(item);
@@ -439,20 +431,28 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         listLayoutService.structureCategories(filledCategories, shoppingListEntity.getListLayoutId(), true);
 
         // add frequent and uncategorized
-        if (!frequent.isEmpty()) {
-            filledCategories.put(frequent.getId(), frequent);
-        }
-        if (!uncategorized.isEmpty()) {
-            filledCategories.put(uncategorized.getId(), uncategorized);
-        }
-        if (!highlight.isEmpty()) {
-            filledCategories.put(highlight.getId(), highlight);
-        }
-        if (!highlightList.isEmpty()) {
-            filledCategories.put(highlightList.getId(), highlightList);
-        }
+        addCategoryIfNotEmpty(filledCategories,frequent);
+        addCategoryIfNotEmpty(filledCategories,uncategorized);
+        addCategoryIfNotEmpty(filledCategories,highlight);
+        addCategoryIfNotEmpty(filledCategories,highlightList);
 
-        // prune categories
+        // prune and sort categories
+        return cleanUpResults(filledCategories);
+    }
+
+    private ItemCategory createDefaultCategoryByType(CategoryType categoryType, String highlightName) {
+        String categoryName = shoppingListProperties.getCategoryNameByType(categoryType);
+        if (categoryName == null) {
+            categoryName = highlightName;
+        }
+        Long idAndSort = shoppingListProperties.getIdAndSortByType(categoryType);
+        Integer idAndSortInt = idAndSort.intValue();
+
+        return new ItemCategory(   categoryName, idAndSort,idAndSortInt,categoryType);
+
+    }
+
+    private List<Category> cleanUpResults(Map<Long, Category> filledCategories) {
         List<Category> result = new ArrayList<>();
         for (Category cat : filledCategories.values()) {
             ItemCategory c = (ItemCategory) cat;
@@ -464,6 +464,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // return list of categories
         result.sort(Comparator.comparing(Category::getDisplayOrder));
         return result;
+    }
+
+    private void addCategoryIfNotEmpty(Map<Long, Category> filledCategories, ItemCategory category) {
+        if (!category.isEmpty()) {
+            filledCategories.put(category.getId(), category);
+        }
     }
 
     private Set<Long> getHighlightDishItemIds(boolean isHighlightDish, ShoppingListEntity shoppingListEntity, Long highlightDishId) {
