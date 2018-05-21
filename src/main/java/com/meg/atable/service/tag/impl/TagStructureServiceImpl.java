@@ -117,11 +117,13 @@ public class TagStructureServiceImpl implements TagStructureService {
         if (tag == null) {
             return false;
         }
+        // MM replace this with call to method which throws exceptions
         // get tag relation for tag
-        TagRelationEntity tagRelation = tagRelationRepository.findByChild(tag).get();
-        if (tagRelation == null) {
+        Optional<TagRelationEntity> tagRelationOpt = tagRelationRepository.findByChild(tag);
+        if (!tagRelationOpt.isPresent()) {
             return false;
         }
+        TagRelationEntity tagRelation = tagRelationOpt.get();
         // replace parent in tag relation
         tagRelation.setParent(null);
         tagRelation = tagRelationRepository.save(tagRelation);
@@ -377,7 +379,7 @@ public class TagStructureServiceImpl implements TagStructureService {
     @Override
     public Map<Long, TagSwapout> getTagSwapouts(List<Long> dishIds, List<String> tagListForSlot) {
 
-        List<Long> tagIdsAsLongs = tagListForSlot.stream().map(t -> Long.valueOf(t)).collect(Collectors.toList());
+        List<Long> tagIdsAsLongs = tagListForSlot.stream().map(Long::valueOf).collect(Collectors.toList());
         List<Object[]> rawResults = tagSearchGroupRepository.getTagSwapoutsByDishesAndGroups(dishIds, tagIdsAsLongs);
         HashMap<Long, TagSwapout> resultMap = new HashMap<>();
         for (Object[] result : rawResults) {

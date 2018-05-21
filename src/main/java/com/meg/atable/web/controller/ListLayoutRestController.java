@@ -6,13 +6,17 @@ import com.meg.atable.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.data.entity.ListLayoutEntity;
 import com.meg.atable.service.ListLayoutException;
 import com.meg.atable.service.ListLayoutService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.security.Principal;
@@ -27,6 +31,7 @@ import java.util.stream.Collectors;
 @Controller
 public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
+    private static final Logger logger = LogManager.getLogger(ListLayoutRestController.class);
 
     @Autowired
     private ListLayoutService listLayoutService;
@@ -82,11 +87,11 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> deleteCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId)  {
+    public ResponseEntity<Object> deleteCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) {
         try {
             this.listLayoutService.deleteCategoryFromListLayout(listLayoutId, layoutCategoryId);
         } catch (ListLayoutException e) {
-            // MM TODO Exception Handling!
+            logger.error("Unable to delete Category [" + layoutCategoryId + "] from list layout [" + listLayoutId + "].",e);
         }
 
         return ResponseEntity.noContent().build();
@@ -148,12 +153,12 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
     }
 
     //@RequestMapping(method = RequestMethod.POST, value = "/category/{layoutCategoryId}/parent/{parentCategoryId}", produces = "application/json")
-    public ResponseEntity<Object> addSubcategoryToCategory(Principal principal,  @PathVariable Long layoutCategoryId,
-                                                    @PathVariable Long parentCategoryId) {
+    public ResponseEntity<Object> addSubcategoryToCategory(Principal principal, @PathVariable Long layoutCategoryId,
+                                                           @PathVariable Long parentCategoryId) {
         try {
-            this.listLayoutService.addCategoryToParent(layoutCategoryId,parentCategoryId);
+            this.listLayoutService.addCategoryToParent(layoutCategoryId, parentCategoryId);
         } catch (ListLayoutException e) {
-            // MM WE NEED LOGGING!!!
+            logger.error("Unable to add Category [" + layoutCategoryId + "] to Parent [" + parentCategoryId + "].",e);
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.noContent().build();
@@ -161,11 +166,11 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
     //@RequestMapping(method = RequestMethod.POST, value = "/category/{categoryId}", produces = "application/json")
     public ResponseEntity<Object> moveCategory(Principal principal, @PathVariable Long categoryId, @RequestParam(value = "move", required = true) String direction) {
-        boolean moveUp = direction != null && direction.toLowerCase().equals("up");
+        boolean moveUp = direction != null && "up".equalsIgnoreCase(direction);
         try {
             this.listLayoutService.moveCategory(categoryId, moveUp);
         } catch (ListLayoutException e) {
-            // MM WE NEED LOGGING!!!
+            logger.error("Unable to move Category [" + categoryId + "] direction up[" + moveUp + "].",e);
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.noContent().build();

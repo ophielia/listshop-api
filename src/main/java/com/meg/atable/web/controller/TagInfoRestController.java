@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -23,13 +24,10 @@ import java.util.stream.Collectors;
 @Controller
 public class TagInfoRestController implements TagInfoRestControllerApi {
 
-    private final TagService tagService;
-
     private final TagStructureService tagStructureService;
 
     @Autowired
-    TagInfoRestController(TagService tagService, TagStructureService tagStructureService) {
-        this.tagService = tagService;
+    TagInfoRestController(TagStructureService tagStructureService) {
         this.tagStructureService = tagStructureService;
     }
 
@@ -48,7 +46,7 @@ public class TagInfoRestController implements TagInfoRestControllerApi {
 
     private List<TagType> processTagTypeInput(String tag_type) {
         if (tag_type == null) {
-            return null;
+            return new ArrayList<>();
         } else if (tag_type.contains(",")) {
             return Arrays.asList(tag_type.split(",")).stream()
                     .map(t -> TagType.valueOf(t.trim()))

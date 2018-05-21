@@ -32,7 +32,7 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         logger.error(message, ex);
         //
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), message);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
     @ExceptionHandler({ ObjectNotYoursException.class })
@@ -42,7 +42,7 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         logger.error(message, ex);
         //
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), message);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
     @ExceptionHandler({ Exception.class })
@@ -51,7 +51,7 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         logger.error("error", ex);
         //
         final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), "error occurred");
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
 }

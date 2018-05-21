@@ -174,7 +174,7 @@ public class TagRestController implements TagRestControllerApi {
 
     private List<TagType> processTagTypeInput(String tag_type) {
         if (tag_type == null) {
-            return null;
+            return new ArrayList<>();
         } else if (tag_type.contains(",")) {
             return Arrays.asList(tag_type.split(",")).stream()
                     .map(t -> TagType.valueOf(t.trim()))

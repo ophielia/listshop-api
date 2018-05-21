@@ -108,7 +108,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
                                                                  @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry) {
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
 
-        if (highlightDish.equals(0)) {
+        if ("0".equals(highlightDish)) {
             highlightDish = null;
         }
         ListType listType = null;
@@ -151,7 +151,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
                                                      @RequestParam(value = "removeEntireItem", required = false, defaultValue = "false") Boolean removeEntireItem,
                                                      @RequestParam(value = "sourceId", required = false, defaultValue = "0") String sourceId) {
         Long serviceSourceId = null;
-        if (!sourceId.equals("0")) {
+        if (!"0".equals(sourceId)) {
             serviceSourceId = Long.valueOf(sourceId);
         }
 
@@ -202,7 +202,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         try {
             this.shoppingListService.addDishToList(principal.getName(), listId, dishId);
         } catch (ShoppingListException s) {
-            // MM TODO LOGGING
+            logger.error("Unable to add Dish [" + dishId + "] to List [" + listId + "]", s);
             return ResponseEntity.badRequest().build();
         }
 

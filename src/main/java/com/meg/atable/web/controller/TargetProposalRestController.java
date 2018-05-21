@@ -44,7 +44,7 @@ public class TargetProposalRestController implements TargetProposalRestControlle
             // fill tag and dish info for proposal
             proposalEntity = this.targetProposalService.fillInformationForProposal(proposalEntity);
             TargetProposalResource proposalResource = new TargetProposalResource(proposalEntity);
-            return new ResponseEntity<TargetProposalResource>(proposalResource, HttpStatus.OK);
+            return new ResponseEntity<>(proposalResource, HttpStatus.OK);
         }
 
         return ResponseEntity.notFound().build();

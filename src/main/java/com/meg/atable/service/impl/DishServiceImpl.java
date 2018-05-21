@@ -96,7 +96,7 @@ public class DishServiceImpl implements DishService {
                     c -> c));
 
         }
-        return new HashMap<Long, DishEntity>();
+        return new HashMap<>();
     }
 
     @Override
