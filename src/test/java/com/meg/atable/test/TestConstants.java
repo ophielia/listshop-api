@@ -44,5 +44,11 @@ public final class TestConstants {
     public static final Long LIST_LAYOUT_2_CATEGORY_ID5 = 8L;
     public static final Long LIST_LAYOUT_2_CATEGORY_ID6 = 5L;  // will be used for delete test
 
+    public static final Long MENU_PLAN_1_ID = 500L;  //status meal plan
+    public static final String MENU_PLAN_1_NAME ="meal plan 1";  //status meal plan
+    public static final Long MENU_PLAN_2_ID = 501L;  //delete meal plan
+    public static final String MENU_PLAN_2_NAME ="meal plan 2";  //delete meal plan
+    public static final Long MENU_PLAN_3_ID = 503L;  //delete meal plan
+    public static final String MENU_PLAN_3_NAME ="meal plan 3";  //delete meal plan
 
 }

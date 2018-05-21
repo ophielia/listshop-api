@@ -1,7 +1,7 @@
 package com.meg.atable.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.atable.controller.ShoppingListRestController;
+import com.meg.atable.web.controller.ShoppingListRestController;
 import com.meg.atable.data.entity.ShoppingListEntity;
 import org.springframework.hateoas.ResourceSupport;
 

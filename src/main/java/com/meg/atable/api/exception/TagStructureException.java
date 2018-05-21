@@ -1,4 +1,4 @@
-package com.meg.atable.api;
+package com.meg.atable.api.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * Created by margaretmartin on 13/05/2017.
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class UserNotFoundException extends RuntimeException {
+public class TagStructureException extends RuntimeException {
 
-    public UserNotFoundException(String userId) {
-        super("couldn't find this user [" + userId+"]");
+    public TagStructureException(Long tagId) {
+        super("couldn't find this tag [" + tagId+"]");
     }
 }

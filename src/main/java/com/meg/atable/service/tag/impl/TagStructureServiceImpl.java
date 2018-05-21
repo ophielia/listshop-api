@@ -1,6 +1,6 @@
 package com.meg.atable.service.tag.impl;
 
-import com.meg.atable.api.TagStructureException;
+import com.meg.atable.api.exception.TagStructureException;
 import com.meg.atable.api.model.FatTag;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;

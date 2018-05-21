@@ -1,4 +1,4 @@
-package com.meg.atable.controller;
+package com.meg.atable.web.controller;
 
 import com.meg.atable.api.controller.ShoppingListRestControllerApi;
 import com.meg.atable.api.model.*;
@@ -95,7 +95,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         ListType listType = ListType.valueOf(listTypeString);
         ShoppingListEntity result = shoppingListService.getListByUsernameAndType(principal.getName(), listType);
 
-        List<Category> categories = shoppingListService.categorizeList(result, null, false, listType);
+        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, null, false, listType);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
 
@@ -115,7 +115,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         if (!"0".equals(highlightListType)) {
             listType = ListType.valueOf(highlightListType);
         }
-        List<Category> categories = shoppingListService.categorizeList(result, highlightDish, showPantry, listType);
+        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, listType);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }

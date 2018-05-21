@@ -1,8 +1,6 @@
 package com.meg.atable.service.impl;
 
-import com.meg.atable.api.DishNotFoundException;
-import com.meg.atable.api.UnauthorizedAccessException;
-import com.meg.atable.api.UserNotFoundException;
+import com.meg.atable.api.exception.*;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.data.repository.UserRepository;
@@ -50,24 +48,25 @@ public class DishServiceImpl implements DishService {
         return dishRepository.findByUserId(user.getId());
     }
 
-    @Override
-    public Optional<DishEntity> getDishById(Long dishId) {
+    private Optional<DishEntity> getDishById(Long dishId) {
         return dishRepository.findById(dishId);
     }
 
 
     @Override
-    public Optional<DishEntity> getDishForUserById(String username, Long dishId) {
+    public DishEntity getDishForUserById(String username, Long dishId) throws ObjectNotFoundException, ObjectNotYoursException {
         UserAccountEntity user = userRepository.findByUsername(username);
         Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
         if (!dishOpt.isPresent()) {
-            throw new DishNotFoundException(dishId);
+            final String msg = "No dish found by id for user [" + username + "] and dishId [" + dishId + "]";
+            throw new ObjectNotFoundException(msg, dishId, "Dish");
         }
         DishEntity dish = dishOpt.get();
         if (!dish.getUserId().equals(user.getId())) {
-            throw new UnauthorizedAccessException("Dish [" + dishId + "] doesn't belong to user [" + username + "].");
+            final String msg = "Dish found for dishId [" + dishId + "], but doesn't belong to user [" + username + "].";
+            throw new ObjectNotYoursException(msg, "Dish",dishId, user.getUsername());
         }
-        return Optional.of(dish);
+        return dish;
     }
 
     @Override

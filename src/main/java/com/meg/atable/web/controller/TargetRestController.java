@@ -1,4 +1,4 @@
-package com.meg.atable.controller;
+package com.meg.atable.web.controller;
 
 import com.meg.atable.api.controller.TargetRestControllerApi;
 import com.meg.atable.api.model.ModelMapper;

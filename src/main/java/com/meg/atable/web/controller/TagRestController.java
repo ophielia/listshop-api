@@ -1,4 +1,4 @@
-package com.meg.atable.controller;
+package com.meg.atable.web.controller;
 
 import com.meg.atable.api.controller.TagRestControllerApi;
 import com.meg.atable.api.model.*;

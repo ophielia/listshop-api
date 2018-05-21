@@ -1,4 +1,4 @@
-package com.meg.atable.controller;
+package com.meg.atable.web.controller;
 
 import com.meg.atable.api.controller.MealPlanRestControllerApi;
 import com.meg.atable.api.model.MealPlan;
@@ -78,12 +78,9 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity mealPlan = this.mealPlanService
                 .getMealPlanById(principal.getName(), mealPlanId);
 
-        if (mealPlan != null) {
-            MealPlanResource mealPlanResource = new MealPlanResource(mealPlan);
+        MealPlanResource mealPlanResource = new MealPlanResource(mealPlan);
 
-            return new ResponseEntity(mealPlanResource, HttpStatus.OK);
-        }
-        return ResponseEntity.notFound().build();
+        return new ResponseEntity(mealPlanResource, HttpStatus.OK);
     }
 
     @Override

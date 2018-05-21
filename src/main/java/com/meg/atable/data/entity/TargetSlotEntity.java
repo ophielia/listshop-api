@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
                 value="target_slot_sequence"),
                 @org.hibernate.annotations.Parameter(
                         name = "increment_size",
-                        value="1")}
+                        value="2")}
 )
 public class TargetSlotEntity {
 

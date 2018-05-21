@@ -206,7 +206,7 @@ public class ShoppingListServiceImplTest {
     public void testCategorizeList() {
         ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID);
 
-        List<Category> categoryEntities = shoppingListService.categorizeList(result, null, false, null);
+        List<Category> categoryEntities = shoppingListService.categorizeList(userAccount.getUsername(), result, null, false, null);
         Assert.assertNotNull(categoryEntities);
 
         // count items and subcategories
@@ -365,7 +365,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.addDishToList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, 110L);
         ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
 
-        List<Category> categoryEntities = shoppingListService.categorizeList(result, 110L, false, null);
+        List<Category> categoryEntities = shoppingListService.categorizeList(userAccount.getUsername(), result, 110L, false, null);
         Assert.assertNotNull(categoryEntities);
 
         // should find category with category id -1

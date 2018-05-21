@@ -1,6 +1,6 @@
-package com.meg.atable.controller;
+package com.meg.atable.web.controller;
 
-import com.meg.atable.api.UserNotFoundException;
+import com.meg.atable.api.exception.UserNotFoundException;
 import com.meg.atable.api.controller.DishRestControllerApi;
 import com.meg.atable.api.model.Dish;
 import com.meg.atable.api.model.DishResource;
@@ -104,7 +104,7 @@ public class DishRestController implements DishRestControllerApi {
                     .map(t -> new Long(t.getId()))
                     .collect(Collectors.toSet());
             tagService.addTagsToDish(result.getId(),tagIds);
-            result = dishService.getDishById(result.getId()).get();
+            result = dishService.getDishForUserById(principal.getName(),result.getId());
         }
         Link forOneDish = new DishResource(result).getLink("self");
         return ResponseEntity.created(URI.create(forOneDish.getHref())).build();
@@ -114,32 +114,27 @@ public class DishRestController implements DishRestControllerApi {
     public ResponseEntity<Object> updateDish(Principal principal, @PathVariable Long dishId, @RequestBody Dish input) {
         UserAccountEntity user = this.getUserForPrincipal(principal);
 
-        return this.dishService
-                .getDishForUserById(user.getUsername(), dishId)
-                .map(dish -> {
-                    dish.setDescription(input.getDescription());
-                    dish.setDishName(input.getDishName());
+        DishEntity dish =  this.dishService
+                .getDishForUserById(user.getUsername(), dishId);
 
-                    dishService.save(dish, true);
+        dish.setDescription(input.getDescription());
+        dish.setDishName(input.getDishName());
 
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        dishService.save(dish, true);
+
+        return ResponseEntity.noContent().build();
     }
 
 
     public ResponseEntity<Dish> readDish(Principal principal, @PathVariable Long dishId) {
-        return this.dishService
-                .getDishById(dishId)
-                .map(dish -> {
-                    List<TagEntity> sortedDishTags = dish.getTags();
-                    sortedDishTags.sort(Comparator.comparing(TagEntity::getTagType)
-                            .thenComparing(TagEntity::getName));
-                    DishResource dishResource = new DishResource(dish, sortedDishTags);
+        DishEntity dish =  this.dishService
+                .getDishForUserById(principal.getName(),dishId);
+        List<TagEntity> sortedDishTags = dish.getTags();
+        sortedDishTags.sort(Comparator.comparing(TagEntity::getTagType)
+                .thenComparing(TagEntity::getName));
+        DishResource dishResource = new DishResource(dish, sortedDishTags);
 
-                    return new ResponseEntity(dishResource, HttpStatus.OK);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        return new ResponseEntity(dishResource, HttpStatus.OK);
     }
 
     public ResponseEntity<Resources<TagResource>> getTagsByDishId(Principal principal, @PathVariable Long dishId) {

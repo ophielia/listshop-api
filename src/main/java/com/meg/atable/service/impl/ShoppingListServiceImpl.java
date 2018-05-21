@@ -1,5 +1,7 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.exception.ObjectNotFoundException;
+import com.meg.atable.api.exception.ObjectNotYoursException;
 import com.meg.atable.api.model.*;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
@@ -92,7 +94,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public ShoppingListEntity createList(String userName, ListGenerateProperties listGenerateProperties) throws ShoppingListException {
+    public ShoppingListEntity createList(String userName, ListGenerateProperties listGenerateProperties) throws ShoppingListException, ObjectNotYoursException, ObjectNotFoundException {
         // create list
         ShoppingListEntity newList = createListForUser(userName, listGenerateProperties.getListType());
         ListItemCollector collector = new ListItemCollector(newList.getId(), null);
@@ -104,14 +106,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         } else if (listGenerateProperties.getMealPlanSourceId() != null) {
             // get dishIds for meal plan
             MealPlanEntity mealPlan = mealPlanService.getMealPlanById(userName, listGenerateProperties.getMealPlanSourceId());
-            if (mealPlan == null) {
-                logger.error("Meal plan id passed as source, but none found for id [" +
-                        listGenerateProperties.getMealPlanSourceId() + "]");
-            } else {
-                dishIds = new ArrayList<>();
-                for (SlotEntity slot : mealPlan.getSlots()) {
-                    dishIds.add(slot.getDish().getId());
-                }
+            dishIds = new ArrayList<>();
+            if (mealPlan.getSlots() != null) {
+            for (SlotEntity slot : mealPlan.getSlots()) {
+                dishIds.add(slot.getDish().getId());
+            }
             }
         }
 
@@ -277,7 +276,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) {
+    public ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException {
         UserAccountEntity user = userService.getUserByUserName(name);
         // get list layout by type
         ListLayoutType generalLayout = shoppingListProperties.getDefaultLayouts().get(ListType.General);
@@ -294,9 +293,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // get the mealplan
         MealPlanEntity mealPlan = mealPlanService.getMealPlanById(name, mealPlanId);
-        if (mealPlan == null) {
-            return null;
-        }
 
         // create new inprocess list
         ShoppingListEntity newList = new ShoppingListEntity();
@@ -364,12 +360,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    public List<Category> categorizeList(ShoppingListEntity shoppingListEntity, Long highlightDishId, Boolean showPantry, ListType highlightListType) {
+    public List<Category> categorizeList(String userName, ShoppingListEntity shoppingListEntity, Long highlightDishId, Boolean showPantry, ListType highlightListType) {
         boolean isHighlightDish = highlightDishId != null && !highlightDishId.equals(0L);
         boolean isHighlightList = !isHighlightDish && highlightListType != null;
         boolean separateFrequent = showPantry != null && showPantry;//shoppingListEntity.getListType().equals(ListType.InProcess);
 
-        String highlightName = getHighlightDishName(isHighlightDish, highlightDishId);
+        String highlightName = getHighlightDishName(userName, isHighlightDish, highlightDishId);
         Set<Long> dishItemIds = getHighlightDishItemIds(isHighlightDish, shoppingListEntity, highlightDishId);
         if (shoppingListEntity == null) {
             return new ArrayList<>();
@@ -482,17 +478,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    private String getHighlightDishName(boolean isHighlightDish, Long highlightDishId) {
+    private String getHighlightDishName(String userName, boolean isHighlightDish, Long highlightDishId) {
         if (!isHighlightDish || highlightDishId == null) {
             return "";
         }
 
-        Optional<DishEntity> dishOpt = dishService.getDishById(highlightDishId);
-        if (!dishOpt.isPresent()) {
-            return "";
-        }
+        DishEntity dish = dishService.getDishForUserById(userName,highlightDishId);
 
-        DishEntity dish = dishOpt.get();
         return dish.getDishName();
 
     }

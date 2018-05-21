@@ -1,5 +1,7 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.exception.ObjectNotFoundException;
+import com.meg.atable.api.exception.ObjectNotYoursException;
 import com.meg.atable.api.model.MealPlanType;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
@@ -62,7 +64,7 @@ public class MealPlanServiceImpl implements MealPlanService {
         UserAccountEntity user = userService.getUserByUserName(username);
 
         // check name - if null or empty, autoname
-        if (mealPlanEntity.getName() == null || mealPlanEntity.getName().isEmpty())  {
+        if (mealPlanEntity.getName() == null || mealPlanEntity.getName().isEmpty()) {
             Haikunator haikunator = new HaikunatorBuilder().setTokenLength(0).setDelimiter(" ").build();
             String mealPlanName = haikunator.haikunate();
             mealPlanEntity.setName(mealPlanName);
@@ -99,11 +101,8 @@ public class MealPlanServiceImpl implements MealPlanService {
         }
         for (TargetProposalSlotEntity proposalSlot : proposalSlots) {
             Long dishId = proposalSlot.getSelectedDishId();
-            Optional<DishEntity> dishOpt = dishService.getDishForUserById(username, dishId);
-            if (!dishOpt.isPresent()) {
-                continue;
-            }
-            DishEntity dish = dishOpt.get();
+            DishEntity dish = dishService.getDishForUserById(username, dishId);
+
             // add new meal plan slot
             SlotEntity slot = new SlotEntity();
             slot.setMealPlan(mealPlan);
@@ -113,33 +112,30 @@ public class MealPlanServiceImpl implements MealPlanService {
         return mealPlan;
     }
 
-    public MealPlanEntity getMealPlanById(String userName, Long mealPlanId) {
+    public MealPlanEntity getMealPlanById(String userName, Long mealPlanId) throws ObjectNotFoundException, ObjectNotYoursException {
         UserAccountEntity user = userService.getUserByUserName(userName);
 
         Optional<MealPlanEntity> mealPlanEntityOpt = mealPlanRepository.findById(mealPlanId);
         if (!mealPlanEntityOpt.isPresent()) {
-            return null;
+            final String msg = "No meal plan found by id for user [" + userName + "] and mealPlanId [" + mealPlanId + "]";
+            throw new ObjectNotFoundException(msg, mealPlanId, "MealPlan");
         }
         MealPlanEntity mealPlanEntity = mealPlanEntityOpt.get();
         // ensure that this meal plan belongs to the user
-        if (mealPlanEntity != null && mealPlanEntity.getUserId().equals(user.getId()) ) {
-            return mealPlanEntity;
+        if (!mealPlanEntity.getUserId().equals(user.getId())) {
+            final String msg = "MealPlan found, but doesn't belong to user [" + userName + "] and mealPlanId [" + mealPlanId + "]";
+            throw new ObjectNotYoursException(msg, "MealPlan",mealPlanId, user.getUsername());
         }
-        return null;
+        return mealPlanEntity;
     }
 
 
-    public void addDishToMealPlan(String username, Long mealPlanId, Long dishId) {
+    public void addDishToMealPlan(String username, Long mealPlanId, Long dishId) throws ObjectNotYoursException, ObjectNotFoundException {
         // get meal plan
         MealPlanEntity mealPlan = getMealPlanById(username, mealPlanId);
-        // MM need check here for mealplan not found
+
         // get dish
-        Optional<DishEntity> dishOpt = dishService.getDishForUserById(username, dishId);
-        if (!dishOpt.isPresent()) {
-            logger.error("Dish can't be found for id [" + dishId + "] belonging to user [" + username + "]");
-            return;
-        }
-        DishEntity dish =dishOpt.get();
+        DishEntity dish =  dishService.getDishForUserById(username, dishId);
 
         // add slot to dish
         List<SlotEntity> slotList = slotRepository.findByMealPlan(mealPlan);
@@ -155,9 +151,10 @@ public class MealPlanServiceImpl implements MealPlanService {
         mealPlanRepository.save(mealPlan);
     }
 
-    public void deleteDishFromMealPlan(String username, Long mealPlanId, Long dishId) {
+    public void deleteDishFromMealPlan(String username, Long mealPlanId, Long dishId) throws ObjectNotYoursException, ObjectNotFoundException {
         // get meal plan
         MealPlanEntity mealPlan = getMealPlanById(username, mealPlanId);
+
         // get slots
         List<SlotEntity> slotList = slotRepository.findByMealPlan(mealPlan);
 
@@ -181,22 +178,20 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
 
-    public boolean deleteMealPlan(String name, Long mealPlanId) {
+    public boolean deleteMealPlan(String name, Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException {
         MealPlanEntity toDelete = getMealPlanById(name, mealPlanId);
 
-        if (toDelete != null) {
-            if (!toDelete.getSlots().isEmpty()) {
-                slotRepository.deleteAll(toDelete.getSlots());
-                toDelete.setSlots(null);
-            }
-            mealPlanRepository.delete(toDelete);
-            return true;
+        if (!toDelete.getSlots().isEmpty()) {
+            slotRepository.deleteAll(toDelete.getSlots());
+            toDelete.setSlots(null);
         }
-        return false;
+        mealPlanRepository.delete(toDelete);
+        return true;
+
     }
 
-    public void renameMealPlan(String userName, Long mealPlanId, String newName) {
-        MealPlanEntity mealPlan = getMealPlanById(userName,mealPlanId);
+    public void renameMealPlan(String userName, Long mealPlanId, String newName) throws ObjectNotFoundException, ObjectNotYoursException {
+        MealPlanEntity mealPlan = getMealPlanById(userName, mealPlanId);
         mealPlan.setName(newName);
         mealPlanRepository.save(mealPlan);
     }

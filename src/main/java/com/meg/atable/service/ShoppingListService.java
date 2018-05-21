@@ -1,5 +1,7 @@
 package com.meg.atable.service;
 
+import com.meg.atable.api.exception.ObjectNotFoundException;
+import com.meg.atable.api.exception.ObjectNotYoursException;
 import com.meg.atable.api.model.Category;
 import com.meg.atable.api.model.GenerateType;
 import com.meg.atable.api.model.ListGenerateProperties;
@@ -18,7 +20,7 @@ public interface ShoppingListService {
 
     ShoppingListEntity createList(String userName, ShoppingListEntity shoppingListEntity);
 
-    ShoppingListEntity createList(String userName, ListGenerateProperties listGeneratProperties) throws ShoppingListException;
+    ShoppingListEntity createList(String userName, ListGenerateProperties listGeneratProperties) throws ShoppingListException, ObjectNotYoursException, ObjectNotFoundException;
 
     ShoppingListEntity getListByUsernameAndType(String userName, ListType listType);
 
@@ -30,11 +32,11 @@ public interface ShoppingListService {
 
     void deleteItemFromList(String name, Long listId, Long itemId, Boolean removeEntireItem, Long dishSourceId);
 
-    ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId);
+    ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException;
 
     ShoppingListEntity setListActive(String username, Long listId, GenerateType generateType);
 
-    List<Category> categorizeList(ShoppingListEntity shoppingListEntity, Long highlightDishId, Boolean showPantry, ListType highlightDishType);
+    List<Category> categorizeList(String userName, ShoppingListEntity shoppingListEntity, Long highlightDishId, Boolean showPantry, ListType highlightDishType);
 
     void addDishToList(String name, Long listId, Long dishId) throws ShoppingListException;
 
