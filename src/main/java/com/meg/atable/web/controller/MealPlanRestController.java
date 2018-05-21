@@ -8,9 +8,12 @@ import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.MealPlanEntity;
 import com.meg.atable.service.MealPlanService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +31,9 @@ import java.util.stream.Collectors;
  */
 @Controller
 public class MealPlanRestController implements MealPlanRestControllerApi {
+
+    private static final Logger logger = LogManager.getLogger(MealPlanRestController.class);
+
 
     @Autowired
     private MealPlanService mealPlanService;
@@ -55,8 +62,20 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity result = mealPlanService.createMealPlan(principal.getName(), mealPlanEntity);
 
         if (result != null) {
-            Link forOneMealPlan = new MealPlanResource(result).getLink("self");
-            return ResponseEntity.created(URI.create(forOneMealPlan.getHref())).build();
+            MealPlanResource mealPlanResource = new MealPlanResource(result);
+            Link forOneMealPlan = mealPlanResource.getLink("self");
+            HttpHeaders headers = new HttpHeaders();
+            try {
+                headers.setLocation(new URI(forOneMealPlan.getHref()));
+            } catch (URISyntaxException e) {
+                logger.error("Can't parse meal plan link");
+                return ResponseEntity.badRequest().build();
+            }
+
+
+            ResponseEntity<Object> r = new ResponseEntity(mealPlanResource, headers, HttpStatus.CREATED);
+            return r;
+
         }
         return ResponseEntity.badRequest().build();
 
@@ -95,7 +114,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
 
     //@RequestMapping(method = RequestMethod.POST, value = "/{mealPlanId}/name", produces = "application/json")
     public ResponseEntity<Object> renameMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable String newName) {
-        this.mealPlanService.renameMealPlan(principal.getName(),mealPlanId,newName );
+        this.mealPlanService.renameMealPlan(principal.getName(), mealPlanId, newName);
         return ResponseEntity.noContent().build();
     }
 
