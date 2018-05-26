@@ -213,4 +213,34 @@ public class TargetEntity extends AbstractInflateAndFlatten {
     public void setProposalId(Long proposalId) {
         this.proposalId = proposalId;
     }
+
+    public String getContentHashCode() {
+// this is used to decide if the tags for this target have changed since the last proposal was run
+        // this is used to decide if the slots have changed since the last proposal has been run
+        // slots changed == different picked dishes
+        StringBuffer hashCode = new StringBuffer(getTargetId().hashCode());
+        // make list of all tagList strings for target and contained slots
+        // also include dish type tags
+        List<String> targetTags =inflateStringToList(getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER);
+        if (targetTags != null) {
+            targetTags.forEach(t -> hashCode.append(t.hashCode()));
+        }
+
+        if (slots != null && !slots.isEmpty()) {
+            for (TargetSlotEntity slot : slots) {
+                List<String> slotTags =inflateStringToList(slot.getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER);
+                if (slotTags != null) {
+                    int slotHashCode = (slot.getSlotOrder() * slotTags.hashCode());
+                    hashCode.append(slotHashCode);
+                }
+                if (slot.getSlotDishTagId() != null) {
+                    hashCode.append(slot.getSlotDishTagId().hashCode());
+                }
+            }
+        }
+        int finalCode = hashCode.toString().hashCode();
+        return String.valueOf(finalCode);
+    }
+
+
 }

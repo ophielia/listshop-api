@@ -25,6 +25,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserAccountEntity getUserByUserName(String userName) {
+        // MM do your exception magic here
         return userRepository.findByUsername(userName);
     }
 

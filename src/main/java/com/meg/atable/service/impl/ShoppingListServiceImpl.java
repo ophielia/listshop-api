@@ -143,7 +143,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 listGenerateProperties.getMealPlanSourceId() == null &&
                 listGenerateProperties.getDishSourcesIds() != null) {
             MealPlanEntity mp = mealPlanService.createMealPlan(userName, new MealPlanEntity());
-            listGenerateProperties.getDishSourcesIds().forEach(ds -> mealPlanService.addDishToMealPlan(userName, mp.getId(), ds));
+            for (Long ds : listGenerateProperties.getDishSourcesIds()) {
+                mealPlanService.addDishToMealPlan(userName, mp.getId(), ds);
+            }
             // MM add link to shopping list here
         }
 
@@ -478,7 +480,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    private String getHighlightDishName(String userName, boolean isHighlightDish, Long highlightDishId) {
+    private String getHighlightDishName(String userName, boolean isHighlightDish, Long highlightDishId) throws ObjectNotYoursException, ObjectNotFoundException {
         if (!isHighlightDish || highlightDishId == null) {
             return "";
         }

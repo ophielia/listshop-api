@@ -4,6 +4,7 @@ import com.meg.atable.api.model.MealPlanType;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -75,7 +76,7 @@ public class MealPlanEntity {
     }
 
     public List<SlotEntity> getSlots() {
-        return slots;
+        return slots!=null?slots:new ArrayList<>();
     }
 
     public void setSlots(List<SlotEntity> slots) {

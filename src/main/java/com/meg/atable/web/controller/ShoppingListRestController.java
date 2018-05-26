@@ -1,6 +1,8 @@
 package com.meg.atable.web.controller;
 
 import com.meg.atable.api.controller.ShoppingListRestControllerApi;
+import com.meg.atable.api.exception.ObjectNotFoundException;
+import com.meg.atable.api.exception.ObjectNotYoursException;
 import com.meg.atable.api.model.*;
 import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.ShoppingListEntity;
@@ -60,7 +62,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 //    @RequestMapping(method = RequestMethod.POST,value="/new" produces = "application/json", consumes = "application/json")
     @Override
-    public ResponseEntity<Object> newCreateList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) {
+    public ResponseEntity<Object> newCreateList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) throws ObjectNotFoundException, ObjectNotYoursException {
 
 
         ShoppingListEntity result = null;
@@ -187,7 +189,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
     @Override
-    public ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId) {
+    public ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId) throws ObjectNotFoundException, ObjectNotYoursException {
         ShoppingListEntity shoppingListEntity = this.shoppingListService.generateListFromMealPlan(principal.getName(), mealPlanId);
         if (shoppingListEntity != null) {
             Link listLink = new ShoppingListResource(shoppingListEntity, null).getLink("self");

@@ -1,6 +1,8 @@
 package com.meg.atable.web.controller;
 
 import com.meg.atable.api.controller.MealPlanRestControllerApi;
+import com.meg.atable.api.exception.ObjectNotFoundException;
+import com.meg.atable.api.exception.ObjectNotYoursException;
 import com.meg.atable.api.model.MealPlan;
 import com.meg.atable.api.model.MealPlanResource;
 import com.meg.atable.api.model.ModelMapper;
@@ -43,7 +45,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
 
 
     @Override
-    public ResponseEntity<Resources<MealPlanResource>> retrieveMealPlans(Principal principal) {
+    public ResponseEntity<Resources<MealPlanResource>> retrieveMealPlans(Principal principal) throws ObjectNotYoursException,  ObjectNotFoundException {
         List<MealPlanResource> mealPlanList = mealPlanService
                 .getMealPlansForUserName(principal.getName())
                 .stream().map(MealPlanResource::new)
@@ -82,7 +84,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> createMealPlanFromTargetProposal(Principal principal, @PathVariable Long proposalId) {
+    public ResponseEntity<Object> createMealPlanFromTargetProposal(Principal principal, @PathVariable Long proposalId) throws ObjectNotFoundException, ObjectNotYoursException {
         MealPlanEntity result = mealPlanService.createMealPlanFromProposal(principal.getName(), proposalId);
 
         if (result != null) {
@@ -93,7 +95,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<MealPlan> readMealPlan(Principal principal, @PathVariable Long mealPlanId) {
+    public ResponseEntity<MealPlan> readMealPlan(Principal principal, @PathVariable Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException {
         MealPlanEntity mealPlan = this.mealPlanService
                 .getMealPlanById(principal.getName(), mealPlanId);
 
@@ -103,7 +105,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<MealPlan> deleteMealPlan(Principal principal, @PathVariable Long mealPlanId) {
+    public ResponseEntity<MealPlan> deleteMealPlan(Principal principal, @PathVariable Long mealPlanId) throws ObjectNotFoundException, ObjectNotYoursException {
 
         boolean success = mealPlanService.deleteMealPlan(principal.getName(), mealPlanId);
         if (success) {
@@ -113,14 +115,14 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     //@RequestMapping(method = RequestMethod.POST, value = "/{mealPlanId}/name", produces = "application/json")
-    public ResponseEntity<Object> renameMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable String newName) {
+    public ResponseEntity<Object> renameMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable String newName) throws ObjectNotYoursException, ObjectNotFoundException {
         this.mealPlanService.renameMealPlan(principal.getName(), mealPlanId, newName);
         return ResponseEntity.noContent().build();
     }
 
 
     @Override
-    public ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) {
+    public ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) throws ObjectNotFoundException, ObjectNotYoursException {
         UserAccountEntity user = userService.getUserByUserName(principal.getName());
 
         this.mealPlanService.addDishToMealPlan(user.getUsername(), mealPlanId, dishId);
@@ -129,7 +131,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) {
+    public ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) throws ObjectNotFoundException, ObjectNotYoursException {
         UserAccountEntity user = userService.getUserByUserName(principal.getName());
 
         this.mealPlanService.deleteDishFromMealPlan(user.getUsername(), mealPlanId, dishId);

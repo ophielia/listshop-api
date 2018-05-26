@@ -1,5 +1,7 @@
 package com.meg.atable.api.controller;
 
+import com.meg.atable.api.exception.ObjectNotFoundException;
+import com.meg.atable.api.exception.ObjectNotYoursException;
 import com.meg.atable.api.model.Item;
 import com.meg.atable.api.model.ListGenerateProperties;
 import com.meg.atable.api.model.ShoppingList;
@@ -27,7 +29,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<Object> createList(Principal principal, @RequestBody ShoppingList shoppingList);
 
     @RequestMapping(method = RequestMethod.POST,value="/new", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> newCreateList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties);
+    ResponseEntity<Object> newCreateList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{listId}", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> setListActive(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value = "filter", required = true) String filter);
@@ -69,7 +71,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<Object> deleteAllItemsFromList(Principal principal, @PathVariable Long listId);
 
     @RequestMapping(method = RequestMethod.POST, value = "/mealplan/{mealPlanId}", produces = "application/json")
-    ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId);
+    ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @RequestMapping(method = RequestMethod.POST, value = "/{listId}/dish/{dishId}", produces = "application/json")
     ResponseEntity<Object> addDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId);

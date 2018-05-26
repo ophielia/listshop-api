@@ -12,28 +12,23 @@ BIGGER TODOS -
 
 
 CURRENT HOPPER:
-    Clean up
+    Clean up - front end
         add lists to existing list
         bug - legends when switching lists or adding dishes
         shop page print
         shop page skinning checkboxes (minor)
         shop page check off text - not green
-        no "Shop" for PickUp and Base
-        no add Base for base
-        no add Pickup for pickup
         Clean up list of lists
-        done - Quick add page
         sub menus for dish, list and plan (i.e. for list - shop / add / manage / )
 
-DB COLS TO CHECK -
-done            tag.is_parent_tag
-done            tag.rating_family
-done            tag.auto_tag_flag
-done            no code    list.list_type
-done            code_ok    list.list_layout_type
-done            entire table target_slotS
-done            add sequence on target_slot
-done            add meal_plan_id
+    Back End
+        continue adding / consolidating error handling - not found and doesn't belong - which is handled by controller advice
+        coming up on target / proposal refactor
+
+    Front end - plans
+        stub page for create meal plan
+        continue migration to HttpClient
+
 
 
 
@@ -108,3 +103,20 @@ done - shop page - cross off instead of remove
 done - shop page - cross off
 done - Utility - sections in navigation - Home Dish List Plan
 done - default listLayoutType - general - just in case
+
+
+
+DB COLS TO CHECK -
+done            tag.is_parent_tag
+done            tag.rating_family
+done            tag.auto_tag_flag
+done            no code    list.list_type
+done            code_ok    list.list_layout_type
+done            entire table target_slotS
+done            add sequence on target_slot
+done            add meal_plan_id
+
+        done - no "Shop" for PickUp and Base
+        done - no add Base for base
+        done - no add Pickup for pickup
+        done - Quick add page

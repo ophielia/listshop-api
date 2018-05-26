@@ -21,7 +21,7 @@ public interface MealPlanService {
 
     MealPlanEntity createMealPlan(String username, MealPlanEntity mealPlanEntity);
 
-    MealPlanEntity createMealPlanFromProposal(String name, Long proposalId);
+    MealPlanEntity createMealPlanFromProposal(String name, Long proposalId) throws ObjectNotYoursException, ObjectNotFoundException;
 
     void addDishToMealPlan(String username, Long mealPlanId, Long dishId) throws ObjectNotYoursException, ObjectNotFoundException;
 

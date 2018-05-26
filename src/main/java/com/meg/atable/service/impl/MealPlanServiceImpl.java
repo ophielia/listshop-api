@@ -76,7 +76,7 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
     @Override
-    public MealPlanEntity createMealPlanFromProposal(String username, Long proposalId) {
+    public MealPlanEntity createMealPlanFromProposal(String username, Long proposalId) throws ObjectNotYoursException, ObjectNotFoundException {
         // get username
         UserAccountEntity user = userService.getUserByUserName(username);
         // get proposal
