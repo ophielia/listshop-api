@@ -104,7 +104,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
             List<ProposalContextApproachEntity> persistedApproaches = buildProposalContextApproaches(context, approaches);
             context.setContextApproaches(persistedApproaches);
             context.setProposalId(proposal.getProposalId());
-            context.setCurrentAttemptIndex(0);
+            context.setCurrentApproachIndex(0);
             proposalContextRepository.save(context);
 
             target.setProposalId(proposal.getProposalId());
@@ -212,7 +212,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         }
 
         // get list of approaches (order in which slots are assembled)
-        int refreshIndex = sortDirection == SortDirection.UP ? context.getCurrentAttemptIndex() + 1 : context.getCurrentAttemptIndex() - 1;
+        int refreshIndex = sortDirection == SortDirection.UP ? context.getCurrentApproachIndex() + 1 : context.getCurrentApproachIndex() - 1;
         if (refreshIndex < 0) {
             refreshIndex = refreshIndex + context.getProposalCount();
         } else if (refreshIndex >= context.getProposalCount()) {
@@ -223,10 +223,10 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         proposal = clearDishesFromProposal(proposal);
         proposal = setResultsInProposal(proposal, rawResults, attempt, context, slotToSelected);
         context.setRefreshFlag(proposal.generateRefreshFlag());
-        context.setCurrentAttemptIndex(refreshIndex);
+        context.setCurrentApproachIndex(refreshIndex);
 
         // save changes
-        proposal.setTargetName("idx;" + context.getCurrentAttemptIndex() + ";");
+        proposal.setTargetName("idx;" + context.getCurrentApproachIndex() + ";");
         proposal = targetProposalRepository.save(proposal);
         target.setProposalId(proposal.getProposalId());
         targetService.save(target);
@@ -289,7 +289,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
             List<ProposalContextApproachEntity> persistedApproaches = buildProposalContextApproaches(context, approaches);
             context.setContextApproaches(persistedApproaches);
             context.setProposalId(proposal.getProposalId());
-            context.setCurrentAttemptIndex(0);
+            context.setCurrentApproachIndex(0);
             proposalContextRepository.save(context);
 
             target.setProposalId(proposal.getProposalId());
@@ -454,7 +454,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         // make a new TargetProposalEntity
         TargetProposalEntity proposalEntity = new TargetProposalEntity(target);
         // set additional information in proposal - regenerateOnRefresh, currentProposalIndex, and proposal list
-        context.setCurrentAttemptIndex(0);
+        context.setCurrentApproachIndex(0);
 
         // save proposal (in order to assign ids)
         proposalEntity = targetProposalRepository.save(proposalEntity);
@@ -463,7 +463,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         processSingleProposal(result, rawResults, context);
 
         // get result and fill slots
-        Integer[] order = result.getAttemptOrder();
+        Integer[] order = result.getSlotNumberOrder();
         for (int i = 0; i < order.length; i++) {
             // get rawResult for order
             RawSlotResult rawResult = rawResults.get(i);
@@ -486,13 +486,13 @@ public class TargetProposalServiceImpl implements TargetProposalService {
 
     private TargetProposalEntity setResultsInProposal(TargetProposalEntity proposal, List<RawSlotResult> rawResults, ProposalAttempt result, ProposalContextEntity context, Map<Long, Long> selectedBySlot) {
         // make a new TargetProposalEntity
-        context.setCurrentAttemptIndex(0);
+        context.setCurrentApproachIndex(0);
 
         // process ProposalAttempt to fill raw results
         processSingleProposal(result, rawResults, context);
 
         // get result and fill slots
-        Integer[] order = result.getAttemptOrder();
+        Integer[] order = result.getSlotNumberOrder();
         for (int i = 0; i < order.length; i++) {
             // get rawResult for order
             RawSlotResult rawResult = rawResults.get(order[i]);
@@ -568,14 +568,13 @@ public class TargetProposalServiceImpl implements TargetProposalService {
 
     private ProposalContextEntity buildProposalContext(int slotcount) {
         ProposalContextEntity context = new ProposalContextEntity();
-        context.setMaximumEmpties(5);
         context.setDishCountPerSlot(5);
         if (slotcount < 3) {
-            context.setApproachType(ApproachType.WHEEL);
+            context.setCurrentApproachType(ApproachType.WHEEL);
             context.setProposalCount(slotcount);
             return context;
         }
-        context.setApproachType(ApproachType.WHEEL_MIXED);
+        context.setCurrentApproachType(ApproachType.WHEEL_MIXED);
         context.setProposalCount(Math.min(slotcount + 1, 10));
         return context;
     }
@@ -606,12 +605,12 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         // clear all filters
         rawResults.forEach(t -> t.clearFilteredDishes());
         // cycle through proposal order
-        Integer[] cycle = proposal.getAttemptOrder();
+        Integer[] cycle = proposal.getSlotNumberOrder();
         for (int i = 0; i < cycle.length; i++) {
             RawSlotResult rawResult = rawResults.get(cycle[i]);
 
             List<DishTagSearchResult> dishMatches = rawResult.getFilteredMatches(context.getDishCountPerSlot());
-            proposal.setDishMatches(i, rawResult.getSlotId(), dishMatches);
+            //MMproposal.setDishMatches(i, rawResult.getSlotId(), dishMatches);
             for (int j = i + 1; j < cycle.length; j++) {
                 rawResults.get(cycle[j]).addDishesToFilter(dishMatches);
             }
@@ -620,8 +619,9 @@ public class TargetProposalServiceImpl implements TargetProposalService {
     }
 
     private List<ProposalAttempt> getProposalAttempts(ProposalContextEntity context, int slotcount) {
-        ApproachType approachType = context.getApproachType();
+        ApproachType approachType = context.getCurrentApproachType();
 
+        //MMList<Integer[]> approachOrders = AttemptGenerator.getProposalOrders(approachType, slotcount, context.getProposalCount(), indexToSlotNumber);
         List<Integer[]> approachOrders = AttemptGenerator.getProposalOrders(approachType, slotcount, context.getProposalCount());
 
         List<ProposalAttempt> proposalAttempts = new ArrayList<>();
@@ -633,7 +633,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
     }
 
     private List<RawSlotResult> retrieveRawResults(TargetEntity target, ProposalContextEntity context, List<Long> dishExcludeList) {
-        int maxempties = context.getMaximumEmpties();
+        int maxempties = 5;//MM remove this context.getMaximumEmpties();
 
         // get target tags
         Set<String> targetTagIds = target.getTagIdsAsSet();
@@ -661,7 +661,7 @@ public class TargetProposalServiceImpl implements TargetProposalService {
         tagListForSlot.addAll(slot.getTagIdsAsList());
 
         // query db
-        List<DishTagSearchResult> dishResults = dishSearchService.retrieveDishResultsForTags(userId, slot.getSlotDishTagId(), targetTagIds.size(), tagListForSlot, searchGroups);
+        List<DishTagSearchResult> dishResults = dishSearchService.retrieveDishResultsForTags(userId, slot.getSlotDishTagId(), targetTagIds.size(), tagListForSlot, searchGroups,null );
         List<DishTagSearchResult> matches = new ArrayList<>();
         List<DishTagSearchResult> targetMatches = new ArrayList<>();
         List<DishTagSearchResult> emptyMatches = new ArrayList<>();
@@ -676,8 +676,8 @@ public class TargetProposalServiceImpl implements TargetProposalService {
                     }
                 });
         int end = emptyMatches.size();
-        if (emptyMatches.size() > context.getMaximumEmpties()) {
-            end = context.getMaximumEmpties();
+        if (emptyMatches.size() > 5) {
+            end = 5;
 
         }
         // a word about sorting - the results are sorted by last_added date from the database.  Additional

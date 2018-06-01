@@ -1,9 +1,12 @@
 package com.meg.atable.service;
 
 import com.meg.atable.api.model.ApproachType;
+import com.meg.atable.data.entity.ProposalEntity;
 import com.meg.atable.data.entity.TargetSlotEntity;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by margaretmartin on 25/05/2018.
@@ -17,6 +20,10 @@ public class ProcessInformation {
     private ApproachType approachType;
     private int proposalCount;
     private int resultsPerSlot;
+    Map<Integer,List<String>> searchTagKeyBySlot = new HashMap<>();
+    private Map<Integer, Long> dishTagBySlot = new HashMap<>();
+    private ProposalEntity proposal;
+    private Map<Integer, Integer> dishCountBySlot = new HashMap<>();
 
     public void setSearchSlots(List<TargetSlotEntity> searchSlots) {
         this.searchSlots = searchSlots;
@@ -80,5 +87,32 @@ public class ProcessInformation {
 
     public int getResultsPerSlot() {
         return resultsPerSlot;
+    }
+
+    public void addTagKeyBySlot(Integer slotOrder, List<String> tagListForSlot) {
+searchTagKeyBySlot.put(slotOrder,tagListForSlot);
+    }
+
+    public List<String> getTagKeyBySlotNumber(Integer slotNumber) {
+        return searchTagKeyBySlot.get(slotNumber);
+    }
+    public Long getDishTagBySlotNumber(Integer slotNumber) {
+        return dishTagBySlot.get(slotNumber);
+    }
+
+    public void setDishTagBySlotNumber(Integer slotNumber, Long tagId) {
+        dishTagBySlot.put(slotNumber, tagId);
+    }
+
+    public ProposalEntity getProposal() {
+        return proposal;
+    }
+
+    public void setProposal(ProposalEntity proposal) {
+        this.proposal = proposal;
+    }
+
+    public Integer getDishCountBySlotNumber(Integer slotNumber) {
+        return dishCountBySlot.get(slotNumber);
     }
 }

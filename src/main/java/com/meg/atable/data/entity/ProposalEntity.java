@@ -1,10 +1,13 @@
 package com.meg.atable.data.entity;
 
+import com.meg.atable.common.FlatStringUtils;
+import com.meg.atable.service.TargetServiceConstants;
 import org.hibernate.annotations.GenericGenerator;
+import org.postgresql.util.PSQLException;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 22/05/2018.
@@ -32,11 +35,8 @@ public class ProposalEntity {
 
     private List<ProposalSlotEntity> slots;
     private boolean isRefreshable;
-    private Long id;
-
-
-
-
+    @Transient
+    private List<TagEntity> targetTags;
 
 
     public Long getId() {
@@ -81,4 +81,61 @@ public class ProposalEntity {
         return String.valueOf(finalCode);
     }
 
+    public void fillInAllTags(Map<Long, TagEntity> dictionary) {
+        if (dictionary.isEmpty()) {
+            return;
+        }
+        if (slots != null && !slots.isEmpty()) {
+            for (ProposalSlotEntity slot : slots) {
+                slot.fillInTags(dictionary);
+            }
+        }
+    }
+
+
+    public void setTargetTags(List<TagEntity> targetTags) {
+        this.targetTags = targetTags;
+    }
+
+    public List<TagEntity> getTargetTags() {
+        return targetTags;
+    }
+
+    public void fillSlotTags(Integer slotOrder, List<String> tagIdsAsList, Map<Long, TagEntity> tagDictionary) {
+        ProposalSlotEntity slotToFill = null;
+        for (ProposalSlotEntity slot: getSlots()) {
+            if (slot.getSlotNumber().equals(slotOrder)) {
+                slotToFill = slot;
+                break;
+            }
+        }
+        if (slotToFill == null) {
+            return;
+        }
+        slotToFill.fillInTags(tagIdsAsList,tagDictionary);
+    }
+
+    public List<Long> getAllDishIds() {
+        // make list of all dish strings for target and contained slots
+        // also include dish type tags
+        List<Long> dishIdList = new ArrayList<>();
+        if (slots != null && !slots.isEmpty()) {
+            for (ProposalSlotEntity dishslot : slots) {
+                dishIdList.addAll(dishslot.getAllDishIds());
+            }
+        }
+
+        return dishIdList;
+    }
+
+    public void fillInAllDishes(Map<Long, DishEntity> dictionary) {
+        if (dictionary.isEmpty()) {
+            return;
+        }
+        if (slots != null && !slots.isEmpty()) {
+            for (ProposalSlotEntity slot : slots) {
+                slot.fillInDishes(dictionary);
+            }
+        }
+    }
 }

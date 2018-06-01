@@ -134,9 +134,9 @@ public class DishSearchServiceImpl implements DishSearchService {
     }
 
     @Override
-    public List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, Long slotDishTagId, int size, List<String> tagListForSlot, Map<Long, List<Long>> searchGroups) {
+    public List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, Long slotDishTagId, int size, List<String> tagListForSlot, Map<Long, List<Long>> searchGroups, List<Long> sqlFilteredDishes) {
         // create sql
-        Object[] sqlAndParams = createSqlForDishTagSearchResult(tagListForSlot, searchGroups);
+        Object[] sqlAndParams = createSqlForDishTagSearchResult(tagListForSlot, searchGroups, sqlFilteredDishes);
         String sql = (String) sqlAndParams[0];
         Map<String, Object> params = (Map<String, Object>) sqlAndParams[1];
         // create parameters
@@ -149,7 +149,7 @@ public class DishSearchServiceImpl implements DishSearchService {
 
     }
 
-    private Object[] createSqlForDishTagSearchResult(List<String> tagListForSlot, Map<Long, List<Long>> searchGroups) {
+    private Object[] createSqlForDishTagSearchResult(List<String> tagListForSlot, Map<Long, List<Long>> searchGroups, List<Long> sqlFilteredDishes) {
         Object[] returnvalue = new Object[2];
         Map<String, Object> parameters = new HashMap<>();
 
@@ -190,7 +190,18 @@ public class DishSearchServiceImpl implements DishSearchService {
             i++;
         }
 
-        returnvalue[0] = selectClause.append(fromClause).append(outerJoins).append(groupByClause).append(orderByClause).toString();
+        StringBuilder whereClause = new StringBuilder(" ");
+        if (sqlFilteredDishes != null && !sqlFilteredDishes.isEmpty()) {
+            whereClause.append(" where d.dish_id not in (");
+            sqlFilteredDishes.forEach( d -> whereClause.append(d).append(","));
+            whereClause.setLength(whereClause.length()-1);
+            whereClause.append(") ");
+        }
+
+
+        returnvalue[0] = selectClause.append(fromClause).append(outerJoins)
+                .append(whereClause)
+                .append(groupByClause).append(orderByClause).toString();
         returnvalue[1] = parameters;
         return returnvalue;
     }

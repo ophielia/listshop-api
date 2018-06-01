@@ -54,4 +54,8 @@ public class ProposalRequest {
     public TargetEntity getTarget() {
         return target;
     }
+
+    public ProposalContextEntity getContext() {
+        return context;
+    }
 }

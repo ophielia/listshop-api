@@ -27,27 +27,24 @@ public class ProposalContextEntity {
 
     private Long proposalId;
 
-    @OneToMany(mappedBy = "proposalContext", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "proposalContext", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<ProposalContextApproachEntity> contextApproaches;
 
-    private Integer maximumEmpties;
-
-    private Integer dishCountPerSlot;
-
     @Enumerated(EnumType.STRING)
-    private ApproachType approachType;
-
-    private Integer proposalCount;
+    private ApproachType currentApproachType;
 
 
-    private String refreshFlag;
-    private Integer currentAttemptIndex;
-    private Long id;
+    private Integer currentApproachIndex;
+
     private Long targetId;
+
+    @OneToMany(mappedBy = "proposalContext", fetch = FetchType.EAGER)
     private List<ContextApproachEntity> approaches;
-    private Long mealPlanId;
+
     private String targetHashCode;
+
     private String proposalHashCode;
+
 
     public ProposalContextEntity() {
         // jpa empty constructor
@@ -62,65 +59,50 @@ public class ProposalContextEntity {
     }
 
     public String getRefreshFlag() {
-        return refreshFlag;
+        return null;//MM remove this refreshFlag;
     }
 
     public void setRefreshFlag(String refreshFlag) {
-        this.refreshFlag = refreshFlag;
+
+        //MM remove this this.refreshFlag = refreshFlag;
     }
 
     public List<ProposalContextApproachEntity> getSlots() {
         return contextApproaches;
     }
 
-    public Integer getMaximumEmpties() {
-        return maximumEmpties;
-    }
-
-    public void setMaximumEmpties(int maximumEmpties) {
-        this.maximumEmpties = maximumEmpties;
-    }
-
     public Integer getDishCountPerSlot() {
-        return dishCountPerSlot;
+        return null;//MM remove thisdishCountPerSlot;
     }
 
     public void setDishCountPerSlot(int dishCountPerSlot) {
-        this.dishCountPerSlot = dishCountPerSlot;
-    }
-
-    public ApproachType getApproachType() {
-        return approachType;
-    }
-
-    public void setApproachType(ApproachType approachType) {
-        this.approachType = approachType;
+        //MM remove this this.dishCountPerSlot = dishCountPerSlot;
     }
 
     public Integer getProposalCount() {
-        return proposalCount;
+        return null;
+        //MM remove thisproposalCount;
     }
 
     public void setProposalCount(int proposalCount) {
-        this.proposalCount = proposalCount;
+        //MM remove thisthis.proposalCount = proposalCount;
     }
 
     public void setContextApproaches(List<ProposalContextApproachEntity> contextApproaches) {
         this.contextApproaches = contextApproaches;
     }
 
-    public int getCurrentAttemptIndex() {
-        return currentAttemptIndex;
+    public int getCurrentApproachIndex() {
+        return currentApproachIndex;
     }
 
-    public void setCurrentAttemptIndex(int currentAttemptIndex) {
-        this.currentAttemptIndex = currentAttemptIndex;
+    public void setCurrentApproachIndex(int currentApproachIndex) {
+        this.currentApproachIndex = currentApproachIndex;
     }
 
 
     public Long getId() {
-        // MM finish implementing id
-        return id;
+        return this.proposalContextId;
     }
 
     public Long getTargetId() {
@@ -131,13 +113,21 @@ public class ProposalContextEntity {
         this.targetId = targetId;
     }
 
-    public String proposalHashCode() {
+    public String getProposalHashCode() {
         // the proposalHashCode is used in the context of deciding if the picked dishes for a proposal have changed
         return this.proposalHashCode;
     }
 
-    public String targetHashCode() {
-        return null;
+    public void setProposalHashCode(String proposalHashCode) {
+        this.proposalHashCode = proposalHashCode;
+    }
+
+    public String getTargetHashCode() {
+        return this.targetHashCode;
+    }
+
+    public void setTargetHashCode(String targetHashCode) {
+        this.targetHashCode = targetHashCode;
     }
 
     public List<ContextApproachEntity> getApproaches() {
@@ -149,26 +139,19 @@ public class ProposalContextEntity {
     }
 
     public Long getMealPlanId() {
-        return mealPlanId;
+        return null;//MM remove this mealPlanId;
     }
 
     public void setMealPlanId(Long mealPlanId) {
-        this.mealPlanId = mealPlanId;
+        //MM remove this this.mealPlanId = mealPlanId;
     }
 
-    public String getTargetHashCode() {
-        return targetHashCode;
+
+    public void setCurrentApproachType(ApproachType currentApproachType) {
+        this.currentApproachType = currentApproachType;
     }
 
-    public void setTargetHashCode(String targetHashCode) {
-        this.targetHashCode = targetHashCode;
-    }
-
-    public String getProposalHashCode() {
-        return proposalHashCode;
-    }
-
-    public void setProposalHashCode(String proposalHashCode) {
-        this.proposalHashCode = proposalHashCode;
+    public ApproachType getCurrentApproachType() {
+        return currentApproachType;
     }
 }

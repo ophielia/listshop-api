@@ -1,14 +1,51 @@
 package com.meg.atable.data.entity;
 
-/**
- * Created by margaretmartin on 23/05/2018.
- */
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "proposal_approach")
+@GenericGenerator(
+        name = "proposal_approach_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value = "proposal_approach_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value = "1")}
+)
 public class ContextApproachEntity {
 
-    // MM WOW do we need some clean up here!
+    @Id
+    private Long proposalApproachId;
+
+    @ManyToOne
+    @JoinColumn(name = "proposal_context_id", nullable = false)
+    private ProposalContextEntity proposalContext;
+
     private Integer approachNumber;
-    private ProposalContextEntity context;
+
     private String instructions;
+
+    private ProposalContextEntity context;
+
+    public Long getId() {
+        return proposalApproachId;
+    }
+
+    public void setId(Long proposalApproachId) {
+        this.proposalApproachId = proposalApproachId;
+    }
+
+    public ProposalContextEntity getProposalContext() {
+        return proposalContext;
+    }
+
+    public void setProposalContext(ProposalContextEntity proposalContext) {
+        this.proposalContext = proposalContext;
+    }
 
     public Integer getApproachNumber() {
         return approachNumber;
@@ -33,4 +70,5 @@ public class ContextApproachEntity {
     public void setInstructions(String instructions) {
         this.instructions = instructions;
     }
+
 }

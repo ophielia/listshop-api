@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
  */
 public class ProposalAttempt {
 
-    Integer[] attemptOrder;
+    Integer[] slotNumberOrder;
 
     private Map<Integer, List<DishTagSearchResult>> dishMatches = new HashMap<Integer, List<DishTagSearchResult>>();
     private Map<Integer, Double[]> slotResults = new HashMap<Integer, Double[]>();
@@ -17,24 +17,24 @@ public class ProposalAttempt {
     private int proposalContentHash;
 
     public ProposalAttempt(Integer[] order) {
-        this.attemptOrder = order;
+        this.slotNumberOrder = order;
     }
 
-    public Integer[] getAttemptOrder() {
-        return attemptOrder;
+    public Integer[] getSlotNumberOrder() {
+        return slotNumberOrder;
     }
 
-    public void setDishMatches(int i, Long slotId,List<DishTagSearchResult> dishMatches) {
+    public void setDishMatches(int i, Integer slotNumber,List<DishTagSearchResult> dishMatches) {
         int totalTagCount = dishMatches.get(0).getTagResults().length;
         int slotTagCount = totalTagCount - dishMatches.get(0).getTargetTagLimit();
         processStatistics(i, totalTagCount, slotTagCount, dishMatches);
-        addToContentHash(slotId,dishMatches);
+        addToContentHash(slotNumber,dishMatches);
         this.dishMatches.put(i, dishMatches);
     }
 
-    private void addToContentHash(Long slotId, List<DishTagSearchResult> dishMatches) {
+    private void addToContentHash(Integer slotNumber, List<DishTagSearchResult> dishMatches) {
         Set<Long> contents = new HashSet<>();
-        contents.add(slotId);
+        contents.add(Long.valueOf(slotNumber));
         contents.addAll(dishMatches.stream().map(dm -> dm.getDishId()).collect(Collectors.toList()));
         int slothash = contents.hashCode();
         proposalContentHash += slothash;
@@ -95,13 +95,13 @@ public class ProposalAttempt {
     @Override
     public String toString() {
         return "ProposalAttempt{" +
-                "attemptOrder=" + Arrays.toString(attemptOrder) +
+                "slotNumberOrder=" + Arrays.toString(slotNumberOrder) +
                 ", slotResults=" + slotResults +
                 '}';
     }
 
     public String getAttemptOrderAsString(String delimiter) {
-        List<Integer> attemptOrderStringList = Arrays.asList(attemptOrder);
+        List<Integer> attemptOrderStringList = Arrays.asList(slotNumberOrder);
         return String.join(delimiter, attemptOrderStringList.stream()
                 .map(String::valueOf).collect(Collectors.toList()));
     }

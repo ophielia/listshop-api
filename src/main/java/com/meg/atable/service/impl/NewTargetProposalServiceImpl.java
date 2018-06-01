@@ -5,20 +5,21 @@ import com.meg.atable.api.exception.ObjectNotYoursException;
 import com.meg.atable.api.exception.ProposalProcessingException;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
+import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.data.entity.*;
 import com.meg.atable.data.repository.ProposalContextRepository;
 import com.meg.atable.data.repository.ProposalRepository;
 import com.meg.atable.data.repository.TargetRepository;
 import com.meg.atable.service.*;
+import com.meg.atable.service.tag.TagService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -44,8 +45,13 @@ public class NewTargetProposalServiceImpl implements NewTargetProposalService {
     UserService userService;
 
     @Autowired
+    DishService dishService;
+
+    @Autowired
     private MealPlanService mealPlanService;
 
+    @Autowired
+    private TagService tagService;
 
     @Override
     public ProposalEntity generateProposal(String userName, Long targetId) throws ObjectNotYoursException, ObjectNotFoundException {
@@ -185,6 +191,53 @@ public class NewTargetProposalServiceImpl implements NewTargetProposalService {
 
     }
 
+    @Override
+    public ProposalEntity fillInformationForProposal(ProposalEntity proposalEntity) {
+        if (proposalEntity == null) {
+            return null;
+        }
+
+        // get list of tag ids
+        // Set<Long> tagIds = proposalEntity.getAllTagIds();
+
+        // get target
+        TargetEntity target = getTargetForProposal(proposalEntity);
+        // get all tag ids from target
+        Set<Long> tagIds = target.getAllTagIds();
+        // retrieve tags for ids
+        Map<Long, TagEntity> tagDictionary = tagService.getDictionaryForIds(tagIds);
+
+        // set target tags
+        List<TagEntity> targetTags = getTagsForList(target.getTargetTagIds(),tagDictionary);
+        proposalEntity.setTargetTags(targetTags);
+        // fill slots
+        for (TargetSlotEntity targetSlot: target.getSlots()) {
+            proposalEntity.fillSlotTags(targetSlot.getSlotOrder(), targetSlot.getTagIdsAsList(),tagDictionary);
+        }
+
+        // get list of dish ids
+        List<Long> dishIds = proposalEntity.getAllDishIds();
+        Map<Long, DishEntity> dishDictionary = dishService.getDictionaryForIdList(dishIds);
+        proposalEntity.fillInAllDishes(dishDictionary);
+
+        return proposalEntity;
+
+    }
+
+    private List<TagEntity> getTagsForList(String targetTagIds, Map<Long, TagEntity> dictionary) {
+        return FlatStringUtils.inflateStringToList(targetTagIds,";")
+                .stream()
+                .filter(t -> dictionary.containsKey(new Long(t)))
+                .map(t -> dictionary.get(new Long(t)))
+                .collect(Collectors.toList());
+
+    }
+
+    private TargetEntity getTargetForProposal(ProposalEntity proposalEntity) {
+        return targetRepository.findTargetByProposalId(proposalEntity.getId());
+    }
+
+
     private ProposalEntity persistResults(TargetEntity target, ProposalContextEntity context, ProposalEntity proposal, ProcessResult result) {
 
 
@@ -207,6 +260,12 @@ public class NewTargetProposalServiceImpl implements NewTargetProposalService {
         context.setProposalId(proposal.getId());
         context.setTargetId(target.getTargetId());
         context.setApproaches(resultApproaches);
+        context.setProposalHashCode(proposal.getPickedHashCode());
+        context.setTargetHashCode(target.getContentHashCode());
+        context.setCurrentApproachIndex(result.getCurrentApproach());
+        if (result.getCurrentApproachType() != null) {
+            context.setCurrentApproachType(result.getCurrentApproachType());
+        }
         contextRepository.save(context);
 
         return proposal;
@@ -336,11 +395,11 @@ public class NewTargetProposalServiceImpl implements NewTargetProposalService {
         if (context == null) {
             return true;
         }
-        if (context.targetHashCode() == null) {
+        if (context.getTargetHashCode() == null) {
             return true;
         }
 
-        return context.targetHashCode().equals(target.getContentHashCode());
+        return context.getTargetHashCode().equals(target.getContentHashCode());
     }
 
     private boolean hasProposalChange(ProposalEntity proposal, ProposalContextEntity context) {
@@ -350,10 +409,10 @@ public class NewTargetProposalServiceImpl implements NewTargetProposalService {
         if (context == null) {
             return true;
         }
-        if (context.proposalHashCode() == null) {
+        if (context.getProposalHashCode() == null) {
             return true;
         }
-        return !context.proposalHashCode().equals(proposal.getPickedHashCode());
+        return !context.getProposalHashCode().equals(proposal.getPickedHashCode());
     }
 
 }

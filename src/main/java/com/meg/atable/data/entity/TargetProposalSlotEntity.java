@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
                         name = "increment_size",
                         value="1")}
 )
+@Deprecated
 public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "targetProposalSlot")
@@ -32,12 +33,8 @@ public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
     private Long slotId;
     private Long targetId;
     private Long slotDishTagId;
-    @Transient
-    private TagEntity slotDishTag;
     private String targetTagIds;
     private Integer slotOrder;
-    @Transient
-    private List<TagEntity> tags;
     @ManyToOne
     private TargetProposalEntity targetProposal;
     private Long targetSlotId;
@@ -106,11 +103,11 @@ public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
     }
 
     public TagEntity getSlotDishTag() {
-        return slotDishTag;
+        return null; //MM remove this slotDishTag;
     }
 
     public void setSlotDishTag(TagEntity slotDishTag) {
-        this.slotDishTag = slotDishTag;
+        //MM remove thisthis.slotDishTag = slotDishTag;
     }
 
     public String getTargetTagIds() {
@@ -130,11 +127,11 @@ public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
     }
 
     public List<TagEntity> getTags() {
-        return tags;
+        return null;//MM remove this tags;
     }
 
     public void setTags(List<TagEntity> tags) {
-        this.tags = tags;
+        int i=1;//MM remove this this.tags = tags;
     }
 
     public TargetProposalEntity getTargetProposal() {
@@ -160,14 +157,14 @@ public class TargetProposalSlotEntity extends AbstractInflateAndFlatten {
         if (dictionary.isEmpty()) {
             return;
         }
-        tags = inflateStringToList(getTargetTagIds()).stream()
+        List<TagEntity> tags = inflateStringToList(getTargetTagIds()).stream()
                 .filter(t -> dictionary.containsKey(new Long(t)))
                 .map(t -> dictionary.get(new Long(t)))
                 .collect(Collectors.toList());
 
         if (slotDishTagId != null) {
             if (dictionary.containsKey(slotDishTagId)) {
-                slotDishTag = dictionary.get(slotDishTagId);
+                TagEntity slotDishTag = dictionary.get(slotDishTagId);
             }
         }
 

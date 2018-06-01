@@ -16,4 +16,6 @@ public interface NewTargetProposalService {
     
     ProposalEntity proposalForMealPlan(String userName,Long mealPlanId,Long targetId, Integer slotId) throws ProposalProcessingException;
 
+    ProposalEntity fillInformationForProposal(ProposalEntity proposalEntity);
+
 }
