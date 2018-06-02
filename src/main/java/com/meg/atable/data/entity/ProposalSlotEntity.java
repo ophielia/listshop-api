@@ -148,6 +148,12 @@ public class ProposalSlotEntity {
             }
         }
 
+        if (dishSlots != null && !dishSlots.isEmpty()) {
+            for (DishSlotEntity dishslot : dishSlots) {
+                    dishslot.fillInTags(dictionary);
+            }
+        }
+
     }
 
     public Collection<Long> getAllDishIds() {

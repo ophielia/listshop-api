@@ -12,8 +12,10 @@ public interface NewTargetProposalService {
 
     ProposalEntity generateProposal(String userName,Long targetId) throws ObjectNotYoursException, ObjectNotFoundException;
 
-    ProposalEntity refreshOrFillInProposal(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException;
-    
+    ProposalEntity refreshProposal(String userName, Long proposalId) throws ProposalProcessingException;
+
+    ProposalEntity fillInProposal(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException;
+
     ProposalEntity proposalForMealPlan(String userName,Long mealPlanId,Long targetId, Integer slotId) throws ProposalProcessingException;
 
     ProposalEntity fillInformationForProposal(ProposalEntity proposalEntity);

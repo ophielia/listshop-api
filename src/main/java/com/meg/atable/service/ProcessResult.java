@@ -2,7 +2,6 @@ package com.meg.atable.service;
 
 import com.meg.atable.api.model.ApproachType;
 import com.meg.atable.data.entity.ContextApproachEntity;
-import com.meg.atable.data.entity.ProposalContextApproachEntity;
 import com.meg.atable.data.entity.ProposalSlotEntity;
 
 import java.util.List;

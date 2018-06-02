@@ -1,20 +1,26 @@
-﻿-- proposal_context changes
+﻿-- add column to meal plan
+ALTER TABLE meal_plan ADD COLUMN   target_id      bigint        ;
+
+-- proposal_context changes
 ALTER TABLE proposal_context DROP COLUMN  approach_type character;
 ALTER TABLE proposal_context DROP COLUMN  dish_count_per_slot;
 ALTER TABLE proposal_context DROP COLUMN  maximum_empties;
 ALTER TABLE proposal_context DROP COLUMN  proposal_count               ;
 ALTER TABLE proposal_context DROP COLUMN  refresh_flag;
 
-ALTER TABLE proposal_context ADD COLUMN   currentApproachType   character varying(255)   ;
-ALTER TABLE proposal_context ADD COLUMN   targetId      bigint        ;
-ALTER TABLE proposal_context ADD COLUMN   targetHashCode   character varying(255)    ;
-ALTER TABLE proposal_context ADD COLUMN   proposalHashCode character varying(255)     ;
+ALTER TABLE proposal_context ADD COLUMN   current_approach_type   character varying(255)   ;
+ALTER TABLE proposal_context ADD COLUMN   current_approach_index   integer   ;
+ALTER TABLE proposal_context ADD COLUMN   meal_plan_id   bigint   ;
+ALTER TABLE proposal_context ADD COLUMN   target_id      bigint        ;
+ALTER TABLE proposal_context ADD COLUMN   target_hash_code   character varying(255)    ;
+ALTER TABLE proposal_context ADD COLUMN   proposal_hash_code character varying(255)     ;
 
 -- proposal_approach
 CREATE TABLE proposal_approach (
     proposal_approach_id bigint NOT NULL,
+    proposal_context_id bigint NOT NULL,
     approach_number int,
-    instructions varying(255)
+    instructions character varying(255)
 );
 
 
@@ -29,8 +35,9 @@ CREATE SEQUENCE proposal_approach_sequence
 
 CREATE TABLE proposal_dish (
     dish_slot_id bigint NOT NULL,
+    slot_id bigint not null;
     dish_id bigint,
-    matched_tag_ids varying(255)
+    matched_tag_ids character varying(255)
 );
 
 CREATE SEQUENCE proposal_dish_sequence
@@ -46,7 +53,7 @@ CREATE SEQUENCE proposal_dish_sequence
 CREATE TABLE proposal_slot (
     slot_id bigint NOT NULL,
     slot_number integer,
-    flat_matched_tag_ids varying(255),
+    flat_matched_tag_ids character varying(255),
     proposal_id bigint NOT NULL,
     picked_dish_id bigint,
     slot_dish_tag_id bigint
@@ -64,7 +71,8 @@ CREATE SEQUENCE proposal_slot_sequence
 CREATE TABLE proposal (
     proposal_id bigint NOT NULL,
     user_id bigint,
-    is_refreshable boolean
+    is_refreshable boolean,
+    created timestamp without time zone
 
 );
 
@@ -76,7 +84,7 @@ CREATE SEQUENCE proposal_sequence
     CACHE 1;
 
 -- old tables
-drop table target_proposal_dish;
-drop table target_proposal_slot;
-drop table target_proposal;
+--drop table target_proposal_dish;
+--drop table target_proposal_slot;
+--drop table target_proposal;
 

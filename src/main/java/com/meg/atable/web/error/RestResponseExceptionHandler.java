@@ -2,6 +2,7 @@ package com.meg.atable.web.error;
 
 import com.meg.atable.api.exception.ObjectNotFoundException;
 import com.meg.atable.api.exception.ObjectNotYoursException;
+import com.meg.atable.api.exception.ProposalProcessingException;
 import com.meg.atable.api.model.ApiError;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -44,6 +45,18 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), message);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
+
+
+    @ExceptionHandler({ ProposalProcessingException.class })
+    public ResponseEntity<Object> handleProposalProcessingException(final Exception ex, final WebRequest request) {
+        final String message = "Error occured generating proposal.";
+        logger.info(ex.getClass().getName());
+        logger.error(message, ex);
+        //
+        final ApiError apiError = new ApiError(HttpStatus.SERVICE_UNAVAILABLE, ex.getLocalizedMessage(), message);
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
 
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {

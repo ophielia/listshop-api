@@ -39,6 +39,8 @@ public class MealPlanEntity {
     @OneToMany(mappedBy = "mealPlan", fetch = FetchType.EAGER)
     private List<SlotEntity> slots;
 
+    private Long targetId;
+
     public MealPlanEntity() {
         // jpa empty constructor
     }
@@ -91,4 +93,11 @@ public class MealPlanEntity {
         this.userId = userId;
     }
 
+    public Long getTargetId() {
+        return targetId;
+    }
+
+    public void setTargetId(Long targetId) {
+        this.targetId = targetId;
+    }
 }

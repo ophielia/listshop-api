@@ -46,7 +46,6 @@ public class ModelMapper {
                 .categories(categories);
     }
 
-
     public static Target toModel(TargetEntity targetEntity) {
         List<TargetSlot> slots = targetSlotsToModel(targetEntity.getSlots());
         List<Tag> tags = toModel(targetEntity.getTargetTags());
@@ -72,47 +71,46 @@ public class ModelMapper {
                 .slotOrder(targetSlotEntity.getSlotOrder());
     }
 
-    public static TargetProposal toModel(TargetProposalEntity proposalEntity) {
-        List<TargetProposalSlot> slots = targetProposalSlotsToModel(proposalEntity.getProposalSlots());
+    public static TargetProposal toModel(ProposalEntity proposalEntity) {
+        List<TargetProposalSlot> slots = proposalSlotsToModel(proposalEntity.getSlots());
         List<Tag> tags = toModel(proposalEntity.getTargetTags());
-        return new TargetProposal(proposalEntity.getProposalId())
+        return new TargetProposal(proposalEntity.getId())
                 .userId(proposalEntity.getUserId())
                 .targetName(proposalEntity.getTargetName())
                 .created(proposalEntity.getCreated())
-                .lastUsed(proposalEntity.getLastUsed())
                 .targetTags(tags)
-                .canBeRefreshed(proposalEntity.canBeRefreshed())
+                .canBeRefreshed(proposalEntity.isRefreshable())
                 .proposalSlots(slots);
     }
 
-    private static List<TargetProposalSlot> targetProposalSlotsToModel(List<TargetProposalSlotEntity> slotEntities) {
+    private static List<TargetProposalSlot> proposalSlotsToModel(List<ProposalSlotEntity> slotEntities) {
         List<TargetProposalSlot> targetSlots = new ArrayList<>();
         if (slotEntities != null) {
-            for (TargetProposalSlotEntity slotEntity : slotEntities) {
+            for (ProposalSlotEntity slotEntity : slotEntities) {
                 targetSlots.add(toModel(slotEntity));
             }
         }
         return targetSlots;
     }
 
-    public static TargetProposalDish toModel(TargetProposalDishEntity dishEntity) {
+    public static TargetProposalDish toModel(DishSlotEntity dishEntity) {
         List<Tag> tags = toModel(dishEntity.getMatchedTags());
-        return new TargetProposalDish(dishEntity.getProposalDishId())
+        return new TargetProposalDish(dishEntity.getDishId())
                 .dish(toModel(dishEntity.getDish()))
                 .matchedTags(tags);
     }
 
-    public static TargetProposalSlot toModel(TargetProposalSlotEntity slotEntity) {
+    public static TargetProposalSlot toModel(ProposalSlotEntity slotEntity) {
         List<Tag> tags = toModel(slotEntity.getTags());
-        List<TargetProposalDish> dishes = proposalDishSlotsToModel(slotEntity.getDishSlotList());
+        List<TargetProposalDish> dishes = proposalDishSlotsToModel(slotEntity.getDishSlots());
 
-        return new TargetProposalSlot(slotEntity.getSlotId())
+        return new TargetProposalSlot(slotEntity.getId())
                 .slotDishTag(toModel(slotEntity.getSlotDishTag()))
                 .tags(tags)
-                .selectedDishId(slotEntity.getSelectedDishId())
-                .selectedDishIndex(slotEntity.getSelectedDishIndex())
+                .selectedDishId(slotEntity.getPickedDishId())
+                .selectedDishIndex(0)
                 .dishSlotList(dishes)
-                .slotOrder(slotEntity.getSlotOrder());
+                .slotOrder(slotEntity.getSlotNumber());
 
     }
 
@@ -126,10 +124,10 @@ public class ModelMapper {
         return targetSlots;
     }
 
-    private static List<TargetProposalDish> proposalDishSlotsToModel(List<TargetProposalDishEntity> slotDishEntities) {
+    private static List<TargetProposalDish> proposalDishSlotsToModel(List<DishSlotEntity> slotDishEntities) {
         List<TargetProposalDish> dishSlots = new ArrayList<>();
         if (slotDishEntities != null) {
-            for (TargetProposalDishEntity dishEntity : slotDishEntities) {
+            for (DishSlotEntity dishEntity : slotDishEntities) {
                 dishSlots.add(toModel(dishEntity));
             }
         }
@@ -233,7 +231,6 @@ public class ModelMapper {
         }
         return result;
     }
-
 
     private static ItemSource toDishSourceModel( DishEntity dish) {
         ItemSource source = new ItemSource();

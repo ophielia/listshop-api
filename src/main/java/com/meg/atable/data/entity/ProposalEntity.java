@@ -3,6 +3,8 @@ package com.meg.atable.data.entity;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.service.TargetServiceConstants;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.postgresql.util.PSQLException;
 
 import javax.persistence.*;
@@ -33,10 +35,18 @@ public class ProposalEntity {
 
     private Long userId;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "proposal")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<ProposalSlotEntity> slots;
+
+    private Date created;
+
     private boolean isRefreshable;
+
     @Transient
     private List<TagEntity> targetTags;
+    @Transient
+    private String targetName;
 
 
     public Long getId() {
@@ -79,17 +89,6 @@ public class ProposalEntity {
 
         int finalCode = hashCode.toString().hashCode();
         return String.valueOf(finalCode);
-    }
-
-    public void fillInAllTags(Map<Long, TagEntity> dictionary) {
-        if (dictionary.isEmpty()) {
-            return;
-        }
-        if (slots != null && !slots.isEmpty()) {
-            for (ProposalSlotEntity slot : slots) {
-                slot.fillInTags(dictionary);
-            }
-        }
     }
 
 
@@ -137,5 +136,21 @@ public class ProposalEntity {
                 slot.fillInDishes(dictionary);
             }
         }
+    }
+
+    public void setTargetName(String targetName) {
+        this.targetName = targetName;
+    }
+
+    public String getTargetName() {
+        return targetName;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getCreated() {
+        return created;
     }
 }

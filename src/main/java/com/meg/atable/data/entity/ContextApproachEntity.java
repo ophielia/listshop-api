@@ -29,22 +29,12 @@ public class ContextApproachEntity {
 
     private String instructions;
 
-    private ProposalContextEntity context;
-
     public Long getId() {
         return proposalApproachId;
     }
 
     public void setId(Long proposalApproachId) {
         this.proposalApproachId = proposalApproachId;
-    }
-
-    public ProposalContextEntity getProposalContext() {
-        return proposalContext;
-    }
-
-    public void setProposalContext(ProposalContextEntity proposalContext) {
-        this.proposalContext = proposalContext;
     }
 
     public Integer getApproachNumber() {
@@ -56,11 +46,11 @@ public class ContextApproachEntity {
     }
 
     public void setContext(ProposalContextEntity context) {
-        this.context = context;
+        this.proposalContext = context;
     }
 
     public ProposalContextEntity getContext() {
-        return context;
+        return proposalContext;
     }
 
     public String getInstructions() {

@@ -1,9 +1,11 @@
 package com.meg.atable.web.controller;
 
 import com.meg.atable.api.controller.TargetProposalRestControllerApi;
+import com.meg.atable.api.exception.ProposalProcessingException;
+import com.meg.atable.api.model.ProposalResource;
 import com.meg.atable.api.model.SortDirection;
-import com.meg.atable.api.model.TargetProposalResource;
-import com.meg.atable.data.entity.TargetProposalEntity;
+import com.meg.atable.data.entity.ProposalEntity;
+import com.meg.atable.service.NewTargetProposalService;
 import com.meg.atable.service.TargetProposalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -25,11 +27,14 @@ public class TargetProposalRestController implements TargetProposalRestControlle
     @Autowired
     private TargetProposalService targetProposalService;
 
+    @Autowired
+    private NewTargetProposalService targetProposalGenerator;
+
     @Override
     public ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId) {
-        TargetProposalEntity proposalEntity = this.targetProposalService.createTargetProposal(principal.getName(), targetId);
+        ProposalEntity proposalEntity = this.targetProposalGenerator.generateProposal(principal.getName(), targetId);
         if (proposalEntity != null) {
-            Link forOneProposal = new TargetProposalResource(proposalEntity).getLink("self");
+            Link forOneProposal = new ProposalResource(proposalEntity).getLink("self");
             return ResponseEntity.created(URI.create(forOneProposal.getHref())).build();
         }
 
@@ -37,13 +42,13 @@ public class TargetProposalRestController implements TargetProposalRestControlle
     }
 
     @Override
-    public ResponseEntity<TargetProposalResource> getProposal(Principal principal, @PathVariable("proposalId") Long proposalId) {
-        TargetProposalEntity proposalEntity = this.targetProposalService.getTargetProposalById(principal.getName(), proposalId);
+    public ResponseEntity<ProposalResource> getProposal(Principal principal, @PathVariable("proposalId") Long proposalId) {
+        ProposalEntity proposalEntity = this.targetProposalService.getProposalById(principal.getName(), proposalId);
         if (proposalEntity != null) {
 
             // fill tag and dish info for proposal
-            proposalEntity = this.targetProposalService.fillInformationForProposal(proposalEntity);
-            TargetProposalResource proposalResource = new TargetProposalResource(proposalEntity);
+            proposalEntity = this.targetProposalGenerator.fillInformationForProposal(proposalEntity);
+            ProposalResource proposalResource = new ProposalResource(proposalEntity);
             return new ResponseEntity<>(proposalResource, HttpStatus.OK);
         }
 
@@ -53,13 +58,14 @@ public class TargetProposalRestController implements TargetProposalRestControlle
 
     @Override
     public ResponseEntity<Object> refreshProposal(Principal principal, @PathVariable("proposalId") Long proposalId,
-                                                  @RequestParam(value = "direction", required = false) String direction) {
+                                                  @RequestParam(value = "direction", required = false) String direction) throws ProposalProcessingException {
+        // MM clean up - this isn't used
         SortDirection sortDirection = SortDirection.UP;
         if (direction != null) {
             sortDirection = SortDirection.valueOf(direction);
         }
-        this.targetProposalService.refreshTargetProposal(principal.getName(), proposalId, sortDirection);
 
+        this.targetProposalGenerator.refreshProposal(principal.getName(),proposalId);
 
         return ResponseEntity.noContent().build();
 
@@ -80,8 +86,9 @@ public class TargetProposalRestController implements TargetProposalRestControlle
     }
 
     @Override
-    public ResponseEntity<Object> refreshProposalSlot(Principal principal, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) {
-        this.targetProposalService.showMoreProposalSlotOptions(principal.getName(), proposalId, slotId);
+    public ResponseEntity<Object> refreshProposalSlot(Principal principal, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) throws ProposalProcessingException {
+        // MM need to swap out id with number
+        this.targetProposalGenerator.fillInProposal(principal.getName(), proposalId, slotId.intValue());
 
 
         return ResponseEntity.noContent().build();

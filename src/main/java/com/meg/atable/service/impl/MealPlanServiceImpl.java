@@ -80,7 +80,7 @@ public class MealPlanServiceImpl implements MealPlanService {
         // get username
         UserAccountEntity user = userService.getUserByUserName(username);
         // get proposal
-        TargetProposalEntity proposalEntity = targetProposalService.getTargetProposalById(username, proposalId);
+        ProposalEntity proposalEntity = targetProposalService.getTargetProposalById(username, proposalId);
 
         if (proposalEntity == null) {
             return null;
@@ -95,12 +95,12 @@ public class MealPlanServiceImpl implements MealPlanService {
         mealPlan = mealPlanRepository.save(mealPlan);
 
         // get targets for proposal
-        List<TargetProposalSlotEntity> proposalSlots = proposalEntity.getProposalSlots();
+        List<ProposalSlotEntity> proposalSlots = proposalEntity.getSlots();
         if (proposalSlots == null) {
             return mealPlan;
         }
-        for (TargetProposalSlotEntity proposalSlot : proposalSlots) {
-            Long dishId = proposalSlot.getSelectedDishId();
+        for (ProposalSlotEntity proposalSlot : proposalSlots) {
+            Long dishId = proposalSlot.getPickedDishId();
             DishEntity dish = dishService.getDishForUserById(username, dishId);
 
             // add new meal plan slot

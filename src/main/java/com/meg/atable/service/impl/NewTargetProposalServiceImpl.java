@@ -58,7 +58,7 @@ public class NewTargetProposalServiceImpl implements NewTargetProposalService {
         // get target for user
         TargetEntity target = getTargetForUser(userName, targetId);
         // get proposal context for target
-        ProposalContextEntity context = getProposalContextForTarget(targetId);
+        ProposalContextEntity context = getContextForTarget(targetId);
         ProposalEntity proposal = null;
         if (context != null) {
             proposal = getProposalForUser(userName, context.getProposalId());
@@ -79,9 +79,119 @@ public class NewTargetProposalServiceImpl implements NewTargetProposalService {
         return persistResults(target,context, proposal, result);
     }
 
+    @Override
+    public ProposalEntity refreshProposal(String userName, Long proposalId) throws ProposalProcessingException {
+        return refreshOrFillInProposal(userName,proposalId, null);
+    }
 
     @Override
-    public ProposalEntity refreshOrFillInProposal(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException {
+    public ProposalEntity fillInProposal(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException {
+        return refreshOrFillInProposal(userName,proposalId, slotNr);
+    }
+
+
+
+    @Override
+    public ProposalEntity proposalForMealPlan(String userName, Long mealPlanId, Long targetId, Integer slotId) throws ProposalProcessingException {
+        boolean newSearch = true;
+        ProposalEntity proposal = null;
+
+        // get proposal context for target
+        ProposalContextEntity context = getContextForTarget(targetId);
+        if (context != null) {
+            newSearch = false;
+            try {
+                proposal = getProposalForUser(userName, context.getProposalId());
+            } catch (ObjectNotFoundException e) {
+                // the context was found, but not the proposal.
+                // strange - but not can be handled
+                // log and continue
+                logger.error("Proposal [" + context.getProposalId() + "] not found for existing context in MealPlan search.", e);
+                proposal = new ProposalEntity();
+            }
+        } else {
+            context = new ProposalContextEntity();
+            context.setMealPlanId(mealPlanId);
+        }
+
+        // get  target
+        TargetEntity target = null;
+        try {
+            target = getTargetForUser(userName, targetId);
+        } catch (ObjectNotFoundException | ObjectNotYoursException e) {
+            throw new ProposalProcessingException("Target [" + targetId + "] not found for MealPlan search.", e);
+        }
+
+        // get mealplan
+        MealPlanEntity mealPlan;
+        try {
+            mealPlan = mealPlanService.getMealPlanById(userName, mealPlanId);
+            mealPlanService.fillInDishTags(mealPlan);
+        } catch (ObjectNotFoundException | ObjectNotYoursException e) {
+            throw new ProposalProcessingException("MealPlan [" + mealPlanId + "] not found for MealPlan search.", e);
+        }
+
+
+        // check for changes
+        boolean hasChanged = !newSearch && (hasTargetChange(target, context) || hasProposalChange(proposal, context));
+
+
+        ProposalSearchType searchType = hasChanged || newSearch ? ProposalSearchType.NewSearch : ProposalSearchType.RefreshSearch;
+
+        // create search object
+        ProposalRequestBuilder builder = new ProposalRequestBuilder();
+        ProposalRequest request = builder.create()
+                .withSearchType(searchType)
+                .withProposal(proposal)
+                .withTarget(target)
+                .withMealPlan(mealPlan)
+                .withContext(context)
+                .build();
+
+        // process proposal request
+        ProcessResult result = processProposalRequest(request);
+
+        // persist results
+        // process proposal
+        return persistResults(target,context, proposal, result);
+
+    }
+
+    @Override
+    public ProposalEntity fillInformationForProposal(ProposalEntity proposalEntity) {
+        if (proposalEntity == null) {
+            return null;
+        }
+
+        // get list of tag ids
+        // Set<Long> tagIds = proposalEntity.getAllTagIds();
+
+        // get target
+        TargetEntity target = getTargetForProposal(proposalEntity);
+        proposalEntity.setTargetName(target.getTargetName());
+        // get all tag ids from target
+        Set<Long> tagIds = target.getAllTagIds();
+        // retrieve tags for ids
+        Map<Long, TagEntity> tagDictionary = tagService.getDictionaryForIds(tagIds);
+
+        // set target tags
+        List<TagEntity> targetTags = getTagsForList(target.getTargetTagIds(),tagDictionary);
+        proposalEntity.setTargetTags(targetTags);
+        // fill slots
+        for (TargetSlotEntity targetSlot: target.getSlots()) {
+            proposalEntity.fillSlotTags(targetSlot.getSlotOrder(), targetSlot.getTagIdsAsList(),tagDictionary);
+        }
+
+        // get list of dish ids
+        List<Long> dishIds = proposalEntity.getAllDishIds();
+        Map<Long, DishEntity> dishDictionary = dishService.getDictionaryForIdList(dishIds);
+        proposalEntity.fillInAllDishes(dishDictionary);
+
+        return proposalEntity;
+
+    }
+
+    private ProposalEntity refreshOrFillInProposal(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException {
         // get proposal for user
         ProposalEntity proposal = null;
         try {
@@ -130,99 +240,6 @@ public class NewTargetProposalServiceImpl implements NewTargetProposalService {
         return persistResults(target,context, proposal, result);
     }
 
-    @Override
-    public ProposalEntity proposalForMealPlan(String userName, Long mealPlanId, Long targetId, Integer slotId) throws ProposalProcessingException {
-        boolean newSearch = true;
-        ProposalEntity proposal = null;
-
-        // get proposal context for target
-        ProposalContextEntity context = getContextForMealPlan(mealPlanId);
-        if (context != null) {
-            newSearch = false;
-            try {
-                proposal = getProposalForUser(userName, context.getProposalId());
-            } catch (ObjectNotFoundException e) {
-                // the context was found, but not the proposal.
-                // strange - but not can be handled
-                // log and continue
-                logger.error("Proposal [" + targetId + "] not found for existing context in MealPlan search.", e);
-            }
-        }
-
-        // get  target
-        TargetEntity target = null;
-        try {
-            target = getTargetForUser(userName, targetId);
-        } catch (ObjectNotFoundException | ObjectNotYoursException e) {
-            throw new ProposalProcessingException("Target [" + targetId + "] not found for MealPlan search.", e);
-        }
-
-        // get mealplan
-        MealPlanEntity mealPlan;
-        try {
-            mealPlan = mealPlanService.getMealPlanById(userName, mealPlanId);
-        } catch (ObjectNotFoundException | ObjectNotYoursException e) {
-            throw new ProposalProcessingException("MealPlan [" + mealPlanId + "] not found for MealPlan search.", e);
-        }
-
-
-        // check for changes
-        boolean hasChanged = !newSearch && (hasTargetChange(target, context) || hasProposalChange(proposal, context));
-
-
-        ProposalSearchType searchType = hasChanged || newSearch ? ProposalSearchType.NewSearch : ProposalSearchType.RefreshSearch;
-
-        // create search object
-        ProposalRequestBuilder builder = new ProposalRequestBuilder();
-        ProposalRequest request = builder.create()
-                .withSearchType(searchType)
-                .withProposal(proposal)
-                .withTarget(target)
-                .withMealPlan(mealPlan)
-                .withContext(context)
-                .build();
-
-        // process proposal request
-        ProcessResult result = processProposalRequest(request);
-
-        // persist results
-        // process proposal
-        return persistResults(target,context, proposal, result);
-
-    }
-
-    @Override
-    public ProposalEntity fillInformationForProposal(ProposalEntity proposalEntity) {
-        if (proposalEntity == null) {
-            return null;
-        }
-
-        // get list of tag ids
-        // Set<Long> tagIds = proposalEntity.getAllTagIds();
-
-        // get target
-        TargetEntity target = getTargetForProposal(proposalEntity);
-        // get all tag ids from target
-        Set<Long> tagIds = target.getAllTagIds();
-        // retrieve tags for ids
-        Map<Long, TagEntity> tagDictionary = tagService.getDictionaryForIds(tagIds);
-
-        // set target tags
-        List<TagEntity> targetTags = getTagsForList(target.getTargetTagIds(),tagDictionary);
-        proposalEntity.setTargetTags(targetTags);
-        // fill slots
-        for (TargetSlotEntity targetSlot: target.getSlots()) {
-            proposalEntity.fillSlotTags(targetSlot.getSlotOrder(), targetSlot.getTagIdsAsList(),tagDictionary);
-        }
-
-        // get list of dish ids
-        List<Long> dishIds = proposalEntity.getAllDishIds();
-        Map<Long, DishEntity> dishDictionary = dishService.getDictionaryForIdList(dishIds);
-        proposalEntity.fillInAllDishes(dishDictionary);
-
-        return proposalEntity;
-
-    }
 
     private List<TagEntity> getTagsForList(String targetTagIds, Map<Long, TagEntity> dictionary) {
         return FlatStringUtils.inflateStringToList(targetTagIds,";")
@@ -242,11 +259,12 @@ public class NewTargetProposalServiceImpl implements NewTargetProposalService {
 
 
         // persist results
-        if (proposal == null) {
-            proposal = proposalRepository.save(new ProposalEntity());
+        if (proposal.getId() == null) {
+            proposal.setCreated(new Date());
+            proposal = proposalRepository.save(proposal);
         }
-        if (context == null) {
-            context = contextRepository.save(new ProposalContextEntity());
+        if (context.getId() == null) {
+            context = contextRepository.save(context);
         }
         // process proposal
         List<ProposalSlotEntity> resultSlots = mergeProposalSlots(proposal, result.getResultSlots());
@@ -351,11 +369,7 @@ public class NewTargetProposalServiceImpl implements NewTargetProposalService {
         return processor.processProposal(request);
     }
 
-    private ProposalContextEntity getContextForMealPlan(Long mealPlanId) {
-        return contextRepository.findByMealPlanId(mealPlanId);
-    }
-
-    private ProposalContextEntity getProposalContextForTarget(Long targetId) {
+    private ProposalContextEntity getContextForTarget(Long targetId) {
         return contextRepository.findByTargetId(targetId);
     }
 

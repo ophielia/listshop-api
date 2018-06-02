@@ -27,9 +27,6 @@ public class ProposalContextEntity {
 
     private Long proposalId;
 
-    @OneToMany(mappedBy = "proposalContext", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<ProposalContextApproachEntity> contextApproaches;
-
     @Enumerated(EnumType.STRING)
     private ApproachType currentApproachType;
 
@@ -38,12 +35,14 @@ public class ProposalContextEntity {
 
     private Long targetId;
 
-    @OneToMany(mappedBy = "proposalContext", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "proposalContext", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<ContextApproachEntity> approaches;
 
     private String targetHashCode;
 
     private String proposalHashCode;
+
+    private Long mealPlanId;
 
 
     public ProposalContextEntity() {
@@ -58,40 +57,6 @@ public class ProposalContextEntity {
         this.proposalId = proposalId;
     }
 
-    public String getRefreshFlag() {
-        return null;//MM remove this refreshFlag;
-    }
-
-    public void setRefreshFlag(String refreshFlag) {
-
-        //MM remove this this.refreshFlag = refreshFlag;
-    }
-
-    public List<ProposalContextApproachEntity> getSlots() {
-        return contextApproaches;
-    }
-
-    public Integer getDishCountPerSlot() {
-        return null;//MM remove thisdishCountPerSlot;
-    }
-
-    public void setDishCountPerSlot(int dishCountPerSlot) {
-        //MM remove this this.dishCountPerSlot = dishCountPerSlot;
-    }
-
-    public Integer getProposalCount() {
-        return null;
-        //MM remove thisproposalCount;
-    }
-
-    public void setProposalCount(int proposalCount) {
-        //MM remove thisthis.proposalCount = proposalCount;
-    }
-
-    public void setContextApproaches(List<ProposalContextApproachEntity> contextApproaches) {
-        this.contextApproaches = contextApproaches;
-    }
-
     public int getCurrentApproachIndex() {
         return currentApproachIndex;
     }
@@ -99,7 +64,6 @@ public class ProposalContextEntity {
     public void setCurrentApproachIndex(int currentApproachIndex) {
         this.currentApproachIndex = currentApproachIndex;
     }
-
 
     public Long getId() {
         return this.proposalContextId;
@@ -139,11 +103,11 @@ public class ProposalContextEntity {
     }
 
     public Long getMealPlanId() {
-        return null;//MM remove this mealPlanId;
+        return mealPlanId;
     }
 
     public void setMealPlanId(Long mealPlanId) {
-        //MM remove this this.mealPlanId = mealPlanId;
+        this.mealPlanId = mealPlanId;
     }
 
 

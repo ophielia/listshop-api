@@ -1,6 +1,7 @@
 package com.meg.atable.api.controller;
 
-import com.meg.atable.api.model.TargetProposalResource;
+import com.meg.atable.api.exception.ProposalProcessingException;
+import com.meg.atable.api.model.ProposalResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +19,11 @@ public interface TargetProposalRestControllerApi {
     ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{proposalId}", produces = "application/json")
-    ResponseEntity<TargetProposalResource> getProposal(Principal principal, @PathVariable("proposalId") Long proposalId);
+    ResponseEntity<ProposalResource> getProposal(Principal principal, @PathVariable("proposalId") Long proposalId);
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{proposalId}", produces = "application/json")
     ResponseEntity<Object> refreshProposal(Principal principal, @PathVariable("proposalId") Long proposalId,
-                                           @RequestParam(value = "direction", required = false) String direction);
+                                           @RequestParam(value = "direction", required = false) String direction) throws ProposalProcessingException;
 
     @RequestMapping(method = RequestMethod.POST, value = "/{proposalId}/slot/{slotId}/dish/{dishId}", produces = "application/json")
     ResponseEntity<Object> selectDishInSlot(Principal principal, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId);
@@ -31,7 +32,7 @@ public interface TargetProposalRestControllerApi {
     ResponseEntity<Object> clearDishFromSlot(Principal principal, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId);
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{proposalId}/slot/{slotId}", produces = "application/json")
-    ResponseEntity<Object> refreshProposalSlot(Principal principal, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId);
+    ResponseEntity<Object> refreshProposalSlot(Principal principal, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) throws ProposalProcessingException;
 
 
 }

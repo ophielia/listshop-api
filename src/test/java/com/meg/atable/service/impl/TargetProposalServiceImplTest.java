@@ -92,7 +92,7 @@ private DishSearchService dishSearchService;
         TargetEntity target = createTarget3();
 
 
-        targetProposalService.createTargetProposal(testUserName,targetId1);
+        // MM targetProposalService.createTargetProposal(testUserName,targetId1);
     }
 
     private TargetEntity createTarget1() {

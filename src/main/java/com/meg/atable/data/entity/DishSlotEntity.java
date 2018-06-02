@@ -1,9 +1,13 @@
 package com.meg.atable.data.entity;
 
+import com.meg.atable.common.FlatStringUtils;
 import com.sun.javafx.scene.control.behavior.OptionalBoolean;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "proposal_dish")
@@ -30,6 +34,8 @@ public class DishSlotEntity {
     private ProposalSlotEntity slot;
     @Transient
     private DishEntity dish;
+    @Transient
+    private List<TagEntity> matchedTags;
 
     public Long getId() {
         return dishSlotId;
@@ -69,5 +75,26 @@ public class DishSlotEntity {
 
     public DishEntity getDish() {
         return dish;
+    }
+
+    public List<TagEntity> getMatchedTags() {
+        return matchedTags;
+    }
+
+    public void setMatchedTags(List<TagEntity> matchedTags) {
+        this.matchedTags = matchedTags;
+    }
+
+    public void fillInTags(Map<Long, TagEntity> dictionary) {
+
+        if (dictionary.isEmpty()) {
+            return;
+        }
+        matchedTags = FlatStringUtils.inflateStringToList(getMatchedTagIds(),";").stream()
+                .filter(t -> dictionary.containsKey(new Long(t)))
+                .map( t -> dictionary.get(new Long(t)))
+                .collect(Collectors.toList());
+
+
     }
 }

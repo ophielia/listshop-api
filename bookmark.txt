@@ -22,8 +22,13 @@ CURRENT HOPPER:
         sub menus for dish, list and plan (i.e. for list - shop / add / manage / )
 
     Back End
-        continue adding / consolidating error handling - not found and doesn't belong - which is handled by controller advice
-        coming up on target / proposal refactor
+        done - continue adding / consolidating error handling - not found and doesn't belong - which is handled by controller advice
+        done - coming up on target / proposal refactor
+        Rework targets
+            wire in repositories
+            qualifiers for different processors
+            tests
+            different processors
 
     Front end - plans
         stub page for create meal plan
