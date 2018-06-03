@@ -51,4 +51,13 @@ public final class TestConstants {
     public static final Long MENU_PLAN_3_ID = 503L;  //delete meal plan
     public static final String MENU_PLAN_3_NAME ="meal plan 3";  //delete meal plan
 
+    public static final Long TAG_MAIN_DISH = 320L;
+    public static final Long TAG_SIDE_DISH = 432L;
+    public static final Long TAG_YUMMY = 321L;
+    public static final Long TAG_CARROTS = 81L;
+    public static final Long TAG_PASTA = 24L;
+    public static final Long TAG_CROCKPOT = 323L;
+    public static final Long TAG_MEAT = 346L;
+    public static final Long TAG_SOUP = 301L;
+
 }

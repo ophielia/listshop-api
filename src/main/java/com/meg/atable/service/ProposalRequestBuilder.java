@@ -11,10 +11,7 @@ import com.meg.atable.service.impl.ProposalRequest;
  */
 public class ProposalRequestBuilder {
     ProposalRequest request;
-    ProposalEntity proposal;
-    TargetEntity target;
-    ProposalContextEntity context;
-    ProposalSearchType searchType;
+
 
     public ProposalRequestBuilder() {
 
@@ -27,16 +24,16 @@ public class ProposalRequestBuilder {
     }
 
     public ProposalRequestBuilder withTarget(TargetEntity target) {
-        this.request.setTarget(this.target);
+        this.request.setTarget(target);
         return this;
     }
     public ProposalRequestBuilder withProposal(ProposalEntity proposal) {
-        this.request.setProposal(this.proposal);
+        this.request.setProposal(proposal);
         return this;
     }
 
     public ProposalRequestBuilder withContext(ProposalContextEntity context) {
-        this.request.setContext(this.context);
+        this.request.setContext(context);
         return this;
     }
 
@@ -51,7 +48,7 @@ public class ProposalRequestBuilder {
     }
 
     public ProposalRequestBuilder withSearchType(ProposalSearchType searchType) {
-        this.request.setSearchType(this.searchType);
+        this.request.setSearchType(searchType);
         return this;
     }
 

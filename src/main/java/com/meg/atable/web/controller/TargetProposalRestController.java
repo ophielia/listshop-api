@@ -5,7 +5,7 @@ import com.meg.atable.api.exception.ProposalProcessingException;
 import com.meg.atable.api.model.ProposalResource;
 import com.meg.atable.api.model.SortDirection;
 import com.meg.atable.data.entity.ProposalEntity;
-import com.meg.atable.service.NewTargetProposalService;
+import com.meg.atable.service.ProposalGeneratorService;
 import com.meg.atable.service.TargetProposalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -28,7 +28,7 @@ public class TargetProposalRestController implements TargetProposalRestControlle
     private TargetProposalService targetProposalService;
 
     @Autowired
-    private NewTargetProposalService targetProposalGenerator;
+    private ProposalGeneratorService targetProposalGenerator;
 
     @Override
     public ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId) {
@@ -88,7 +88,7 @@ public class TargetProposalRestController implements TargetProposalRestControlle
     @Override
     public ResponseEntity<Object> refreshProposalSlot(Principal principal, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) throws ProposalProcessingException {
         // MM need to swap out id with number
-        this.targetProposalGenerator.fillInProposal(principal.getName(), proposalId, slotId.intValue());
+        this.targetProposalGenerator.fillOutProposalSlot(principal.getName(), proposalId, slotId.intValue());
 
 
         return ResponseEntity.noContent().build();

@@ -26,10 +26,11 @@ import java.util.stream.Collectors;
  */
 @Service
 @Transactional
-public class NewTargetProposalServiceImpl implements NewTargetProposalService {
+public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
 
-    private static final Logger logger = LogManager.getLogger(NewTargetProposalServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(ProposalGeneratorServiceImpl.class);
 
+    @Autowired
     ProposalProcessorFactory proposalProcessorFactory;
 
     @Autowired
@@ -85,7 +86,7 @@ public class NewTargetProposalServiceImpl implements NewTargetProposalService {
     }
 
     @Override
-    public ProposalEntity fillInProposal(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException {
+    public ProposalEntity fillOutProposalSlot(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException {
         return refreshOrFillInProposal(userName,proposalId, slotNr);
     }
 
@@ -392,7 +393,7 @@ public class NewTargetProposalServiceImpl implements NewTargetProposalService {
     private ProposalEntity getProposalForUser(String userName, Long proposalId) throws ObjectNotFoundException {
         UserAccountEntity user = userService.getUserByUserName(userName);
 
-        ProposalEntity proposal = proposalRepository.findProposalByUserIdAndId(user.getId(), proposalId);
+        ProposalEntity proposal = proposalRepository.findProposalByUserIdAndProposalId(user.getId(), proposalId);
         if (proposal == null) {
             final String msg = "No proposal found by id for user [" + userName + "] and proposal [" + proposalId + "]";
             throw new ObjectNotFoundException(msg, proposalId, "Proposal");

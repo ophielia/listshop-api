@@ -5,18 +5,21 @@ import com.meg.atable.service.ProposalProcessorFactory;
 import com.meg.atable.service.ProposalSearchType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * Created by margaretmartin on 24/05/2018.
  */
+@Component
 public class ProposalProcessorFactoryImpl implements ProposalProcessorFactory {
 
     @Autowired
-            @Qualifier(value="newSearchProposalProcessorImpl")
+    @Qualifier(value="newSearch")
     ProposalProcessor newSearchProcessor;
 
     @Autowired
-    @Qualifier(value="refreshProposalProcessorImpl")
+    @Qualifier(value="refreshSearch")
     ProposalProcessor refreshSearchProcessor;
 
     @Override

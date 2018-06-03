@@ -25,8 +25,8 @@ CURRENT HOPPER:
         done - continue adding / consolidating error handling - not found and doesn't belong - which is handled by controller advice
         done - coming up on target / proposal refactor
         Rework targets
-            wire in repositories
-            qualifiers for different processors
+            done - wire in repositories
+            done - qualifiers for different processors
             tests
             different processors
 
