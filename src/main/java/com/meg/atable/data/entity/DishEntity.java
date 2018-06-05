@@ -14,13 +14,13 @@ import java.util.List;
         strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
         parameters = {@org.hibernate.annotations.Parameter(
                 name = "sequence_name",
-                value="dish_sequence"),
+                value = "dish_sequence"),
                 @org.hibernate.annotations.Parameter(
                         name = "initial_value",
-                        value="57000"),
+                        value = "57000"),
                 @org.hibernate.annotations.Parameter(
                         name = "increment_size",
-                        value="1")}
+                        value = "1")}
 )
 public class DishEntity {
 
@@ -28,7 +28,7 @@ public class DishEntity {
     private Long userId;
 
     @Id
-    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="dish_sequence")
+    //@GeneratedValue( strategy=GenerationType.SEQUENCE, generator="dish_sequence")
     @Column(name = "dish_id")
     private Long dish_id;
 
@@ -40,7 +40,7 @@ public class DishEntity {
     @JoinTable(name = "DISH_TAGS",
             joinColumns = @JoinColumn(name = "DISH_ID"),
             inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
-    private List<TagEntity> tags= new ArrayList<>();
+    private List<TagEntity> tags = new ArrayList<>();
 
     private Date lastAdded;
 

@@ -1,7 +1,6 @@
 package com.meg.atable.data.entity;
 
 import com.meg.atable.common.FlatStringUtils;
-import com.sun.javafx.scene.control.behavior.OptionalBoolean;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -16,13 +15,14 @@ import java.util.stream.Collectors;
         strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
         parameters = {@org.hibernate.annotations.Parameter(
                 name = "sequence_name",
-                value="proposal_dish_sequence"),
+                value = "proposal_dish_sequence"),
                 @org.hibernate.annotations.Parameter(
                         name = "increment_size",
-                        value="1")}
+                        value = "1")}
 )
 public class DishSlotEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "proposal_dish_sequence")
     private Long dishSlotId;
 
     private Long dishId;
@@ -57,24 +57,24 @@ public class DishSlotEntity {
         this.matchedTagIds = matchedTagIds;
     }
 
-    public void setSlot(ProposalSlotEntity slot) {
-        this.slot = slot;
-    }
-
     public ProposalSlotEntity getSlot() {
         return slot;
+    }
+
+    public void setSlot(ProposalSlotEntity slot) {
+        this.slot = slot;
     }
 
     public void setProposalSlot(ProposalSlotEntity proposalSlot) {
         this.slot = proposalSlot;
     }
 
-    public void setDish(DishEntity dish) {
-        this.dish = dish;
-    }
-
     public DishEntity getDish() {
         return dish;
+    }
+
+    public void setDish(DishEntity dish) {
+        this.dish = dish;
     }
 
     public List<TagEntity> getMatchedTags() {
@@ -90,9 +90,9 @@ public class DishSlotEntity {
         if (dictionary.isEmpty()) {
             return;
         }
-        matchedTags = FlatStringUtils.inflateStringToList(getMatchedTagIds(),";").stream()
+        matchedTags = FlatStringUtils.inflateStringToList(getMatchedTagIds(), ";").stream()
                 .filter(t -> dictionary.containsKey(new Long(t)))
-                .map( t -> dictionary.get(new Long(t)))
+                .map(t -> dictionary.get(new Long(t)))
                 .collect(Collectors.toList());
 
 

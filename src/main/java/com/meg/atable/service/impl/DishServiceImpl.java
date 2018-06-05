@@ -1,6 +1,8 @@
 package com.meg.atable.service.impl;
 
-import com.meg.atable.api.exception.*;
+import com.meg.atable.api.exception.ObjectNotFoundException;
+import com.meg.atable.api.exception.ObjectNotYoursException;
+import com.meg.atable.api.exception.UserNotFoundException;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.data.repository.UserRepository;
@@ -40,7 +42,7 @@ public class DishServiceImpl implements DishService {
     private TagStructureService tagStructureService;
 
     @Override
-    public Collection<DishEntity> getDishesForUserName(String userName) throws UserNotFoundException {
+    public List<DishEntity> getDishesForUserName(String userName) throws UserNotFoundException {
         UserAccountEntity user = userRepository.findByUsername(userName);
         if (user == null) {
             throw new UserNotFoundException(userName);
@@ -64,7 +66,7 @@ public class DishServiceImpl implements DishService {
         DishEntity dish = dishOpt.get();
         if (!dish.getUserId().equals(user.getId())) {
             final String msg = "Dish found for dishId [" + dishId + "], but doesn't belong to user [" + username + "].";
-            throw new ObjectNotYoursException(msg, "Dish",dishId, user.getUsername());
+            throw new ObjectNotYoursException(msg, "Dish", dishId, user.getUsername());
         }
         return dish;
     }

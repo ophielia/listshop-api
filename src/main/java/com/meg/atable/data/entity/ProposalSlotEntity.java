@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Table(name = "proposal_slot")
 @GenericGenerator(
         name = "proposal_slot_sequence",
-        strategy = "org.hibernate.slotId.enhanced.SequenceStyleGenerator",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
         parameters = {@org.hibernate.annotations.Parameter(
                 name = "sequence_name",
                 value = "proposal_slot_sequence"),
@@ -26,12 +26,13 @@ import java.util.stream.Collectors;
 public class ProposalSlotEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "proposal_slot_sequence")
     private Long slotId;
 
     private Integer slotNumber;
 
     @ManyToOne
-    @JoinColumn(name = "proposal_id", nullable=false)
+    @JoinColumn(name = "proposal_id", nullable = false)
     private ProposalEntity proposal;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
@@ -78,7 +79,7 @@ public class ProposalSlotEntity {
     }
 
     public List<DishSlotEntity> getDishSlots() {
-        return dishSlots!=null?dishSlots:new ArrayList<>();
+        return dishSlots != null ? dishSlots : new ArrayList<>();
     }
 
     public void setDishSlots(List<DishSlotEntity> dishSlots) {
@@ -133,24 +134,22 @@ public class ProposalSlotEntity {
         this.tags = tags;
     }
 
-    public void fillInTags(List<String> tagIdsAsList,Map<Long, TagEntity> dictionary) {
+    public void fillInTags(List<String> tagIdsAsList, Map<Long, TagEntity> dictionary) {
         if (dictionary.isEmpty()) {
             return;
         }
-        tags =tagIdsAsList.stream()
+        tags = tagIdsAsList.stream()
                 .filter(t -> dictionary.containsKey(new Long(t)))
-                .map( t -> dictionary.get(new Long(t)))
+                .map(t -> dictionary.get(new Long(t)))
                 .collect(Collectors.toList());
 
-        if (slotDishTagId!=null) {
-            if (dictionary.containsKey(slotDishTagId)) {
-                slotDishTag = dictionary.get(slotDishTagId);
-            }
+        if (slotDishTagId != null && dictionary.containsKey(slotDishTagId)) {
+            slotDishTag = dictionary.get(slotDishTagId);
         }
 
         if (dishSlots != null && !dishSlots.isEmpty()) {
             for (DishSlotEntity dishslot : dishSlots) {
-                    dishslot.fillInTags(dictionary);
+                dishslot.fillInTags(dictionary);
             }
         }
 

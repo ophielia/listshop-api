@@ -56,6 +56,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
 
     @Override
     public ProposalEntity generateProposal(String userName, Long targetId) throws ObjectNotYoursException, ObjectNotFoundException {
+        UserAccountEntity userAccount = userService.getUserByUserName(userName);
         // get target for user
         TargetEntity target = getTargetForUser(userName, targetId);
         // get proposal context for target
@@ -77,23 +78,23 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         // process proposal request
         ProcessResult result = processProposalRequest(request);
 
-        return persistResults(target,context, proposal, result);
+        return persistResults(userAccount, target, context, proposal, result);
     }
 
     @Override
     public ProposalEntity refreshProposal(String userName, Long proposalId) throws ProposalProcessingException {
-        return refreshOrFillInProposal(userName,proposalId, null);
+        return refreshOrFillInProposal(userName, proposalId, null);
     }
 
     @Override
     public ProposalEntity fillOutProposalSlot(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException {
-        return refreshOrFillInProposal(userName,proposalId, slotNr);
+        return refreshOrFillInProposal(userName, proposalId, slotNr);
     }
-
 
 
     @Override
     public ProposalEntity proposalForMealPlan(String userName, Long mealPlanId, Long targetId, Integer slotId) throws ProposalProcessingException {
+        UserAccountEntity userAccount = userService.getUserByUserName(userName);
         boolean newSearch = true;
         ProposalEntity proposal = null;
 
@@ -154,7 +155,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
 
         // persist results
         // process proposal
-        return persistResults(target,context, proposal, result);
+        return persistResults(userAccount, target, context, proposal, result);
 
     }
 
@@ -176,11 +177,11 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         Map<Long, TagEntity> tagDictionary = tagService.getDictionaryForIds(tagIds);
 
         // set target tags
-        List<TagEntity> targetTags = getTagsForList(target.getTargetTagIds(),tagDictionary);
+        List<TagEntity> targetTags = getTagsForList(target.getTargetTagIds(), tagDictionary);
         proposalEntity.setTargetTags(targetTags);
         // fill slots
-        for (TargetSlotEntity targetSlot: target.getSlots()) {
-            proposalEntity.fillSlotTags(targetSlot.getSlotOrder(), targetSlot.getTagIdsAsList(),tagDictionary);
+        for (TargetSlotEntity targetSlot : target.getSlots()) {
+            proposalEntity.fillSlotTags(targetSlot.getSlotOrder(), targetSlot.getTagIdsAsList(), tagDictionary);
         }
 
         // get list of dish ids
@@ -193,6 +194,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     }
 
     private ProposalEntity refreshOrFillInProposal(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException {
+        UserAccountEntity userAccount = userService.getUserByUserName(userName);
         // get proposal for user
         ProposalEntity proposal = null;
         try {
@@ -211,9 +213,9 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         TargetEntity target = null;
         try {
             target = getTargetForUser(userName, context.getTargetId());
-        } catch (ObjectNotYoursException | ObjectNotFoundException  e) {
+        } catch (ObjectNotYoursException | ObjectNotFoundException e) {
             final String msg = "Can't retreive target [" + context.getTargetId() + "] for context.";
-            throw new ProposalProcessingException(msg,e);
+            throw new ProposalProcessingException(msg, e);
         }
 
         // check for changes
@@ -238,12 +240,12 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         ProcessResult result = processProposalRequest(request);
 
         // persist results
-        return persistResults(target,context, proposal, result);
+        return persistResults(userAccount, target, context, proposal, result);
     }
 
 
     private List<TagEntity> getTagsForList(String targetTagIds, Map<Long, TagEntity> dictionary) {
-        return FlatStringUtils.inflateStringToList(targetTagIds,";")
+        return FlatStringUtils.inflateStringToList(targetTagIds, ";")
                 .stream()
                 .filter(t -> dictionary.containsKey(new Long(t)))
                 .map(t -> dictionary.get(new Long(t)))
@@ -256,15 +258,18 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     }
 
 
-    private ProposalEntity persistResults(TargetEntity target, ProposalContextEntity context, ProposalEntity proposal, ProcessResult result) {
+    private ProposalEntity persistResults(UserAccountEntity user, TargetEntity target, ProposalContextEntity context, ProposalEntity proposal, ProcessResult result) {
 
 
         // persist results
-        if (proposal.getId() == null) {
+        if (proposal == null) {
+            proposal = new ProposalEntity();
             proposal.setCreated(new Date());
+            proposal.setUserId(user.getId());
             proposal = proposalRepository.save(proposal);
         }
-        if (context.getId() == null) {
+        if (context == null) {
+            context = new ProposalContextEntity();
             context = contextRepository.save(context);
         }
         // process proposal
@@ -292,6 +297,12 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
 
     private List<ContextApproachEntity> mergeContextApproaches(ProposalContextEntity context, List<ContextApproachEntity> resultApproaches) {
         List<ContextApproachEntity> finalList = new ArrayList<>();
+        if (resultApproaches == null || resultApproaches.isEmpty()) {
+            return finalList;
+        }
+        if (context.getApproaches() == null || context.getApproaches().isEmpty()) {
+            return resultApproaches;
+        }
         Iterator<ContextApproachEntity> resultSlotIterator = resultApproaches.iterator();
         Iterator<ContextApproachEntity> existingSlotIterator = context.getApproaches().iterator();
         while (resultSlotIterator.hasNext()) {
