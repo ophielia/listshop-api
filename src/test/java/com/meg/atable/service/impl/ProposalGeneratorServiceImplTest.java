@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,15 +35,33 @@ import static org.mockito.ArgumentMatchers.any;
 @Transactional
 public class ProposalGeneratorServiceImplTest {
 
+
+    private static Long existingProposalId;
+
+
     @MockBean
     @Qualifier(value = "newSearch")
-    ProposalProcessor newSearchProcessor;
+    private ProposalProcessor newSearchProcessor;
+
+    @MockBean
+    @Qualifier(value = "refreshSearch")
+    private ProposalProcessor refreshProcessor;
+
+    @MockBean
+    @Qualifier(value = "fillInSearch")
+    private ProposalProcessor fillInProcessor;
+
 
     @Autowired
+    private
     ProposalGeneratorService proposalGeneratorServiceImpl;
 
     @Autowired
     private TargetProposalService proposalService;
+
+
+    @Autowired
+    private MealPlanService mealPlanService;
 
     @Autowired
     private ProposalContextRepository proposalContextRepository;
@@ -58,7 +77,17 @@ public class ProposalGeneratorServiceImplTest {
 
     @Before
     public void setUp() {
-
+        // make / save base target
+        TargetEntity targetEntity = buildBaseTestTarget();
+        List<ContextApproachEntity> approachEntities = makeDummyContextApproaches(new ProposalContextEntity(), 3, 5);
+        ProcessResult processResult = new ProcessResult(approachEntities);
+        List<ProposalSlotEntity> resultSlots = makeDummyProposalForTarget(targetEntity);
+        processResult.setResultSlots(resultSlots);
+        Mockito.when(newSearchProcessor.processProposal(any(ProposalRequest.class))).thenReturn(processResult);
+        // run "dummy" mock proposal
+        ProposalEntity proposalEntity = proposalGeneratorServiceImpl.generateProposal(TestConstants.USER_3_NAME, targetEntity.getTargetId());
+        // save result as existingProposalId
+        existingProposalId = proposalEntity.getId();
     }
 
     @Test
@@ -97,6 +126,140 @@ public class ProposalGeneratorServiceImplTest {
         Assert.assertNotNull(context.getApproaches());
         Assert.assertEquals(3, context.getApproaches().size());
         Assert.assertEquals(0, context.getCurrentApproachIndex());
+    }
+
+    @Test
+    public void refreshProposal() throws Exception {
+        ProposalEntity proposal = proposalService.getProposalById(TestConstants.USER_3_NAME, existingProposalId);
+        ProposalContextEntity contextentity = proposalContextRepository.findByProposalId(proposal.getId());
+        TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_3_NAME, contextentity.getTargetId());
+        // make test fixtures
+        List<ContextApproachEntity> approachEntities = makeDummyContextApproaches(new ProposalContextEntity(), 3, 5);
+        ProcessResult processResult = new ProcessResult(approachEntities);
+        List<ProposalSlotEntity> resultSlots = makeDummyProposalForTarget(targetEntity);
+        processResult.setResultSlots(resultSlots);
+        Mockito.when(refreshProcessor.processProposal(any(ProposalRequest.class))).thenReturn(processResult);
+
+        // test call
+        ProposalEntity proposalEntity = proposalGeneratorServiceImpl.refreshProposal(TestConstants.USER_3_NAME, existingProposalId);
+
+        // retrieve result
+        Assert.assertNotNull(proposalEntity);
+        ProposalEntity result = proposalService.getProposalById(TestConstants.USER_3_NAME, proposalEntity.getId());
+
+        // result exists
+        Assert.assertNotNull(result);
+        // result has same number of slots as target
+        Assert.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
+        // slots contain 5 dishes each
+        for (ProposalSlotEntity slotEntity : result.getSlots()) {
+            Assert.assertTrue(slotEntity.getDishSlots().size() == 5);
+        }
+        // has approaches and is refreshable
+        ProposalContextEntity context = proposalContextRepository.findByProposalId(result.getId());
+        Assert.assertNotNull(context);
+        Assert.assertNotNull(context.getApproaches());
+        Assert.assertEquals(3, context.getApproaches().size());
+        Assert.assertEquals(0, context.getCurrentApproachIndex());
+    }
+
+
+    @Test
+    public void proposalForMealPlan() throws Exception {
+        // make / save base target
+        TargetEntity targetEntity = buildBaseTestTarget();
+        // make / save meal plan
+        MealPlanEntity mealPlanEntity = buildTestMealPlan(4);
+        // make test fixtures
+        ProposalRequest request = new ProposalRequest();
+        request.setSearchType(ProposalSearchType.NewSearch);
+        request.setTarget(targetEntity);
+        List<ContextApproachEntity> approachEntities = makeDummyContextApproaches(new ProposalContextEntity(), 3, 5);
+        ProcessResult processResult = new ProcessResult(approachEntities);
+        List<ProposalSlotEntity> resultSlots = makeDummyProposalForTarget(targetEntity);
+        processResult.setResultSlots(resultSlots);
+        Mockito.when(newSearchProcessor.processProposal(any(ProposalRequest.class))).thenReturn(processResult);
+
+
+        // test call
+        ProposalEntity proposalEntity = proposalGeneratorServiceImpl.proposalForMealPlan(TestConstants.USER_3_NAME, mealPlanEntity.getId(), targetEntity.getTargetId());
+
+        // retrieve result
+        Assert.assertNotNull(proposalEntity);
+        ProposalEntity result = proposalService.getProposalById(TestConstants.USER_3_NAME, proposalEntity.getId());
+
+        // result exists
+        Assert.assertNotNull(result);
+        // result has same number of slots as target
+        Assert.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
+        // slots contain 5 dishes each
+        for (ProposalSlotEntity slotEntity : result.getSlots()) {
+            Assert.assertTrue(slotEntity.getDishSlots().size() == 5);
+        }
+        // has approaches and is refreshable
+        ProposalContextEntity context = proposalContextRepository.findByProposalId(result.getId());
+        Assert.assertNotNull(context);
+        Assert.assertNotNull(context.getApproaches());
+        Assert.assertEquals(3, context.getApproaches().size());
+        Assert.assertEquals(0, context.getCurrentApproachIndex());
+    }
+
+
+    @Test
+    public void addToProposalSlot() throws Exception {
+        ProposalEntity proposal = proposalService.getProposalById(TestConstants.USER_3_NAME, existingProposalId);
+        ProposalContextEntity contextentity = proposalContextRepository.findByProposalId(proposal.getId());
+        TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_3_NAME, contextentity.getTargetId());
+        // make test fixtures
+        List<ContextApproachEntity> approachEntities = makeDummyContextApproaches(new ProposalContextEntity(), 3, 5);
+        ProcessResult processResult = new ProcessResult(approachEntities);
+        List<ProposalSlotEntity> resultSlots = makeDummyProposalForTarget(targetEntity);
+        resultSlots = resultSlots.subList(0, 1);
+        processResult.setResultSlots(resultSlots);
+        Mockito.when(fillInProcessor.processProposal(any(ProposalRequest.class))).thenReturn(processResult);
+
+        // test call
+        ProposalEntity proposalEntity = proposalGeneratorServiceImpl.addToProposalSlot(TestConstants.USER_3_NAME, existingProposalId, 0);
+
+// retrieve result
+        Assert.assertNotNull(proposalEntity);
+        ProposalEntity result = proposalService.getProposalById(TestConstants.USER_3_NAME, existingProposalId);
+
+        // result exists
+        Assert.assertNotNull(result);
+        // result has same number of slots as target
+        Assert.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
+        // slots contain 5 dishes each
+        for (ProposalSlotEntity slotEntity : result.getSlots()) {
+            Assert.assertTrue(slotEntity.getDishSlots().size() == 5);
+        }
+        // has approaches and is refreshable
+        ProposalContextEntity context = proposalContextRepository.findByProposalId(result.getId());
+        Assert.assertNotNull(context);
+        Assert.assertNotNull(context.getApproaches());
+        Assert.assertEquals(3, context.getApproaches().size());
+        Assert.assertEquals(0, context.getCurrentApproachIndex());
+    }
+
+    @Test
+    public void fillInformationForProposal() throws Exception {
+        ProposalEntity proposal = proposalService.getProposalById(TestConstants.USER_3_NAME, existingProposalId);
+
+        proposal = proposalGeneratorServiceImpl.fillInformationForProposal(TestConstants.USER_3_NAME, proposal);
+
+        // make sure everything is filled in
+        Assert.assertNotNull(proposal.getTargetTags());
+        Assert.assertNotNull(proposal.getSlots());
+        for (ProposalSlotEntity slot : proposal.getSlots()) {
+            Set<Long> ids = FlatStringUtils.inflateStringToLongSet(slot.getFlatMatchedTagIds(), ";");
+            Assert.assertTrue(ids.size() <= slot.getTags().size());
+            for (DishSlotEntity dish : slot.getDishSlots()) {
+                if (dish.getMatchedTagIds() != null) {
+                    Assert.assertTrue(dish.getMatchedTags().size() > 0);
+                }
+            }
+        }
+
     }
 
     private List<ContextApproachEntity> makeDummyContextApproaches(ProposalContextEntity proposalContext, int approachCount, int slotCount) {
@@ -171,6 +334,21 @@ public class ProposalGeneratorServiceImplTest {
             testDishIds.add(dishes.get(i).getId());
         }
         return testDishIds;
+    }
+
+    private MealPlanEntity buildTestMealPlan(int dishCount) {
+        Random random = new Random();
+        List<Long> testDishIds = getTestDishIds();
+        MealPlanEntity mealPlanEntity = mealPlanService.createMealPlan(TestConstants.USER_3_NAME, new MealPlanEntity());
+
+        int maxValue = testDishIds.size();
+        int begin = random.nextInt(maxValue);
+        for (int i = begin; i < begin + dishCount; i++) {
+            int index = i >= maxValue ? i - begin : i;
+            Long dishId = testDishIds.get(index);
+            mealPlanService.addDishToMealPlan(TestConstants.USER_3_NAME, mealPlanEntity.getId(), dishId);
+        }
+        return mealPlanEntity;
     }
 
     private TargetEntity buildBaseTestTarget() {

@@ -47,7 +47,7 @@ public class TargetProposalRestController implements TargetProposalRestControlle
         if (proposalEntity != null) {
 
             // fill tag and dish info for proposal
-            proposalEntity = this.targetProposalGenerator.fillInformationForProposal(proposalEntity);
+            proposalEntity = this.targetProposalGenerator.fillInformationForProposal(principal.getName(), proposalEntity);
             ProposalResource proposalResource = new ProposalResource(proposalEntity);
             return new ResponseEntity<>(proposalResource, HttpStatus.OK);
         }
@@ -59,13 +59,8 @@ public class TargetProposalRestController implements TargetProposalRestControlle
     @Override
     public ResponseEntity<Object> refreshProposal(Principal principal, @PathVariable("proposalId") Long proposalId,
                                                   @RequestParam(value = "direction", required = false) String direction) throws ProposalProcessingException {
-        // MM clean up - this isn't used
-        SortDirection sortDirection = SortDirection.UP;
-        if (direction != null) {
-            sortDirection = SortDirection.valueOf(direction);
-        }
 
-        this.targetProposalGenerator.refreshProposal(principal.getName(),proposalId);
+        this.targetProposalGenerator.refreshProposal(principal.getName(), proposalId);
 
         return ResponseEntity.noContent().build();
 
@@ -88,7 +83,7 @@ public class TargetProposalRestController implements TargetProposalRestControlle
     @Override
     public ResponseEntity<Object> refreshProposalSlot(Principal principal, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) throws ProposalProcessingException {
         // MM need to swap out id with number
-        this.targetProposalGenerator.fillOutProposalSlot(principal.getName(), proposalId, slotId.intValue());
+        this.targetProposalGenerator.addToProposalSlot(principal.getName(), proposalId, slotId.intValue());
 
 
         return ResponseEntity.noContent().build();

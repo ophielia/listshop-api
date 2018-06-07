@@ -9,7 +9,6 @@ import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.data.entity.*;
 import com.meg.atable.data.repository.ProposalContextRepository;
 import com.meg.atable.data.repository.ProposalRepository;
-import com.meg.atable.data.repository.TargetRepository;
 import com.meg.atable.service.*;
 import com.meg.atable.service.tag.TagService;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +33,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     ProposalProcessorFactory proposalProcessorFactory;
 
     @Autowired
-    TargetRepository targetRepository;
+    TargetService targetService;
 
     @Autowired
     ProposalRepository proposalRepository;
@@ -58,7 +57,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     public ProposalEntity generateProposal(String userName, Long targetId) throws ObjectNotYoursException, ObjectNotFoundException {
         UserAccountEntity userAccount = userService.getUserByUserName(userName);
         // get target for user
-        TargetEntity target = getTargetForUser(userName, targetId);
+        TargetEntity target = targetService.getTargetById(userName, targetId);
         // get proposal context for target
         ProposalContextEntity context = getContextForTarget(targetId);
         ProposalEntity proposal = null;
@@ -87,13 +86,13 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     }
 
     @Override
-    public ProposalEntity fillOutProposalSlot(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException {
+    public ProposalEntity addToProposalSlot(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException {
         return refreshOrFillInProposal(userName, proposalId, slotNr);
     }
 
 
     @Override
-    public ProposalEntity proposalForMealPlan(String userName, Long mealPlanId, Long targetId, Integer slotId) throws ProposalProcessingException {
+    public ProposalEntity proposalForMealPlan(String userName, Long mealPlanId, Long targetId) throws ProposalProcessingException {
         UserAccountEntity userAccount = userService.getUserByUserName(userName);
         boolean newSearch = true;
         ProposalEntity proposal = null;
@@ -119,7 +118,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         // get  target
         TargetEntity target = null;
         try {
-            target = getTargetForUser(userName, targetId);
+            target = targetService.getTargetById(userName, targetId);
         } catch (ObjectNotFoundException | ObjectNotYoursException e) {
             throw new ProposalProcessingException("Target [" + targetId + "] not found for MealPlan search.", e);
         }
@@ -160,16 +159,20 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     }
 
     @Override
-    public ProposalEntity fillInformationForProposal(ProposalEntity proposalEntity) {
+    public ProposalEntity fillInformationForProposal(String userName, ProposalEntity proposalEntity) {
         if (proposalEntity == null) {
-            return null;
+            return proposalEntity;
         }
 
         // get list of tag ids
         // Set<Long> tagIds = proposalEntity.getAllTagIds();
 
         // get target
-        TargetEntity target = getTargetForProposal(proposalEntity);
+        Long targetId = getTargetIdForProposal(proposalEntity);
+        TargetEntity target = targetService.getTargetById(userName, targetId);
+        if (target == null) {
+            return proposalEntity;
+        }
         proposalEntity.setTargetName(target.getTargetName());
         // get all tag ids from target
         Set<Long> tagIds = target.getAllTagIds();
@@ -212,7 +215,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
 
         TargetEntity target = null;
         try {
-            target = getTargetForUser(userName, context.getTargetId());
+            target = targetService.getTargetById(userName, context.getTargetId());
         } catch (ObjectNotYoursException | ObjectNotFoundException e) {
             final String msg = "Can't retreive target [" + context.getTargetId() + "] for context.";
             throw new ProposalProcessingException(msg, e);
@@ -253,14 +256,16 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
 
     }
 
-    private TargetEntity getTargetForProposal(ProposalEntity proposalEntity) {
-        return targetRepository.findTargetByProposalId(proposalEntity.getId());
+    private Long getTargetIdForProposal(ProposalEntity proposalEntity) {
+        ProposalContextEntity context = contextRepository.findByProposalId(proposalEntity.getId());
+        return context.getTargetId();
     }
 
 
-    private ProposalEntity persistResults(UserAccountEntity user, TargetEntity target, ProposalContextEntity context, ProposalEntity proposal, ProcessResult result) {
+    private ProposalEntity persistResults(UserAccountEntity user, TargetEntity target, ProposalContextEntity passedContext, ProposalEntity passedProposal, ProcessResult result) {
 
-
+        ProposalEntity proposal = passedProposal;
+        ProposalContextEntity context = passedContext;
         // persist results
         if (proposal == null) {
             proposal = new ProposalEntity();
@@ -275,7 +280,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         // process proposal
         List<ProposalSlotEntity> resultSlots = mergeProposalSlots(proposal, result.getResultSlots());
         proposal.setSlots(resultSlots);
-        boolean canRefresh = result.getResultApproaches() != null && !result.getResultApproaches().isEmpty();
+        boolean canRefresh = result.getResultApproaches() != null && result.getResultApproaches().size() > 1;
         proposal.setIsRefreshable(canRefresh);
         proposalRepository.save(proposal);
 
@@ -300,12 +305,13 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         if (resultApproaches == null || resultApproaches.isEmpty()) {
             return finalList;
         }
+        resultApproaches.stream().forEach(a -> a.setContext(context));
         if (context.getApproaches() == null || context.getApproaches().isEmpty()) {
             return resultApproaches;
         }
         Iterator<ContextApproachEntity> resultSlotIterator = resultApproaches.iterator();
-        Iterator<ContextApproachEntity> existingSlotIterator = context.getApproaches().iterator();
         while (resultSlotIterator.hasNext()) {
+            Iterator<ContextApproachEntity> existingSlotIterator = context.getApproaches().iterator();
             ContextApproachEntity resultApproach = resultSlotIterator.next();
             while (existingSlotIterator.hasNext()) {
                 ContextApproachEntity existingApproach = existingSlotIterator.next();
@@ -328,16 +334,15 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     private List<ProposalSlotEntity> mergeProposalSlots(ProposalEntity proposal, List<ProposalSlotEntity> resultSlots) {
         List<ProposalSlotEntity> finalList = new ArrayList<>();
         Iterator<ProposalSlotEntity> resultSlotIterator = resultSlots.iterator();
-        Iterator<ProposalSlotEntity> existingSlotIterator = proposal.getSlots().iterator();
         while (resultSlotIterator.hasNext()) {
+            Iterator<ProposalSlotEntity> existingSlotIterator = proposal.getSlots().iterator();
             ProposalSlotEntity resultSlot = resultSlotIterator.next();
             while (existingSlotIterator.hasNext()) {
                 ProposalSlotEntity existingSlot = existingSlotIterator.next();
                 if (existingSlot.getSlotNumber().equals(resultSlot.getSlotNumber())) {
                     resultSlotIterator.remove();
-                    existingSlotIterator.remove();
-                    copySlotResults(resultSlot, existingSlot);
-                    finalList.add(existingSlot);
+                    List<DishSlotEntity> mergedDishes = copySlotResults(resultSlot, existingSlot);
+                    existingSlot.setDishSlots(mergedDishes);
                     break;
                 }
             }
@@ -345,6 +350,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
 
         // add any results not found in existing to final List
         resultSlots.stream().forEach(s -> s.setProposal(proposal));
+        finalList.addAll(proposal.getSlots());
         finalList.addAll(resultSlots);
         return finalList;
     }
@@ -385,19 +391,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         return contextRepository.findByTargetId(targetId);
     }
 
-    private TargetEntity getTargetForUser(String userName, Long targetId) throws ObjectNotYoursException, ObjectNotFoundException {
-        UserAccountEntity user = userService.getUserByUserName(userName);
-
-        TargetEntity target = targetRepository.findTargetByUserIdAndTargetId(user.getId(), targetId);
-        if (target == null) {
-            final String msg = "No target found by id for user [" + userName + "] and target [" + targetId + "]";
-            throw new ObjectNotFoundException(msg, targetId, "Target");
-        }
-
-        return target;
-    }
-
-    private ProposalContextEntity getContextForProposal(Long targetProposalId) {
+   private ProposalContextEntity getContextForProposal(Long targetProposalId) {
         return contextRepository.findByProposalId(targetProposalId);
     }
 
@@ -425,7 +419,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
             return true;
         }
 
-        return context.getTargetHashCode().equals(target.getContentHashCode());
+        return !context.getTargetHashCode().equals(target.getContentHashCode());
     }
 
     private boolean hasProposalChange(ProposalEntity proposal, ProposalContextEntity context) {

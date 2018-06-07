@@ -19,6 +19,7 @@ import javax.persistence.*;
 public class ContextApproachEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "proposal_approach_sequence")
     private Long proposalApproachId;
 
     @ManyToOne

@@ -35,7 +35,7 @@ public class ProposalContextEntity {
 
     private Long targetId;
 
-    @OneToMany(mappedBy = "proposalContext", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "proposalContext", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ContextApproachEntity> approaches;
 
     private String targetHashCode;
