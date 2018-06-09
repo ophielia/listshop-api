@@ -1,6 +1,7 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.data.entity.TargetSlotEntity;
 import com.meg.atable.service.DishSearchCriteria;
 import com.meg.atable.service.DishSearchService;
 import com.meg.atable.service.DishTagSearchResult;
@@ -134,7 +135,7 @@ public class DishSearchServiceImpl implements DishSearchService {
     }
 
     @Override
-    public List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, Long slotDishTagId, int size, List<String> tagListForSlot, Map<Long, List<Long>> searchGroups, List<Long> sqlFilteredDishes) {
+    public List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, TargetSlotEntity targetSlotEntity, int size, List<String> tagListForSlot, Map<Long, List<Long>> searchGroups, List<Long> sqlFilteredDishes) {
         // create sql
         Object[] sqlAndParams = createSqlForDishTagSearchResult(tagListForSlot, searchGroups, sqlFilteredDishes);
         String sql = (String) sqlAndParams[0];
@@ -142,7 +143,7 @@ public class DishSearchServiceImpl implements DishSearchService {
         // create parameters
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", userId);
-        parameters.addValue("slotTagId", slotDishTagId);
+        parameters.addValue("slotTagId", targetSlotEntity.getSlotDishTagId());
         params.forEach((key, value) -> parameters.addValue(key, value));
 
         return this.jdbcTemplate.query(sql, parameters, new DishTagSearchResultMapper(size, tagListForSlot.size()));

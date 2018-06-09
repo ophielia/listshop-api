@@ -177,7 +177,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         information.setDishTagBySlotNumber(slot.getSlotOrder(), slot.getSlotDishTagId());
 
         // query db
-        List<DishTagSearchResult> dishResults = dishSearchService.retrieveDishResultsForTags(userId, slot.getSlotDishTagId(), targetTagIds.size(), tagListForSlot, searchGroups, information.getSqlFilter());
+        List<DishTagSearchResult> dishResults = dishSearchService.retrieveDishResultsForTags(userId,slot , targetTagIds.size(), tagListForSlot, searchGroups, information.getSqlFilter());
 
         List<DishTagSearchResult> slotMatches = new ArrayList<>();
         List<DishTagSearchResult> targetMatches = new ArrayList<>();

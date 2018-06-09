@@ -3,7 +3,6 @@ package com.meg.atable.web.controller;
 import com.meg.atable.api.controller.TargetProposalRestControllerApi;
 import com.meg.atable.api.exception.ProposalProcessingException;
 import com.meg.atable.api.model.ProposalResource;
-import com.meg.atable.api.model.SortDirection;
 import com.meg.atable.data.entity.ProposalEntity;
 import com.meg.atable.service.ProposalGeneratorService;
 import com.meg.atable.service.TargetProposalService;
@@ -24,11 +23,15 @@ import java.security.Principal;
 @Controller
 public class TargetProposalRestController implements TargetProposalRestControllerApi {
 
-    @Autowired
-    private TargetProposalService targetProposalService;
+    private final TargetProposalService targetProposalService;
+
+    private final ProposalGeneratorService targetProposalGenerator;
 
     @Autowired
-    private ProposalGeneratorService targetProposalGenerator;
+    public TargetProposalRestController(TargetProposalService targetProposalService, ProposalGeneratorService targetProposalGenerator) {
+        this.targetProposalService = targetProposalService;
+        this.targetProposalGenerator = targetProposalGenerator;
+    }
 
     @Override
     public ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId) {

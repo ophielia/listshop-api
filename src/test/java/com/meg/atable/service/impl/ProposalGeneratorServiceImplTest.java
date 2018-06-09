@@ -92,7 +92,7 @@ public class ProposalGeneratorServiceImplTest {
 
     @Test
     public void generateProposal() throws Exception {
-        // make / save base target
+        // make / save b    ase target
         TargetEntity targetEntity = buildBaseTestTarget();
         // make test fixtures
         ProposalRequest request = new ProposalRequest();
