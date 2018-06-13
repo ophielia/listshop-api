@@ -57,12 +57,16 @@ public class ProcessInformation {
         return maximumEmpties;
     }
 
-    public void setDishCountPerSlot(int dishCountPerSlot) {
-        this.dishCountPerSlot = dishCountPerSlot;
+    public void getGeneralDishCount(int slotNr, int dishCountPerSlot) {
+        this.dishCountBySlot.put(slotNr,dishCountPerSlot);
     }
 
-    public int getDishCountPerSlot() {
+    public int getGeneralDishCount() {
         return dishCountPerSlot;
+    }
+
+    public void getGeneralDishCount(int dishCountPerSlot) {
+        this.dishCountPerSlot = dishCountPerSlot;
     }
 
     public void setApproachType(ApproachType approachType) {
@@ -86,6 +90,10 @@ public class ProcessInformation {
     }
 
     public int getResultsPerSlot() {
+        return resultsPerSlot;
+    }
+
+    public int getDishResultCountBySlot(int slotNumber) {
         return resultsPerSlot;
     }
 

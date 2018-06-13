@@ -5,6 +5,7 @@ import com.meg.atable.data.repository.TagInstructionRepository;
 import com.meg.atable.service.Instruction;
 import com.meg.atable.service.tag.AutoTagProcessor;
 import com.meg.atable.service.tag.AutoTagSubject;
+import com.meg.atable.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class TagProcessorImpl extends AbstractAutoTagProcessor {
     TagInstructionRepository tagInstructionRepository;
 
     @Autowired
-    TagStructureServiceImpl tagStructureService;
+    TagStructureService tagStructureService;
 
     private List<Instruction> instructions;
 
@@ -63,7 +64,7 @@ public class TagProcessorImpl extends AbstractAutoTagProcessor {
                 return instruction.getAssignTagId();
             }
         }
-        if (!instruction.getInvert() & matches.size() > 0) {
+        if (!instruction.getInvert() & !matches.isEmpty()) {
             return instruction.getAssignTagId();
         }
         return null;

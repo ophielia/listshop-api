@@ -1,10 +1,12 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.api.model.ApproachType;
+import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.data.entity.*;
 import com.meg.atable.service.*;
 import com.meg.atable.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.*;
 
@@ -20,6 +22,8 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
     DishSearchService dishSearchService;
 
 
+    @Value("${proposal.processor.dish.result.count}")
+    protected static final int SEARCH_DISH_RESULT_COUNT =5;
 
 
     protected List<ProposalSlotEntity> mapRawSlotsToEntities(ProcessInformation info, List<NewRawSlotResult> rawSlotResults) {
@@ -30,8 +34,8 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
                 proposalSlot.setProposal(info.getProposal());
                 proposalSlot.setSlotNumber(slot.getSlotNumber());
                 proposalSlot.setSlotDishTagId(info.getDishTagBySlotNumber(slot.getSlotNumber()));
-                String flatMatchedIds = matchedIdsAsString(slot,info.getTagKeyBySlotNumber(slot.getSlotNumber()));
-                proposalSlot.setFlatMatchedTagIds(flatMatchedIds);
+                //MM don't need this, I think String flatMatchedIds = matchedIdsAsString(slot,info.getTagKeyBySlotNumber(slot.getSlotNumber()));
+                //MM this either proposalSlot.setFlatMatchedTagIds(flatMatchedIds);
                 List<DishSlotEntity> dishSlots = mapDishSlots(info,slot, proposalSlot);
                 proposalSlot.setDishSlots(dishSlots);
                 resultList.add(proposalSlot);
@@ -39,12 +43,6 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         }
 
         return resultList;
-    }
-
-    protected String matchedIdsAsString(NewRawSlotResult slot, List<String> tagKeyBySlotNumber) {
-        List<String> matchedIds = new ArrayList<>();
-
-        return null;
     }
 
     protected List<DishSlotEntity> mapDishSlots(ProcessInformation info, NewRawSlotResult slot, ProposalSlotEntity proposalSlot) {
@@ -64,18 +62,13 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         return dishSlotResults;
     }
 
-    protected List<DishTagSearchResult> getDishIdsToFilter(Map<Integer, NewRawSlotResult> resultsBySlot) {
-        // MM implement this
-        return null;
-    }
 
     protected void fillFromApproach(ContextApproachEntity fillApproach, Map<Integer, NewRawSlotResult> resultsBySlot) {
         // MM implement this
     }
 
-    protected List<ContextApproachEntity> processApproaches(List<NewRawSlotResult> rawSearchTSlotResults,
-                                                          ProcessInformation info, Map<Integer, Integer> indexToSlotNumber,
-                                                          Map<Integer, NewRawSlotResult> resultsBySlot) {
+    protected List<ContextApproachEntity> processApproaches(ProcessInformation info, Map<Integer, Integer> indexToSlotNumber,
+                                                            Map<Integer, NewRawSlotResult> resultsBySlot) {
 
 
         // generate approach orders
@@ -91,7 +84,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
             proposalAttempts.add(proposalAttempt);
         }
         // process each proposal attempt
-        List<ProposalAttempt> attempts = processProposals(proposalAttempts, resultsBySlot, info);
+        List<ProposalAttempt> attempts = processProposals(proposalAttempts, resultsBySlot, indexToSlotNumber,info);
         // sort proposal attempts
         attempts.sort(Comparator.comparing(ProposalAttempt::getHealthIndexMedian)
                 .thenComparing(ProposalAttempt::getHealthIndexAverage).reversed());
@@ -110,7 +103,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         return approachEntities;
     }
 
-    protected List<ProposalAttempt> processProposals(List<ProposalAttempt> proposals, Map<Integer, NewRawSlotResult> resultsBySlot, ProcessInformation context) {
+    protected List<ProposalAttempt> processProposals(List<ProposalAttempt> proposals, Map<Integer, NewRawSlotResult> resultsBySlot, Map<Integer, Integer> indexToSlotNumber,ProcessInformation context) {
         Set<Integer> contentChecks = new HashSet<>();
 
         List<ProposalAttempt> results = new ArrayList<>();
@@ -136,10 +129,10 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         for (int i = 0; i < cycle.length; i++) {
             NewRawSlotResult rawResult = resultsBySlot.get(cycle[i]);
 
-            List<DishTagSearchResult> dishMatches = rawResult.getFilteredMatches(information.getDishCountPerSlot());
-            proposal.setDishMatches(i, rawResult.getSlotNumber(), dishMatches);
+            List<DishTagSearchResult> dishMatches = rawResult.getFilteredMatches(information.getGeneralDishCount());
+            proposal.setDishMatches(rawResult.getSlotNumber(), dishMatches);
             for (int j = i + 1; j < cycle.length; j++) {
-                NewRawSlotResult otherResult = resultsBySlot.get(cycle[i]);
+                NewRawSlotResult otherResult = resultsBySlot.get(cycle[j]);
                 otherResult.addDishesToFilter(dishMatches);
             }
         }
@@ -169,7 +162,6 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
     }
 
     protected NewRawSlotResult retrieveSingleSlotResult(TargetSlotEntity slot, Long userId, Set<String> targetTagIds, Map<Long, List<Long>> searchGroups, ProcessInformation information) {
-        //MM TODO - sql filter - add to sql!
         List<String> tagListForSlot = new ArrayList<>();
         tagListForSlot.addAll(targetTagIds);
         tagListForSlot.addAll(slot.getTagIdsAsList());
@@ -212,7 +204,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
 
         // a word about sorting - the results are sorted by last_added date from the database.  Additional
         // sorting by match counts (full and slot) is done within RawSlotResults
-        return new NewRawSlotResult(slot.getSlotOrder(), slotMatches, tagListForSlot, matchCount);
+        return new NewRawSlotResult(slot.getSlotOrder(), slotMatches, matchCount, information.getDishResultCountBySlot(slot.getSlotOrder()));
 
     }
 

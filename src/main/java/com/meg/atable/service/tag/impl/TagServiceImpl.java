@@ -12,6 +12,7 @@ import com.meg.atable.service.DishSearchCriteria;
 import com.meg.atable.service.DishSearchService;
 import com.meg.atable.service.tag.TagChangeListener;
 import com.meg.atable.service.tag.TagService;
+import com.meg.atable.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class TagServiceImpl implements TagService {
     @Autowired
     private TagRepository tagRepository;
     @Autowired
-    private TagStructureServiceImpl tagStructureService;
+    private TagStructureService tagStructureService;
     @Autowired
     private DishRepository dishRepository;
 

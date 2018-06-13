@@ -1,7 +1,6 @@
 package com.meg.atable.service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -9,33 +8,25 @@ import java.util.List;
  */
 public class NewRawSlotResult {
 
-    private  Integer slotNumber;
-    private final List<String> tagListForSlot;
-    private  ArrayList<Long> filteredDishes=new ArrayList<>();
+    private final int rawMatchCount;
+    private final int dishResultsPerSlot;
+    private Integer slotNumber;
+    private ArrayList<Long> filteredDishes = new ArrayList<>();
     private List<DishTagSearchResult> dishSortedResults;
-    private long rawMatchCount;
 
-    public NewRawSlotResult(Integer slotNumber, List<DishTagSearchResult> searchResults,
-                            List<String> tagListForSlot, int rawMatchCount) {
+    public NewRawSlotResult(Integer slotNumber, List<DishTagSearchResult> searchResults, int slotMatchCount, int dishResultsForSlot) {
         this.slotNumber = slotNumber;
-        this.tagListForSlot = tagListForSlot;
-        //this.filteredDishes = new ArrayList<>();
-        //this.alwaysExclude = new ArrayList<>();
         this.dishSortedResults = searchResults;
-
-    }
-
-
-    public long getRawMatchCount() {
-        return rawMatchCount;
-    }
-
-    public void setSlotNumber(Integer slotNumber) {
-        this.slotNumber = slotNumber;
+        this.rawMatchCount = slotMatchCount;
+        this.dishResultsPerSlot = dishResultsForSlot;
     }
 
     public Integer getSlotNumber() {
         return slotNumber;
+    }
+
+    public void setSlotNumber(Integer slotNumber) {
+        this.slotNumber = slotNumber;
     }
 
     public void clearFilteredDishes() {
@@ -48,15 +39,25 @@ public class NewRawSlotResult {
             if (matches.size() >= dishesPerSlot) {
                 break;
             }
-            if (filteredDishes.contains(match.getDishId())) {
-                continue;
+            if (!filteredDishes.contains(match.getDishId())) {
+                matches.add(match);
             }
-            matches.add(match);
         }
         return matches;
     }
 
+    public List<DishTagSearchResult> getFilteredMatches() {
+        return getFilteredMatches(this.dishResultsPerSlot);
+    }
+
     public void addDishesToFilter(List<DishTagSearchResult> dishMatches) {
         dishMatches.stream().forEach(m -> this.filteredDishes.add(m.getDishId()));
+    }
+
+    public void addDishIdsToFilter(List<Long> dishIdMatches) {
+        this.filteredDishes.addAll(dishIdMatches);
+    }
+    public int getRawMatchCount() {
+        return rawMatchCount;
     }
 }

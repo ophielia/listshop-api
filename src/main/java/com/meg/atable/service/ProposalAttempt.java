@@ -10,8 +10,8 @@ public class ProposalAttempt {
 
     Integer[] slotNumberOrder;
 
-    private Map<Integer, List<DishTagSearchResult>> dishMatches = new HashMap<Integer, List<DishTagSearchResult>>();
-    private Map<Integer, Double[]> slotResults = new HashMap<Integer, Double[]>();
+    private Map<Integer, List<DishTagSearchResult>> dishMatches = new HashMap<>();
+    private Map<Integer, Double[]> slotResults = new HashMap<>();
     private double healthIndexMedian;
     private double healthIndexAverage;
     private int proposalContentHash;
@@ -24,18 +24,28 @@ public class ProposalAttempt {
         return slotNumberOrder;
     }
 
-    public void setDishMatches(int i, Integer slotNumber,List<DishTagSearchResult> dishMatches) {
+    public void setDishMatches(Integer slotNumber, List<DishTagSearchResult> dishMatches) {
         int totalTagCount = dishMatches.get(0).getTagResults().length;
         int slotTagCount = totalTagCount - dishMatches.get(0).getTargetTagLimit();
-        processStatistics(i, totalTagCount, slotTagCount, dishMatches);
+        processStatistics(slotNumber, totalTagCount, slotTagCount, dishMatches);
         addToContentHash(slotNumber,dishMatches);
-        this.dishMatches.put(i, dishMatches);
+        this.dishMatches.put(slotNumber, dishMatches);
     }
+
+/*
+
+    public void setSlotMatches(Map<Integer, List<DishTagSearchResult>> dishMatches) {
+        for (Map.Entry<Integer,List<DishTagSearchResult>> entry: dishMatches.entrySet()) {
+            this.dishMatches.put(entry.getKey(),entry.getValue());
+        }
+    }
+ */
 
     private void addToContentHash(Integer slotNumber, List<DishTagSearchResult> dishMatches) {
         Set<Long> contents = new HashSet<>();
         contents.add(Long.valueOf(slotNumber));
-        contents.addAll(dishMatches.stream().map(dm -> dm.getDishId()).collect(Collectors.toList()));
+        contents.addAll(dishMatches.stream().map(DishTagSearchResult::getDishId).collect(Collectors.toList()));
+
         int slothash = contents.hashCode();
         proposalContentHash += slothash;
     }
@@ -84,7 +94,7 @@ public class ProposalAttempt {
                     healthIndexList.get(healthIndexList.size() / 2 - 1))
                     / 2.0;
         } else {
-            median = healthIndexList.get((int) Math.ceil(healthIndexList.size() / 2));
+            median = healthIndexList.get(healthIndexList.size() / 2);
         }
         setHealthIndexMedian(median);
         setHealthIndexAverage(healthIndexList.stream().mapToDouble(t -> t).average().getAsDouble());
