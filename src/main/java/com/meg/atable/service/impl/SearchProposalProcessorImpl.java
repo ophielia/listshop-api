@@ -65,7 +65,7 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
                 NewRawSlotResult fill = rawFillSlotResults.get(i);
                 fill.addDishIdsToFilter(toFilter);
                 for (int j = i + 1; j < rawFillSlotResults.size(); j++) {
-                    rawFillSlotResults.get(j).addDishesToFilter(fill.getFilteredMatches(info.getGeneralDishCount()));
+                    rawFillSlotResults.get(j).addDishesToFilter(fill.getFilteredMatches());
                 }
             }
         }
@@ -106,7 +106,7 @@ return idsToFilter;
     protected ProcessInformation fillProcessInfo(ProposalRequest request) {
         ProcessInformation info = new ProcessInformation();
         List<Long> sqlFilter = new ArrayList<>();
-        Map<Integer,Integer> dishResultsBySlot = new HashMap<>();
+        Map<Integer,Integer> dishCountPerSlot = new HashMap<>();
 
         // check if there are any picked dishes in proposal
         List<Integer> fillInSlotNumbers = new ArrayList<>();
@@ -115,12 +115,13 @@ return idsToFilter;
                 if (slot.getPickedDishId() != null) {
                     sqlFilter.add(slot.getPickedDishId());
                     fillInSlotNumbers.add(slot.getSlotNumber());
-                    dishResultsBySlot.put(slot.getSlotNumber(),SEARCH_DISH_RESULT_COUNT - 1);
+                    dishCountPerSlot.put(slot.getSlotNumber(),SEARCH_DISH_RESULT_COUNT - 1);
                 } else {
-                    dishResultsBySlot.put(slot.getSlotNumber(),SEARCH_DISH_RESULT_COUNT );
+                    dishCountPerSlot.put(slot.getSlotNumber(),SEARCH_DISH_RESULT_COUNT );
                 }
             }
         }
+
         List<TargetSlotEntity> fillSlots = new ArrayList<>();
         List<TargetSlotEntity> searchSlots = new ArrayList<>();
         int targetSlotCount = 0;
@@ -136,7 +137,7 @@ return idsToFilter;
         }
         info.setFillSlots(fillSlots);
         info.setSearchSlots(searchSlots);
-
+        info.setDishCountPerSlot(dishCountPerSlot);
         // if meal plan part of search, add meal plan ids to sql filter
         if (request.getMealPlan() != null) {
             for (SlotEntity slot : request.getMealPlan().getSlots()) {
@@ -153,13 +154,12 @@ return idsToFilter;
         }
 
         info.setMaximumEmpties(5); // config
-        info.getGeneralDishCount(5);// config
         info.setApproachType(approachType);
         info.setProposalCount(proposalCount);
         info.setSearchSlots(searchSlots);
         info.setFillSlots(fillSlots);
         info.setSqlFilter(sqlFilter);
-        int slotDishCount = targetSlotCount * info.getGeneralDishCount();
+        int slotDishCount = targetSlotCount * SEARCH_DISH_RESULT_COUNT;
         info.setResultsPerSlot(slotDishCount);
         info.setProposal(request.getProposal());
 

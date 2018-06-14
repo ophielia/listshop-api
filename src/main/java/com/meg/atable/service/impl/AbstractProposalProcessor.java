@@ -49,7 +49,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         List<DishSlotEntity> dishSlotResults = new ArrayList<>();
         List<String> tagListForSlot = info.getTagKeyBySlotNumber(slot.getSlotNumber());
 
-        for (DishTagSearchResult singleDish : slot.getFilteredMatches(info.getDishCountBySlotNumber(slot.getSlotNumber()))) {
+        for (DishTagSearchResult singleDish : slot.getFilteredMatches()) {
             DishSlotEntity dish = new DishSlotEntity();
             dish.setDishId(singleDish.getDishId());
             List<String> matchedIds = singleDish.getMatchedTagIds(tagListForSlot);
@@ -129,7 +129,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         for (int i = 0; i < cycle.length; i++) {
             NewRawSlotResult rawResult = resultsBySlot.get(cycle[i]);
 
-            List<DishTagSearchResult> dishMatches = rawResult.getFilteredMatches(information.getGeneralDishCount());
+            List<DishTagSearchResult> dishMatches = rawResult.getFilteredMatches();
             proposal.setDishMatches(rawResult.getSlotNumber(), dishMatches);
             for (int j = i + 1; j < cycle.length; j++) {
                 NewRawSlotResult otherResult = resultsBySlot.get(cycle[j]);
@@ -204,7 +204,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
 
         // a word about sorting - the results are sorted by last_added date from the database.  Additional
         // sorting by match counts (full and slot) is done within RawSlotResults
-        return new NewRawSlotResult(slot.getSlotOrder(), slotMatches, matchCount, information.getDishResultCountBySlot(slot.getSlotOrder()));
+        return new NewRawSlotResult(slot.getSlotOrder(), slotMatches, matchCount, information.getDishCountPerSlot(slot.getSlotOrder()));
 
     }
 

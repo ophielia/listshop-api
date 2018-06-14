@@ -60,4 +60,8 @@ public class NewRawSlotResult {
     public int getRawMatchCount() {
         return rawMatchCount;
     }
+
+    public void setDishCountForSlot(int slotNumber, Integer dishCount) {
+
+    }
 }

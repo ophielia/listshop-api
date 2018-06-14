@@ -109,8 +109,11 @@ public class SearchProposalProcessorImplTest {
         Long lastPickedId = lastSlot.getDishSlots().get(0).getDishId();
         lastSlot.setPickedDishId(lastPickedId);
         List<Long> sqlFilter = new ArrayList<>();
+        List<Integer> pickedSlots = new ArrayList<>();
         sqlFilter.add(firstPickedId);
         sqlFilter.add(lastPickedId);
+        pickedSlots.add(firstSlot.getSlotNumber());
+        pickedSlots.add(lastSlot.getSlotNumber());
         testRequest.setProposal(proposalEntity);
 
         // get tag structure dummy results
@@ -137,7 +140,8 @@ public class SearchProposalProcessorImplTest {
         for (ProposalSlotEntity slot : testResult.getResultSlots()) {
             // at least one tag match
             boolean tagMatch = false;
-            Assert.assertEquals(5, slot.getDishSlots().size());
+            int dishSlotCount = pickedSlots.contains(slot.getSlotNumber())?4:5;
+            Assert.assertEquals(dishSlotCount, slot.getDishSlots().size());
             for (DishSlotEntity dishSlot : slot.getDishSlots()) {
                 tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
                 if (tagMatch) {
@@ -149,8 +153,8 @@ public class SearchProposalProcessorImplTest {
 
         // currentApproach is 0
         Assert.assertEquals(0, testResult.getCurrentApproach());
-        // resultApproach > 1
-        Assert.assertTrue(testResult.getResultApproaches().size() > 1);
+        // resultApproach > 0   - random results with 2 slots lead to valid one result only sometimes.
+        Assert.assertTrue(testResult.getResultApproaches().size() > 0);
 
     }
 

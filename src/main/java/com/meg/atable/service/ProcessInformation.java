@@ -12,98 +12,87 @@ import java.util.Map;
  * Created by margaretmartin on 25/05/2018.
  */
 public class ProcessInformation {
+    Map<Integer, List<String>> searchTagKeyBySlot = new HashMap<>();
     private List<TargetSlotEntity> searchSlots;
     private List<TargetSlotEntity> fillSlots;
     private List<Long> sqlFilter;
     private int maximumEmpties;
-    private int dishCountPerSlot;
+    private Map<Integer, Integer> dishCountPerSlot = new HashMap<>();
     private ApproachType approachType;
     private int proposalCount;
     private int resultsPerSlot;
-    Map<Integer,List<String>> searchTagKeyBySlot = new HashMap<>();
     private Map<Integer, Long> dishTagBySlot = new HashMap<>();
     private ProposalEntity proposal;
     private Map<Integer, Integer> dishCountBySlot = new HashMap<>();
-
-    public void setSearchSlots(List<TargetSlotEntity> searchSlots) {
-        this.searchSlots = searchSlots;
-    }
 
     public List<TargetSlotEntity> getSearchSlots() {
         return searchSlots;
     }
 
-    public void setFillSlots(List<TargetSlotEntity> fillSlots) {
-        this.fillSlots = fillSlots;
+    public void setSearchSlots(List<TargetSlotEntity> searchSlots) {
+        this.searchSlots = searchSlots;
     }
 
     public List<TargetSlotEntity> getFillSlots() {
         return fillSlots;
     }
 
-    public void setSqlFilter(List<Long> sqlFilter) {
-        this.sqlFilter = sqlFilter;
+    public void setFillSlots(List<TargetSlotEntity> fillSlots) {
+        this.fillSlots = fillSlots;
     }
 
     public List<Long> getSqlFilter() {
         return sqlFilter;
     }
 
-    public void setMaximumEmpties(int maximumEmpties) {
-        this.maximumEmpties = maximumEmpties;
+    public void setSqlFilter(List<Long> sqlFilter) {
+        this.sqlFilter = sqlFilter;
     }
 
     public int getMaximumEmpties() {
         return maximumEmpties;
     }
 
+    public void setMaximumEmpties(int maximumEmpties) {
+        this.maximumEmpties = maximumEmpties;
+    }
+
     public void getGeneralDishCount(int slotNr, int dishCountPerSlot) {
-        this.dishCountBySlot.put(slotNr,dishCountPerSlot);
-    }
-
-    public int getGeneralDishCount() {
-        return dishCountPerSlot;
-    }
-
-    public void getGeneralDishCount(int dishCountPerSlot) {
-        this.dishCountPerSlot = dishCountPerSlot;
-    }
-
-    public void setApproachType(ApproachType approachType) {
-        this.approachType = approachType;
+        this.dishCountBySlot.put(slotNr, dishCountPerSlot);
     }
 
     public ApproachType getApproachType() {
         return approachType;
     }
 
-    public void setProposalCount(int proposalCount) {
-        this.proposalCount = proposalCount;
+    public void setApproachType(ApproachType approachType) {
+        this.approachType = approachType;
     }
 
     public int getProposalCount() {
         return proposalCount;
     }
 
-    public void setResultsPerSlot(int dishesPerSlot) {
-        this.resultsPerSlot = dishesPerSlot;
+    public void setProposalCount(int proposalCount) {
+        this.proposalCount = proposalCount;
     }
 
     public int getResultsPerSlot() {
         return resultsPerSlot;
     }
 
-    public int getDishResultCountBySlot(int slotNumber) {
-        return resultsPerSlot;
+    public void setResultsPerSlot(int dishesPerSlot) {
+        this.resultsPerSlot = dishesPerSlot;
     }
 
     public void addTagKeyBySlot(Integer slotOrder, List<String> tagListForSlot) {
-searchTagKeyBySlot.put(slotOrder,tagListForSlot);
+        searchTagKeyBySlot.put(slotOrder, tagListForSlot);
     }
 
     public List<String> getTagKeyBySlotNumber(Integer slotNumber) {
         return searchTagKeyBySlot.get(slotNumber);
     }
+
     public Long getDishTagBySlotNumber(Integer slotNumber) {
         return dishTagBySlot.get(slotNumber);
     }
@@ -123,4 +112,14 @@ searchTagKeyBySlot.put(slotOrder,tagListForSlot);
     public Integer getDishCountBySlotNumber(Integer slotNumber) {
         return dishCountBySlot.get(slotNumber);
     }
+
+    public void setDishCountPerSlot(Map<Integer, Integer> dishCountPerSlot) {
+        this.dishCountPerSlot = dishCountPerSlot;
+    }
+
+    public int getDishCountPerSlot(int slotNumber) {
+        return dishCountPerSlot.get(slotNumber);
+    }
+
+
 }
