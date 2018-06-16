@@ -58,4 +58,18 @@ public class ProposalRequest {
     public ProposalContextEntity getContext() {
         return context;
     }
+
+    @Override
+    public String toString() {
+        String proposalId =proposal != null?String.valueOf(proposal.getId()): "--";
+        String contextId =context != null?String.valueOf(context.getId()): "--";
+        String mealPlanId =mealPlan != null?String.valueOf(mealPlan.getId()): "--";
+        return "ProposalRequest{" +
+                "target=" + target +
+                ", proposalId=" +proposalId +
+                ", contextId=" +  contextId+
+                ", mealPlanId=" + mealPlanId+
+                ", searchType=" + searchType +
+                '}';
+    }
 }

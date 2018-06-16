@@ -1,5 +1,6 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.exception.ProposalProcessingException;
 import com.meg.atable.api.model.ApproachType;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.data.entity.*;
@@ -63,8 +64,15 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
     }
 
 
-    protected void fillFromApproach(ContextApproachEntity fillApproach, Map<Integer, NewRawSlotResult> resultsBySlot) {
-        // MM implement this
+    protected void fillFromApproach(ContextApproachEntity fillApproach, Map<Integer, NewRawSlotResult> resultsBySlot) throws ProposalProcessingException {
+
+        Integer[] order = FlatStringUtils.inflateStringToIntegerArray(fillApproach.getInstructions(),";");
+        if (order == null) {
+            throw new ProposalProcessingException("Invalid order [" + fillApproach.getInstructions() + "] for filling approach");
+        }
+        ProposalAttempt proposal = new ProposalAttempt(order);
+        processSingleProposal(proposal, resultsBySlot);
+
     }
 
     protected List<ContextApproachEntity> processApproaches(ProcessInformation info, Map<Integer, Integer> indexToSlotNumber,
@@ -84,7 +92,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
             proposalAttempts.add(proposalAttempt);
         }
         // process each proposal attempt
-        List<ProposalAttempt> attempts = processProposals(proposalAttempts, resultsBySlot, indexToSlotNumber,info);
+        List<ProposalAttempt> attempts = processProposals(proposalAttempts, resultsBySlot);
         // sort proposal attempts
         attempts.sort(Comparator.comparing(ProposalAttempt::getHealthIndexMedian)
                 .thenComparing(ProposalAttempt::getHealthIndexAverage).reversed());
@@ -103,13 +111,13 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         return approachEntities;
     }
 
-    protected List<ProposalAttempt> processProposals(List<ProposalAttempt> proposals, Map<Integer, NewRawSlotResult> resultsBySlot, Map<Integer, Integer> indexToSlotNumber,ProcessInformation context) {
+    protected List<ProposalAttempt> processProposals(List<ProposalAttempt> proposals, Map<Integer, NewRawSlotResult> resultsBySlot) {
         Set<Integer> contentChecks = new HashSet<>();
 
         List<ProposalAttempt> results = new ArrayList<>();
         for (ProposalAttempt proposal : proposals) {
             // run single proposal
-            processSingleProposal(proposal, resultsBySlot, context);
+            processSingleProposal(proposal, resultsBySlot);
             if (!contentChecks.contains(proposal.getProposalContentHash())) {
                 results.add(proposal);
                 contentChecks.add(proposal.getProposalContentHash());
@@ -119,7 +127,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         return results;
     }
 
-    protected void processSingleProposal(ProposalAttempt proposal, Map<Integer, NewRawSlotResult> resultsBySlot, ProcessInformation information) {
+    protected void processSingleProposal(ProposalAttempt proposal, Map<Integer, NewRawSlotResult> resultsBySlot) {
         // clear all filters
         for (Map.Entry<Integer, NewRawSlotResult> entry : resultsBySlot.entrySet()) {
             entry.getValue().clearFilteredDishes();
@@ -204,7 +212,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
 
         // a word about sorting - the results are sorted by last_added date from the database.  Additional
         // sorting by match counts (full and slot) is done within RawSlotResults
-        return new NewRawSlotResult(slot.getSlotOrder(), slotMatches, matchCount, information.getDishCountPerSlot(slot.getSlotOrder()));
+        return new NewRawSlotResult(slot.getSlotOrder(), slotMatches, matchCount, information.getDishCountBySlotNumber(slot.getSlotOrder()));
 
     }
 

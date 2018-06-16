@@ -1,5 +1,6 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.exception.ProposalProcessingException;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.data.entity.*;
 import com.meg.atable.data.repository.ProposalContextRepository;
@@ -76,7 +77,7 @@ public class ProposalGeneratorServiceImplTest {
 
 
     @Before
-    public void setUp() {
+    public void setUp() throws ProposalProcessingException {
         // make / save base target
         TargetEntity targetEntity = buildBaseTestTarget();
         List<ContextApproachEntity> approachEntities = makeDummyContextApproaches(new ProposalContextEntity(), 3, 5);

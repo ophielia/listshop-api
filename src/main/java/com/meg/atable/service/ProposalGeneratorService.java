@@ -10,7 +10,7 @@ import com.meg.atable.data.entity.ProposalEntity;
  */
 public interface ProposalGeneratorService {
 
-    ProposalEntity generateProposal(String userName, Long targetId) throws ObjectNotYoursException, ObjectNotFoundException;
+    ProposalEntity generateProposal(String userName, Long targetId) throws ObjectNotYoursException, ObjectNotFoundException, ProposalProcessingException;
 
     ProposalEntity refreshProposal(String userName, Long proposalId) throws ProposalProcessingException;
 

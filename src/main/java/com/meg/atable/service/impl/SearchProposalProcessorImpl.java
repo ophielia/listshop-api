@@ -1,10 +1,10 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.exception.ProposalProcessingException;
 import com.meg.atable.api.model.ApproachType;
 import com.meg.atable.data.entity.*;
 import com.meg.atable.service.*;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -20,22 +20,20 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
 
 
     @Override
-    public ProcessResult processProposal(ProposalRequest request) {
+    public ProcessResult processProposal(ProposalRequest request) throws ProposalProcessingException {
         // initialize request object
         ProcessInformation info = fillProcessInfo(request);
 
         // check that we have slots to search for
         if (info.getSearchSlots().isEmpty()) {
-            //MM throw exception here
-            return null;
+            throw new ProposalProcessingException("");
         }
         // retrieve raw results
         List<NewRawSlotResult> rawSearchSlotResults = getRawSlotResults(info.getSearchSlots(), request.getTarget(), info);
 
         // do search for approach with search slots
         if (rawSearchSlotResults == null || rawSearchSlotResults.isEmpty()) {
-            // MM throw exception here
-            return null;
+            throw new ProposalProcessingException("No search results found whatsoever for ProposalRequest [" + request + "]");
         }
 
         Map<Integer, Integer> indexToSlotNumber = new HashMap<>();
@@ -133,11 +131,10 @@ return idsToFilter;
             targetSlotCount++;
                 searchSlots.add(slot);
             }
-            info.getGeneralDishCount(slot.getSlotOrder(),5);
         }
         info.setFillSlots(fillSlots);
         info.setSearchSlots(searchSlots);
-        info.setDishCountPerSlot(dishCountPerSlot);
+        info.setDishCountPerSlotNumber(dishCountPerSlot);
         // if meal plan part of search, add meal plan ids to sql filter
         if (request.getMealPlan() != null) {
             for (SlotEntity slot : request.getMealPlan().getSlots()) {
@@ -162,6 +159,7 @@ return idsToFilter;
         int slotDishCount = targetSlotCount * SEARCH_DISH_RESULT_COUNT;
         info.setResultsPerSlot(slotDishCount);
         info.setProposal(request.getProposal());
+        info.setDefaultDishCountPerSlot(SEARCH_DISH_RESULT_COUNT);
 
         return info;
     }

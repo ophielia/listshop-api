@@ -16,7 +16,7 @@ import java.security.Principal;
 public interface TargetProposalRestControllerApi {
 
     @RequestMapping(method = RequestMethod.POST, value = "/target/{targetId}", produces = "application/json")
-    ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId);
+    ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId) throws ProposalProcessingException;
 
     @RequestMapping(method = RequestMethod.GET, value = "/{proposalId}", produces = "application/json")
     ResponseEntity<ProposalResource> getProposal(Principal principal, @PathVariable("proposalId") Long proposalId);

@@ -58,7 +58,6 @@ public class TargetServiceImpl implements TargetService {
         UserAccountEntity user = userService.getUserByUserName(name);
 
         return targetRepository.findTargetByUserIdAndTargetId(user.getId(), targetId);
-
     }
 
     @Override

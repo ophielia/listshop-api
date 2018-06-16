@@ -13,7 +13,7 @@ public interface TargetProposalService {
 
     ProposalEntity getTargetProposalById(String name, Long proposalId);
 
-    void selectDishInSlot(Principal principal, Long proposalId, Long slotId, Long dishId);
+    void selectDishInSlot(String userName,  Long proposalId, Long slotId, Long dishId);
 
     void clearDishFromSlot(Principal principal, Long proposalId, Long slotId, Long dishId);
 }

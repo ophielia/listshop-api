@@ -23,7 +23,7 @@ public class ProcessInformation {
     private int resultsPerSlot;
     private Map<Integer, Long> dishTagBySlot = new HashMap<>();
     private ProposalEntity proposal;
-    private Map<Integer, Integer> dishCountBySlot = new HashMap<>();
+    private int defaultDishCountPerSlot;
 
     public List<TargetSlotEntity> getSearchSlots() {
         return searchSlots;
@@ -49,16 +49,20 @@ public class ProcessInformation {
         this.sqlFilter = sqlFilter;
     }
 
+    public int getDefaultDishCountPerSlot() {
+        return defaultDishCountPerSlot;
+    }
+
+    public void setDefaultDishCountPerSlot(int defaultDishCountPerSlot) {
+        this.defaultDishCountPerSlot = defaultDishCountPerSlot;
+    }
+
     public int getMaximumEmpties() {
         return maximumEmpties;
     }
 
     public void setMaximumEmpties(int maximumEmpties) {
         this.maximumEmpties = maximumEmpties;
-    }
-
-    public void getGeneralDishCount(int slotNr, int dishCountPerSlot) {
-        this.dishCountBySlot.put(slotNr, dishCountPerSlot);
     }
 
     public ApproachType getApproachType() {
@@ -110,16 +114,18 @@ public class ProcessInformation {
     }
 
     public Integer getDishCountBySlotNumber(Integer slotNumber) {
-        return dishCountBySlot.get(slotNumber);
+        if (dishCountPerSlot.containsKey(slotNumber)) {
+
+        return dishCountPerSlot.get(slotNumber);
+        }
+        return defaultDishCountPerSlot;
     }
 
-    public void setDishCountPerSlot(Map<Integer, Integer> dishCountPerSlot) {
+    public void setDishCountPerSlotNumber(Map<Integer, Integer> dishCountPerSlot) {
         this.dishCountPerSlot = dishCountPerSlot;
     }
 
-    public int getDishCountPerSlot(int slotNumber) {
-        return dishCountPerSlot.get(slotNumber);
-    }
+
 
 
 }

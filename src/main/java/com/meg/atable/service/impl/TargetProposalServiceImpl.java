@@ -70,8 +70,8 @@ public class TargetProposalServiceImpl implements TargetProposalService {
     }
 
     @Override
-    public void selectDishInSlot(Principal principal, Long proposalId, Long slotId, Long dishId) {
-        ProposalEntity proposalEntity = getTargetProposalById(principal.getName(), proposalId);
+    public void selectDishInSlot(String userName, Long proposalId, Long slotId, Long dishId) {
+        ProposalEntity proposalEntity = getTargetProposalById(userName, proposalId);
         if (proposalEntity == null ||
                 proposalEntity.getSlots() == null) {
             return;

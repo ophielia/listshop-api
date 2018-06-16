@@ -34,7 +34,7 @@ public class TargetProposalRestController implements TargetProposalRestControlle
     }
 
     @Override
-    public ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId) {
+    public ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId) throws ProposalProcessingException {
         ProposalEntity proposalEntity = this.targetProposalGenerator.generateProposal(principal.getName(), targetId);
         if (proposalEntity != null) {
             Link forOneProposal = new ProposalResource(proposalEntity).getLink("self");
@@ -71,7 +71,7 @@ public class TargetProposalRestController implements TargetProposalRestControlle
 
     @Override
     public ResponseEntity<Object> selectDishInSlot(Principal principal, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId) {
-        this.targetProposalService.selectDishInSlot(principal, proposalId, slotId, dishId);
+        this.targetProposalService.selectDishInSlot(principal.getName(), proposalId, slotId, dishId);
 
         return ResponseEntity.noContent().build();
     }

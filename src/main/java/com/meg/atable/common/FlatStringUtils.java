@@ -56,4 +56,17 @@ public class FlatStringUtils {
     public static String flattenListToString(List<String> list, String delimiter) {
         return String.join(delimiter, list);
     }
+
+    public static Integer[] inflateStringToIntegerArray(String flatlist, String delimiter) {
+
+        if (flatlist == null || flatlist.isEmpty()) {
+            return new Integer[0];
+        }
+        List<Integer> resultList = Arrays.asList(flatlist.split(delimiter)).stream().mapToInt(Integer::parseInt).boxed().collect(Collectors.toList());
+        Integer[] resultArray = new Integer[resultList.size()];
+        for (int i=0;i<resultList.size();i++) {
+            resultArray[i] = resultList.get(i);
+        }
+        return resultArray;
+    }
 }

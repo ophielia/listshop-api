@@ -54,7 +54,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     private TagService tagService;
 
     @Override
-    public ProposalEntity generateProposal(String userName, Long targetId) throws ObjectNotYoursException, ObjectNotFoundException {
+    public ProposalEntity generateProposal(String userName, Long targetId) throws ObjectNotYoursException, ObjectNotFoundException, ProposalProcessingException {
         UserAccountEntity userAccount = userService.getUserByUserName(userName);
         // get target for user
         TargetEntity target = targetService.getTargetById(userName, targetId);
@@ -381,7 +381,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         return finalDishList;
     }
 
-    private ProcessResult processProposalRequest(ProposalRequest request) {
+    private ProcessResult processProposalRequest(ProposalRequest request) throws ProposalProcessingException {
         ProposalProcessor processor = proposalProcessorFactory.getProposalProcessor(request);
 
         return processor.processProposal(request);
