@@ -1,5 +1,6 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.exception.ObjectNotFoundException;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.TagEntity;
@@ -141,7 +142,10 @@ public class TargetServiceImpl implements TargetService {
         }
         targetEntity.setProposalId(null);
         Optional<TargetSlotEntity> targetSlotEntityOpt = targetSlotRepository.findById(slotId);
-        TargetSlotEntity targetSlotEntity = targetSlotEntityOpt.isPresent()?targetSlotEntityOpt.get():null;
+        if (!targetSlotEntityOpt.isPresent()) {
+            throw new ObjectNotFoundException(slotId,"TargetSlotEntity");
+        }
+        TargetSlotEntity targetSlotEntity = targetSlotEntityOpt.get();
 
         targetSlotEntity.addTagId(tagId);
         targetSlotRepository.save(targetSlotEntity);
@@ -153,9 +157,12 @@ public class TargetServiceImpl implements TargetService {
         if (targetEntity == null) {
             return;
         }
-        targetEntity.setProposalId(null);
+        targetEntity.setProposalId(null); // MM get rid of this
         Optional<TargetSlotEntity> targetSlotEntityOpt = targetSlotRepository.findById(slotId);
-        TargetSlotEntity targetSlotEntity = targetSlotEntityOpt.isPresent()?targetSlotEntityOpt.get():null;
+        if (!targetSlotEntityOpt.isPresent()) {
+            throw new ObjectNotFoundException(slotId,"TargetSlotEntity");
+        }
+        TargetSlotEntity targetSlotEntity = targetSlotEntityOpt.get();
 
         targetSlotEntity.removeTagId(tagId);
         targetSlotRepository.save(targetSlotEntity);

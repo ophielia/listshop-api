@@ -1,6 +1,7 @@
 package com.meg.atable.service;
 
 import com.meg.atable.api.model.ApproachType;
+import com.meg.atable.data.entity.ContextApproachEntity;
 import com.meg.atable.data.entity.ProposalEntity;
 import com.meg.atable.data.entity.TargetSlotEntity;
 
@@ -24,6 +25,8 @@ public class ProcessInformation {
     private Map<Integer, Long> dishTagBySlot = new HashMap<>();
     private ProposalEntity proposal;
     private int defaultDishCountPerSlot;
+    private ContextApproachEntity currentApproach;
+    private int currentApproachIndex;
 
     public List<TargetSlotEntity> getSearchSlots() {
         return searchSlots;
@@ -126,6 +129,19 @@ public class ProcessInformation {
     }
 
 
+    public void setCurrentApproach(ContextApproachEntity currentApproach) {
+        this.currentApproach = currentApproach;
+    }
 
+    public ContextApproachEntity getCurrentApproach() {
+        return currentApproach;
+    }
 
+    public void setCurrentApproachIndex(int currentApproachIndex) {
+        this.currentApproachIndex = currentApproachIndex;
+    }
+
+    public int getCurrentApproachIndex() {
+        return currentApproachIndex;
+    }
 }

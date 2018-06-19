@@ -85,22 +85,6 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
         return processResult;
     }
 
-    private List<Long> pullDishIdsToFilter(List<NewRawSlotResult> slotResults) {
-            if (slotResults.isEmpty()) {
-                return new ArrayList<>();
-            }
-            List<Long> idsToFilter = new ArrayList<>();
-            for (NewRawSlotResult slot: slotResults) {
-                if (slot.getFilteredMatches().isEmpty()) {
-                    continue;
-                }
-
-                idsToFilter.addAll(slot.getFilteredMatches().stream().map(DishTagSearchResult::getDishId).collect(Collectors.toList()));
-
-            }
-return idsToFilter;
-    }
-
     protected ProcessInformation fillProcessInfo(ProposalRequest request) {
         ProcessInformation info = new ProcessInformation();
         List<Long> sqlFilter = new ArrayList<>();

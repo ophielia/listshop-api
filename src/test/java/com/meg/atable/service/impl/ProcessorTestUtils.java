@@ -1,10 +1,14 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.model.ApproachType;
+import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.data.entity.*;
+import com.meg.atable.service.AttemptGenerator;
 import com.meg.atable.service.DishTagSearchResult;
 import com.meg.atable.test.TestConstants;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 15/06/2018.
@@ -16,11 +20,11 @@ public class ProcessorTestUtils {
         List<TargetSlotEntity> slots = new ArrayList<>();
 
         int tagCounter = 1;
-        for (int i=0;i<slotCount;i++) {
+        for (int i = 0; i < slotCount; i++) {
             TargetSlotEntity slot = new TargetSlotEntity();
             slot.setSlotDishTagId(TestConstants.TAG_MAIN_DISH);
-            for (int j=0; j<tagSlotCount;j++) {
-                slot.addTagId((long)tagCounter);
+            for (int j = 0; j < tagSlotCount; j++) {
+                slot.addTagId((long) tagCounter);
                 tagCounter++;
             }
             slot.setSlotOrder(i);
@@ -28,16 +32,16 @@ public class ProcessorTestUtils {
         }
 
         target.setSlots(slots);
-        for (int i=0;i<tagTargetCount;i++) {
-            target.addTargetTagId((long)tagCounter);
-tagCounter++;
+        for (int i = 0; i < tagTargetCount; i++) {
+            target.addTargetTagId((long) tagCounter);
+            tagCounter++;
         }
 
         return target;
     }
 
     protected static List<DishTagSearchResult> makeDummySearchResults(TargetSlotEntity slot, Map<String, Boolean> dishTagMatches, Set<String> targetTagIds, int targetIdCount,
-                                                             int resultCount, int emptyCount, boolean isOffset, boolean matchAll, List<Long> filter) {
+                                                                      int resultCount, int emptyCount, boolean isOffset, boolean matchAll, List<Long> filter) {
         List<DishTagSearchResult> results = new ArrayList<>();
         List<String> allTags = new ArrayList<>();
         allTags.addAll(targetTagIds);
@@ -48,7 +52,7 @@ tagCounter++;
             offset = (slot.getSlotOrder() * 2) + 1;
         }
         int i = -1;
-        while (i<resultCount-emptyCount) {
+        while (i < resultCount - emptyCount) {
             i++;
             Long dummyDishId = (long) i + offset;
             if (filter.contains(dummyDishId)) {
@@ -63,8 +67,8 @@ tagCounter++;
 
         }
 
-        i = resultCount - emptyCount-1;
-        while ( i < resultCount) {
+        i = resultCount - emptyCount - 1;
+        while (i < resultCount) {
             i++;
             Long dummyDishId = (long) i + offset;
             DishTagSearchResult result = new DishTagSearchResult(dummyDishId, null, targetIdCount, allTags.size());
@@ -130,7 +134,7 @@ tagCounter++;
         MealPlanEntity mealPlan = new MealPlanEntity();
         List<Long> dishIds = getRandomDishIds(dishSlotCount);
         List<SlotEntity> slots = new ArrayList<>();
-        for (Long dishId: dishIds) {
+        for (Long dishId : dishIds) {
             DishEntity dish = new DishEntity();
             dish.setId(dishId);
             SlotEntity dishSlot = new SlotEntity();
@@ -139,5 +143,72 @@ tagCounter++;
         }
         mealPlan.setSlots(slots);
         return mealPlan;
+    }
+
+    public static ProposalContextEntity getDummyContext(TargetEntity target, int proposalCount, int selectedIndex) {
+        // create context
+        // don't worry about links to target / proposal
+        ProposalContextEntity context = new ProposalContextEntity();
+
+        // fill context approaches
+        List<Integer[]> approachOrders = getDummyApproachOrders(target,5);
+        List<ContextApproachEntity> approaches = new ArrayList<>();
+        for (int i = 0; i < proposalCount; i++) {
+            ContextApproachEntity approach = new ContextApproachEntity();
+            approach.setContext(context);
+            approach.setApproachNumber(i);
+            List<String> instructionList = Arrays.stream(approachOrders.get(i)).map(String::valueOf).collect(Collectors.toList());
+            approach.setInstructions(FlatStringUtils.flattenListToString(instructionList,";"));
+            approaches.add(approach);
+        }
+        context.setApproaches(approaches);
+        context.setCurrentApproachIndex(selectedIndex);
+        return context;
+    }
+
+    private static List<Integer[]> getDummyApproachOrders(TargetEntity target, int proposalCount) {
+
+        Map<Integer, Integer> dummyIndexToSlot = new HashMap<>();
+        for (int i = 0; i < proposalCount; i++) {
+            dummyIndexToSlot.put(i, i);
+        }
+
+        return AttemptGenerator.getProposalOrders(ApproachType.WHEEL_MIXED, target.getSlots().size(), proposalCount, dummyIndexToSlot);
+    }
+
+    public static ProposalContextEntity getDummyContext(int selectedIndex,TargetEntity target, ProposalEntity proposalEntity) {
+        // create context
+        // don't worry about links to target / proposal
+        ProposalContextEntity context = new ProposalContextEntity();
+
+        // fill context approaches
+        List<Integer> searchSlots = new ArrayList<>();
+        for (ProposalSlotEntity proposalSlot : proposalEntity.getSlots()) {
+            if (proposalSlot.getPickedDishId()!=null) {
+                continue;
+            }
+            searchSlots.add(proposalSlot.getSlotNumber());
+        }
+
+        Map<Integer, Integer> dummyIndexToSlot = new HashMap<>();
+        for (int i = 0; i < searchSlots.size(); i++) {
+            dummyIndexToSlot.put(i, searchSlots.get(i));
+        }
+
+        int proposalCount = Math.min(5, searchSlots.size());
+        List<Integer[]> approachOrders = AttemptGenerator.getProposalOrders(ApproachType.WHEEL_MIXED, searchSlots.size(), proposalCount, dummyIndexToSlot);
+
+        List<ContextApproachEntity> approaches = new ArrayList<>();
+        for (int i = 0; i < proposalCount; i++) {
+            ContextApproachEntity approach = new ContextApproachEntity();
+            approach.setContext(context);
+            approach.setApproachNumber(i);
+            List<String> instructionList = Arrays.stream(approachOrders.get(i)).map(String::valueOf).collect(Collectors.toList());
+            approach.setInstructions(FlatStringUtils.flattenListToString(instructionList,";"));
+            approaches.add(approach);
+        }
+        context.setApproaches(approaches);
+        context.setCurrentApproachIndex(selectedIndex);
+        return context;
     }
 }

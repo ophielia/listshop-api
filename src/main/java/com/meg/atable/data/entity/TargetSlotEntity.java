@@ -122,7 +122,7 @@ public class TargetSlotEntity {
 
         List<String> tagids = getTagIdsAsList();
         tagids = tagids.stream()
-                .filter(t -> !t.equals(tagId.toString()))
+                .filter(t -> !t.equals(String.valueOf(tagId)))
                 .collect(Collectors.toList());
         targetTagIds = flattenListToString(tagids);
     }
@@ -147,10 +147,9 @@ public class TargetSlotEntity {
                 .map( t -> dictionary.get(new Long(t)))
                 .collect(Collectors.toList());
 
-        if (slotDishTagId!=null) {
-            if (dictionary.containsKey(slotDishTagId)) {
+        if (slotDishTagId!=null &&dictionary.containsKey(slotDishTagId)) {
                 slotDishTag = dictionary.get(slotDishTagId);
-            }
+
         }
 
     }

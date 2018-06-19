@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 24/05/2018.
@@ -26,6 +27,8 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
     @Value("${proposal.processor.dish.result.count}")
     protected static final int SEARCH_DISH_RESULT_COUNT =5;
 
+    @Value("${proposal.processor.dish.empty.count}")
+    protected static final int EMPTY_COUNT = 5;
 
     protected List<ProposalSlotEntity> mapRawSlotsToEntities(ProcessInformation info, List<NewRawSlotResult> rawSlotResults) {
         List<ProposalSlotEntity> resultList = new ArrayList<>();
@@ -215,5 +218,22 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         return new NewRawSlotResult(slot.getSlotOrder(), slotMatches, matchCount, information.getDishCountBySlotNumber(slot.getSlotOrder()));
 
     }
+
+    protected List<Long> pullDishIdsToFilter(List<NewRawSlotResult> slotResults) {
+        if (slotResults.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Long> idsToFilter = new ArrayList<>();
+        for (NewRawSlotResult slot: slotResults) {
+            if (slot.getFilteredMatches().isEmpty()) {
+                continue;
+            }
+
+            idsToFilter.addAll(slot.getFilteredMatches().stream().map(DishTagSearchResult::getDishId).collect(Collectors.toList()));
+
+        }
+        return idsToFilter;
+    }
+
 
 }

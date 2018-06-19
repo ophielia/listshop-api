@@ -106,3 +106,41 @@ INSERT INTO category_tags (category_id, tag_id) VALUES (1, 502);
 INSERT INTO category_tags (category_id, tag_id) VALUES (2, 503);
 INSERT INTO category_tags (category_id, tag_id) VALUES (501, 500);
 INSERT INTO category_tags (category_id, tag_id) VALUES (501, 500);
+
+
+-- targets
+INSERT INTO target (target, target_id, created, last_updated,last_used, target_name, target_tag_ids, user_id)
+  VALUES ('TargetEntity', 500, '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 20);
+
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 500, 320, 1, 500, '406');  // main dish, chicken broth
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 501, 320, 1, 500, '321');  // main dish, yummy
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 502, 320, 1, 500, '81');  // main dish, carrots
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 503, 320, 1, 500, '89');  // main dish, yummy
+
+INSERT INTO target (target, target_id, created, last_updated,last_used, target_name, target_tag_ids, user_id)
+  VALUES ('TargetEntity', 501, '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 20);
+
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 504, 320, 1, 501, '406');  // main dish
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 505, 320, 1, 501, '321');  // main dish
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 506, 320, 1, 501, '81');  // main dish
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 507, 320, 1, 501, '89');  // main dish
+
+INSERT INTO target (target, target_id, created, last_updated,last_used, target_name, target_tag_ids, user_id)
+  VALUES ('TargetEntity', 502, '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 500);
+
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 508, 320, 1, 502, '406;301');  // main dish
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 509, 320, 1, 502, '329;301');  // main dish
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 510, 320, 1, 502, '81;301');  // main dish
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 511, 320, 1, 502, '89;301');  // main dish

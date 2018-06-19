@@ -10,6 +10,7 @@ import com.meg.atable.data.repository.TargetRepository;
 import com.meg.atable.data.repository.TargetSlotRepository;
 import com.meg.atable.service.tag.TagService;
 import com.meg.atable.service.TargetService;
+import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,8 +57,19 @@ public class TargetServiceImplTest {
     private static TargetSlotEntity targetSlotEntity;
     private static TagEntity dishTypeTag;
 
+    private Long targetIdToDelete;
+    private Long targetIdToEdit;
+
     @Before
     public void setUp() throws Exception {
+        TargetEntity newTarget = new TargetEntity();
+        newTarget.setTargetName("george");
+
+        TargetEntity result = targetService.createTarget(TestConstants.USER_1_NAME, newTarget);
+targetIdToDelete = result.getTargetId();
+
+        result = targetService.createTarget(TestConstants.USER_1_NAME,newTarget);
+        targetIdToEdit = result.getTargetId();
         if (setUpComplete) {
             return;
         }
@@ -128,7 +140,7 @@ public class TargetServiceImplTest {
 
     @Test
     public void getTargetsForUserName() throws Exception {
-        List<TargetEntity> result = targetService.getTargetsForUserName(userAccount.getUsername());
+        List<TargetEntity> result = targetService.getTargetsForUserName(TestConstants.USER_3_NAME);
 
 
         Assert.assertNotNull(result);
@@ -141,7 +153,7 @@ public class TargetServiceImplTest {
         TargetEntity newTarget = new TargetEntity();
         newTarget.setTargetName("george");
 
-        TargetEntity result = targetService.createTarget(newUserAccount.getUsername(), newTarget);
+        TargetEntity result = targetService.createTarget(TestConstants.USER_1_NAME, newTarget);
 
         Assert.assertNotNull(result);
         Assert.assertEquals("george", result.getTargetName());
@@ -154,31 +166,31 @@ public class TargetServiceImplTest {
 
     @Test
     public void getTargetById() throws Exception {
-        TargetEntity result = targetService.getTargetById(userAccount.getUsername(), target1.getTargetId());
+        TargetEntity result = targetService.getTargetById(TestConstants.USER_3_NAME, TestConstants.TARGET_1_ID);
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(target1.getTargetId(), result.getTargetId());
-        Assert.assertEquals(target1.getUserId(), result.getUserId());
+        Assert.assertEquals(TestConstants.TARGET_1_ID, result.getTargetId());
+        Assert.assertEquals(TestConstants.USER_3_ID, result.getUserId());
         Assert.assertNotNull(result.getCreated());
     }
 
     @Test
     public void deleteTarget() throws Exception {
-        Long id = target2.getTargetId();
-        targetService.deleteTarget(userAccount.getUsername(), id);
+        targetService.deleteTarget(TestConstants.USER_1_NAME, targetIdToDelete);
 
-        TargetEntity result = targetService.getTargetById(userAccount.getUsername(), id);
+        TargetEntity result = targetService.getTargetById(TestConstants.USER_1_NAME, targetIdToDelete);
         Assert.assertNull(result);
     }
 
     @Test
     public void updateTarget() throws Exception {
         String newname = "New Name";
-        target1.setTargetName(newname);
+        TargetEntity toEdit = targetService.getTargetById(TestConstants.USER_1_NAME, targetIdToEdit);
+        toEdit.setTargetName(newname);
 
-        targetService.updateTarget(userAccount.getUsername(), target1);
+        targetService.updateTarget(TestConstants.USER_1_NAME, toEdit);
 
-        TargetEntity result = targetService.getTargetById(userAccount.getUsername(), target1.getTargetId());
+        TargetEntity result = targetService.getTargetById(TestConstants.USER_1_NAME, targetIdToEdit);
         Assert.assertEquals(newname, result.getTargetName());
     }
 
@@ -186,77 +198,79 @@ public class TargetServiceImplTest {
     public void addSlotToTarget() throws Exception {
         TargetEntity targetEntity = new TargetEntity();
         targetEntity.setTargetName("new Target slots");
-        targetEntity = targetService.createTarget(newUserAccount.getUsername(), targetEntity);
+        targetEntity = targetService.createTarget(TestConstants.USER_1_NAME, targetEntity);
         int size = targetEntity.getSlots() != null ? targetEntity.getSlots().size() : 0;
         TargetSlotEntity slotEntity = new TargetSlotEntity();
-        slotEntity.setSlotDishTagId(dishTypeTag.getId());
+        slotEntity.setSlotDishTagId(TestConstants.TAG_MAIN_DISH);
 
-        targetService.addSlotToTarget(newUserAccount.getUsername(), targetEntity.getTargetId(), slotEntity);
-        targetEntity = targetService.getTargetById(newUserAccount.getUsername(), targetEntity.getTargetId());
+        targetService.addSlotToTarget(TestConstants.USER_1_NAME, targetEntity.getTargetId(), slotEntity);
+        targetEntity = targetService.getTargetById(TestConstants.USER_1_NAME, targetEntity.getTargetId());
         List<TargetSlotEntity> result = targetEntity.getSlots();
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.get(size));
         Assert.assertEquals(targetEntity.getTargetId(), result.get(size).getTargetId());
         Assert.assertTrue(size + 1 == result.get(size).getSlotOrder());
-        Assert.assertEquals(dishTypeTag.getId(), result.get(size).getSlotDishTagId());
+        Assert.assertEquals(TestConstants.TAG_MAIN_DISH, result.get(size).getSlotDishTagId());
     }
 
     @Test
     public void deleteSlotFromTarget() throws Exception {
+        targetService.deleteSlotFromTarget(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID, TestConstants.TARGET_SLOT_1_ID);
 
-        targetService.deleteSlotFromTarget(newUserAccount.getUsername(), target3.getTargetId(), targetSlotEntity.getId());
-
-        TargetEntity targetEntity = targetService.getTargetById(newUserAccount.getUsername(), target3.getTargetId());
+        TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
         List<TargetSlotEntity> result = targetEntity.getSlots();
         Assert.assertNotNull(result);
         Optional<TargetSlotEntity> foundSlot = targetEntity.getSlots().stream()
-                .filter(t -> t.getId().longValue() == targetSlotEntity.getId().longValue()).findFirst();
+                .filter(t -> t.getId().longValue() == TestConstants.TARGET_2_ID.longValue()).findFirst();
         Assert.assertFalse(foundSlot.isPresent());
     }
 
     @Test
     public void addTagToTargetSlot() throws Exception {
-        TargetEntity target = targetService.getTargetById(userAccount.getUsername(), target2.getTargetId());
+        TargetEntity target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
         TargetSlotEntity slot = target.getSlots().get(0);
         Long slotId = slot.getId();
         String slottags = slot.getTargetTagIds() == null ? "" : slot.getTargetTagIds();
-        Assert.assertFalse(slottags.contains(String.valueOf(tag1.getId())));
-        targetService.addTagToTargetSlot(userAccount.getUsername(), target.getTargetId(), slotId, tag1.getId());
+        Assert.assertFalse(slottags.contains(String.valueOf(TestConstants.TAG_CROCKPOT)));
+        targetService.addTagToTargetSlot(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID, slotId, TestConstants.TAG_CROCKPOT);
 
-        target = targetService.getTargetById(userAccount.getUsername(), target2.getTargetId());
+        target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
         slot = target.getSlots().get(0);
         slotId = slot.getId();
         slottags = slot.getTargetTagIds();
         Assert.assertNotNull(slottags);
-        Assert.assertTrue(slottags.contains(String.valueOf(tag1.getId())));
+        Assert.assertTrue(slottags.contains(String.valueOf(TestConstants.TAG_CROCKPOT)));
     }
 
     @Test
     public void deleteTagFromTargetSlot() throws Exception {
-        TargetEntity target = targetService.getTargetById(newUserAccount.getUsername(), target3.getTargetId());
+        TargetEntity target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
         TargetSlotEntity slot = target.getSlots().get(0);
         Long slotId = slot.getId();
         String slottags = slot.getTargetTagIds() == null ? "" : slot.getTargetTagIds();
-        Assert.assertTrue(slottags.contains(String.valueOf(tag1.getId())));
-        targetService.deleteTagFromTargetSlot(userAccount.getUsername(), target.getTargetId(), slotId, tag1.getId());
+        Assert.assertTrue(slottags.contains(String.valueOf(TestConstants.TAG_SOUP)));
+        targetService.deleteTagFromTargetSlot(TestConstants.USER_1_NAME, target.getTargetId(), slotId, TestConstants.TAG_SOUP);
 
-        target = targetService.getTargetById(newUserAccount.getUsername(), target3.getTargetId());
-        slot = target.getSlots().get(0);
-        slotId = slot.getId();
-        slottags = slot.getTargetTagIds();
-        Assert.assertNotNull(slottags);
-        Assert.assertFalse(slottags.contains(String.valueOf(tag1.getId())));
+        target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
+        for (TargetSlotEntity slotEntity : target.getSlots()) {
+            if (!slotId.equals(slotEntity.getId())) {
+                continue;
+            }
+            slottags = slotEntity.getTargetTagIds();
+            Assert.assertNotNull(slottags);
+            Assert.assertFalse(slottags.contains(String.valueOf(TestConstants.TAG_SOUP)));
 
+        }
     }
 
     @Test
     public void addTagToTarget() throws Exception {
-        TargetEntity target = targetService.getTargetById(userAccount.getUsername(), target2.getTargetId());
+        TargetEntity target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
         String targettags = target.getTargetTagIds() == null ? "" : target.getTargetTagIds();
         Assert.assertFalse(targettags.contains(String.valueOf(tag1.getId())));
-        targetService.addTagToTarget(userAccount.getUsername(), target.getTargetId(),  tag1.getId());
+        targetService.addTagToTarget(TestConstants.USER_1_NAME, target.getTargetId(),  tag1.getId());
 
-        target = targetService.getTargetById(userAccount.getUsername(), target2.getTargetId());
+        target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
         targettags = target.getTargetTagIds();
         Assert.assertNotNull(targettags);
         Assert.assertTrue(targettags.contains(String.valueOf(tag1.getId())));
@@ -264,15 +278,15 @@ public class TargetServiceImplTest {
 
     @Test
     public void deleteTagFromTarget() throws Exception {
-        TargetEntity target = targetService.getTargetById(newUserAccount.getUsername(), target3.getTargetId());
+        TargetEntity target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
         String targettags = target.getTargetTagIds() != null ?target.getTargetTagIds():"";
-        Assert.assertTrue(targettags.contains(String.valueOf(tag1.getId())));
-        targetService.deleteTagFromTarget(newUserAccount.getUsername(), target.getTargetId(), tag1.getId());
+        Assert.assertTrue(targettags.contains(String.valueOf(TestConstants.TAG_EASE_OF_PREP)));
+        targetService.deleteTagFromTarget(TestConstants.USER_1_NAME, target.getTargetId(), TestConstants.TAG_EASE_OF_PREP);
 
-        target = targetService.getTargetById(newUserAccount.getUsername(), target3.getTargetId());
+        target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
         targettags = target.getTargetTagIds();
         Assert.assertNotNull(targettags);
-        Assert.assertFalse(targettags.contains(String.valueOf(tag1.getId())));
+        Assert.assertFalse(targettags.contains(String.valueOf(TestConstants.TAG_EASE_OF_PREP)));
 
     }
 }

@@ -13,5 +13,6 @@ public interface DishSearchService {
 
     List<DishEntity> findDishes(DishSearchCriteria criteria);
 
-    List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, TargetSlotEntity targetSlotEntity, int size, List<String> tagListForSlot, Map<Long, List<Long>> searchGroups, List<Long> sqlFilteredDishes);
+    List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, TargetSlotEntity targetSlotEntity, int size, List<String> tagListForSlot,
+                                                         Map<Long, List<Long>> searchGroups, List<Long> sqlFilteredDishes);
 }
