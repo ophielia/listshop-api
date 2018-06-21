@@ -16,6 +16,7 @@ public class ProposalRequest {
     private ProposalContextEntity context;
     private ProposalSearchType searchType;
     private MealPlanEntity mealPlan;
+    private Integer fillInSlotNumber;
 
     public void setTarget(TargetEntity target) {
         this.target = target;
@@ -71,5 +72,13 @@ public class ProposalRequest {
                 ", mealPlanId=" + mealPlanId+
                 ", searchType=" + searchType +
                 '}';
+    }
+
+    public void setFillInSlotNumber(Integer fillInSlotNumber) {
+        this.fillInSlotNumber = fillInSlotNumber;
+    }
+
+    public Integer getFillInSlotNumber() {
+        return fillInSlotNumber;
     }
 }

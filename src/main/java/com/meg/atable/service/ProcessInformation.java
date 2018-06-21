@@ -27,6 +27,8 @@ public class ProcessInformation {
     private int defaultDishCountPerSlot;
     private ContextApproachEntity currentApproach;
     private int currentApproachIndex;
+    private List<Long> codeFilter;
+    private List<Long> currentSlotResults;
 
     public List<TargetSlotEntity> getSearchSlots() {
         return searchSlots;
@@ -143,5 +145,21 @@ public class ProcessInformation {
 
     public int getCurrentApproachIndex() {
         return currentApproachIndex;
+    }
+
+    public void setCodeFilter(List<Long> codeFilter) {
+        this.codeFilter = codeFilter;
+    }
+
+    public List<Long> getCodeFilter() {
+        return codeFilter;
+    }
+
+    public void setCurrentSlotResults(List<Long> currentSlotResults) {
+        this.currentSlotResults = currentSlotResults;
+    }
+
+    public List<Long> getCurrentDishIdsForSlot() {
+        return currentSlotResults;
     }
 }

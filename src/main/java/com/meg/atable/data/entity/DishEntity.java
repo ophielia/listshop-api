@@ -28,7 +28,7 @@ public class DishEntity {
     private Long userId;
 
     @Id
-    //@GeneratedValue( strategy=GenerationType.SEQUENCE, generator="dish_sequence")
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="dish_sequence")
     @Column(name = "dish_id")
     private Long dish_id;
 

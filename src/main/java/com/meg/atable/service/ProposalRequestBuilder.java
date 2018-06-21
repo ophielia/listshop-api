@@ -56,4 +56,9 @@ public class ProposalRequestBuilder {
         this.request.setMealPlan(mealPlan);
         return this;
     }
+
+    public ProposalRequestBuilder withSlotNumber(Integer slotNr) {
+            this.request.setFillInSlotNumber(slotNr);
+            return this;
+    }
 }

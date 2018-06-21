@@ -13,6 +13,7 @@ public class NewRawSlotResult {
     private Integer slotNumber;
     private ArrayList<Long> filteredDishes = new ArrayList<>();
     private List<DishTagSearchResult> dishSortedResults;
+    private List<DishTagSearchResult> preSelectedResults;
 
     public NewRawSlotResult(Integer slotNumber, List<DishTagSearchResult> searchResults, int slotMatchCount, int dishResultsForSlot) {
         this.slotNumber = slotNumber;
@@ -35,6 +36,9 @@ public class NewRawSlotResult {
 
     public List<DishTagSearchResult> getFilteredMatches(int dishesPerSlot) {
         List<DishTagSearchResult> matches = new ArrayList<>();
+        if (preSelectedResults != null) {
+            matches.addAll(preSelectedResults);
+        }
         for (DishTagSearchResult match : dishSortedResults) {
             if (matches.size() >= dishesPerSlot) {
                 break;
@@ -57,11 +61,17 @@ public class NewRawSlotResult {
     public void addDishIdsToFilter(List<Long> dishIdMatches) {
         this.filteredDishes.addAll(dishIdMatches);
     }
+
     public int getRawMatchCount() {
         return rawMatchCount;
     }
 
-    public void setDishCountForSlot(int slotNumber, Integer dishCount) {
-
+    public void addPrefilledDishIds(List<Long> currentDishIdsForSlot) {
+        preSelectedResults = new ArrayList<>();
+        for (DishTagSearchResult match : dishSortedResults) {
+            if (currentDishIdsForSlot.contains(match.getDishId())) {
+                preSelectedResults.add(match);
+            }
+        }
     }
 }

@@ -45,6 +45,8 @@ public class TargetSlotEntity {
     @Transient
     private List<TagEntity> tags;
 
+    public final static String IDENTIFIER="TargetSlotEntity";
+
     public TargetSlotEntity() {
         // for JPA
     }
@@ -105,10 +107,6 @@ public class TargetSlotEntity {
         return slotDishTag;
     }
 
-    public void setSlotDishTag(TagEntity slotDishTag) {
-        this.slotDishTag = slotDishTag;
-    }
-
     public void addTagId(Long tagId) {
         List<String> tagids = getTagIdsAsList();
         tagids.add(tagId.toString());
@@ -138,7 +136,7 @@ public class TargetSlotEntity {
         return String.join(TargetServiceConstants.TARGET_TAG_DELIMITER,list);
     }
 
-    public void fillInTags(Map<Long, TagEntity> dictionary) {
+    void fillInTags(Map<Long, TagEntity> dictionary) {
         if (dictionary.isEmpty()) {
             return;
         }

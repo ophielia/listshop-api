@@ -64,4 +64,5 @@ public final class TestConstants {
     public static final Long TARGET_2_ID = 502L; // belongs to user 1 (500)
     public static final Long TARGET_SLOT_1_ID = 508L;
     public static final Long TAG_EASE_OF_PREP = 399L;
+    public static final Long DISH_1_ID = 1L; // Israeli Couscous
 }

@@ -234,6 +234,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         ProposalRequestBuilder builder = new ProposalRequestBuilder();
         ProposalRequest request = builder.create()
                 .withSearchType(searchType)
+                .withSlotNumber(slotNr)
                 .withProposal(proposal)
                 .withTarget(target)
                 .withContext(context)

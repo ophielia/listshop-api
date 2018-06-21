@@ -15,24 +15,30 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static com.meg.atable.data.entity.TargetSlotEntity.IDENTIFIER;
+
 /**
  * Created by margaretmartin on 18/12/2017.
  */
 @Service
 public class TargetServiceImpl implements TargetService {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private TargetRepository targetRepository;
+    private final TargetRepository targetRepository;
 
 
-    @Autowired
-    private TargetSlotRepository targetSlotRepository;
+    private final TargetSlotRepository targetSlotRepository;
+
+    private final TagService tagService;
 
     @Autowired
-    private TagService tagService;
+    public TargetServiceImpl(UserService userService, TargetRepository targetRepository, TargetSlotRepository targetSlotRepository, TagService tagService) {
+        this.userService = userService;
+        this.targetRepository = targetRepository;
+        this.targetSlotRepository = targetSlotRepository;
+        this.tagService = tagService;
+    }
 
     @Override
     public List<TargetEntity> getTargetsForUserName(String name) {
@@ -96,9 +102,6 @@ public class TargetServiceImpl implements TargetService {
     public void addSlotToTarget(String name, Long targetId, TargetSlotEntity targetSlotEntity) {
         TargetEntity targetEntity = getTargetById(name, targetId);
         targetEntity.setProposalId(null);
-        if (targetEntity == null) {
-            return;
-        }
 
         targetSlotEntity.setTargetId(targetEntity.getTargetId());
         List<TargetSlotEntity> slots = targetEntity.getSlots();
@@ -110,9 +113,10 @@ public class TargetServiceImpl implements TargetService {
         Integer max = maxSlotOrder.isPresent() ? maxSlotOrder.getAsInt() : 0;
         targetSlotEntity.setSlotOrder(max + 1);
 
-        targetSlotEntity = targetSlotRepository.save(targetSlotEntity);
+        TargetSlotEntity result;
+        result = targetSlotRepository.save(targetSlotEntity);
 
-        targetEntity.addSlot(targetSlotEntity);
+        targetEntity.addSlot(result);
 
         targetRepository.save(targetEntity);
     }
@@ -120,13 +124,13 @@ public class TargetServiceImpl implements TargetService {
     @Override
     public void deleteSlotFromTarget(String name, Long targetId, Long slotId) {
         TargetEntity targetEntity = getTargetById(name, targetId);
-        if (targetEntity == null) {
-            return;
-        }
+
         targetEntity.setProposalId(null);
         Optional<TargetSlotEntity> targetSlotEntityOpt = targetSlotRepository.findById(slotId);
-        TargetSlotEntity targetSlotEntity = targetSlotEntityOpt.isPresent()?targetSlotEntityOpt.get():null;
-
+        if (!targetSlotEntityOpt.isPresent()) {
+            throw new ObjectNotFoundException(slotId, IDENTIFIER);
+        }
+        TargetSlotEntity targetSlotEntity = targetSlotEntityOpt.get();
         targetEntity.removeSlot(targetSlotEntity);
 
         targetRepository.save(targetEntity);

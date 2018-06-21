@@ -30,6 +30,9 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
     @Value("${proposal.processor.dish.empty.count}")
     protected static final int EMPTY_COUNT = 5;
 
+    @Value("${proposal.processor.fill.in.increment}")
+    protected static final int FILL_IN_INCREMENT = 5;
+
     protected List<ProposalSlotEntity> mapRawSlotsToEntities(ProcessInformation info, List<NewRawSlotResult> rawSlotResults) {
         List<ProposalSlotEntity> resultList = new ArrayList<>();
         if (rawSlotResults != null) {
@@ -38,7 +41,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
                 proposalSlot.setProposal(info.getProposal());
                 proposalSlot.setSlotNumber(slot.getSlotNumber());
                 proposalSlot.setSlotDishTagId(info.getDishTagBySlotNumber(slot.getSlotNumber()));
-                //MM don't need this, I think String flatMatchedIds = matchedIdsAsString(slot,info.getTagKeyBySlotNumber(slot.getSlotNumber()));
+                //MM don't need this, I think String flatMatchedIds = matchedIdsAsString(slot,info.getTagKeyBySlotNumber(slot.getFillInSlotNumber()));
                 //MM this either proposalSlot.setFlatMatchedTagIds(flatMatchedIds);
                 List<DishSlotEntity> dishSlots = mapDishSlots(info,slot, proposalSlot);
                 proposalSlot.setDishSlots(dishSlots);
