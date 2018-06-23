@@ -6,6 +6,7 @@ import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.JwtUser;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.DishService;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
@@ -29,6 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertNotNull;
@@ -138,7 +140,7 @@ public class DishRestControllerTest {
         toUpdate.setDishName(updateName);
         toUpdate.setDescription(updateDescription);
         toUpdate.setUserId(TestConstants.USER_3_ID);
-
+toUpdate.setTags(new ArrayList<TagEntity>());
         String dishJson = json(toUpdate);
 
         this.mockMvc.perform(put("/dish/" + toUpdate.getId())

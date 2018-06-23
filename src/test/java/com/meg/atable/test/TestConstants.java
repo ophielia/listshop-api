@@ -22,6 +22,10 @@ public final class TestConstants {
     public static final Long TAG_4_ID = 503L;
     public static final Long TAG_5_ID = 504L;
 
+    public static final Long PARENT_TAG_ID_1 = 380L;
+    public static final Long PARENT_TAG_ID_2 = 379L;
+    public static final Long CHILD_TAG_ID_1 =37L;
+
     public static final Long LIST_1_ID = 500L;  // test status
     public static final Long LIST_2_ID = 501L;  // test modification
     public static final Long LIST_3_ID = 502L;

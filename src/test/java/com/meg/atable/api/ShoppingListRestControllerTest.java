@@ -178,11 +178,11 @@ public class ShoppingListRestControllerTest {
                 null);
 
         mockMvc.perform(get("/shoppinglist")
-                .with(user(thisuserDetails)))
+                .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$._embedded.shoppingListResourceList", hasSize(3)));
+                .andExpect(jsonPath("$._embedded.shoppingListResourceList", hasSize(2)));
     }
 
 
@@ -255,7 +255,7 @@ public class ShoppingListRestControllerTest {
                 + "/item";
 
         Item item = new Item()
-                .tagId(tag1.getId().toString())
+                .tagId(String.valueOf(TestConstants.TAG_CARROTS))
                 .itemSource("Manual");
 
         String itemJson = json(item);
@@ -271,7 +271,7 @@ public class ShoppingListRestControllerTest {
     @WithMockUser
     public void testDeleteItemFromList() throws Exception {
         Long listId = TestConstants.LIST_1_ID;
-        String url = "/shoppinglist/" + listId + "/item/" + toDeleteItemId;
+        String url = "/shoppinglist/" + listId + "/item/" + 501L;
         mockMvc.perform(delete(url)
                 .with(user(userDetails)))
                 .andExpect(status().isNoContent());
@@ -286,7 +286,7 @@ public class ShoppingListRestControllerTest {
         this.mockMvc.perform(post(url)
                 .with(user(userDetails))
                 .contentType(contentType))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isCreated());
     }
 
     private String json(Object o) throws IOException {
