@@ -83,6 +83,10 @@ CREATE SEQUENCE proposal_sequence
     NO MAXVALUE
     CACHE 1;
 
+alter table target drop column target;
+alter table target add column target character varying(255);
+alter table target_slot drop column target;
+alter table target_slot add column target character varying(255);
 -- old tables
 --drop table target_proposal_dish;
 --drop table target_proposal_slot;

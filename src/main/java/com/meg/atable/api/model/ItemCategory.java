@@ -73,12 +73,9 @@ public class ItemCategory extends AbstractCategory {
 
     @Override
     public boolean isEmpty() {
-        if (getSubCategories().isEmpty() &&
+        return getSubCategories().isEmpty() &&
                 getItems().isEmpty() &&
-                getItemEntities().isEmpty()) {
-            return true;
-        }
-        return false;
+                getItemEntities().isEmpty();
     }
 
     public void sortItems() {

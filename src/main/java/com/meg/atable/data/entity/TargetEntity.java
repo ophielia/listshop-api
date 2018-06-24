@@ -8,8 +8,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "Target")
 @Table(name = "target")
 @GenericGenerator(
         name = "target_sequence",
@@ -50,6 +48,7 @@ public class TargetEntity extends AbstractInflateAndFlatten {
     private Long proposalId;
 
     public TargetEntity() {
+        // for jpa
     }
 
     public TargetEntity(Long targetId) {
@@ -122,7 +121,7 @@ public class TargetEntity extends AbstractInflateAndFlatten {
 
     public void addSlot(TargetSlotEntity slot) {
         if (slots == null) {
-            slots = new ArrayList<TargetSlotEntity>();
+            slots = new ArrayList<>();
         }
         slots.add(slot);
 
@@ -218,7 +217,7 @@ public class TargetEntity extends AbstractInflateAndFlatten {
 // this is used to decide if the tags for this target have changed since the last proposal was run
         // this is used to decide if the slots have changed since the last proposal has been run
         // slots changed == different picked dishes
-        StringBuffer hashCode = new StringBuffer(getTargetId().hashCode());
+        StringBuilder hashCode = new StringBuilder(getTargetId().hashCode());
         // make list of all tagList strings for target and contained slots
         // also include dish type tags
         List<String> targetTags =inflateStringToList(getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER);

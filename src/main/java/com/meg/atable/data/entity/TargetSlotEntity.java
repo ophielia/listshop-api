@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="Target")
 @Table(name = "target_slot")
 @GenericGenerator(
         name = "target_slot_sequence",

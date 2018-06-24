@@ -29,12 +29,9 @@ public class ListLayoutCategory extends AbstractCategory {
 
     @Override
     public boolean isEmpty() {
-        if (getSubCategories().isEmpty() &&
+        return getSubCategories().isEmpty() &&
                 getTags().isEmpty() &&
-                getTagEntities().isEmpty()) {
-            return true;
-        }
-        return false;
+                getTagEntities().isEmpty();
     }
 
 
