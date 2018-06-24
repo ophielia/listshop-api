@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class TargetRestControllerTest {
+public class ProposalRestControllerTest {
 
 
     private static UserDetails userDetails;
@@ -79,6 +79,30 @@ public class TargetRestControllerTest {
 
         assertNotNull("the JSON message converter must not be null");
     }
+
+    /*
+
+        @RequestMapping(method = RequestMethod.POST, value = "/target/{targetId}", produces = "application/json")
+    ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId) throws ProposalProcessingException;
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{proposalId}", produces = "application/json")
+    ResponseEntity<ProposalResource> getProposal(Principal principal, @PathVariable("proposalId") Long proposalId);
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/{proposalId}", produces = "application/json")
+    ResponseEntity<Object> refreshProposal(Principal principal, @PathVariable("proposalId") Long proposalId,
+                                           @RequestParam(value = "direction", required = false) String direction) throws ProposalProcessingException;
+
+    @RequestMapping(method = RequestMethod.POST, value = "/{proposalId}/slot/{slotId}/dish/{dishId}", produces = "application/json")
+    ResponseEntity<Object> selectDishInSlot(Principal principal, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId);
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{proposalId}/slot/{slotId}/dish/{dishId}", produces = "application/json")
+    ResponseEntity<Object> clearDishFromSlot(Principal principal, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId);
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/{proposalId}/slot/{slotId}", produces = "application/json")
+    ResponseEntity<Object> refreshProposalSlot(Principal principal, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) throws ProposalProcessingException;
+
+     */
+
 
     @Before
     @WithMockUser

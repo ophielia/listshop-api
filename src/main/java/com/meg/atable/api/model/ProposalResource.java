@@ -1,7 +1,7 @@
 package com.meg.atable.api.model;
 
 
-import com.meg.atable.api.controller.TargetProposalRestControllerApi;
+import com.meg.atable.api.controller.ProposalRestControllerApi;
 import com.meg.atable.data.entity.ProposalEntity;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -14,7 +14,7 @@ public class ProposalResource extends ResourceSupport {
 
     public ProposalResource(ProposalEntity proposalEntity) {
         this.proposal = ModelMapper.toModel(proposalEntity);
-        this.add(linkTo(methodOn(TargetProposalRestControllerApi.class)
+        this.add(linkTo(methodOn(ProposalRestControllerApi.class)
                 .getProposal(null,proposalEntity.getId())).withSelfRel());
     }
 

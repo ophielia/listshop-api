@@ -1,6 +1,6 @@
 package com.meg.atable.web.controller;
 
-import com.meg.atable.api.controller.TargetProposalRestControllerApi;
+import com.meg.atable.api.controller.ProposalRestControllerApi;
 import com.meg.atable.api.exception.ProposalProcessingException;
 import com.meg.atable.api.model.ProposalResource;
 import com.meg.atable.data.entity.ProposalEntity;
@@ -21,14 +21,14 @@ import java.security.Principal;
  * Created by margaretmartin on 20/10/2017.
  */
 @Controller
-public class TargetProposalRestController implements TargetProposalRestControllerApi {
+public class ProposalRestController implements ProposalRestControllerApi {
 
     private final TargetProposalService targetProposalService;
 
     private final ProposalGeneratorService targetProposalGenerator;
 
     @Autowired
-    public TargetProposalRestController(TargetProposalService targetProposalService, ProposalGeneratorService targetProposalGenerator) {
+    public ProposalRestController(TargetProposalService targetProposalService, ProposalGeneratorService targetProposalGenerator) {
         this.targetProposalService = targetProposalService;
         this.targetProposalGenerator = targetProposalGenerator;
     }

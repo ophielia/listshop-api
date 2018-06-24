@@ -13,7 +13,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/proposal")
-public interface TargetProposalRestControllerApi {
+public interface ProposalRestControllerApi {
 
     @RequestMapping(method = RequestMethod.POST, value = "/target/{targetId}", produces = "application/json")
     ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId) throws ProposalProcessingException;
