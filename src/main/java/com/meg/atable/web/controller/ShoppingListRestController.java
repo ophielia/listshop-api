@@ -47,22 +47,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<Object> createList(Principal principal, @RequestBody ShoppingList shoppingList) {
-        ShoppingListEntity shoppingListEntity = ModelMapper.toEntity(shoppingList);
-
-        ShoppingListEntity result = shoppingListService.createList(principal.getName(), shoppingListEntity);
-
-        if (result != null) {
-            Link oneList = new ShoppingListResource(result, null).getLink("self");
-            return ResponseEntity.created(URI.create(oneList.getHref())).build();
-        }
-        return ResponseEntity.badRequest().build();
-
-    }
-
-//    @RequestMapping(method = RequestMethod.POST,value="/new" produces = "application/json", consumes = "application/json")
-    @Override
-    public ResponseEntity<Object> newCreateList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) throws ObjectNotFoundException, ObjectNotYoursException {
+    public ResponseEntity<Object> createList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) throws ObjectNotFoundException, ObjectNotYoursException {
 
 
         ShoppingListEntity result = null;

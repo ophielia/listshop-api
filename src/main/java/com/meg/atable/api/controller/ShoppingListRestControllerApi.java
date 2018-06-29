@@ -26,13 +26,10 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<Resources<ShoppingListResource>> retrieveLists(Principal principal);
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> createList(Principal principal, @RequestBody ShoppingList shoppingList);
-
-    @RequestMapping(method = RequestMethod.POST,value="/new", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> newCreateList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) throws ObjectNotFoundException, ObjectNotYoursException;
+    ResponseEntity<Object> createList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{listId}", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> setListActive(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value = "filter", required = true) String filter);
+    ResponseEntity<Object> setListActive(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value = "generateType", required = true) String filter);
 
     @RequestMapping(method = RequestMethod.GET, value = "/type/{listType}", produces = "application/json")
     ResponseEntity<ShoppingListResource> retrieveListByType(Principal principal, @PathVariable("listType") String listType);

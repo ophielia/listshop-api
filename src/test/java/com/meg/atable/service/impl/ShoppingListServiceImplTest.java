@@ -89,20 +89,7 @@ public class ShoppingListServiceImplTest {
         Assert.assertNull(result);
     }
 
-    @Test
-    public void testCreateListOld() {
-        ShoppingListEntity shoppingListEntity = new ShoppingListEntity();
-        shoppingListEntity.setListType(ListType.BaseList);
-        shoppingListEntity.setListLayoutType(ListLayoutType.All);
 
-        ShoppingListEntity result = shoppingListService.createList(addUserAccount.getUsername(), shoppingListEntity);
-
-        Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getCreatedOn());
-        Assert.assertNotNull(result.getListLayoutType());
-        Assert.assertEquals(shoppingListEntity.getListType(), result.getListType());
-        Assert.assertNotNull(result.getId());
-    }
 
     @Test
     public void testCreateList() throws ShoppingListException {
@@ -114,7 +101,6 @@ public class ShoppingListServiceImplTest {
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getCreatedOn());
-        Assert.assertNotNull(result.getListLayoutType());
         Assert.assertEquals(ListType.PickUpList, result.getListType());
         Assert.assertNotNull(result.getId());
     }
@@ -199,7 +185,7 @@ public class ShoppingListServiceImplTest {
         Assert.assertNotNull(shoppingListProperties.getTestValue());
         Assert.assertEquals("beep", shoppingListProperties.getTestValue());
         Assert.assertNotNull(shoppingListProperties.getDefaultLayouts());
-        Assert.assertEquals(4, shoppingListProperties.getDefaultLayouts().entrySet().size());
+        Assert.assertEquals(5, shoppingListProperties.getDefaultLayouts().entrySet().size());
     }
 
     @Test
@@ -365,15 +351,16 @@ public class ShoppingListServiceImplTest {
         shoppingListService.addDishToList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, 110L);
         ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
 
-        List<Category> categoryEntities = shoppingListService.categorizeList(userAccount.getUsername(), result, 110L, false, null);
+        List<Category> categoryEntities = shoppingListService.categorizeList(TestConstants.USER_3_NAME, result, 110L, false, null);
         Assert.assertNotNull(categoryEntities);
 
         // should find category with category id -1
         boolean highlightCategoryFound = false;
         for (Category categoryResult : categoryEntities) {
             ItemCategory cr = (ItemCategory) categoryResult;
-            if (cr.getId().toString().equals("-1")) {
+            if (CategoryType.Highlight.name().equals(cr.getCategoryType())) {
                 highlightCategoryFound = true;
+                break;
             }
         }
         Assert.assertTrue(highlightCategoryFound);

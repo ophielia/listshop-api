@@ -1,17 +1,10 @@
 package com.meg.atable.api;
 
 import com.meg.atable.Application;
-import com.meg.atable.api.model.ModelMapper;
-import com.meg.atable.api.model.Target;
-import com.meg.atable.api.model.TargetSlot;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.JwtUser;
 import com.meg.atable.auth.service.UserService;
-import com.meg.atable.data.entity.TargetEntity;
-import com.meg.atable.data.entity.TargetSlotEntity;
-import com.meg.atable.service.TargetService;
 import com.meg.atable.test.TestConstants;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,13 +26,11 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 @RunWith(SpringRunner.class)
@@ -50,8 +41,6 @@ public class ProposalRestControllerTest {
 
 
     private static UserDetails userDetails;
-    private static UserDetails newUserDetails;
-    private static UserAccountEntity newUserAccount;
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
@@ -62,46 +51,7 @@ public class ProposalRestControllerTest {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private TargetService targetService;
-
     private MockMvc mockMvc;
-
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter = Arrays.stream(converters)
-
-                .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
-                .findAny()
-                .orElse(null);
-
-        assertNotNull("the JSON message converter must not be null");
-    }
-
-    /*
-
-        @RequestMapping(method = RequestMethod.POST, value = "/target/{targetId}", produces = "application/json")
-    ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId) throws ProposalProcessingException;
-
-    @RequestMapping(method = RequestMethod.GET, value = "/{proposalId}", produces = "application/json")
-    ResponseEntity<ProposalResource> getProposal(Principal principal, @PathVariable("proposalId") Long proposalId);
-
-    @RequestMapping(method = RequestMethod.PUT, value = "/{proposalId}", produces = "application/json")
-    ResponseEntity<Object> refreshProposal(Principal principal, @PathVariable("proposalId") Long proposalId,
-                                           @RequestParam(value = "direction", required = false) String direction) throws ProposalProcessingException;
-
-    @RequestMapping(method = RequestMethod.POST, value = "/{proposalId}/slot/{slotId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> selectDishInSlot(Principal principal, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId);
-
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{proposalId}/slot/{slotId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> clearDishFromSlot(Principal principal, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId);
-
-    @RequestMapping(method = RequestMethod.PUT, value = "/{proposalId}/slot/{slotId}", produces = "application/json")
-    ResponseEntity<Object> refreshProposalSlot(Principal principal, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) throws ProposalProcessingException;
-
-     */
 
 
     @Before
@@ -120,114 +70,36 @@ public class ProposalRestControllerTest {
                 null,
                 true,
                 null);
-        newUserAccount = userService.getUserById(TestConstants.USER_1_ID);
-        newUserDetails = new JwtUser(newUserAccount.getId(),
-                newUserAccount.getUsername(),
-                null,
-                null,
-                null,
-                true,
-                null);
+
     }
 
 
     @Test
     @WithMockUser
-    public void testReadTarget() throws Exception {
-        Long testId = TestConstants.TARGET_1_ID;
-        mockMvc.perform(get("/target/"
-                + testId)
-                .with(user(userDetails)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.target.target_id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.target.target_id").value(testId))
-                .andReturn();
-    }
-
-    @Test
-    @WithMockUser
-    public void testRetrieveTargets() throws Exception {
-
-        mockMvc.perform(get("/target")
-                .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$._embedded.targetResourceList", hasSize(2)));
-    }
-
-    @Test
-    @WithMockUser
-    public void testDeleteTarget() throws Exception {
-        Long testId = TestConstants.TARGET_2_ID;
-        mockMvc.perform(delete("/target/"
-                + testId)
-                .with(user(newUserDetails)))
-                .andExpect(status().isNoContent());
-
-    }
-
-    @Test
-    @WithMockUser
-    public void testCreateTarget() throws Exception {
-        TargetEntity targetEntity = new TargetEntity();
-        targetEntity.setTargetName("targetCreate");
-        targetEntity.setUserId(newUserAccount.getId());
-        Target target = ModelMapper.toModel(targetEntity);
-        String targetJson = json(target);
-
-        this.mockMvc.perform(post("/target")
-                .with(user(newUserDetails))
-                .contentType(contentType)
-                .content(targetJson))
+    public void testGenerateProposal() throws Exception {
+        String url = "/proposal/target/" + TestConstants.TARGET_1_ID;
+        this.mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
                 .andExpect(status().isCreated());
+
     }
 
     @Test
     @WithMockUser
-    public void testUpdateTarget() throws Exception {
-        String newName = "new super duper name";
-        TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_3_NAME, TestConstants.TARGET_3_ID);
-
-        Target toUpdate = ModelMapper.toModel(targetEntity);
-        toUpdate.targetName(newName);
-        String targetJson = json(toUpdate);
-
-        this.mockMvc.perform(put("/target/" + targetEntity.getTargetId())
+    public void testGetProposal() throws Exception {
+        String url = "/proposal/" + TestConstants.PROPOSAL_1_ID;
+        this.mockMvc.perform(get(url)
                 .with(user(userDetails))
-                .contentType(contentType)
-                .content(targetJson))
-                .andExpect(status().isCreated());
-    }
-
-
-    @Test
-    @WithMockUser
-    public void testAddSlotToTarget() throws Exception {
-        TargetSlotEntity slot = new TargetSlotEntity();
-        slot.setSlotDishTagId(TestConstants.TAG_MAIN_DISH);
-        TargetSlot slotDTO = ModelMapper.toModel(slot);
-        String targetJson = json(slotDTO);
-
-        String url = "/target/" + TestConstants.TARGET_3_ID
-                + "/slot";
-        this.mockMvc.perform(post(url)
-                .with(user(userDetails))
-                .contentType(contentType)
-                .content(targetJson))
-                .andExpect(status().isNoContent());
+                .contentType(contentType))
+                .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser
-    public void testDeleteSlotFromTarget() throws Exception {
-        TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_3_NAME, TestConstants.TARGET_3_ID);
-        TargetSlotEntity slot = targetEntity.getSlots().get(0);
-        String url = "/target/" + TestConstants.TARGET_3_ID + "/slot/"
-                + slot.getId();
-        this.mockMvc.perform(delete(url)
+    public void testRefreshProposal() throws Exception {
+        String url = "/proposal/" + TestConstants.PROPOSAL_2_ID;
+        this.mockMvc.perform(put(url)
                 .with(user(userDetails))
                 .contentType(contentType))
                 .andExpect(status().isNoContent());
@@ -235,55 +107,42 @@ public class ProposalRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testAddTagToSlot() throws Exception {
-        TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_3_NAME, TestConstants.TARGET_3_ID);
-        TargetSlotEntity slot = targetEntity.getSlots().get(0);
+    public void testSelectDishInSlot() throws Exception {
 
-        String url = "/target/" + TestConstants.TARGET_3_ID + "/slot/"
-                + slot.getId() + "/tag/" + TestConstants.TAG_CROCKPOT;
+        String url = "/proposal/" + TestConstants.PROPOSAL_1_ID
+                + "/slot/" + TestConstants.PROPOSAL_1_SLOT_4_ID
+                + "/dish/" + TestConstants.PROPOSAL_1_SLOT_4_DISH_ID;
         this.mockMvc.perform(post(url)
-                .with(user(newUserDetails))
+                .with(user(userDetails))
                 .contentType(contentType))
                 .andExpect(status().isNoContent());
+
+
     }
 
     @Test
     @WithMockUser
-    public void testDeleteTagFromSlot() throws Exception {
-        String url = "/target/" + TestConstants.TARGET_3_ID + "/slot/"
-                + TestConstants.TARGET_3_SLOT_ID + "/tag/" + TestConstants.TAG_CARROTS;
+    public void testClearDishFromSlot() throws Exception {
+        String url = "/proposal/" + TestConstants.PROPOSAL_3_ID
+                + "/slot/" + TestConstants.PROPOSAL_3_SLOT_4_ID
+                + "/dish/" + TestConstants.PROPOSAL_3_SLOT_4_DISH_ID;
         this.mockMvc.perform(delete(url)
-                .with(user(newUserDetails))
+                .with(user(userDetails))
                 .contentType(contentType))
                 .andExpect(status().isNoContent());
+
     }
 
     @Test
     @WithMockUser
-    public void testAddTagToTarget() throws Exception {
-        String url = "/target/" + TestConstants.TARGET_3_ID
-                + "/tag/" + TestConstants.CHILD_TAG_ID_1;
-        this.mockMvc.perform(post(url)
-                .with(user(newUserDetails))
+    public void refreshProposalSlot() throws Exception {
+        String url = "/proposal/" + TestConstants.PROPOSAL_2_ID
+                + "/slot/3";
+        this.mockMvc.perform(put(url)
+                .with(user(userDetails))
                 .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
 
-    @Test
-    @WithMockUser
-    public void testDeleteTagFromTarget() throws Exception {
-        String url = "/target/" + TestConstants.TARGET_3_ID
-                + "/tag/" + TestConstants.TAG_EASE_OF_PREP;
-        this.mockMvc.perform(delete(url)
-                .with(user(newUserDetails))
-                .contentType(contentType))
-                .andExpect(status().isNoContent());
-    }
-
-    private String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
-    }
 
 }

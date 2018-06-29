@@ -2,19 +2,10 @@ package com.meg.atable.api;
 
 import com.meg.atable.Application;
 import com.meg.atable.api.model.Item;
+import com.meg.atable.api.model.ListGenerateProperties;
+import com.meg.atable.api.model.ListType;
 import com.meg.atable.api.model.ShoppingList;
-import com.meg.atable.api.model.TagType;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.JwtUser;
-import com.meg.atable.auth.service.UserService;
-import com.meg.atable.data.entity.*;
-import com.meg.atable.data.repository.DishRepository;
-import com.meg.atable.data.repository.MealPlanRepository;
-import com.meg.atable.data.repository.SlotRepository;
-import com.meg.atable.data.repository.TagRepository;
-import com.meg.atable.service.ShoppingListService;
-import com.meg.atable.service.impl.ServiceTestUtils;
-import com.meg.atable.service.tag.TagService;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -37,7 +28,6 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertNotNull;
@@ -54,21 +44,16 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @ActiveProfiles("test")
 public class ShoppingListRestControllerTest {
 
+    private static UserDetails userDetails;
+    private static UserDetails meUserDetails;
+    private static boolean setupComplete = false;
+    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
+            MediaType.APPLICATION_JSON.getSubtype(),
+            Charset.forName("utf8"));
     @Autowired
     private WebApplicationContext webApplicationContext;
-
-
-    @Autowired
-    private TagRepository tagRepository;
-
-    @Autowired
-    private DishRepository dishRepository;
-
-    @Autowired
-    private MealPlanRepository mealPlanRepository;
-
-    @Autowired
-    private SlotRepository slotRepository;
+    private MockMvc mockMvc;
+    private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
@@ -81,23 +66,6 @@ public class ShoppingListRestControllerTest {
         assertNotNull("the JSON message converter must not be null");
     }
 
-    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
-    private MockMvc mockMvc;
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-    private final String userName = "testname";
-
-    private static UserAccountEntity userAccount;
-    private static UserDetails userDetails;
-    private static TagEntity tag1;
-    private static ShoppingListEntity baseShoppingList;
-    private static ShoppingListEntity toDeletePickup;
-    private static Long toDeleteItemId;
-    private static boolean setupComplete = false;
-    private static MealPlanEntity finalMealPlan;
-
-
     @Before
     @WithMockUser
     public void setup() throws Exception {
@@ -106,9 +74,7 @@ public class ShoppingListRestControllerTest {
                 .apply(springSecurity())
                 .build();
 
-        if (setupComplete) {
-            return;
-        }
+
         userDetails = new JwtUser(TestConstants.USER_1_ID,
                 TestConstants.USER_1_NAME,
                 null,
@@ -116,99 +82,29 @@ public class ShoppingListRestControllerTest {
                 null,
                 true,
                 null);
-        setupComplete = true;
-/*
-        if (setupComplete) {
-            return;
-        }
-        userAccount = userService.save(new UserAccountEntity(userName, "password"));
-        userDetails = new JwtUser(userAccount.getId(),
-                userName,
+
+        meUserDetails = new JwtUser(TestConstants.USER_3_ID,
+                TestConstants.USER_3_NAME,
                 null,
                 null,
                 null,
                 true,
                 null);
 
-        // Tags to make Items
-        tag1 = new TagEntity();
-        tag1.setTagType(TagType.Ingredient);
-        tag1.setName("tag1");
-        tag1 = tagService.createTag(null, tag1);
-        TagEntity tag2 = new TagEntity();
-        tag2.setTagType(TagType.Ingredient);
-        tag2.setName("tag1");
-        tag2 = tagService.createTag(null, tag2);
-        // Base Shopping List for retrieve with one item
-        baseShoppingList = new ShoppingListEntity();
-        baseShoppingList.setListLayoutType(ListLayoutType.All);
-        baseShoppingList.setListType(ListType.BaseList);
-        baseShoppingList = shoppingListService.createList(userName, baseShoppingList);
-        ItemEntity itemEntity = new ItemEntity();
-        itemEntity.addItemSource(ItemSourceType.Manual);
-        itemEntity.setTag(tag2);
-        shoppingListService.addItemToList(userName, TestConstants.LIST_1_ID, itemEntity);
-        // now - find the item id of the added item (so it can be deleted
-        baseShoppingList = shoppingListService.getListById(userName, TestConstants.LIST_1_ID);
-        toDeleteItemId = baseShoppingList.getItems().get(0).getId();
-
-        // Pick up list which will be deleted
-        toDeletePickup = new ShoppingListEntity();
-        toDeletePickup.setListLayoutType(ListLayoutType.All);
-        toDeletePickup.setListType(ListType.PickUpList);
-        toDeletePickup = shoppingListService.createList(userName, toDeletePickup);
-        userAccount = userService.save(new UserAccountEntity("updateUser", "password"));
-
-        finalMealPlan = createTestMealPlan();
-        setupComplete = true;
-
- */
     }
 
 
     @Test
     @WithMockUser
     public void testRetrieveLists() throws Exception {
-        JwtUser thisuserDetails = new JwtUser(TestConstants.USER_1_ID,
-                TestConstants.USER_1_NAME,
-                null,
-                null,
-                null,
-                true,
-                null);
 
         mockMvc.perform(get("/shoppinglist")
                 .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$._embedded.shoppingListResourceList", hasSize(2)));
+                .andExpect(content().contentType(contentType));
     }
 
-
-    @Test
-    @WithMockUser
-    public void testCreateList() throws Exception {
-        JwtUser createUserDetails = new JwtUser(TestConstants.USER_1_ID,
-                userName,
-                null,
-                null,
-                null,
-                true,
-                null);
-
-        ShoppingList shoppingList = new ShoppingList()
-                .listType("ActiveList")
-                .layoutType("All");
-        String shoppingListJson = json(shoppingList);
-
-        this.mockMvc.perform(post("/shoppinglist")
-                .with(user(createUserDetails))
-                .contentType(contentType)
-                .content(shoppingListJson))
-                .andExpect(status().isCreated());
-
-    }
 
     @Test
     @WithMockUser
@@ -270,7 +166,7 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testDeleteItemFromList() throws Exception {
-        Long listId = TestConstants.LIST_1_ID;
+        Long listId = TestConstants.LIST_3_ID;
         String url = "/shoppinglist/" + listId + "/item/" + 501L;
         mockMvc.perform(delete(url)
                 .with(user(userDetails)))
@@ -289,37 +185,118 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isCreated());
     }
 
+    @Test
+    @WithMockUser
+    public void testNewCreateList() throws Exception {
+        ListGenerateProperties properties = new ListGenerateProperties();
+        properties.setRawListType("General");
+        properties.setAddFromBase(true);
+        properties.setAddFromPickup(true);
+        properties.setGenerateMealplan(false);
+
+        String jsonProperties = json(properties);
+
+        String url = "/shoppinglist";
+
+        this.mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType)
+                .content(jsonProperties))
+                .andExpect(status().isCreated());
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testSetListActive() throws Exception {
+
+        Long listId = TestConstants.LIST_1_ID;
+        String url = "/shoppinglist/" + listId + "?generateType=Add";
+        mockMvc.perform(put(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithMockUser
+    public void testAddToListByListType() throws Exception {
+        Long listId = TestConstants.LIST_1_ID;
+        String url = "/shoppinglist/" + listId + "/listtype/" + ListType.BaseList;
+        mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testSetCrossedOffForItem() throws Exception {
+        Long listId = TestConstants.LIST_1_ID;
+        String url = "/shoppinglist/" + listId + "/item/shop/" + TestConstants.ITEM_1_ID
+                + "?crossOff=true";
+        mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser
+    public void testCrossOffAllItemsOnList() throws Exception {
+
+        Long listId = TestConstants.LIST_1_ID;
+        String url = "/shoppinglist/" + listId + "/item/shop"
+                + "?crossOff=true";
+        mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser
+    public void testAddDishToList() throws Exception {
+        Long listId = TestConstants.LIST_1_ID;
+        String url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_1_ID;
+        mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testRemoveDishFromList() throws Exception {
+
+        Long listId = TestConstants.LIST_1_ID;
+        String url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_1_ID;
+        mockMvc.perform(delete(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+    }
+
+
+    @Test
+    @WithMockUser
+    public void testChangeListLayout() throws Exception {
+
+        Long listId = TestConstants.LIST_1_ID;
+        String url = "/shoppinglist/" + listId + "/layout/" + TestConstants.LIST_LAYOUT_2_ID;
+        mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+
+    }
+
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();
     }
 
-    private MealPlanEntity createTestMealPlan() {
-        TagEntity tag1 = ServiceTestUtils.buildTag("tag1", TagType.TagType);
-        TagEntity tag2 = ServiceTestUtils.buildTag("tag2", TagType.TagType);
-        TagEntity tag3 = ServiceTestUtils.buildTag("tag3", TagType.TagType);
-        TagEntity tag4 = ServiceTestUtils.buildTag("tag4", TagType.TagType);
-        TagEntity tag5 = ServiceTestUtils.buildTag("tag5", TagType.TagType);
-        List<TagEntity> tags = Arrays.asList(tag1, tag2, tag3, tag4, tag5);
-        List<TagEntity> savedTags = tagRepository.saveAll(tags);
-
-        DishEntity dish1 = ServiceTestUtils.buildDish(userAccount.getId(), "dish1", savedTags.subList(0, 2));
-        DishEntity dish2 = ServiceTestUtils.buildDish(userAccount.getId(), "dish2", savedTags.subList(2, 3));
-        DishEntity dish3 = ServiceTestUtils.buildDish(userAccount.getId(), "dish3", savedTags.subList(3, 5));
-        List<DishEntity> dishes = Arrays.asList(dish1, dish2, dish3);
-        List<DishEntity> savedDishes = dishRepository.saveAll(dishes);
-
-        MealPlanEntity mealPlanEntity = ServiceTestUtils.buildMealPlan("testMealPlan", userAccount.getId());
-        MealPlanEntity savedMealPlan = mealPlanRepository.save(mealPlanEntity);
-
-        SlotEntity slot1 = ServiceTestUtils.buildDishSlot(savedMealPlan, savedDishes.get(0));
-        SlotEntity slot2 = ServiceTestUtils.buildDishSlot(savedMealPlan, savedDishes.get(1));
-        SlotEntity slot3 = ServiceTestUtils.buildDishSlot(savedMealPlan, savedDishes.get(2));
-        List<SlotEntity> slots = Arrays.asList(slot1, slot2, slot3);
-        List<SlotEntity> savedSlots = slotRepository.saveAll(slots);
-
-        savedMealPlan.setSlots(savedSlots);
-        return mealPlanRepository.save(savedMealPlan);
-    }
 }

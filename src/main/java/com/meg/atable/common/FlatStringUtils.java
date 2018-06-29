@@ -57,6 +57,11 @@ public class FlatStringUtils {
         return String.join(delimiter, list);
     }
 
+    public static String flattenListOfLongsToString(List<Long> list, String delimiter) {
+        List<String> stringList = list.stream().map(String::valueOf).collect(Collectors.toList());
+        return flattenListToString(stringList,delimiter);
+    }
+
     public static Integer[] inflateStringToIntegerArray(String flatlist, String delimiter) {
 
         if (flatlist == null || flatlist.isEmpty()) {

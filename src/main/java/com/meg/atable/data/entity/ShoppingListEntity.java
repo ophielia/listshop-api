@@ -1,6 +1,5 @@
 package com.meg.atable.data.entity;
 
-import com.meg.atable.api.model.ListLayoutType;
 import com.meg.atable.api.model.ListType;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -19,10 +18,10 @@ import java.util.List;
         strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
         parameters = {@org.hibernate.annotations.Parameter(
                 name = "sequence_name",
-                value="list_sequence"),
+                value = "list_sequence"),
                 @org.hibernate.annotations.Parameter(
                         name = "increment_size",
-                        value="1")}
+                        value = "1")}
 )
 public class ShoppingListEntity {
 
@@ -55,13 +54,10 @@ public class ShoppingListEntity {
     private Long mealPlanId;
 
     @Transient
-    private ListLayoutType listLayoutType;
-
-    @Transient
     private List<DishEntity> dishSources = new ArrayList<>();
 
     @Transient
-    private List<String> listSources= new ArrayList<>();
+    private List<String> listSources = new ArrayList<>();
 
     @Transient
     private String mealPlanName = "";
@@ -112,14 +108,6 @@ public class ShoppingListEntity {
         this.userId = userId;
     }
 
-    public ListLayoutType getListLayoutType() {
-        return listLayoutType;
-    }
-
-    public void setListLayoutType(ListLayoutType listLayoutType) {
-        this.listLayoutType = listLayoutType;
-    }
-
     public Long getListLayoutId() {
         return listLayoutId;
     }
@@ -144,12 +132,12 @@ public class ShoppingListEntity {
         this.listSources = listSources;
     }
 
-    public void setLastUpdate(Date lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
-
     public Date getLastUpdate() {
         return lastUpdate;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 
     public Long getMealPlanId() {
@@ -178,7 +166,6 @@ public class ShoppingListEntity {
                 ", listLayoutId=" + listLayoutId +
                 ", lastUpdate=" + lastUpdate +
                 ", mealPlanId=" + mealPlanId +
-                ", listLayoutType=" + listLayoutType +
                 ", dishSources=" + dishSources +
                 ", listSources=" + listSources +
                 ", mealPlanName='" + mealPlanName + '\'' +

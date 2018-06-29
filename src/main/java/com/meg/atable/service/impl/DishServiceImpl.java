@@ -57,7 +57,13 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public DishEntity getDishForUserById(String username, Long dishId) throws ObjectNotFoundException, ObjectNotYoursException {
+        if (dishId == null) {
+            final String msg = "Null dishId passed as argument [" + username + "].";
+            throw new ObjectNotFoundException(msg, null, "Dish");
+        }
+
         UserAccountEntity user = userRepository.findByUsername(username);
+
         Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
         if (!dishOpt.isPresent()) {
             final String msg = "No dish found by id for user [" + username + "] and dishId [" + dishId + "]";

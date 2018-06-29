@@ -65,7 +65,7 @@ public class RefreshProposalProcessorImpl extends AbstractProposalProcessor {
         }
 
         // fill and return result
-        ProcessResult processResult = new ProcessResult(request.getContext().getApproaches());
+        ProcessResult processResult = new ProcessResult(null);
         processResult.setCurrentApproach(info.getCurrentApproachIndex());
         List<NewRawSlotResult> allResults = new ArrayList<>();
         if (!rawSearchSlotResults.isEmpty()) {

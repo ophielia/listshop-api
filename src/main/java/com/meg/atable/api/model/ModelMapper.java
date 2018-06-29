@@ -311,12 +311,10 @@ public class ModelMapper {
         }
 
         List<Category> categories = itemCategoriesToModel(itemCategories, dishSourceDictionary);
-        String layoutType = shoppingListEntity.getListLayoutType() != null ? shoppingListEntity.getListLayoutType().name() : "";
 
         return new ShoppingList(shoppingListEntity.getId())
                 .createdOn(shoppingListEntity.getCreatedOn())
                 .listType(shoppingListEntity.getListType().name())
-                .layoutType(layoutType)
                 .categories(categories)
                 .dishSources(dishSources)
                 .listSources(listSources)
@@ -442,10 +440,6 @@ public class ModelMapper {
         ListType listType = ListType.valueOf(shoppingList.getListType());
         shoppingListEntity.setListType(listType);
         shoppingListEntity.setUserId(shoppingList.getUserId());
-        if (shoppingList.getLayoutType() != null) {
-            ListLayoutType layoutType = ListLayoutType.valueOf(shoppingList.getLayoutType());
-            shoppingListEntity.setListLayoutType(layoutType);
-        }
         // not setting items here, since items will be updated individually from client
         return shoppingListEntity;
     }
@@ -459,10 +453,10 @@ public class ModelMapper {
     }
 
     public static ListLayoutEntity toEntity(ListLayout listLayout) {
-        ListLayoutType layoutType = ListLayoutType.valueOf(listLayout.getLayoutType());
-        ListLayoutEntity listLayoutEntity = new ListLayoutEntity(listLayout.getLayoutId());
-        listLayoutEntity.setLayoutType(layoutType);
+        ListLayoutType layoutType = listLayout.getLayoutType()!=null?ListLayoutType.valueOf(listLayout.getLayoutType()):null;
+        ListLayoutEntity listLayoutEntity = new ListLayoutEntity();
         listLayoutEntity.setName(listLayout.getName());
+        listLayoutEntity.setLayoutType(layoutType);
         return listLayoutEntity;
     }
 

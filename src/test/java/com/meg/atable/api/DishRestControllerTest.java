@@ -5,13 +5,14 @@ import com.meg.atable.api.model.Dish;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.JwtUser;
 import com.meg.atable.auth.service.UserService;
+import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.DishService;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -140,7 +142,7 @@ public class DishRestControllerTest {
         toUpdate.setDishName(updateName);
         toUpdate.setDescription(updateDescription);
         toUpdate.setUserId(TestConstants.USER_3_ID);
-toUpdate.setTags(new ArrayList<TagEntity>());
+        toUpdate.setTags(new ArrayList<TagEntity>());
         String dishJson = json(toUpdate);
 
         this.mockMvc.perform(put("/dish/" + toUpdate.getId())
@@ -150,6 +152,67 @@ toUpdate.setTags(new ArrayList<TagEntity>());
                 .andExpect(status().is2xxSuccessful());
     }
 
+    @Test
+    @WithMockUser
+    public void testGetTagsByDishId() throws Exception {
+        mockMvc.perform(get("/dish/" + TestConstants.DISH_2_ID + "/tag")
+                .with(user(userDetails)))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().contentType(contentType));
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testAddTagToDish() throws Exception {
+        String url = "/dish/" + TestConstants.DISH_1_ID + "/tag/" + TestConstants.TAG_CARROTS;
+        this.mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser
+    public void testDeleteTagFromDish() throws Exception {
+        String url = "/dish/" + TestConstants.DISH_1_ID + "/tag/344";
+        this.mockMvc.perform(delete(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser
+    public void testAddAndRemoveTags() throws Exception {
+        List<Long> addTags = Arrays.asList(TestConstants.TAG_1_ID, TestConstants.TAG_2_ID, TestConstants.TAG_3_ID);
+        List<Long> deleteTags = Arrays.asList(55L, 104L);
+
+        String addList = FlatStringUtils.flattenListOfLongsToString(addTags, ",");
+        String deleteList = FlatStringUtils.flattenListOfLongsToString(deleteTags, ",");
+        String url = "/dish/" + TestConstants.DISH_1_ID + "/tag?addTags=" + addList + "&removeTags=" + deleteList;
+        this.mockMvc.perform(put(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser
+    public void testFindDishes() throws Exception {
+        List<Long> excludedTags = Arrays.asList(TestConstants.TAG_1_ID, TestConstants.TAG_2_ID, TestConstants.TAG_3_ID);
+        List<Long>  includedTags = Arrays.asList(TestConstants.TAG_MEAT, TestConstants.TAG_PASTA);
+
+        String includedList = FlatStringUtils.flattenListOfLongsToString(includedTags, ",");
+        String excludedList = FlatStringUtils.flattenListOfLongsToString(excludedTags, ",");
+        String url = "/dish?includedTags=" + includedList + "&excludedTags=" + excludedList;
+        this.mockMvc.perform(get(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(content().contentType(contentType));
+
+    }
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

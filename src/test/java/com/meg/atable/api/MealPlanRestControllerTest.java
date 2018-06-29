@@ -10,6 +10,7 @@ import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.MealPlanEntity;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -174,6 +176,31 @@ public class MealPlanRestControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    @WithMockUser
+    public void testCreateMealPlanFromTargetProposal() throws Exception {
+        String url = "/mealplan/proposal/" + TestConstants.PROPOSAL_1_ID;
+
+        this.mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testRenameMealPlan() throws Exception {
+
+        String url = "/mealplan/" + TestConstants.MENU_PLAN_3_ID + "/name/george";
+
+
+        this.mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+
+    }
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

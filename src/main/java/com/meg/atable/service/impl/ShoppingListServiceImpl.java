@@ -74,14 +74,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingListEntity createList(String userName, ShoppingListEntity shoppingList) {
         UserAccountEntity user = userService.getUserByUserName(userName);
         // get list layout for user, list_type
-        ListLayoutEntity listLayout = getListLayout(user, shoppingList.getListType(), shoppingList.getListLayoutType());
+        ListLayoutEntity listLayout = getListLayout(user, shoppingList.getListType(), null);
         shoppingList.setListLayoutId(listLayout.getId());
         shoppingList.setCreatedOn(new Date());
         shoppingList.setUserId(user.getId());
         return shoppingListRepository.save(shoppingList);
     }
 
-    public ShoppingListEntity createListForUser(String userName, ListType listType) {
+    private ShoppingListEntity createListForUser(String userName, ListType listType) {
         UserAccountEntity user = userService.getUserByUserName(userName);
         ShoppingListEntity newList = new ShoppingListEntity();
         newList.setListType(listType != null ? listType : ListType.General);
@@ -194,7 +194,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             return null;
         }
         Optional<ShoppingListEntity> shoppingListEntityOpt = shoppingListRepository.findById(listId);
-        ShoppingListEntity shoppingListEntity = shoppingListEntityOpt.isPresent() ? shoppingListEntityOpt.get() : null;
+        ShoppingListEntity shoppingListEntity = shoppingListEntityOpt.orElse(null);
         if (shoppingListEntity != null && shoppingListEntity.getUserId().equals(user.getId())) {
             return shoppingListEntity;
         }
@@ -279,7 +279,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException {
-        UserAccountEntity user = userService.getUserByUserName(name);
         // get list layout by type
         ListLayoutType generalLayout = shoppingListProperties.getDefaultLayouts().get(ListType.General);
         Optional<ListLayoutEntity> listLayoutEntityOptional = listLayoutService.getListLayouts()
@@ -330,7 +329,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
         saveListChanges(newList, collector);
         Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.findById(newList.getId());
-        return shoppingListEntity.isPresent() ? shoppingListEntity.get() : null;
+        return shoppingListEntity.orElse(null);
 
     }
 
@@ -480,7 +479,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    private String getHighlightDishName(String userName, boolean isHighlightDish, Long highlightDishId) throws ObjectNotYoursException, ObjectNotFoundException {
+    private String getHighlightDishName(String userName, boolean isHighlightDish, Long highlightDishId)  {
         if (!isHighlightDish || highlightDishId == null) {
             return "";
         }

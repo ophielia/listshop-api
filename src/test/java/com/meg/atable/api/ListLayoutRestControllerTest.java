@@ -14,7 +14,6 @@ import com.meg.atable.data.entity.ListLayoutEntity;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.ListLayoutService;
-import com.meg.atable.service.tag.TagService;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -297,6 +296,30 @@ public class ListLayoutRestControllerTest {
                 .andExpect(status().isNoContent());
 
     }
+
+    @Test
+    @WithMockUser
+    public void testAddSubcategoryToCategory() throws Exception {
+
+        String url = "/listlayout/category/" + TestConstants.LIST_LAYOUT_2_CATEGORY_ID4
+                + "/parent/" + TestConstants.LIST_LAYOUT_2_CATEGORY_ID1;
+
+        mockMvc.perform(post(url)
+                .with(user(userDetails)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser
+    public void testMoveCategory() throws Exception {
+        String url = "/listlayout/category/" + TestConstants.LIST_LAYOUT_2_CATEGORY_ID5
+                + "?move=up";
+
+        mockMvc.perform(post(url)
+                .with(user(userDetails)))
+                .andExpect(status().isNoContent());
+    }
+
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

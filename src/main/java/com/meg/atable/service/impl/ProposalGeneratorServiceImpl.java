@@ -302,6 +302,9 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     }
 
     private List<ContextApproachEntity> mergeContextApproaches(ProposalContextEntity context, List<ContextApproachEntity> resultApproaches) {
+        if (resultApproaches == null || resultApproaches.isEmpty()) {
+            return context.getApproaches();
+        }
         List<ContextApproachEntity> finalList = new ArrayList<>();
         if (resultApproaches == null || resultApproaches.isEmpty()) {
             return finalList;
