@@ -38,6 +38,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     @Autowired
     ProposalRepository proposalRepository;
 
+
     @Autowired
     ProposalContextRepository contextRepository;
 
@@ -381,6 +382,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
 
         // add any results not found in existing to final List
         resultSlot.getDishSlots().stream().forEach(s -> s.setSlot(existingSlot)); // MM again - may need some conversion here
+
         finalDishList.addAll(resultSlot.getDishSlots());
         return finalDishList;
     }
@@ -395,7 +397,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         return contextRepository.findByTargetId(targetId);
     }
 
-   private ProposalContextEntity getContextForProposal(Long targetProposalId) {
+    private ProposalContextEntity getContextForProposal(Long targetProposalId) {
         return contextRepository.findByProposalId(targetProposalId);
     }
 

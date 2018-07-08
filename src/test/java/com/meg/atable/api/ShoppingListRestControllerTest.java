@@ -4,10 +4,10 @@ import com.meg.atable.Application;
 import com.meg.atable.api.model.Item;
 import com.meg.atable.api.model.ListGenerateProperties;
 import com.meg.atable.api.model.ListType;
-import com.meg.atable.api.model.ShoppingList;
 import com.meg.atable.auth.service.JwtUser;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -46,7 +45,6 @@ public class ShoppingListRestControllerTest {
 
     private static UserDetails userDetails;
     private static UserDetails meUserDetails;
-    private static boolean setupComplete = false;
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
@@ -111,7 +109,7 @@ public class ShoppingListRestControllerTest {
     public void testRetrieveListByType() throws Exception {
         Long testId = TestConstants.LIST_1_ID;
 
-        mockMvc.perform(get("/shoppinglist/type/BaseList")
+        mockMvc.perform(get("/shoppinglist/type/ActiveList")
                 .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
@@ -137,10 +135,10 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testDeleteList() throws Exception {
-        Long testId = TestConstants.LIST_3_ID;
+        Long testId = TestConstants.LIST_2_ID;
 
         mockMvc.perform(delete("/shoppinglist/" + testId)
-                .with(user(userDetails)))
+                .with(user(meUserDetails)))
                 .andExpect(status().isNoContent());
     }
 
@@ -292,6 +290,38 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
 
     }
+
+
+    @Test
+    @WithMockUser
+    public void deleteAllItemsFromList() throws Exception {
+
+        Long listId = TestConstants.LIST_1_ID;
+        String url = "/shoppinglist/" + listId + "/item";
+        mockMvc.perform(delete(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    @WithMockUser
+    public void removeListItemsFromList() throws Exception {
+//      @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/listtype/{listType}", produces = "application/json")
+        //      ResponseEntity<Object> removeListItemsFromList(Principal principal, @PathVariable Long listId, @PathVariable String listType);
+  /*
+        Long listId = TestConstants.LIST_1_ID;
+        String url = "/shoppinglist/" + listId + "/layout/" + TestConstants.LIST_LAYOUT_2_ID;
+        mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+
+*/
+        Assert.assertEquals(1, 2);
+    }
+
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

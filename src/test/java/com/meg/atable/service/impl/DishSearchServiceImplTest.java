@@ -40,11 +40,11 @@ public class DishSearchServiceImplTest {
 private DishSearchService dishSearchService;
 
     @Autowired
-    private UserService userService;
-
+    private TagRepository tagRepository;
 
     @Autowired
-    private TagRepository tagRepository;
+    private UserService userService;
+
 
     private static boolean setUpComplete = false;
     private static UserAccountEntity userAccount;
@@ -65,7 +65,7 @@ private DishSearchService dishSearchService;
 
     @Before
     public void setUp() {
-
+        userAccount = userService.getUserByUserName(TestConstants.USER_1_NAME);
     }
 
     @Test

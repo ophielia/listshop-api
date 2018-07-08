@@ -179,12 +179,12 @@ public class MealPlanRestControllerTest {
     @Test
     @WithMockUser
     public void testCreateMealPlanFromTargetProposal() throws Exception {
-        String url = "/mealplan/proposal/" + TestConstants.PROPOSAL_1_ID;
+        String url = "/mealplan/proposal/" + TestConstants.PROPOSAL_3_ID;
 
         this.mockMvc.perform(post(url)
                 .with(user(userDetails))
                 .contentType(contentType))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isCreated());
 
     }
 

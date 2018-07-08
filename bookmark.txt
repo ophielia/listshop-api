@@ -10,6 +10,8 @@ BIGGER TODOS -
 
     eventually - Item - date added, And , date updated
 
+    com.meg.atable.web.controller.ShoppingListRestController.removeListItemsFromList
+        make second parameter a list id - not a list type
 
 CURRENT HOPPER:
     Clean up - front end

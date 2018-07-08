@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.meg.atable.Application;
 import com.meg.atable.api.model.Tag;
 import com.meg.atable.api.model.TagType;
+import com.meg.atable.auth.service.JwtUser;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.test.TestConstants;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -28,6 +31,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -42,6 +47,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @ActiveProfiles("test")
 public class TagRestControllerTest {
 
+    private static UserDetails userDetails;
     @Autowired
     private
     ObjectMapper objectMapper;
@@ -52,27 +58,31 @@ public class TagRestControllerTest {
             "hal+json",
             Charset.forName("utf8"));
     private MockMvc mockMvc;
-
-
     @Autowired
     private TagRepository tagRepository;
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-/*
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-
-
-        assertNotNull("the JSON message converter must not be null");
-    }
- */
 
     @Before
+    @WithMockUser
     public void setup() throws Exception {
-        this.mockMvc = webAppContextSetup(webApplicationContext).build();
-    }
 
+        this.mockMvc = webAppContextSetup(webApplicationContext)
+                .apply(springSecurity())
+                .build();
+
+
+        userDetails = new JwtUser(TestConstants.USER_1_ID,
+                TestConstants.USER_1_NAME,
+                null,
+                null,
+                null,
+                true,
+                null);
+
+
+    }
 
     @Test
     public void readSingleTag() throws Exception {
@@ -143,11 +153,61 @@ public class TagRestControllerTest {
     }
 
 
+    @Test
+    public void addAsChild() throws Exception {
+        String url = "/tag/" + TestConstants.PARENT_TAG_ID_2 + "/child";
+
+        Tag tag = new Tag("testTag");
+        tag = tag.tagType(TagType.Rating.name());
+        String tagString = json(tag);
+
+        this.mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType)
+                .content(tagString))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    public void addChildren() throws Exception {
+        String url = "/tag/" + TestConstants.PARENT_TAG_ID_1 + "/children?tagIds=" + TestConstants.TAG_MEAT + "," + TestConstants.TAG_CARROTS + "," + TestConstants.TAG_CROCKPOT;
+
+        this.mockMvc.perform(post(url).contentType(contentType))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    public void assignChildToBaseTag() throws Exception {
+        String url = "/tag/" + TestConstants.PARENT_TAG_ID_1 + "/child/" + TestConstants.TAG_MEAT;
+
+        this.mockMvc.perform(put(url)
+                .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful());
+
+    }
+
+    @Test
+    public void getChildrenTagDishAssignments() throws Exception {
+        String url = "/tag/" + TestConstants.PARENT_TAG_ID_1 + "/children/dish";
+
+        this.mockMvc.perform(get(url)
+                .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @WithMockUser
+    public void replaceTagsInDishes() throws Exception {
+        this.mockMvc.perform(put("/tag/" + TestConstants.TAG_CARROTS + "/dish/" + TestConstants.TAG_MEAT)
+                .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+
     private String json(Object o) throws IOException {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
 
         return objectMapper.writeValueAsString(o);
-
     }
 
 }

@@ -262,29 +262,29 @@ insert into proposal (created, is_refreshable, user_id, proposal_id) values (cur
 insert into proposal_context (current_approach_index, current_approach_type, meal_plan_id,  proposal_id, target_id, proposal_context_id) values
 (0, 'WHEEL_MIXED', null,  502,  501, 502);
 insert into proposal_slot (flat_matched_tag_ids, picked_dish_id, proposal_id, slot_dish_tag_id, slot_number, slot_id) values
-(null, 96, 500, 320, 1, 520);
-insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (37, '89', 510, 531);
-insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (5, '64', 510, 532);
-insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (42, '64', 510, 533);
-insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (39, '322', 510, 534);
+(null, 96, 502, 320, 1, 620);
+insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (37, '89', 510, 631);
+insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (5, '64', 510, 632);
+insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (42, '64', 510, 633);
+insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (39, '322', 510, 634);
 
 insert into proposal_slot (flat_matched_tag_ids, picked_dish_id, proposal_id, slot_dish_tag_id, slot_number, slot_id) values
 (null, 66, 502, 320, 2, 521);
 insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values
-(106, '322;64;321', 511, 535);
-insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (16, '322;399;321', 521, 537);
-insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (103, '322;64;321', 521, 538);
-insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (76, '322;321', 521, 539);
+(106, '322;64;321', 511, 635);
+insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (16, '322;399;321', 521, 637);
+insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (103, '322;64;321', 521, 638);
+insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (76, '322;321', 521, 639);
 
 
 
 insert into proposal_slot (flat_matched_tag_ids, picked_dish_id, proposal_id, slot_dish_tag_id, slot_number, slot_id) values
 (null, 105, 502, 320, 3, 522);
 insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values
-(65, '322;399;406', 522, 540);
-insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (104, '322;406', 522, 542);
-insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (64, '406', 522, 543);
-insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (52, '406', 522, 544);
+(65, '322;399;406', 522, 641);
+insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (104, '322;406', 522, 642);
+insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (64, '406', 522, 643);
+insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values (52, '406', 522, 644);
 
 
 
@@ -292,13 +292,13 @@ insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) valu
 insert into proposal_slot (flat_matched_tag_ids, picked_dish_id, proposal_id, slot_dish_tag_id, slot_number, slot_id) values
 (null, 115, 502, 320, 4, 523);
 insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values
-(61, '81', 523, 546);
+(61, '81', 523, 646);
 insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values
-(63, '81', 523, 547);
+(63, '81', 523, 647);
 insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values
-(10, '81', 523, 548);
+(10, '81', 523, 648);
 insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) values
-(77, '81', 523, 549);
+(77, '81', 523, 649);
 
 
 
