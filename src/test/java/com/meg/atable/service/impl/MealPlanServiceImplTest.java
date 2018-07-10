@@ -1,6 +1,8 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.Application;
+import com.meg.atable.api.exception.ObjectNotFoundException;
+import com.meg.atable.api.exception.ObjectNotYoursException;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.DishEntity;
@@ -99,7 +101,7 @@ public class MealPlanServiceImplTest {
         Assert.assertEquals(TestConstants.MENU_PLAN_1_NAME, check.getName());
     }
 
-    @Test
+    @Test(expected = ObjectNotYoursException.class)
     public void getMealPlanById_BadUser() throws Exception {
         // get id for retrieve - already set up
         Long id = TestConstants.MEAL_PLAN_1_ID;
@@ -163,12 +165,12 @@ public class MealPlanServiceImplTest {
         }
     }
 
-    @Test
+    @Test(expected=ObjectNotFoundException.class)
     public void testDeleteMealPlan() {
-        MealPlanEntity mealPlan = mealPlanService.getMealPlanById(deleteUserAccount.getUsername(), TestConstants.MENU_PLAN_3_ID);
+        MealPlanEntity mealPlan = mealPlanService.getMealPlanById(deleteUserAccount.getUsername(), TestConstants.MENU_PLAN_4_ID);
 
         boolean success = mealPlanService.deleteMealPlan(deleteUserAccount.getUsername(), mealPlan.getId());
-        MealPlanEntity testPlan = mealPlanService.getMealPlanById(deleteUserAccount.getUsername(), TestConstants.MENU_PLAN_3_ID);
+        MealPlanEntity testPlan = mealPlanService.getMealPlanById(deleteUserAccount.getUsername(), TestConstants.MENU_PLAN_4_ID);
         Assert.assertNull(testPlan);
         Assert.assertTrue(success);
     }

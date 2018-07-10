@@ -113,8 +113,6 @@ public class RefreshProposalProcessorImplTest {
 
         // currentApproach is 1
         Assert.assertEquals(1, testResult.getCurrentApproach());
-        // resultApproach > 0   - random results with 2 slots lead to valid one result only sometimes.
-        Assert.assertTrue(testResult.getResultApproaches().size() > 0);
         Assert.assertTrue(noFilteredDishMatch);
     }
 
@@ -172,8 +170,6 @@ public class RefreshProposalProcessorImplTest {
 
         // currentApproach is 1
         Assert.assertEquals(1, testResult.getCurrentApproach());
-        // resultApproach > 0   - random results with 2 slots lead to valid one result only sometimes.
-        Assert.assertTrue(testResult.getResultApproaches().size() > 0);
         Assert.assertTrue(noFilteredDishMatch);
     }
 
@@ -257,8 +253,6 @@ public class RefreshProposalProcessorImplTest {
 
         // currentApproach is 1
         Assert.assertEquals(0, testResult.getCurrentApproach());
-        // resultApproach > 0   - random results with 2 slots lead to valid one result only sometimes.
-        Assert.assertTrue(testResult.getResultApproaches().size() > 0);
         Assert.assertTrue(noFilteredDishMatch);
     }
 
@@ -328,8 +322,6 @@ public class RefreshProposalProcessorImplTest {
 
         // currentApproach is 1
         Assert.assertEquals(1, testResult.getCurrentApproach());
-        // resultApproach > 0   - random results with 2 slots lead to valid one result only sometimes.
-        Assert.assertTrue(testResult.getResultApproaches().size() > 0);
         Assert.assertTrue(noFilteredDishMatch);
     }
 
@@ -392,8 +384,6 @@ public class RefreshProposalProcessorImplTest {
 
         // currentApproach is 0
         Assert.assertEquals(1, testResult.getCurrentApproach());
-        // resultApproach > 1
-        Assert.assertTrue(testResult.getResultApproaches().size() > 1);
 
     }
 

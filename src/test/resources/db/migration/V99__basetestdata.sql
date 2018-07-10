@@ -59,6 +59,7 @@ insert into dish_tags (dish_id, tag_id) values (502, 503);
 insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 1', 500, 500) ;
 insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 1', 501, 501) ;
 insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 1', 20, 503) ;
+insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 2', 20, 504) ;
 
 -- slots for meal plan - 
 insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (500, 500, 500);
@@ -70,7 +71,9 @@ insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) value
 insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (500, 503, 506);
 insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (501, 503, 507);
 insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (502, 503, 508);
-
+insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (500, 504, 509);
+insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (501, 504, 510);
+insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (502, 504, 511);
 
 
 -- list layouts - ids 999 - to delete

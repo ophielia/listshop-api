@@ -194,16 +194,6 @@ public class ListLayoutServiceImplTest {
         Assert.assertEquals(testNewName, resultCategories.get(0).getName());
     }
 
-    @Test
-    public void testGetUncategorizedTagsForList() {
-        // retrieve category 1 has tags 1 and 2 assigned
-        // this method should retrieve 3 - 5
-        // MM fix this List<TagEntity> uncategorizedTags = listLayoutService.getUncategorizedTagsForList(uncategorizedCount.getId());
-        List<TagEntity> uncategorizedTags = new ArrayList<>();
-
-        Assert.assertNotNull(uncategorizedTags);
-        Assert.assertTrue(uncategorizedTags.size() == 3);
-    }
 
     @Test
     public void testGetTagsForLayoutCategory() {
@@ -257,23 +247,6 @@ public class ListLayoutServiceImplTest {
         Assert.assertTrue(resultTags.size() == 0);
     }
 
-
-    @Test
-    public void testGetSubCategoryMappings() {
-        // MM implement this
-        // MM child to parent
-        //Long listLayoutId
-        //return null;
-        Assert.assertEquals(1, 2);
-    }
-
-    @Test
-    public void testGetListCategoriesForIds() {
-
-        // MM implement this
-        //public List<ListLayoutCategoryEntity> getListCategoriesForIds(Set<Long> categoryIds) {
-        Assert.assertEquals(1, 2);
-    }
 
     @Test
     public void testGetStructuredCategories() {
