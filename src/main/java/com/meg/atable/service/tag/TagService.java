@@ -3,6 +3,7 @@ package com.meg.atable.service.tag;
 import com.meg.atable.api.model.TagFilterType;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,9 @@ import java.util.Set;
  * Created by margaretmartin on 13/05/2017.
  */
 public interface TagService {
+    @Value("${service.tagservice.main.dish.tagid}")
+    public final Long MAIN_DISH_TAG_ID = 320L;
+
     TagEntity save(TagEntity tag);
 
     TagEntity getTagById(Long dishId);

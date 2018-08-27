@@ -7,7 +7,7 @@ import java.security.Principal;
 /**
  * Created by margaretmartin on 30/10/2017.
  */
-public interface TargetProposalService {
+public interface ProposalService {
 
     ProposalEntity getProposalById(String name, Long proposalId);
 

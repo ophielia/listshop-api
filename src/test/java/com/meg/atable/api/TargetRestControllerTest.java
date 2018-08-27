@@ -163,6 +163,24 @@ public class TargetRestControllerTest {
 
     @Test
     @WithMockUser
+    public void testCreatePickupTarget() throws Exception {
+        TargetEntity targetEntity = new TargetEntity();
+        targetEntity.setTargetName("targetCreate");
+        targetEntity.setUserId(newUserAccount.getId());
+        Target target = ModelMapper.toModel(targetEntity);
+        String targetJson = json(target);
+
+        String tagids = "?pickupTags=" + TestConstants.TAG_CARROTS + "," + TestConstants.TAG_MEAT;
+        String url = "/target/pickup" + tagids;
+        this.mockMvc.perform(post(url)
+                .with(user(newUserDetails))
+                .contentType(contentType)
+                .content(targetJson))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithMockUser
     public void testUpdateTarget() throws Exception {
         String newName = "new super duper name";
         TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_3_NAME, TestConstants.TARGET_3_ID);

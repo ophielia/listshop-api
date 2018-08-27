@@ -25,6 +25,10 @@ public interface TargetRestControllerApi {
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createTarget(Principal principal, @RequestBody Target input);
 
+    @RequestMapping(method = RequestMethod.POST,value = "/pickup", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> createPickupTarget(Principal principal, @RequestBody Target input,
+                                              @RequestParam(value = "pickupTags", required = false) String pickupTags);
+
     @RequestMapping(method = RequestMethod.GET, value = "/{targetId}", produces = "application/json")
     ResponseEntity<Target> readTarget(Principal principal, @PathVariable("targetId") Long targetId);
 

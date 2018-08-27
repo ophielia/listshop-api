@@ -11,7 +11,7 @@ import com.meg.atable.data.repository.SlotRepository;
 import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.DishService;
 import com.meg.atable.service.MealPlanService;
-import com.meg.atable.service.TargetProposalService;
+import com.meg.atable.service.ProposalService;
 import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -47,7 +47,7 @@ public class MealPlanServiceImpl implements MealPlanService {
     private DishService dishService;
 
     @Autowired
-    private TargetProposalService targetProposalService;
+    private ProposalService targetProposalService;
 
     @Autowired
     private TagRepository tagRepository;

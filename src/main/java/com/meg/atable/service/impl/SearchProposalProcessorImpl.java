@@ -2,6 +2,7 @@ package com.meg.atable.service.impl;
 
 import com.meg.atable.api.exception.ProposalProcessingException;
 import com.meg.atable.api.model.ApproachType;
+import com.meg.atable.api.model.TargetType;
 import com.meg.atable.data.entity.*;
 import com.meg.atable.service.*;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -140,10 +141,11 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
         info.setSearchSlots(searchSlots);
         info.setFillSlots(fillSlots);
         info.setSqlFilter(sqlFilter);
-        int slotDishCount = targetSlotCount * SEARCH_DISH_RESULT_COUNT;
+        int resultCount = TargetType.Standard.equals(request.getTarget().getTargetType())?SEARCH_DISH_RESULT_COUNT:SEARCH_DISH_RESULT_COUNT_PICKUP;
+        int slotDishCount = targetSlotCount * resultCount;
         info.setResultsPerSlot(slotDishCount);
         info.setProposal(request.getProposal());
-        info.setDefaultDishCountPerSlot(SEARCH_DISH_RESULT_COUNT);
+        info.setDefaultDishCountPerSlot(resultCount);
 
         return info;
     }

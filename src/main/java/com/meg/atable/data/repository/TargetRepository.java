@@ -13,6 +13,8 @@ public interface TargetRepository extends JpaRepository<TargetEntity, Long> {
 
     List<TargetEntity> findTargetsByUserId(Long userId);
 
+    List<TargetEntity> findTargetsByUserIdAndExpiresIsNull(Long userId);
+
     // MM implement this
     TargetEntity findTargetByProposalId(Long id);
 }

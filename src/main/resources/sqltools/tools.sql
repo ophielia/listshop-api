@@ -243,3 +243,74 @@ nextval('list_layout_category_sequence')
 mvn flyway:info
 mvn flyway:baseline -Dflyway.baselineVersion=5
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+v7 undo
+﻿-- add column to meal plan
+ALTER TABLE meal_plan DROP COLUMN if exists  target_id  ;
+
+-- proposal_context changes
+ALTER TABLE proposal_context ADD COLUMN  approach_type integer;
+ALTER TABLE proposal_context ADD COLUMN  dish_count_per_slot integer;
+ALTER TABLE proposal_context ADD COLUMN  maximum_empties integer;
+ALTER TABLE proposal_context ADD COLUMN  proposal_count          integer      ;
+ALTER TABLE proposal_context ADD COLUMN  refresh_flag integer;
+
+ALTER TABLE proposal_context DROP COLUMN   current_approach_type ;
+ALTER TABLE proposal_context DROP COLUMN   current_approach_index ;
+ALTER TABLE proposal_context DROP COLUMN   meal_plan_id ;
+ALTER TABLE proposal_context DROP COLUMN   target_id     ;
+ALTER TABLE proposal_context DROP COLUMN   target_hash_code ;
+ALTER TABLE proposal_context DROP COLUMN   proposal_hash_code ;
+
+-- proposal_approach
+DROP TABLE if exists proposal_approach;
+
+
+drop SEQUENCE  if exists proposal_approach_sequence;
+
+-- proposal_dish
+
+drop TABLE if exists proposal_dish ;
+
+drop SEQUENCE if exists proposal_dish_sequence;
+
+
+-- proposal_slot
+
+drop TABLE if exists proposal_slot ;
+
+drop SEQUENCE if exists proposal_slot_sequence;
+
+
+drop TABLE if exists proposal;
+
+DROP SEQUENCE if exists proposal_sequence;
+
+--alter table target drop column target;
+--alter table target add column target character varying(255);
+--alter table target_slot drop column target;
+--alter table target_slot add column target character varying(255);
+-- old tables
+--drop table target_proposal_dish;
+--drop table target_proposal_slot;
+--drop table target_proposal;
+
+

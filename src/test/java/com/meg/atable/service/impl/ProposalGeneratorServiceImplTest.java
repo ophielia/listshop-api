@@ -58,7 +58,7 @@ public class ProposalGeneratorServiceImplTest {
     ProposalGeneratorService proposalGeneratorServiceImpl;
 
     @Autowired
-    private TargetProposalService proposalService;
+    private ProposalService proposalService;
 
 
     @Autowired

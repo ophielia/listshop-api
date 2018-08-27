@@ -1,7 +1,6 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.api.exception.ProposalProcessingException;
-import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.data.entity.*;
 import com.meg.atable.data.repository.ProposalContextRepository;
 import com.meg.atable.service.*;
@@ -10,20 +9,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -44,7 +36,7 @@ public class ProposalGeneratorServiceImplIntTest {
     ProposalGeneratorService proposalGeneratorServiceImpl;
 
     @Autowired
-    private TargetProposalService proposalService;
+    private ProposalService proposalService;
 
 
     @Autowired

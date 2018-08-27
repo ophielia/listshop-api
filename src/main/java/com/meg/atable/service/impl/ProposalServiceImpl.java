@@ -8,7 +8,7 @@ import com.meg.atable.data.entity.DishSlotEntity;
 import com.meg.atable.data.entity.ProposalEntity;
 import com.meg.atable.data.entity.ProposalSlotEntity;
 import com.meg.atable.data.repository.ProposalRepository;
-import com.meg.atable.service.TargetProposalService;
+import com.meg.atable.service.ProposalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ import java.util.Optional;
  */
 @Service
 @Transactional
-public class TargetProposalServiceImpl implements TargetProposalService {
+public class ProposalServiceImpl implements ProposalService {
 
 
     @Autowired

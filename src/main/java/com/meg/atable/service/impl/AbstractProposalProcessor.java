@@ -24,8 +24,11 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
     DishSearchService dishSearchService;
 
 
-    @Value("${proposal.processor.dish.result.count}")
+    @Value("${proposal.processor.dish.result.count.standard}")
     protected static final int SEARCH_DISH_RESULT_COUNT =5;
+
+    @Value("${proposal.processor.dish.result.count.pickup}")
+    protected static final int SEARCH_DISH_RESULT_COUNT_PICKUP =10;
 
     @Value("${proposal.processor.dish.empty.count}")
     protected static final int EMPTY_COUNT = 5;

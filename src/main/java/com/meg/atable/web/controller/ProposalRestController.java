@@ -5,7 +5,7 @@ import com.meg.atable.api.exception.ProposalProcessingException;
 import com.meg.atable.api.model.ProposalResource;
 import com.meg.atable.data.entity.ProposalEntity;
 import com.meg.atable.service.ProposalGeneratorService;
-import com.meg.atable.service.TargetProposalService;
+import com.meg.atable.service.ProposalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -23,12 +23,12 @@ import java.security.Principal;
 @Controller
 public class ProposalRestController implements ProposalRestControllerApi {
 
-    private final TargetProposalService targetProposalService;
+    private final ProposalService targetProposalService;
 
     private final ProposalGeneratorService targetProposalGenerator;
 
     @Autowired
-    public ProposalRestController(TargetProposalService targetProposalService, ProposalGeneratorService targetProposalGenerator) {
+    public ProposalRestController(ProposalService targetProposalService, ProposalGeneratorService targetProposalGenerator) {
         this.targetProposalService = targetProposalService;
         this.targetProposalGenerator = targetProposalGenerator;
     }

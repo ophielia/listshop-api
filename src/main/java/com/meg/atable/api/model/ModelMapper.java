@@ -49,10 +49,12 @@ public class ModelMapper {
     public static Target toModel(TargetEntity targetEntity) {
         List<TargetSlot> slots = targetSlotsToModel(targetEntity.getSlots());
         List<Tag> tags = toModel(targetEntity.getTargetTags());
+        String targetType = targetEntity.getTargetType().name();
         return new Target(targetEntity.getTargetId())
                 .userId(targetEntity.getUserId())
                 .targetName(targetEntity.getTargetName())
                 .slots(slots)
+                .targetType(targetType)
                 .proposalId(targetEntity.getProposalId())
                 .created(targetEntity.getCreated())
                 .lastUsed(targetEntity.getLastUsed())
@@ -384,11 +386,16 @@ public class ModelMapper {
             return null;
         }
         Long targetId = target.getTargetId();
+        TargetType targetType=null;
+        if (target.getTargetType() != null) {
+            targetType = TargetType.valueOf(target.getTargetType());
+        }
         TargetEntity targetEntity = new TargetEntity(targetId);
 
         targetEntity.setTargetName(target.getTargetName());
         targetEntity.setCreated(target.getCreated());
         targetEntity.setUserId(target.getUserId());
+        targetEntity.setTargetType(targetType);
         targetEntity.setLastUsed(target.getLastUsed());
         return targetEntity;
     }

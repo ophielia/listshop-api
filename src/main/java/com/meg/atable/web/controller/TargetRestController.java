@@ -16,9 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +36,7 @@ public class TargetRestController implements TargetRestControllerApi {
     @Override
     public ResponseEntity<Resources<TargetResource>> retrieveTargets(Principal principal) {
         List<TargetResource> targetList = targetService
-                .getTargetsForUserName(principal.getName())
+                .getTargetsForUserName(principal.getName(), false)
                 .stream().map(TargetResource::new)
                 .collect(Collectors.toList());
 
@@ -57,8 +60,28 @@ public class TargetRestController implements TargetRestControllerApi {
 
     }
 
+    public ResponseEntity<Object> createPickupTarget(Principal principal, @RequestBody Target input,
+                                                     @RequestParam(value = "pickupTags", required = false) String pickupTags) {
+        List<Long> tagIdList = commaDelimitedToList(pickupTags);
+        TargetEntity targetEntity = ModelMapper.toEntity(input);
+
+        TargetEntity result = targetService.createTarget(principal.getName(), targetEntity);
+
+        TargetSlotEntity resultSlot = targetService.addDefaultTargetSlot(principal.getName(), result );
+
+        if (!tagIdList.isEmpty()) {
+            tagIdList.stream().forEach(t -> targetService.addTagToTargetSlot(principal.getName(), result.getTargetId(), resultSlot.getId(), t));
+        }
+
+        if (result != null) {
+            Link forOneTarget = new TargetResource(result).getLink("self");
+            return ResponseEntity.created(URI.create(forOneTarget.getHref())).build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
     @Override
-    public ResponseEntity<Target> readTarget(Principal principal,@PathVariable Long targetId) {
+    public ResponseEntity<Target> readTarget(Principal principal, @PathVariable Long targetId) {
         TargetEntity target = this.targetService
                 .getTargetById(principal.getName(), targetId);
 
@@ -75,7 +98,7 @@ public class TargetRestController implements TargetRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Target> deleteTarget(Principal principal,@PathVariable Long targetId) {
+    public ResponseEntity<Target> deleteTarget(Principal principal, @PathVariable Long targetId) {
         boolean success = targetService.deleteTarget(principal.getName(), targetId);
         if (success) {
             return ResponseEntity.noContent().build();
@@ -123,7 +146,7 @@ public class TargetRestController implements TargetRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteTagFromSlot(Principal principal, @PathVariable Long targetId,@PathVariable Long slotId,@PathVariable Long tagId) {
+    public ResponseEntity<Object> deleteTagFromSlot(Principal principal, @PathVariable Long targetId, @PathVariable Long slotId, @PathVariable Long tagId) {
         this.targetService.deleteTagFromTargetSlot(principal.getName(), targetId, slotId, tagId);
 
         return ResponseEntity.noContent().build();
@@ -131,18 +154,29 @@ public class TargetRestController implements TargetRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> addTagToTarget(Principal principal,@PathVariable Long targetId,@PathVariable Long tagId) {
+    public ResponseEntity<Object> addTagToTarget(Principal principal, @PathVariable Long targetId, @PathVariable Long tagId) {
         this.targetService.addTagToTarget(principal.getName(), targetId, tagId);
 
         return ResponseEntity.noContent().build();
     }
 
     @Override
-    public ResponseEntity<Object> deleteTagFromTarget(Principal principal,@PathVariable Long targetId,@PathVariable Long tagId) {
+    public ResponseEntity<Object> deleteTagFromTarget(Principal principal, @PathVariable Long targetId, @PathVariable Long tagId) {
         this.targetService.deleteTagFromTarget(principal.getName(), targetId, tagId);
 
         return ResponseEntity.noContent().build();
     }
 
+    private List<Long> commaDelimitedToList(String commaSeparatedIds) {
+// translate tags into list of Long ids
+        if (commaSeparatedIds == null) {
+            return new ArrayList<>();
+        }
+        String[] ids = commaSeparatedIds.split(",");
+        if (ids == null || ids.length == 0) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(ids).map(Long::valueOf).collect(Collectors.toList());
 
+    }
 }

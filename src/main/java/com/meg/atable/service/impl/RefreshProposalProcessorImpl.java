@@ -1,6 +1,7 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.api.exception.ProposalProcessingException;
+import com.meg.atable.api.model.TargetType;
 import com.meg.atable.data.entity.*;
 import com.meg.atable.service.NewRawSlotResult;
 import com.meg.atable.service.ProcessInformation;
@@ -85,6 +86,7 @@ public class RefreshProposalProcessorImpl extends AbstractProposalProcessor {
         ProcessInformation info = new ProcessInformation();
         List<Long> sqlFilter = new ArrayList<>();
         Map<Integer, Integer> dishCountPerSlot = new HashMap<>();
+        int resultCount = TargetType.Standard.equals(request.getTarget().getTargetType())?SEARCH_DISH_RESULT_COUNT:SEARCH_DISH_RESULT_COUNT_PICKUP;
 
         // check if there are any picked dishes in proposal
         List<Integer> fillInSlotNumbers = new ArrayList<>();
@@ -93,9 +95,9 @@ public class RefreshProposalProcessorImpl extends AbstractProposalProcessor {
                 if (slot.getPickedDishId() != null) {
                     sqlFilter.add(slot.getPickedDishId());
                     fillInSlotNumbers.add(slot.getSlotNumber());
-                    dishCountPerSlot.put(slot.getSlotNumber(), SEARCH_DISH_RESULT_COUNT - 1);
+                    dishCountPerSlot.put(slot.getSlotNumber(), resultCount - 1);
                 } else {
-                    dishCountPerSlot.put(slot.getSlotNumber(), SEARCH_DISH_RESULT_COUNT);
+                    dishCountPerSlot.put(slot.getSlotNumber(), resultCount);
                 }
             }
         }
@@ -135,10 +137,10 @@ public class RefreshProposalProcessorImpl extends AbstractProposalProcessor {
         info.setSearchSlots(searchSlots);
         info.setFillSlots(fillSlots);
         info.setSqlFilter(sqlFilter);
-        int slotDishCount = targetSlotCount * SEARCH_DISH_RESULT_COUNT;
+        int slotDishCount = targetSlotCount * resultCount;
         info.setResultsPerSlot(slotDishCount);
         info.setProposal(request.getProposal());
-        info.setDefaultDishCountPerSlot(SEARCH_DISH_RESULT_COUNT);
+        info.setDefaultDishCountPerSlot(resultCount);
 
         return info;
     }

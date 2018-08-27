@@ -140,7 +140,17 @@ targetIdToDelete = result.getTargetId();
 
     @Test
     public void getTargetsForUserName() throws Exception {
-        List<TargetEntity> result = targetService.getTargetsForUserName(TestConstants.USER_3_NAME);
+        List<TargetEntity> result = targetService.getTargetsForUserName(TestConstants.USER_3_NAME, false);
+
+
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2, result.size());
+
+    }
+
+    @Test
+    public void getTargetsForUserName_WithTemporary() throws Exception {
+        List<TargetEntity> result = targetService.getTargetsForUserName(TestConstants.USER_3_NAME, true);
 
 
         Assert.assertNotNull(result);
@@ -161,6 +171,24 @@ targetIdToDelete = result.getTargetId();
         Assert.assertNotNull(result.getUserId());
         Assert.assertNull(result.getLastUsed());
         Assert.assertNotNull(result.getCreated());
+        Assert.assertNull(result.getExpires());
+
+    }
+
+    @Test
+    public void createTarget_Temporary() throws Exception {
+        TargetEntity newTarget = new TargetEntity();
+        newTarget.setTargetName("george");
+
+        TargetEntity result = targetService.createTarget(TestConstants.USER_1_NAME, newTarget);
+
+        Assert.assertNotNull(result);
+        Assert.assertEquals("george", result.getTargetName());
+        Assert.assertNotNull(result.getTargetId());
+        Assert.assertNotNull(result.getUserId());
+        Assert.assertNull(result.getLastUsed());
+        Assert.assertNotNull(result.getCreated());
+        Assert.assertNotNull(result.getExpires());
 
     }
 
@@ -274,6 +302,14 @@ targetIdToDelete = result.getTargetId();
         targettags = target.getTargetTagIds();
         Assert.assertNotNull(targettags);
         Assert.assertTrue(targettags.contains(String.valueOf(tag1.getId())));
+    }
+
+    @Test
+    public void testAddDefaultTargetSlot() throws Exception {
+        TargetEntity target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
+TargetSlotEntity slotResult = targetService.addDefaultTargetSlot(TestConstants.USER_1_NAME, target);
+        Assert.assertNotNull(slotResult);
+        Assert.assertEquals(TagService.MAIN_DISH_TAG_ID,slotResult.getSlotDishTagId());
     }
 
     @Test

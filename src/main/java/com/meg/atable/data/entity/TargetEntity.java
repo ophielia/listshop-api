@@ -1,9 +1,11 @@
 package com.meg.atable.data.entity;
 
+import com.meg.atable.api.model.TargetType;
 import com.meg.atable.service.TargetServiceConstants;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,21 +16,23 @@ import java.util.stream.Collectors;
         strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
         parameters = {@org.hibernate.annotations.Parameter(
                 name = "sequence_name",
-                value="target_sequence"),
+                value = "target_sequence"),
                 @org.hibernate.annotations.Parameter(
                         name = "increment_size",
-                        value="1")}
+                        value = "1")}
 )
 public class TargetEntity extends AbstractInflateAndFlatten {
 
     @Id
-    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="target_sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "target_sequence")
     private Long targetId;
 
     private Long userId;
 
     private String targetName;
 
+    @Enumerated(EnumType.STRING)
+    private TargetType targetType;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "target_id")
@@ -39,6 +43,8 @@ public class TargetEntity extends AbstractInflateAndFlatten {
     private Date lastUsed;
 
     private Date lastUpdated;
+
+    private LocalDateTime expires;
 
     private String targetTagIds;
 
@@ -213,6 +219,22 @@ public class TargetEntity extends AbstractInflateAndFlatten {
         this.proposalId = proposalId;
     }
 
+    public LocalDateTime getExpires() {
+        return expires;
+    }
+
+    public void setExpires(LocalDateTime expires) {
+        this.expires = expires;
+    }
+
+    public TargetType getTargetType() {
+        return targetType;
+    }
+
+    public void setTargetType(TargetType targetType) {
+        this.targetType = targetType;
+    }
+
     public String getContentHashCode() {
 // this is used to decide if the tags for this target have changed since the last proposal was run
         // this is used to decide if the slots have changed since the last proposal has been run
@@ -220,14 +242,14 @@ public class TargetEntity extends AbstractInflateAndFlatten {
         StringBuilder hashCode = new StringBuilder(getTargetId().hashCode());
         // make list of all tagList strings for target and contained slots
         // also include dish type tags
-        List<String> targetTags =inflateStringToList(getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER);
+        List<String> targetTags = inflateStringToList(getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER);
         if (targetTags != null) {
             targetTags.forEach(t -> hashCode.append(t.hashCode()));
         }
 
         if (slots != null && !slots.isEmpty()) {
             for (TargetSlotEntity slot : slots) {
-                List<String> slotTags =inflateStringToList(slot.getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER);
+                List<String> slotTags = inflateStringToList(slot.getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER);
                 if (slotTags != null) {
                     int slotHashCode = (slot.getSlotOrder() * slotTags.hashCode());
                     hashCode.append(slotHashCode);

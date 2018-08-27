@@ -2,6 +2,7 @@ package com.meg.atable.service;
 
 import com.meg.atable.data.entity.TargetEntity;
 import com.meg.atable.data.entity.TargetSlotEntity;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
@@ -10,7 +11,10 @@ import java.util.List;
  */
 public interface TargetService {
 
-    List<TargetEntity> getTargetsForUserName(String name);
+    @Value("${service.targetservice.pickup.target.expiresafter.minutes}")
+    int EXPIRES_AFTER_MINUTES = 60;
+
+    List<TargetEntity> getTargetsForUserName(String name, boolean includeTemporary);
 
     TargetEntity createTarget(String name, TargetEntity targetEntity);
 
@@ -35,4 +39,6 @@ public interface TargetService {
     TargetEntity fillTagsForTarget(TargetEntity target);
 
     TargetEntity save(TargetEntity target);
+
+    TargetSlotEntity addDefaultTargetSlot(String userName, TargetEntity result);
 }

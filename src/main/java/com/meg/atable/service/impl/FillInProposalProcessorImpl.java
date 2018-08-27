@@ -1,6 +1,7 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.api.exception.ProposalProcessingException;
+import com.meg.atable.api.model.TargetType;
 import com.meg.atable.data.entity.*;
 import com.meg.atable.service.NewRawSlotResult;
 import com.meg.atable.service.ProcessInformation;
@@ -114,10 +115,11 @@ public class FillInProposalProcessorImpl extends AbstractProposalProcessor {
         info.setFillSlots(fillSlots);
         info.setSqlFilter(sqlFilter);
 
-        int slotDishCount = request.getProposal().getSlots().size() * SEARCH_DISH_RESULT_COUNT;
+        int resultCount = TargetType.Standard.equals(request.getTarget().getTargetType())?SEARCH_DISH_RESULT_COUNT:SEARCH_DISH_RESULT_COUNT_PICKUP;
+        int slotDishCount = request.getProposal().getSlots().size() * resultCount;
         info.setResultsPerSlot(slotDishCount);
         info.setProposal(request.getProposal());
-        info.setDefaultDishCountPerSlot(SEARCH_DISH_RESULT_COUNT);
+        info.setDefaultDishCountPerSlot(resultCount);
 
         return info;
     }
