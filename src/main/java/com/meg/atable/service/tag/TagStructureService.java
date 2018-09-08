@@ -1,19 +1,20 @@
 package com.meg.atable.service.tag;
 
-import com.meg.atable.api.model.TagFilterType;
+import com.meg.atable.api.model.FatTag;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.data.entity.TagRelationEntity;
 import com.meg.atable.data.entity.TagSearchGroupEntity;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 13/05/2017.
  */
 public interface TagStructureService {
-     List<TagEntity> getBaseTagList(List<TagType> tagTypes);
+    List<TagEntity> getBaseTagList(List<TagType> tagTypes);
 
     TagRelationEntity createRelation(TagEntity parentTag, TagEntity childTag);
 
@@ -35,11 +36,11 @@ public interface TagStructureService {
 
     List<TagSearchGroupEntity> buildGroupAssignments(Long groupId, List<TagEntity> members);
 
-    void deleteTagGroupsByGroupAndMember(List<Long> groupTagIds,List<Long> memberTagIds);
+    void deleteTagGroupsByGroupAndMember(List<Long> groupTagIds, List<Long> memberTagIds);
 
-    HashMap<Long,List<Long>> getSearchGroupsForTagIds(Set<Long> allTags);
+    Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags);
 
-    HashMap<Long,TagSwapout> getTagSwapouts(List<Long> dishIds, List<String> tagListForSlot);
+    Map<Long, TagSwapout> getTagSwapouts(List<Long> dishIds, List<String> tagListForSlot);
 
     List<Long> getSearchGroupIdsByMember(Long id);
 
@@ -52,4 +53,6 @@ public interface TagStructureService {
     void createMembersForGroup(Long id, List<Long> toAdd);
 
     void removeMembersForGroup(Long id, List<Long> toDelete);
+
+    List<FatTag> getTagsWithChildren(List<TagType> tagTypes);
 }

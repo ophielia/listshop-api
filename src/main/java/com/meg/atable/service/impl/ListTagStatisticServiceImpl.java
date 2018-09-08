@@ -1,6 +1,5 @@
 package com.meg.atable.service.impl;
 
-import com.meg.atable.api.model.ListType;
 import com.meg.atable.data.entity.ItemEntity;
 import com.meg.atable.data.entity.ListTagStatistic;
 import com.meg.atable.data.entity.TagEntity;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -29,57 +29,51 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
     public void processStatistics(Long userId, ListItemCollector collector) {
         // get statistics for tags - hash by tagid
         Map<Long, ListTagStatistic> statLkup = listTagStatisticRepo.findByUserIdAndTagIdIn(userId, collector.getAllTagIds()).stream()
-                .collect(Collectors.toMap(lts -> lts.getTagId(), lts -> lts));
+                .collect(Collectors.toMap(ListTagStatistic::getTagId, Function.identity()));
 
         // go through list tags - return list of stats
         List<ListTagStatistic> statList = new ArrayList<>();
         List<ItemEntity> itemList = collector.getTagItems();
 
-        for (ItemEntity item: itemList) {
+        for (ItemEntity item : itemList) {
             if (!item.isUpdated() & !item.isDeleted()) {
                 continue;
             }
             TagEntity tag = item.getTag();
             if (item.isAdded()) {
                 if (statLkup.containsKey(tag.getId())) {
-                    ListTagStatistic stat =statLkup.get(tag.getId());
+                    ListTagStatistic stat = statLkup.get(tag.getId());
                     boolean frequentCrossOff = isFrequentCrossOff(stat);
-item.setFrequent(frequentCrossOff);
-
-
+                    item.setFrequent(frequentCrossOff);
                 }
-                ListTagStatistic stat = addOrRemoveItem(statLkup,userId,tag.getId(),item.getAddCount(),0);
+                ListTagStatistic stat = addOrRemoveItem(statLkup, userId, tag.getId(), item.getAddCount(), 0);
                 statList.add(stat);
-                continue;
-            }
-            if (item.isRemoved()) {
+            } else if (item.isRemoved()) {
                 if (statLkup.containsKey(tag.getId())) {
-                    ListTagStatistic stat =statLkup.get(tag.getId());
+                    ListTagStatistic stat = statLkup.get(tag.getId());
                     boolean frequentCrossOff = isFrequentCrossOff(stat);
                     item.setFrequent(frequentCrossOff);
 
 
                 }
-                ListTagStatistic stat = addOrRemoveItem(statLkup,userId,tag.getId(),0,item.getRemovedCount());
+                ListTagStatistic stat = addOrRemoveItem(statLkup, userId, tag.getId(), 0, item.getRemovedCount());
                 statList.add(stat);
-                continue;
-            }
-            if (item.isDeleted()) {
+            } else if (item.isDeleted()) {
                 if (statLkup.containsKey(tag.getId())) {
-                    ListTagStatistic stat =statLkup.get(tag.getId());
+                    ListTagStatistic stat = statLkup.get(tag.getId());
                     boolean frequentCrossOff = isFrequentCrossOff(stat);
                     item.setFrequent(frequentCrossOff);
 
 
                 }
-                ListTagStatistic stat = addOrRemoveItem(statLkup,userId,tag.getId(),0,item.getRemovedCount());
+                ListTagStatistic stat = addOrRemoveItem(statLkup, userId, tag.getId(), 0, item.getRemovedCount());
                 statList.add(stat);
             }
 
         }
 
         // save list of stats
-        listTagStatisticRepo.save(statList);
+        listTagStatisticRepo.saveAll(statList);
     }
 
     private ListTagStatistic addCounted(ListTagStatistic statistic) {
@@ -111,7 +105,7 @@ item.setFrequent(frequentCrossOff);
 
     }
 
-    private ListTagStatistic addOrRemoveItem(Map<Long, ListTagStatistic> statLkup, Long userId,Long tagId, int addCount, int removeCount) {
+    private ListTagStatistic addOrRemoveItem(Map<Long, ListTagStatistic> statLkup, Long userId, Long tagId, int addCount, int removeCount) {
 
         // get statistic for tag
         ListTagStatistic statistic = statLkup.get(tagId);
@@ -133,7 +127,6 @@ item.setFrequent(frequentCrossOff);
         // save statistic
         return statistic;
     }
-
 
 
 }

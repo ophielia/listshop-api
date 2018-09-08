@@ -1,5 +1,7 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.exception.ObjectNotFoundException;
+import com.meg.atable.api.model.TargetType;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.data.entity.TagEntity;
@@ -7,12 +9,16 @@ import com.meg.atable.data.entity.TargetEntity;
 import com.meg.atable.data.entity.TargetSlotEntity;
 import com.meg.atable.data.repository.TargetRepository;
 import com.meg.atable.data.repository.TargetSlotRepository;
-import com.meg.atable.service.tag.TagService;
 import com.meg.atable.service.TargetService;
+import com.meg.atable.service.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+
+import static com.meg.atable.data.entity.TargetSlotEntity.IDENTIFIER;
 
 /**
  * Created by margaretmartin on 18/12/2017.
@@ -20,23 +26,31 @@ import java.util.*;
 @Service
 public class TargetServiceImpl implements TargetService {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private TargetRepository targetRepository;
+    private final TargetRepository targetRepository;
 
 
-    @Autowired
-    private TargetSlotRepository targetSlotRepository;
+    private final TargetSlotRepository targetSlotRepository;
+
+    private final TagService tagService;
 
     @Autowired
-    private TagService tagService;
+    public TargetServiceImpl(UserService userService, TargetRepository targetRepository, TargetSlotRepository targetSlotRepository, TagService tagService) {
+        this.userService = userService;
+        this.targetRepository = targetRepository;
+        this.targetSlotRepository = targetSlotRepository;
+        this.tagService = tagService;
+    }
 
     @Override
-    public List<TargetEntity> getTargetsForUserName(String name) {
+    public List<TargetEntity> getTargetsForUserName(String name, boolean includeTemporary) {
         UserAccountEntity user = userService.getUserByUserName(name);
-        return targetRepository.findTargetsByUserId(user.getId());
+        if (includeTemporary) {
+            return targetRepository.findTargetsByUserId(user.getId());
+        } else {
+            return targetRepository.findTargetsByUserIdAndExpiresIsNull(user.getId());
+        }
     }
 
     @Override
@@ -49,7 +63,15 @@ public class TargetServiceImpl implements TargetService {
 
         targetEntity.setUserId(user.getId());
         targetEntity.setCreated(new Date());
+        if (targetEntity.getTargetType() == null) {
+            targetEntity.setTargetType(TargetType.Standard);
+        }
 
+        if (TargetType.PickUp.equals(targetEntity.getTargetType())) {
+            LocalDateTime expires = LocalDateTime.now().plus(EXPIRES_AFTER_MINUTES, ChronoUnit.MINUTES );
+            // TODO - decide strategy for pickup list - and expiring....
+            targetEntity.setExpires(expires);
+        }
         return targetRepository.save(targetEntity);
     }
 
@@ -58,7 +80,6 @@ public class TargetServiceImpl implements TargetService {
         UserAccountEntity user = userService.getUserByUserName(name);
 
         return targetRepository.findTargetByUserIdAndTargetId(user.getId(), targetId);
-
     }
 
     @Override
@@ -68,7 +89,7 @@ public class TargetServiceImpl implements TargetService {
             return false;
         }
         List<TargetSlotEntity> slots = target.getSlots();
-        targetSlotRepository.delete(slots);
+        targetSlotRepository.deleteAll(slots);
         target.setSlots(null);
         targetRepository.delete(target);
 
@@ -96,9 +117,6 @@ public class TargetServiceImpl implements TargetService {
     public void addSlotToTarget(String name, Long targetId, TargetSlotEntity targetSlotEntity) {
         TargetEntity targetEntity = getTargetById(name, targetId);
         targetEntity.setProposalId(null);
-        if (targetEntity == null) {
-            return;
-        }
 
         targetSlotEntity.setTargetId(targetEntity.getTargetId());
         List<TargetSlotEntity> slots = targetEntity.getSlots();
@@ -110,9 +128,10 @@ public class TargetServiceImpl implements TargetService {
         Integer max = maxSlotOrder.isPresent() ? maxSlotOrder.getAsInt() : 0;
         targetSlotEntity.setSlotOrder(max + 1);
 
-        targetSlotEntity = targetSlotRepository.save(targetSlotEntity);
+        TargetSlotEntity result;
+        result = targetSlotRepository.save(targetSlotEntity);
 
-        targetEntity.addSlot(targetSlotEntity);
+        targetEntity.addSlot(result);
 
         targetRepository.save(targetEntity);
     }
@@ -120,12 +139,13 @@ public class TargetServiceImpl implements TargetService {
     @Override
     public void deleteSlotFromTarget(String name, Long targetId, Long slotId) {
         TargetEntity targetEntity = getTargetById(name, targetId);
-        if (targetEntity == null) {
-            return;
-        }
-        targetEntity.setProposalId(null);
-        TargetSlotEntity targetSlotEntity = targetSlotRepository.findOne(slotId);
 
+        targetEntity.setProposalId(null);
+        Optional<TargetSlotEntity> targetSlotEntityOpt = targetSlotRepository.findById(slotId);
+        if (!targetSlotEntityOpt.isPresent()) {
+            throw new ObjectNotFoundException(slotId, IDENTIFIER);
+        }
+        TargetSlotEntity targetSlotEntity = targetSlotEntityOpt.get();
         targetEntity.removeSlot(targetSlotEntity);
 
         targetRepository.save(targetEntity);
@@ -140,7 +160,11 @@ public class TargetServiceImpl implements TargetService {
             return;
         }
         targetEntity.setProposalId(null);
-        TargetSlotEntity targetSlotEntity = targetSlotRepository.findOne(slotId);
+        Optional<TargetSlotEntity> targetSlotEntityOpt = targetSlotRepository.findById(slotId);
+        if (!targetSlotEntityOpt.isPresent()) {
+            throw new ObjectNotFoundException(slotId, "TargetSlotEntity");
+        }
+        TargetSlotEntity targetSlotEntity = targetSlotEntityOpt.get();
 
         targetSlotEntity.addTagId(tagId);
         targetSlotRepository.save(targetSlotEntity);
@@ -152,8 +176,12 @@ public class TargetServiceImpl implements TargetService {
         if (targetEntity == null) {
             return;
         }
-        targetEntity.setProposalId(null);
-        TargetSlotEntity targetSlotEntity = targetSlotRepository.findOne(slotId);
+        targetEntity.setProposalId(null); // MM get rid of this
+        Optional<TargetSlotEntity> targetSlotEntityOpt = targetSlotRepository.findById(slotId);
+        if (!targetSlotEntityOpt.isPresent()) {
+            throw new ObjectNotFoundException(slotId, "TargetSlotEntity");
+        }
+        TargetSlotEntity targetSlotEntity = targetSlotEntityOpt.get();
 
         targetSlotEntity.removeTagId(tagId);
         targetSlotRepository.save(targetSlotEntity);
@@ -201,5 +229,37 @@ public class TargetServiceImpl implements TargetService {
         return targetRepository.save(target);
     }
 
+    @Override
+    public TargetSlotEntity addDefaultTargetSlot(String userName, TargetEntity target) {
+        TargetSlotEntity toCreate = new TargetSlotEntity();
+        toCreate.setSlotDishTagId(TagService.MAIN_DISH_TAG_ID);
 
+        TargetSlotEntity slot = createNewSlot(userName,target,toCreate);
+
+        target.addSlot(slot);
+
+        targetRepository.save(target);
+
+        return slot;
+    }
+
+
+
+    private TargetSlotEntity createNewSlot(String name, TargetEntity targetEntity, TargetSlotEntity targetSlotEntity) {
+        targetSlotEntity.setTargetId(targetEntity.getTargetId());
+        List<TargetSlotEntity> slots = targetEntity.getSlots();
+        if (slots == null) {
+            slots = new ArrayList<>();
+        }
+        OptionalInt maxSlotOrder = slots.stream()
+                .mapToInt(TargetSlotEntity::getSlotOrder).max();
+        Integer max = maxSlotOrder.isPresent() ? maxSlotOrder.getAsInt() : 0;
+        targetSlotEntity.setSlotOrder(max + 1);
+
+        TargetSlotEntity result;
+        result = targetSlotRepository.save(targetSlotEntity);
+
+        return result;
+
+    }
 }

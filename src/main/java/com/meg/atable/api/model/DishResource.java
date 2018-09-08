@@ -2,12 +2,10 @@ package com.meg.atable.api.model;
 
 
 import com.meg.atable.api.controller.DishRestControllerApi;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.TagEntity;
 import org.springframework.hateoas.ResourceSupport;
 
-import java.security.Principal;
 import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;

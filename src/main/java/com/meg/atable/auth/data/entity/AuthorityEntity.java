@@ -2,8 +2,6 @@ package com.meg.atable.auth.data.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "AUTHORITY")

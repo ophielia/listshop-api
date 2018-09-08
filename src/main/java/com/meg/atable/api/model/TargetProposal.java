@@ -1,7 +1,6 @@
 package com.meg.atable.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.atable.data.entity.TagEntity;
 
 import java.util.Date;
 import java.util.List;

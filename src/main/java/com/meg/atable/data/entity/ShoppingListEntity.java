@@ -1,7 +1,7 @@
 package com.meg.atable.data.entity;
 
-import com.meg.atable.api.model.ListLayoutType;
 import com.meg.atable.api.model.ListType;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,7 +13,16 @@ import java.util.List;
  */
 @Entity
 @Table(name = "list")
-@SequenceGenerator(name = "list_sequence", sequenceName = "list_sequence")
+@GenericGenerator(
+        name = "list_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value = "list_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value = "1")}
+)
 public class ShoppingListEntity {
 
     @Id
@@ -39,16 +48,20 @@ public class ShoppingListEntity {
     @JoinColumn(name = "list_layout_id")
     private Long listLayoutId;
 
-    @Transient
-    private ListLayoutType listLayoutType;
+    private Date lastUpdate;
+
+    @Column(name = "meal_plan_id")
+    private Long mealPlanId;
 
     @Transient
     private List<DishEntity> dishSources = new ArrayList<>();
 
     @Transient
-    private List<String> listSources= new ArrayList<>();
+    private List<String> listSources = new ArrayList<>();
 
-    private Date lastUpdate;
+    @Transient
+    private String mealPlanName = "";
+
 
     public ShoppingListEntity(Long id) {
         this.list_id = id;
@@ -95,14 +108,6 @@ public class ShoppingListEntity {
         this.userId = userId;
     }
 
-    public ListLayoutType getListLayoutType() {
-        return listLayoutType;
-    }
-
-    public void setListLayoutType(ListLayoutType listLayoutType) {
-        this.listLayoutType = listLayoutType;
-    }
-
     public Long getListLayoutId() {
         return listLayoutId;
     }
@@ -127,11 +132,43 @@ public class ShoppingListEntity {
         this.listSources = listSources;
     }
 
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
+
     public void setLastUpdate(Date lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 
-    public Date getLastUpdate() {
-        return lastUpdate;
+    public Long getMealPlanId() {
+        return mealPlanId;
+    }
+
+    public void setMealPlanId(Long mealPlanId) {
+        this.mealPlanId = mealPlanId;
+    }
+
+    public String getMealPlanName() {
+        return mealPlanName;
+    }
+
+    public void setMealPlanName(String mealPlanName) {
+        this.mealPlanName = mealPlanName;
+    }
+
+    @Override
+    public String toString() {
+        return "ShoppingListEntity{" +
+                "list_id=" + list_id +
+                ", createdOn=" + createdOn +
+                ", listType=" + listType +
+                ", userId=" + userId +
+                ", listLayoutId=" + listLayoutId +
+                ", lastUpdate=" + lastUpdate +
+                ", mealPlanId=" + mealPlanId +
+                ", dishSources=" + dishSources +
+                ", listSources=" + listSources +
+                ", mealPlanName='" + mealPlanName + '\'' +
+                '}';
     }
 }

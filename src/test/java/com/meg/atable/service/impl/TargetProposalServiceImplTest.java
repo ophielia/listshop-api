@@ -10,7 +10,7 @@ import com.meg.atable.data.entity.TargetSlotEntity;
 import com.meg.atable.data.repository.DishRepository;
 import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.DishSearchService;
-import com.meg.atable.service.TargetProposalService;
+import com.meg.atable.service.ProposalService;
 import com.meg.atable.service.TargetService;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ private DishSearchService dishSearchService;
 
 
     @Autowired
-    private TargetProposalService targetProposalService;
+    private ProposalService targetProposalService;
 
     @Autowired
     private TargetService targetService;
@@ -92,7 +92,7 @@ private DishSearchService dishSearchService;
         TargetEntity target = createTarget3();
 
 
-        targetProposalService.createTargetProposal(testUserName,targetId1);
+        // MM targetProposalService.createTargetProposal(testUserName,targetId1);
     }
 
     private TargetEntity createTarget1() {

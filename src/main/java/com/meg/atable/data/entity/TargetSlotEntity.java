@@ -1,7 +1,7 @@
 package com.meg.atable.data.entity;
 
-import com.meg.atable.service.TargetService;
 import com.meg.atable.service.TargetServiceConstants;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,15 +11,24 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="Target")
 @Table(name = "target_slot")
+@GenericGenerator(
+        name = "target_slot_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="target_slot_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="2")}
+)
 public class TargetSlotEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "target_slot_sequence")
     private Long targetSlotId;
 
+    @Column(name="target_id")
     private Long targetId;
 
     private Long slotDishTagId;
@@ -33,6 +42,8 @@ public class TargetSlotEntity {
 
     @Transient
     private List<TagEntity> tags;
+
+    public final static String IDENTIFIER="TargetSlotEntity";
 
     public TargetSlotEntity() {
         // for JPA
@@ -94,10 +105,6 @@ public class TargetSlotEntity {
         return slotDishTag;
     }
 
-    public void setSlotDishTag(TagEntity slotDishTag) {
-        this.slotDishTag = slotDishTag;
-    }
-
     public void addTagId(Long tagId) {
         List<String> tagids = getTagIdsAsList();
         tagids.add(tagId.toString());
@@ -111,7 +118,7 @@ public class TargetSlotEntity {
 
         List<String> tagids = getTagIdsAsList();
         tagids = tagids.stream()
-                .filter(t -> !t.equals(tagId.toString()))
+                .filter(t -> !t.equals(String.valueOf(tagId)))
                 .collect(Collectors.toList());
         targetTagIds = flattenListToString(tagids);
     }
@@ -127,7 +134,7 @@ public class TargetSlotEntity {
         return String.join(TargetServiceConstants.TARGET_TAG_DELIMITER,list);
     }
 
-    public void fillInTags(Map<Long, TagEntity> dictionary) {
+    void fillInTags(Map<Long, TagEntity> dictionary) {
         if (dictionary.isEmpty()) {
             return;
         }
@@ -136,12 +143,10 @@ public class TargetSlotEntity {
                 .map( t -> dictionary.get(new Long(t)))
                 .collect(Collectors.toList());
 
-        if (slotDishTagId!=null) {
-            if (dictionary.containsKey(slotDishTagId)) {
+        if (slotDishTagId!=null &&dictionary.containsKey(slotDishTagId)) {
                 slotDishTag = dictionary.get(slotDishTagId);
-            }
+
         }
-        return;
 
     }
 }

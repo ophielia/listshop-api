@@ -1,5 +1,7 @@
 package com.meg.atable.service.impl;
 
+import com.meg.atable.api.exception.ObjectNotFoundException;
+import com.meg.atable.api.exception.ObjectNotYoursException;
 import com.meg.atable.api.model.MealPlanType;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
@@ -9,15 +11,18 @@ import com.meg.atable.data.repository.SlotRepository;
 import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.DishService;
 import com.meg.atable.service.MealPlanService;
-import com.meg.atable.service.TargetProposalService;
+import com.meg.atable.service.ProposalService;
 import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +30,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class MealPlanServiceImpl implements MealPlanService {
+
+    private static final Logger logger = LogManager.getLogger(ShoppingListServiceImpl.class);
+
 
     @Autowired
     private UserService userService;
@@ -39,7 +47,7 @@ public class MealPlanServiceImpl implements MealPlanService {
     private DishService dishService;
 
     @Autowired
-    private TargetProposalService targetProposalService;
+    private ProposalService targetProposalService;
 
     @Autowired
     private TagRepository tagRepository;
@@ -56,7 +64,7 @@ public class MealPlanServiceImpl implements MealPlanService {
         UserAccountEntity user = userService.getUserByUserName(username);
 
         // check name - if null or empty, autoname
-        if (mealPlanEntity.getName() == null || mealPlanEntity.getName().isEmpty())  {
+        if (mealPlanEntity.getName() == null || mealPlanEntity.getName().isEmpty()) {
             Haikunator haikunator = new HaikunatorBuilder().setTokenLength(0).setDelimiter(" ").build();
             String mealPlanName = haikunator.haikunate();
             mealPlanEntity.setName(mealPlanName);
@@ -64,16 +72,15 @@ public class MealPlanServiceImpl implements MealPlanService {
         // createMealPlan with repository and return
         mealPlanEntity.setUserId(user.getId());
         mealPlanEntity.setCreated(new Date());
-        mealPlanEntity = mealPlanRepository.save(mealPlanEntity);
-        return mealPlanEntity;
+        return mealPlanRepository.save(mealPlanEntity);
     }
 
     @Override
-    public MealPlanEntity createMealPlanFromProposal(String username, Long proposalId) {
+    public MealPlanEntity createMealPlanFromProposal(String username, Long proposalId) throws ObjectNotYoursException, ObjectNotFoundException {
         // get username
         UserAccountEntity user = userService.getUserByUserName(username);
         // get proposal
-        TargetProposalEntity proposalEntity = targetProposalService.getTargetProposalById(username, proposalId);
+        ProposalEntity proposalEntity = targetProposalService.getTargetProposalById(username, proposalId);
 
         if (proposalEntity == null) {
             return null;
@@ -88,16 +95,14 @@ public class MealPlanServiceImpl implements MealPlanService {
         mealPlan = mealPlanRepository.save(mealPlan);
 
         // get targets for proposal
-        List<TargetProposalSlotEntity> proposalSlots = proposalEntity.getProposalSlots();
+        List<ProposalSlotEntity> proposalSlots = proposalEntity.getSlots();
         if (proposalSlots == null) {
             return mealPlan;
         }
-        for (TargetProposalSlotEntity proposalSlot : proposalSlots) {
-            Long dishId = proposalSlot.getSelectedDishId();
-            DishEntity dish = dishService.getDishForUserById(username, dishId).get();
-            if (dish == null) {
-                continue;
-            }
+        for (ProposalSlotEntity proposalSlot : proposalSlots) {
+            Long dishId = proposalSlot.getPickedDishId();
+            DishEntity dish = dishService.getDishForUserById(username, dishId);
+
             // add new meal plan slot
             SlotEntity slot = new SlotEntity();
             slot.setMealPlan(mealPlan);
@@ -107,24 +112,30 @@ public class MealPlanServiceImpl implements MealPlanService {
         return mealPlan;
     }
 
-    public MealPlanEntity getMealPlanById(String userName, Long mealPlanId) {
+    public MealPlanEntity getMealPlanById(String userName, Long mealPlanId) throws ObjectNotFoundException, ObjectNotYoursException {
         UserAccountEntity user = userService.getUserByUserName(userName);
 
-        MealPlanEntity mealPlanEntity = mealPlanRepository.findOne(mealPlanId);
-        // ensure that this meal plan belongs to the user
-        if (mealPlanEntity != null && mealPlanEntity.getUserId().equals(user.getId()) ) {
-            return mealPlanEntity;
+        Optional<MealPlanEntity> mealPlanEntityOpt = mealPlanRepository.findById(mealPlanId);
+        if (!mealPlanEntityOpt.isPresent()) {
+            final String msg = "No meal plan found by id for user [" + userName + "] and mealPlanId [" + mealPlanId + "]";
+            throw new ObjectNotFoundException(msg, mealPlanId, "MealPlan");
         }
-        return null;
+        MealPlanEntity mealPlanEntity = mealPlanEntityOpt.get();
+        // ensure that this meal plan belongs to the user
+        if (!mealPlanEntity.getUserId().equals(user.getId())) {
+            final String msg = "MealPlan found, but doesn't belong to user [" + userName + "] and mealPlanId [" + mealPlanId + "]";
+            throw new ObjectNotYoursException(msg, "MealPlan",mealPlanId, user.getUsername());
+        }
+        return mealPlanEntity;
     }
 
 
-    public void addDishToMealPlan(String username, Long mealPlanId, Long dishId) {
+    public void addDishToMealPlan(String username, Long mealPlanId, Long dishId) throws ObjectNotYoursException, ObjectNotFoundException {
         // get meal plan
         MealPlanEntity mealPlan = getMealPlanById(username, mealPlanId);
-        // MM need check here for mealplan not found
+
         // get dish
-        DishEntity dish = dishService.getDishForUserById(username, dishId).get();
+        DishEntity dish =  dishService.getDishForUserById(username, dishId);
 
         // add slot to dish
         List<SlotEntity> slotList = slotRepository.findByMealPlan(mealPlan);
@@ -140,9 +151,10 @@ public class MealPlanServiceImpl implements MealPlanService {
         mealPlanRepository.save(mealPlan);
     }
 
-    public void deleteDishFromMealPlan(String username, Long mealPlanId, Long dishId) {
+    public void deleteDishFromMealPlan(String username, Long mealPlanId, Long dishId) throws ObjectNotYoursException, ObjectNotFoundException {
         // get meal plan
         MealPlanEntity mealPlan = getMealPlanById(username, mealPlanId);
+
         // get slots
         List<SlotEntity> slotList = slotRepository.findByMealPlan(mealPlan);
 
@@ -166,18 +178,22 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
 
-    public boolean deleteMealPlan(String name, Long mealPlanId) {
+    public boolean deleteMealPlan(String name, Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException {
         MealPlanEntity toDelete = getMealPlanById(name, mealPlanId);
 
-        if (toDelete != null) {
-            if (toDelete.getSlots() != null && toDelete.getSlots().size() > 0) {
-                slotRepository.delete(toDelete.getSlots());
-                toDelete.setSlots(null);
-            }
-            mealPlanRepository.delete(toDelete);
-            return true;
+        if (!toDelete.getSlots().isEmpty()) {
+            slotRepository.deleteAll(toDelete.getSlots());
+            toDelete.setSlots(null);
         }
-        return false;
+        mealPlanRepository.delete(toDelete);
+        return true;
+
+    }
+
+    public void renameMealPlan(String userName, Long mealPlanId, String newName) throws ObjectNotFoundException, ObjectNotYoursException {
+        MealPlanEntity mealPlan = getMealPlanById(userName, mealPlanId);
+        mealPlan.setName(newName);
+        mealPlanRepository.save(mealPlan);
     }
 
     public List<TagEntity> fillInDishTags(MealPlanEntity mealPlan) {

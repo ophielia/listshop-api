@@ -8,4 +8,9 @@ public interface ProposalContextRepository extends JpaRepository<ProposalContext
 
 
     ProposalContextEntity findByProposalId(Long proposalId);
+
+    ProposalContextEntity findByTargetId(Long targetId);
+
+
+
 }

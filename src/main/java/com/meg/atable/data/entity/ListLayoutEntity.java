@@ -1,6 +1,7 @@
 package com.meg.atable.data.entity;
 
 import com.meg.atable.api.model.ListLayoutType;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.List;
@@ -10,7 +11,16 @@ import java.util.List;
  */
 @Entity
 @Table(name = "list_layout")
-@SequenceGenerator(name="list_layout_sequence", sequenceName = "list_layout_sequence")
+@GenericGenerator(
+        name = "list_layout_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="list_layout_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class ListLayoutEntity {
     @Id
     @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="list_layout_sequence")

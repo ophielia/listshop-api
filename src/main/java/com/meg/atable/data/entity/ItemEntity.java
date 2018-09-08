@@ -1,6 +1,7 @@
 package com.meg.atable.data.entity;
 
 import com.meg.atable.api.model.ItemSourceType;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,7 +13,16 @@ import java.util.List;
  */
 @Entity
 @Table(name = "list_item")
-@SequenceGenerator(name = "list_item_sequence", sequenceName = "list_item_sequence")
+@GenericGenerator(
+        name = "list_item_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="list_item_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class ItemEntity {
 
     @Id
@@ -176,7 +186,7 @@ public class ItemEntity {
 
     public boolean isFrequent() {
 
-        return isFrequent == null? false : isFrequent;
+        return isFrequent == null ? false : isFrequent;
     }
 
     public void setFrequent(boolean frequent) {
@@ -184,7 +194,7 @@ public class ItemEntity {
     }
 
     public String getRawListSources() {
-        return rawListSources;
+        return rawListSources != null ? rawListSources : "";
     }
 
     public void setRawListSources(String rawListSources) {
@@ -234,7 +244,7 @@ public class ItemEntity {
     public String toString() {
         return "ItemEntity{" +
                 "item_id=" + item_id +
-                 ", rawDishSources='" + rawDishSources + '\'' +
+                ", rawDishSources='" + rawDishSources + '\'' +
                 ", rawListSources='" + rawListSources + '\'' +
                 ", listId=" + listId +
                 ", usedCount=" + usedCount +
@@ -271,7 +281,7 @@ public class ItemEntity {
     }
 
     public boolean isRemoved() {
-            return removedCount > 0;
+        return removedCount > 0;
     }
 
     public int getRemovedCount() {
@@ -282,11 +292,23 @@ public class ItemEntity {
         this.removedCount++;
     }
 
+    public void incrementRemovedCount(int removeCount) {
+        this.removedCount = this.removedCount + removeCount;
+    }
+
     public boolean isDeleted() {
         return deleted;
     }
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+
+    public String getDisplay() {
+        if (this.tag != null) {
+            return this.tag.getName();
+        }
+        return this.freeText;
     }
 }

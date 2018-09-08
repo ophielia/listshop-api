@@ -22,6 +22,10 @@ public final class TestConstants {
     public static final Long TAG_4_ID = 503L;
     public static final Long TAG_5_ID = 504L;
 
+    public static final Long PARENT_TAG_ID_1 = 380L;
+    public static final Long PARENT_TAG_ID_2 = 379L;
+    public static final Long CHILD_TAG_ID_1 =37L;
+
     public static final Long LIST_1_ID = 500L;  // test status
     public static final Long LIST_2_ID = 501L;  // test modification
     public static final Long LIST_3_ID = 502L;
@@ -44,5 +48,43 @@ public final class TestConstants {
     public static final Long LIST_LAYOUT_2_CATEGORY_ID5 = 8L;
     public static final Long LIST_LAYOUT_2_CATEGORY_ID6 = 5L;  // will be used for delete test
 
+    public static final Long MENU_PLAN_1_ID = 500L;  //status meal plan
+    public static final String MENU_PLAN_1_NAME ="meal plan 1";  //status meal plan
+    public static final Long MENU_PLAN_2_ID = 501L;  //delete meal plan
+    public static final String MENU_PLAN_2_NAME ="meal plan 2";  //delete meal plan
+    public static final Long MENU_PLAN_3_ID = 503L;  //delete meal plan
+    public static final String MENU_PLAN_3_NAME ="meal plan 3";  //delete meal plan
+    public static final Long MENU_PLAN_4_ID = 504L;  //delete meal plan
 
+    public static final Long TAG_MAIN_DISH = 320L;
+    public static final Long TAG_SIDE_DISH = 432L;
+    public static final Long TAG_YUMMY = 321L;
+    public static final Long TAG_CARROTS = 81L;
+    public static final Long TAG_PASTA = 24L;
+    public static final Long TAG_CROCKPOT = 323L;
+    public static final Long TAG_MEAT = 346L;
+    public static final Long TAG_SOUP = 301L;
+
+
+    public static final Long TARGET_1_ID = 500L;  // status
+    public static final Long TARGET_2_ID = 502L; // belongs to user 1 (500) delete
+    public static final Long TARGET_3_ID = 501L; // modify
+
+    public static final Long TARGET_SLOT_1_ID = 508L;
+    public static final Long TAG_EASE_OF_PREP = 399L;
+    public static final Long DISH_1_ID = 1L; // Israeli Couscous
+    public static final Long DISH_2_ID = 109L; // Israeli Couscous
+
+    public static final Long TARGET_3_SLOT_ID = 506L;
+
+
+
+    public static final Long PROPOSAL_1_ID = 500L;  // status
+    public static final Long PROPOSAL_1_SLOT_4_ID = 503L;
+    public static final Long PROPOSAL_1_SLOT_4_DISH_ID = 515L;
+    public static final Long PROPOSAL_2_ID = 501L;
+    public static final Long PROPOSAL_3_ID = 502L;
+    public static final Long PROPOSAL_3_SLOT_4_ID = 523L;
+    public static final Long PROPOSAL_3_SLOT_4_DISH_ID = 61L;
 }
+

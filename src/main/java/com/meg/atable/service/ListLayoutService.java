@@ -42,9 +42,11 @@ public interface ListLayoutService {
 
     List<ListLayoutCategoryEntity> getListCategoriesForIds(Set<Long> categoryIds);
 
+    List<ListLayoutCategoryEntity> getListCategoriesForLayout(Long layoutId);
+
     List<Category> getStructuredCategories(ListLayoutEntity listLayout);
 
-    void structureCategories(Map<Long, Category> filledCategories, Long listLayoutId);
+    void structureCategories(Map<Long, Category> filledCategories, Long listLayoutId, boolean pruneSubcategories);
 
     void addCategoryToParent(Long categoryId, Long parentId) throws ListLayoutException;
 

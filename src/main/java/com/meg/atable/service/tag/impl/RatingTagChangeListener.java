@@ -49,8 +49,8 @@ public class RatingTagChangeListener implements TagChangeListener {
             return;
         }
         // in this one , we need to know if the power changed
-        if (beforeChange.getPower()!=null &&
-                afterChange.getPower()!=null &&
+        if (beforeChange.getPower() != null &&
+                afterChange.getPower() != null &&
                 beforeChange.getPower().equals(afterChange.getPower())) {
             return;
         }
@@ -59,10 +59,23 @@ public class RatingTagChangeListener implements TagChangeListener {
 
     }
 
+    @Override
+    public void onTagAdd(TagEntity newTag) {
+        // not used in this implementation
+    }
+
+    @Override
+    public void onTagDelete(TagEntity deletedTag) {
+// not used in this implementation
+    }
+
     private void updateGroupsAndMembers(TagEntity tagEntity) {
 
         List<TagEntity> siblingGroups = tagStructureService.getSiblingTags(tagEntity);
 
+        if (siblingGroups == null) {
+            return;
+        }
         // if the power changed
         // get existing groups
         List<Long> existingGroupIds = tagStructureService.getSearchGroupIdsByMember(tagEntity.getId());
@@ -71,8 +84,8 @@ public class RatingTagChangeListener implements TagChangeListener {
         List<Long> eligibleGroupIds = new ArrayList<>();
         if (siblingGroups != null) {
             siblingGroups.stream()
-                    .filter(t -> t.getPower()!= null && t.getPower() < tagEntity.getPower())
-                    .map(t -> t.getId())
+                    .filter(t -> t.getPower() != null && t.getPower() < tagEntity.getPower())
+                    .map(TagEntity::getId)
                     .collect(Collectors.toList());
         }
 
@@ -84,7 +97,7 @@ public class RatingTagChangeListener implements TagChangeListener {
         // get eligible members
         List<Long> eligibleMemberIds = siblingGroups.stream()
                 .filter(t -> t.getPower() != null && t.getPower() > tagEntity.getPower())
-                .map(t -> t.getId())
+                .map(TagEntity::getId)
                 .collect(Collectors.toList());
         eligibleMemberIds.add(tagEntity.getId());
 

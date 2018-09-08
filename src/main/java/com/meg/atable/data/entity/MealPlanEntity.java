@@ -1,14 +1,25 @@
 package com.meg.atable.data.entity;
 
 import com.meg.atable.api.model.MealPlanType;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "meal_plan")
-@SequenceGenerator(name="meal_plan_sequence", sequenceName = "meal_plan_sequence")
+@GenericGenerator(
+        name = "meal_plan_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="meal_plan_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class MealPlanEntity {
 
     @Id
@@ -27,6 +38,8 @@ public class MealPlanEntity {
 
     @OneToMany(mappedBy = "mealPlan", fetch = FetchType.EAGER)
     private List<SlotEntity> slots;
+
+    private Long targetId;
 
     public MealPlanEntity() {
         // jpa empty constructor
@@ -65,7 +78,7 @@ public class MealPlanEntity {
     }
 
     public List<SlotEntity> getSlots() {
-        return slots;
+        return slots!=null?slots:new ArrayList<>();
     }
 
     public void setSlots(List<SlotEntity> slots) {
@@ -80,4 +93,11 @@ public class MealPlanEntity {
         this.userId = userId;
     }
 
+    public Long getTargetId() {
+        return targetId;
+    }
+
+    public void setTargetId(Long targetId) {
+        this.targetId = targetId;
+    }
 }

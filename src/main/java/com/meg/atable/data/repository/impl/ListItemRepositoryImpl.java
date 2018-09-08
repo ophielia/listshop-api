@@ -30,11 +30,11 @@ public class ListItemRepositoryImpl implements ItemChangeRepository {
         List<ItemEntity> toDelete = collector.getItemsToDelete();
 
         if (!toUpdate.isEmpty()) {
-            itemRepository.save(toUpdate);
+            itemRepository.saveAll(toUpdate);
         }
 
         if (!toDelete.isEmpty()) {
-            itemRepository.delete(toDelete);
+            itemRepository.deleteAll(toDelete);
         }
 
     }

@@ -1,7 +1,6 @@
 package com.meg.atable.api.model;
 
 
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 

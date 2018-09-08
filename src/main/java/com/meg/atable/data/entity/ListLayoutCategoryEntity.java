@@ -1,5 +1,7 @@
 package com.meg.atable.data.entity;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +11,16 @@ import java.util.List;
  */
 @Entity
 @Table(name = "list_category")
-@SequenceGenerator(name = "list_layout_category_sequence", sequenceName = "list_layout_category_sequence")
+@GenericGenerator(
+        name = "list_layout_category_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="list_layout_category_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class ListLayoutCategoryEntity {
 
     @Id

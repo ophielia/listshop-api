@@ -1,8 +1,8 @@
 package com.meg.atable.service.impl;
 
-import com.meg.atable.api.DishNotFoundException;
-import com.meg.atable.api.UnauthorizedAccessException;
-import com.meg.atable.api.UserNotFoundException;
+import com.meg.atable.api.exception.ObjectNotFoundException;
+import com.meg.atable.api.exception.ObjectNotYoursException;
+import com.meg.atable.api.exception.UserNotFoundException;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.data.repository.UserRepository;
@@ -42,7 +42,7 @@ public class DishServiceImpl implements DishService {
     private TagStructureService tagStructureService;
 
     @Override
-    public Collection<DishEntity> getDishesForUserName(String userName) throws UserNotFoundException {
+    public List<DishEntity> getDishesForUserName(String userName) throws UserNotFoundException {
         UserAccountEntity user = userRepository.findByUsername(userName);
         if (user == null) {
             throw new UserNotFoundException(userName);
@@ -50,23 +50,31 @@ public class DishServiceImpl implements DishService {
         return dishRepository.findByUserId(user.getId());
     }
 
-    @Override
-    public Optional<DishEntity> getDishById(Long dishId) {
-        return Optional.of(dishRepository.findOne(dishId));
+    private Optional<DishEntity> getDishById(Long dishId) {
+        return dishRepository.findById(dishId);
     }
 
 
     @Override
-    public Optional<DishEntity> getDishForUserById(String username, Long dishId) {
+    public DishEntity getDishForUserById(String username, Long dishId) throws ObjectNotFoundException, ObjectNotYoursException {
+        if (dishId == null) {
+            final String msg = "Null dishId passed as argument [" + username + "].";
+            throw new ObjectNotFoundException(msg, null, "Dish");
+        }
+
         UserAccountEntity user = userRepository.findByUsername(username);
-        DishEntity dish = dishRepository.findOne(dishId);
-        if (dish == null) {
-            throw new DishNotFoundException(dishId);
+
+        Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
+        if (!dishOpt.isPresent()) {
+            final String msg = "No dish found by id for user [" + username + "] and dishId [" + dishId + "]";
+            throw new ObjectNotFoundException(msg, dishId, "Dish");
         }
-        if (!dish.getUserId().equals(user.getId()) ) {
-            throw new UnauthorizedAccessException("Dish [" + dishId + "] doesn't belong to user [" + username + "].");
+        DishEntity dish = dishOpt.get();
+        if (!dish.getUserId().equals(user.getId())) {
+            final String msg = "Dish found for dishId [" + dishId + "], but doesn't belong to user [" + username + "].";
+            throw new ObjectNotYoursException(msg, "Dish", dishId, user.getUsername());
         }
-        return Optional.of(dish);
+        return dish;
     }
 
     @Override
@@ -80,29 +88,29 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<DishEntity> save(List<DishEntity> dishes) {
-        return dishRepository.save(dishes);
+        return dishRepository.saveAll(dishes);
     }
 
     @Override
     public List<DishEntity> getDishes(List<Long> dishIds) {
-        return dishRepository.findAll(dishIds);
+        return dishRepository.findAllById(dishIds);
     }
 
     @Override
     public Map<Long, DishEntity> getDictionaryForIdList(List<Long> dishIds) {
-        List<DishEntity> tags = dishRepository.findAll(dishIds);
+        List<DishEntity> tags = dishRepository.findAllById(dishIds);
         if (!tags.isEmpty()) {
             return tags.stream().collect(Collectors.toMap(DishEntity::getId,
                     c -> c));
 
         }
-        return new HashMap<Long, DishEntity>();
+        return new HashMap<>();
     }
 
     @Override
     public List<TagEntity> getDishesForTagChildren(Long tagId, String name) {
         UserAccountEntity user = userRepository.findByUsername(name);
-        TagEntity tag = tagService.getTagById(tagId).get();
+        TagEntity tag = tagService.getTagById(tagId);
 
         if (!TagType.Rating.equals(tag.getTagType())) {
             return new ArrayList<>();

@@ -12,6 +12,10 @@ public class ShoppingList {
     @JsonProperty("created")
     private Date createdOn;
 
+
+    @JsonProperty("updated")
+    private Date updated;
+
     @JsonProperty("list_type")
     private String listType;
 
@@ -107,6 +111,15 @@ public class ShoppingList {
 
     public ShoppingList listSources(List<ItemSource> listSources) {
         this.listSources = listSources;
+        return this;
+    }
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public ShoppingList updated(Date updated) {
+        this.updated = updated;
         return this;
     }
 }

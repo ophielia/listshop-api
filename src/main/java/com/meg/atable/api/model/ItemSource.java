@@ -1,10 +1,5 @@
 package com.meg.atable.api.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.Date;
-
 /**
  * Created by margaretmartin on 29/10/2017.
  */

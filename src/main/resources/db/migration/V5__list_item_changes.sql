@@ -52,10 +52,4 @@ and t.assign_select = false
 where lc.layout_id = 1;
 
 
-
-select * from category_tags ct
-join list_category lc using (category_id)
---select * from list_category
-where layout_id = 1;
-
 drop table george;

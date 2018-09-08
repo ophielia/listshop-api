@@ -3,17 +3,22 @@ package com.meg.atable.service.tag;
 import com.meg.atable.api.model.TagFilterType;
 import com.meg.atable.api.model.TagType;
 import com.meg.atable.data.entity.TagEntity;
-import com.meg.atable.service.tag.impl.StandardTagChangeListener;
+import org.springframework.beans.factory.annotation.Value;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 13/05/2017.
  */
 public interface TagService {
+    @Value("${service.tagservice.main.dish.tagid}")
+    public final Long MAIN_DISH_TAG_ID = 320L;
+
     TagEntity save(TagEntity tag);
 
-    Optional<TagEntity> getTagById(Long dishId);
+    TagEntity getTagById(Long dishId);
 
 
     TagEntity createTag(TagEntity parent, String name);
@@ -43,14 +48,13 @@ public interface TagService {
 
     void deleteTagFromDish(Long dishId, Long tagId);
 
-    Map<Long,TagEntity> getDictionaryForIds(Set<Long> tagIds);
+    Map<Long, TagEntity> getDictionaryForIds(Set<Long> tagIds);
 
     TagEntity updateTag(Long tagId, TagEntity toUpdate);
 
     void replaceTagInDishes(String name, Long fromTagId, Long toTagId);
 
     void addTagChangeListener(TagChangeListener tagChangeListener);
-
 
 
 }

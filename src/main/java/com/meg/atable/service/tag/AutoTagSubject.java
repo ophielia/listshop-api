@@ -5,8 +5,8 @@ import com.meg.atable.data.entity.ShadowTags;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 08/12/2017.
@@ -22,7 +22,7 @@ public class AutoTagSubject {
     public AutoTagSubject(DishEntity dishEntity, boolean overrideStatus) {
         this.dish = dishEntity;
         this.overrideFlag = overrideStatus;
-        this.tagsToAssign = new ArrayList<Long>();
+        this.tagsToAssign = new ArrayList<>();
     }
 
     public boolean isOverrideFlag() {
@@ -40,17 +40,19 @@ public class AutoTagSubject {
 
 
     public List<Long> getTagsToAssign() {
-        tagsToAssign = tagsToAssign.stream()
-                .filter(t -> !shadowTags.contains(t))
-                .collect(Collectors.toList());
-
         return tagsToAssign;
     }
- public DishEntity getDish() {
+
+    public DishEntity getDish() {
         return dish;
     }
 
     public void addToTagIdsToAssign(Long tagId) {
+        // before adding, ensure that this tag doesn't exist as shadow
+        Optional<ShadowTags> sTag = shadowTags.stream().filter(s -> s.getTagId().equals(tagId)).findFirst();
+        if (sTag.isPresent()) {
+            return;
+        }
         this.tagsToAssign.add(tagId);
     }
 
@@ -60,7 +62,7 @@ public class AutoTagSubject {
 
     public boolean hasBeenProcessedBy(Long processIdentifier) {
         Long dishAutotagStatus = dish.getAutoTagStatus();
-        return dishAutotagStatus % processIdentifier ==0;
+        return dishAutotagStatus % processIdentifier == 0;
     }
 
     public Set<Long> getTagIdsForDish() {

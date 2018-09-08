@@ -2,8 +2,10 @@ package com.meg.atable.api.model;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.atable.controller.MealPlanRestController;
+import com.meg.atable.api.exception.ObjectNotFoundException;
+import com.meg.atable.api.exception.ObjectNotYoursException;
 import com.meg.atable.data.entity.MealPlanEntity;
+import com.meg.atable.web.controller.MealPlanRestController;
 import org.springframework.hateoas.ResourceSupport;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -14,7 +16,7 @@ public class MealPlanResource extends ResourceSupport {
     @JsonProperty("meal_plan")
     private final MealPlan mealPlan;
 
-    public MealPlanResource(MealPlanEntity mealPlanEntity) {
+    public MealPlanResource(MealPlanEntity mealPlanEntity)  {
         this.mealPlan = ModelMapper.toModel(mealPlanEntity);
 
         Long userId = mealPlanEntity.getUserId();

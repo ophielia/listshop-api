@@ -4,9 +4,6 @@ import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.data.repository.UserRepository;
 import com.meg.atable.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,11 +19,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserAccountEntity getUserById(Long userId) {
-        return userRepository.findOne(userId);
+        Optional<UserAccountEntity> userOpt =  userRepository.findById(userId);
+        return userOpt.isPresent()?userOpt.get():null;
     }
 
     @Override
     public UserAccountEntity getUserByUserName(String userName) {
+        // MM do your exception magic here
         return userRepository.findByUsername(userName);
     }
 

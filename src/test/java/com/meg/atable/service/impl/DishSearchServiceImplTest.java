@@ -16,6 +16,7 @@ import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.DishSearchCriteria;
 import com.meg.atable.service.DishSearchService;
 import com.meg.atable.service.MealPlanService;
+import com.meg.atable.test.TestConstants;
 import io.jsonwebtoken.lang.Collections;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,11 +40,11 @@ public class DishSearchServiceImplTest {
 private DishSearchService dishSearchService;
 
     @Autowired
-    private UserService userService;
-
+    private TagRepository tagRepository;
 
     @Autowired
-    private TagRepository tagRepository;
+    private UserService userService;
+
 
     private static boolean setUpComplete = false;
     private static UserAccountEntity userAccount;
@@ -64,44 +65,25 @@ private DishSearchService dishSearchService;
 
     @Before
     public void setUp() {
-        if (setUpComplete) {
-            return;
-        }
-        String userName = "mealPlanTest";
-        userAccount = userService.save(new UserAccountEntity(userName, "password"));
-
-
-         tag1 = ServiceTestUtils.buildTag("tag1", TagType.Ingredient);
-
-         tag2 = ServiceTestUtils.buildTag("tag2", TagType.Ingredient);
-
-         tag3 = ServiceTestUtils.buildTag("tag3", TagType.Ingredient);
-
-         tag4 = ServiceTestUtils.buildTag("tag4", TagType.Ingredient);
-         tag5 = ServiceTestUtils.buildTag("tag5", TagType.Ingredient);
-         tagRepository.save(Arrays.asList(tag1,tag2,tag3,tag4,tag5));
-
-         dish1 = ServiceTestUtils.buildDish(userAccount.getId(),"dish1",
-                 Arrays.asList(tag1,tag2));
-        dish2 = ServiceTestUtils.buildDish(userAccount.getId(),"dish2",
-                Arrays.asList(tag3,tag4));
-        dish3 = ServiceTestUtils.buildDish(userAccount.getId(),"dish3",
-                Arrays.asList(tag1,tag3,tag5));
-        dishRepository.save(Arrays.asList(dish1,dish2,dish3));
-
-
-        setUpComplete = true;
-
+        userAccount = userService.getUserByUserName(TestConstants.USER_1_NAME);
     }
 
     @Test
     public void findMealsByTag() throws Exception {
         DishSearchCriteria criteria = new DishSearchCriteria(userAccount.getId());
-        criteria.setIncludedTagIds(Arrays.asList(tag1.getId(),tag3.getId(),tag5.getId()));
-        criteria.setExcludedTagIds(Arrays.asList(tag4.getId()));
+        criteria.setIncludedTagIds(Arrays.asList(TestConstants.TAG_1_ID,TestConstants.TAG_2_ID,TestConstants.TAG_3_ID));
+        criteria.setExcludedTagIds(Arrays.asList(TestConstants.TAG_4_ID));
 
         List<DishEntity> dishlist = dishSearchService.findDishes(criteria);
         Assert.assertNotNull(dishlist);
+    }
+
+    @Test
+    public void testDishProposalSearch() {
+        /*
+            List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, TargetSlotEntity targetSlotEntity, int size, List<String> tagListForSlot,
+                                                         Map<Long, List<Long>> searchGroups, List<Long> sqlFilteredDishes);
+         */
     }
 
 

@@ -10,7 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -18,9 +20,11 @@ import java.util.List;
 public class ApproachGeneratorTest {
 
 
+
     @Test
     public void testGenerateWheel() throws Exception {
-        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.WHEEL, 3, 3);
+        Map<Integer, Integer> indexToSlotNumber = getDummyIndex();
+        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.WHEEL, 3, 3, indexToSlotNumber);
 
         Assert.assertEquals(3, proposals.size());
         Integer[] spot1 = {0, 1, 2};
@@ -31,9 +35,20 @@ public class ApproachGeneratorTest {
         evaluate(spot3, proposals.get(2));
     }
 
+    private Map<Integer, Integer> getDummyIndex() {
+        Map<Integer, Integer> indexToSlotNumber = new HashMap<>();
+        indexToSlotNumber.put(0,0);
+        indexToSlotNumber.put(1,1);
+        indexToSlotNumber.put(2,2);
+        indexToSlotNumber.put(3,3);
+        indexToSlotNumber.put(4,4);
+        return indexToSlotNumber;
+    }
+
     @Test
     public void testGenerateWheel_Five() throws Exception {
-        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.WHEEL, 5, 5);
+        Map<Integer, Integer> indexToSlotNumber = getDummyIndex();
+        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.WHEEL, 5, 5, indexToSlotNumber);
 
         Assert.assertEquals(5, proposals.size());
         Integer[] spot1 = {0, 1, 2, 3, 4};
@@ -50,7 +65,8 @@ public class ApproachGeneratorTest {
 
     @Test
     public void testGenerateWheelSorted() throws Exception {
-        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.SORTED_WHEEL, 3, 3);
+        Map<Integer, Integer> indexToSlotNumber = getDummyIndex();
+        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.SORTED_WHEEL, 3, 3, indexToSlotNumber);
 
         Assert.assertEquals(3, proposals.size());
         Integer[] spot1 = {0, 1, 2};
@@ -63,7 +79,8 @@ public class ApproachGeneratorTest {
 
     @Test
     public void testGenerateWheelSorted_Five() throws Exception {
-        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.SORTED_WHEEL, 5, 5);
+        Map<Integer, Integer> indexToSlotNumber = getDummyIndex();
+        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.SORTED_WHEEL, 5, 5, indexToSlotNumber);
 
         Assert.assertEquals(5, proposals.size());
         Integer[] spot1 = {0, 1, 2, 3, 4};
@@ -80,7 +97,8 @@ public class ApproachGeneratorTest {
 
     @Test
     public void testGenerateWheelReverseSorted() throws Exception {
-        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.REV_SORTED_WHEEL, 3, 3);
+        Map<Integer, Integer> indexToSlotNumber = getDummyIndex();
+        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.REV_SORTED_WHEEL, 3, 3, indexToSlotNumber);
 
         Assert.assertEquals(3, proposals.size());
         Integer[] spot1 = {0, 1, 2};
@@ -93,7 +111,8 @@ public class ApproachGeneratorTest {
 
     @Test
     public void testGenerateReverseWheelSorted_Five() throws Exception {
-        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.REV_SORTED_WHEEL, 5, 5);
+        Map<Integer, Integer> indexToSlotNumber = getDummyIndex();
+        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.REV_SORTED_WHEEL, 5, 5, indexToSlotNumber);
 
         Assert.assertEquals(5, proposals.size());
         Integer[] spot1 = {0, 1, 2, 3, 4};
@@ -110,7 +129,8 @@ public class ApproachGeneratorTest {
 
     @Test
     public void testGenerateWheel_MixedFive() throws Exception {
-        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.WHEEL_MIXED, 5, 6);
+        Map<Integer, Integer> indexToSlotNumber = getDummyIndex();
+        List<Integer[]> proposals = AttemptGenerator.getProposalOrders(ApproachType.WHEEL_MIXED, 5, 6, indexToSlotNumber);
 
         Assert.assertEquals(6, proposals.size());
         Integer[] spot1 = {0, 1, 2, 3, 4};

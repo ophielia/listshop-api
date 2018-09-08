@@ -1,6 +1,7 @@
 package com.meg.atable.data.entity;
 
 import com.meg.atable.api.model.TagType;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -8,7 +9,16 @@ import java.util.List;
 
 @Entity
 @Table(name = "tag")
-@SequenceGenerator(name="tag_sequence", sequenceName = "tag_sequence")
+@GenericGenerator(
+        name = "tag_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value="tag_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value="1")}
+)
 public class TagEntity {
 
     @Id
@@ -25,17 +35,11 @@ public class TagEntity {
 
     private Boolean tagTypeDefault;
 
-    private String ratingFamily;
-
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<DishEntity> dishes = new ArrayList<>();
 
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<ListLayoutCategoryEntity> categories = new ArrayList<>();
-
-    private Integer autoTagFlag;
-
-    private Boolean isParentTag;
 
     private Boolean assignSelect;
 
@@ -123,30 +127,6 @@ public class TagEntity {
         this.tagTypeDefault = tagTypeDefault;
     }
 
-    public String getRatingFamily() {
-        return ratingFamily;
-    }
-
-    public void setRatingFamily(String ratingFamily) {
-        this.ratingFamily = ratingFamily;
-    }
-
-    public Integer getAutoTagFlag() {
-        return autoTagFlag;
-    }
-
-    public void setAutoTagFlag(Integer autoTagFlag) {
-        this.autoTagFlag = autoTagFlag;
-    }
-
-    public Boolean isParentTag() {
-        return isParentTag;
-    }
-
-    public void setParentTag(Boolean parentTag) {
-        isParentTag = parentTag;
-    }
-
     public Boolean getAssignSelect() {
         return assignSelect;
     }
@@ -185,8 +165,6 @@ public class TagEntity {
         copy.setDescription(getDescription());
         copy.setSearchSelect(getSearchSelect());
         copy.setAssignSelect(getAssignSelect());
-        copy.setRatingFamily(getRatingFamily());
-        copy.setAutoTagFlag(getAutoTagFlag());
         copy.setPower(getPower());
             return copy;
     }
@@ -199,11 +177,8 @@ public class TagEntity {
                 ", description='" + description + '\'' +
                 ", tagType=" + tagType +
                 ", tagTypeDefault=" + tagTypeDefault +
-                ", ratingFamily='" + ratingFamily + '\'' +
                 ", dishes=" + dishes +
                 ", categories=" + categories +
-                ", autoTagFlag=" + autoTagFlag +
-                ", isParentTag=" + isParentTag +
                 ", assignSelect=" + assignSelect +
                 ", searchSelect=" + searchSelect +
                 ", isVerified=" + isVerified +

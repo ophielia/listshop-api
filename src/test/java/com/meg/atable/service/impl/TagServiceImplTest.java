@@ -3,8 +3,10 @@ package com.meg.atable.service.impl;
 import com.meg.atable.Application;
 import com.meg.atable.data.entity.DishEntity;
 import com.meg.atable.data.entity.TagEntity;
+import com.meg.atable.data.repository.TagRepository;
 import com.meg.atable.service.DishService;
 import com.meg.atable.service.tag.TagService;
+import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +24,9 @@ import java.util.List;
 public class TagServiceImplTest {
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private TagRepository tagRepository;
 
     @Autowired
     private DishService dishService;
@@ -71,7 +76,7 @@ public class TagServiceImplTest {
         testSave = tagService.save(testSave);
         Long id = testSave.getId();
 
-        TagEntity check = tagService.getTagById(id).get();
+        TagEntity check = tagService.getTagById(id);
         Assert.assertNotNull(check);
         Assert.assertEquals(testSave.getName(), check.getName());
         Assert.assertEquals(testSave.getDescription(), check.getDescription());
@@ -106,7 +111,7 @@ public class TagServiceImplTest {
 
     @Test
     public void testAddTagToDish() throws Exception {
-        tagService.addTagToDish(dish.getId(), a.getId());
+        tagService.addTagToDish(dish.getId(), TestConstants.TAG_MEAT);
 
         List<TagEntity> tags = tagService.getTagsForDish(dish.getId());
 
@@ -114,7 +119,7 @@ public class TagServiceImplTest {
         Assert.assertTrue(tags.size() == 3);
         boolean containsTagA = false;
         for (TagEntity testTag : tags) {
-            if (testTag.getId() == a.getId()) {
+            if (testTag.getId().equals(TestConstants.TAG_MEAT) ) {
                 containsTagA = true;
                 break;
             }
@@ -122,17 +127,6 @@ public class TagServiceImplTest {
         Assert.assertTrue(containsTagA);
     }
 
-    @Test
-    public void testAssignTagToParent_error() {
-        // tags a, b, c
-        // assign a as child of c
-
-        // service call
-        boolean result = tagService.assignTagToParent(a.getId(), c.getId());
-
-        Assert.assertFalse(result);
-
-    }
 
     @Test
     public void testDeleteTag() {

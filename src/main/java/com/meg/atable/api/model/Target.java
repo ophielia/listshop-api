@@ -16,8 +16,9 @@ public class Target {
 
     private Long userId;
 
-
     private String targetName;
+
+    private String targetType;
 
     private List<TargetSlot> slots = new ArrayList<>();
 
@@ -28,6 +29,8 @@ public class Target {
     private Long proposalId;
 
     private List<Tag> targetTags;
+
+    private boolean isTemporary;
 
     public Target() {
         // empty for json constructor
@@ -64,6 +67,16 @@ public class Target {
 
     public Target targetName(String targetName) {
         this.targetName = targetName;
+        return this;
+    }
+
+    @JsonProperty("target_type")
+    public String getTargetType() {
+        return targetType;
+    }
+
+    public Target targetType(String targetType) {
+        this.targetType = targetType;
         return this;
     }
 
@@ -113,6 +126,16 @@ public class Target {
     @JsonProperty("proposal_id")
     public Target proposalId(Long proposalId) {
         this.proposalId = proposalId;
+        return this;
+    }
+
+    public boolean isTemporary() {
+        return isTemporary;
+    }
+
+    @JsonProperty("is_temporary")
+    public Target setIsTemporary(boolean isTemporary) {
+        this.isTemporary = isTemporary;
         return this;
     }
 }

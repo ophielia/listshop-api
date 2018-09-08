@@ -1,6 +1,7 @@
 package com.meg.atable.service.impl;
 
 import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.data.entity.TargetSlotEntity;
 import com.meg.atable.service.DishSearchCriteria;
 import com.meg.atable.service.DishSearchService;
 import com.meg.atable.service.DishTagSearchResult;
@@ -43,10 +44,10 @@ public class DishSearchServiceImpl implements DishSearchService {
         parameters.addValue("userId", criteria.getUserId())
         ;
         String sqlBase = "select distinct d.* from dish d ";
-        StringBuffer fromExtension = new StringBuffer();
-        StringBuffer whereClause = new StringBuffer("where d.user_id = :userId ");
+        StringBuilder fromExtension = new StringBuilder();
+        StringBuilder whereClause = new StringBuilder("where d.user_id = :userId ");
         HashSet<Long> allTagIds = getAllTagIdsForCriteria(criteria);
-        HashMap<Long, List<Long>> groupDictionary = tagStructureService.getSearchGroupsForTagIds(allTagIds);
+        Map<Long, List<Long>> groupDictionary = tagStructureService.getSearchGroupsForTagIds(allTagIds);
         if (!criteria.getIncludedTagIds().isEmpty()) {
             // get dictionary for tag_ids
 
@@ -119,12 +120,11 @@ public class DishSearchServiceImpl implements DishSearchService {
 
         String sql = sqlBase + fromExtension.toString() + whereClause;
 
-        List<DishEntity> dishEntities = this.jdbcTemplate.query(sql, parameters, new DishMapper());
-        return dishEntities;
+        return this.jdbcTemplate.query(sql, parameters, new DishMapper());
     }
 
     private HashSet<Long> getAllTagIdsForCriteria(DishSearchCriteria criteria) {
-        HashSet<Long> allTagIds = new HashSet<Long>();
+        HashSet<Long> allTagIds = new HashSet<>();
         if (criteria.getIncludedTagIds() != null) {
             allTagIds.addAll(criteria.getIncludedTagIds());
         }
@@ -135,32 +135,31 @@ public class DishSearchServiceImpl implements DishSearchService {
     }
 
     @Override
-    public List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, Long slotDishTagId, int size, List<String> tagListForSlot, Map<Long, List<Long>> searchGroups) {
+    public List<DishTagSearchResult> retrieveDishResultsForTags(Long userId, TargetSlotEntity targetSlotEntity, int size, List<String> tagListForSlot, Map<Long, List<Long>> searchGroups, List<Long> sqlFilteredDishes) {
         // create sql
-        Object[] sqlAndParams = createSqlForDishTagSearchResult(tagListForSlot, searchGroups);
+        Object[] sqlAndParams = createSqlForDishTagSearchResult(tagListForSlot, searchGroups, sqlFilteredDishes);
         String sql = (String) sqlAndParams[0];
         Map<String, Object> params = (Map<String, Object>) sqlAndParams[1];
         // create parameters
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", userId);
-        parameters.addValue("slotTagId", slotDishTagId);
-        params.entrySet().forEach(p -> parameters.addValue(p.getKey(), p.getValue()));
+        parameters.addValue("slotTagId", targetSlotEntity.getSlotDishTagId());
+        params.forEach((key, value) -> parameters.addValue(key, value));
 
-        List<DishTagSearchResult> rawSearchResults = this.jdbcTemplate.query(sql, parameters, new DishTagSearchResultMapper(size, tagListForSlot.size()));
+        return this.jdbcTemplate.query(sql, parameters, new DishTagSearchResultMapper(size, tagListForSlot.size()));
 
-        return rawSearchResults;
     }
 
-    private Object[] createSqlForDishTagSearchResult(List<String> tagListForSlot, Map<Long, List<Long>> searchGroups) {
+    private Object[] createSqlForDishTagSearchResult(List<String> tagListForSlot, Map<Long, List<Long>> searchGroups, List<Long> sqlFilteredDishes) {
         Object[] returnvalue = new Object[2];
         Map<String, Object> parameters = new HashMap<>();
 
-        StringBuffer selectClause = new StringBuffer("select distinct dt.dish_id , d.last_added ");
-        StringBuffer outerJoins = new StringBuffer();
-        StringBuffer orderByClause = new StringBuffer(" order by d.last_added NULLS FIRST ");
+        StringBuilder selectClause = new StringBuilder("select distinct dt.dish_id , d.last_added ");
+        StringBuilder outerJoins = new StringBuilder();
+        StringBuilder orderByClause = new StringBuilder(" order by d.last_added NULLS FIRST ");
         // construct basic joins and from clause
-        StringBuffer fromClause = new StringBuffer(" from dish_tags dt join dish d on d.dish_id = dt.dish_id and d.user_id = :userId and dt.tag_id = :slotTagId");
-        StringBuffer groupByClause = new StringBuffer(" group by dt.dish_id, d.last_added ");
+        StringBuilder fromClause = new StringBuilder(" from dish_tags dt join dish d on d.dish_id = dt.dish_id and d.user_id = :userId and dt.tag_id = :slotTagId");
+        StringBuilder groupByClause = new StringBuilder(" group by dt.dish_id, d.last_added ");
         // construct outerJoins and add to selectClause
         int i = 0;
         for (String id : tagListForSlot) {
@@ -192,7 +191,18 @@ public class DishSearchServiceImpl implements DishSearchService {
             i++;
         }
 
-        returnvalue[0] = selectClause.append(fromClause).append(outerJoins).append(groupByClause).append(orderByClause).toString();
+        StringBuilder whereClause = new StringBuilder(" ");
+        if (sqlFilteredDishes != null && !sqlFilteredDishes.isEmpty()) {
+            whereClause.append(" where d.dish_id not in (");
+            sqlFilteredDishes.forEach( d -> whereClause.append(d).append(","));
+            whereClause.setLength(whereClause.length()-1);
+            whereClause.append(") ");
+        }
+
+
+        returnvalue[0] = selectClause.append(fromClause).append(outerJoins)
+                .append(whereClause)
+                .append(groupByClause).append(orderByClause).toString();
         returnvalue[1] = parameters;
         return returnvalue;
     }

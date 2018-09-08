@@ -5,11 +5,14 @@ import com.meg.atable.api.model.Dish;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.JwtUser;
 import com.meg.atable.auth.service.UserService;
+import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.data.entity.DishEntity;
+import com.meg.atable.data.entity.TagEntity;
 import com.meg.atable.service.DishService;
+import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -51,13 +52,9 @@ public class DishRestControllerTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
-    private final List<DishEntity> dishList = new ArrayList<>();
     private MockMvc mockMvc;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
-    private UserAccountEntity userAccount;
-    private DishEntity dish;
     private UserDetails userDetails;
-    private UserDetails userDetailsBad;
 
     @Autowired
     private DishService dishService;
@@ -85,29 +82,14 @@ public class DishRestControllerTest {
                 .apply(springSecurity())
                 .build();
 
-
-        String userName = "testname";
-        this.userAccount = userService.save(new UserAccountEntity(userName, "password"));
-        userDetails = new JwtUser(this.userAccount.getId(),
-                "testname",
+        UserAccountEntity userAccount = userService.getUserByUserName(TestConstants.USER_3_NAME);
+        userDetails = new JwtUser(userAccount.getId(),
+                TestConstants.USER_3_NAME,
                 null,
                 null,
                 null,
                 true,
                 null);
-
-        this.dishList.add(dishService.save(new DishEntity(this.userAccount.getId(), "dish1"), false));
-        this.dishList.add(dishService.save(new DishEntity(userAccount.getId(), "dish2"), false));
-
-        this.userAccount = userService.save(new UserAccountEntity("updateUser", "password"));
-        userDetailsBad = new JwtUser(this.userAccount.getId(),
-                "updateUser",
-                null,
-                null,
-                null,
-                true,
-                null);
-        this.dish = dishService.save(new DishEntity(userAccount.getId(), "dish2"), false);
 
     }
 
@@ -115,9 +97,9 @@ public class DishRestControllerTest {
     @Test
     @WithMockUser
     public void readSingleDish() throws Exception {
-        Long testId = this.dishList.get(0).getId();
+        Long testId = TestConstants.DISH_1_ID;
         mockMvc.perform(get("/dish/"
-                + this.dishList.get(0).getId())
+                + testId)
                 .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
@@ -129,37 +111,22 @@ public class DishRestControllerTest {
     @Test
     @WithMockUser
     public void readDishes() throws Exception {
-        Long testId = this.dishList.get(0).getId();
-        Long testId2 = this.dishList.get(1).getId();
         mockMvc.perform(get("/dish")
                 .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$._embedded.dishResourceList", hasSize(2)))
-                .andExpect(jsonPath("$._embedded.dishResourceList[0].dish.dish_id").value(testId))
-                .andExpect(jsonPath("$._embedded.dishResourceList[0].dish.name", is("dish1")))
-                .andExpect(jsonPath("$._embedded.dishResourceList[1].dish.dish_id").value(testId2))
-                .andExpect(jsonPath("$._embedded.dishResourceList[1].dish.name", is("dish2")));
+                .andExpect(content().contentType(contentType));
     }
 
     @Test
     @WithMockUser
     public void createDish() throws Exception {
 
-        UserAccountEntity createUserAccount = userService.save(new UserAccountEntity("createRecipe", "password"));
-        JwtUser createUserDetails = new JwtUser(createUserAccount.getId(),
-                "createRecipe",
-                null,
-                null,
-                null,
-                true,
-                null);
         String dishJson = json(new Dish(
-                this.userAccount.getId(), "created dish"));
+                TestConstants.USER_3_ID, "created dish"));
 
         this.mockMvc.perform(post("/dish")
-                .with(user(createUserDetails))
+                .with(user(userDetails))
                 .contentType(contentType)
                 .content(dishJson))
                 .andExpect(status().isCreated());
@@ -167,25 +134,85 @@ public class DishRestControllerTest {
 
 
     @Test
-    @Ignore
     @WithMockUser
     public void updateDish() throws Exception {
-        DishEntity toUpdate = this.dishList.get(0);
-        String updateName = "updated:" + dish.getDishName();
-        String updateDescription = "updated:" + (dish.getDescription() == null ? "" : dish.getDescription());
+        DishEntity toUpdate = dishService.getDishForUserById(TestConstants.USER_3_NAME, TestConstants.DISH_1_ID);
+        String updateName = "updated:" + toUpdate.getDishName();
+        String updateDescription = "updated:" + (toUpdate.getDescription() == null ? "" : toUpdate.getDescription());
         toUpdate.setDishName(updateName);
         toUpdate.setDescription(updateDescription);
-        toUpdate.setUserId(userAccount.getId());
-
+        toUpdate.setUserId(TestConstants.USER_3_ID);
+        toUpdate.setTags(new ArrayList<TagEntity>());
         String dishJson = json(toUpdate);
 
-        this.mockMvc.perform(put("/dish/" + dish.getId())
-                .with(user(userDetailsBad))
+        this.mockMvc.perform(put("/dish/" + toUpdate.getId())
+                .with(user(userDetails))
                 .contentType(contentType)
                 .content(dishJson))
                 .andExpect(status().is2xxSuccessful());
     }
 
+    @Test
+    @WithMockUser
+    public void testGetTagsByDishId() throws Exception {
+        mockMvc.perform(get("/dish/" + TestConstants.DISH_2_ID + "/tag")
+                .with(user(userDetails)))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().contentType(contentType));
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testAddTagToDish() throws Exception {
+        String url = "/dish/" + TestConstants.DISH_1_ID + "/tag/" + TestConstants.TAG_CARROTS;
+        this.mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser
+    public void testDeleteTagFromDish() throws Exception {
+        String url = "/dish/" + TestConstants.DISH_1_ID + "/tag/344";
+        this.mockMvc.perform(delete(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser
+    public void testAddAndRemoveTags() throws Exception {
+        List<Long> addTags = Arrays.asList(TestConstants.TAG_1_ID, TestConstants.TAG_2_ID, TestConstants.TAG_3_ID);
+        List<Long> deleteTags = Arrays.asList(55L, 104L);
+
+        String addList = FlatStringUtils.flattenListOfLongsToString(addTags, ",");
+        String deleteList = FlatStringUtils.flattenListOfLongsToString(deleteTags, ",");
+        String url = "/dish/" + TestConstants.DISH_1_ID + "/tag?addTags=" + addList + "&removeTags=" + deleteList;
+        this.mockMvc.perform(put(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser
+    public void testFindDishes() throws Exception {
+        List<Long> excludedTags = Arrays.asList(TestConstants.TAG_1_ID, TestConstants.TAG_2_ID, TestConstants.TAG_3_ID);
+        List<Long>  includedTags = Arrays.asList(TestConstants.TAG_MEAT, TestConstants.TAG_PASTA);
+
+        String includedList = FlatStringUtils.flattenListOfLongsToString(includedTags, ",");
+        String excludedList = FlatStringUtils.flattenListOfLongsToString(excludedTags, ",");
+        String url = "/dish?includedTags=" + includedList + "&excludedTags=" + excludedList;
+        this.mockMvc.perform(get(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(content().contentType(contentType));
+
+    }
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

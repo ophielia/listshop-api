@@ -1,9 +1,11 @@
 package com.meg.atable.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meg.atable.data.entity.ItemEntity;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -17,6 +19,8 @@ public class ItemCategory extends AbstractCategory {
 
     private java.util.List<Item> items = new ArrayList<>();
 
+    private String categoryType;
+
     @JsonIgnore
     List<ItemEntity> itemEntities = new ArrayList<>();
 
@@ -25,8 +29,15 @@ public class ItemCategory extends AbstractCategory {
         super(name);
     }
 
-    public ItemCategory(String name, Long id) {
+    public ItemCategory(String name, Long id, CategoryType categoryType) {
         super(name, id);
+        this.categoryType = categoryType.name();
+    }
+
+
+    public ItemCategory(String name,Long id,  Integer displayOrder, CategoryType categoryType) {
+        super(id, name, displayOrder);
+        this.categoryType = categoryType.name();
     }
 
     public List<Item> getItems() {
@@ -51,13 +62,23 @@ public class ItemCategory extends AbstractCategory {
         return this;
     }
 
+    @JsonProperty("category_type")
+    public String getCategoryType() {
+        return categoryType;
+    }
+
+    public void setCategoryType(String categoryType) {
+        this.categoryType = categoryType;
+    }
+
     @Override
     public boolean isEmpty() {
-        if (getSubCategories().isEmpty() &&
+        return getSubCategories().isEmpty() &&
                 getItems().isEmpty() &&
-                getItemEntities().isEmpty()) {
-            return true;
-        }
-        return false;
+                getItemEntities().isEmpty();
+    }
+
+    public void sortItems() {
+        this.itemEntities.sort(Comparator.comparing(ItemEntity::getDisplay));
     }
 }

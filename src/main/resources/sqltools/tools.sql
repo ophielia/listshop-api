@@ -97,7 +97,16 @@ and (c.is_parent_tag is null or c.is_parent_tag = false)
 -- adding a new auto_tag_instruction
 ﻿INSERT INTO public.auto_tag_instructions(
 	instruction_type, instruction_id, assign_tag_id, is_invert, search_terms)
-	VALUES ('Tag', nextval('hibernate_sequence'), 8428, false, 3);
+	VALUES ('Tag', nextval('auto_tag_instructions_sequence'), 346, false, '9,88,368, 372, 374, 375');
+
+INSERT INTO public.auto_tag_instructions(
+	instruction_type, instruction_id, assign_tag_id, is_invert, search_terms,invert_filter)
+	VALUES ('Tag', nextval('auto_tag_instructions_sequence'), 199, true, '9,88,368, 372, 374, 375','320');
+
+﻿INSERT INTO public.auto_tag_instructions(
+	instruction_type, instruction_id, assign_tag_id, is_invert, search_terms)
+	VALUES ('Text', nextval('auto_tag_instructions_sequence'), 323, false, 'crockpot,crock-pot,slow cooker,slow-cooker,slowcooker');
+
 
 
 ﻿-- clear proposals
@@ -213,4 +222,95 @@ join list_category lc using (category_id)
 where layout_id = 1
 
 
+-- weird layout category bug
+﻿select ct.*,lc.category_id, lc.layout_id,lc.name,t.tag_id,t.name from tag t
+join category_tags ct using (tag_id)
+join list_category lc using (category_id)
+where layout_id =5
+and (lc.name = 'Meat' or lc.name = 'Other')
+order by t.name;
+
+delete
+from category_tags
+where category_id = 5
+and tag_id in  (select tag_id from category_tags where category_id = 10  )
+
+
+
 nextval('list_layout_category_sequence')
+
+
+mvn flyway:info
+mvn flyway:baseline -Dflyway.baselineVersion=5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+v7 undo
+﻿-- add column to meal plan
+ALTER TABLE meal_plan DROP COLUMN if exists  target_id  ;
+
+-- proposal_context changes
+ALTER TABLE proposal_context ADD COLUMN  approach_type integer;
+ALTER TABLE proposal_context ADD COLUMN  dish_count_per_slot integer;
+ALTER TABLE proposal_context ADD COLUMN  maximum_empties integer;
+ALTER TABLE proposal_context ADD COLUMN  proposal_count          integer      ;
+ALTER TABLE proposal_context ADD COLUMN  refresh_flag integer;
+
+ALTER TABLE proposal_context DROP COLUMN   current_approach_type ;
+ALTER TABLE proposal_context DROP COLUMN   current_approach_index ;
+ALTER TABLE proposal_context DROP COLUMN   meal_plan_id ;
+ALTER TABLE proposal_context DROP COLUMN   target_id     ;
+ALTER TABLE proposal_context DROP COLUMN   target_hash_code ;
+ALTER TABLE proposal_context DROP COLUMN   proposal_hash_code ;
+
+-- proposal_approach
+DROP TABLE if exists proposal_approach;
+
+
+drop SEQUENCE  if exists proposal_approach_sequence;
+
+-- proposal_dish
+
+drop TABLE if exists proposal_dish ;
+
+drop SEQUENCE if exists proposal_dish_sequence;
+
+
+-- proposal_slot
+
+drop TABLE if exists proposal_slot ;
+
+drop SEQUENCE if exists proposal_slot_sequence;
+
+
+drop TABLE if exists proposal;
+
+DROP SEQUENCE if exists proposal_sequence;
+
+--alter table target drop column target;
+--alter table target add column target character varying(255);
+--alter table target_slot drop column target;
+--alter table target_slot add column target character varying(255);
+-- old tables
+--drop table target_proposal_dish;
+--drop table target_proposal_slot;
+--drop table target_proposal;
+
+

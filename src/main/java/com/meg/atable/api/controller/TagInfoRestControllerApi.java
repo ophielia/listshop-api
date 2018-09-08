@@ -1,8 +1,10 @@
 package com.meg.atable.api.controller;
 
-import com.meg.atable.api.model.TagInfoResource;
+import com.meg.atable.api.model.TagDrilldownResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -14,6 +16,6 @@ public interface TagInfoRestControllerApi {
 
 
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<TagInfoResource> retrieveTagList(@RequestParam(value = "tag_type", required = false) String tag_type,
-                                                    @RequestParam(value = "filter", required = false) String filter);
-}
+    ResponseEntity<List<TagDrilldownResource>> retrieveTagList(@RequestParam(value = "tag_type", required = false) String tag_type);
+
+    }

@@ -34,11 +34,15 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
             "tag t where t.tag_id = dt.tag_id and  t.tag_type = 'Ingredient' and dt.dish_id in (:dishIdList) ", nativeQuery = true)
     List<TagEntity> getIngredientTagsForDishes(@Param("dishIdList") List<Long> dishIdList);
 
-    @Query(value = "select t.*  from tag t join selectabletags s on s.child_tag_id = t.tag_id left outer join category_tags ct on ct.tag_id = t.tag_id and ct.category_id in (select category_id from list_category where layout_id = :layoutId) " +
-            "where ct.tag_id is null and t.tag_type in ('Ingredient', 'NonEdible') order by t.name;", nativeQuery = true)
+    @Query(value = "select t.*  from tag t " +
+            "left outer join category_tags ct on ct.tag_id = t.tag_id and ct.category_id in " +
+            "   (select category_id from list_category" +
+            "   where layout_id = :layoutId) " +
+            "where ct.tag_id is null and t.tag_type in ('Ingredient', 'NonEdible') and t.assign_select = true " +
+            "order by t.name;", nativeQuery = true)
     List<TagEntity> getUncategorizedTagsForList(@Param("layoutId") Long listLayoutId);
 
-    @Query(value = "select t.*  from tag t join category_tags ct on ct.tag_id = t.tag_id and ct.category_id = :layoutCategoryId", nativeQuery = true)
+    @Query(value = "select t.*  from tag t join category_tags ct on ct.tag_id = t.tag_id and ct.category_id = :layoutCategoryId order by t.name ", nativeQuery = true)
     List<TagEntity> getTagsForLayoutCategory(@Param("layoutCategoryId") Long layoutCategoryId);
 
     @Query(value = "select distinct t.* from tag t " +
@@ -49,11 +53,6 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
     @Query(value = "select distinct t.* from tag t " +
             "join tag_relation tr on tr.parent_tag_id = t.tag_id;", nativeQuery = true)
     List<TagEntity> findParentTags();
-
-
-    @Query("select distinct t.autoTagFlag FROM TagEntity t , DishEntity d " +
-            "where d member of t.dishes and d.dish_id = ?1")
-    List<Integer> getAutoTagsForDish(Long dishId);
 
     @Query("select distinct t.tag_id FROM TagEntity t , DishEntity d " +
             "where d member of t.dishes and d.dish_id = ?1")
