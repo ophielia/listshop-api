@@ -69,6 +69,7 @@ public class TargetServiceImpl implements TargetService {
 
         if (TargetType.PickUp.equals(targetEntity.getTargetType())) {
             LocalDateTime expires = LocalDateTime.now().plus(EXPIRES_AFTER_MINUTES, ChronoUnit.MINUTES );
+            // TODO - decide strategy for pickup list - and expiring....
             targetEntity.setExpires(expires);
         }
         return targetRepository.save(targetEntity);
