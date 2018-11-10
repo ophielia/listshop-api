@@ -10,7 +10,7 @@ BIGGER TODOS -
 
     eventually - Item - date added, And , date updated
 
-    com.meg.atable.web.controller.ShoppingListRestController.removeListItemsFromList
+    com.meg.atable.lmt.api.web.controller.ShoppingListRestController.removeListItemsFromList
         make second parameter a list id - not a list type
 
 CURRENT HOPPER:
@@ -35,6 +35,9 @@ CURRENT HOPPER:
     Front end - plans
         stub page for create meal plan
         continue migration to HttpClient
+
+
+        Ratings Rework
 
 
 

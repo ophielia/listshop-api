@@ -13,5 +13,4 @@ public interface UserService {
 
     UserAccountEntity save(UserAccountEntity user);
 
-    void deleteAll();
 }

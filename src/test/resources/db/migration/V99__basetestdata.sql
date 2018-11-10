@@ -1,6 +1,7 @@
 -- base test user - id 1
 insert into users (email, enabled, last_password_reset_date, password, username, user_id) values (null, true,null, 'password', 'testuser', 500);
 insert into users (email, enabled, last_password_reset_date, password, username, user_id) values (null, true,null, 'password', 'adduser', 501);
+insert into users (email, enabled, last_password_reset_date, password, username, user_id) values (null, true,null, 'password', 'deleteuser', 502);
 
 -- tags - ids 500-504
 insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag2', 0, true, 'TagType', false, 501);
