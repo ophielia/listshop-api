@@ -24,7 +24,7 @@ public class ModelMapper {
                     .lastAdded(dishEntity.getLastAdded())
                     .userId(dishEntity.getUserId());
         }
-        return null;
+        return new Dish();
     }
 
     public static Dish toModel(DishEntity dishEntity, List<TagEntity> tagEntities) {

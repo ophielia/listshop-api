@@ -320,6 +320,10 @@ public class TagServiceImpl implements TagService {
         TagEntity tag = tagOpt.get();
 
         List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
+        // check if tag exists already
+        if (dishTags.contains(tag)) {
+            return;
+        }
         dishTags.add(tag);
         // if rating tag, remove related tags
         if (tag.getTagType().equals(TagType.Rating)) {
@@ -390,7 +394,11 @@ public class TagServiceImpl implements TagService {
         listeners.add(tagChangeListener);
     }
 
+    public void mergeTags(TagEntity fromTag, TagEntity foTag) {
+        // set fromTag to non-display and remove from structure
+        fromTag.setDisplay(false);
 
+    }
     private void fireTagParentChangedEvent(TagEntity oldParent, TagEntity newParent, TagEntity changedTag) {
         for (TagChangeListener listener : listeners) {
             listener.onParentChange(oldParent, newParent, changedTag);

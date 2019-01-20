@@ -27,17 +27,13 @@ import java.util.stream.Collectors;
 public class TagStructureServiceImpl implements TagStructureService {
 
     @Autowired
+    TagCache tagCache;
+    @Autowired
     private TagSearchGroupRepository tagSearchGroupRepository;
-
     @Autowired
     private TagRelationRepository tagRelationRepository;
-
     @Autowired
     private TagRepository tagRepository;
-
-    @Autowired
-    TagCache tagCache;
-
 
     @Override
     public TagRelationEntity createRelation(TagEntity parentTag, TagEntity childTag) {
@@ -265,6 +261,7 @@ public class TagStructureServiceImpl implements TagStructureService {
 
     @Override
     public List<FatTag> getTagsWithChildren(List<TagType> tagTypes) {
+
         // get relationship lookups
         Map<Long, List<Long>> parentToChildren = getTagRelationshipLookup(tagTypes);
 
@@ -304,7 +301,7 @@ public class TagStructureServiceImpl implements TagStructureService {
     }
 
     private FatTag fillInTag(Long tagId, Map<Long, List<Long>> parentToChildren)
-    throws TagStructureException {
+            throws TagStructureException {
         // check for tag in cache
         FatTag fatTag = tagCache.get(tagId);
         if (fatTag != null) {
@@ -353,7 +350,7 @@ public class TagStructureServiceImpl implements TagStructureService {
     public Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags) {
         List<TagSearchGroupEntity> rawSearchGroups = tagSearchGroupRepository.findByGroupIdIn(allTags);
 
-// put the results in a HashMap
+        // put the results in a HashMap
         HashMap<Long, List<Long>> results = new HashMap<>();
         for (TagSearchGroupEntity result : rawSearchGroups) {
             if (!results.containsKey(result.getGroupId())) {
