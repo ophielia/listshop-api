@@ -164,6 +164,7 @@ public class FillInProposalProcessorImplTest {
             List<DishTagSearchResult> rawSearchResults = ProcessorTestUtils.makeDummySearchResults(slot,
                     dishTagMatches, target.getTagIdsAsSet(), target.getTagIdsAsSet().size(),
                     20, 3, true, false, sqlFilter);
+            Assert.assertNotNull(rawSearchResults.toString());
             Mockito.when(dishSearchService.retrieveDishResultsForTags(eq(TestConstants.USER_3_ID), eq(slot), any(Integer.class),
                     any(List.class), any(Map.class), eq(sqlFilter)))
                     .thenReturn(rawSearchResults);

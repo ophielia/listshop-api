@@ -22,10 +22,6 @@ public class DishSearchCriteria {
         return userId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     public List<Long> getIncludedTagIds() {
         return includedTagIds;
     }

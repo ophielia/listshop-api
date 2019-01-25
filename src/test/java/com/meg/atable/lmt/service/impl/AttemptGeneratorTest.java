@@ -17,8 +17,7 @@ import java.util.Map;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-public class ApproachGeneratorTest {
-
+public class AttemptGeneratorTest {
 
 
     @Test

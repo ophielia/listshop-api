@@ -29,6 +29,7 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
 
     List<TagEntity> findTagsByAssignSelect(Boolean assignSelect);
 
+    List<TagEntity> findTagsByIsDisplay(Boolean isDisplay);
 
     @Query(value = "select t.* from dish_tags dt, " +
             "tag t where t.tag_id = dt.tag_id and  t.tag_type = 'Ingredient' and dt.dish_id in (:dishIdList) ", nativeQuery = true)
@@ -57,4 +58,6 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
     @Query("select distinct t.tag_id FROM TagEntity t , DishEntity d " +
             "where d member of t.dishes and d.dish_id = ?1")
     Set<Long> getTagIdsForDish(Long dishId);
+
+
 }

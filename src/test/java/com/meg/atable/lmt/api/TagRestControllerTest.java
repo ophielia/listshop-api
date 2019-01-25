@@ -97,6 +97,17 @@ public class TagRestControllerTest {
     }
 
     @Test
+    public void readInactiveTags() throws Exception {
+        String url = "/tag/inactive";
+        mockMvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.tag.tag_id", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.tag.tag_id").value(TestConstants.TAG_ID_INACTIVE));
+
+    }
+
+    @Test
     public void readTags() throws Exception {
         mockMvc.perform(get("/tag"))
                 .andExpect(status().isOk())

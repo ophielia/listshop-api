@@ -1,10 +1,12 @@
 package com.meg.atable.lmt.service.tag;
 
+import com.meg.atable.lmt.api.exception.ActionInvalidException;
 import com.meg.atable.lmt.api.model.TagFilterType;
 import com.meg.atable.lmt.api.model.TagType;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,5 +58,5 @@ public interface TagService {
 
     void addTagChangeListener(TagChangeListener tagChangeListener);
 
-
+    void saveTagForDelete(Long tagId, Long replacementTagId) throws ActionInvalidException;
 }

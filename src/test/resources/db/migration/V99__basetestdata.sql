@@ -9,6 +9,12 @@ insert into tag (assign_select,  description,  is_verified, name, power, search_
 insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag4', 0, true, 'TagType', false, 503);
 insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag1', 0, true, 'TagType', false, 500);
 insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag5', 0, true, 'TagType', false, 504);
+insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id, is_display, to_delete) values (true, null,  true, 'notdisplayed', 0, true, 'Ingredient', false, 505, false, false);
+insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id, is_display, to_delete) values (true, null,  true, 'notdisplayed', 0, true, 'Ingredient', false, 506, true, true);
+
+
+INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES (9000, 505, 393);  -- assigns no display tag to tag in heirarchy (which contained other tags)
+INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES (9001, 506, 393);  -- assigns no display tag to tag in heirarchy (which contained other tags)
 
 
 -- lists - ids 500-503
@@ -110,6 +116,7 @@ INSERT INTO category_tags (category_id, tag_id) VALUES (1, 502);
 INSERT INTO category_tags (category_id, tag_id) VALUES (2, 503);
 INSERT INTO category_tags (category_id, tag_id) VALUES (501, 500);
 INSERT INTO category_tags (category_id, tag_id) VALUES (501, 500);
+INSERT INTO category_tags (category_id, tag_id) VALUES (501, 505);
 
 
 -- targets

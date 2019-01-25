@@ -1,5 +1,6 @@
 package com.meg.atable.lmt.service.tag.impl;
 
+import com.meg.atable.lmt.api.exception.ActionInvalidException;
 import com.meg.atable.lmt.api.model.TagFilterType;
 import com.meg.atable.lmt.api.model.TagType;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
@@ -14,6 +15,7 @@ import com.meg.atable.lmt.service.tag.TagChangeListener;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +43,10 @@ public class TagServiceImpl implements TagService {
 
     @Autowired
     private DishSearchService dishSearchService;
+
+
+    @Value("${service.tagservice.delete.tag.immediately:false}")
+    boolean DELETE_IMMEDIATELY;
 
     @Override
     public TagEntity save(TagEntity tag) {
@@ -203,6 +209,8 @@ public class TagServiceImpl implements TagService {
         TagEntity parentTag = getParentForNewTag(parent, newtag);
         newtag.setAssignSelect(true);
         newtag.setSearchSelect(false);
+        newtag.setToDelete(false);
+        newtag.setIsDisplay(true);
         TagEntity saved = tagRepository.save(newtag);
 
         tagStructureService.createRelation(parentTag, saved);
@@ -224,6 +232,43 @@ public class TagServiceImpl implements TagService {
             return defaults.get(0);
         }
         return null;
+    }
+
+
+    @Override
+    public void saveTagForDelete(Long tagId, Long replacementTagId) throws ActionInvalidException {
+        TagEntity tag = getTagById(tagId);
+        TagEntity replacement = getTagById(replacementTagId);
+
+        // do validation
+        //      tag is found
+        if (tag == null) {
+            throw new ActionInvalidException("Tag not found for id [" + tagId + "].");
+        }
+        //      tag to be deleted doesn't have children
+        List<TagEntity> children = tagStructureService.getChildren(tag);
+        if (children != null && !children.isEmpty()) {
+            throw new ActionInvalidException("Tag [" + tag.getId() + "] can't be deleted because it has children.");
+        }
+
+        // mark tag to be deleted
+        tag.setToDelete(true);
+        tag.setReplacementTagId(replacement != null ? replacement.getId() : null);
+
+        // delete tag now if immediate delete is activated
+        if (DELETE_IMMEDIATELY) {
+            replaceAndDeleteTag(tag);
+        }
+    }
+
+    private void replaceAndDeleteTag(TagEntity tag) {
+        // MM start here
+
+        // replace tags visible in objects -
+        // dish, lists, proposals and targets
+
+        // delete tags from utility / background spaces
+
     }
 
     @Override
@@ -396,7 +441,7 @@ public class TagServiceImpl implements TagService {
 
     public void mergeTags(TagEntity fromTag, TagEntity foTag) {
         // set fromTag to non-display and remove from structure
-        fromTag.setDisplay(false);
+        //fromTag.setDisplay(false);
 
     }
     private void fireTagParentChangedEvent(TagEntity oldParent, TagEntity newParent, TagEntity changedTag) {

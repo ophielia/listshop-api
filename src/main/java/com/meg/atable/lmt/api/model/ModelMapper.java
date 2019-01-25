@@ -266,6 +266,7 @@ public class ModelMapper {
                 // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
                 .assignSelect(tagEntity.getAssignSelect())
                 .parentId(String.valueOf(tagEntity.getParentId()))
+                .toDelete(tagEntity.isToDelete())
                 .searchSelect(tagEntity.getSearchSelect());
     }
 

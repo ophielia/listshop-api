@@ -19,10 +19,6 @@ public class AttemptGenerator {
         throw new IllegalAccessError("Utility class");
     }
 
-    public static List<Integer[]> getProposalOrders(ApproachType approachType, int slotcount, int proposalcount) {
-
-        return getProposalOrders(approachType,slotcount,proposalcount,null);
-    }
 
     public static List<Integer[]> getProposalOrders(ApproachType approachType, int slotcount, int proposalcount, Map<Integer, Integer> indexToSlotNumber) {
         switch (approachType) {

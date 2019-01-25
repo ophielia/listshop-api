@@ -23,6 +23,7 @@ public final class TestConstants {
     public static final Long TAG_3_ID = 502L;
     public static final Long TAG_4_ID = 503L;
     public static final Long TAG_5_ID = 504L;
+    public static final Long TAG_ID_INACTIVE = 505L;
 
     public static final Long PARENT_TAG_ID_1 = 380L;
     public static final Long PARENT_TAG_ID_2 = 379L;
@@ -88,5 +89,6 @@ public final class TestConstants {
     public static final Long PROPOSAL_3_ID = 502L;
     public static final Long PROPOSAL_3_SLOT_4_ID = 523L;
     public static final Long PROPOSAL_3_SLOT_4_DISH_ID = 61L;
+
 }
 

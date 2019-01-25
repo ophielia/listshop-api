@@ -27,6 +27,8 @@ public class Tag {
 
     private String parentId ;
 
+    private Boolean toDelete;
+
     Tag() {
     }
 
@@ -139,6 +141,16 @@ public class Tag {
 
     public Tag dishes(List<Dish> dishes) {
         this.dishes = dishes;
+        return this;
+    }
+
+    @JsonProperty("to_delete")
+    public Boolean getToDelete() {
+        return toDelete;
+    }
+
+    public Tag toDelete(Boolean toDelete) {
+        this.toDelete = toDelete;
         return this;
     }
 }

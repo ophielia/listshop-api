@@ -1,6 +1,10 @@
 package com.meg.atable.lmt.api.web.controller;
 
 import com.meg.atable.lmt.api.controller.TagRestControllerApi;
+import com.meg.atable.lmt.api.exception.ActionInvalidException;
+import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
+import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
+import com.meg.atable.lmt.api.exception.ProposalProcessingException;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.service.DishService;
@@ -169,6 +173,14 @@ public class TagRestController implements TagRestControllerApi {
 
     public ResponseEntity<TagResource> replaceTagsInDishes(Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId) {
         this.tagService.replaceTagInDishes(principal.getName(), tagId, toTagId);
+        return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<Object> saveTagForDelete(Long tagId, Long replacementTagId) {
+
+        this.tagService.saveTagForDelete(tagId,replacementTagId);
+
+
         return ResponseEntity.noContent().build();
     }
 

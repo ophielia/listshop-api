@@ -54,6 +54,12 @@ public class TagEntity {
     @Transient
     private Long parentId;
 
+    private Boolean isDisplay;
+
+    private Boolean toDelete;
+
+    private Long replacementTagId;
+
     public TagEntity() {
         // jpa empty constructor
     }
@@ -61,6 +67,8 @@ public class TagEntity {
     public TagEntity(String name, String description) {
         this.name = name;
         this.description = description;
+        this.isDisplay = true;
+        this.toDelete = false;
     }
 
     public TagEntity(Long tag_id) {
@@ -159,7 +167,14 @@ public class TagEntity {
         this.power = power;
     }
 
-    public TagEntity copy() {
+
+    public void setIsDisplay(boolean display) {
+        this.isDisplay = display;
+    }
+
+    public boolean getDisplay() {
+        return isDisplay == null? true : isDisplay;
+    }    public TagEntity copy() {
         TagEntity copy = new TagEntity();
         copy.setName(getName());
         copy.setDescription(getDescription());
@@ -167,6 +182,26 @@ public class TagEntity {
         copy.setAssignSelect(getAssignSelect());
         copy.setPower(getPower());
             return copy;
+    }
+
+    public boolean isDisplay() {
+        return isDisplay;
+    }
+
+    public Boolean isToDelete() {
+        return toDelete;
+    }
+
+    public void setToDelete(boolean toDelete) {
+        this.toDelete = toDelete;
+    }
+
+    public Long getReplacementTagId() {
+        return replacementTagId;
+    }
+
+    public void setReplacementTagId(Long replacementTagId) {
+        this.replacementTagId = replacementTagId;
     }
 
     @Override
@@ -187,4 +222,5 @@ public class TagEntity {
                 ", parentId=" + parentId +
                 '}';
     }
+
 }
