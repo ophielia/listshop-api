@@ -55,7 +55,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     private TagService tagService;
 
     @Override
-    public ProposalEntity generateProposal(String userName, Long targetId) throws ObjectNotYoursException, ObjectNotFoundException, ProposalProcessingException {
+    public ProposalEntity generateProposal(String userName, Long targetId) throws  ProposalProcessingException {
         UserAccountEntity userAccount = userService.getUserByUserName(userName);
         // get target for user
         TargetEntity target = targetService.getTargetById(userName, targetId);
@@ -117,7 +117,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         }
 
         // get  target
-        TargetEntity target = null;
+        TargetEntity target;
         try {
             target = targetService.getTargetById(userName, targetId);
         } catch (ObjectNotFoundException | ObjectNotYoursException e) {
@@ -165,9 +165,6 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
             return proposalEntity;
         }
 
-        // get list of tag ids
-        // Set<Long> tagIds = proposalEntity.getAllTagIds();
-
         // get target
         Long targetId = getTargetIdForProposal(proposalEntity);
         TargetEntity target = targetService.getTargetById(userName, targetId);
@@ -200,7 +197,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     private ProposalEntity refreshOrFillInProposal(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException {
         UserAccountEntity userAccount = userService.getUserByUserName(userName);
         // get proposal for user
-        ProposalEntity proposal = null;
+        ProposalEntity proposal;
         try {
             proposal = getProposalForUser(userName, proposalId);
         } catch (ObjectNotFoundException e) {
@@ -214,7 +211,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
             throw new ProposalProcessingException(msg);
         }
 
-        TargetEntity target = null;
+        TargetEntity target;
         try {
             target = targetService.getTargetById(userName, context.getTargetId());
         } catch (ObjectNotYoursException | ObjectNotFoundException e) {
@@ -307,9 +304,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
             return context.getApproaches();
         }
         List<ContextApproachEntity> finalList = new ArrayList<>();
-        if (resultApproaches == null || resultApproaches.isEmpty()) {
-            return finalList;
-        }
+
         resultApproaches.stream().forEach(a -> a.setContext(context));
         if (context.getApproaches() == null || context.getApproaches().isEmpty()) {
             return resultApproaches;
@@ -401,7 +396,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         return contextRepository.findByProposalId(targetProposalId);
     }
 
-    private ProposalEntity getProposalForUser(String userName, Long proposalId) throws ObjectNotFoundException {
+    private ProposalEntity getProposalForUser(String userName, Long proposalId) {
         UserAccountEntity user = userService.getUserByUserName(userName);
 
         ProposalEntity proposal = proposalRepository.findProposalByUserIdAndProposalId(user.getId(), proposalId);

@@ -264,7 +264,6 @@ targetIdToDelete = result.getTargetId();
 
         target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
         slot = target.getSlots().get(0);
-        slotId = slot.getId();
         slottags = slot.getTargetTagIds();
         Assert.assertNotNull(slottags);
         Assert.assertTrue(slottags.contains(String.valueOf(TestConstants.TAG_CROCKPOT)));

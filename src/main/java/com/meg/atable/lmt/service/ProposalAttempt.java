@@ -25,21 +25,12 @@ public class ProposalAttempt {
     }
 
     public void setDishMatches(Integer slotNumber, List<DishTagSearchResult> dishMatches) {
-        int totalTagCount = dishMatches.get(0).getTagResults().length;
-        int slotTagCount = totalTagCount - dishMatches.get(0).getTargetTagLimit();
+        int totalTagCount = dishMatches.isEmpty()?0:dishMatches.get(0).getTagResults().length;
+        int slotTagCount = dishMatches.isEmpty()?0:totalTagCount - dishMatches.get(0).getTargetTagLimit();
         processStatistics(slotNumber, totalTagCount, slotTagCount, dishMatches);
         addToContentHash(slotNumber,dishMatches);
         this.dishMatches.put(slotNumber, dishMatches);
     }
-
-/*
-
-    public void setSlotMatches(Map<Integer, List<DishTagSearchResult>> dishMatches) {
-        for (Map.Entry<Integer,List<DishTagSearchResult>> entry: dishMatches.entrySet()) {
-            this.dishMatches.put(entry.getKey(),entry.getValue());
-        }
-    }
- */
 
     private void addToContentHash(Integer slotNumber, List<DishTagSearchResult> dishMatches) {
         Set<Long> contents = new HashSet<>();
@@ -70,8 +61,8 @@ public class ProposalAttempt {
         double totalMatchExists = (double) totalNonEmptyMatchCount / (double) dishCount;
         double slotMatchExists = (double) slotNonEmptyMatchCount / (double) dishCount;
 
-        double avgTotalMatch = totalMatchPercentageList.stream().mapToDouble(t -> t).average().getAsDouble();
-        double avgSlotMatch = slotMatchPercentageList.stream().mapToDouble(t -> t).average().getAsDouble();
+        double avgTotalMatch = totalMatchPercentageList.isEmpty()?0.0:totalMatchPercentageList.stream().mapToDouble(t -> t).average().getAsDouble();
+        double avgSlotMatch = slotMatchPercentageList.isEmpty()?0.0:slotMatchPercentageList.stream().mapToDouble(t -> t).average().getAsDouble();
 
         double healthindex = 40.0 * slotMatchExists;
         healthindex += 15.0 * totalMatchExists;
@@ -87,8 +78,8 @@ public class ProposalAttempt {
     public void finalizeResults() {
         // just do health index
         List<Double> healthIndexList = slotResults.values().stream().map(v -> v[0]).collect(Collectors.toList());
-        healthIndexList.stream().sorted();
-        double median = 0;
+        healthIndexList = healthIndexList.stream().sorted().collect(Collectors.toList());
+        double median;
         if (healthIndexList.size() % 2 == 0) {
             median = (healthIndexList.get(healthIndexList.size() / 2) +
                     healthIndexList.get(healthIndexList.size() / 2 - 1))

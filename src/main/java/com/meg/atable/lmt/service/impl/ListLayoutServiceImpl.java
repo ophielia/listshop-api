@@ -183,7 +183,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         }
         ListLayoutCategoryEntity categoryEntity = listLayoutEntityOpt.get();
         // assure list owns category
-        if (!categoryEntity.getLayoutId().equals(listLayoutId.longValue()) ) {
+        if (!categoryEntity.getLayoutId().equals(listLayoutId) ) {
             return;
         }
 
@@ -299,10 +299,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         for (Map.Entry<Long, Long> entry : subCategoryMappings.entrySet()) {
             Category child = filledCategories.get(entry.getKey());
             Category parent = filledCategories.get(entry.getValue());
-            if (child == null) {
-                continue;
-            }
-            if (pruneSubcategories && child.isEmpty()) {
+            if (child == null || (pruneSubcategories && child.isEmpty())) {
                 continue;
             }
             if (parent != null ) {
@@ -373,7 +370,7 @@ Long relationshipId = getCategoryRelationForCategory(category);
 
 
         List<CategoryRelationEntity> relationships = categoryRelationRepository.findCategoryRelationsByChildId(category.getId());
-        CategoryRelationEntity relationship = null;
+        CategoryRelationEntity relationship;
         if (relationships == null || relationships.isEmpty()) {
             // create new relationship
             relationship = new CategoryRelationEntity();
@@ -427,16 +424,16 @@ Long relationshipId = getCategoryRelationForCategory(category);
         // get list depending upon parent and direction
         CategoryRelationEntity relationship = relationships.get(0);
         boolean isBaseCategory = relationship.getParent() == null;
-        List<ListLayoutCategoryEntity> listForSwapout = null;
+        List<ListLayoutCategoryEntity> listForSwapout;
         if (isBaseCategory && moveUp) {
             listForSwapout = listLayoutCategoryRepository.getCategoriesAbove(category.getLayoutId(), category.getDisplayOrder());
-        } else if (isBaseCategory && !moveUp) {
+        } else if (isBaseCategory) {
             listForSwapout = listLayoutCategoryRepository.getCategoriesBelow(category.getLayoutId(), category.getDisplayOrder());
 
         } else if (!isBaseCategory && moveUp) {
             listForSwapout = listLayoutCategoryRepository.getSubcategoriesAbove(category.getLayoutId(), relationship.getParent().getId(), category.getDisplayOrder());
 
-        } else if (!isBaseCategory && !moveUp) {
+        } else if (!isBaseCategory) {
             listForSwapout = listLayoutCategoryRepository.getSubcategoriesBelow(category.getLayoutId(), relationship.getParent().getId(), category.getDisplayOrder());
 
         } else {
@@ -454,7 +451,7 @@ Long relationshipId = getCategoryRelationForCategory(category);
 
     private Integer getDisplayOrderInCategory(Long listLayoutId, ListLayoutCategoryEntity parent) {
         Integer lastCategory = null;
-        List<ListLayoutCategoryEntity> layouts = null;
+        List<ListLayoutCategoryEntity> layouts;
         if (parent == null) {
             layouts = listLayoutCategoryRepository.getCategoriesForOrder(listLayoutId);
 

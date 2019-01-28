@@ -29,7 +29,6 @@ import static org.mockito.ArgumentMatchers.any;
 public class ProposalGeneratorServiceImplIntTest {
 
 
-    private static Long existingProposalId;
 
     @Autowired
     private
@@ -40,39 +39,11 @@ public class ProposalGeneratorServiceImplIntTest {
 
 
     @Autowired
-    private MealPlanService mealPlanService;
-
-    @Autowired
     private ProposalContextRepository proposalContextRepository;
 
     @Autowired
     private TargetService targetService;
 
-    @Autowired
-    private DishService dishService;
-
-    private List<Long> testDishIds;
-
-
-    @Before
-    public void setUp() throws ProposalProcessingException {
-        // make / save base target
-        TargetEntity targetEntity = buildBaseTestTarget();
-
-
-        /*
-
-        List<ContextApproachEntity> approachEntities = makeDummyContextApproaches(new ProposalContextEntity(), 3, 5);
-        ProcessResult processResult = new ProcessResult(approachEntities);
-        List<ProposalSlotEntity> resultSlots = makeDummyProposalForTarget(targetEntity);
-        processResult.setResultSlots(resultSlots);
-        Mockito.when(newSearchProcessor.processProposal(any(ProposalRequest.class))).thenReturn(processResult);
-        // run "dummy" mock proposal
-        ProposalEntity proposalEntity = proposalGeneratorServiceImpl.generateProposal(TestConstants.USER_3_NAME, targetEntity.getTargetId());
-        // save result as existingProposalId
-        existingProposalId = proposalEntity.getId();
-         */
-    }
 
     @Test
     public void testNewSearchGenerateProposal() throws Exception {

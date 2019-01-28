@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
  * Created by margaretmartin on 13/05/2017.
  */
 @Service
+@Transactional
 public class TagServiceImpl implements TagService {
 
     private final List<TagChangeListener> listeners = new CopyOnWriteArrayList<>();
@@ -98,7 +99,6 @@ public class TagServiceImpl implements TagService {
         return new HashMap<>();
     }
 
-    @Transactional
     @Override
     public TagEntity updateTag(Long tagId, TagEntity toUpdate) {
         // get tag from db
@@ -244,7 +244,7 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public void saveTagForDelete(Long tagId, Long replacementTagId) throws ActionInvalidException {
+    public void saveTagForDelete(Long tagId, Long replacementTagId) {
         TagEntity tag = getTagById(tagId);
         TagEntity replacement = getTagById(replacementTagId);
 
@@ -351,15 +351,6 @@ public class TagServiceImpl implements TagService {
         return true;
     }
 
-    private TagEntity getDefaultGroup(TagType tagType) {
-        List<TagEntity> defaults = tagRepository.findTagsByTagTypeAndTagTypeDefault(tagType, true);
-        if (defaults != null && !defaults.isEmpty()) {
-            return defaults.get(0);
-        }
-        return null;
-    }
-
-
     @Override
     public void addTagToDish(Long dishId, Long tagId) {
         // get dish
@@ -411,7 +402,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public void replaceTagInDishes(String name, Long fromTagId, Long toTagId) {
         UserAccountEntity user = userRepository.findByUsername(name);
-        List<DishEntity> dishes = null;
+        List<DishEntity> dishes;
         TagEntity toTag = getTagById(toTagId);
 
         if (fromTagId.equals(0L)) {
@@ -450,11 +441,7 @@ public class TagServiceImpl implements TagService {
         listeners.add(tagChangeListener);
     }
 
-    public void mergeTags(TagEntity fromTag, TagEntity foTag) {
-        // set fromTag to non-display and remove from structure
-        //fromTag.setDisplay(false);
 
-    }
     private void fireTagParentChangedEvent(TagEntity oldParent, TagEntity newParent, TagEntity changedTag) {
         for (TagChangeListener listener : listeners) {
             listener.onParentChange(oldParent, newParent, changedTag);

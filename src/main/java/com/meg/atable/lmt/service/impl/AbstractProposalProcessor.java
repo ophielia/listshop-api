@@ -44,8 +44,6 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
                 proposalSlot.setProposal(info.getProposal());
                 proposalSlot.setSlotNumber(slot.getSlotNumber());
                 proposalSlot.setSlotDishTagId(info.getDishTagBySlotNumber(slot.getSlotNumber()));
-                //MM don't need this, I think String flatMatchedIds = matchedIdsAsString(slot,info.getTagKeyBySlotNumber(slot.getFillInSlotNumber()));
-                //MM this either proposalSlot.setFlatMatchedTagIds(flatMatchedIds);
                 List<DishSlotEntity> dishSlots = mapDishSlots(info,slot, proposalSlot);
                 proposalSlot.setDishSlots(dishSlots);
                 resultList.add(proposalSlot);
@@ -191,7 +189,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         List<DishTagSearchResult> slotMatches = new ArrayList<>();
         List<DishTagSearchResult> targetMatches = new ArrayList<>();
         List<DishTagSearchResult> empties = new ArrayList<>();
-        int matchCount = 0;
+        int matchCount;
         dishResults
                 .forEach(m -> {
                     if (m.getSlotMatches() > 0) {

@@ -40,6 +40,7 @@ public class ProcessResult {
         this.resultSlots=proposalSlots;
     }
 
+    // MM deprecation search - looks like current approach and currentApproachtype serve the same function
     public int getCurrentApproach() {
         return currentApproach;
     }

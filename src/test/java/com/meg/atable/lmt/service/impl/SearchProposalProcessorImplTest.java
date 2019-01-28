@@ -1,5 +1,6 @@
 package com.meg.atable.lmt.service.impl;
 
+import com.meg.atable.lmt.api.model.TargetType;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.service.DishSearchService;
 import com.meg.atable.lmt.service.DishTagSearchResult;
@@ -45,6 +46,7 @@ public class SearchProposalProcessorImplTest {
     @Test
     public void processProposal_NoExistingProposal() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4,2,3);
+        target.setTargetType(TargetType.Standard);
         target.setUserId(TestConstants.USER_3_ID);
         ProposalRequest testRequest = new ProposalRequest();
         testRequest.setTarget(target);
@@ -240,6 +242,7 @@ public class SearchProposalProcessorImplTest {
     @Test
     public void processProposal_MealPlanNoExistingProposal() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4,2,3);
+        target.setTargetType(TargetType.Standard);
         target.setUserId(TestConstants.USER_3_ID);
         ProposalRequest testRequest = new ProposalRequest();
         testRequest.setTarget(target);
@@ -306,6 +309,7 @@ public class SearchProposalProcessorImplTest {
     public void processProposal_NoTargetTagIds() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4,2,3);
         target.setTargetTagIds("");
+        target.setTargetType(TargetType.Standard);
         target.setUserId(TestConstants.USER_3_ID);
         ProposalRequest testRequest = new ProposalRequest();
         testRequest.setTarget(target);
@@ -354,6 +358,7 @@ public class SearchProposalProcessorImplTest {
     @Test
     public void processProposal_NoSlotsTargetIds() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(2,2,3);
+        target.setTargetType(TargetType.Standard);
         TargetSlotEntity targetSlot = target.getSlots().get(0);
         targetSlot.setTargetTagIds(null);
         target.setUserId(TestConstants.USER_3_ID);
@@ -403,6 +408,7 @@ public class SearchProposalProcessorImplTest {
     public void processProposal_OneSlotOnly() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(1,2,3);
         target.setUserId(TestConstants.USER_3_ID);
+        target.setTargetType(TargetType.Standard);
         ProposalRequest testRequest = new ProposalRequest();
         testRequest.setTarget(target);
 

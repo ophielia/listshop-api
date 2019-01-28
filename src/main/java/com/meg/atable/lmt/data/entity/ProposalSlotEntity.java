@@ -46,9 +46,6 @@ public class ProposalSlotEntity {
     private String flatMatchedTagIds;
 
     @Transient
-    private List<String> matchedTagIds;
-
-    @Transient
     private TagEntity slotDishTag;
 
     @Transient
@@ -98,10 +95,6 @@ public class ProposalSlotEntity {
         this.slotDishTagId = slotDishTagId;
     }
 
-    public Long getSlotDishTagId() {
-        return slotDishTagId;
-    }
-
     public String getFlatMatchedTagIds() {
         return flatMatchedTagIds;
     }
@@ -110,20 +103,8 @@ public class ProposalSlotEntity {
         this.flatMatchedTagIds = flatMatchedTagIds;
     }
 
-    public void setMatchedTagIds(List<String> matchedTagIds) {
-        this.matchedTagIds = matchedTagIds;
-    }
-
-    public List<String> getMatchedTagIds() {
-        return matchedTagIds;
-    }
-
     public TagEntity getSlotDishTag() {
         return slotDishTag;
-    }
-
-    public void setSlotDishTag(TagEntity slotDishTag) {
-        this.slotDishTag = slotDishTag;
     }
 
     public List<TagEntity> getTags() {

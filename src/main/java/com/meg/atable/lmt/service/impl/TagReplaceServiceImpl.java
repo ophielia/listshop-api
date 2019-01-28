@@ -145,6 +145,7 @@ public class TagReplaceServiceImpl implements TagReplaceService {
 
     }
 
+    // next - for proposal, replace in proposal_dish, proposal_slot
 
     private void replaceTagsInTargets(Long toReplaceId, Long replaceWithId) {
         // find candidates

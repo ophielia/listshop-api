@@ -95,7 +95,6 @@ public class FillInProposalProcessorImplTest {
 
         Assert.assertNotNull(testResult);
         // check 1 slots with 9 dishes
-        boolean noFilteredDishMatch = true;
         Assert.assertEquals(1, testResult.getResultSlots().size());
         ProposalSlotEntity slot = testResult.getResultSlots().get(0);
             // at least one tag match
@@ -107,10 +106,7 @@ public class FillInProposalProcessorImplTest {
                 if (tagMatch) {
                     break;
                 }
-                if (sqlFilter.contains(dishSlot.getDishId())) {
-                    noFilteredDishMatch = false;
-                    break;
-                }
+
             }
             Assert.assertTrue(tagMatch);
 
@@ -317,7 +313,6 @@ public class FillInProposalProcessorImplTest {
 
         Assert.assertNotNull(testResult);
         // check 8 slots with 5 dishes each
-        boolean noFilteredDishMatch = true;
         Assert.assertEquals(1, testResult.getResultSlots().size());
         for (ProposalSlotEntity slot : testResult.getResultSlots()) {
             // at least one tag match
@@ -327,10 +322,6 @@ public class FillInProposalProcessorImplTest {
             for (DishSlotEntity dishSlot : slot.getDishSlots()) {
                 tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
                 if (tagMatch) {
-                    break;
-                }
-                if (sqlFilter.contains(dishSlot.getDishId())) {
-                    noFilteredDishMatch = false;
                     break;
                 }
             }
@@ -389,7 +380,6 @@ public class FillInProposalProcessorImplTest {
 
         Assert.assertNotNull(testResult);
         // check 4 slots with 5 dishes each
-        boolean noFilteredDishMatch = true;
         Assert.assertEquals(1, testResult.getResultSlots().size());
         for (ProposalSlotEntity slot : testResult.getResultSlots()) {
             // at least one tag match
@@ -399,10 +389,6 @@ public class FillInProposalProcessorImplTest {
             for (DishSlotEntity dishSlot : slot.getDishSlots()) {
                 tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
                 if (tagMatch) {
-                    break;
-                }
-                if (sqlFilter.contains(dishSlot.getDishId())) {
-                    noFilteredDishMatch = false;
                     break;
                 }
             }

@@ -11,6 +11,27 @@ ALTER TABLE tag ALTER COLUMN is_display SET NOT NULL;
 
 ALTER TABLE tag ALTER COLUMN to_delete SET NOT NULL;
 
+--    target_proposal
+--    target_proposal_dish
+--    target_proposal_slot
+--    target_tags
+--    proposal_context_slot
+drop table proposal_context_slot;
+drop table target_proposal;
+drop table target_proposal_dish;
+drop table target_proposal_slot;
+drop table target_tags;
+-- possible deprecation
+--table
+--    proposal_context_slot
+--    target_proposal
+--    target_proposal_dish
+--    target_proposal_slot
+--    target_tags
+
+-- table change name
+-- proposal_dish => proposal_dish_slot
+
 
 
 
