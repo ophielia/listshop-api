@@ -59,5 +59,4 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
             "where d member of t.dishes and d.dish_id = ?1")
     Set<Long> getTagIdsForDish(Long dishId);
 
-
 }

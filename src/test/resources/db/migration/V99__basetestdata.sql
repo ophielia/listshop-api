@@ -61,6 +61,10 @@ insert into dish_tags (dish_id, tag_id) values (500, 501);
 insert into dish_tags (dish_id, tag_id) values (501, 501);
 insert into dish_tags (dish_id, tag_id) values (501, 502);
 insert into dish_tags (dish_id, tag_id) values (502, 503);
+-- inserting tags for delete tag test - tags 110 and 353 into dish 54
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (54, 110);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (54, 353);
+
 
 -- meal plan - 1 - id 500
 insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 1', 500, 500) ;

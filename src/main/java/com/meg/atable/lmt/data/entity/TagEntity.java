@@ -54,9 +54,9 @@ public class TagEntity {
     @Transient
     private Long parentId;
 
-    private Boolean isDisplay;
+    private Boolean isDisplay = true;
 
-    private Boolean toDelete;
+    private Boolean toDelete = false;
 
     private Long replacementTagId;
 
@@ -174,13 +174,18 @@ public class TagEntity {
 
     public boolean getDisplay() {
         return isDisplay == null? true : isDisplay;
-    }    public TagEntity copy() {
+    }
+
+    public TagEntity copy() {
         TagEntity copy = new TagEntity();
         copy.setName(getName());
         copy.setDescription(getDescription());
         copy.setSearchSelect(getSearchSelect());
         copy.setAssignSelect(getAssignSelect());
         copy.setPower(getPower());
+        copy.setReplacementTagId(getReplacementTagId());
+        copy.setToDelete(isToDelete());
+        copy.setIsDisplay(isDisplay);
             return copy;
     }
 

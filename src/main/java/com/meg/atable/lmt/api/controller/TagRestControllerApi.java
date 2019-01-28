@@ -20,8 +20,8 @@ public interface TagRestControllerApi {
                                                 @RequestParam(value = "tag_type", required = false) String tagType,
                                                 @RequestParam(value = "fill_tags", required = false) Boolean fillTags);
 
-    @RequestMapping(value = "/delete/{tagId}", method = RequestMethod.GET)
-    ResponseEntity<Object> saveTagForDelete(@PathVariable Long tagId, @RequestParam(value = "replacement", required = true) Long replacementTagId);
+    @RequestMapping(value = "/delete/{tagId}", method = RequestMethod.DELETE)
+    ResponseEntity<Object> saveTagForDelete(@PathVariable("tagId") Long tagId, @RequestParam(value = "replacementTagId", required = true) Long replacementTagId);
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<TagResource> add(@RequestBody Tag input);

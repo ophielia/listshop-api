@@ -11,6 +11,7 @@ import com.meg.atable.lmt.data.repository.DishRepository;
 import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.DishSearchCriteria;
 import com.meg.atable.lmt.service.DishSearchService;
+import com.meg.atable.lmt.service.TagReplaceService;
 import com.meg.atable.lmt.service.tag.TagChangeListener;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.tag.TagStructureService;
@@ -33,6 +34,10 @@ public class TagServiceImpl implements TagService {
     private final List<TagChangeListener> listeners = new CopyOnWriteArrayList<>();
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private TagReplaceService tagReplaceService;
+
     @Autowired
     private TagStructureService tagStructureService;
     @Autowired
@@ -110,6 +115,9 @@ public class TagServiceImpl implements TagService {
         dbTag.setAssignSelect(toUpdate.getAssignSelect());
         dbTag.setSearchSelect(toUpdate.getSearchSelect());
         dbTag.setPower(toUpdate.getPower());
+        dbTag.setIsDisplay(toUpdate.isDisplay());
+        dbTag.setToDelete(toUpdate.isToDelete());
+        dbTag.setReplacementTagId(toUpdate.getReplacementTagId());
         dbTag = tagRepository.save(dbTag);
 
         // if change, maintain change
@@ -254,6 +262,7 @@ public class TagServiceImpl implements TagService {
         // mark tag to be deleted
         tag.setToDelete(true);
         tag.setReplacementTagId(replacement != null ? replacement.getId() : null);
+        updateTag(tagId, tag);
 
         // delete tag now if immediate delete is activated
         if (DELETE_IMMEDIATELY) {
@@ -265,6 +274,8 @@ public class TagServiceImpl implements TagService {
         // MM start here
 
         // replace tags visible in objects -
+        tagReplaceService.replaceTagInDish(tag.getId(), tag.getReplacementTagId());
+
         // dish, lists, proposals and targets
 
         // delete tags from utility / background spaces

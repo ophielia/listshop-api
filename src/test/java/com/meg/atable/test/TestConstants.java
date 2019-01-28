@@ -67,6 +67,8 @@ public final class TestConstants {
     public static final Long TAG_CROCKPOT = 323L;
     public static final Long TAG_MEAT = 346L;
     public static final Long TAG_SOUP = 301L;
+    public static final Long TAG_TO_DELETE = 353L;
+    public static final Long TAG_TO_REPLACE = 110L;
 
 
     public static final Long TARGET_1_ID = 500L;  // status
@@ -77,6 +79,7 @@ public final class TestConstants {
     public static final Long TAG_EASE_OF_PREP = 399L;
     public static final Long DISH_1_ID = 1L; // Israeli Couscous
     public static final Long DISH_2_ID = 109L; // Israeli Couscous
+    public static final Long DISH_3_ID = 54L; // Beef Broccoli
 
     public static final Long TARGET_3_SLOT_ID = 506L;
 

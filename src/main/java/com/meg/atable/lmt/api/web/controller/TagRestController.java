@@ -176,7 +176,7 @@ public class TagRestController implements TagRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> saveTagForDelete(Long tagId, Long replacementTagId) {
+    public ResponseEntity<Object> saveTagForDelete(@PathVariable Long tagId, @RequestParam Long replacementTagId) {
 
         this.tagService.saveTagForDelete(tagId,replacementTagId);
 
