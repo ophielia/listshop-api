@@ -5,6 +5,6 @@ package com.meg.atable.lmt.service;
  */
 public interface TagReplaceService {
 
-    void replaceTagInDish(Long toReplaceId, Long replaceWithId);
+    void replaceTag(Long toReplaceId, Long replaceWithId);
 
 }

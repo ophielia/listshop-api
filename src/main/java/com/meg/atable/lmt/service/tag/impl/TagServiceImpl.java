@@ -274,7 +274,7 @@ public class TagServiceImpl implements TagService {
         // MM start here
 
         // replace tags visible in objects -
-        tagReplaceService.replaceTagInDish(tag.getId(), tag.getReplacementTagId());
+        tagReplaceService.replaceTag(tag.getId(), tag.getReplacementTagId());
 
         // dish, lists, proposals and targets
 
