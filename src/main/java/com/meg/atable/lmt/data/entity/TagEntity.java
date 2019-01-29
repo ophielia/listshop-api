@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tag")
@@ -23,8 +24,8 @@ public class TagEntity {
 
     @Id
     @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="tag_sequence")
-    @Column(name = "tag_id")
-    private Long tag_id;
+    @Column(name = "tagId")
+    private Long tagId;
 
     private String name;
 
@@ -71,12 +72,12 @@ public class TagEntity {
         this.toDelete = false;
     }
 
-    public TagEntity(Long tag_id) {
-        this.tag_id = tag_id;
+    public TagEntity(Long tagId) {
+        this.tagId = tagId;
     }
 
     public Long getId() {
-        return tag_id;
+        return tagId;
     }
 
     public String getName() {
@@ -210,9 +211,24 @@ public class TagEntity {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TagEntity tagEntity = (TagEntity) o;
+        return Objects.equals(tagId, tagEntity.tagId) &&
+                Objects.equals(name, tagEntity.name) &&
+                tagType == tagEntity.tagType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tagId, name, tagType);
+    }
+
+    @Override
     public String toString() {
         return "TagEntity{" +
-                "tag_id=" + tag_id +
+                "tagId=" + tagId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", tagType=" + tagType +

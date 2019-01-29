@@ -7,6 +7,7 @@ import com.meg.atable.lmt.data.entity.TargetSlotEntity;
 import com.meg.atable.lmt.data.repository.TargetRepository;
 import com.meg.atable.lmt.service.TagReplaceService;
 import com.meg.atable.lmt.service.TargetService;
+import com.meg.atable.lmt.service.tag.TagService;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +34,9 @@ public class TagReplaceServiceImpl implements TagReplaceService {
     private TargetRepository targetRepository;
 
     @Autowired
+    private TagService tagService;
+
+    @Autowired
     private TargetService targetService;
 
 
@@ -45,7 +50,7 @@ public class TagReplaceServiceImpl implements TagReplaceService {
 
         replaceTagInDish(toReplaceId, replaceWithId);
         replaceTagInLists(toReplaceId, replaceWithId);
-        replaceTagsInTargets(toReplaceId,replaceWithId);
+        replaceTagsInTargets(toReplaceId, replaceWithId);
         // clear session
         session.flush();
         session.clear();
@@ -149,7 +154,7 @@ public class TagReplaceServiceImpl implements TagReplaceService {
 
     private void replaceTagsInTargets(Long toReplaceId, Long replaceWithId) {
         // find candidates
-        List<Object> candidatesRaw = findTargetCandidates(toReplaceId);
+        List<Object> candidatesRaw = findTargetSlotCandidates(toReplaceId);
         List<Long> candidates = candidatesRaw.stream().map(o -> Long.valueOf(String.valueOf(o))).collect(Collectors.toList());
         List<TargetEntity> targetEntities = targetRepository.findAllById(candidates);
         String replaceId = String.valueOf(toReplaceId);
@@ -168,9 +173,28 @@ public class TagReplaceServiceImpl implements TagReplaceService {
                 }
             }
         }
+
+        candidatesRaw = findTargetCandidates(toReplaceId);
+        candidates = candidatesRaw.stream().map(o -> Long.valueOf(String.valueOf(o))).collect(Collectors.toList());
+        targetEntities = targetRepository.findAllById(candidates);
+        // for each candidate -
+        for (TargetEntity target : targetEntities) {
+            // get user for target
+            UserAccountEntity user = userService.getUserById(target.getUserId());
+            Set<String> targetTagSet = target.getTagIdsAsSet();
+            if (targetTagSet.isEmpty() || !targetTagSet.contains(replaceId)) {
+                continue;
+            }
+            targetService.deleteTagFromTarget(user.getUsername(), target.getTargetId(), toReplaceId);
+            if (!targetTagSet.contains(replaceWith)) {
+                targetService.addTagToTarget(user.getUsername(), target.getTargetId(), replaceWithId);
+            }
+
+        }
+
     }
 
-    private List<Object> findTargetCandidates(Long toReplaceId) {
+    private List<Object> findTargetSlotCandidates(Long toReplaceId) {
         StringBuilder baseSql = new StringBuilder();
         baseSql.append("select distinct target_id from target_slot where " +
                 "        (target_tag_ids like '");
@@ -182,7 +206,21 @@ public class TagReplaceServiceImpl implements TagReplaceService {
                 "        target_tag_ids like '%;");
         baseSql.append(toReplaceId).append("')");
         Query query = entityManager.createNativeQuery(baseSql.toString());
-        List<Object> candidates = query.getResultList();
-        return candidates;
+        return query.getResultList();
+    }
+
+    private List<Object> findTargetCandidates(Long toReplaceId) {
+        StringBuilder baseSql = new StringBuilder();
+        baseSql.append("select distinct target_id from target where " +
+                "        (target_tag_ids like '");
+        baseSql.append(toReplaceId).append("%' or " +
+                "        target_tag_ids like '%;");
+        baseSql.append(toReplaceId).append(";%' or " +
+                "        target_tag_ids like '%;");
+        baseSql.append(toReplaceId).append(";' or " +
+                "        target_tag_ids like '%;");
+        baseSql.append(toReplaceId).append("')");
+        Query query = entityManager.createNativeQuery(baseSql.toString());
+        return query.getResultList();
     }
 }
