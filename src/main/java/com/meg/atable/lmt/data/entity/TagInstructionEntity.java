@@ -59,7 +59,6 @@ public class TagInstructionEntity extends AutoTagInstructionEntity implements In
 
     }
 
-
     public Set<Long> getSearchTags() {
         return searchTags;
     }
