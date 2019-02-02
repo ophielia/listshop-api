@@ -33,7 +33,7 @@ public class TagProcessorImpl extends AbstractAutoTagProcessor {
     }
 
     @Override
-    protected List<Instruction> fillInstructions() {
+    public List<Instruction> fillInstructions() {
         List<TagInstructionEntity> entities = tagInstructionRepository.findAll();
         for (TagInstructionEntity instruction : entities) {
             Set<Long> tagIdList = instruction.getMasterSearchTags();
@@ -50,7 +50,7 @@ public class TagProcessorImpl extends AbstractAutoTagProcessor {
     }
 
     @Override
-    protected Long processTagForInstruction(Instruction instr, AutoTagSubject subject) {
+    public Long processTagForInstruction(Instruction instr, AutoTagSubject subject) {
         TagInstructionEntity instruction = (TagInstructionEntity) instr;
         // determine if search term match exists
         List<Long> matches = instruction.getSearchTags().stream()

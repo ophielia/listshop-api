@@ -7,4 +7,5 @@ public interface TagReplaceService {
 
     void replaceTag(Long toReplaceId, Long replaceWithId);
 
+    void replaceAllTags();
 }

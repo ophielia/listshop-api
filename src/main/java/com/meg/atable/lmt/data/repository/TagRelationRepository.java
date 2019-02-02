@@ -32,12 +32,12 @@ public interface TagRelationRepository extends JpaRepository<TagRelationEntity, 
             "       from tag_relation tr " +
             "       join tag t on t.tag_id = tr.child_tag_id " +
             "       where t.tag_type in (:tagTypes)" +
-            "       and t.is_display = true and t.to_delete = false;", nativeQuery = true)
+            "       and t.to_delete = false;", nativeQuery = true)
     List<Object[]> getTagRelationshipsForTagType(@Param("tagTypes") List<String> tagTypes);
 
     @Query(value = "select tr.parent_tag_id, tr.child_tag_id " +
             "       from tag_relation tr join tag t on tr.child_tag_id = t.tag_id" +
-            "       where t.is_display = true and t.to_delete = false;", nativeQuery = true)
+            "       where t.to_delete = false;", nativeQuery = true)
     List<Object[]> getAllTagRelationships();
 
 }

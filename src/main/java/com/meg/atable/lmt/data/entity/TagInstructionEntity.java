@@ -24,7 +24,7 @@ public class TagInstructionEntity extends AutoTagInstructionEntity implements In
     private List<Long> invertExclusions;
 
     @Override
-    public Long getTagIdToAssign(AutoTagSubject subject) {
+    public Long assignTag(AutoTagSubject subject) {
         if (inflatedSearchTerms == null) {
             inflateSearchTerms();
         }

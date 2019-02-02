@@ -3,13 +3,8 @@ package com.meg.atable.lmt.service.impl;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.FlatStringUtils;
-import com.meg.atable.lmt.data.entity.DishSlotEntity;
-import com.meg.atable.lmt.data.entity.ProposalSlotEntity;
-import com.meg.atable.lmt.data.entity.TargetEntity;
-import com.meg.atable.lmt.data.entity.TargetSlotEntity;
-import com.meg.atable.lmt.data.repository.DishSlotRepository;
-import com.meg.atable.lmt.data.repository.ProposalSlotRepository;
-import com.meg.atable.lmt.data.repository.TargetRepository;
+import com.meg.atable.lmt.data.entity.*;
+import com.meg.atable.lmt.data.repository.*;
 import com.meg.atable.lmt.service.TagReplaceService;
 import com.meg.atable.lmt.service.TargetService;
 import org.hibernate.Session;
@@ -39,6 +34,12 @@ public class TagReplaceServiceImpl implements TagReplaceService {
     private TargetRepository targetRepository;
 
     @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
+    private TagInstructionRepository tagInstructionRepository;
+
+    @Autowired
     private ProposalSlotRepository proposalSlotRepository;
 
     @Autowired
@@ -51,6 +52,22 @@ public class TagReplaceServiceImpl implements TagReplaceService {
     @Autowired
     private UserService userService;
 
+
+    @Override
+    public void replaceAllTags() {
+        // get all tags to replace
+        List<TagEntity> toReplaceList = tagRepository.findTagsByToDeleteTrue();
+
+        // go through each, calling replaceTag
+        for (TagEntity tag : toReplaceList) {
+            if (tag.getReplacementTagId()==null) {
+                continue;
+            }
+            replaceTag(tag.getId(),tag.getReplacementTagId());
+        }
+    }
+
+
     @Override
     @Transactional
     public void replaceTag(Long toReplaceId, Long replaceWithId) {
@@ -60,21 +77,83 @@ public class TagReplaceServiceImpl implements TagReplaceService {
         replaceTagInLists(toReplaceId, replaceWithId);
         replaceTagsInTargets(toReplaceId, replaceWithId);
         replaceTagsInProposal(toReplaceId, replaceWithId);
-// autotag instruction
-        // text instruction entity
+        replaceAutotagInstruction(toReplaceId, replaceWithId);
+
 
         // category tag id
-        // list tag statistic
-        // shadow tags
-             // tag instruction entity
-        // tag relation
+        removeCategoryTags(toReplaceId);
+        // list tag statistic - shadow tags
+        removeStatsAndShadowTags(toReplaceId);
+         // tag relation
+        removeTagRelation(toReplaceId);
         // tag search group
-
+        removeTagSearchGroup(toReplaceId);
 
         // clear session
         session.flush();
         session.clear();
 
+    }
+
+
+    private void removeTagSearchGroup(Long toReplaceId) {
+        StringBuilder baseSql = new StringBuilder();
+        baseSql.append("delete from  tag_search_group " +
+                "where member_id = ");
+        baseSql.append(toReplaceId).append("; ");
+        Query query = entityManager.createNativeQuery(baseSql.toString());
+        query.executeUpdate();
+    }
+
+    private void removeTagRelation(Long toReplaceId) {
+        StringBuilder baseSql = new StringBuilder();
+        baseSql.append("delete from  tag_relation " +
+                "where child_tag_id = ");
+        baseSql.append(toReplaceId).append("; ");
+        Query query = entityManager.createNativeQuery(baseSql.toString());
+        query.executeUpdate();
+    }
+
+    private void removeStatsAndShadowTags(Long toReplaceId) {
+        StringBuilder baseSql = new StringBuilder();
+        baseSql.append("delete from  list_tag_stats " +
+                "where tag_id = ");
+        baseSql.append(toReplaceId).append("; ");
+        Query query = entityManager.createNativeQuery(baseSql.toString());
+        query.executeUpdate();
+
+         baseSql = new StringBuilder();
+        baseSql.append("delete from  shadow_tags " +
+                "where tag_id = ");
+        baseSql.append(toReplaceId).append("; ");
+        query = entityManager.createNativeQuery(baseSql.toString());
+        query.executeUpdate();
+    }
+
+    private void removeCategoryTags(Long toReplaceId) {
+        StringBuilder baseSql = new StringBuilder();
+        baseSql.append("delete from  category_tags " +
+                "where tag_id = ");
+        baseSql.append(toReplaceId).append("; ");
+        Query query = entityManager.createNativeQuery(baseSql.toString());
+        query.executeUpdate();
+
+    }
+
+    private void replaceAutotagInstruction(Long toReplaceId, Long replaceWithId) {
+
+        // find candidates
+        List<TagInstructionEntity> candidates = findAutoTagCandidates(toReplaceId);
+        // for each candidate -
+        for (AutoTagInstructionEntity instructionEntity  : candidates) {
+            // replace tag
+            instructionEntity.setAssignTagId(replaceWithId);
+        }
+        tagInstructionRepository.saveAll(candidates);
+    }
+
+    private List<TagInstructionEntity> findAutoTagCandidates(Long toReplaceId) {
+        return tagInstructionRepository.findByAssignTagId(toReplaceId);
     }
 
     private void replaceTagInLists(Long toReplaceId, Long replaceWithId) {
@@ -173,26 +252,26 @@ public class TagReplaceServiceImpl implements TagReplaceService {
     // next - for proposal, replace in proposal_dish, proposal_slot
 
     private void replaceTagsInTargets(Long toReplaceId, Long replaceWithId) {
-        // find candidates
-        List<Object> candidatesRaw = findTargetSlotCandidates(toReplaceId);
-        List<Long> candidates = candidatesRaw.stream().map(o -> Long.valueOf(String.valueOf(o))).collect(Collectors.toList());
-        List<TargetEntity> targetEntities = targetRepository.findAllById(candidates);
-        String replaceId = String.valueOf(toReplaceId);
-        String replaceWith = String.valueOf(replaceWithId);
-        // for each candidate -
-        for (TargetEntity target : targetEntities) {
-            // get user for target
-            UserAccountEntity user = userService.getUserById(target.getUserId());
-            for (TargetSlotEntity slot : target.getSlots()) {
-                if (!slot.getTagIdsAsList().contains(replaceId)) {
-                    continue;
-                }
-                targetService.deleteTagFromTargetSlot(user.getUsername(), target.getTargetId(), slot.getId(), toReplaceId);
-                if (!slot.getTagIdsAsList().contains(replaceWith)) {
-                    targetService.addTagToTargetSlot(user.getUsername(), target.getTargetId(), slot.getId(), replaceWithId);
+            // find candidates
+            List<Object> candidatesRaw = findTargetSlotCandidates(toReplaceId);
+            List<Long> candidates = candidatesRaw.stream().map(o -> Long.valueOf(String.valueOf(o))).collect(Collectors.toList());
+            List<TargetEntity> targetEntities = targetRepository.findAllById(candidates);
+            String replaceId = String.valueOf(toReplaceId);
+            String replaceWith = String.valueOf(replaceWithId);
+            // for each candidate -
+            for (TargetEntity target : targetEntities) {
+                // get user for target
+                UserAccountEntity user = userService.getUserById(target.getUserId());
+                for (TargetSlotEntity slot : target.getSlots()) {
+                    if (!slot.getTagIdsAsList().contains(replaceId)) {
+                        continue;
+                    }
+                    targetService.deleteTagFromTargetSlot(user.getUsername(), target.getTargetId(), slot.getId(), toReplaceId);
+                    if (!slot.getTagIdsAsList().contains(replaceWith)) {
+                        targetService.addTagToTargetSlot(user.getUsername(), target.getTargetId(), slot.getId(), replaceWithId);
+                    }
                 }
             }
-        }
 
         candidatesRaw = findTargetCandidates(toReplaceId);
         candidates = candidatesRaw.stream().map(o -> Long.valueOf(String.valueOf(o))).collect(Collectors.toList());

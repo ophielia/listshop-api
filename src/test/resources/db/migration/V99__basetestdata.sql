@@ -9,8 +9,8 @@ insert into tag (assign_select,  description,  is_verified, name, power, search_
 insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag4', 0, true, 'TagType', false, 503);
 insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag1', 0, true, 'TagType', false, 500);
 insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag5', 0, true, 'TagType', false, 504);
-insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id, is_display, to_delete) values (true, null,  true, 'notdisplayed', 0, true, 'Ingredient', false, 505, false, false);
-insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id, is_display, to_delete) values (true, null,  true, 'notdisplayed', 0, true, 'Ingredient', false, 506, true, true);
+insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id,  to_delete) values (true, null,  true, 'notdisplayed', 0, true, 'Ingredient', false, 505,  false);
+insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id,  to_delete) values (true, null,  true, 'notdisplayed', 0, true, 'Ingredient', false, 506,  true);
 
 
 INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES (9000, 505, 393);  -- assigns no display tag to tag in heirarchy (which contained other tags)
@@ -331,3 +331,10 @@ insert into proposal_dish (dish_id, matched_tag_ids, slot_id, dish_slot_id) valu
 insert into proposal_approach (approach_number, instructions, proposal_context_id, proposal_approach_id) values (0, '4;1;3', 501, 510);
 insert into proposal_approach (approach_number, instructions, proposal_context_id, proposal_approach_id) values (1, '1;3;4', 501, 511);
 update proposal_context set current_approach_index=0, current_approach_type='WHEEL_MIXED',  proposal_hash_code='0',target_hash_code='-623001283', target_id=501 where proposal_context_id=501;
+
+-- autotags
+--    text
+ INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'Text', 1, 301, 'false', 'Soup', false);
+ INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'Text', 2, 323, 'false', 'Crock-pot;Crockpot;Crock pot', false);
+ INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'Tag', 3, 346, 'false', '9;88;368;372;374;375', null);
+ INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'Tag', 4, 199, 'true', '9;88;368;372;374;375', 433);

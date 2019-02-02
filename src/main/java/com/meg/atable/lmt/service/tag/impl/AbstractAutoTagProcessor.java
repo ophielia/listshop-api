@@ -53,7 +53,7 @@ public abstract class AbstractAutoTagProcessor implements AutoTagProcessor {
 
 
 
-    List<Instruction> getInstructions() {
+    public List<Instruction> getInstructions() {
         long now = System.currentTimeMillis();
         if (now - STALEMILLIS < filledOnMilliseconds) {
             return currentInstructions();

@@ -29,6 +29,8 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
 
     List<TagEntity> findTagsByAssignSelect(Boolean assignSelect);
 
+    List<TagEntity> findTagsByToDeleteTrue();
+
     List<TagEntity> findTagsByIsDisplay(Boolean isDisplay);
 
     @Query(value = "select t.* from dish_tags dt, " +

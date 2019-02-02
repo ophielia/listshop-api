@@ -7,6 +7,7 @@ import com.meg.atable.lmt.service.tag.AutoTagSubject;
  */
 public interface Instruction {
 
+    Long getAssignTagId();
 
-    Long getTagIdToAssign(AutoTagSubject subject);
+    Long assignTag(AutoTagSubject subject);
 }

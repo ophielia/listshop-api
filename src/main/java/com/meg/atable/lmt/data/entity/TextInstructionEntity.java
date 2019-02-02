@@ -21,7 +21,7 @@ public class TextInstructionEntity extends AutoTagInstructionEntity implements I
     private List<String> textSearchTerms;
 
     @Override
-    public Long getTagIdToAssign(AutoTagSubject subject) {
+    public Long assignTag(AutoTagSubject subject) {
         if (textSearchTerms == null) {
             inflateSearchTerms();
         }
