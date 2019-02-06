@@ -109,7 +109,6 @@ public class TagServiceImpl implements TagService {
         dbTag.setAssignSelect(toUpdate.getAssignSelect());
         dbTag.setSearchSelect(toUpdate.getSearchSelect());
         dbTag.setPower(toUpdate.getPower());
-        dbTag.setIsDisplay(toUpdate.isDisplay());
         dbTag.setToDelete(toUpdate.isToDelete());
         dbTag.setReplacementTagId(toUpdate.getReplacementTagId());
         dbTag = tagRepository.save(dbTag);
@@ -212,7 +211,6 @@ public class TagServiceImpl implements TagService {
         newtag.setAssignSelect(true);
         newtag.setSearchSelect(false);
         newtag.setToDelete(false);
-        newtag.setIsDisplay(true);
         TagEntity saved = tagRepository.save(newtag);
 
         tagStructureService.createRelation(parentTag, saved);

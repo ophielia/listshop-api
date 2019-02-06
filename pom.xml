@@ -147,7 +147,7 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>5.0.7</version>
                 <configuration>
-                    <url>jdbc:postgresql://localhost:5432/dishsnap</url>
+                    <url>jdbc:postgresql://localhost:5432/dishdev</url>
                     <user>bank</user>
                     <password>940620</password>
                     <table>flyway_schema_history</table>

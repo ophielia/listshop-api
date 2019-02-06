@@ -15,15 +15,15 @@ import java.util.Objects;
         strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
         parameters = {@org.hibernate.annotations.Parameter(
                 name = "sequence_name",
-                value="tag_sequence"),
+                value = "tag_sequence"),
                 @org.hibernate.annotations.Parameter(
                         name = "increment_size",
-                        value="1")}
+                        value = "1")}
 )
 public class TagEntity {
 
     @Id
-    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="tag_sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tag_sequence")
     @Column(name = "tag_id")
     private Long tag_id;
 
@@ -55,8 +55,6 @@ public class TagEntity {
     @Transient
     private Long parentId;
 
-    private Boolean isDisplay = true;
-
     private Boolean toDelete = false;
 
     private Long replacementTagId;
@@ -68,7 +66,6 @@ public class TagEntity {
     public TagEntity(String name, String description) {
         this.name = name;
         this.description = description;
-        this.isDisplay = true;
         this.toDelete = false;
     }
 
@@ -169,14 +166,6 @@ public class TagEntity {
     }
 
 
-    public void setIsDisplay(boolean display) {
-        this.isDisplay = display;
-    }
-
-    public boolean getDisplay() {
-        return isDisplay == null? true : isDisplay;
-    }
-
     public TagEntity copy() {
         TagEntity copy = new TagEntity();
         copy.setName(getName());
@@ -186,13 +175,9 @@ public class TagEntity {
         copy.setPower(getPower());
         copy.setReplacementTagId(getReplacementTagId());
         copy.setToDelete(isToDelete());
-        copy.setIsDisplay(isDisplay);
-            return copy;
+        return copy;
     }
 
-    public boolean isDisplay() {
-        return isDisplay;
-    }
 
     public Boolean isToDelete() {
         return toDelete;

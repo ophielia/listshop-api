@@ -247,6 +247,15 @@ mvn flyway:baseline -Dflyway.baselineVersion=5
 
 
 
+1. backup dishdev
+2. copy dishsnap to dishdev
+3. move migrate scripts to dev
+4. mvn flyway:migrate
+5. fire up
+6. merge merge_tags => develop
+7. merge develop => master
+8. checkout master
+9. mvn flyway:migrate dishsnap
 
 
 
