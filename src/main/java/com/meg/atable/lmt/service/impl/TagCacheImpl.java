@@ -16,7 +16,7 @@ public class TagCacheImpl implements TagCache {
 
     Map<Long, TagCacheEntry> cacheMap = new HashMap<>();
 
-    private final static long EXPIRATION_TIME = 5L * 60000L;
+    private static final long EXPIRATION_TIME = 5L * 60000L;
 
     private class TagCacheEntry {
         long createstamp;
@@ -59,6 +59,11 @@ public class TagCacheImpl implements TagCache {
         if (cacheMap.containsKey(id)) {
             cacheMap.remove(id);
         }
+    }
+
+    @Override
+    public void clearCache() {
+        cacheMap = new HashMap<>();
     }
 
 }

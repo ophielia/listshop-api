@@ -1,7 +1,5 @@
 package com.meg.atable.lmt.service.impl;
 
-import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
-import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
@@ -74,7 +72,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingListEntity createList(String userName, ShoppingListEntity shoppingList) {
         UserAccountEntity user = userService.getUserByUserName(userName);
         // get list layout for user, list_type
-        ListLayoutEntity listLayout = getListLayout(user, shoppingList.getListType(), null);
+        ListLayoutEntity listLayout = getListLayout(shoppingList.getListType(), null);
         shoppingList.setListLayoutId(listLayout.getId());
         shoppingList.setCreatedOn(new Date());
         shoppingList.setUserId(user.getId());
@@ -86,7 +84,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ShoppingListEntity newList = new ShoppingListEntity();
         newList.setListType(listType != null ? listType : ListType.General);
         // get list layout for user, list_type
-        ListLayoutEntity listLayout = getListLayout(user, listType, null);
+        ListLayoutEntity listLayout = getListLayout(listType, null);
         newList.setListLayoutId(listLayout.getId());
         newList.setCreatedOn(new Date());
         newList.setUserId(user.getId());
@@ -94,7 +92,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public ShoppingListEntity createList(String userName, ListGenerateProperties listGenerateProperties) throws ShoppingListException, ObjectNotYoursException, ObjectNotFoundException {
+    public ShoppingListEntity createList(String userName, ListGenerateProperties listGenerateProperties) throws ShoppingListException {
         // create list
         ShoppingListEntity newList = createListForUser(userName, listGenerateProperties.getListType());
         ListItemCollector collector = new ListItemCollector(newList.getId(), null);
@@ -156,7 +154,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
 
-    private ListLayoutEntity getListLayout(UserAccountEntity user, ListType listType, ListLayoutType listLayoutType) {
+    private ListLayoutEntity getListLayout(ListType listType, ListLayoutType listLayoutType) {
         // nothing yet for user - eventually, we could consider user preferences / properties here
 
         ListLayoutType resultlayout = listLayoutType;
@@ -205,6 +203,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public boolean deleteList(String userName, Long listId) {
         ShoppingListEntity toDelete = getListById(userName, listId);
         if (toDelete != null) {
+            List<ItemEntity> items = toDelete.getItems();
+            itemRepository.deleteAll(items);
+            toDelete.setItems(new ArrayList<>());
             shoppingListRepository.delete(toDelete);
             return true;
         }
@@ -278,7 +279,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException {
+    public ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) {
         // get list layout by type
         ListLayoutType generalLayout = shoppingListProperties.getDefaultLayouts().get(ListType.General);
         Optional<ListLayoutEntity> listLayoutEntityOptional = listLayoutService.getListLayouts()
@@ -364,7 +365,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public List<Category> categorizeList(String userName, ShoppingListEntity shoppingListEntity, Long highlightDishId, Boolean showPantry, ListType highlightListType) {
         boolean isHighlightDish = highlightDishId != null && !highlightDishId.equals(0L);
         boolean isHighlightList = !isHighlightDish && highlightListType != null;
-        boolean separateFrequent = showPantry != null && showPantry;//shoppingListEntity.getListType().equals(ListType.InProcess);
+        boolean separateFrequent = showPantry != null && showPantry;
 
         String highlightName = getHighlightDishName(userName, isHighlightDish, highlightDishId);
         Set<Long> dishItemIds = getHighlightDishItemIds(isHighlightDish, shoppingListEntity, highlightDishId);
@@ -699,23 +700,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         shoppingListRepository.save(shoppingList);
     }
 
-
-    private void deleteAllItemsFromList(Long listId) {
-        shoppingListRepository.bulkDeleteItemsFromList(listId);
-    }
-
     private Map<Long, Long> getCategoryDictionary(Long layoutId, List<TagEntity> tagList) {
         return listSearchService.getTagToCategoryMap(layoutId, tagList);
     }
 
-    private Long getCategoryIdForItem(ShoppingListEntity shoppingList, ItemEntity itemEntity) {
-        if (itemEntity == null || itemEntity.getTag() == null) {
-            return null;
-        }
-        Map<Long, Long> lookup = getCategoryDictionary(shoppingList.getListLayoutId(), Arrays.asList(itemEntity.getTag()));
-        if (lookup.isEmpty()) {
-            return null;
-        }
-        return lookup.get(itemEntity.getTag().getId());
-    }
 }

@@ -89,6 +89,9 @@ public class TagReplaceServiceImpl implements TagReplaceService {
         // tag search group
         removeTagSearchGroup(toReplaceId);
 
+        // delete the actual tag
+        tagRepository.deleteById(toReplaceId);
+
         // clear session
         session.flush();
         session.clear();
@@ -325,7 +328,7 @@ public class TagReplaceServiceImpl implements TagReplaceService {
 
     private void replaceTagsInProposal(Long toReplaceId, Long replaceWithId) {
         // find candidates
-        List<Object> candidatesRaw = findProposalDishSlotCandidates(toReplaceId);
+        List<Object> candidatesRaw = findProposalSlotCandidates(toReplaceId);
         List<Long> candidates = candidatesRaw.stream().map(o -> Long.valueOf(String.valueOf(o))).collect(Collectors.toList());
         List<ProposalSlotEntity> proposalSlotEntities = proposalSlotRepository.findAllById(candidates);
         String replaceId = String.valueOf(toReplaceId);

@@ -24,8 +24,8 @@ public class TagEntity {
 
     @Id
     @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="tag_sequence")
-    @Column(name = "tagId")
-    private Long tagId;
+    @Column(name = "tag_id")
+    private Long tag_id;
 
     private String name;
 
@@ -73,11 +73,11 @@ public class TagEntity {
     }
 
     public TagEntity(Long tagId) {
-        this.tagId = tagId;
+        this.tag_id = tagId;
     }
 
     public Long getId() {
-        return tagId;
+        return tag_id;
     }
 
     public String getName() {
@@ -215,20 +215,20 @@ public class TagEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TagEntity tagEntity = (TagEntity) o;
-        return Objects.equals(tagId, tagEntity.tagId) &&
+        return Objects.equals(tag_id, tagEntity.tag_id) &&
                 Objects.equals(name, tagEntity.name) &&
                 tagType == tagEntity.tagType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tagId, name, tagType);
+        return Objects.hash(tag_id, name, tagType);
     }
 
     @Override
     public String toString() {
         return "TagEntity{" +
-                "tagId=" + tagId +
+                "tag_id=" + tag_id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", tagType=" + tagType +

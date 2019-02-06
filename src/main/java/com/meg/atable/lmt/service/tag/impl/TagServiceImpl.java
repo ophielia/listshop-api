@@ -1,10 +1,10 @@
 package com.meg.atable.lmt.service.tag.impl;
 
+import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.repository.UserRepository;
 import com.meg.atable.lmt.api.exception.ActionInvalidException;
 import com.meg.atable.lmt.api.model.TagFilterType;
 import com.meg.atable.lmt.api.model.TagType;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.auth.data.repository.UserRepository;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.repository.DishRepository;
@@ -33,26 +33,20 @@ import java.util.stream.Collectors;
 public class TagServiceImpl implements TagService {
 
     private final List<TagChangeListener> listeners = new CopyOnWriteArrayList<>();
+    @Value("${service.tagservice.delete.tag.immediately:false}")
+    boolean DELETEIMMEDIATELY;
     @Autowired
     private TagRepository tagRepository;
-
     @Autowired
     private TagReplaceService tagReplaceService;
-
     @Autowired
     private TagStructureService tagStructureService;
     @Autowired
     private DishRepository dishRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private DishSearchService dishSearchService;
-
-
-    @Value("${service.tagservice.delete.tag.immediately:false}")
-    boolean DELETE_IMMEDIATELY;
 
     @Override
     public TagEntity save(TagEntity tag) {
@@ -62,9 +56,9 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagEntity getTagById(Long tagId) {
 
-        Optional<TagEntity> tagOpt =  tagRepository.findById(tagId);
+        Optional<TagEntity> tagOpt = tagRepository.findById(tagId);
 
-        return tagOpt.isPresent()?tagOpt.get():null;
+        return tagOpt.isPresent() ? tagOpt.get() : null;
     }
 
     @Override
@@ -161,9 +155,9 @@ public class TagServiceImpl implements TagService {
         }
         // get by tag type
         if (tagTypes != null) {
-            return tagRepository.findTagsByTagTypeInOrderByName(tagTypes);
+            return tagRepository.findTagsByToDeleteFalseAndTagTypeInOrderByName(tagTypes);
         }
-        return tagRepository.findAll(new Sort(Sort.Direction.ASC, "name"));
+        return tagRepository.findTagsByToDeleteFalse(new Sort(Sort.Direction.ASC, "name"));
     }
 
 
@@ -179,9 +173,9 @@ public class TagServiceImpl implements TagService {
 
     private List<TagEntity> getSearchSelectableTagList(List<TagType> tagTypes) {
         if (tagTypes == null) {
-            return tagRepository.findTagsBySearchSelect(true);
+            return tagRepository.findTagsBySearchSelectAndToDeleteFalse(true);
         } else {
-            return tagRepository.findTagsBySearchSelectAndTagTypeIsIn(true, tagTypes);
+            return tagRepository.findTagsBySearchSelectAndTagTypeIsInAndToDeleteFalse(true, tagTypes);
         }
 
     }
@@ -189,9 +183,9 @@ public class TagServiceImpl implements TagService {
 
     private List<TagEntity> getAssignSelectableTagList(List<TagType> tagTypes) {
         if (tagTypes == null) {
-            return tagRepository.findTagsByAssignSelect(true);
+            return tagRepository.findTagsByAssignSelectAndToDeleteFalse(true);
         } else {
-            return tagRepository.findTagsByAssignSelectAndTagTypeIsIn(true, tagTypes);
+            return tagRepository.findTagsByAssignSelectAndTagTypeIsInAndToDeleteFalse(true, tagTypes);
         }
 
     }
@@ -258,6 +252,16 @@ public class TagServiceImpl implements TagService {
         if (children != null && !children.isEmpty()) {
             throw new ActionInvalidException("Tag [" + tag.getId() + "] can't be deleted because it has children.");
         }
+        // replacement tag exists
+        if (replacementTagId == null) {
+            throw new ActionInvalidException("Replacement Tag Id is null");
+        }
+        // tag is not same as replacement tag
+        if (replacementTagId.equals(tagId)) {
+            throw new ActionInvalidException("Tag cannot replace itself.");
+
+        }
+
 
         // mark tag to be deleted
         tag.setToDelete(true);
@@ -265,22 +269,11 @@ public class TagServiceImpl implements TagService {
         updateTag(tagId, tag);
 
         // delete tag now if immediate delete is activated
-        if (DELETE_IMMEDIATELY) {
-            replaceAndDeleteTag(tag);
+        if (DELETEIMMEDIATELY) {
+            tagReplaceService.replaceTag(tag.getId(), tag.getReplacementTagId());
         }
     }
 
-    private void replaceAndDeleteTag(TagEntity tag) {
-        // MM start here
-
-        // replace tags visible in objects -
-        tagReplaceService.replaceTag(tag.getId(), tag.getReplacementTagId());
-
-        // dish, lists, proposals and targets
-
-        // delete tags from utility / background spaces
-
-    }
 
     @Override
     public List<TagEntity> getTagsForDish(Long dishId) {

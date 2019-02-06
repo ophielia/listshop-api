@@ -4,6 +4,7 @@ package com.meg.atable.lmt.data.repository;
 import com.meg.atable.lmt.api.model.TagType;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,22 +17,22 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
 
     List<TagEntity> findTagsByDishes(DishEntity dish);
 
-    List<TagEntity> findTagsByTagTypeInOrderByName(List<TagType> tagTypes);
+    List<TagEntity> findTagsByToDeleteFalse(Sort sort);
 
+    List<TagEntity> findTagsByToDeleteFalseAndTagTypeInOrderByName(List<TagType> tagTypes);
 
     List<TagEntity> findTagsByTagTypeAndTagTypeDefault(TagType tagType, boolean isDefault);
 
-    List<TagEntity> findTagsBySearchSelectAndTagTypeIsIn(Boolean searchSelect, List<TagType> tagtypes);
+    List<TagEntity> findTagsBySearchSelectAndTagTypeIsInAndToDeleteFalse(Boolean searchSelect, List<TagType> tagtypes);
 
-    List<TagEntity> findTagsBySearchSelect(Boolean searchSelect);
+    List<TagEntity> findTagsBySearchSelectAndToDeleteFalse(Boolean searchSelect);
 
-    List<TagEntity> findTagsByAssignSelectAndTagTypeIsIn(Boolean assignSelect, List<TagType> tagtypes);
+    List<TagEntity> findTagsByAssignSelectAndTagTypeIsInAndToDeleteFalse(Boolean assignSelect, List<TagType> tagtypes);
 
-    List<TagEntity> findTagsByAssignSelect(Boolean assignSelect);
+    List<TagEntity> findTagsByAssignSelectAndToDeleteFalse(Boolean assignSelect);
 
     List<TagEntity> findTagsByToDeleteTrue();
 
-    List<TagEntity> findTagsByIsDisplay(Boolean isDisplay);
 
     @Query(value = "select t.* from dish_tags dt, " +
             "tag t where t.tag_id = dt.tag_id and  t.tag_type = 'Ingredient' and dt.dish_id in (:dishIdList) ", nativeQuery = true)
@@ -57,7 +58,7 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
             "join tag_relation tr on tr.parent_tag_id = t.tag_id;", nativeQuery = true)
     List<TagEntity> findParentTags();
 
-    @Query("select distinct t.tagId FROM TagEntity t , DishEntity d " +
+    @Query("select distinct t.tag_id FROM TagEntity t , DishEntity d " +
             "where d member of t.dishes and d.dish_id = ?1")
     Set<Long> getTagIdsForDish(Long dishId);
 

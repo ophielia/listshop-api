@@ -10,8 +10,9 @@ public interface TagCache {
 
     FatTag get(Long id);
 
-
     void set(FatTag fatTag);
 
     void clearEntry(Long id);
+
+    void clearCache();
 }

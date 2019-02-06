@@ -1,7 +1,5 @@
 package com.meg.atable.lmt.service;
 
-import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
-import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
 import com.meg.atable.lmt.api.model.Category;
 import com.meg.atable.lmt.api.model.GenerateType;
 import com.meg.atable.lmt.api.model.ListGenerateProperties;
@@ -20,7 +18,7 @@ public interface ShoppingListService {
 
     ShoppingListEntity createList(String userName, ShoppingListEntity shoppingListEntity);
 
-    ShoppingListEntity createList(String userName, ListGenerateProperties listGeneratProperties) throws ShoppingListException, ObjectNotYoursException, ObjectNotFoundException;
+    ShoppingListEntity createList(String userName, ListGenerateProperties listGeneratProperties) throws ShoppingListException;
 
     ShoppingListEntity getListByUsernameAndType(String userName, ListType listType);
 
@@ -32,7 +30,7 @@ public interface ShoppingListService {
 
     void deleteItemFromList(String name, Long listId, Long itemId, Boolean removeEntireItem, Long dishSourceId);
 
-    ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException;
+    ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId);
 
     ShoppingListEntity setListActive(String username, Long listId, GenerateType generateType);
 
@@ -55,7 +53,6 @@ public interface ShoppingListService {
     void deleteAllItemsFromList(String name, Long listId);
 
     void addListToList(String name, Long listId, ListType listType);
-
 
 
 }
