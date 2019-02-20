@@ -56,6 +56,8 @@ INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish1', null, 500, 500);
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish2', null, 500, 501);
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish3', null, 500, 502);
+insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish4', null, 500, 503);
+insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish4', null, 500, 504);
 insert into dish_tags (dish_id, tag_id) values (500, 500);
 insert into dish_tags (dish_id, tag_id) values (500, 501);
 insert into dish_tags (dish_id, tag_id) values (501, 501);
@@ -64,6 +66,24 @@ insert into dish_tags (dish_id, tag_id) values (502, 503);
 -- inserting tags for delete tag test - tags 110 and 353 into dish 54
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (54, 110);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (54, 353);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 353);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 218);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 363);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 419);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 344);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 322);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 396);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 426);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 400);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 353);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 218);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 363);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 419);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 344);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 322);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 396);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 426);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 400);
 
 
 -- meal plan - 1 - id 500
@@ -71,6 +91,7 @@ insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) val
 insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 1', 501, 501) ;
 insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 1', 20, 503) ;
 insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 2', 20, 504) ;
+insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 5', 500, 505) ;
 
 -- slots for meal plan - 
 insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (500, 500, 500);
@@ -85,6 +106,8 @@ insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) value
 insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (500, 504, 509);
 insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (501, 504, 510);
 insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (502, 504, 511);
+insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (503, 505, 512);
+insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (504, 505, 513);
 
 
 -- list layouts - ids 999 - to delete

@@ -1,6 +1,10 @@
 package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.Application;
+import com.meg.atable.lmt.api.model.DishRatingInfo;
+import com.meg.atable.lmt.api.model.RatingInfo;
+import com.meg.atable.lmt.api.model.RatingUpdateInfo;
+import com.meg.atable.lmt.api.model.SortOrMoveDirection;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.repository.TagRepository;
@@ -16,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
+import java.util.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -24,9 +28,6 @@ import java.util.List;
 public class TagServiceImplTest {
     @Autowired
     private TagService tagService;
-
-    @Autowired
-    private TagRepository tagRepository;
 
     @Autowired
     private DishService dishService;
@@ -120,7 +121,7 @@ public class TagServiceImplTest {
         Assert.assertTrue(tags.size() == 3);
         boolean containsTagA = false;
         for (TagEntity testTag : tags) {
-            if (testTag.getId().equals(TestConstants.TAG_MEAT) ) {
+            if (testTag.getId().equals(TestConstants.TAG_MEAT)) {
                 containsTagA = true;
                 break;
             }
@@ -139,6 +140,139 @@ public class TagServiceImplTest {
         boolean found = tags.stream().anyMatch(t -> t.getId() == c.getId());
         // assert not found
         Assert.assertFalse(found);
+    }
+
+    @Test
+    public void testGetRatingUpdateInfoForOneDish_EmptyRatings() {
+        // get rating info for dish 25 (ham and potato soup) and user3
+        // dish 25 doesn't have any ratings
+        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds(TestConstants.USER_3_NAME, Collections.singletonList(25L));
+        Assert.assertNotNull(updateInfo);
+        Assert.assertNotNull(updateInfo.getRatingHeaders());
+        Assert.assertEquals(8, updateInfo.getRatingHeaders().size());
+        Assert.assertNotNull(updateInfo.getDishRatingInfoSet());
+        Assert.assertEquals(1, updateInfo.getDishRatingInfoSet().size());
+        DishRatingInfo info = updateInfo.getDishRatingInfoSet().iterator().next();
+        Assert.assertNotNull(info.getRatings());
+        Assert.assertEquals(8, info.getRatings().size());
+
+        Set<RatingInfo> testHeaders = updateInfo.getRatingHeaders();
+        Iterator it = testHeaders.iterator();
+        while (it.hasNext()) {
+            RatingInfo toTest = (RatingInfo) it.next();
+            Assert.assertNotNull(toTest.getMaxPower());
+        }
+    }
+
+    @Test
+    public void testGetRatingUpdateInfoForOneDish_FilledRatings() {
+
+        // one dish, all ratings filled
+        // dish 503 belonging to user 500 (user_1)
+        // it has all ratings filled in already
+        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds(TestConstants.USER_1_NAME, Collections.singletonList(TestConstants.DISH_4_ID));
+        Assert.assertNotNull(updateInfo);
+        Assert.assertNotNull(updateInfo.getRatingHeaders());
+        Assert.assertEquals(8, updateInfo.getRatingHeaders().size());
+        Assert.assertNotNull(updateInfo.getDishRatingInfoSet());
+        Assert.assertEquals(1, updateInfo.getDishRatingInfoSet().size());
+        DishRatingInfo info = updateInfo.getDishRatingInfoSet().iterator().next();
+        Assert.assertNotNull(info.getRatings());
+        Assert.assertEquals(8, info.getRatings().size());
+
+        Set<RatingInfo> testHeaders = updateInfo.getRatingHeaders();
+        Iterator it = testHeaders.iterator();
+        while (it.hasNext()) {
+            RatingInfo toTest = (RatingInfo) it.next();
+            Assert.assertNotNull(toTest.getMaxPower());
+        }
+    }
+
+
+    @Test
+    public void testGetRatingUpdateInfoForDishIds() {
+
+        // two dishes, one filled, one not
+        // dish 4 - filled, dish 5 - not filled
+        List<Long> dishIds = new ArrayList<>();
+        dishIds.add(TestConstants.DISH_3_ID);
+        dishIds.add(TestConstants.DISH_5_ID);
+        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds(TestConstants.USER_3_NAME, dishIds);
+        Assert.assertNotNull(updateInfo);
+        Assert.assertNotNull(updateInfo.getRatingHeaders());
+        Assert.assertEquals(8, updateInfo.getRatingHeaders().size());
+        Assert.assertNotNull(updateInfo.getDishRatingInfoSet());
+        Assert.assertEquals(2, updateInfo.getDishRatingInfoSet().size());
+        for (Iterator<DishRatingInfo> iter = updateInfo.getDishRatingInfoSet().iterator(); iter.hasNext(); ) {
+            DishRatingInfo info = iter.next();
+            Assert.assertNotNull(info.getRatings());
+            Assert.assertEquals(8, info.getRatings().size());
+        }
+
+        Set<RatingInfo> testHeaders = updateInfo.getRatingHeaders();
+        Iterator it = testHeaders.iterator();
+        while (it.hasNext()) {
+            RatingInfo toTest = (RatingInfo) it.next();
+            Assert.assertNotNull(toTest.getMaxPower());
+        }
+    }
+
+    @Test
+    public void testIncrementRatingUp() {
+        // for dish 4, user 1 - increment rating 291
+        // should move from 400 to 399
+        // get dish
+        DishEntity dish = dishService.getDishForUserById(TestConstants.USER_1_NAME, TestConstants.DISH_4_ID);
+
+        // get tags for dish
+        List<TagEntity> tags = tagService.getTagsForDish(dish.getId());
+
+        // assert includes 400
+        Optional<TagEntity> testTag = tags.stream().filter(t -> t.getId().equals(400L)).findFirst();
+        Assert.assertTrue(testTag.isPresent());
+
+        // increment
+        tagService.incrementDishRating(TestConstants.USER_1_NAME, TestConstants.DISH_4_ID, 291L, SortOrMoveDirection.UP);
+
+        // get tags for dish
+        tags = tagService.getTagsForDish(dish.getId());
+
+        // assert doesn't include 400
+        testTag = tags.stream().filter(t -> t.getId().equals(400L)).findFirst();
+        Assert.assertFalse(testTag.isPresent());
+
+        // assert includes 399
+        testTag = tags.stream().filter(t -> t.getId().equals(399L)).findFirst();
+        Assert.assertTrue(testTag.isPresent());
+    }
+
+    @Test
+    public void testIncrementRatingDown() {
+        // for dish 62, user 3 - increment rating 291
+        // should move from 400 to 401
+        // get dish
+        DishEntity dish = dishService.getDishForUserById(TestConstants.USER_1_NAME, TestConstants.DISH_4_ID);
+
+        // get tags for dish
+        List<TagEntity> tags = tagService.getTagsForDish(dish.getId());
+
+        // assert includes 400
+        Optional<TagEntity> testTag = tags.stream().filter(t -> t.getId().equals(400L)).findFirst();
+        Assert.assertTrue(testTag.isPresent());
+
+        // increment
+        tagService.incrementDishRating(TestConstants.USER_1_NAME, TestConstants.DISH_4_ID, 291L, SortOrMoveDirection.DOWN);
+
+        // get tags for dish
+        tags = tagService.getTagsForDish(dish.getId());
+
+        // assert doesn't include 400
+        testTag = tags.stream().filter(t -> t.getId().equals(400L)).findFirst();
+        Assert.assertFalse(testTag.isPresent());
+
+        // assert includes 399
+        testTag = tags.stream().filter(t -> t.getId().equals(401L)).findFirst();
+        Assert.assertTrue(testTag.isPresent());
     }
 
     @Test

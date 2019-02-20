@@ -4,6 +4,7 @@ import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
 import com.meg.atable.lmt.api.model.MealPlan;
 import com.meg.atable.lmt.api.model.MealPlanResource;
+import com.meg.atable.lmt.api.model.RatingUpdateInfoResource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,5 +44,9 @@ public interface MealPlanRestControllerApi {
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{mealPlanId}/dish/{dishId}", produces = "application/json")
     ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) throws ObjectNotFoundException, ObjectNotYoursException;
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{mealPlanId}/ratings", produces = "application/json")
+    ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable Long mealPlanId);
+
 
 }

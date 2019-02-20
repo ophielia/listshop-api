@@ -2,6 +2,7 @@ package com.meg.atable.lmt.api.controller;
 
 import com.meg.atable.lmt.api.model.Dish;
 import com.meg.atable.lmt.api.model.DishResource;
+import com.meg.atable.lmt.api.model.RatingUpdateInfoResource;
 import com.meg.atable.lmt.api.model.TagResource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
@@ -19,25 +20,25 @@ import java.security.Principal;
 public interface DishRestControllerApi {
 
 
-    @RequestMapping( method = RequestMethod.GET, produces = "application/json")
+    @GetMapping( produces = "application/json")
     ResponseEntity<Resources<DishResource>> retrieveDishes(Principal principal,
                                                            @RequestParam(value = "includedTags", required = false) String includedTags,
                                                            @RequestParam(value = "excludedTags", required = false) String excludedTags
                                                            );
 
-    @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @PostMapping( produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createDish(Principal principal, @RequestBody Dish input);
 
     @RequestMapping(value = "/{dishId}", method = RequestMethod.PUT, consumes = "application/json")
     ResponseEntity<Object> updateDish(Principal principal, @PathVariable Long dishId, @RequestBody Dish input);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{dishId}", produces = "application/json")
+    @GetMapping( value = "/{dishId}", produces = "application/json")
      ResponseEntity<Dish> readDish(Principal principal, @PathVariable("dishId") Long dishId);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{dishId}/tag", produces = "application/json")
+    @GetMapping( value = "/{dishId}/tag", produces = "application/json")
      ResponseEntity<Resources<TagResource>> getTagsByDishId(Principal principal,@PathVariable("dishId") Long dishId);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{dishId}/tag/{tagId}", produces = "application/json")
+    @PostMapping( value = "/{dishId}/tag/{tagId}", produces = "application/json")
      ResponseEntity<Object> addTagToDish(Principal principal,@PathVariable Long dishId, @PathVariable Long tagId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{dishId}/tag/{tagId}", produces = "application/json")
@@ -47,5 +48,13 @@ public interface DishRestControllerApi {
      ResponseEntity<Object> addAndRemoveTags(Principal principal, @PathVariable Long dishId,
                                                                     @RequestParam(value = "addTags", required = false) String addTags,
                                                                     @RequestParam(value = "removeTags", required = false) String removeTags);
+
+    @GetMapping( value = "/{dishId}/ratings", produces = "application/json")
+    ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable Long dishId);
+
+    @PostMapping(value = "/{dishId}/rating/{ratingId}", produces = "application/json")
+    ResponseEntity<Object> updateRatingForDish(Principal principal, @PathVariable Long dishId,
+                                               @PathVariable Long ratingId,
+                                               @RequestParam(value = "action", required = true) String direction);
 
 }

@@ -1,11 +1,11 @@
 package com.meg.atable.lmt.service.impl;
 
+import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.repository.UserRepository;
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
 import com.meg.atable.lmt.api.exception.UserNotFoundException;
 import com.meg.atable.lmt.api.model.TagType;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.auth.data.repository.UserRepository;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.repository.DishRepository;
@@ -42,7 +42,7 @@ public class DishServiceImpl implements DishService {
     private TagStructureService tagStructureService;
 
     @Override
-    public List<DishEntity> getDishesForUserName(String userName) throws UserNotFoundException {
+    public List<DishEntity> getDishesForUserName(String userName) {
         UserAccountEntity user = userRepository.findByUsername(userName);
         if (user == null) {
             throw new UserNotFoundException(userName);
@@ -56,7 +56,7 @@ public class DishServiceImpl implements DishService {
 
 
     @Override
-    public DishEntity getDishForUserById(String username, Long dishId) throws ObjectNotFoundException, ObjectNotYoursException {
+    public DishEntity getDishForUserById(String username, Long dishId) {
         if (dishId == null) {
             final String msg = "Null dishId passed as argument [" + username + "].";
             throw new ObjectNotFoundException(msg, null, "Dish");
@@ -89,6 +89,13 @@ public class DishServiceImpl implements DishService {
     @Override
     public List<DishEntity> save(List<DishEntity> dishes) {
         return dishRepository.saveAll(dishes);
+    }
+
+    @Override
+    public List<DishEntity> getDishes(String username, List<Long> dishIds) {
+        UserAccountEntity user = userRepository.findByUsername(username);
+
+        return dishRepository.findByDishIdsForUser(user.getId(), dishIds);
     }
 
     @Override

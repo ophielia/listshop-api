@@ -14,15 +14,17 @@ import java.util.Map;
  */
 public interface DishService {
 
-    List<DishEntity> getDishesForUserName(String userId) throws UserNotFoundException;
+    List<DishEntity> getDishesForUserName(String userId) ;
 
-    DishEntity getDishForUserById(String username, Long dishId) throws ObjectNotFoundException, ObjectNotYoursException;
+    DishEntity getDishForUserById(String username, Long dishId) ;
 
     DishEntity save(DishEntity dish, boolean doAutotag);
 
     List<DishEntity> save(List<DishEntity> dishes);
 
     List<DishEntity> getDishes(List<Long> dishIds);
+
+    List<DishEntity> getDishes(String userName, List<Long> dishIds);
 
     Map<Long, DishEntity> getDictionaryForIdList(List<Long> dishIds);
 

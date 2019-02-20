@@ -244,6 +244,8 @@ mvn flyway:info
 mvn flyway:baseline -Dflyway.baselineVersion=5
 
 
+INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id)
+ VALUES (nextval('tag_search_group_sequence'), 368, 50591);
 
 
 

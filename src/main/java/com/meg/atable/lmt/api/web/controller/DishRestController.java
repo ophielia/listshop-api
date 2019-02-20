@@ -1,13 +1,10 @@
 package com.meg.atable.lmt.api.web.controller;
 
-import com.meg.atable.lmt.api.exception.UserNotFoundException;
-import com.meg.atable.lmt.api.controller.DishRestControllerApi;
-import com.meg.atable.lmt.api.model.Dish;
-import com.meg.atable.lmt.api.model.DishResource;
-import com.meg.atable.lmt.api.model.Tag;
-import com.meg.atable.lmt.api.model.TagResource;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
+import com.meg.atable.lmt.api.controller.DishRestControllerApi;
+import com.meg.atable.lmt.api.exception.UserNotFoundException;
+import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.service.DishSearchCriteria;
@@ -91,7 +88,6 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     public ResponseEntity<Object> createDish(Principal principal, @RequestBody Dish input) {
-        //this.getUserForPrincipal(principal);
 
         UserAccountEntity user = userService.getUserByUserName(principal.getName());
         DishEntity result = dishService.save(new DishEntity(user.getId(),
@@ -180,6 +176,22 @@ public class DishRestController implements DishRestControllerApi {
             this.tagService.removeTagsFromDish(dishId,tagIds);
         }
 
+        return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable Long dishId) {
+
+        RatingUpdateInfo ratingUpdateInfo = tagService.getRatingUpdateInfoForDishIds(principal.getName(), Collections.singletonList(dishId));
+        RatingUpdateInfoResource ratingResource = new RatingUpdateInfoResource(ratingUpdateInfo);
+        return new ResponseEntity(ratingResource, HttpStatus.OK);
+
+    }
+
+    public ResponseEntity<Object> updateRatingForDish(Principal principal, @PathVariable Long dishId,
+                                               @PathVariable Long ratingId,
+                                               @RequestParam(value = "direction", required = true) String direction) {
+        SortOrMoveDirection moveDirection = SortOrMoveDirection.valueOf(direction);
+        tagService.incrementDishRating(principal.getName(),dishId, ratingId, moveDirection);
         return ResponseEntity.noContent().build();
     }
 

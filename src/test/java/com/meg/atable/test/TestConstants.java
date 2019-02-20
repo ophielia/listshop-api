@@ -58,6 +58,7 @@ public final class TestConstants {
     public static final Long MENU_PLAN_3_ID = 503L;  //delete meal plan
     public static final String MENU_PLAN_3_NAME ="meal plan 3";  //delete meal plan
     public static final Long MENU_PLAN_4_ID = 504L;  //delete meal plan
+    public static final Long MENU_PLAN_5_ID = 505L;  //delete meal plan
 
     public static final Long TAG_MAIN_DISH = 320L;
     public static final Long TAG_SIDE_DISH = 432L;
@@ -80,6 +81,8 @@ public final class TestConstants {
     public static final Long DISH_1_ID = 1L; // Israeli Couscous
     public static final Long DISH_2_ID = 109L; // Israeli Couscous
     public static final Long DISH_3_ID = 54L; // Beef Broccoli
+    public static final Long DISH_4_ID = 503L; // dummy dish, test only
+    public static final Long DISH_5_ID = 62L;   // Fish Tacos
 
     public static final Long TARGET_3_SLOT_ID = 506L;
 
@@ -92,6 +95,7 @@ public final class TestConstants {
     public static final Long PROPOSAL_3_ID = 502L;
     public static final Long PROPOSAL_3_SLOT_4_ID = 523L;
     public static final Long PROPOSAL_3_SLOT_4_DISH_ID = 61L;
+
 
 }
 

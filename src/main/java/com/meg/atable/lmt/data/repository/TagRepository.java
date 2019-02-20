@@ -62,4 +62,39 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
             "where d member of t.dishes and d.dish_id = ?1")
     Set<Long> getTagIdsForDish(Long dishId);
 
+
+    @Query(value = "    select t.* " +
+            "    from tag t " +
+            "    join tag_relation tr on tr.child_tag_id = t.tag_id " +
+            "    join dish_tags dt on dt.tag_id = t.tag_id " +
+            "    where tr.parent_tag_id = ?2 " +
+            "    and dish_id = ?1", nativeQuery = true)
+    TagEntity getAssignedTagForRating(Long dishId, Long ratingId);
+
+
+
+    @Query(value = "SELECT t.*  " +
+            "FROM   tag t  " +
+            "       JOIN tag_relation tr  " +
+            "         ON tr.child_tag_id = t.tag_id  " +
+            "WHERE  tr.parent_tag_id = ?1  " +
+            "       AND t.power > (SELECT power  " +
+            "                      FROM   tag  " +
+            "                      WHERE  tag_id = ?2)  " +
+            "ORDER  BY power ASC  " +
+            "LIMIT  1 ", nativeQuery = true)
+    TagEntity getNextRatingUp(Long parentRatingId, Long currentId);
+
+    @Query(value = "SELECT t.*  " +
+            "FROM   tag t  " +
+            "       JOIN tag_relation tr  " +
+            "         ON tr.child_tag_id = t.tag_id  " +
+            "WHERE  tr.parent_tag_id = ?1  " +
+            "       AND t.power < (SELECT power  " +
+            "                      FROM   tag  " +
+            "                      WHERE  tag_id = ?2)  " +
+            "ORDER  BY power DESC  " +
+            "LIMIT  1 ", nativeQuery = true)
+    TagEntity getNextRatingDown(Long parentRatingId, Long currentId);
+
 }

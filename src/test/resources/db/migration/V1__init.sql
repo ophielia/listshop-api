@@ -2439,7 +2439,6 @@ INSERT INTO dish_tags (dish_id, tag_id) VALUES (21, 344);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (22, 344);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (23, 344);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (24, 344);
-INSERT INTO dish_tags (dish_id, tag_id) VALUES (25, 344);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (26, 344);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (27, 344);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (28, 344);

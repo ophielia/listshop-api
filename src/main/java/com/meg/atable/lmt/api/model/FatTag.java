@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class FatTag {
     private final TagEntity tag ;
-    private Long id;
+
     private Long parentId;
     private List<FatTag> children ;
 
@@ -41,6 +41,9 @@ this.tag = tag;
         return children;
     }
 
+    public void setChildren(List<FatTag> children) {
+        this.children = children;
+    }
     public TagType getTagType() {
         if (tag== null) {
             return null;

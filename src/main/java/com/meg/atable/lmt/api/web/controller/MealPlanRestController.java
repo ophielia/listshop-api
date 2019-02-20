@@ -1,13 +1,11 @@
 package com.meg.atable.lmt.api.web.controller;
 
+import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.api.controller.MealPlanRestControllerApi;
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
-import com.meg.atable.lmt.api.model.MealPlan;
-import com.meg.atable.lmt.api.model.MealPlanResource;
-import com.meg.atable.lmt.api.model.ModelMapper;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.auth.service.UserService;
+import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.MealPlanEntity;
 import com.meg.atable.lmt.service.MealPlanService;
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +56,6 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
 
     @Override
     public ResponseEntity<Object> createMealPlan(Principal principal, @RequestBody MealPlan input) {
-        //this.getUserForPrincipal(principal);
         MealPlanEntity mealPlanEntity = ModelMapper.toEntity(input);
 
         MealPlanEntity result = mealPlanService.createMealPlan(principal.getName(), mealPlanEntity);
@@ -138,4 +135,16 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
 
         return ResponseEntity.noContent().build();
     }
+
+    @Override
+    //@RequestMapping(method=RequestMethod.GET, value = "/{mealPlanId}/ratings", produces = "application/json")
+    public ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable Long mealPlanId) {
+        UserAccountEntity user = userService.getUserByUserName(principal.getName());
+
+        RatingUpdateInfo ratingInfo = this.mealPlanService.getRatingsForMealPlan(user.getUsername(), mealPlanId);
+        RatingUpdateInfoResource ratingResource = new RatingUpdateInfoResource(ratingInfo);
+
+        return new ResponseEntity(ratingResource, HttpStatus.OK);
+    }
+
 }

@@ -1,15 +1,17 @@
 package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.Application;
-import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
-import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
 import com.meg.atable.auth.data.entity.UserAccountEntity;
 import com.meg.atable.auth.service.UserService;
+import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
+import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
+import com.meg.atable.lmt.api.model.DishRatingInfo;
+import com.meg.atable.lmt.api.model.RatingInfo;
+import com.meg.atable.lmt.api.model.RatingUpdateInfo;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.MealPlanEntity;
 import com.meg.atable.lmt.data.entity.SlotEntity;
 import com.meg.atable.lmt.data.repository.DishRepository;
-import com.meg.atable.lmt.data.repository.MealPlanRepository;
 import com.meg.atable.lmt.service.MealPlanService;
 import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
@@ -22,7 +24,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -34,9 +38,6 @@ public class MealPlanServiceImplTest {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private MealPlanRepository mealPlanRepository;
 
 
     private  UserAccountEntity userAccount;
@@ -173,6 +174,32 @@ public class MealPlanServiceImplTest {
         MealPlanEntity testPlan = mealPlanService.getMealPlanById(deleteUserAccount.getUsername(), TestConstants.MENU_PLAN_4_ID);
         Assert.assertNull(testPlan);
         Assert.assertTrue(success);
+    }
+
+    @Test
+    public void testGetRatingsForMealPlan() {
+        // using meal plan 5 (505) as test , with 2 dishes
+        // user id is 500 (user 1)
+        String username = TestConstants.USER_1_NAME;
+        Long mealPlanId = TestConstants.MENU_PLAN_5_ID;
+        RatingUpdateInfo updateInfo = mealPlanService.getRatingsForMealPlan(username, mealPlanId);
+        Assert.assertNotNull(updateInfo);
+        Assert.assertNotNull(updateInfo.getRatingHeaders());
+        Assert.assertEquals(8, updateInfo.getRatingHeaders().size());
+        Assert.assertNotNull(updateInfo.getDishRatingInfoSet());
+        Assert.assertEquals(2, updateInfo.getDishRatingInfoSet().size());
+        for (Iterator<DishRatingInfo> iter = updateInfo.getDishRatingInfoSet().iterator(); iter.hasNext(); ) {
+            DishRatingInfo info = iter.next();
+            Assert.assertNotNull(info.getRatings());
+            Assert.assertEquals(8, info.getRatings().size());
+        }
+
+        Set<RatingInfo> testHeaders = updateInfo.getRatingHeaders();
+        Iterator it = testHeaders.iterator();
+        while (it.hasNext()) {
+            RatingInfo toTest = (RatingInfo) it.next();
+            Assert.assertNotNull(toTest.getMaxPower());
+        }
     }
 
     public void testCreateMealPlanFromProposal() {}

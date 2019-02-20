@@ -2,6 +2,7 @@ package com.meg.atable.lmt.service;
 
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
+import com.meg.atable.lmt.api.model.RatingUpdateInfo;
 import com.meg.atable.lmt.data.entity.MealPlanEntity;
 import com.meg.atable.lmt.data.entity.SlotEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
@@ -35,4 +36,6 @@ public interface MealPlanService {
     List<TagEntity> getTagsForSlot(SlotEntity slot);
 
     void renameMealPlan(String userName, Long mealPlanId, String newName) throws ObjectNotFoundException, ObjectNotYoursException;
+
+    RatingUpdateInfo getRatingsForMealPlan(String username, Long mealPlanId);
 }

@@ -1,10 +1,11 @@
 package com.meg.atable.lmt.service.impl;
 
+import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
 import com.meg.atable.lmt.api.model.MealPlanType;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.auth.service.UserService;
+import com.meg.atable.lmt.api.model.RatingUpdateInfo;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.data.repository.MealPlanRepository;
 import com.meg.atable.lmt.data.repository.SlotRepository;
@@ -12,6 +13,7 @@ import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.DishService;
 import com.meg.atable.lmt.service.MealPlanService;
 import com.meg.atable.lmt.service.ProposalService;
+import com.meg.atable.lmt.service.tag.TagService;
 import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -51,6 +53,9 @@ public class MealPlanServiceImpl implements MealPlanService {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private TagService tagService;
 
     public List<MealPlanEntity> getMealPlansForUserName(String username) {
         // get user
@@ -219,6 +224,20 @@ public class MealPlanServiceImpl implements MealPlanService {
         }
         // save dishes
         dishService.save(dishes);
+    }
+
+    public RatingUpdateInfo getRatingsForMealPlan(String username, Long mealPlanId) {
+        // get mealplan
+        MealPlanEntity mealPlan = getMealPlanById(username, mealPlanId);
+
+        // gather dish ids
+        List<Long> dishIds = new ArrayList<>();
+        for (SlotEntity slot : mealPlan.getSlots()) {
+            dishIds.add(slot.getDish().getId());
+        }
+
+        // call and return tag service method
+        return tagService.getRatingUpdateInfoForDishIds(username, dishIds);
     }
 
     public List<TagEntity> getTagsForSlot(SlotEntity slot) {
