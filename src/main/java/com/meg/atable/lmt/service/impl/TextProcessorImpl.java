@@ -24,7 +24,7 @@ public class TextProcessorImpl extends AbstractAutoTagProcessor {
 
     @Override
     public Long getProcessIdentifier() {
-        return Type.Tag;
+        return Type.TEXT;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class TextProcessorImpl extends AbstractAutoTagProcessor {
         if (instruction.getInvert() && !match) {
             return instruction.getAssignTagId();
         }
-        if (!instruction.getInvert() & match) {
+        if (!instruction.getInvert() && match) {
             return instruction.getAssignTagId();
         }
 

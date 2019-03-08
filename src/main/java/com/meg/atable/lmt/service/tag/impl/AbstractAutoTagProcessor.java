@@ -3,8 +3,10 @@ package com.meg.atable.lmt.service.tag.impl;
 import com.meg.atable.lmt.service.tag.AutoTagProcessor;
 import com.meg.atable.lmt.service.tag.AutoTagSubject;
 import com.meg.atable.lmt.service.Instruction;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -15,7 +17,15 @@ public abstract class AbstractAutoTagProcessor implements AutoTagProcessor {
 
     long filledOnMilliseconds;
 
-    private static final long STALEMILLIS = 60 * 5 * 1000;
+    @Value("${service.autotag.cache.expiresafter.minutes}")
+    private long expiresAfterMinutes;
+
+    private long staleMilliseconds;
+
+    @PostConstruct
+    public void setMilliseconds() {
+        staleMilliseconds = 60 * expiresAfterMinutes * 1000;
+    }
 
     @Override
     public AutoTagSubject autoTagSubject(AutoTagSubject subject) {
@@ -55,7 +65,7 @@ public abstract class AbstractAutoTagProcessor implements AutoTagProcessor {
 
     public List<Instruction> getInstructions() {
         long now = System.currentTimeMillis();
-        if (now - STALEMILLIS < filledOnMilliseconds) {
+        if (now - staleMilliseconds < filledOnMilliseconds) {
             return currentInstructions();
         }
         fillInstructions();

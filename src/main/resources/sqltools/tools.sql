@@ -1,6 +1,6 @@
 ﻿with upd as (select t.tag_id, p.name from tag t join tag_relation r on r.parent_tag_id = t.tag_id
 join tag p on r.child_tag_id = p.tag_id
-where t.tag_type = 'Rating')
+where t.tag_type = 'RATING')
 update tag  p
 set rating_family = upd.name
 from upd
@@ -97,15 +97,15 @@ and (c.is_parent_tag is null or c.is_parent_tag = false)
 -- adding a new auto_tag_instruction
 ﻿INSERT INTO public.auto_tag_instructions(
 	instruction_type, instruction_id, assign_tag_id, is_invert, search_terms)
-	VALUES ('Tag', nextval('auto_tag_instructions_sequence'), 346, false, '9,88,368, 372, 374, 375');
+	VALUES ('TAG', nextval('auto_tag_instructions_sequence'), 346, false, '9,88,368, 372, 374, 375');
 
 INSERT INTO public.auto_tag_instructions(
 	instruction_type, instruction_id, assign_tag_id, is_invert, search_terms,invert_filter)
-	VALUES ('Tag', nextval('auto_tag_instructions_sequence'), 199, true, '9,88,368, 372, 374, 375','320');
+	VALUES ('TAG', nextval('auto_tag_instructions_sequence'), 199, true, '9,88,368, 372, 374, 375','320');
 
 ﻿INSERT INTO public.auto_tag_instructions(
 	instruction_type, instruction_id, assign_tag_id, is_invert, search_terms)
-	VALUES ('Text', nextval('auto_tag_instructions_sequence'), 323, false, 'crockpot,crock-pot,slow cooker,slow-cooker,slowcooker');
+	VALUES ('TEXT', nextval('auto_tag_instructions_sequence'), 323, false, 'crockpot,crock-pot,slow cooker,slow-cooker,slowcooker');
 
 
 

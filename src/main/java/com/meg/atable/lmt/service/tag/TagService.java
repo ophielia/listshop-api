@@ -30,9 +30,9 @@ public interface TagService {
 
     TagEntity createTag(TagEntity parent, TagEntity newTag);
 
-    List<TagEntity> getTagsForDish(Long dishId);
+    List<TagEntity> getTagsForDish(String username, Long dishId);
 
-    List<TagEntity> getTagsForDish(Long dishId, List<TagType> tagtypes);
+    List<TagEntity> getTagsForDish(String username, Long dishId, List<TagType> tagtypes);
 
     boolean assignTagToParent(Long tagId, Long parentId);
 
@@ -40,16 +40,16 @@ public interface TagService {
 
     boolean assignTagToParent(TagEntity childTag, TagEntity newParentTag);
 
-    void addTagToDish(Long dishId, Long tagId);
+    void addTagToDish(String userName, Long dishId, Long tagId);
 
-    void addTagsToDish(Long id, Set<Long> tagIds);
+    void addTagsToDish(String userName, Long id, Set<Long> tagIds);
 
-    void removeTagsFromDish(Long dishId, Set<Long> tagIds);
+    void removeTagsFromDish(String userName, Long dishId, Set<Long> tagIds);
 
     List<TagEntity> getTagList(TagFilterType baseTags, List<TagType> tagType);
 
 
-    void deleteTagFromDish(Long dishId, Long tagId);
+    void deleteTagFromDish(String userName, Long dishId, Long tagId);
 
     Map<Long, TagEntity> getDictionaryForIds(Set<Long> tagIds);
 
@@ -59,7 +59,7 @@ public interface TagService {
 
     void addTagChangeListener(TagChangeListener tagChangeListener);
 
-    void saveTagForDelete(Long tagId, Long replacementTagId) throws ActionInvalidException;
+    void saveTagForDelete(Long tagId, Long replacementTagId);
 
     RatingUpdateInfo getRatingUpdateInfoForDishIds(String username, List<Long> dishIdList);
 

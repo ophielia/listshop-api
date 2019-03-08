@@ -67,4 +67,7 @@ this.tag = tag;
         return tag.getSearchSelect();
     }
 
+    public TagEntity getTag() {
+        return tag;
+    }
 }

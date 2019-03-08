@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.meg.atable.test.TestConstants.USER_3_NAME;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
@@ -57,8 +59,8 @@ public class TagProcessorImplTest {
         Instruction vegetarian = instructions.stream().filter(i -> i.getAssignTagId().equals(199L)).findFirst().get();
 
         // test dish -dish tag 1 - Israeli Couscous
-        DishEntity dishEntity = dishService.getDishForUserById(TestConstants.USER_3_NAME, TestConstants.DISH_1_ID);
-        List<TagEntity> tags = tagService.getTagsForDish(TestConstants.DISH_1_ID);
+        DishEntity dishEntity = dishService.getDishForUserById(USER_3_NAME, TestConstants.DISH_1_ID);
+        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, TestConstants.DISH_1_ID);
         Set<Long> tagIds = tags.stream().map(TagEntity::getId).collect(Collectors.toSet());
         AutoTagSubject subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);
@@ -70,8 +72,8 @@ public class TagProcessorImplTest {
 
         // test meaty dish - should be 346 found, and 199 not found
         // 28 porcupines
-        dishEntity = dishService.getDishForUserById(TestConstants.USER_3_NAME, 28L);
-        tags = tagService.getTagsForDish(28L);
+        dishEntity = dishService.getDishForUserById(USER_3_NAME, 28L);
+        tags = tagService.getTagsForDish(USER_3_NAME, 28L);
         tagIds = tags.stream().map(TagEntity::getId).collect(Collectors.toSet());
         subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);
@@ -83,8 +85,8 @@ public class TagProcessorImplTest {
 
 
         // 47 chicken cassolet
-        dishEntity = dishService.getDishForUserById(TestConstants.USER_3_NAME, 47L);
-        tags = tagService.getTagsForDish(47L);
+        dishEntity = dishService.getDishForUserById(USER_3_NAME, 47L);
+        tags = tagService.getTagsForDish(USER_3_NAME, 47L);
         tagIds = tags.stream().map(TagEntity::getId).collect(Collectors.toSet());
         subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);
@@ -95,8 +97,8 @@ public class TagProcessorImplTest {
         Assert.assertNull(assignedId);
 
         // test dish - 25 - Ham and Potato Soup - should be tagged meat
-        dishEntity = dishService.getDishForUserById(TestConstants.USER_3_NAME, 25L);
-        tags = tagService.getTagsForDish(25L);
+        dishEntity = dishService.getDishForUserById(USER_3_NAME, 25L);
+        tags = tagService.getTagsForDish(USER_3_NAME, 25L);
         tagIds = tags.stream().map(TagEntity::getId).collect(Collectors.toSet());
         subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);

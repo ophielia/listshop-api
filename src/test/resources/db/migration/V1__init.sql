@@ -3675,7 +3675,7 @@ INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_de
 INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (328, NULL, 'Kids Like It 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
 INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (329, NULL, 'Ease of Prep 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
 INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (330, NULL, 'Quick To Table 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (331, 'dd', 'Type Tag', 'TagType', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (331, 'dd', 'Type TAG', 'TagType', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
 INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (332, NULL, 'cheap', 'Rating', NULL, true, NULL, true, false, false, NULL, NULL);
 INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (333, NULL, 'Appetizer', 'DishType', NULL, true, NULL, NULL, true, true, NULL, NULL);
 INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (334, NULL, 'black pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
@@ -4515,6 +4515,8 @@ INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (
 INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (231, 376, 466);
 INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (232, 421, 472);
 INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (233, 375, 473);
+INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (234, 372, 443);
+INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (235, 375, 162);
 
 
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (1, NULL, true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'rufus');
@@ -4524,7 +4526,8 @@ INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, 
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (29, NULL, true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'michelle');
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (2, NULL, NULL, NULL, 'password', 'testname');
 
-
+insert into shadow_tags (    shadow_tag_id ,dish_id ,tag_id ) values (    1 ,3 ,346 );
+insert into shadow_tags (    shadow_tag_id ,dish_id ,tag_id ) values (    2 ,87 ,199 );
 --
 -- Name: authority_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --

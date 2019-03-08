@@ -99,7 +99,7 @@ public class DishRestController implements DishRestControllerApi {
                     .filter(t -> t.getId() != null)
                     .map(t -> new Long(t.getId()))
                     .collect(Collectors.toSet());
-            tagService.addTagsToDish(result.getId(),tagIds);
+            tagService.addTagsToDish(principal.getName(),result.getId(),tagIds);
             result = dishService.getDishForUserById(principal.getName(),result.getId());
         }
         Link forOneDish = new DishResource(result).getLink("self");
@@ -136,7 +136,7 @@ public class DishRestController implements DishRestControllerApi {
     public ResponseEntity<Resources<TagResource>> getTagsByDishId(Principal principal, @PathVariable Long dishId) {
 
         List<TagResource> tagList = tagService
-                .getTagsForDish(dishId)
+                .getTagsForDish(principal.getName(), dishId)
                 .stream().map(TagResource::new)
                 .collect(Collectors.toList());
         return new ResponseEntity(tagList, HttpStatus.OK);
@@ -145,7 +145,7 @@ public class DishRestController implements DishRestControllerApi {
     public ResponseEntity<Object> addTagToDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId) {
         getUserForPrincipal(principal);
 
-        this.tagService.addTagToDish(dishId, tagId);
+        this.tagService.addTagToDish(principal.getName(),dishId, tagId);
 
         return ResponseEntity.noContent().build();
 
@@ -155,7 +155,7 @@ public class DishRestController implements DishRestControllerApi {
     public ResponseEntity<Object> deleteTagFromDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId) {
         getUserForPrincipal(principal);
 
-        this.tagService.deleteTagFromDish(dishId, tagId);
+        this.tagService.deleteTagFromDish(principal.getName(), dishId, tagId);
 
         return ResponseEntity.noContent().build();
     }
@@ -168,12 +168,12 @@ public class DishRestController implements DishRestControllerApi {
 
         if (addTags != null && !addTags.isEmpty()) {
             Set<Long> tagIds = commaDelimitedToSet(addTags);
-            this.tagService.addTagsToDish(dishId,tagIds);
+            this.tagService.addTagsToDish(principal.getName(), dishId, tagIds);
         }
 
         if (removeTags != null && !removeTags.isEmpty()) {
             Set<Long> tagIds = commaDelimitedToSet(removeTags);
-            this.tagService.removeTagsFromDish(dishId,tagIds);
+            this.tagService.removeTagsFromDish(principal.getName(), dishId, tagIds);
         }
 
         return ResponseEntity.noContent().build();

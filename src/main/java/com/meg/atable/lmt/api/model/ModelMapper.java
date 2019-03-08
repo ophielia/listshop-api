@@ -16,7 +16,7 @@ public class ModelMapper {
     public static Dish toModel(DishEntity dishEntity) {
         if (dishEntity != null) {
             List<Tag> tags = new ArrayList<>();
-            //List<Tag> tags = toModel(dishEntity.getSlots());
+            //List<TAG> tags = toModel(dishEntity.getSlots());
             return new Dish(dishEntity.getId())
                     .description(dishEntity.getDescription())
                     .dishName(dishEntity.getDishName())

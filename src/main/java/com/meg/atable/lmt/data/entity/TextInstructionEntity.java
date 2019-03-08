@@ -14,7 +14,7 @@ import java.util.List;
  * Created by margaretmartin on 08/12/2017.
  */
 @Entity
-@DiscriminatorValue("Text")
+@DiscriminatorValue("TEXT")
 public class TextInstructionEntity extends AutoTagInstructionEntity implements Instruction {
 
 @Transient
@@ -39,7 +39,7 @@ public class TextInstructionEntity extends AutoTagInstructionEntity implements I
         if (getInvert() && !match) {
             return getAssignTagId();
         }
-        if (!getInvert() & match) {
+        if (!getInvert() && match) {
             return getAssignTagId();
         }
         return null;

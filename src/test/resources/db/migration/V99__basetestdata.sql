@@ -357,7 +357,10 @@ update proposal_context set current_approach_index=0, current_approach_type='WHE
 
 -- autotags
 --    text
- INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'Text', 1, 301, 'false', 'Soup', false);
- INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'Text', 2, 323, 'false', 'Crock-pot;Crockpot;Crock pot', false);
- INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'Tag', 3, 346, 'false', '9;88;368;372;374;375', null);
- INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'Tag', 4, 199, 'true', '9;88;368;372;374;375', 433);
+ INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'TEXT', 1, 301, 'false', 'Soup', false);
+ INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'TEXT', 2, 323, 'false', 'Crock-pot;Crockpot;Crock pot', false);
+ INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'TAG', 3, 346, 'false', '9;434;375;88;372', null);
+ INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'TAG', 4, 199, 'true', '9;434;88;375;372', 433);
+
+
+update dish set auto_tag_status = 1;

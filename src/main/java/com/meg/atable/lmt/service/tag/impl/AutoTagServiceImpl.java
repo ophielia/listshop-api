@@ -1,5 +1,7 @@
 package com.meg.atable.lmt.service.tag.impl;
 
+import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.ShadowTags;
 import com.meg.atable.lmt.data.repository.ShadowTagRepository;
@@ -29,21 +31,24 @@ public class AutoTagServiceImpl implements AutoTagService {
     ShadowTagRepository shadowTagRepository;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     TagService tagService;
 
     @Autowired
     private List<AutoTagProcessor> processorList;
 
-    @PostConstruct
-    private void setup() {
 
-    }
 
     @Override
     public void doAutoTag(DishEntity dishEntity, boolean overrideStatus) {
         if (dishEntity == null) {
             return;
         }
+        // get user
+        UserAccountEntity user = userService.getUserById(dishEntity.getUserId());
+
         // pull tagswithflags
         Set<Long> tagIdsForDish = tagRepository.getTagIdsForDish(dishEntity.getId());
 
@@ -60,14 +65,21 @@ public class AutoTagServiceImpl implements AutoTagService {
             subject = tagProcessor.autoTagSubject(subject);
         }
 
-        // save processed flags // MM TODO
+        // save processed flags - just setting this in the entity,
+        // because the doAutoTag() method is (often) called from a save context
+        Long processedStatusFlag = subject.getProcessedBySet().stream()
+                .reduce(1L, (a, b) -> a * b);
+        dishEntity.setAutoTagStatus(processedStatusFlag);
+
         // check for results
         if (subject.getTagsToAssign()== null || subject.getTagsToAssign().isEmpty()) {
             return;
         }
-        addTagsToDish(subject);
+
+        addTagsToDish(user.getUsername(), subject);
         createShadowTagsForDish(subject);
     }
+
 
     private void createShadowTagsForDish(AutoTagSubject subject) {
         Long dishId = subject.getDish().getId();
@@ -82,11 +94,11 @@ public class AutoTagServiceImpl implements AutoTagService {
         shadowTagRepository.saveAll(toInsert);
     }
 
-    private void addTagsToDish(AutoTagSubject subject) {
+    private void addTagsToDish(String userName, AutoTagSubject subject) {
         Long dishId = subject.getDish().getId();
 
         for (Long tagId : subject.getTagsToAssign()) {
-            tagService.addTagToDish(dishId, tagId);
+            tagService.addTagToDish(userName, dishId, tagId);
         }
 
     }

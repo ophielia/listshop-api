@@ -3,10 +3,7 @@ package com.meg.atable.lmt.service.tag;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.ShadowTags;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by margaretmartin on 08/12/2017.
@@ -16,7 +13,7 @@ public class AutoTagSubject {
     private List<Long> tagsToAssign;
     private DishEntity dish;
     private List<ShadowTags> shadowTags;
-    private List<Long> processedByList = new ArrayList<>();
+    private Set<Long> processedBySet = new HashSet<>();
     private Set<Long> tagIdsForDish;
 
     public AutoTagSubject(DishEntity dishEntity, boolean overrideStatus) {
@@ -57,7 +54,7 @@ public class AutoTagSubject {
     }
 
     public void addProcessedBy(Long processIdentifier) {
-        processedByList.add(processIdentifier);
+        processedBySet.add(processIdentifier);
     }
 
     public boolean hasBeenProcessedBy(Long processIdentifier) {
@@ -71,5 +68,13 @@ public class AutoTagSubject {
 
     public void setTagIdsForDish(Set<Long> tagIdsForDish) {
         this.tagIdsForDish = tagIdsForDish;
+    }
+
+    public Set<Long> getProcessedBySet() {
+        return processedBySet;
+    }
+
+    public void setProcessedBySet(Set<Long> processedBySet) {
+        this.processedBySet = processedBySet;
     }
 }

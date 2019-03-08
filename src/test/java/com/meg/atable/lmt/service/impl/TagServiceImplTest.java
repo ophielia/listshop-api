@@ -7,7 +7,6 @@ import com.meg.atable.lmt.api.model.RatingUpdateInfo;
 import com.meg.atable.lmt.api.model.SortOrMoveDirection;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
-import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.DishService;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.test.TestConstants;
@@ -21,6 +20,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
+
+import static com.meg.atable.test.TestConstants.USER_3_NAME;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -102,7 +103,7 @@ public class TagServiceImplTest {
 
     @Test
     public void testGetTagsForDish() throws Exception {
-        List<TagEntity> tags = tagService.getTagsForDish(dish.getId());
+        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, dish.getId());
 
         Assert.assertNotNull(tags);
         Assert.assertTrue(tags.size() > 0);
@@ -113,9 +114,9 @@ public class TagServiceImplTest {
 
     @Test
     public void testAddTagToDish() throws Exception {
-        tagService.addTagToDish(dish.getId(), TestConstants.TAG_MEAT);
+        tagService.addTagToDish(USER_3_NAME, dish.getId(), TestConstants.TAG_MEAT);
 
-        List<TagEntity> tags = tagService.getTagsForDish(dish.getId());
+        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, dish.getId());
 
         Assert.assertNotNull(tags);
         Assert.assertTrue(tags.size() == 3);
@@ -133,9 +134,9 @@ public class TagServiceImplTest {
     @Test
     public void testDeleteTagFromDish() {
         // delete tag c from dish
-        tagService.deleteTagFromDish(dish.getId(), c.getId());
+        tagService.deleteTagFromDish(USER_3_NAME, dish.getId(), c.getId());
         // get tags from dish
-        List<TagEntity> tags = tagService.getTagsForDish(dish.getId());
+        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, dish.getId());
         // check dish tags for c
         boolean found = tags.stream().anyMatch(t -> t.getId() == c.getId());
         // assert not found
@@ -225,7 +226,7 @@ public class TagServiceImplTest {
         DishEntity dish = dishService.getDishForUserById(TestConstants.USER_1_NAME, TestConstants.DISH_4_ID);
 
         // get tags for dish
-        List<TagEntity> tags = tagService.getTagsForDish(dish.getId());
+        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, dish.getId());
 
         // assert includes 400
         Optional<TagEntity> testTag = tags.stream().filter(t -> t.getId().equals(400L)).findFirst();
@@ -235,7 +236,7 @@ public class TagServiceImplTest {
         tagService.incrementDishRating(TestConstants.USER_1_NAME, TestConstants.DISH_4_ID, 291L, SortOrMoveDirection.UP);
 
         // get tags for dish
-        tags = tagService.getTagsForDish(dish.getId());
+        tags = tagService.getTagsForDish(USER_3_NAME, dish.getId());
 
         // assert doesn't include 400
         testTag = tags.stream().filter(t -> t.getId().equals(400L)).findFirst();
@@ -254,7 +255,7 @@ public class TagServiceImplTest {
         DishEntity dish = dishService.getDishForUserById(TestConstants.USER_1_NAME, TestConstants.DISH_4_ID);
 
         // get tags for dish
-        List<TagEntity> tags = tagService.getTagsForDish(dish.getId());
+        List<TagEntity> tags = tagService.getTagsForDish(TestConstants.USER_1_NAME, dish.getId());
 
         // assert includes 400
         Optional<TagEntity> testTag = tags.stream().filter(t -> t.getId().equals(400L)).findFirst();
@@ -264,7 +265,7 @@ public class TagServiceImplTest {
         tagService.incrementDishRating(TestConstants.USER_1_NAME, TestConstants.DISH_4_ID, 291L, SortOrMoveDirection.DOWN);
 
         // get tags for dish
-        tags = tagService.getTagsForDish(dish.getId());
+        tags = tagService.getTagsForDish(TestConstants.USER_1_NAME, dish.getId());
 
         // assert doesn't include 400
         testTag = tags.stream().filter(t -> t.getId().equals(400L)).findFirst();
@@ -282,7 +283,7 @@ public class TagServiceImplTest {
 
         // eventually we'll moved these to a testdb in postgres
         // until then, skipping these tests
-        List<TagEntity> tags = tagService.getTagsForDish(TestConstants.DISH_3_ID);
+        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, TestConstants.DISH_3_ID);
 /*
         Assert.assertNotNull(tags);
         boolean containsTagA = false;

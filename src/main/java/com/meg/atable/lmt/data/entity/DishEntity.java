@@ -46,15 +46,19 @@ public class DishEntity {
 
     private Long autoTagStatus;
 
+    private Date createdOn;
+
     public DishEntity(Long userId, String dishName) {
         this.userId = userId;
         this.dishName = dishName;
+        this.createdOn = new Date();
     }
 
     public DishEntity(Long userId, String dishName, String description) {
         this.userId = userId;
         this.dishName = dishName;
         this.description = description;
+        this.createdOn = new Date();
     }
 
     public DishEntity() {
@@ -65,8 +69,8 @@ public class DishEntity {
         return dish_id;
     }
 
-    public void setId(Long dish_id) {
-        this.dish_id = dish_id;
+    public void setId(Long dishId) {
+        this.dish_id = dishId;
     }
 
     public String getDishName() {

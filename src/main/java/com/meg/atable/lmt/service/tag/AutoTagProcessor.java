@@ -10,8 +10,11 @@ public interface AutoTagProcessor {
    Long getProcessIdentifier();
 
     class Type {
-        public static final Long Tag=3L;
-        public static final Long Text=5L;
-
+        public static final Long TAG = 3L;
+        public static final Long TEXT = 5L;
+        public static final Long RATING = 7L;
+        private Type() {
+            throw new IllegalStateException("Utility class");
+        }
     }
 }

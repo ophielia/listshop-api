@@ -200,7 +200,7 @@ public class ListLayoutServiceImplTest {
         List<TagEntity> categoryTags = listLayoutService.getTagsForLayoutCategory(TestConstants.LIST_LAYOUT_2_CATEGORY_ID1);
 
         Assert.assertNotNull(categoryTags);
-        Assert.assertTrue(categoryTags.size() == 2);
+        Assert.assertTrue(categoryTags.size() == 3);
 
     }
 

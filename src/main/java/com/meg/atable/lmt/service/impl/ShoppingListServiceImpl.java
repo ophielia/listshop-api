@@ -114,7 +114,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // now, add all dish ids
         for (Long id : dishIds) {
-            addDishToList(collector, id);
+            addDishToList(userName,collector, id);
         }
 
         // add base list - if desired
@@ -310,7 +310,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         tagTypeList.add(TagType.Ingredient);
         tagTypeList.add(TagType.NonEdible);
         for (SlotEntity slot : mealPlan.getSlots()) {
-            List<TagEntity> tags = tagService.getTagsForDish(slot.getDish().getId(), tagTypeList);
+            List<TagEntity> tags = tagService.getTagsForDish(name, slot.getDish().getId(), tagTypeList);
             collector.addTags(tags, slot.getDish().getId(), null);
         }
 
@@ -523,17 +523,18 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         saveListChanges(list, collector);
     }
 
-    private void addDishToList(ListItemCollector collector, Long dishId) throws ShoppingListException {
+    private void addDishToList(String name,ListItemCollector collector, Long dishId) throws ShoppingListException {
         // gather tags for dish to add
         if (dishId == null) {
             logger.error("No dish found for null dishId");
             throw new ShoppingListException("No dish found for null dishId.");
         }
-        List<TagEntity> tagsForDish = tagService.getTagsForDish(dishId).stream()
+        List<TagEntity> tagsForDish = tagService.getTagsForDish(name, dishId).stream()
                 .filter(t -> t.getTagType().equals(TagType.Ingredient) || t.getTagType().equals(TagType.NonEdible))
                 .collect(Collectors.toList());
         if (tagsForDish == null || tagsForDish.isEmpty()) {
-            throw new ShoppingListException("No tags found for dishId [" + dishId + "]");
+            logger.info("No tags found for dishId [" + dishId + "]");
+            return;
         }
 
 
@@ -552,7 +553,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // create collector
         ListItemCollector collector = new ListItemCollector(listId, list.getItems());
 
-        addDishToList(collector, dishId);
+        addDishToList(name,collector, dishId);
 
         saveListChanges(list, collector);
     }
@@ -619,7 +620,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // make collector
         ListItemCollector collector = new ListItemCollector(listId, shoppingList.getItems());
 
-        List<TagEntity> tagsToRemove = tagService.getTagsForDish(dishId);
+        List<TagEntity> tagsToRemove = tagService.getTagsForDish(name, dishId);
 
         collector.removeTagsForDish(dishId, tagsToRemove);
 

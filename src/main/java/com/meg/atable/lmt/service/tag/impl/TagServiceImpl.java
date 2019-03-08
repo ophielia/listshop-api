@@ -1,12 +1,11 @@
 package com.meg.atable.lmt.service.tag.impl;
 
 import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.auth.data.repository.UserRepository;
+import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.api.exception.ActionInvalidException;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
-import com.meg.atable.lmt.data.repository.DishRepository;
 import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.DishSearchCriteria;
 import com.meg.atable.lmt.service.DishSearchService;
@@ -15,7 +14,6 @@ import com.meg.atable.lmt.service.TagReplaceService;
 import com.meg.atable.lmt.service.tag.TagChangeListener;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.tag.TagStructureService;
-import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -33,22 +31,40 @@ import java.util.stream.Collectors;
 @Transactional
 public class TagServiceImpl implements TagService {
 
+    @Autowired
+    private UserService userService;
     private final List<TagChangeListener> listeners = new CopyOnWriteArrayList<>();
     @Value("${service.tagservice.delete.tag.immediately:false}")
-    boolean DELETEIMMEDIATELY;
+    boolean deleteImmediately;
     @Autowired
     private TagRepository tagRepository;
     @Autowired
     private TagReplaceService tagReplaceService;
     @Autowired
     private TagStructureService tagStructureService;
-    @Autowired
-    private DishRepository dishRepository;
 
     @Autowired
     private DishService dishService;
-    @Autowired
-    private UserRepository userRepository;
+
+    @Override
+    public void deleteTagFromDish(String userName, Long dishId, Long tagId) {
+        if (tagId == null) {
+            return;
+        }
+        // get dish
+        DishEntity dish = dishService.getDishForUserById(userName, dishId);
+        if (dish == null) {
+            return;
+        }
+        // filter tag to be deleted from dish
+        List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
+        List<TagEntity> dishTagsDeletedTag = dishTags.stream()
+                .filter(t -> !t.getId().equals(tagId))
+                .collect(Collectors.toList());
+        // add tags to dish
+        dish.setTags(dishTagsDeletedTag);
+        dishService.save(dish, false);
+    }
     @Autowired
     private DishSearchService dishSearchService;
 
@@ -65,25 +81,49 @@ public class TagServiceImpl implements TagService {
         return tagOpt.isPresent() ? tagOpt.get() : null;
     }
 
-    @Override
-    public void deleteTagFromDish(Long dishId, Long tagId) {
-        if (tagId == null) {
-            return;
+    public RatingUpdateInfo getRatingUpdateInfoForDishIds(String userName, List<Long> dishIdList) {
+        // get ratings structure
+        List<FatTag> ratingTagsWithChildren = tagStructureService.getTagsWithChildren(Collections.singletonList(TagType.Rating));
+
+        // put into lookup - rating info for child tags and create headers set
+        LookupInformation parsedInfo = parseRatingTags(ratingTagsWithChildren);
+        Map<Long, RatingInfo> ratingInfoById = parsedInfo.getTagToRatingInfo();
+        Set<RatingInfo> headers = parsedInfo.getParentRatings();
+
+        // get all tags for dishes
+        List<DishEntity> dishes = dishService.getDishes(userName, dishIdList);
+
+        // fill temporary hash with info objects
+        Map<DishRatingInfo, Set<RatingInfo>> unorderedInfo = processDishRatings(dishes, ratingInfoById);
+
+        // fill the MealRatingInfo objects in order of the headers
+        for (RatingInfo headerTag : headers) {
+            for (Map.Entry<DishRatingInfo, Set<RatingInfo>> entry : unorderedInfo.entrySet()) {
+                if (entry.getValue().contains(headerTag)) {
+                    // dish has this rating - add it to the DishRatingInfo
+                    Optional<RatingInfo> ratingInfoOpt = entry.getValue()
+                            .stream()
+                            .filter(r -> r.equals(headerTag)).findFirst();
+                    if (ratingInfoOpt.isPresent()) {
+                        entry.getKey().addRating(ratingInfoOpt.get());
+                    }
+                } else {
+                    // dish does not have this rating -
+                    // create this tag for the dish, and add it to the DishRatingInfo
+                    Optional<FatTag> tagOpt = ratingTagsWithChildren.stream().filter(ft -> ft.getId().equals(headerTag.getRatingTagId())).findFirst();
+                    if (tagOpt.isPresent()) {
+                        Long assignTagId = getDefaultTagIdForRating(tagOpt.get());
+                        if (assignTagId != null) {
+                            addTagToDish(userName, entry.getKey().getDishId(), assignTagId);
+                            RatingInfo ratingInfo = ratingInfoById.get(assignTagId);
+                            entry.getKey().addRating(ratingInfo);
+                        }
+                    }
+                }
+            }
         }
-        // get dish
-        Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
-        if (!dishOpt.isPresent()) {
-            return;
-        }
-        DishEntity dish = dishOpt.get();
-        // filter tag to be deleted from dish
-        List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
-        List<TagEntity> dishTagsDeletedTag = dishTags.stream()
-                .filter(t -> !t.getId().equals(tagId))
-                .collect(Collectors.toList());
-        // add tags to dish
-        dish.setTags(dishTagsDeletedTag);
-        dishRepository.save(dish);
+
+        return new RatingUpdateInfo(headers, unorderedInfo.keySet());
     }
 
     @Override
@@ -206,20 +246,20 @@ public class TagServiceImpl implements TagService {
         // do validation
         //      tag is found
         if (tag == null) {
-            throw new ActionInvalidException("Tag not found for id [" + tagId + "].");
+            throw new ActionInvalidException("TAG not found for id [" + tagId + "].");
         }
         //      tag to be deleted doesn't have children
         List<TagEntity> children = tagStructureService.getChildren(tag);
         if (children != null && !children.isEmpty()) {
-            throw new ActionInvalidException("Tag [" + tag.getId() + "] can't be deleted because it has children.");
+            throw new ActionInvalidException("TAG [" + tag.getId() + "] can't be deleted because it has children.");
         }
         // replacement tag exists
         if (replacementTagId == null) {
-            throw new ActionInvalidException("Replacement Tag Id is null");
+            throw new ActionInvalidException("Replacement TAG Id is null");
         }
         // tag is not same as replacement tag
         if (replacementTagId.equals(tagId)) {
-            throw new ActionInvalidException("Tag cannot replace itself.");
+            throw new ActionInvalidException("TAG cannot replace itself.");
 
         }
 
@@ -230,54 +270,9 @@ public class TagServiceImpl implements TagService {
         updateTag(tagId, tag);
 
         // delete tag now if immediate delete is activated
-        if (DELETEIMMEDIATELY) {
+        if (deleteImmediately) {
             tagReplaceService.replaceTag(tag.getId(), tag.getReplacementTagId());
         }
-    }
-
-    public RatingUpdateInfo getRatingUpdateInfoForDishIds(String userName, List<Long> dishIdList) {
-        // get ratings structure
-        List<FatTag> ratingTagsWithChildren = tagStructureService.getTagsWithChildren(Collections.singletonList(TagType.Rating));
-
-        // put into lookup - rating info for child tags and create headers set
-        Pair<Map<Long, RatingInfo>, Set<RatingInfo>> parsedInfo = parseRatingTags(ratingTagsWithChildren);
-        Map<Long, RatingInfo> ratingInfoById = parsedInfo.getKey();
-        Set<RatingInfo> headers = parsedInfo.getValue();
-
-        // get all tags for dishes
-        List<DishEntity> dishes = dishService.getDishes(userName, dishIdList);
-
-        // fill temporary hash with info objects
-        Map<DishRatingInfo, Set<RatingInfo>> unorderedInfo = processDishRatings(dishes, ratingInfoById);
-
-        // fill the MealRatingInfo objects in order of the headers
-        for (RatingInfo headerTag : headers) {
-            for (Map.Entry<DishRatingInfo, Set<RatingInfo>> entry : unorderedInfo.entrySet()) {
-                if (entry.getValue().contains(headerTag)) {
-                    // dish has this rating - add it to the DishRatingInfo
-                    Optional<RatingInfo> ratingInfoOpt = entry.getValue()
-                            .stream()
-                            .filter(r -> r.equals(headerTag)).findFirst();
-                    if (ratingInfoOpt.isPresent()) {
-                        entry.getKey().addRating(ratingInfoOpt.get());
-                    }
-                } else {
-                    // dish does not have this rating -
-                    // create this tag for the dish, and add it to the DishRatingInfo
-                    Optional<FatTag> tagOpt = ratingTagsWithChildren.stream().filter(ft -> ft.getId().equals(headerTag.getRatingTagId())).findFirst();
-                    if (tagOpt.isPresent()) {
-                        Long assignTagId = getDefaultTagIdForRating(tagOpt.get());
-                        if (assignTagId != null) {
-                            addTagToDish(entry.getKey().getDishId(), assignTagId);
-                            RatingInfo ratingInfo = ratingInfoById.get(assignTagId);
-                            entry.getKey().addRating(ratingInfo);
-                        }
-                    }
-                }
-            }
-        }
-
-        return new RatingUpdateInfo(headers, unorderedInfo.keySet());
     }
 
     public void incrementDishRating(String name, Long dishId, Long ratingId, SortOrMoveDirection moveDirection) {
@@ -298,8 +293,13 @@ public class TagServiceImpl implements TagService {
             nextTag = tagRepository.getNextRatingDown(ratingId, currentTag.getId());
         }
         // assign new tag
-        addTagToDish(dishId,nextTag.getId());
+        addTagToDish(name, dishId, nextTag.getId());
 
+    }
+
+    @Override
+    public List<TagEntity> getTagsForDish(String username, Long dishId) {
+        return getTagsForDish(username, dishId, null);
     }
 
     private Map<DishRatingInfo, Set<RatingInfo>> processDishRatings(List<DishEntity> dishes, Map<Long, RatingInfo> ratingInfoById) {
@@ -325,23 +325,46 @@ public class TagServiceImpl implements TagService {
         return unorderedInfo;
     }
 
-
     @Override
-    public List<TagEntity> getTagsForDish(Long dishId) {
-        return getTagsForDish(dishId, null);
-    }
-
-    @Override
-    public List<TagEntity> getTagsForDish(Long dishId, List<TagType> tagtypes) {
+    public List<TagEntity> getTagsForDish(String username, Long dishId, List<TagType> tagtypes) {
         List<TagEntity> results = new ArrayList<>();
-        Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
+        DishEntity dish = dishService.getDishForUserById(username, dishId);
 
-        if (!dishOpt.isPresent()) {
+        if (dish == null) {
             return results;
         }
 
-        DishEntity dish = dishOpt.get();
         return getTagsForDish(dish, tagtypes);
+    }
+
+    @Override
+    public void addTagToDish(String userName, Long dishId, Long tagId) {
+        // get dish
+        DishEntity dish = dishService.getDishForUserById(userName, dishId);
+        if (dish == null) {
+            return;
+        }
+        // get tag
+        Optional<TagEntity> tagOpt = tagRepository.findById(tagId);
+        if (!tagOpt.isPresent()) {
+            return;
+        }
+
+        TagEntity tag = tagOpt.get();
+
+        List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
+        // check if tag exists already
+        if (dishTags.contains(tag)) {
+            return;
+        }
+        dishTags.add(tag);
+        // if rating tag, remove related tags
+        if (tag.getTagType().equals(TagType.Rating)) {
+            dishTags = removeRelatedTags(dishTags, tag);
+        }
+        // add tags to dish
+        dish.setTags(dishTags);
+        dishService.save(dish, false);
     }
 
     private List<TagEntity> getTagsForDish(DishEntity dish, List<TagType> tagtypes) {
@@ -399,56 +422,18 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void addTagToDish(Long dishId, Long tagId) {
-        // get dish
-        Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
-        if (!dishOpt.isPresent()) {
-            return;
-        }
-        // get tag
-        Optional<TagEntity> tagOpt = tagRepository.findById(tagId);
-        if (!tagOpt.isPresent()) {
-            return;
-        }
-        DishEntity dish = dishOpt.get();
-        TagEntity tag = tagOpt.get();
-
-        List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
-        // check if tag exists already
-        if (dishTags.contains(tag)) {
-            return;
-        }
-        dishTags.add(tag);
-        // if rating tag, remove related tags
-        if (tag.getTagType().equals(TagType.Rating)) {
-            dishTags = removeRelatedTags(dishTags, tag);
-        }
-        // add tags to dish
-        dish.setTags(dishTags);
-        dishRepository.save(dish);
+    public void addTagsToDish(String userName, Long dishId, Set<Long> tagIds) {
+        tagIds.forEach(t -> addTagToDish(userName, dishId, t));
     }
 
     @Override
-    public void addTagsToDish(Long dishId, Set<Long> tagIds) {
-        tagIds.forEach(t -> addTagToDish(dishId, t));
-    }
-
-    @Override
-    public void removeTagsFromDish(Long dishId, Set<Long> tagIds) {
-        tagIds.forEach(t -> deleteTagFromDish(dishId, t));
-    }
-
-    private List<TagEntity> removeRelatedTags(List<TagEntity> dishTags, TagEntity tag) {
-        // get sibling tags for dish
-        List<TagEntity> siblings = tagStructureService.getSiblingTags(tag);
-        return dishTags.stream()
-                .filter(t -> !siblings.contains(t))
-                .collect(Collectors.toList());
+    public void removeTagsFromDish(String userName, Long dishId, Set<Long> tagIds) {
+        tagIds.forEach(t -> deleteTagFromDish(userName, dishId, t));
     }
 
     @Override
     public void replaceTagInDishes(String name, Long fromTagId, Long toTagId) {
-        UserAccountEntity user = userRepository.findByUsername(name);
+        UserAccountEntity user = userService.getUserByUserName(name);
         List<DishEntity> dishes;
         TagEntity toTag = getTagById(toTagId);
 
@@ -478,8 +463,46 @@ public class TagServiceImpl implements TagService {
             }
             // add tags to dish
             dish.setTags(dishTags);
-            dishRepository.save(dish);
+            dishService.save(dish, false);
         }
+    }
+
+    private List<TagEntity> removeRelatedTags(List<TagEntity> dishTags, TagEntity tag) {
+        // get sibling tags for dish
+        List<TagEntity> siblings = tagStructureService.getSiblingTags(tag);
+        return dishTags.stream()
+                .filter(t -> !siblings.contains(t))
+                .collect(Collectors.toList());
+    }
+
+    private LookupInformation parseRatingTags(List<FatTag> ratingTagsWithChildren) {
+
+        Map<Long, RatingInfo> ratingInfoById = new HashMap<>();
+        Set<RatingInfo> headers = new HashSet<>();
+
+        for (FatTag parentTag : ratingTagsWithChildren) {
+            // sort children
+            List<FatTag> sortedChildren = parentTag.getChildren()
+                    .stream()
+                    .sorted(Comparator.comparing(FatTag::getPower))
+                    .collect(Collectors.toList());
+            parentTag.setChildren(sortedChildren);
+            int order = 1;
+            int maxPower = sortedChildren.size();
+            for (FatTag childTag : sortedChildren) {
+                RatingInfo childInfo = new RatingInfo(parentTag.getId(), parentTag.getName(), order);
+                childInfo.setMaxPower(maxPower);
+                ratingInfoById.put(childTag.getId(), childInfo);
+                order++;
+            }
+            // put into header
+            if (!sortedChildren.isEmpty()) {
+                RatingInfo header = new RatingInfo(parentTag.getId(), parentTag.getName());
+                header.setMaxPower(sortedChildren.size());
+                headers.add(header);
+            }
+        }
+        return new LookupInformation(ratingInfoById, headers);
     }
 
 
@@ -537,34 +560,22 @@ public class TagServiceImpl implements TagService {
 
     }
 
-    private Pair<Map<Long, RatingInfo>, Set<RatingInfo>> parseRatingTags(List<FatTag> ratingTagsWithChildren) {
+    private class LookupInformation {
+        private Map<Long, RatingInfo> tagToRatingInfo;
+        private Set<RatingInfo> parentRatings;
 
-        Map<Long, RatingInfo> ratingInfoById = new HashMap<>();
-        Set<RatingInfo> headers = new HashSet<>();
-
-        for (FatTag parentTag : ratingTagsWithChildren) {
-            // sort children
-            List<FatTag> sortedChildren = parentTag.getChildren()
-                    .stream()
-                    .sorted(Comparator.comparing(FatTag::getPower))
-                    .collect(Collectors.toList());
-            parentTag.setChildren(sortedChildren);
-            int order = 1;
-            int maxPower = sortedChildren.size();
-            for (FatTag childTag : sortedChildren) {
-                RatingInfo childInfo = new RatingInfo(parentTag.getId(), parentTag.getName(), order);
-                childInfo.setMaxPower(maxPower);
-                ratingInfoById.put(childTag.getId(), childInfo);
-                order++;
-            }
-            // put into header
-            if (!sortedChildren.isEmpty()) {
-                RatingInfo header = new RatingInfo(parentTag.getId(), parentTag.getName());
-                header.setMaxPower(sortedChildren.size());
-                headers.add(header);
-            }
+        public LookupInformation(Map<Long, RatingInfo> tagToRatingInfo, Set<RatingInfo> parentRatings) {
+            this.tagToRatingInfo = tagToRatingInfo;
+            this.parentRatings = parentRatings;
         }
-        return new Pair(ratingInfoById, headers);
+
+        public Map<Long, RatingInfo> getTagToRatingInfo() {
+            return tagToRatingInfo;
+        }
+
+        public Set<RatingInfo> getParentRatings() {
+            return parentRatings;
+        }
     }
 
     private Long getDefaultTagIdForRating(FatTag ratingParent) {

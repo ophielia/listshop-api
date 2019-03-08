@@ -117,7 +117,7 @@ public class MealPlanServiceImplTest {
         List<MealPlanEntity> list = mealPlanService.getMealPlansForUserName(userAccount.getUsername());
 
         Assert.assertNotNull(list);
-        Assert.assertEquals(1L, list.size());
+        Assert.assertEquals(2L, list.size());
     }
 
     @Test

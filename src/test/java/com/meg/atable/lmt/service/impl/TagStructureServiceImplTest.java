@@ -46,21 +46,7 @@ public class TagStructureServiceImplTest {
         Assert.assertTrue(allgood);
     }
 
-    @Test
-    public void testNoDisplayTagsNotIncluded() {
-        // tag cod, tag_id = 505 is marked as no display.  Should not be returned
-        List<FatTag> results = tagStructureService.getTagsWithChildren(null);
 
-        // gather all keys in FatTag
-        Set<Long> allTagIds = new HashSet<>();
-        for (FatTag tag : results) {
-            allTagIds.add(tag.getId());
-            allTagIds.addAll(getChildrenIds(tag));
-        }
-
-        Optional<Long> testFind = allTagIds.stream().filter(t-> t.equals(505L)).findFirst();
-        Assert.assertFalse(testFind.isPresent());
-    }
 
     @Test
     public void testToDeleteTagsNotIncluded() {
