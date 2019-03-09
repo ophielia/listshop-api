@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * Created by margaretmartin on 08/12/2017.
  */
 @Entity
-@DiscriminatorValue("TAG")
+@DiscriminatorValue("Tag")
 public class TagInstructionEntity extends AutoTagInstructionEntity implements Instruction {
     @Transient
     private Set<Long> inflatedSearchTerms;
