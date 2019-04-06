@@ -2,7 +2,7 @@ package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.Application;
 import com.meg.atable.lmt.api.model.*;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.ItemEntity;
@@ -48,15 +48,15 @@ public class ShoppingListServiceImplTest {
     private TagService tagService;
     @Autowired
     private ShoppingListProperties shoppingListProperties;
-    private UserAccountEntity userAccount;  // user_id 500
-    private UserAccountEntity addUserAccount;  // user_id 501
+    private UserEntity userAccount;  // user_id 500
+    private UserEntity addUserAccount;  // user_id 501
     private TagEntity tag1; // 500
     private TagEntity cheddarTag; // 18
 
     @Before
     public void setUp() {
-        userAccount = userService.getUserByUserName(TestConstants.USER_1_NAME);
-        addUserAccount = userService.getUserByUserName(TestConstants.USER_2_NAME);
+        userAccount = userService.getUserByUserEmail(TestConstants.USER_1_NAME);
+        addUserAccount = userService.getUserByUserEmail(TestConstants.USER_2_NAME);
         // make tags
         tag1 = tagService.getTagById(TestConstants.TAG_1_ID);
         cheddarTag = tagService.getTagById(18L); // 18 is cheddar tag id;
@@ -72,7 +72,7 @@ public class ShoppingListServiceImplTest {
 
     @Test
     public void testGetListByUsername() {
-        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(), TestConstants.LIST_1_ID);
+        ShoppingListEntity result = shoppingListService.getListById(userAccount.getEmail(), TestConstants.LIST_1_ID);
 
 
         Assert.assertNotNull(result);
@@ -97,7 +97,7 @@ public class ShoppingListServiceImplTest {
         properties.setRawListType("PickUpList");
 
 
-        ShoppingListEntity result = shoppingListService.createList(addUserAccount.getUsername(), properties);
+        ShoppingListEntity result = shoppingListService.createList(addUserAccount.getEmail(), properties);
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getCreatedOn());
@@ -107,7 +107,7 @@ public class ShoppingListServiceImplTest {
 
     @Test
     public void testDeleteList() {
-        boolean result = shoppingListService.deleteList(userAccount.getUsername(), TestConstants.LIST_3_ID);
+        boolean result = shoppingListService.deleteList(userAccount.getEmail(), TestConstants.LIST_3_ID);
 
         Assert.assertTrue(result);
     }
@@ -158,14 +158,14 @@ public class ShoppingListServiceImplTest {
     //@FlywayTest(locationsForMigrate = "classpath:db/testdata/shoppingListServiceImpl_deleteItem")
     //@FlywayTest(invokeBaselineDB = true)
     public void testDeleteItemFromList() {
-        ShoppingListEntity result = shoppingListService.getListById(userAccount.getUsername(), TestConstants.LIST_1_ID);
+        ShoppingListEntity result = shoppingListService.getListById(userAccount.getEmail(), TestConstants.LIST_1_ID);
         int sizeBefore = result.getItems().size();
 
         // delete from active list
-        shoppingListService.deleteItemFromList(userAccount.getUsername(), TestConstants.LIST_1_ID, TestConstants.ITEM_1_ID, false, null);
+        shoppingListService.deleteItemFromList(userAccount.getEmail(), TestConstants.LIST_1_ID, TestConstants.ITEM_1_ID, false, null);
 
         // retrieve active list
-        result = shoppingListService.getListById(userAccount.getUsername(), TestConstants.LIST_1_ID);
+        result = shoppingListService.getListById(userAccount.getEmail(), TestConstants.LIST_1_ID);
 
         // ensure item is NOT there
         Assert.assertNotNull(result);
@@ -175,7 +175,7 @@ public class ShoppingListServiceImplTest {
 
     @Test
     public void testGenerateListFromMealPlan() {
-        ShoppingListEntity result = shoppingListService.generateListFromMealPlan(userAccount.getUsername(), TestConstants.MEAL_PLAN_1_ID);
+        ShoppingListEntity result = shoppingListService.generateListFromMealPlan(userAccount.getEmail(), TestConstants.MEAL_PLAN_1_ID);
         Assert.assertNotNull(result);
     }
 
@@ -192,7 +192,7 @@ public class ShoppingListServiceImplTest {
     public void testCategorizeList() {
         ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID);
 
-        List<Category> categoryEntities = shoppingListService.categorizeList(userAccount.getUsername(), result, null, false, null);
+        List<Category> categoryEntities = shoppingListService.categorizeList(userAccount.getEmail(), result, null, false, null);
         Assert.assertNotNull(categoryEntities);
 
         // count items and subcategories

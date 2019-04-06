@@ -1,9 +1,9 @@
 package com.meg.atable.auth.api;
 
 import com.meg.atable.Application;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.auth.service.JwtAuthenticationRequest;
-import com.meg.atable.auth.service.JwtUser;
+import com.meg.atable.auth.data.entity.UserEntity;
+import com.meg.atable.auth.service.impl.JwtAuthenticationRequest;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.api.model.Dish;
@@ -11,7 +11,6 @@ import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.service.DishService;
 import com.meg.atable.test.TestConstants;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,7 +84,7 @@ public class AuthenticationRestControllerTest {
                 .apply(springSecurity())
                 .build();
 
-        UserAccountEntity userAccount = userService.getUserByUserName(TestConstants.USER_3_NAME);
+        UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
         userDetails = new JwtUser(userAccount.getId(),
                 TestConstants.USER_3_NAME,
                 null,
@@ -108,7 +107,8 @@ public class AuthenticationRestControllerTest {
 
                 mockMvc.perform(post("/auth")
                 .content(deviceJson)
-                .content(authReqJson));
+                .content(authReqJson))
+                .andDo(print());
 
 
                 //.with(user(userDetails)))

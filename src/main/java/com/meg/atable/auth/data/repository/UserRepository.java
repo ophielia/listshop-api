@@ -1,10 +1,12 @@
 package com.meg.atable.auth.data.repository;
 
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
-public interface UserRepository extends JpaRepository<UserAccountEntity, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    UserAccountEntity findByUsername(String username);
+    UserEntity findByUsername(String username);
+
+    UserEntity findByEmail(String email);
 }

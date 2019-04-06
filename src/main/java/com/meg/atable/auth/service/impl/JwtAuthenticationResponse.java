@@ -1,4 +1,4 @@
-package com.meg.atable.auth.service;
+package com.meg.atable.auth.service.impl;
 
 import java.io.Serializable;
 

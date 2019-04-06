@@ -1,4 +1,4 @@
-package com.meg.atable.auth.service;
+package com.meg.atable.auth.service.impl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -56,14 +56,14 @@ public class JwtTokenUtil implements Serializable {
     }
 
     public Date getExpirationDateFromToken(String token) {
-        Date expiration;
+        Date localExpiration;
         try {
             final Claims claims = getClaimsFromToken(token);
-            expiration = claims.getExpiration();
+            localExpiration = claims.getExpiration();
         } catch (Exception e) {
-            expiration = null;
+            localExpiration = null;
         }
-        return expiration;
+        return localExpiration;
     }
 
     public String getAudienceFromToken(String token) {
@@ -95,8 +95,8 @@ public class JwtTokenUtil implements Serializable {
     }
 
     private Boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
+        final Date localExpiration = getExpirationDateFromToken(token);
+        return localExpiration.before(new Date());
     }
 
     private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
@@ -158,7 +158,6 @@ public class JwtTokenUtil implements Serializable {
         JwtUser user = (JwtUser) userDetails;
         final String username = getUsernameFromToken(token);
         final Date created = getCreatedDateFromToken(token);
-        //final Date expiration = getExpirationDateFromToken(token);
         return (
                 username.equals(user.getUsername())
                         && !isTokenExpired(token)

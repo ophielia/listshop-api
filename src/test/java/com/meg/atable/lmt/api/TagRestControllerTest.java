@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.meg.atable.Application;
 import com.meg.atable.lmt.api.model.Tag;
 import com.meg.atable.lmt.api.model.TagType;
-import com.meg.atable.auth.service.JwtUser;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.test.TestConstants;

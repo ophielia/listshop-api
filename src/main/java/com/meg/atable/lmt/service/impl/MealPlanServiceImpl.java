@@ -1,6 +1,6 @@
 package com.meg.atable.lmt.service.impl;
 
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
@@ -59,14 +59,14 @@ public class MealPlanServiceImpl implements MealPlanService {
 
     public List<MealPlanEntity> getMealPlansForUserName(String username) {
         // get user
-        UserAccountEntity user = userService.getUserByUserName(username);
+        UserEntity user = userService.getUserByUserEmail(username);
 
         return mealPlanRepository.findByUserId(user.getId());
     }
 
     public MealPlanEntity createMealPlan(String username, MealPlanEntity mealPlanEntity) {
         // get username
-        UserAccountEntity user = userService.getUserByUserName(username);
+        UserEntity user = userService.getUserByUserEmail(username);
 
         // check name - if null or empty, autoname
         if (mealPlanEntity.getName() == null || mealPlanEntity.getName().isEmpty()) {
@@ -81,9 +81,9 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
     @Override
-    public MealPlanEntity createMealPlanFromProposal(String username, Long proposalId) throws ObjectNotYoursException, ObjectNotFoundException {
+    public MealPlanEntity createMealPlanFromProposal(String username, Long proposalId) {
         // get username
-        UserAccountEntity user = userService.getUserByUserName(username);
+        UserEntity user = userService.getUserByUserEmail(username);
         // get proposal
         ProposalEntity proposalEntity = targetProposalService.getTargetProposalById(username, proposalId);
 
@@ -117,8 +117,8 @@ public class MealPlanServiceImpl implements MealPlanService {
         return mealPlan;
     }
 
-    public MealPlanEntity getMealPlanById(String userName, Long mealPlanId) throws ObjectNotFoundException, ObjectNotYoursException {
-        UserAccountEntity user = userService.getUserByUserName(userName);
+    public MealPlanEntity getMealPlanById(String userName, Long mealPlanId)  {
+        UserEntity user = userService.getUserByUserEmail(userName);
 
         Optional<MealPlanEntity> mealPlanEntityOpt = mealPlanRepository.findById(mealPlanId);
         if (!mealPlanEntityOpt.isPresent()) {
@@ -129,13 +129,13 @@ public class MealPlanServiceImpl implements MealPlanService {
         // ensure that this meal plan belongs to the user
         if (!mealPlanEntity.getUserId().equals(user.getId())) {
             final String msg = "MealPlan found, but doesn't belong to user [" + userName + "] and mealPlanId [" + mealPlanId + "]";
-            throw new ObjectNotYoursException(msg, "MealPlan",mealPlanId, user.getUsername());
+            throw new ObjectNotYoursException(msg, "MealPlan",mealPlanId, user.getEmail());
         }
         return mealPlanEntity;
     }
 
 
-    public void addDishToMealPlan(String username, Long mealPlanId, Long dishId) throws ObjectNotYoursException, ObjectNotFoundException {
+    public void addDishToMealPlan(String username, Long mealPlanId, Long dishId) {
         // get meal plan
         MealPlanEntity mealPlan = getMealPlanById(username, mealPlanId);
 
@@ -195,7 +195,7 @@ public class MealPlanServiceImpl implements MealPlanService {
 
     }
 
-    public void renameMealPlan(String userName, Long mealPlanId, String newName) throws ObjectNotFoundException, ObjectNotYoursException {
+    public void renameMealPlan(String userName, Long mealPlanId, String newName)  {
         MealPlanEntity mealPlan = getMealPlanById(userName, mealPlanId);
         mealPlan.setName(newName);
         mealPlanRepository.save(mealPlan);

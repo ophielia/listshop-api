@@ -1,4 +1,4 @@
-package com.meg.atable.auth.service;
+package com.meg.atable.auth.service.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;

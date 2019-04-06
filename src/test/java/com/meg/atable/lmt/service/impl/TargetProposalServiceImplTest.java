@@ -1,7 +1,7 @@
 package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.Application;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
@@ -43,7 +43,7 @@ private DishSearchService dishSearchService;
     private TagRepository tagRepository;
 
     private static boolean setUpComplete = false;
-    private static UserAccountEntity userAccount;
+    private static UserEntity userAccount;
 
     @Autowired
     private DishRepository dishRepository;

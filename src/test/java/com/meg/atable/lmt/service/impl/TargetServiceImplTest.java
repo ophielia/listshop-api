@@ -1,7 +1,7 @@
 package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.Application;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.entity.TargetEntity;
@@ -46,8 +46,8 @@ public class TargetServiceImplTest {
     private TargetSlotRepository targetSlotRepository;
 
     private static boolean setUpComplete = false;
-    private static UserAccountEntity userAccount;
-    private static UserAccountEntity newUserAccount;
+    private static UserEntity userAccount;
+    private static UserEntity newUserAccount;
     private static TagEntity tag1;
     private static TagEntity tag21;
     private static TagEntity tag31;
@@ -86,8 +86,8 @@ targetIdToDelete = result.getTargetId();
         String tagString = tag1.getId() + ";" + tag21.getId();
         // make users
         String userName = "targetServiceTest";
-        userAccount = userService.save(new UserAccountEntity(userName, "password"));
-        newUserAccount = userService.save(new UserAccountEntity("newUser", "password"));
+        userAccount = userService.save(new UserEntity(userName, "password"));
+        newUserAccount = userService.save(new UserEntity("newUser", "password"));
 
         TargetEntity targetEntity = new TargetEntity();
         targetEntity.setUserId(userAccount.getId());

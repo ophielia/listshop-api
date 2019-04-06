@@ -3,7 +3,7 @@ package com.meg.atable.lmt.service.impl;
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
 import com.meg.atable.lmt.api.exception.ProposalProcessingException;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.*;
@@ -56,7 +56,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
 
     @Override
     public ProposalEntity generateProposal(String userName, Long targetId) throws  ProposalProcessingException {
-        UserAccountEntity userAccount = userService.getUserByUserName(userName);
+        UserEntity userAccount = userService.getUserByUserEmail(userName);
         // get target for user
         TargetEntity target = targetService.getTargetById(userName, targetId);
         // get proposal context for target
@@ -94,7 +94,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
 
     @Override
     public ProposalEntity proposalForMealPlan(String userName, Long mealPlanId, Long targetId) throws ProposalProcessingException {
-        UserAccountEntity userAccount = userService.getUserByUserName(userName);
+        UserEntity userAccount = userService.getUserByUserEmail(userName);
         boolean newSearch = true;
         ProposalEntity proposal = null;
 
@@ -195,7 +195,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     }
 
     private ProposalEntity refreshOrFillInProposal(String userName, Long proposalId, Integer slotNr) throws ProposalProcessingException {
-        UserAccountEntity userAccount = userService.getUserByUserName(userName);
+        UserEntity userAccount = userService.getUserByUserEmail(userName);
         // get proposal for user
         ProposalEntity proposal;
         try {
@@ -261,7 +261,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     }
 
 
-    private ProposalEntity persistResults(UserAccountEntity user, TargetEntity target, ProposalContextEntity passedContext, ProposalEntity passedProposal, ProcessResult result) {
+    private ProposalEntity persistResults(UserEntity user, TargetEntity target, ProposalContextEntity passedContext, ProposalEntity passedProposal, ProcessResult result) {
 
         ProposalEntity proposal = passedProposal;
         ProposalContextEntity context = passedContext;
@@ -397,7 +397,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     }
 
     private ProposalEntity getProposalForUser(String userName, Long proposalId) {
-        UserAccountEntity user = userService.getUserByUserName(userName);
+        UserEntity user = userService.getUserByUserEmail(userName);
 
         ProposalEntity proposal = proposalRepository.findProposalByUserIdAndProposalId(user.getId(), proposalId);
         if (proposal == null) {

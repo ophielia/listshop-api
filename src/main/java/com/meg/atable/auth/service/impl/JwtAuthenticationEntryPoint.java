@@ -1,4 +1,4 @@
-package com.meg.atable.auth.service;
+package com.meg.atable.auth.service.impl;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

@@ -1,7 +1,7 @@
 package com.meg.atable.configuration;
 
-import com.meg.atable.auth.service.JwtAuthenticationEntryPoint;
-import com.meg.atable.auth.service.JwtAuthenticationTokenFilter;
+import com.meg.atable.auth.service.impl.JwtAuthenticationEntryPoint;
+import com.meg.atable.auth.service.impl.JwtAuthenticationTokenFilter;
 import com.meg.atable.auth.service.impl.JwtUserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -35,13 +35,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
     private DataSource dataSource;
 
-    public static final String USER_QUERY = "select username, password, enabled from users where username = ?";
-    public static final String AUTHORITIES_QUERY = "select username, a.name from users u, authority a  where u.user_id = a.user_id and username = ?";
+    public static final String USER_QUERY = "select email, password, enabled from users where email = ?";
+    public static final String AUTHORITIES_QUERY = "select username, a.name from users u, authority a  where u.user_id = a.user_id and email = ?";
 
     @Autowired
     public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
@@ -67,19 +64,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Bean
+    @Override
     public UserDetailsService userDetailsService() {
         return new JwtUserDetailsServiceImpl();
     }
 
     @Bean
-    public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
+    public JwtAuthenticationTokenFilter authenticationTokenFilterBean()  {
         return new JwtAuthenticationTokenFilter();
     }
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
                 .cors().and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
@@ -89,13 +86,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests()
                 //.antMatchers(HttpMethod.OPTIONS,"/path/to/allow").permitAll()
+                .antMatchers(HttpMethod.POST,"/user").permitAll()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/swagger*/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/v2/api-docs/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/tag/**").permitAll()
                 .antMatchers("/taginfo/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated();
-                //.anyRequest().permitAll();
+
 
         // Custom JWT based security filter
         httpSecurity

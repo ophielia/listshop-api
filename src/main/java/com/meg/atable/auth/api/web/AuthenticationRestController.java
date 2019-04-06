@@ -1,10 +1,10 @@
-package com.meg.atable.auth.web.controller;
+package com.meg.atable.auth.api.web;
 
-import com.meg.atable.auth.controller.AuthenticationRestControllerApi;
-import com.meg.atable.auth.service.JwtAuthenticationRequest;
-import com.meg.atable.auth.service.JwtAuthenticationResponse;
-import com.meg.atable.auth.service.JwtTokenUtil;
-import com.meg.atable.auth.service.JwtUser;
+import com.meg.atable.auth.api.controller.AuthenticationRestControllerApi;
+import com.meg.atable.auth.service.impl.JwtAuthenticationRequest;
+import com.meg.atable.auth.service.impl.JwtAuthenticationResponse;
+import com.meg.atable.auth.service.impl.JwtTokenUtil;
+import com.meg.atable.auth.service.impl.JwtUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,6 @@ import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,7 +35,7 @@ public class AuthenticationRestController implements AuthenticationRestControlle
     @Autowired
     private UserDetailsService userDetailsService;
 
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AuthenticationException {
+    public ResponseEntity<Object> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, Device device) {
 
 
         // Perform the security
@@ -56,7 +55,7 @@ public class AuthenticationRestController implements AuthenticationRestControlle
         return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
 
-    public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
+    public ResponseEntity<Object> refreshAndGetAuthenticationToken(HttpServletRequest request) {
         String token = request.getHeader(tokenHeader);
         String username = jwtTokenUtil.getUsernameFromToken(token);
         JwtUser user = (JwtUser) userDetailsService.loadUserByUsername(username);

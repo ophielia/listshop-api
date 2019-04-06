@@ -4,6 +4,7 @@ package com.meg.atable.auth.data.entity;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import java.util.List;
                         name = "increment_size",
                         value="1")}
 )
-public class UserAccountEntity {
+public class UserEntity {
 
     @Id
     @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="user_id_sequence")
@@ -36,6 +37,8 @@ public class UserAccountEntity {
 
     private String email;
 
+    private Date creationDate;
+
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<AuthorityEntity> authorities;
@@ -43,12 +46,19 @@ public class UserAccountEntity {
     private Boolean enabled;
     private Date lastPasswordResetDate;
 
-    public UserAccountEntity(String userName, String password) {
+    public UserEntity(String userName, String password) {
         this.username = userName;
         this.password = password;
     }
 
-    UserAccountEntity() {
+    public UserEntity(String userName, String email,  String password) {
+        this.username = userName;
+        this.password = password;
+        this.email = email;
+        this.enabled = true;
+    }
+
+    UserEntity() {
         // jpa empty constructor
     }
 
@@ -83,6 +93,9 @@ public class UserAccountEntity {
     }
 
     public List<AuthorityEntity> getAuthorities() {
+        if (authorities == null) {
+            authorities = new ArrayList<>();
+        }
         return authorities;
     }
 
@@ -104,5 +117,13 @@ public class UserAccountEntity {
 
     public void setLastPasswordResetDate(Date lastPasswordResetDate) {
         this.lastPasswordResetDate = lastPasswordResetDate;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

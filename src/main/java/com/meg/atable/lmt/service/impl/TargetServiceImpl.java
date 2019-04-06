@@ -2,7 +2,7 @@ package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.model.TargetType;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.entity.TargetEntity;
@@ -45,7 +45,7 @@ public class TargetServiceImpl implements TargetService {
 
     @Override
     public List<TargetEntity> getTargetsForUserName(String name, boolean includeTemporary) {
-        UserAccountEntity user = userService.getUserByUserName(name);
+        UserEntity user = userService.getUserByUserEmail(name);
         if (includeTemporary) {
             return targetRepository.findTargetsByUserId(user.getId());
         } else {
@@ -59,7 +59,7 @@ public class TargetServiceImpl implements TargetService {
             return null;
         }
 
-        UserAccountEntity user = userService.getUserByUserName(name);
+        UserEntity user = userService.getUserByUserEmail(name);
 
         targetEntity.setUserId(user.getId());
         targetEntity.setCreated(new Date());
@@ -77,7 +77,7 @@ public class TargetServiceImpl implements TargetService {
 
     @Override
     public TargetEntity getTargetById(String name, Long targetId) {
-        UserAccountEntity user = userService.getUserByUserName(name);
+        UserEntity user = userService.getUserByUserEmail(name);
 
         return targetRepository.findTargetByUserIdAndTargetId(user.getId(), targetId);
     }

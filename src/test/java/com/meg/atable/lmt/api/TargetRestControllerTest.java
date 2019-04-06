@@ -4,8 +4,8 @@ import com.meg.atable.Application;
 import com.meg.atable.lmt.api.model.ModelMapper;
 import com.meg.atable.lmt.api.model.Target;
 import com.meg.atable.lmt.api.model.TargetSlot;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.auth.service.JwtUser;
+import com.meg.atable.auth.data.entity.UserEntity;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.data.entity.TargetEntity;
 import com.meg.atable.lmt.data.entity.TargetSlotEntity;
@@ -51,7 +51,7 @@ public class TargetRestControllerTest {
 
     private static UserDetails userDetails;
     private static UserDetails newUserDetails;
-    private static UserAccountEntity newUserAccount;
+    private static UserEntity newUserAccount;
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
@@ -88,7 +88,7 @@ public class TargetRestControllerTest {
                 .build();
 
 
-        UserAccountEntity userAccount = userService.getUserByUserName(TestConstants.USER_3_NAME);
+        UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
         userDetails = new JwtUser(userAccount.getId(),
                 TestConstants.USER_3_NAME,
                 null,
@@ -98,7 +98,7 @@ public class TargetRestControllerTest {
                 null);
         newUserAccount = userService.getUserById(TestConstants.USER_1_ID);
         newUserDetails = new JwtUser(newUserAccount.getId(),
-                newUserAccount.getUsername(),
+                newUserAccount.getEmail(),
                 null,
                 null,
                 null,

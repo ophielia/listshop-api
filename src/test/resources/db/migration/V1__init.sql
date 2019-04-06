@@ -4519,12 +4519,12 @@ INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (
 INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (235, 375, 162);
 
 
-INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (1, NULL, true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'rufus');
-INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (20, NULL, true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'me');
-INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (23, NULL, true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'carrie');
-INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (26, NULL, true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'mom');
-INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (29, NULL, true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'michelle');
-INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (2, NULL, NULL, NULL, 'password', 'testname');
+INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (1, 'rufus', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'rufus');
+INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (20, 'me', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'me');
+INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (23, 'carrie', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'carrie');
+INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (26, 'mom', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'mom');
+INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (29, 'michelle', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'michelle');
+INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (2, 'testname', NULL, NULL, 'password', 'testname');
 
 insert into shadow_tags (    shadow_tag_id ,dish_id ,tag_id ) values (    1 ,3 ,346 );
 insert into shadow_tags (    shadow_tag_id ,dish_id ,tag_id ) values (    2 ,87 ,199 );

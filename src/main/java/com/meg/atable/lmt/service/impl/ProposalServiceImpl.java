@@ -2,7 +2,7 @@ package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.data.entity.DishSlotEntity;
 import com.meg.atable.lmt.data.entity.ProposalEntity;
@@ -37,7 +37,7 @@ public class ProposalServiceImpl implements ProposalService {
 
     @Override
     public ProposalEntity getProposalById(String name, Long proposalId) {
-        UserAccountEntity user = userService.getUserByUserName(name);
+        UserEntity user = userService.getUserByUserEmail(name);
         Optional<ProposalEntity> proposalOpt = proposalRepository.findById(proposalId);
         if (!proposalOpt.isPresent()) {
             final String msg = "No proposal found by id for user [" + name + "] and proposal [" + proposalId + "]";
@@ -46,7 +46,7 @@ public class ProposalServiceImpl implements ProposalService {
         ProposalEntity proposal = proposalOpt.get();
         if (proposal.getUserId() == null || !proposal.getUserId().equals(user.getId())) {
             final String msg = "Proposal found, but doesn't belong to user [" + name + "] proposalId [" + proposalId + "]";
-            throw new ObjectNotYoursException(msg, "Proposal", proposalId, user.getUsername());
+            throw new ObjectNotYoursException(msg, "Proposal", proposalId, user.getEmail());
         }
 
         proposal.getSlots().sort(Comparator.comparing(ProposalSlotEntity::getSlotNumber));
@@ -55,7 +55,7 @@ public class ProposalServiceImpl implements ProposalService {
 
     @Override
     public ProposalEntity getTargetProposalById(String name, Long proposalId) {
-        UserAccountEntity user = userService.getUserByUserName(name);
+        UserEntity user = userService.getUserByUserEmail(name);
         Optional<ProposalEntity> proposalOpt = targetProposalRepository.findById(proposalId);
         if (!proposalOpt.isPresent()) {
             return null;

@@ -4,7 +4,7 @@ import com.meg.atable.Application;
 import com.meg.atable.lmt.api.model.Item;
 import com.meg.atable.lmt.api.model.ListGenerateProperties;
 import com.meg.atable.lmt.api.model.ListType;
-import com.meg.atable.auth.service.JwtUser;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
 import org.junit.Assert;

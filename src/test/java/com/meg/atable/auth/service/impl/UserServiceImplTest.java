@@ -1,7 +1,7 @@
 package com.meg.atable.auth.service.impl;
 
 import com.meg.atable.Application;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.test.TestConstants;
 import org.junit.Test;
@@ -11,8 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)
@@ -25,35 +24,45 @@ public class UserServiceImplTest {
 
     @Test
     public void testGetUserById() {
-        UserAccountEntity testUser = userService.getUserById(TestConstants.USER_3_ID);
+        UserEntity testUser = userService.getUserById(TestConstants.USER_3_ID);
         assertNotNull(testUser);
         assertNotNull(testUser.getId());
         assertEquals(TestConstants.USER_3_ID, testUser.getId());
-        assertEquals(TestConstants.USER_3_NAME, testUser.getUsername());
+        assertEquals(TestConstants.USER_3_NAME, testUser.getEmail());
 
     }
 
     @Test
     public void testGetUserByUserName() {
-        UserAccountEntity testUser = userService.getUserByUserName(TestConstants.USER_3_NAME);
+        UserEntity testUser = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
         assertNotNull(testUser);
         assertNotNull(testUser.getId());
         assertEquals(TestConstants.USER_3_ID, testUser.getId());
-        assertEquals(TestConstants.USER_3_NAME, testUser.getUsername());
+        assertEquals(TestConstants.USER_3_NAME, testUser.getEmail());
 
     }
 
     @Test
     public void testSave() {
         final String testName = "email@test.com";
-        UserAccountEntity testUser = userService.getUserByUserName(TestConstants.USER_3_NAME);
+        UserEntity testUser = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
         testUser.setEmail("email@test.com");
         userService.save(testUser);
-        UserAccountEntity testResult = userService.getUserByUserName(TestConstants.USER_3_NAME);
+        UserEntity testResult = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
         assertEquals(testName, testResult.getEmail());
     }
 
     @Test
-    public void deleteAll() {
+    public void testCreateUser() {
+        final String username = "george";
+        final String email = "george@will.run";
+        final String password = "Passw0rd";
+
+        UserEntity result = userService.createUser(username, email, password);
+        assertNotNull(result);
+        assertNotNull(result.getPassword());
+        assertNotNull(result.getCreationDate());
+        assertNotEquals(result.getPassword(), password);
+        assertEquals("$2a$10$NH7iIw4T517hii0kjk/RruJ5n3Puq4k/PkAZLPPZM.KT9ONHspwRm",result.getPassword());
     }
 }

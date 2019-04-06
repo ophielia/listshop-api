@@ -5,8 +5,8 @@ import com.meg.atable.lmt.api.model.ListLayout;
 import com.meg.atable.lmt.api.model.ListLayoutCategory;
 import com.meg.atable.lmt.api.model.ListLayoutType;
 import com.meg.atable.lmt.api.model.ModelMapper;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.auth.service.JwtUser;
+import com.meg.atable.auth.data.entity.UserEntity;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
@@ -55,7 +55,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public class ListLayoutRestControllerTest {
 
 
-    private static UserAccountEntity userAccount;
+    private static UserEntity userAccount;
     private static UserDetails userDetails;
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
@@ -91,7 +91,7 @@ public class ListLayoutRestControllerTest {
                 .apply(springSecurity())
                 .build();
 
-        userAccount = userService.getUserByUserName(TestConstants.USER_3_NAME);
+        userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
         userDetails = new JwtUser(userAccount.getId(),
                 userName,
                 null,
@@ -120,7 +120,7 @@ public class ListLayoutRestControllerTest {
     @WithMockUser
     public void testAddCategoryToListLayout() throws Exception {
         JwtUser createUserDetails = new JwtUser(userAccount.getId(),
-                userAccount.getUsername(),
+                userAccount.getEmail(),
                 null,
                 null,
                 null,

@@ -1,6 +1,6 @@
 package com.meg.atable.lmt.api.web.controller;
 
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.api.controller.DishRestControllerApi;
 import com.meg.atable.lmt.api.exception.UserNotFoundException;
@@ -65,7 +65,7 @@ public class DishRestController implements DishRestControllerApi {
 
     private List<DishResource> findDishes(Principal principal, String includedTags, String excludedTags) {
 
-        UserAccountEntity user = userService.getUserByUserName(principal.getName());
+        UserEntity user = userService.getUserByUserEmail(principal.getName());
         DishSearchCriteria criteria = new DishSearchCriteria(user.getId());
         if (includedTags != null) {
             List<Long> tagIdList = commaDelimitedToList(includedTags);
@@ -89,7 +89,7 @@ public class DishRestController implements DishRestControllerApi {
 
     public ResponseEntity<Object> createDish(Principal principal, @RequestBody Dish input) {
 
-        UserAccountEntity user = userService.getUserByUserName(principal.getName());
+        UserEntity user = userService.getUserByUserEmail(principal.getName());
         DishEntity result = dishService.save(new DishEntity(user.getId(),
                 input.getDishName(),
                 input.getDescription()), false);
@@ -108,10 +108,10 @@ public class DishRestController implements DishRestControllerApi {
 
 
     public ResponseEntity<Object> updateDish(Principal principal, @PathVariable Long dishId, @RequestBody Dish input) {
-        UserAccountEntity user = this.getUserForPrincipal(principal);
+        UserEntity user = this.getUserForPrincipal(principal);
 
         DishEntity dish =  this.dishService
-                .getDishForUserById(user.getUsername(), dishId);
+                .getDishForUserById(user.getEmail(), dishId);
 
         dish.setDescription(input.getDescription());
         dish.setDishName(input.getDishName());
@@ -195,11 +195,11 @@ public class DishRestController implements DishRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
-    private UserAccountEntity getUserForPrincipal(Principal principal) {
+    private UserEntity getUserForPrincipal(Principal principal) {
 
         String username = principal.getName();
-        UserAccountEntity user = this.userService
-                .getUserByUserName(username);
+        UserEntity user = this.userService
+                .getUserByUserEmail(username);
         if (user == null) {
             throw new UserNotFoundException("username");
         }

@@ -1,6 +1,6 @@
 package com.meg.atable.lmt.service.tag.impl;
 
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.api.exception.ActionInvalidException;
 import com.meg.atable.lmt.api.model.*;
@@ -433,7 +433,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void replaceTagInDishes(String name, Long fromTagId, Long toTagId) {
-        UserAccountEntity user = userService.getUserByUserName(name);
+        UserEntity user = userService.getUserByUserEmail(name);
         List<DishEntity> dishes;
         TagEntity toTag = getTagById(toTagId);
 

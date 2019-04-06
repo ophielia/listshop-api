@@ -1,6 +1,6 @@
 package com.meg.atable.lmt.service.impl;
 
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.*;
@@ -264,14 +264,14 @@ public class TagReplaceServiceImpl implements TagReplaceService {
             // for each candidate -
             for (TargetEntity target : targetEntities) {
                 // get user for target
-                UserAccountEntity user = userService.getUserById(target.getUserId());
+                UserEntity user = userService.getUserById(target.getUserId());
                 for (TargetSlotEntity slot : target.getSlots()) {
                     if (!slot.getTagIdsAsList().contains(replaceId)) {
                         continue;
                     }
-                    targetService.deleteTagFromTargetSlot(user.getUsername(), target.getTargetId(), slot.getId(), toReplaceId);
+                    targetService.deleteTagFromTargetSlot(user.getEmail(), target.getTargetId(), slot.getId(), toReplaceId);
                     if (!slot.getTagIdsAsList().contains(replaceWith)) {
-                        targetService.addTagToTargetSlot(user.getUsername(), target.getTargetId(), slot.getId(), replaceWithId);
+                        targetService.addTagToTargetSlot(user.getEmail(), target.getTargetId(), slot.getId(), replaceWithId);
                     }
                 }
             }
@@ -282,14 +282,14 @@ public class TagReplaceServiceImpl implements TagReplaceService {
         // for each candidate -
         for (TargetEntity target : targetEntities) {
             // get user for target
-            UserAccountEntity user = userService.getUserById(target.getUserId());
+            UserEntity user = userService.getUserById(target.getUserId());
             Set<String> targetTagSet = target.getTagIdsAsSet();
             if (targetTagSet.isEmpty() || !targetTagSet.contains(replaceId)) {
                 continue;
             }
-            targetService.deleteTagFromTarget(user.getUsername(), target.getTargetId(), toReplaceId);
+            targetService.deleteTagFromTarget(user.getEmail(), target.getTargetId(), toReplaceId);
             if (!targetTagSet.contains(replaceWith)) {
-                targetService.addTagToTarget(user.getUsername(), target.getTargetId(), replaceWithId);
+                targetService.addTagToTarget(user.getEmail(), target.getTargetId(), replaceWithId);
             }
 
         }

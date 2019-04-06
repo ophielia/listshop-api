@@ -1,6 +1,6 @@
 package com.meg.atable.lmt.service.impl;
 
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.data.repository.UserRepository;
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
@@ -43,7 +43,7 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<DishEntity> getDishesForUserName(String userName) {
-        UserAccountEntity user = userRepository.findByUsername(userName);
+        UserEntity user = userRepository.findByUsername(userName);
         if (user == null) {
             throw new UserNotFoundException(userName);
         }
@@ -62,7 +62,7 @@ public class DishServiceImpl implements DishService {
             throw new ObjectNotFoundException(msg, null, "Dish");
         }
 
-        UserAccountEntity user = userRepository.findByUsername(username);
+        UserEntity user = userRepository.findByUsername(username);
 
         Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
         if (!dishOpt.isPresent()) {
@@ -72,7 +72,7 @@ public class DishServiceImpl implements DishService {
         DishEntity dish = dishOpt.get();
         if (!dish.getUserId().equals(user.getId())) {
             final String msg = "Dish found for dishId [" + dishId + "], but doesn't belong to user [" + username + "].";
-            throw new ObjectNotYoursException(msg, "Dish", dishId, user.getUsername());
+            throw new ObjectNotYoursException(msg, "Dish", dishId, user.getEmail());
         }
         return dish;
     }
@@ -93,7 +93,7 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<DishEntity> getDishes(String username, List<Long> dishIds) {
-        UserAccountEntity user = userRepository.findByUsername(username);
+        UserEntity user = userRepository.findByUsername(username);
 
         return dishRepository.findByDishIdsForUser(user.getId(), dishIds);
     }
@@ -116,7 +116,7 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<TagEntity> getDishesForTagChildren(Long tagId, String name) {
-        UserAccountEntity user = userRepository.findByUsername(name);
+        UserEntity user = userRepository.findByUsername(name);
         TagEntity tag = tagService.getTagById(tagId);
 
         if (!TagType.Rating.equals(tag.getTagType())) {

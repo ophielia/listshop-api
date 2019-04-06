@@ -1,7 +1,7 @@
 package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.lmt.api.model.*;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.*;
@@ -63,14 +63,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public List<ShoppingListEntity> getListsByUsername(String userName) {
-        UserAccountEntity user = userService.getUserByUserName(userName);
+        UserEntity user = userService.getUserByUserEmail(userName);
 
         return shoppingListRepository.findByUserId(user.getId());
     }
 
     @Override
     public ShoppingListEntity createList(String userName, ShoppingListEntity shoppingList) {
-        UserAccountEntity user = userService.getUserByUserName(userName);
+        UserEntity user = userService.getUserByUserEmail(userName);
         // get list layout for user, list_type
         ListLayoutEntity listLayout = getListLayout(shoppingList.getListType(), null);
         shoppingList.setListLayoutId(listLayout.getId());
@@ -80,7 +80,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     private ShoppingListEntity createListForUser(String userName, ListType listType) {
-        UserAccountEntity user = userService.getUserByUserName(userName);
+        UserEntity user = userService.getUserByUserEmail(userName);
         ShoppingListEntity newList = new ShoppingListEntity();
         newList.setListType(listType != null ? listType : ListType.General);
         // get list layout for user, list_type
@@ -179,7 +179,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public ShoppingListEntity getListByUsernameAndType(String userName, ListType listType) {
-        UserAccountEntity user = userService.getUserByUserName(userName);
+        UserEntity user = userService.getUserByUserEmail(userName);
 
         return shoppingListRepository.findByUserIdAndListType(user.getId(), listType);
     }
@@ -187,7 +187,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingListEntity getListById(String userName, Long listId) {
         logger.debug("Retrieving List for id [" + listId + "] and name [" + userName + "]");
-        UserAccountEntity user = userService.getUserByUserName(userName);
+        UserEntity user = userService.getUserByUserEmail(userName);
         if (user == null) {
             return null;
         }
@@ -336,7 +336,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Transactional
     public ShoppingListEntity setListActive(String username, Long listId, GenerateType generateType) {
-        UserAccountEntity user = userService.getUserByUserName(username);
+        UserEntity user = userService.getUserByUserEmail(username);
         // get active list
         ShoppingListEntity oldActive = shoppingListRepository.findByUserIdAndListType(user.getId(), ListType.ActiveList);
         // get list to set active
