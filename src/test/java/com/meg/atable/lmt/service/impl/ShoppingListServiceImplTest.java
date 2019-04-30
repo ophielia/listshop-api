@@ -37,12 +37,6 @@ public class ShoppingListServiceImplTest {
     @Autowired
     private ShoppingListService shoppingListService;
     @Autowired
-    private ShoppingListRepository shoppingListRepository;
-    @Autowired
-    private MealPlanRepository mealPlanRepository;
-    @Autowired
-    private ItemRepository itemRepository;
-    @Autowired
     private UserService userService;
     @Autowired
     private TagService tagService;
@@ -60,6 +54,28 @@ public class ShoppingListServiceImplTest {
         // make tags
         tag1 = tagService.getTagById(TestConstants.TAG_1_ID);
         cheddarTag = tagService.getTagById(18L); // 18 is cheddar tag id;
+    }
+
+    @Test
+    public void testGetActiveListForUser() {
+        // 20 should find active list with id 501 3
+        ShoppingListEntity result = shoppingListService.getActiveListForUser(TestConstants.USER_3_NAME);
+        Assert.assertNotNull(result);
+        Assert.assertNotNull(result.getListType());
+        Assert.assertEquals(ListType.ActiveList, result.getListType());
+        Assert.assertEquals(Long.valueOf(501L), Long.valueOf(result.getId()));
+
+        // test user 4 doesn't have any lists. should return a new active list
+        List<ShoppingListEntity> results = shoppingListService.getListsByUsername(TestConstants.USER_4_NAME);
+        Assert.assertNotNull(results);
+        Assert.assertTrue(results.isEmpty());
+        result = shoppingListService.getActiveListForUser(TestConstants.USER_1_NAME);
+        Assert.assertNotNull(result);
+        Assert.assertNotNull(result.getListType());
+        Assert.assertEquals(ListType.ActiveList, result.getListType());
+        Assert.assertTrue(result.getItems().isEmpty());
+        //  Assert.assertNotNull(results);
+        //Assert.assertTrue(results.size() == 2);
     }
 
     @Test

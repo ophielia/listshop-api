@@ -55,4 +55,5 @@ public interface ShoppingListService {
     void addListToList(String name, Long listId, ListType listType);
 
 
+    ShoppingListEntity getActiveListForUser(String name);
 }

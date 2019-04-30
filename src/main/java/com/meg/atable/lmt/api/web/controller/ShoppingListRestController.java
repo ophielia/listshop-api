@@ -107,6 +107,28 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return singleResult(result, categories);
     }
 
+
+    @Override
+    public ResponseEntity<ShoppingListResource> retrieveActiveList(Principal principal,
+                                                                 @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
+                                                                 @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
+                                                                 @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry) {
+        ShoppingListEntity result = shoppingListService.getActiveListForUser(principal.getName());
+
+        if ("0".equals(highlightDish)) {
+            highlightDish = null;
+        }
+        ListType listType = null;
+        if (!"0".equals(highlightListType)) {
+            listType = ListType.valueOf(highlightListType);
+        }
+        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, listType);
+        shoppingListService.fillSources(result);
+        return singleResult(result, categories);
+    }
+
+
+
     @Override
     public ResponseEntity<ShoppingList> deleteList(Principal principal, @PathVariable("listId") Long listId) {
         boolean success = shoppingListService.deleteList(principal.getName(), listId);

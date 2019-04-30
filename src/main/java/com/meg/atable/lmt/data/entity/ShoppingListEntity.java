@@ -23,12 +23,18 @@ import java.util.List;
                         name = "increment_size",
                         value = "1")}
 )
+@NamedEntityGraph(
+        name = "list-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("items")
+        }
+)
 public class ShoppingListEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_sequence")
     @Column(name = "list_id")
-    private Long list_id;
+    private Long listId;
 
 
     private Date createdOn;
@@ -38,7 +44,7 @@ public class ShoppingListEntity {
     @Enumerated(EnumType.STRING)
     private ListType listType;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "list_id", referencedColumnName = "list_id")
     private List<ItemEntity> items;
 
@@ -64,7 +70,7 @@ public class ShoppingListEntity {
 
 
     public ShoppingListEntity(Long id) {
-        this.list_id = id;
+        this.listId = id;
     }
 
     public ShoppingListEntity() {
@@ -73,7 +79,7 @@ public class ShoppingListEntity {
 
 
     public Long getId() {
-        return list_id;
+        return listId;
     }
 
     public Date getCreatedOn() {
@@ -159,7 +165,7 @@ public class ShoppingListEntity {
     @Override
     public String toString() {
         return "ShoppingListEntity{" +
-                "list_id=" + list_id +
+                "listId=" + listId +
                 ", createdOn=" + createdOn +
                 ", listType=" + listType +
                 ", userId=" + userId +

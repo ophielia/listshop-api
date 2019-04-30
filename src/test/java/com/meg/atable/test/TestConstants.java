@@ -12,7 +12,7 @@ public final class TestConstants {
     public final static String USER_3_NAME = "me";
     public static final Long USER_3_ID = 20L;
     public final static String USER_4_NAME = "deleteuser";
-    public static final Long USER_4_ID = 503L;
+    public static final Long USER_4_ID = 502L;
 
     public static final Long MEAL_PLAN_1_ID = 500L;
 

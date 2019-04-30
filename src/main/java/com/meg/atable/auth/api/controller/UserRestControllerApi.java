@@ -1,8 +1,11 @@
 package com.meg.atable.auth.api.controller;
 
 import com.meg.atable.auth.api.model.User;
+import com.meg.atable.auth.api.model.UserResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -17,4 +20,6 @@ public interface UserRestControllerApi {
     ResponseEntity<Object> createUser(@RequestBody User input);
 
 
+    @GetMapping(produces = "application/json")
+    ResponseEntity<UserResource> getUser(Principal principal);
 }

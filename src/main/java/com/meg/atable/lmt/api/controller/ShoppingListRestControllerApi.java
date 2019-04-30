@@ -40,6 +40,13 @@ public interface ShoppingListRestControllerApi {
                                                           @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
                                                           @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry);
 
+    @RequestMapping(method = RequestMethod.GET, value = "/active", produces = "application/json")
+    ResponseEntity<ShoppingListResource> retrieveActiveList(Principal principal,
+                                                          @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
+                                                          @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
+                                                          @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry);
+
+
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}", produces = "application/json")
     ResponseEntity<ShoppingList> deleteList(Principal principal, @PathVariable("listId") Long listId);
 

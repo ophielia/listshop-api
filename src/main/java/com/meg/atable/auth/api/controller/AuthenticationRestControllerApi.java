@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Created by margaretmartin on 23/09/2017.
  */
-public interface AuthenticationRestControllerApi {
+public interface  AuthenticationRestControllerApi {
 
     @PostMapping(value = "${jwt.route.authentication.path}", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, Device device);

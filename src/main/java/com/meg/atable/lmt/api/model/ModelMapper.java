@@ -1,5 +1,7 @@
 package com.meg.atable.lmt.api.model;
 
+import com.meg.atable.auth.api.model.User;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.*;
 
@@ -25,6 +27,14 @@ public class ModelMapper {
                     .userId(dishEntity.getUserId());
         }
         return new Dish();
+    }
+
+    public static User toModel(UserEntity userEntity) {
+        if (userEntity != null) {
+            return new User(userEntity.getUsername(), userEntity.getEmail())
+                    .creationDate(userEntity.getCreationDate());
+        }
+        return new User(null, null);
     }
 
     public static Dish toModel(DishEntity dishEntity, List<TagEntity> tagEntities) {

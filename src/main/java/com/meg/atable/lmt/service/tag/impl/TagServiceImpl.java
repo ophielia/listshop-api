@@ -186,7 +186,7 @@ public class TagServiceImpl implements TagService {
             return getParentTagList(tagTypes);
         }
         // get by tag type
-        if (tagTypes != null) {
+        if (tagTypes != null && !tagTypes.isEmpty()) {
             return tagRepository.findTagsByToDeleteFalseAndTagTypeInOrderByName(tagTypes);
         }
         return tagRepository.findTagsByToDeleteFalse(new Sort(Sort.Direction.ASC, "name"));

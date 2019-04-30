@@ -68,6 +68,42 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return shoppingListRepository.findByUserId(user.getId());
     }
 
+
+    @Override
+    public ShoppingListEntity getActiveListForUser(String name) {
+        UserEntity user = userService.getUserByUserEmail(name);
+
+        // get all lists
+        List<ShoppingListEntity> userLists = shoppingListRepository.findByUserId(user.getId());
+
+        // put them in a map
+        Map<String, List<ShoppingListEntity>> listMap = new HashMap<>();
+        for (ShoppingListEntity list : userLists) {
+            String type = list.getListType() != null ? list.getListType().name() : "no_type";
+            if (!listMap.containsKey(type)) {
+                listMap.put(type,new ArrayList<>());
+            }
+            listMap.get(type).add(list);
+        }
+
+        Long tagIdToRetrieve = null;
+        // find list to retrieve
+        List<String> orderedTypes = Arrays.asList(ListType.ActiveList.name(), ListType.General.name(), "no_type");
+        for (String key : orderedTypes) {
+            if (listMap.containsKey(key)) {
+                tagIdToRetrieve = listMap.get(key).get(0).getId();
+                break;
+            }
+        }
+
+        // if the list id exists, retreive and return the list belonging to it
+        if (tagIdToRetrieve != null) {
+            return getListById(name, tagIdToRetrieve);
+        }
+        // if the list doesn't exist, return a new list
+        return createListForUser(name, ListType.ActiveList);
+    }
+
     @Override
     public ShoppingListEntity createList(String userName, ShoppingListEntity shoppingList) {
         UserEntity user = userService.getUserByUserEmail(userName);
@@ -181,7 +217,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingListEntity getListByUsernameAndType(String userName, ListType listType) {
         UserEntity user = userService.getUserByUserEmail(userName);
 
-        return shoppingListRepository.findByUserIdAndListType(user.getId(), listType);
+        return shoppingListRepository.findWithItemsByUserIdAndListType(user.getId(), listType);
     }
 
     @Override
@@ -191,7 +227,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (user == null) {
             return null;
         }
-        Optional<ShoppingListEntity> shoppingListEntityOpt = shoppingListRepository.findById(listId);
+        Optional<ShoppingListEntity> shoppingListEntityOpt = shoppingListRepository.getWithItemsByListId(listId);
         ShoppingListEntity shoppingListEntity = shoppingListEntityOpt.orElse(null);
         if (shoppingListEntity != null && shoppingListEntity.getUserId().equals(user.getId())) {
             return shoppingListEntity;
@@ -329,7 +365,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // update the last added date for dishes
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
         saveListChanges(newList, collector);
-        Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.findById(newList.getId());
+        Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.getWithItemsByListId(newList.getId());
         return shoppingListEntity.orElse(null);
 
     }
@@ -338,7 +374,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingListEntity setListActive(String username, Long listId, GenerateType generateType) {
         UserEntity user = userService.getUserByUserEmail(username);
         // get active list
-        ShoppingListEntity oldActive = shoppingListRepository.findByUserIdAndListType(user.getId(), ListType.ActiveList);
+        ShoppingListEntity oldActive = shoppingListRepository.findWithItemsByUserIdAndListType(user.getId(), ListType.ActiveList);
         // get list to set active
         ShoppingListEntity toActive = getListById(username, listId);
 

@@ -97,7 +97,8 @@ public class UserRestControllerTest {
         final String username = "dXNlcm5hbWU=";
         final String email = "ZW1haWw=";
         final String password = "UGFzc3cwcmQ=";
-        User user = new User(username, email, password);
+        User user = new User(username, email);
+        user.setPassword(password);
         final String userjson = json(user);
         final String deviceJson = json(device);
 
