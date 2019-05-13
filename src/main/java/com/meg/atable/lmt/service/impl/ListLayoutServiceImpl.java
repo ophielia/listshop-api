@@ -14,6 +14,7 @@ import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.ListLayoutException;
 import com.meg.atable.lmt.service.ListLayoutProperties;
 import com.meg.atable.lmt.service.ListLayoutService;
+import com.meg.atable.lmt.service.ShoppingListProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,9 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     @Autowired
     private TagRepository tagRepository;
 
+    @Autowired
+    private ShoppingListProperties shoppingListProperties;
+
     @Override
     public List<ListLayoutEntity> getListLayouts() {
         return listLayoutRepository.findAll();
@@ -59,6 +63,18 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     public ListLayoutEntity createListLayout(ListLayoutEntity listLayoutEntity) {
         // createListLayout with repository and return
         return listLayoutRepository.save(listLayoutEntity);
+    }
+
+    @Override
+    public ListLayoutEntity getDefaultListLayout() {
+        ListLayoutType layoutType = shoppingListProperties.getDefaultListLayoutType();
+
+        List<ListLayoutEntity> listLayoutEntity =  listLayoutRepository.findByLayoutType(layoutType);
+
+        if (listLayoutEntity == null || listLayoutEntity.isEmpty()) {
+            return null;
+        }
+        return listLayoutEntity.get(0);
     }
 
     @Override

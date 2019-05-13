@@ -28,7 +28,7 @@ public class ShoppingListProperties {
     private Integer uncategorizedIdAndSort = 999;
     private Integer highlightIdAndSort = -1;
     private Integer highlightListIdAndSort = -3;
-    private String defaultListLayout = "All";
+    private String defaultListLayout = null;
     private Long defaultIdAndSort = 800L;
     private Map<CategoryType, String> nameMapByType = null;
     private Map<CategoryType, Long> idMapByType = null;
@@ -118,6 +118,10 @@ public class ShoppingListProperties {
 
     public ListLayoutType getDefaultListLayoutType() {
         return ListLayoutType.valueOf(this.defaultListLayout);
+    }
+
+    public void setDefaultListLayout(String defaultListLayout) {
+        this.defaultListLayout = defaultListLayout;
     }
 
     public String getCategoryNameByType(CategoryType categoryType) {

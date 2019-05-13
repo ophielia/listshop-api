@@ -279,7 +279,7 @@ public class TagStructureServiceImpl implements TagStructureService {
 
     private Map<Long, List<Long>> getTagRelationshipLookup(List<TagType> tagTypes) {
         List<Object[]> rawRelations;
-        if (tagTypes == null) {
+        if (tagTypes == null || tagTypes.isEmpty()) {
             rawRelations = tagRelationRepository.getAllTagRelationships();
         } else {
             rawRelations = tagRelationRepository.getTagRelationshipsForTagType(tagTypes.stream().map(TagType::name).collect(Collectors.toList()));

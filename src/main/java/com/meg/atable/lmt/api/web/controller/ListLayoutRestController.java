@@ -72,6 +72,20 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return ResponseEntity.notFound().build();
     }
 
+
+    public ResponseEntity<ListLayout> readDefaultListLayout() {
+        ListLayoutEntity listLayout = this.listLayoutService
+                .getDefaultListLayout();
+
+        if (listLayout != null) {
+            List<Category> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
+            ListLayoutResource listLayoutResource = new ListLayoutResource(listLayout, structuredCategories);
+
+            return new ResponseEntity(listLayoutResource, HttpStatus.OK);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     public ResponseEntity<ListLayout> deleteListLayout(Principal principal, @PathVariable("listLayoutId") Long listLayoutId) {
 
         listLayoutService.deleteListLayout(listLayoutId);

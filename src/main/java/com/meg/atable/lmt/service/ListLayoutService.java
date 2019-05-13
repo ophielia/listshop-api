@@ -22,6 +22,8 @@ public interface ListLayoutService {
 
     ListLayoutEntity getListLayoutById(Long listLayoutId);
 
+    ListLayoutEntity getDefaultListLayout();
+
     void deleteListLayout(Long listLayoutId);
 
     void addCategoryToListLayout(Long listLayoutId, ListLayoutCategoryEntity entity);
@@ -51,4 +53,6 @@ public interface ListLayoutService {
     void addCategoryToParent(Long categoryId, Long parentId) throws ListLayoutException;
 
     void moveCategory(Long categoryId, boolean moveUp) throws ListLayoutException;
+
+
 }

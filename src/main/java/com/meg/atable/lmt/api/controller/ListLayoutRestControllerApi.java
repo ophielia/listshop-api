@@ -29,6 +29,9 @@ public interface ListLayoutRestControllerApi {
     @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}", produces = "application/json")
     ResponseEntity<ListLayout> readListLayout(Principal principal, @PathVariable("listLayoutId") Long listLayoutId);
 
+    @RequestMapping(method = RequestMethod.GET, value = "/default", produces = "application/json")
+    ResponseEntity<ListLayout> readDefaultListLayout();
+
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listLayoutId}", produces = "application/json")
     ResponseEntity<ListLayout> deleteListLayout(Principal principal, @PathVariable("listLayoutId") Long listLayoutId);
 
