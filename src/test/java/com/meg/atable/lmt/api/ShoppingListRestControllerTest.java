@@ -149,8 +149,7 @@ public class ShoppingListRestControllerTest {
                 + "/item";
 
         Item item = new Item()
-                .tagId(String.valueOf(TestConstants.TAG_CARROTS))
-                .itemSource("Manual");
+                .tagId(String.valueOf(TestConstants.TAG_CARROTS));
 
         String itemJson = json(item);
         this.mockMvc.perform(post(url)

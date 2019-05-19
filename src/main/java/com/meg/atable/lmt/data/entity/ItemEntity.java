@@ -56,22 +56,11 @@ public class ItemEntity {
 
     private String freeText;
 
-    private String listCategory;
-
     @Column(name = "frequent_cross_off")
     private Boolean isFrequent = false;
 
     @Transient
     private Long tagId;
-
-    @Transient
-    private List<DishEntity> dishSources = new ArrayList<>();
-
-    @Transient
-    private List<ShoppingListEntity> listSources = new ArrayList<>();
-
-    private Long categoryId;
-
     @Transient
     private int removedCount;
     @Transient
@@ -79,7 +68,7 @@ public class ItemEntity {
     @Transient
     private boolean isUpdated;
     @Transient
-    private boolean deleted;
+    private boolean isDeleted;
     @Transient
     private boolean isAdded;
 
@@ -156,14 +145,6 @@ public class ItemEntity {
         this.removedOn = removedOn;
     }
 
-    public String getListCategory() {
-        return listCategory;
-    }
-
-    public void setListCategory(String listCategory) {
-        this.listCategory = listCategory;
-    }
-
     public Long getListId() {
         return listId;
     }
@@ -189,26 +170,6 @@ public class ItemEntity {
         this.tagId = tagId;
     }
 
-
-    public void addItemSource(ItemSourceType sourceType) {
-        if (this.rawDishSources == null) {
-            this.rawDishSources = sourceType.name();
-            return;
-        }
-        if (this.rawDishSources.contains(sourceType.name())) {
-            return;
-        }
-        this.rawDishSources = this.rawDishSources + ";" + sourceType.name();
-    }
-
-    public Long getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-    }
-
     public boolean isFrequent() {
         if (isFrequent == null) {
             return false;
@@ -226,22 +187,6 @@ public class ItemEntity {
 
     public void setRawListSources(String rawListSources) {
         this.rawListSources = rawListSources;
-    }
-
-    public List<DishEntity> getDishSources() {
-        return dishSources;
-    }
-
-    public void setDishSources(List<DishEntity> dishSources) {
-        this.dishSources = dishSources;
-    }
-
-    public List<ShoppingListEntity> getListSources() {
-        return listSources;
-    }
-
-    public void setListSources(List<ShoppingListEntity> listSources) {
-        this.listSources = listSources;
     }
 
     public void addRawDishSource(Long dishId) {
@@ -302,11 +247,11 @@ public class ItemEntity {
     }
 
     public boolean isDeleted() {
-        return deleted;
+        return isDeleted;
     }
 
     public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+        this.isDeleted = deleted;
         this.removedOn = new Date();
     }
 

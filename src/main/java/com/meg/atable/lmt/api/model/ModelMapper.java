@@ -366,13 +366,13 @@ public class ModelMapper {
     private static Item toModel(ItemEntity itemEntity) {
         return new Item(itemEntity.getId())
                 .tag(toModel(itemEntity.getTag()))
-                .itemSource(itemEntity.getRawDishSources())
                 .listId(itemEntity.getListId().toString())
                 .addedOn(itemEntity.getAddedOn())
+                .updated(itemEntity.getUpdatedOn())
+                .removed(itemEntity.getRemovedOn())
                 .crossedOff(itemEntity.getCrossedOff())
                 .usedCount(itemEntity.getUsedCount())
-                .freeText(itemEntity.getFreeText())
-                .listCategory(itemEntity.getListCategory());
+                .freeText(itemEntity.getFreeText());
     }
 
     public static TagEntity toEntity(Tag tag) {
@@ -447,7 +447,6 @@ public class ModelMapper {
         ItemEntity itemEntity = new ItemEntity(id);
         itemEntity.setTag(toEntity(input.getTag()));
         itemEntity.setFreeText(input.getFreeText());
-        itemEntity.setRawDishSources(input.getItemSource());
         itemEntity.setListId(listId);
         itemEntity.setTagId(tagId);
         return itemEntity;

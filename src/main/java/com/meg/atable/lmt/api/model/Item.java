@@ -16,11 +16,14 @@ public class Item implements Comparable {
 
     private Tag tag;
 
-    @JsonProperty("item_source")
-    private String itemSource;
-
     @JsonProperty("added")
     private Date addedOn;
+
+    @JsonProperty("removed")
+    private Date removed;
+
+    @JsonProperty("updated")
+    private Date updated;
 
     @JsonProperty("free_text")
     private String freeText;
@@ -28,13 +31,9 @@ public class Item implements Comparable {
     @JsonProperty("crossed_off")
     private Date crossedOff;
 
-    @JsonProperty("list_category")
-    private String listCategory;
-
     @JsonProperty("list_id")
     private String listId;
 
-    @JsonProperty("tag_id")
     private String tagId;
 
     @JsonProperty("used_count")
@@ -69,14 +68,6 @@ public class Item implements Comparable {
         return this;
     }
 
-    public String getItemSource() {
-        return itemSource;
-    }
-
-    public Item itemSource(String itemSource) {
-        this.itemSource = itemSource;
-        return this;
-    }
 
     public Date getAddedOn() {
         return addedOn;
@@ -106,14 +97,6 @@ public class Item implements Comparable {
         return this;
     }
 
-    public String getListCategory() {
-        return listCategory;
-    }
-
-    public Item listCategory(String listCategory) {
-        this.listCategory = listCategory;
-        return this;
-    }
 
     public String getListId() {
         return listId;
@@ -125,8 +108,14 @@ public class Item implements Comparable {
         return this;
     }
 
+    @JsonIgnore
     public String getTagId() {
         return tagId;
+    }
+
+    @JsonProperty("tag_id")
+    public void setTagId(String tagId) {
+        this.tagId = tagId;
     }
 
     public Item tagId(String tagId) {
@@ -140,6 +129,24 @@ public class Item implements Comparable {
 
     public Item usedCount(Integer usedCount) {
         this.usedCount = usedCount;
+        return this;
+    }
+
+    public Date getRemoved() {
+        return removed;
+    }
+
+    public Item removed(Date created) {
+        this.removed = created;
+        return this;
+    }
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public Item updated(Date updated) {
+        this.updated = updated;
         return this;
     }
 
