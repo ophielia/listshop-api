@@ -19,7 +19,7 @@ public final class JwtUserFactory {
                 user.getEmail(),
                 user.getEmail(),
                 user.getPassword(),
-                mapToGrantedAuthorities(user.getAuthorities()),//MM work on this!
+                mapToGrantedAuthorities(user.getAuthorities()),//TODO work on this!
                 user.getEnabled(),
                 user.getLastPasswordResetDate()
         );

@@ -69,7 +69,7 @@ public class ShoppingListServiceImplTest {
         List<ShoppingListEntity> results = shoppingListService.getListsByUsername(TestConstants.USER_4_NAME);
         Assert.assertNotNull(results);
         Assert.assertTrue(results.isEmpty());
-        result = shoppingListService.getActiveListForUser(TestConstants.USER_1_NAME);
+        result = shoppingListService.getActiveListForUser(TestConstants.USER_4_NAME);
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getListType());
         Assert.assertEquals(ListType.ActiveList, result.getListType());
@@ -171,8 +171,6 @@ public class ShoppingListServiceImplTest {
     }
 
     @Test
-    //@FlywayTest(locationsForMigrate = "classpath:db/testdata/shoppingListServiceImpl_deleteItem")
-    //@FlywayTest(invokeBaselineDB = true)
     public void testDeleteItemFromList() {
         ShoppingListEntity result = shoppingListService.getListById(userAccount.getEmail(), TestConstants.LIST_1_ID);
         int sizeBefore = result.getItems().size();
@@ -182,11 +180,13 @@ public class ShoppingListServiceImplTest {
 
         // retrieve active list
         result = shoppingListService.getListById(userAccount.getEmail(), TestConstants.LIST_1_ID);
+        ShoppingListEntity withRemoved = shoppingListService.getListById(userAccount.getEmail(), TestConstants.LIST_1_ID, true);
 
         // ensure item is NOT there
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getItems());
         Assert.assertEquals(sizeBefore - 1, result.getItems().size());
+        Assert.assertEquals(sizeBefore, withRemoved.getItems().size());
     }
 
     @Test
@@ -256,7 +256,7 @@ public class ShoppingListServiceImplTest {
                 Assert.assertTrue(item.getRawDishSources().contains(String.valueOf(DISH_ID)));
             }
         }
-        // MM TODO - test for sources, when sources are complete
+        // TODO - test for sources, when sources are complete
         Assert.assertTrue(hasHamburger);
         Assert.assertTrue(hasOnion);
     }

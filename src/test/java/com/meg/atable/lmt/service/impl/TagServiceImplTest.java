@@ -278,7 +278,7 @@ public class TagServiceImplTest {
 
     @Test
     public void testDeleteTag() {
-        // MM this test is for a method which has a postgres specific query behind it, and which
+        // TODO this test is for a method which has a postgres specific query behind it, and which
         // doesn't work with h2
 
         // eventually we'll moved these to a testdb in postgres

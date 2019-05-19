@@ -46,7 +46,7 @@ public class ShoppingListEntity {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "list_id", referencedColumnName = "list_id")
-    private List<ItemEntity> items;
+    private List<ItemEntity> items = new ArrayList<>();
 
     @Column(name = "user_id")
     private Long userId;

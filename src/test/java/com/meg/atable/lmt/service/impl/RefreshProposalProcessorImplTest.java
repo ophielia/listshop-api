@@ -326,12 +326,6 @@ public class RefreshProposalProcessorImplTest {
     }
 
 
-    // MM
-    // test breakage / robustness
-    // no target tags
-    // slot with no tag
-    // only one target slot
-
     @Test
     public void processProposal_NoTargetTagIds() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4,2,3);

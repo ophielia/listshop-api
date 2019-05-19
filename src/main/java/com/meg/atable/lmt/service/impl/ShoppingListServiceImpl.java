@@ -86,19 +86,19 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             listMap.get(type).add(list);
         }
 
-        Long tagIdToRetrieve = null;
+        Long listIdToRetrieve = null;
         // find list to retrieve
         List<String> orderedTypes = Arrays.asList(ListType.ActiveList.name(), ListType.General.name(), "no_type");
         for (String key : orderedTypes) {
             if (listMap.containsKey(key)) {
-                tagIdToRetrieve = listMap.get(key).get(0).getId();
+                listIdToRetrieve = listMap.get(key).get(0).getId();
                 break;
             }
         }
 
         // if the list id exists, retreive and return the list belonging to it
-        if (tagIdToRetrieve != null) {
-            return getListById(name, tagIdToRetrieve);
+        if (listIdToRetrieve != null) {
+            return getListById(name, listIdToRetrieve);
         }
         // if the list doesn't exist, return a new list
         return createListForUser(name, ListType.ActiveList);
@@ -158,7 +158,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             // add Items from BaseList
             ShoppingListEntity baseList = getListByUsernameAndType(userName, ListType.BaseList);
             if (baseList != null) {
-                collector.copyExistingItemsIntoList(ItemSourceType.BaseList.name(), baseList.getItems(), true);
+                collector.copyExistingItemsIntoList(ItemSourceType.BaseList.name(), baseList.getItems(), false);
             }
         }
 
@@ -180,7 +180,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             for (Long ds : listGenerateProperties.getDishSourcesIds()) {
                 mealPlanService.addDishToMealPlan(userName, mp.getId(), ds);
             }
-            // MM add link to shopping list here
+            // TODO add link to shopping list here
         }
 
         // save changes
@@ -222,12 +222,23 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public ShoppingListEntity getListById(String userName, Long listId) {
+        return getListById(userName, listId, false);
+    }
+
+
+    @Override
+    public ShoppingListEntity getListById(String userName, Long listId, boolean includeRemoved) {
         logger.debug("Retrieving List for id [" + listId + "] and name [" + userName + "]");
         UserEntity user = userService.getUserByUserEmail(userName);
         if (user == null) {
             return null;
         }
-        Optional<ShoppingListEntity> shoppingListEntityOpt = shoppingListRepository.getWithItemsByListId(listId);
+        Optional<ShoppingListEntity> shoppingListEntityOpt;
+        if (includeRemoved) {
+            shoppingListEntityOpt = shoppingListRepository.getWithItemsByListId(listId);
+        } else {
+            shoppingListEntityOpt = shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId);
+        }
         ShoppingListEntity shoppingListEntity = shoppingListEntityOpt.orElse(null);
         if (shoppingListEntity != null && shoppingListEntity.getUserId().equals(user.getId())) {
             return shoppingListEntity;
@@ -267,7 +278,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             tag = tagService.getTagById(itemEntity.getTag().getId());
             itemEntity.setTag(tag);
         }
-        collector.addItem(itemEntity); // MM need list type to itemsource translation
+        // TODO need list type to itemsource translation
+        collector.addItem(itemEntity);
 
         saveListChanges(shoppingListEntity, collector);
     }
@@ -302,10 +314,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         List<ItemEntity> items = shoppingListEntity.getItems();
         ListItemCollector collector = new ListItemCollector(listId, items);
-
         ItemEntity item = itemEntityOpt.get();
         if (item.getTag() == null) {
-            //MM
             collector.removeFreeTextItem(item);
         }
 
@@ -353,7 +363,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // add Items from BaseList
         ShoppingListEntity baseList = getListByUsernameAndType(name, ListType.BaseList);
         if (baseList != null) {
-            collector.copyExistingItemsIntoList(ItemSourceType.BaseList.name(), baseList.getItems(), true);
+            collector.copyExistingItemsIntoList(ItemSourceType.BaseList.name(), baseList.getItems(), false);
         }
 
         // add Items from PickUpList
@@ -365,7 +375,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // update the last added date for dishes
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
         saveListChanges(newList, collector);
-        Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.getWithItemsByListId(newList.getId());
+        Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(newList.getId());
         return shoppingListEntity.orElse(null);
 
     }

@@ -358,7 +358,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     private List<DishSlotEntity> copySlotResults(ProposalSlotEntity resultSlot, ProposalSlotEntity existingSlot) {
 
         List<DishSlotEntity> finalDishList = new ArrayList<>();
-        // MM result dish list may need to be converted
+        // TODO result dish list may need to be converted
         Iterator<DishSlotEntity> resultSlotIterator = resultSlot.getDishSlots().iterator();
         Iterator<DishSlotEntity> existingSlotIterator = existingSlot.getDishSlots().iterator();
         while (resultSlotIterator.hasNext()) {
@@ -376,7 +376,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         }
 
         // add any results not found in existing to final List
-        resultSlot.getDishSlots().stream().forEach(s -> s.setSlot(existingSlot)); // MM again - may need some conversion here
+        resultSlot.getDishSlots().stream().forEach(s -> s.setSlot(existingSlot)); // TODO again - may need some conversion here
 
         finalDishList.addAll(resultSlot.getDishSlots());
         return finalDishList;

@@ -24,6 +24,8 @@ public interface ShoppingListService {
 
     ShoppingListEntity getListById(String userName, Long listId);
 
+    ShoppingListEntity getListById(String userName, Long listId, boolean includeRemoved);
+
     boolean deleteList(String userName, Long listId);
 
     void addItemToList(String name, Long listId, ItemEntity itemEntity);

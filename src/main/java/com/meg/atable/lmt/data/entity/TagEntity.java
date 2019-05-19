@@ -77,6 +77,11 @@ public class TagEntity {
         return tag_id;
     }
 
+    public void setId(Long tagId) {
+        // TODO - this is just for tests - make a DaoUtils so we can remove this method
+        this.tag_id = tagId;
+    }
+
     public String getName() {
         return name;
     }

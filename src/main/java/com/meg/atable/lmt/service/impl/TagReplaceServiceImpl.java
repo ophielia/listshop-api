@@ -211,7 +211,7 @@ public class TagReplaceServiceImpl implements TagReplaceService {
     }
 
     private void replaceTagInDish(Long toReplaceId, Long replaceWithId) {
-        // MM add logging
+        // TODO add logging
         // write sql for delete
 
         StringBuilder baseSql = new StringBuilder();

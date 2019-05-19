@@ -400,12 +400,6 @@ public class FillInProposalProcessorImplTest {
         }
 
 
-    // MM
-    // test breakage / robustness
-    // no target tags
-    // slot with no tag
-    // only one target slot
-
     @Test
     public void testFillInProposal_NoTargetTagIds() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4,2,3);

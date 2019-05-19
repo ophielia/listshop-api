@@ -47,7 +47,7 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
 
         // fill best approach
         if (contextApproaches == null || contextApproaches.isEmpty()) {
-            // MM throw exception here
+            // TODO throw exception here
             return null;
         }
 

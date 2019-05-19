@@ -513,9 +513,4 @@ public class ModelMapper {
         return result;
     }
 
-    public static RatingUpdateInfo toModel(RatingUpdateInfo ratingUpdateInfo) {
-        //MM implement this!!!
-
-        return null;
-    }
 }

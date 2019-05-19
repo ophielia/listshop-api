@@ -60,7 +60,7 @@ private TagChangeToCategoryListener tagChangeToCategoryListener;
     @Before
     public void setup() {
 
-         // MM finish this test - make sure it's really testing
+         // TODO finish this test - make sure it's really testing
 //     public void onParentChange(TagEntity origParentTag, TagEntity newParentTag, TagEntity childTag) {
 siblings = new ArrayList<TagEntity>();
 categories = new ArrayList<ListLayoutCategoryEntity>();

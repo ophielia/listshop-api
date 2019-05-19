@@ -31,7 +31,7 @@ public class ItemEntity {
     private Long item_id;
 
     @OneToOne
-    @JoinColumn(name = "tag_id")
+    @JoinColumn(name = "tagId")
     private TagEntity tag;
 
     @Column(name = "dish_sources")
@@ -48,19 +48,21 @@ public class ItemEntity {
 
     private Date addedOn;
 
-    private String freeText;
-
     private Date crossedOff;
+
+    private Date removedOn;
+
+    private Date updatedOn;
+
+    private String freeText;
 
     private String listCategory;
 
     @Column(name = "frequent_cross_off")
     private Boolean isFrequent = false;
 
-
     @Transient
-    private Long tag_id;
-
+    private Long tagId;
 
     @Transient
     private List<DishEntity> dishSources = new ArrayList<>();
@@ -78,6 +80,8 @@ public class ItemEntity {
     private boolean isUpdated;
     @Transient
     private boolean deleted;
+    @Transient
+    private boolean isAdded;
 
     public ItemEntity(Long id) {
         item_id = id;
@@ -89,6 +93,11 @@ public class ItemEntity {
 
     public Long getId() {
         return item_id;
+    }
+
+    public void setId(Long itemId) {
+        // TODO - this is just for tests - make a DaoUtils so we can remove this method
+        this.item_id = itemId;
     }
 
     public TagEntity getTag() {
@@ -115,6 +124,14 @@ public class ItemEntity {
         this.addedOn = addedOn;
     }
 
+    public Date getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
+    }
+
     public String getFreeText() {
         return freeText;
     }
@@ -129,6 +146,14 @@ public class ItemEntity {
 
     public void setCrossedOff(Date crossedOff) {
         this.crossedOff = crossedOff;
+    }
+
+    public Date getRemovedOn() {
+        return removedOn;
+    }
+
+    public void setRemovedOn(Date removedOn) {
+        this.removedOn = removedOn;
     }
 
     public String getListCategory() {
@@ -156,12 +181,12 @@ public class ItemEntity {
     }
 
     public Long getTagId() {
-        return tag_id;
+        return tagId;
 
     }
 
-    public void setTagId(Long tag_id) {
-        this.tag_id = tag_id;
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
     }
 
 
@@ -185,8 +210,10 @@ public class ItemEntity {
     }
 
     public boolean isFrequent() {
-
-        return isFrequent == null ? false : isFrequent;
+        if (isFrequent == null) {
+            return false;
+        }
+        return isFrequent;
     }
 
     public void setFrequent(boolean frequent) {
@@ -251,21 +278,36 @@ public class ItemEntity {
                 ", addedOn=" + addedOn +
                 ", freeText='" + freeText + '\'' +
                 ", crossedOff=" + crossedOff +
-                ", tag_id=" + tag_id +
+                ", tagId=" + tagId +
                 ", isFrequent=" + isFrequent +
                 '}';
     }
 
     public boolean isUpdated() {
-        return !isDeleted() && (isUpdated || addCount > 0 || removedCount > 0);
+        return isUpdated;
     }
 
     public void setUpdated(boolean updated) {
         this.isUpdated = updated;
+        this.updatedOn = new Date();
     }
 
     public boolean isAdded() {
-        return addCount > 0;
+        return isAdded;
+    }
+
+    public void setIsAdded(boolean isAdded) {
+        this.isAdded = isAdded;
+        this.addedOn = new Date();
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+        this.removedOn = new Date();
     }
 
     public int getAddCount() {
@@ -296,13 +338,6 @@ public class ItemEntity {
         this.removedCount = this.removedCount + removeCount;
     }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
 
 
     public String getDisplay() {

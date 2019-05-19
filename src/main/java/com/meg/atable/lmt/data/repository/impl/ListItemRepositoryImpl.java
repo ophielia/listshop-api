@@ -27,15 +27,19 @@ public class ListItemRepositoryImpl implements ItemChangeRepository {
         listTagStatisticService.processStatistics(userId, collector);
 
         List<ItemEntity> toUpdate = collector.getItemsToUpdate();
+        List<ItemEntity> toAdd = collector.getItemsAdded();
         List<ItemEntity> toDelete = collector.getItemsToDelete();
 
         if (!toUpdate.isEmpty()) {
             itemRepository.saveAll(toUpdate);
         }
-
-        if (!toDelete.isEmpty()) {
-            itemRepository.deleteAll(toDelete);
+        if (!toAdd.isEmpty()) {
+            itemRepository.saveAll(toAdd);
         }
+        if (!toDelete.isEmpty()) {
+            itemRepository.saveAll(toDelete);
+        }
+
 
     }
 }

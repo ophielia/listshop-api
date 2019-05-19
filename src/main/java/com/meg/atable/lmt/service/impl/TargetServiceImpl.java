@@ -176,7 +176,8 @@ public class TargetServiceImpl implements TargetService {
         if (targetEntity == null) {
             return;
         }
-        targetEntity.setProposalId(null); // MM get rid of this
+        // TODO get rid of this
+        targetEntity.setProposalId(null);
         Optional<TargetSlotEntity> targetSlotEntityOpt = targetSlotRepository.findById(slotId);
         if (!targetSlotEntityOpt.isPresent()) {
             throw new ObjectNotFoundException(slotId, "TargetSlotEntity");

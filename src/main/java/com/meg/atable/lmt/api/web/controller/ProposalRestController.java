@@ -85,7 +85,7 @@ public class ProposalRestController implements ProposalRestControllerApi {
 
     @Override
     public ResponseEntity<Object> refreshProposalSlot(Principal principal, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) throws ProposalProcessingException {
-        // MM need to swap out id with number
+        // TODO need to swap out id with number
         this.targetProposalGenerator.addToProposalSlot(principal.getName(), proposalId, slotId.intValue());
 
 
