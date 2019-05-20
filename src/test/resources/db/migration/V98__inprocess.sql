@@ -1,3 +1,6 @@
+-- changed to login with email
+update users set email = username;
+
 -- is display will be for default tag that deleted tags without substitute are assigned to.
 ALTER TABLE users ADD COLUMN creation_date  timestamp;
 
@@ -28,7 +31,12 @@ update users set email = username;
 --ALTER TABLE list_item
 --    DROP COLUMN removed_on;
 
+--ALTER TABLE list_item
+--    DROP COLUMN updated_on;
 
+-- ALTER TABLE users drop COLUMN creation_date;
+
+--drop SEQUENCE authority_id_seq;
 
 ------------------------
 -- these are all the timestamp to with timezone changes

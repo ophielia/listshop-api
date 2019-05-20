@@ -141,7 +141,7 @@ public class DishRestControllerTest {
         toUpdate.setDishName(updateName);
         toUpdate.setDescription(updateDescription);
         toUpdate.setUserId(TestConstants.USER_3_ID);
-        toUpdate.setTags(new ArrayList<TagEntity>());
+        toUpdate.setTags(new ArrayList<>());
         String dishJson = json(toUpdate);
 
         this.mockMvc.perform(put("/dish/" + toUpdate.getId())

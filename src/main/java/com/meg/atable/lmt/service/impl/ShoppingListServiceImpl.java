@@ -743,7 +743,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         itemChangeRepository.saveItemChanges(collector, shoppingList.getUserId());
         // make changes in list object
         shoppingList.setItems(collector.getAllItems());
-        shoppingList.setLastUpdate(new Date());
+        if (collector.hasChanges()) {
+            shoppingList.setLastUpdate(new Date());
+        }
         shoppingListRepository.save(shoppingList);
     }
 

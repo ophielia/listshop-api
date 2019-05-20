@@ -114,6 +114,7 @@ public class TagServiceImplTest {
 
     @Test
     public void testAddTagToDish() throws Exception {
+//MM next test to attack
         tagService.addTagToDish(USER_3_NAME, dish.getId(), TestConstants.TAG_MEAT);
 
         List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, dish.getId());

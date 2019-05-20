@@ -80,6 +80,14 @@ public class ListItemCollector {
                 .collect(Collectors.toList());
     }
 
+
+    public boolean hasChanges() {
+        Optional<ItemEntity> changeOpt = tagToItem.values().stream()
+                .filter(isUpdated.or(isAdded).or(isDeleted))
+                .findFirst();
+
+        return changeOpt.isPresent();
+    }
     public void addTags(List<TagEntity> tagEntityList, Long dishId, String listSource) {
         for (TagEntity tag : tagEntityList) {
             addItemByTag(tag, listSource, dishId);
@@ -259,4 +267,5 @@ public class ListItemCollector {
     public void removeFreeTextItem(ItemEntity itemEntity) {
         // TODO implement this
     }
+
 }
