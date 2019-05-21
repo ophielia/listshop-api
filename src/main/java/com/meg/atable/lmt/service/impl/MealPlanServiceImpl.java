@@ -12,7 +12,7 @@ import com.meg.atable.lmt.data.repository.SlotRepository;
 import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.DishService;
 import com.meg.atable.lmt.service.MealPlanService;
-import com.meg.atable.lmt.service.ProposalService;
+import com.meg.atable.lmt.service.proposal.ProposalService;
 import com.meg.atable.lmt.service.tag.TagService;
 import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;

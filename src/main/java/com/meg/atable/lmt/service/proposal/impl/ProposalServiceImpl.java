@@ -1,4 +1,4 @@
-package com.meg.atable.lmt.service.impl;
+package com.meg.atable.lmt.service.proposal.impl;
 
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
@@ -8,7 +8,7 @@ import com.meg.atable.lmt.data.entity.DishSlotEntity;
 import com.meg.atable.lmt.data.entity.ProposalEntity;
 import com.meg.atable.lmt.data.entity.ProposalSlotEntity;
 import com.meg.atable.lmt.data.repository.ProposalRepository;
-import com.meg.atable.lmt.service.ProposalService;
+import com.meg.atable.lmt.service.proposal.ProposalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

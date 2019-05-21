@@ -1,4 +1,4 @@
-package com.meg.atable.lmt.service;
+package com.meg.atable.lmt.service.proposal;
 
 /**
  * Created by margaretmartin on 22/05/2018.

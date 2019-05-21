@@ -1,6 +1,6 @@
 package com.meg.atable.configuration;
 
-import com.meg.atable.lmt.service.TagReplaceService;
+import com.meg.atable.lmt.service.tag.TagReplaceService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

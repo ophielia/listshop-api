@@ -224,6 +224,10 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
         // set tags in category
         List<TagEntity> tagsToAdd = tagRepository.findAllById(tagIdsToAdd);
+        for (TagEntity updateTag : tagsToAdd) {
+            updateTag.setCategoryUpdatedOn(new Date());
+            //MM TODO test this
+        }
         tagCategories.addAll(tagsToAdd);
         categoryEntity.setTags(tagCategories);
 
@@ -256,6 +260,11 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
         // set tags in category
         List<TagEntity> filteredTagList = tagRepository.findAllById(filteredList);
+        for (TagEntity tagToUpdate : filteredTagList) {
+            tagToUpdate.setCategoryUpdatedOn(new Date());
+            //MM TODO update this
+        }
+
         categoryEntity.setTags(filteredTagList);
 
         // save category

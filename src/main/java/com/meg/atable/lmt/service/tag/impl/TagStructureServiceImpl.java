@@ -9,7 +9,7 @@ import com.meg.atable.lmt.data.entity.TagSearchGroupEntity;
 import com.meg.atable.lmt.data.repository.TagRelationRepository;
 import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.data.repository.TagSearchGroupRepository;
-import com.meg.atable.lmt.service.TagCache;
+import com.meg.atable.lmt.service.tag.TagCache;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import com.meg.atable.lmt.service.tag.TagSwapout;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.meg.atable.lmt.service;
+package com.meg.atable.lmt.service.proposal;
 
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;

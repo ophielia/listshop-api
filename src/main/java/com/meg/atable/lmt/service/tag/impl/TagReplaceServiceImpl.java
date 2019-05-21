@@ -1,11 +1,11 @@
-package com.meg.atable.lmt.service.impl;
+package com.meg.atable.lmt.service.tag.impl;
 
 import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.data.repository.*;
-import com.meg.atable.lmt.service.TagReplaceService;
+import com.meg.atable.lmt.service.tag.TagReplaceService;
 import com.meg.atable.lmt.service.TargetService;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,16 +55,8 @@ public class TagReplaceServiceImpl implements TagReplaceService {
 
     @Override
     public void replaceAllTags() {
-        // get all tags to replace
-        List<TagEntity> toReplaceList = tagRepository.findTagsByToDeleteTrue();
-
-        // go through each, calling replaceTag
-        for (TagEntity tag : toReplaceList) {
-            if (tag.getReplacementTagId()==null) {
-                continue;
-            }
-            replaceTag(tag.getId(),tag.getReplacementTagId());
-        }
+        // no - op -
+        // but leaving as an exaple of things to run on app startup
     }
 
 
@@ -88,9 +80,6 @@ public class TagReplaceServiceImpl implements TagReplaceService {
         removeTagRelation(toReplaceId);
         // tag search group
         removeTagSearchGroup(toReplaceId);
-
-        // delete the actual tag
-        tagRepository.deleteById(toReplaceId);
 
         // clear session
         session.flush();

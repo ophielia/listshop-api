@@ -1,12 +1,14 @@
 package com.meg.atable.lmt.service.impl;
 
-import com.meg.atable.lmt.api.exception.ProposalProcessingException;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.data.repository.ProposalContextRepository;
 import com.meg.atable.lmt.service.*;
+import com.meg.atable.lmt.service.proposal.ProposalGeneratorService;
+import com.meg.atable.lmt.service.proposal.ProposalRequest;
+import com.meg.atable.lmt.service.proposal.ProposalSearchType;
+import com.meg.atable.lmt.service.proposal.ProposalService;
 import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 

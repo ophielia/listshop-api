@@ -255,6 +255,7 @@ targetIdToDelete = result.getTargetId();
 
     @Test
     public void addTagToTargetSlot() throws Exception {
+       //MM next failing test
         TargetEntity target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
         TargetSlotEntity slot = target.getSlots().get(0);
         Long slotId = slot.getId();

@@ -1,7 +1,7 @@
 package com.meg.atable.lmt.service.tag.impl;
 
 import com.meg.atable.lmt.data.entity.TagEntity;
-import com.meg.atable.lmt.service.TagCache;
+import com.meg.atable.lmt.service.tag.TagCache;
 import com.meg.atable.lmt.service.tag.TagChangeListener;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.tag.TagStructureService;

@@ -1,10 +1,7 @@
 package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.Application;
-import com.meg.atable.lmt.api.model.DishRatingInfo;
-import com.meg.atable.lmt.api.model.RatingInfo;
-import com.meg.atable.lmt.api.model.RatingUpdateInfo;
-import com.meg.atable.lmt.api.model.SortOrMoveDirection;
+import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.service.DishService;
@@ -19,9 +16,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.*;
 
+import static com.meg.atable.test.TestConstants.USER_1_NAME;
 import static com.meg.atable.test.TestConstants.USER_3_NAME;
+import static java.lang.Thread.sleep;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -70,7 +73,7 @@ public class TagServiceImplTest {
     }
 
     @Test
-    public void save() throws Exception {
+    public void save()  {
         TagEntity testSave = new TagEntity();
         testSave.setName("testname");
         testSave.setDescription("testdescription");
@@ -86,24 +89,60 @@ public class TagServiceImplTest {
 
 
     @Test
-    public void getTagById() throws Exception {
+    public void getTagById()  {
     }
 
     @Test
-    public void getTagList() throws Exception {
+    public void getTagList()  {
     }
 
     @Test
-    public void createTag() throws Exception {
+    public void createTag()  {
+        LocalDateTime beforeCreate = LocalDateTime.now();
+        TagEntity parent = tagService.getTagById(TestConstants.TAG_TO_BE_PARENT);
+        TagEntity newTag = new TagEntity();
+        newTag.setTagType(TagType.Ingredient);
+        newTag.setName("baby rutabegas");
+        newTag.setDescription("are cute");
+        TagEntity result = tagService.createTag(parent, newTag);
+        Long resultId = result.getId();
+
+        TagEntity resultTest = tagService.getTagById(resultId);
+        Assert.assertNotNull(resultTest);
+        Assert.assertNotNull(resultTest.getId());
+        Assert.assertNotNull(resultTest.getCreatedOn());
+        LocalDateTime time = LocalDateTime.ofInstant(result.getCreatedOn().toInstant(), ZoneId.systemDefault());
+        int nanos = Duration.between(beforeCreate, time).getNano();
+        Assert.assertTrue(nanos > 0);
     }
 
     @Test
-    public void createTag1() throws Exception {
+    public void updateTag() throws InterruptedException {
+        LocalDateTime beforeCreate = LocalDateTime.now();
+        sleep(500);
+        TagEntity tagToUpdate = tagService.getTagById(TestConstants.TAG_TO_BE_PARENT);
+        String newname = "rutaruta";
+        String newdescription = "be be be be begas";
+        tagToUpdate.setName(newname);
+        tagToUpdate.setDescription(newdescription);
+
+        tagService.updateTag(TestConstants.TAG_TO_BE_PARENT, tagToUpdate);
+
+        TagEntity result = tagService.getTagById(TestConstants.TAG_TO_BE_PARENT);
+
+        Assert.assertNotNull(result);
+        Assert.assertEquals(newname, result.getName());
+        Assert.assertEquals(newdescription, result.getDescription());
+        Assert.assertNotNull(result.getUpdatedOn());
+        LocalDateTime time = LocalDateTime.ofInstant(result.getUpdatedOn().toInstant(), ZoneId.systemDefault());
+        int nanos = Duration.between(beforeCreate, time).getNano();
+        Assert.assertTrue(nanos > 0);
+
     }
 
     @Test
-    public void testGetTagsForDish() throws Exception {
-        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, dish.getId());
+    public void testGetTagsForDish()  {
+        List<TagEntity> tags = tagService.getTagsForDish("testuser", 500L);
 
         Assert.assertNotNull(tags);
         Assert.assertTrue(tags.size() > 0);
@@ -113,14 +152,17 @@ public class TagServiceImplTest {
 
 
     @Test
-    public void testAddTagToDish() throws Exception {
-//MM next test to attack
-        tagService.addTagToDish(USER_3_NAME, dish.getId(), TestConstants.TAG_MEAT);
+    public void testAddTagToDish()  {
 
-        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, dish.getId());
+        List<TagEntity> originalTags = tagService.getTagsForDish(USER_3_NAME, TestConstants.DISH_1_ID);
+
+
+        tagService.addTagToDish(USER_3_NAME, TestConstants.DISH_1_ID, TestConstants.TAG_MEAT);
+
+        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, TestConstants.DISH_1_ID);
 
         Assert.assertNotNull(tags);
-        Assert.assertTrue(tags.size() == 3);
+        Assert.assertEquals(originalTags.size() + 1, tags.size());
         boolean containsTagA = false;
         for (TagEntity testTag : tags) {
             if (testTag.getId().equals(TestConstants.TAG_MEAT)) {
@@ -134,12 +176,15 @@ public class TagServiceImplTest {
 
     @Test
     public void testDeleteTagFromDish() {
+        List<TagEntity> originaltags = tagService.getTagsForDish(USER_3_NAME, TestConstants.DISH_5_ID);
+        TagEntity tagToDelete = originaltags.get(0);
+        Long tagId = tagToDelete.getId();
         // delete tag c from dish
-        tagService.deleteTagFromDish(USER_3_NAME, dish.getId(), c.getId());
+        tagService.deleteTagFromDish(USER_3_NAME, TestConstants.DISH_5_ID, tagId);
         // get tags from dish
-        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, dish.getId());
+        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, TestConstants.DISH_5_ID);
         // check dish tags for c
-        boolean found = tags.stream().anyMatch(t -> t.getId() == c.getId());
+        boolean found = tags.stream().anyMatch(t -> t.getId() == tagId);
         // assert not found
         Assert.assertFalse(found);
     }
@@ -224,20 +269,20 @@ public class TagServiceImplTest {
         // for dish 4, user 1 - increment rating 291
         // should move from 400 to 399
         // get dish
-        DishEntity dish = dishService.getDishForUserById(TestConstants.USER_1_NAME, TestConstants.DISH_4_ID);
+        DishEntity dish = dishService.getDishForUserById(TestConstants.USER_1_NAME, TestConstants.DISH_6_ID);
 
         // get tags for dish
-        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, dish.getId());
+        List<TagEntity> tags = tagService.getTagsForDish(USER_1_NAME, TestConstants.DISH_6_ID);
 
         // assert includes 400
         Optional<TagEntity> testTag = tags.stream().filter(t -> t.getId().equals(400L)).findFirst();
         Assert.assertTrue(testTag.isPresent());
 
         // increment
-        tagService.incrementDishRating(TestConstants.USER_1_NAME, TestConstants.DISH_4_ID, 291L, SortOrMoveDirection.UP);
+        tagService.incrementDishRating(TestConstants.USER_1_NAME, TestConstants.DISH_6_ID, 291L, SortOrMoveDirection.UP);
 
         // get tags for dish
-        tags = tagService.getTagsForDish(USER_3_NAME, dish.getId());
+        tags = tagService.getTagsForDish(USER_1_NAME, TestConstants.DISH_6_ID);
 
         // assert doesn't include 400
         testTag = tags.stream().filter(t -> t.getId().equals(400L)).findFirst();

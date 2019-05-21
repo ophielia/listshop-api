@@ -1,4 +1,4 @@
-package com.meg.atable.lmt.service;
+package com.meg.atable.lmt.service.tag;
 
 /**
  * Created by margaretmartin on 13/05/2017.

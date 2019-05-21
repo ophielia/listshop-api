@@ -1,4 +1,4 @@
-package com.meg.atable.lmt.service.impl;
+package com.meg.atable.lmt.service.proposal.impl;
 
 import com.meg.atable.lmt.service.TargetProposalConfiguration;
 import org.springframework.stereotype.Service;

@@ -1,9 +1,9 @@
 package com.meg.atable.lmt.service.impl;
 
-import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.FlatStringUtils;
+import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.data.repository.ItemChangeRepository;
 import com.meg.atable.lmt.data.repository.ItemRepository;
@@ -173,6 +173,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // check about generating a meal plan
+        generateMealPlanOnListCreate(userName, listGenerateProperties);
+
+        // save changes
+        saveListChanges(newList, collector);
+        return newList;
+
+    }
+
+    private void generateMealPlanOnListCreate(String userName, ListGenerateProperties listGenerateProperties) {
         if (listGenerateProperties.getGenerateMealplan() &&
                 listGenerateProperties.getMealPlanSourceId() == null &&
                 listGenerateProperties.getDishSourcesIds() != null) {
@@ -182,13 +191,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             }
             // TODO add link to shopping list here
         }
-
-        // save changes
-        saveListChanges(newList, collector);
-        return newList;
-
     }
-
 
     private ListLayoutEntity getListLayout(ListType listType, ListLayoutType listLayoutType) {
         // nothing yet for user - eventually, we could consider user preferences / properties here
@@ -409,12 +412,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     public List<Category> categorizeList(String userName, ShoppingListEntity shoppingListEntity, Long highlightDishId, Boolean showPantry, ListType highlightListType) {
-        boolean isHighlightDish = highlightDishId != null && !highlightDishId.equals(0L);
-        boolean isHighlightList = !isHighlightDish && highlightListType != null;
-        boolean separateFrequent = showPantry != null && showPantry;
 
-        String highlightName = getHighlightDishName(userName, isHighlightDish, highlightDishId);
-        Set<Long> dishItemIds = getHighlightDishItemIds(isHighlightDish, shoppingListEntity, highlightDishId);
+
         if (shoppingListEntity == null) {
             return new ArrayList<>();
         }
@@ -440,11 +439,49 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             filledCategories.put(cat.getId(), cat);
         });
 
+        // split out items into special categories
+        Map<CategoryType, ItemCategory> specialCategories = generateSpecialCategories(userName,shoppingListEntity,
+                filledCategories,
+                dictionary,
+                highlightDishId,
+                showPantry,
+                highlightListType);
 
-        ItemCategory frequent = createDefaultCategoryByType(CategoryType.Frequent,null);
-        ItemCategory uncategorized = createDefaultCategoryByType(CategoryType.UnCategorized,null);
+
+        // sort items in filled categories
+        for (Map.Entry entry : filledCategories.entrySet()) {
+            ((ItemCategory) entry.getValue()).sortItems();
+        }
+
+        // structure categories
+        listLayoutService.structureCategories(filledCategories, shoppingListEntity.getListLayoutId(), true);
+
+        // add frequent and uncategorized
+        addCategoryIfNotEmpty(filledCategories,specialCategories.get(CategoryType.Frequent));
+        addCategoryIfNotEmpty(filledCategories,specialCategories.get(CategoryType.UnCategorized));
+        addCategoryIfNotEmpty(filledCategories,specialCategories.get(CategoryType.Highlight));
+        addCategoryIfNotEmpty(filledCategories,specialCategories.get(CategoryType.HighlightList));
+
+        // prune and sort categories
+        return cleanUpResults(filledCategories);
+    }
+
+    private Map<CategoryType, ItemCategory> generateSpecialCategories(String userName,ShoppingListEntity shoppingListEntity,
+                                                                      Map<Long, Category> filledCategories,
+                                                                      Map<Long, Long> dictionary,
+                                                                      Long highlightDishId, Boolean showPantry, ListType highlightListType) {
+        boolean isHighlightDish = highlightDishId != null && !highlightDishId.equals(0L);
+        boolean isHighlightList = !isHighlightDish && highlightListType != null;
+        boolean separateFrequent = showPantry != null && showPantry;
+        String highlightName = getHighlightDishName(userName, isHighlightDish, highlightDishId);
+        Set<Long> dishItemIds = getHighlightDishItemIds(isHighlightDish, shoppingListEntity, highlightDishId);
+
+
+        HashMap<CategoryType, ItemCategory> specialCategories = new HashMap<>();
+        ItemCategory frequent = createDefaultCategoryByType(CategoryType.Frequent, null);
+        ItemCategory uncategorized = createDefaultCategoryByType(CategoryType.UnCategorized, null);
         ItemCategory highlight = createDefaultCategoryByType(CategoryType.Highlight, highlightName);
-        ItemCategory highlightList = createDefaultCategoryByType(CategoryType.HighlightList,null);
+        ItemCategory highlightList = createDefaultCategoryByType(CategoryType.HighlightList, null);
         for (ItemEntity item : shoppingListEntity.getItems()) {
             if (item.isFrequent() && separateFrequent && !isHighlightDish) {
                 frequent.addItemEntity(item);
@@ -466,22 +503,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             }
         }
 
-        // sort items in filled categories
-        for (Map.Entry entry : filledCategories.entrySet()) {
-            ((ItemCategory) entry.getValue()).sortItems();
-        }
+        specialCategories.put(CategoryType.Highlight,highlight);
+        specialCategories.put(CategoryType.HighlightList,highlightList);
+        specialCategories.put(CategoryType.Frequent,frequent);
+        specialCategories.put(CategoryType.UnCategorized,uncategorized);
 
-        // structure categories
-        listLayoutService.structureCategories(filledCategories, shoppingListEntity.getListLayoutId(), true);
-
-        // add frequent and uncategorized
-        addCategoryIfNotEmpty(filledCategories,frequent);
-        addCategoryIfNotEmpty(filledCategories,uncategorized);
-        addCategoryIfNotEmpty(filledCategories,highlight);
-        addCategoryIfNotEmpty(filledCategories,highlightList);
-
-        // prune and sort categories
-        return cleanUpResults(filledCategories);
+        return specialCategories;
     }
 
     private ItemCategory createDefaultCategoryByType(CategoryType categoryType, String highlightName) {
@@ -511,7 +538,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     private void addCategoryIfNotEmpty(Map<Long, Category> filledCategories, ItemCategory category) {
-        if (!category.isEmpty()) {
+        if (category != null && !category.isEmpty()) {
             filledCategories.put(category.getId(), category);
         }
     }
@@ -713,12 +740,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // set crossed off for item - by setting crossedOff date
         if (crossedOff) {
             item.setCrossedOff(new Date());
+            shoppingListEntity.setLastUpdate(new Date());
         } else {
             item.setCrossedOff(null);
         }
 
         itemRepository.save(item);
-
+        shoppingListRepository.save(shoppingListEntity);
     }
 
     @Override
@@ -736,6 +764,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         items.forEach(i -> i.setCrossedOff(crossOffDate));
 
+        if (crossOff) {
+            shoppingListEntity.setLastUpdate(new Date());
+        }
         itemRepository.saveAll(items);
     }
 

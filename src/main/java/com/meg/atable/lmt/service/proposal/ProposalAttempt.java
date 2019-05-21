@@ -1,4 +1,6 @@
-package com.meg.atable.lmt.service;
+package com.meg.atable.lmt.service.proposal;
+
+import com.meg.atable.lmt.service.DishTagSearchResult;
 
 import java.util.*;
 import java.util.stream.Collectors;

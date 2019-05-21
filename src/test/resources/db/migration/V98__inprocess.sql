@@ -1,6 +1,17 @@
 -- changed to login with email
 update users set email = username;
 
+-- update created date on dish
+with created  as (
+select dish_id, created_on, now() - (interval  '1 minute' * dish_id) as created
+from dish)
+update dish d
+set created_on = c.created
+from created c
+where d.dish_id = c.dish_id;
+
+
+
 -- is display will be for default tag that deleted tags without substitute are assigned to.
 ALTER TABLE users ADD COLUMN creation_date  timestamp;
 
@@ -22,8 +33,21 @@ ALTER TABLE list_item
 ALTER TABLE list_item
     ADD COLUMN updated_on timestamp with time zone ;
 
--- users now keyed off of user email
-update users set email = username;
+
+-- new columns in tag
+ALTER TABLE tag ADD COLUMN created_on timestamp with time zone ;
+ALTER TABLE tag ADD COLUMN updated_on timestamp with time zone ;
+ALTER TABLE tag ADD COLUMN category_updated_on timestamp with time zone ;
+ALTER TABLE tag ADD COLUMN removed_on timestamp with time zone ;
+
+-- update created date on tag
+with created  as (
+select tag_id, created_on, now() - (interval  '1 minute' * tag_id) as created
+from tag)
+update tag d
+set created_on = c.created
+from created c
+where d.tag_id = c.tag_id;
 
 ------------------------
 -- undo for dev
@@ -37,6 +61,13 @@ update users set email = username;
 -- ALTER TABLE users drop COLUMN creation_date;
 
 --drop SEQUENCE authority_id_seq;
+
+-- ALTER TABLE tag ADD COLUMN created_on          ;
+-- ALTER TABLE tag ADD COLUMN updated_on          ;
+-- ALTER TABLE tag ADD COLUMN category_updated_on ;
+-- ALTER TABLE tag ADD COLUMN removed_on          ;
+
+-- update dish set created_on = null;
 
 ------------------------
 -- these are all the timestamp to with timezone changes

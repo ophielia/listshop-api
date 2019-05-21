@@ -1,9 +1,12 @@
 package com.meg.atable.lmt.service.impl;
 
+import com.meg.atable.lmt.api.model.TargetType;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.service.DishSearchService;
 import com.meg.atable.lmt.service.DishTagSearchResult;
-import com.meg.atable.lmt.service.ProcessResult;
+import com.meg.atable.lmt.service.proposal.ProcessResult;
+import com.meg.atable.lmt.service.proposal.ProposalRequest;
+import com.meg.atable.lmt.service.proposal.impl.RefreshProposalProcessorImpl;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
@@ -46,6 +49,7 @@ public class RefreshProposalProcessorImplTest {
     public void testRefreshProposal_Picked() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4,2,3);
         target.setUserId(TestConstants.USER_3_ID);
+        target.setTargetType(TargetType.Standard);
         ProposalRequest testRequest = new ProposalRequest();
         ProposalEntity proposalEntity = ProcessorTestUtils.getProposalForTarget(target);
         testRequest.setTarget(target);
@@ -177,6 +181,7 @@ public class RefreshProposalProcessorImplTest {
     public void testRefreshProposal_MealPlanPicked() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(6,2,3);
         target.setUserId(TestConstants.USER_3_ID);
+        target.setTargetType(TargetType.Standard);
         ProposalRequest testRequest = new ProposalRequest();
         ProposalEntity proposalEntity = ProcessorTestUtils.getProposalForTarget(target);
         testRequest.setTarget(target);
@@ -258,6 +263,8 @@ public class RefreshProposalProcessorImplTest {
 
     @Test
     public void testRefreshProposal_MealPlanNoPicked() throws Exception {
+
+
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4,2,3);
         target.setUserId(TestConstants.USER_3_ID);
         ProposalRequest testRequest = new ProposalRequest();
@@ -386,6 +393,7 @@ public class RefreshProposalProcessorImplTest {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(2,2,3);
         TargetSlotEntity targetSlot = target.getSlots().get(0);
         targetSlot.setTargetTagIds(null);
+        target.setTargetType(TargetType.Standard);
         target.setUserId(TestConstants.USER_3_ID);
         ProposalRequest testRequest = new ProposalRequest();
         testRequest.setTarget(target);
@@ -441,6 +449,7 @@ public class RefreshProposalProcessorImplTest {
     public void processProposal_OneSlotOnly() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(1,2,3);
         target.setUserId(TestConstants.USER_3_ID);
+        target.setTargetType(TargetType.Standard);
         ProposalRequest testRequest = new ProposalRequest();
         testRequest.setTarget(target);
 

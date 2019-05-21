@@ -62,6 +62,7 @@ insert into dish (auto_tag_status, description, dish_name, last_added, user_id, 
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish2', null, 500, 501);
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish3', null, 500, 502);
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish4', null, 500, 503);
+insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish4', null, 500, 603);
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish4', null, 500, 504);
 insert into dish_tags (dish_id, tag_id) values (500, 500);
 insert into dish_tags (dish_id, tag_id) values (500, 501);
@@ -80,6 +81,16 @@ INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 322);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 396);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 426);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 400);
+
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 353);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 218);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 363);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 419);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 344);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 322);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 396);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 426);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 400);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 353);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 218);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 363);

@@ -1,4 +1,4 @@
-package com.meg.atable.lmt.service.impl;
+package com.meg.atable.lmt.service.proposal.impl;
 
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
@@ -10,6 +10,7 @@ import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.data.repository.ProposalContextRepository;
 import com.meg.atable.lmt.data.repository.ProposalRepository;
 import com.meg.atable.lmt.service.*;
+import com.meg.atable.lmt.service.proposal.*;
 import com.meg.atable.lmt.service.tag.TagService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

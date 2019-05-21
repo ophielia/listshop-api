@@ -10,7 +10,7 @@ import com.meg.atable.lmt.data.entity.TargetSlotEntity;
 import com.meg.atable.lmt.data.repository.DishRepository;
 import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.DishSearchService;
-import com.meg.atable.lmt.service.ProposalService;
+import com.meg.atable.lmt.service.proposal.ProposalService;
 import com.meg.atable.lmt.service.TargetService;
 import org.junit.Before;
 import org.junit.Test;

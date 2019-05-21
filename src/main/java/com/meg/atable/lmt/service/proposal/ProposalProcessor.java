@@ -1,7 +1,6 @@
-package com.meg.atable.lmt.service;
+package com.meg.atable.lmt.service.proposal;
 
 import com.meg.atable.lmt.api.exception.ProposalProcessingException;
-import com.meg.atable.lmt.service.impl.ProposalRequest;
 
 /**
  * Created by margaretmartin on 24/05/2018.

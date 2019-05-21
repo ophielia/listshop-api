@@ -1,10 +1,9 @@
-package com.meg.atable.lmt.service.impl;
+package com.meg.atable.lmt.service.proposal;
 
 import com.meg.atable.lmt.data.entity.MealPlanEntity;
 import com.meg.atable.lmt.data.entity.ProposalContextEntity;
 import com.meg.atable.lmt.data.entity.ProposalEntity;
 import com.meg.atable.lmt.data.entity.TargetEntity;
-import com.meg.atable.lmt.service.ProposalSearchType;
 
 /**
  * Created by margaretmartin on 22/05/2018.

@@ -1,7 +1,7 @@
-package com.meg.atable.lmt.service.impl;
+package com.meg.atable.lmt.service.tag.impl;
 
 import com.meg.atable.lmt.api.model.FatTag;
-import com.meg.atable.lmt.service.TagCache;
+import com.meg.atable.lmt.service.tag.TagCache;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;

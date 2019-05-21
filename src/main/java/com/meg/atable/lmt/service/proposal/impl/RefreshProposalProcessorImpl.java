@@ -1,22 +1,27 @@
-package com.meg.atable.lmt.service.impl;
+package com.meg.atable.lmt.service.proposal.impl;
 
 import com.meg.atable.lmt.api.exception.ProposalProcessingException;
-import com.meg.atable.lmt.api.model.ApproachType;
 import com.meg.atable.lmt.api.model.TargetType;
 import com.meg.atable.lmt.data.entity.*;
-import com.meg.atable.lmt.service.*;
+import com.meg.atable.lmt.service.NewRawSlotResult;
+import com.meg.atable.lmt.service.proposal.ProcessInformation;
+import com.meg.atable.lmt.service.proposal.ProcessResult;
+import com.meg.atable.lmt.service.impl.AbstractProposalProcessor;
+import com.meg.atable.lmt.service.proposal.ProposalRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by margaretmartin on 24/05/2018.
  */
 @Component
-@Qualifier("newSearch")
-public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
-
+@Qualifier("refreshSearch")
+public class RefreshProposalProcessorImpl extends AbstractProposalProcessor {
 
 
     @Override
@@ -26,7 +31,7 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
 
         // check that we have slots to search for
         if (info.getSearchSlots().isEmpty()) {
-            throw new ProposalProcessingException("");
+            throw new ProposalProcessingException("No Search Slots in Refresh Proposal");
         }
         // retrieve raw results
         List<NewRawSlotResult> rawSearchSlotResults = getRawSlotResults(info.getSearchSlots(), request.getTarget(), info);
@@ -43,19 +48,13 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
             indexToSlotNumber.put(i, slotResult.getSlotNumber());
             resultsBySlot.put(slotResult.getSlotNumber(), slotResult);
         }
-        List<ContextApproachEntity> contextApproaches = processApproaches(info, indexToSlotNumber, resultsBySlot);
 
-        // fill best approach
-        if (contextApproaches == null || contextApproaches.isEmpty()) {
-            // TODO throw exception here
-            return null;
-        }
-
-        // fill non-search slots
-        ContextApproachEntity fillApproach = contextApproaches.get(0);
+        // fill with refresh approach
+        ContextApproachEntity fillApproach = info.getCurrentApproach();
         fillFromApproach(fillApproach, resultsBySlot);
 
-            List<NewRawSlotResult> rawFillSlotResults = new ArrayList<>();
+        // fill non-search slots
+        List<NewRawSlotResult> rawFillSlotResults = new ArrayList<>();
         if (!info.getFillSlots().isEmpty()) {
             List<Long> toFilter = pullDishIdsToFilter(rawSearchSlotResults);
             rawFillSlotResults = getRawSlotResults(info.getFillSlots(), request.getTarget(), info);
@@ -69,11 +68,10 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
         }
 
         // fill and return result
-        ProcessResult processResult = new ProcessResult(contextApproaches);
-        processResult.setCurrentApproachType(info.getApproachType());
-        processResult.setCurrentApproach(0);
+        ProcessResult processResult = new ProcessResult(null);
+        processResult.setCurrentApproach(info.getCurrentApproachIndex());
         List<NewRawSlotResult> allResults = new ArrayList<>();
-        if (!rawSearchSlotResults.isEmpty() ) {
+        if (!rawSearchSlotResults.isEmpty()) {
             allResults.addAll(rawSearchSlotResults);
         }
         if (!rawFillSlotResults.isEmpty()) {
@@ -85,10 +83,12 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
         return processResult;
     }
 
+
     protected ProcessInformation fillProcessInfo(ProposalRequest request) {
         ProcessInformation info = new ProcessInformation();
         List<Long> sqlFilter = new ArrayList<>();
-        Map<Integer,Integer> dishCountPerSlot = new HashMap<>();
+        Map<Integer, Integer> dishCountPerSlot = new HashMap<>();
+        int resultCount = TargetType.Standard.equals(request.getTarget().getTargetType())?SEARCH_DISH_RESULT_COUNT:SEARCH_DISH_RESULT_COUNT_PICKUP;
 
         // check if there are any picked dishes in proposal
         List<Integer> fillInSlotNumbers = new ArrayList<>();
@@ -97,9 +97,9 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
                 if (slot.getPickedDishId() != null) {
                     sqlFilter.add(slot.getPickedDishId());
                     fillInSlotNumbers.add(slot.getSlotNumber());
-                    dishCountPerSlot.put(slot.getSlotNumber(),SEARCH_DISH_RESULT_COUNT - 1);
+                    dishCountPerSlot.put(slot.getSlotNumber(), resultCount - 1);
                 } else {
-                    dishCountPerSlot.put(slot.getSlotNumber(),SEARCH_DISH_RESULT_COUNT );
+                    dishCountPerSlot.put(slot.getSlotNumber(), resultCount);
                 }
             }
         }
@@ -112,7 +112,7 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
             if (fillInSlotNumbers.contains(slot.getSlotOrder())) {
                 fillSlots.add(slot);
             } else {
-            targetSlotCount++;
+                targetSlotCount++;
                 searchSlots.add(slot);
             }
         }
@@ -126,21 +126,19 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
             }
         }
 
-        // prepare configuration for search
-        ApproachType approachType = ApproachType.WHEEL;
-        int proposalCount = targetSlotCount;
-        if (targetSlotCount >= 3) {
-            approachType = ApproachType.WHEEL_MIXED;
-            proposalCount = Math.min(targetSlotCount + 1, 10);
+        // prepare configuration for refresh
+        ProposalContextEntity context = request.getContext();
+        int approachIndex = context.getCurrentApproachIndex() + 1;
+        if (approachIndex >= request.getContext().getApproaches().size()) {
+            approachIndex = approachIndex - request.getContext().getApproaches().size();
         }
+        info.setCurrentApproach(context.getApproaches().get(approachIndex));
+        info.setCurrentApproachIndex(approachIndex);
 
         info.setMaximumEmpties(5); // config
-        info.setApproachType(approachType);
-        info.setProposalCount(proposalCount);
         info.setSearchSlots(searchSlots);
         info.setFillSlots(fillSlots);
         info.setSqlFilter(sqlFilter);
-        int resultCount = TargetType.Standard.equals(request.getTarget().getTargetType())?SEARCH_DISH_RESULT_COUNT:SEARCH_DISH_RESULT_COUNT_PICKUP;
         int slotDishCount = targetSlotCount * resultCount;
         info.setResultsPerSlot(slotDishCount);
         info.setProposal(request.getProposal());
@@ -149,4 +147,4 @@ public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
         return info;
     }
 
- }
+}

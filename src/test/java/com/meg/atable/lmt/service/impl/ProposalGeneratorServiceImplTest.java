@@ -5,6 +5,7 @@ import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.data.repository.ProposalContextRepository;
 import com.meg.atable.lmt.service.*;
+import com.meg.atable.lmt.service.proposal.*;
 import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;

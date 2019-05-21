@@ -10,7 +10,7 @@ import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.DishSearchCriteria;
 import com.meg.atable.lmt.service.DishSearchService;
 import com.meg.atable.lmt.service.DishService;
-import com.meg.atable.lmt.service.TagReplaceService;
+import com.meg.atable.lmt.service.tag.TagReplaceService;
 import com.meg.atable.lmt.service.tag.TagChangeListener;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.tag.TagStructureService;
@@ -154,8 +154,14 @@ public class TagServiceImpl implements TagService {
         dbTag.setSearchSelect(toUpdate.getSearchSelect());
         dbTag.setPower(toUpdate.getPower());
         dbTag.setToDelete(toUpdate.isToDelete());
+        dbTag.setRemovedOn(toUpdate.getRemovedOn());
+        dbTag.setCreatedOn(toUpdate.getCreatedOn());
+        dbTag.setCategoryUpdatedOn(toUpdate.getCategoryUpdatedOn());
         dbTag.setReplacementTagId(toUpdate.getReplacementTagId());
+
+        dbTag.setUpdatedOn(new Date());
         dbTag = tagRepository.save(dbTag);
+
 
         // if change, maintain change
         fireTagUpdatedEvent(beforeChange, dbTag);
@@ -214,6 +220,7 @@ public class TagServiceImpl implements TagService {
         newtag.setAssignSelect(true);
         newtag.setSearchSelect(false);
         newtag.setToDelete(false);
+        newtag.setCreatedOn(new Date());
         TagEntity saved = tagRepository.save(newtag);
 
         tagStructureService.createRelation(parentTag, saved);
@@ -263,16 +270,15 @@ public class TagServiceImpl implements TagService {
 
         }
 
-
         // mark tag to be deleted
         tag.setToDelete(true);
+        tag.setRemovedOn(new Date());
+        //MM TEST THIS
         tag.setReplacementTagId(replacement != null ? replacement.getId() : null);
+        // update and replace usage
         updateTag(tagId, tag);
+        tagReplaceService.replaceTag(tag.getId(), tag.getReplacementTagId());
 
-        // delete tag now if immediate delete is activated
-        if (deleteImmediately) {
-            tagReplaceService.replaceTag(tag.getId(), tag.getReplacementTagId());
-        }
     }
 
     public void incrementDishRating(String name, Long dishId, Long ratingId, SortOrMoveDirection moveDirection) {
@@ -398,6 +404,7 @@ public class TagServiceImpl implements TagService {
         // assign Child tag to parent tag
         TagEntity parentTag = tagStructureService.assignTagToParent(childTag, newParentTag);
 
+        childTag.setUpdatedOn(new Date());
         // fire tag changed event
         fireTagParentChangedEvent(originalParent, parentTag, childTag);
 
