@@ -5,12 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
 
 
     List<ItemEntity> findByListId(Long listId);
+
+    List<ItemEntity> findByRemovedOnBefore(Date removedOnDate);
 
     @Query(value="select * from list_item where list_id = :listid and tag_id = :tagid", nativeQuery=true)
     List<ItemEntity> getItemsForTag(@Param("listid") Long listid, @Param("tagid") Long tagid);
