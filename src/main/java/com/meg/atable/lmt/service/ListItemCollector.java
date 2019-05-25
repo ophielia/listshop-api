@@ -146,8 +146,8 @@ public class ListItemCollector implements ItemCollector {
     private void addTagForExistingItem(CollectedItem item) {
         // if this tag has been previously removed, we need to clear that information - because
         // it's now being added.
-        if (item.isDeleted()) {
-            item.setDeleted(false);
+        if (item.isRemoved()) {
+            item.setRemoved(false);
         }
         item.setUpdated(true);
     }
@@ -232,7 +232,7 @@ public class ListItemCollector implements ItemCollector {
     }
 
     private void removeItem(CollectedItem item) {
-        item.setDeleted(true);
+        item.setRemoved(true);
         item.incrementRemovedCount(item.getUsedCount());
         item.setUsedCount(0);
     }

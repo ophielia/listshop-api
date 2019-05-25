@@ -1,6 +1,5 @@
 package com.meg.atable.lmt.service.impl;
 
-import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ListTagStatistic;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.repository.ListTagStatisticRepository;
@@ -37,7 +36,7 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         List<CollectedItem> itemList = collector.getCollectedTagItems();
 
         for (CollectedItem item : itemList) {
-            if (!item.isUpdated() & !item.isDeleted()) {
+            if (!item.isUpdated() & !item.isRemoved()) {
                 continue;
             }
             TagEntity tag = item.getTag();
@@ -49,7 +48,7 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
                 }
                 ListTagStatistic stat = addOrRemoveItem(statLkup, userId, tag.getId(), item.getAddCount(), 0);
                 statList.add(stat);
-            } else if (item.isDeleted()) {
+            } else if (item.isRemoved()) {
                 if (statLkup.containsKey(tag.getId())) {
                     ListTagStatistic stat = statLkup.get(tag.getId());
                     boolean frequentCrossOff = isFrequentCrossOff(stat);
@@ -59,7 +58,7 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
                 }
                 ListTagStatistic stat = addOrRemoveItem(statLkup, userId, tag.getId(), 0, item.getRemovedCount());
                 statList.add(stat);
-            } else if (item.isDeleted()) {
+            } else if (item.isRemoved()) {
                 if (statLkup.containsKey(tag.getId())) {
                     ListTagStatistic stat = statLkup.get(tag.getId());
                     boolean frequentCrossOff = isFrequentCrossOff(stat);

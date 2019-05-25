@@ -1,14 +1,9 @@
 package com.meg.atable.lmt.service;
 
-import com.meg.atable.common.FlatStringUtils;
-import com.meg.atable.lmt.api.model.ListType;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by margaretmartin on 02/11/2017.
@@ -25,9 +20,10 @@ public class CollectedItem {
 
     private boolean isUpdated;
 
-    private boolean isDeleted;
+    private boolean isRemoved;
 
     private boolean isAdded;
+
     private boolean isChanged;
 
     public CollectedItem(ItemEntity itemEntity) {
@@ -198,20 +194,20 @@ public class CollectedItem {
         }
     }
 
-    public boolean isDeleted() {
-        return isDeleted;
+    public boolean isRemoved() {
+        return isRemoved;
     }
 
-    public void setDeleted(boolean deleted) {
-        if (deleted) {
+    public void setRemoved(boolean removed) {
+        if (removed) {
             this.setRemovedOn(new Date());
-            this.isDeleted = true;
+            this.isRemoved = true;
         } else {
             this.setRemovedOn(null);
             this.setCrossedOff(null);
             this.setUpdatedOn(null);
             this.setUsedCount(0);
-            this.isDeleted = false;
+            this.isRemoved = false;
         }
         this.isChanged = true;
     }

@@ -13,9 +13,11 @@ import com.meg.atable.lmt.service.tag.TagService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,6 +48,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     ItemChangeRepository itemChangeRepository;
 
     private final ShoppingListProperties shoppingListProperties;
+
+    @Value("${service.shoppinglistservice.merge.items.deleted.after.days}")
+    int mergeDeleteAfterDays = 6;
 
     @Autowired
     public ShoppingListServiceImpl(UserService userService, TagService tagService, DishService dishService, ShoppingListRepository shoppingListRepository, ListLayoutService listLayoutService, ListSearchService listSearchService, MealPlanService mealPlanService, ItemRepository itemRepository, ItemChangeRepository itemChangeRepository, ShoppingListProperties shoppingListProperties) {
@@ -464,6 +469,34 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // prune and sort categories
         return cleanUpResults(filledCategories);
+    }
+
+    // Note - this method doesn't check yet for MergeConflicts.  But the signature
+    // is there to build the interface, so that MergeConflicts can be added later
+    // less painfully.  Right now just going for basic functionality - taking the
+    // last modified item.
+    public List<MergeConflicts> mergeFromClient(String userName, MergeList mergeList) {
+    //MM in progress
+
+        // get active list for user
+
+        // ensure active list id equals mergeList
+
+        // create MergeCollector from list
+
+        // merge from client
+        List<ItemEntity> mergeItems = mergeList.getMergeItems().stream()
+        .map(i -> ModelMapper.toEntity(i))
+                .collect(Collectors.toList());
+
+        // update after merge
+
+        // delete tags by removed on
+        LocalDate removedBeforeDate = LocalDate.now().minusDays(mergeDeleteAfterDays);
+        List<ItemEntity> itemsToRemove = itemRepository.findByRemovedOnBefore(java.sql.Date.valueOf(removedBeforeDate));
+        itemRepository.deleteAll(itemsToRemove);
+
+        return new ArrayList<>();
     }
 
     private Map<CategoryType, ItemCategory> generateSpecialCategories(String userName,ShoppingListEntity shoppingListEntity,
