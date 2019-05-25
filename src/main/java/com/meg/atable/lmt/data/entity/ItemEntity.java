@@ -61,16 +61,6 @@ public class ItemEntity {
 
     @Transient
     private Long tagId;
-    @Transient
-    private int removedCount;
-    @Transient
-    private int addCount;
-    @Transient
-    private boolean isUpdated;
-    @Transient
-    private boolean isDeleted;
-    @Transient
-    private boolean isAdded;
 
     public ItemEntity(Long id) {
         item_id = id;
@@ -189,27 +179,6 @@ public class ItemEntity {
         this.rawListSources = rawListSources;
     }
 
-    public void addRawDishSource(Long dishId) {
-        if (dishId == null) {
-            return;
-        }
-        if (rawDishSources == null) {
-            rawDishSources = String.valueOf(dishId);
-        } else {
-            rawDishSources = rawDishSources + ";" + dishId;
-        }
-    }
-
-    public void addRawListSource(String sourceType) {
-        if (sourceType == null) {
-            return;
-        }
-        if (rawListSources == null) {
-            rawListSources = sourceType;
-        } else {
-            rawListSources = rawListSources + ";" + sourceType;
-        }
-    }
 
 
     @Override
@@ -223,67 +192,9 @@ public class ItemEntity {
                 ", addedOn=" + addedOn +
                 ", freeText='" + freeText + '\'' +
                 ", crossedOff=" + crossedOff +
-                ", tagId=" + tagId +
                 ", isFrequent=" + isFrequent +
                 '}';
     }
-
-    public boolean isUpdated() {
-        return isUpdated;
-    }
-
-    public void setUpdated(boolean updated) {
-        this.isUpdated = updated;
-        this.updatedOn = new Date();
-    }
-
-    public boolean isAdded() {
-        return isAdded;
-    }
-
-    public void setIsAdded(boolean isAdded) {
-        this.isAdded = isAdded;
-        this.addedOn = new Date();
-    }
-
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.isDeleted = deleted;
-        this.removedOn = new Date();
-    }
-
-    public int getAddCount() {
-        return addCount;
-    }
-
-    public void incrementAddCount() {
-        this.addCount++;
-    }
-
-    public void incrementAddCount(int addCount) {
-        this.addCount = this.addCount + addCount;
-    }
-
-    public boolean isRemoved() {
-        return removedCount > 0;
-    }
-
-    public int getRemovedCount() {
-        return removedCount;
-    }
-
-    public void incrementRemovedCount() {
-        this.removedCount++;
-    }
-
-    public void incrementRemovedCount(int removeCount) {
-        this.removedCount = this.removedCount + removeCount;
-    }
-
-
 
     public String getDisplay() {
         if (this.tag != null) {

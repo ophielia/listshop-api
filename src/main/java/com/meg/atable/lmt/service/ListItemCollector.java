@@ -13,25 +13,23 @@ import java.util.stream.Stream;
 /**
  * Created by margaretmartin on 02/11/2017.
  */
-public class ListItemCollector {
+public class ListItemCollector implements ItemCollector {
     private final Long listId;
-    private Map<Long, ItemEntity> tagToItem;
-    private List<ItemEntity> freeTextItems;
+    private Map<Long, CollectedItem> tagCollectedItem;
+    private List<CollectedItem> freeTextItems;
 
-    private Predicate<ItemEntity> isAdded = i -> i.isAdded();
-    private Predicate<ItemEntity> isUpdated = i -> i.isUpdated();
-    private Predicate<ItemEntity> isDeleted = i -> i.isDeleted();
+    private Predicate<CollectedItem> isChanged = i -> i.isChanged();
 
     public ListItemCollector(Long savedNewListId, List<ItemEntity> items) {
         this.listId = savedNewListId;
-        tagToItem = new HashMap<>();
+        tagCollectedItem = new HashMap<>();
         freeTextItems = new ArrayList<>();
         if (items != null) {
             items.stream().forEach(item -> {
                 if (item.getTag() != null) {
-                    tagToItem.put(item.getTag().getId(), item);
+                    tagCollectedItem.put(item.getTag().getId(), new CollectedItem(item));
                 } else {
-                    freeTextItems.add(item);
+                    freeTextItems.add(new CollectedItem(item));
                 }
             });
         }
@@ -39,55 +37,53 @@ public class ListItemCollector {
 
     public ListItemCollector(Long listId) {
         this.listId = listId;
-        tagToItem = new HashMap<>();
+        tagCollectedItem = new HashMap<>();
         freeTextItems = new ArrayList<>();
     }
 
 
+    @Override
     public List<ItemEntity> getAllItems() {
-        return Stream.concat(tagToItem.values().stream(),
-                freeTextItems.stream())
+        return Stream.concat(tagCollectedItem.values().stream()
+                ,freeTextItems.stream())
+        .map(CollectedItem::getItem)
                 .collect(Collectors.toList());
     }
 
-    public List<ItemEntity> getTagItems() {
-        return tagToItem.values()
+
+    @Override
+    public List<CollectedItem> getCollectedTagItems() {
+        return tagCollectedItem.values()
                 .stream().filter(i -> i.getTag() != null)
                 .collect(Collectors.toList());
     }
 
+
+    @Override
     public List<Long> getAllTagIds() {
-        return getTagItems().stream()
-                .map(i -> i.getTag().getId())
+        return tagCollectedItem.values().stream()
+                .map(i -> i.getItem().getTag().getId())
                 .collect(Collectors.toList());
     }
 
-    public List<ItemEntity> getItemsAdded() {
-        return tagToItem.values().stream()
-                .filter(isAdded)
-                .collect(Collectors.toList());
-    }
-
-    public List<ItemEntity> getItemsToUpdate() {
-        return tagToItem.values().stream()
-                .filter(isUpdated.and(isAdded.negate()).and(isDeleted.negate()))
-                .collect(Collectors.toList());
-    }
-
-    public List<ItemEntity> getItemsToDelete() {
-        return tagToItem.values().stream()
-                .filter(isDeleted)
-                .collect(Collectors.toList());
-    }
-
-
+    @Override
     public boolean hasChanges() {
-        Optional<ItemEntity> changeOpt = tagToItem.values().stream()
-                .filter(isUpdated.or(isAdded).or(isDeleted))
+        Optional<CollectedItem> changeOpt = tagCollectedItem.values().stream()
+                .filter(isChanged)
                 .findFirst();
 
         return changeOpt.isPresent();
     }
+
+    @Override
+    public List<ItemEntity> getChangedItems() {
+        return tagCollectedItem.values().stream()
+                .filter(isChanged)
+                .map(CollectedItem::getItem)
+                .collect(Collectors.toList());
+    }
+
+    // list collector
     public void addTags(List<TagEntity> tagEntityList, Long dishId, String listSource) {
         for (TagEntity tag : tagEntityList) {
             addItemByTag(tag, listSource, dishId);
@@ -107,11 +103,11 @@ public class ListItemCollector {
             return;
         }
         if (item.getTag() == null) {
-            ItemEntity copied = copyItem(item);
+            CollectedItem copied = copyItem(item);
             // free text item
             freeTextItems.add(copied);
-        } else if (tagToItem.containsKey(item.getTag().getId())) {
-            ItemEntity update = tagToItem.get(item.getTag().getId());
+        } else if (tagCollectedItem.containsKey(item.getTag().getId())) {
+            CollectedItem update = tagCollectedItem.get(item.getTag().getId());
             int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
             update.setUsedCount(count + 1);
             update.addRawListSource(sourceType);
@@ -120,32 +116,41 @@ public class ListItemCollector {
             if (incrementStats) {
                 update.incrementAddCount(Math.max(item.getUsedCount(), 1));
             }
-            tagToItem.put(item.getTag().getId(), update);
+            tagCollectedItem.put(item.getTag().getId(), update);
         } else {
-            ItemEntity copied = copyItem(item);
+            CollectedItem copied = copyItem(item);
             int count = item.getUsedCount() != null ? item.getUsedCount() : 0;
+            copied.setIsAdded(true);
             copied.setUsedCount(count);
             copied.addRawListSource(sourceType);
             copied.setRawDishSources(item.getRawDishSources());
             if (incrementStats) {
                 copied.incrementAddCount(Math.max(1, item.getUsedCount()));
             }
-            tagToItem.put(item.getTag().getId(), copied);
+            tagCollectedItem.put(item.getTag().getId(), copied);
         }
     }
 
-    private void createItemFromTag(TagEntity tag, Long dishId) {
-        ItemEntity item = new ItemEntity();
+    private CollectedItem createItemFromTag(TagEntity tag, Long dishId) {
+        CollectedItem item = new CollectedItem(new ItemEntity());
+
         item.setTag(tag);
         item.setListId(listId);
         item.addRawDishSource(dishId);
         item.setUsedCount(0);
         item.setIsAdded(true);
 
-        tagToItem.put(tag.getId(), item);
+        return item;
     }
 
-
+    private void addTagForExistingItem(CollectedItem item) {
+        // if this tag has been previously removed, we need to clear that information - because
+        // it's now being added.
+        if (item.isDeleted()) {
+            item.setDeleted(false);
+        }
+        item.setUpdated(true);
+    }
 
     public void removeTagsForDish(Long dishId, List<TagEntity> tagsToRemove) {
         for (TagEntity tag : tagsToRemove) {
@@ -160,29 +165,27 @@ public class ListItemCollector {
     }
 
 
-    private ItemEntity copyItem(ItemEntity item) {
-        ItemEntity copied = new ItemEntity();
+    private CollectedItem copyItem(ItemEntity item) {
+        CollectedItem copied = new CollectedItem(new ItemEntity());
         // resetting count when adding from another list
         copied.setUsedCount(item.getUsedCount());
         copied.setTag(item.getTag());
         copied.setListId(listId);
         copied.setFreeText(item.getFreeText());
-        copied.setIsAdded(true);
+        copied.setAddedOn(new Date());
         return copied;
     }
 
     public void removeItemByTagId(Long tagId, Long dishId, Boolean removeEntireItem) {
-        if (!tagToItem.containsKey(tagId)) {
+        if (!tagCollectedItem.containsKey(tagId)) {
             return;
         }
-        ItemEntity update = tagToItem.get(tagId);
+        CollectedItem update = tagCollectedItem.get(tagId);
 
         int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
         if (count <= 1 || removeEntireItem) {
             // delete item outright
-            update.setDeleted(true);
-            update.incrementRemovedCount(update.getUsedCount());
-            update.setUsedCount(0);
+            removeItem(update);
             return;
         } else {
             // dish is not removed - it's updated
@@ -194,26 +197,22 @@ public class ListItemCollector {
                     update.setRawDishSources(newSources);
                 }
             }
-            update.setUpdated(true);
-            update.setUsedCount(count - 1);
-            update.incrementRemovedCount();
+            updateItemOnRemove(update,count);
         }
 
-        tagToItem.put(tagId, update);
+        tagCollectedItem.put(tagId, update);
     }
 
     private void removeItemWithListSource(ItemEntity item, ListType listType) {
-        if (!tagToItem.containsKey(item.getTag().getId())) {
+        if (!tagCollectedItem.containsKey(item.getTag().getId())) {
             return;
         }
-        ItemEntity update = tagToItem.get(item.getTag().getId());
+        CollectedItem update = tagCollectedItem.get(item.getTag().getId());
 
         int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
         if (count <= 1) {
             // delete item outright
-            update.setDeleted(true);
-            update.incrementRemovedCount(update.getUsedCount());
-            update.setUsedCount(0);
+            removeItem(update);
             return;
         } else {
             // item has other usages remaining - updated, not deleted
@@ -225,19 +224,28 @@ public class ListItemCollector {
                     update.setRawListSources(newSources);
                 }
             }
-            update.setUpdated(true);
-            update.setUsedCount(count - 1);
-            update.incrementRemovedCount();
+            updateItemOnRemove(update,count);
         }
 
-        tagToItem.put(item.getTag().getId(), update);
+        tagCollectedItem.put(item.getTag().getId(), update);
 
     }
 
+    private void removeItem(CollectedItem item) {
+        item.setDeleted(true);
+        item.incrementRemovedCount(item.getUsedCount());
+        item.setUsedCount(0);
+    }
+
+    private void updateItemOnRemove(CollectedItem update, int count) {
+        update.setUpdated(true);
+        update.setUsedCount(count - 1);
+        update.incrementRemovedCount();
+    }
 
     public void addItem(ItemEntity item) {
         if (item.getTag() == null) {
-            freeTextItems.add(item);
+            freeTextItems.add(new CollectedItem(item));
             return;
         }
 
@@ -245,13 +253,13 @@ public class ListItemCollector {
     }
 
     private void addItemByTag(TagEntity tag, String sourceType, Long dishId) {
-        ItemEntity update = tagToItem.get(tag.getId());
+        CollectedItem update = tagCollectedItem.get(tag.getId());
 
         if (update == null) {
-            createItemFromTag(tag, null);
-            update = tagToItem.get(tag.getId());
+            update = createItemFromTag(tag, null);
         } else {
-            update.setUpdated(true);
+            //MM help here - check for removed
+            addTagForExistingItem(update);
         }
 
         int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
@@ -259,7 +267,7 @@ public class ListItemCollector {
         update.addRawListSource(sourceType);
         update.addRawDishSource(dishId);
         update.incrementAddCount();
-        tagToItem.put(tag.getId(), update);
+        tagCollectedItem.put(tag.getId(), update);
 
     }
 

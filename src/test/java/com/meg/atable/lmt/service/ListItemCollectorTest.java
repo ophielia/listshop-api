@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -28,19 +29,15 @@ public class ListItemCollectorTest {
         collector.addItem(item);
 
         // check results
-        List<ItemEntity> added = collector.getItemsAdded();
-        assertNotNull(added);
-        assertEquals(1, added.size());
-        List<ItemEntity> removed = collector.getItemsToDelete();
-        assertNotNull(removed);
-        assertEquals(0, removed.size());
-        List<ItemEntity> updated = collector.getItemsToUpdate();
-        assertNotNull(updated);
-        assertEquals(0, updated.size());
+        List<ItemEntity> changed = collector.getChangedItems();
+        assertNotNull(changed);
+        assertEquals(1, changed.size());
+
     }
 
     @Test
     public void testUpdate() {
+
         ItemEntity item = createItem(1L, 100L);
         ListItemCollector collector = new ListItemCollector(999L, Collections.singletonList(item));
 
@@ -49,15 +46,11 @@ public class ListItemCollectorTest {
         collector.addItem(itemUpdate);
 
         // check results
-        List<ItemEntity> added = collector.getItemsAdded();
-        assertNotNull(added);
-        assertEquals(0, added.size());
-        List<ItemEntity> removed = collector.getItemsToDelete();
-        assertNotNull(removed);
-        assertEquals(0, removed.size());
-        List<ItemEntity> updated = collector.getItemsToUpdate();
-        assertNotNull(updated);
-        assertEquals(1, updated.size());
+        List<ItemEntity> changed = collector.getChangedItems();
+        assertNotNull(changed);
+        assertEquals(1, changed.size());
+        assertNotNull(changed.get(0).getUpdatedOn() );
+
     }
 
     @Test
@@ -69,15 +62,10 @@ public class ListItemCollectorTest {
         collector.removeItemByTagId(1L, null, true);
 
         // check results
-        List<ItemEntity> added = collector.getItemsAdded();
-        assertNotNull(added);
-        assertEquals(0, added.size());
-        List<ItemEntity> removed = collector.getItemsToDelete();
-        assertNotNull(removed);
-        assertEquals(1, removed.size());
-        List<ItemEntity> updated = collector.getItemsToUpdate();
-        assertNotNull(updated);
-        assertEquals(0, updated.size());
+        List<ItemEntity> changed = collector.getChangedItems();
+        assertNotNull(changed);
+        assertEquals(1, changed.size());
+        assertNotNull(changed.get(0).getRemovedOn() );
     }
 
 
@@ -103,29 +91,26 @@ public class ListItemCollectorTest {
         collector.addItem(item2);
 
         // check results
-        List<ItemEntity> added = collector.getItemsAdded();
-        assertNotNull(added);
-        assertEquals(1, added.size());
-        List<ItemEntity> removed = collector.getItemsToDelete();
-        assertNotNull(removed);
-        assertEquals(1, removed.size());
-        List<ItemEntity> updated = collector.getItemsToUpdate();
-        assertNotNull(updated);
-        assertEquals(1, updated.size());
+        List<ItemEntity> changed = collector.getChangedItems();
+        assertNotNull(changed);
+        assertEquals(3, changed.size());
 
         // check dates
-        for (ItemEntity result : added) {
-            assertNotNull(result.getAddedOn());
-            assertTrue(result.getAddedOn().after(dateCheck));
+        int added =0;
+        int updated = 0;
+        int deleted = 0;
+        for (ItemEntity result : changed) {
+            if (result.getRemovedOn() != null) {
+                deleted++;
+            } else if (result.getUpdatedOn() != null) {
+                updated++;
+            } else if (result.getAddedOn() != null) {
+                added++;
+            }
         }
-        for (ItemEntity result : removed) {
-            assertNotNull(result.getRemovedOn());
-            assertTrue(result.getRemovedOn().after(dateCheck));
-        }
-        for (ItemEntity result : updated) {
-            assertNotNull(result.getUpdatedOn());
-            assertTrue(result.getUpdatedOn().after(dateCheck));
-        }
+        assertTrue(deleted > 0);
+        assertTrue(added > 0);
+        assertTrue(updated > 0);
     }
 
     private ItemEntity createItem(Long tagId, Long itemId) {

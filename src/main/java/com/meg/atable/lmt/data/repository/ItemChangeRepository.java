@@ -1,11 +1,11 @@
 package com.meg.atable.lmt.data.repository;
 
-import com.meg.atable.lmt.service.ListItemCollector;
+import com.meg.atable.lmt.service.ItemCollector;
 
 /**
  * Created by margaretmartin on 05/04/2018.
  */
 
 public interface ItemChangeRepository {
-    void saveItemChanges(ListItemCollector collector, Long userId);
+    void saveItemChanges(ItemCollector collector, Long userId);
 }

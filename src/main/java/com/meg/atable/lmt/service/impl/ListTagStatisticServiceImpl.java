@@ -4,6 +4,7 @@ import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ListTagStatistic;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.repository.ListTagStatisticRepository;
+import com.meg.atable.lmt.service.CollectedItem;
 import com.meg.atable.lmt.service.ListItemCollector;
 import com.meg.atable.lmt.service.ListTagStatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,9 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
 
         // go through list tags - return list of stats
         List<ListTagStatistic> statList = new ArrayList<>();
-        List<ItemEntity> itemList = collector.getTagItems();
+        List<CollectedItem> itemList = collector.getCollectedTagItems();
 
-        for (ItemEntity item : itemList) {
+        for (CollectedItem item : itemList) {
             if (!item.isUpdated() & !item.isDeleted()) {
                 continue;
             }
@@ -48,7 +49,7 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
                 }
                 ListTagStatistic stat = addOrRemoveItem(statLkup, userId, tag.getId(), item.getAddCount(), 0);
                 statList.add(stat);
-            } else if (item.isRemoved()) {
+            } else if (item.isDeleted()) {
                 if (statLkup.containsKey(tag.getId())) {
                     ListTagStatistic stat = statLkup.get(tag.getId());
                     boolean frequentCrossOff = isFrequentCrossOff(stat);
