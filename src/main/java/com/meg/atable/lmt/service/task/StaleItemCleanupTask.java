@@ -2,6 +2,8 @@ package com.meg.atable.lmt.service.task;
 
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.repository.ItemRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,6 +19,9 @@ import java.util.List;
 @Component
 public class StaleItemCleanupTask {
 
+    private static final Logger logger = LogManager.getLogger(StaleItemCleanupTask.class);
+
+
     @Value("${component.staleitemcleanuptask.items.deleted.after.days}")
     int deleteAfterDays = 11;
 
@@ -25,12 +30,15 @@ public class StaleItemCleanupTask {
 
     @Scheduled(cron = "0 0 8,13 * * ?")
     public void removeItemsByRemovedBeforeDate() {
-        //MM need logging here
+        logger.info("About to delete stale tags from item table.");
         LocalDate removedBeforeDate = LocalDate.now().minusDays(deleteAfterDays);
 
         List<ItemEntity> itemsToRemove = itemRepository.findByRemovedOnBefore(Date.valueOf(removedBeforeDate));
+    int removeCount = itemsToRemove != null ? itemsToRemove.size() : 0;
+        logger.info("... found [" + removeCount + "] items to delete.");
 
-        itemRepository.deleteAll(itemsToRemove);
+    itemRepository.deleteAll(itemsToRemove);
+        logger.info("StaleItemCleanupTask complete.");
     }
 
 

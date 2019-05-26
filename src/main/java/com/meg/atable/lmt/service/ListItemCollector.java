@@ -13,75 +13,18 @@ import java.util.stream.Stream;
 /**
  * Created by margaretmartin on 02/11/2017.
  */
-public class ListItemCollector implements ItemCollector {
-    private final Long listId;
-    private Map<Long, CollectedItem> tagCollectedItem;
-    private List<CollectedItem> freeTextItems;
+public class ListItemCollector extends AbstractItemCollector {
 
-    private Predicate<CollectedItem> isChanged = i -> i.isChanged();
-
-    public ListItemCollector(Long savedNewListId, List<ItemEntity> items) {
-        this.listId = savedNewListId;
-        tagCollectedItem = new HashMap<>();
-        freeTextItems = new ArrayList<>();
-        if (items != null) {
-            items.stream().forEach(item -> {
-                if (item.getTag() != null) {
-                    tagCollectedItem.put(item.getTag().getId(), new CollectedItem(item));
-                } else {
-                    freeTextItems.add(new CollectedItem(item));
-                }
-            });
-        }
+    public ListItemCollector(Long listId, List<ItemEntity> items) {
+        super(listId, items);
     }
 
     public ListItemCollector(Long listId) {
-        this.listId = listId;
-        tagCollectedItem = new HashMap<>();
-        freeTextItems = new ArrayList<>();
+        super(listId);
     }
 
 
-    @Override
-    public List<ItemEntity> getAllItems() {
-        return Stream.concat(tagCollectedItem.values().stream()
-                ,freeTextItems.stream())
-        .map(CollectedItem::getItem)
-                .collect(Collectors.toList());
-    }
 
-
-    @Override
-    public List<CollectedItem> getCollectedTagItems() {
-        return tagCollectedItem.values()
-                .stream().filter(i -> i.getTag() != null)
-                .collect(Collectors.toList());
-    }
-
-
-    @Override
-    public List<Long> getAllTagIds() {
-        return tagCollectedItem.values().stream()
-                .map(i -> i.getItem().getTag().getId())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean hasChanges() {
-        Optional<CollectedItem> changeOpt = tagCollectedItem.values().stream()
-                .filter(isChanged)
-                .findFirst();
-
-        return changeOpt.isPresent();
-    }
-
-    @Override
-    public List<ItemEntity> getChangedItems() {
-        return tagCollectedItem.values().stream()
-                .filter(isChanged)
-                .map(CollectedItem::getItem)
-                .collect(Collectors.toList());
-    }
 
     // list collector
     public void addTags(List<TagEntity> tagEntityList, Long dishId, String listSource) {
@@ -105,9 +48,9 @@ public class ListItemCollector implements ItemCollector {
         if (item.getTag() == null) {
             CollectedItem copied = copyItem(item);
             // free text item
-            freeTextItems.add(copied);
-        } else if (tagCollectedItem.containsKey(item.getTag().getId())) {
-            CollectedItem update = tagCollectedItem.get(item.getTag().getId());
+            getFreeTextItemList().add(copied);
+        } else if (getTagCollectedMap().containsKey(item.getTag().getId())) {
+            CollectedItem update = getTagCollectedMap().get(item.getTag().getId());
             int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
             update.setUsedCount(count + 1);
             update.addRawListSource(sourceType);
@@ -116,7 +59,7 @@ public class ListItemCollector implements ItemCollector {
             if (incrementStats) {
                 update.incrementAddCount(Math.max(item.getUsedCount(), 1));
             }
-            tagCollectedItem.put(item.getTag().getId(), update);
+            getTagCollectedMap().put(item.getTag().getId(), update);
         } else {
             CollectedItem copied = copyItem(item);
             int count = item.getUsedCount() != null ? item.getUsedCount() : 0;
@@ -127,7 +70,7 @@ public class ListItemCollector implements ItemCollector {
             if (incrementStats) {
                 copied.incrementAddCount(Math.max(1, item.getUsedCount()));
             }
-            tagCollectedItem.put(item.getTag().getId(), copied);
+            getTagCollectedMap().put(item.getTag().getId(), copied);
         }
     }
 
@@ -135,7 +78,7 @@ public class ListItemCollector implements ItemCollector {
         CollectedItem item = new CollectedItem(new ItemEntity());
 
         item.setTag(tag);
-        item.setListId(listId);
+        item.setListId(getListId());
         item.addRawDishSource(dishId);
         item.setUsedCount(0);
         item.setIsAdded(true);
@@ -170,17 +113,17 @@ public class ListItemCollector implements ItemCollector {
         // resetting count when adding from another list
         copied.setUsedCount(item.getUsedCount());
         copied.setTag(item.getTag());
-        copied.setListId(listId);
+        copied.setListId(getListId());
         copied.setFreeText(item.getFreeText());
         copied.setAddedOn(new Date());
         return copied;
     }
 
     public void removeItemByTagId(Long tagId, Long dishId, Boolean removeEntireItem) {
-        if (!tagCollectedItem.containsKey(tagId)) {
+        if (!getTagCollectedMap().containsKey(tagId)) {
             return;
         }
-        CollectedItem update = tagCollectedItem.get(tagId);
+        CollectedItem update = getTagCollectedMap().get(tagId);
 
         int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
         if (count <= 1 || removeEntireItem) {
@@ -200,14 +143,14 @@ public class ListItemCollector implements ItemCollector {
             updateItemOnRemove(update,count);
         }
 
-        tagCollectedItem.put(tagId, update);
+        getTagCollectedMap().put(tagId, update);
     }
 
     private void removeItemWithListSource(ItemEntity item, ListType listType) {
-        if (!tagCollectedItem.containsKey(item.getTag().getId())) {
+        if (!getTagCollectedMap().containsKey(item.getTag().getId())) {
             return;
         }
-        CollectedItem update = tagCollectedItem.get(item.getTag().getId());
+        CollectedItem update = getTagCollectedMap().get(item.getTag().getId());
 
         int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
         if (count <= 1) {
@@ -227,7 +170,7 @@ public class ListItemCollector implements ItemCollector {
             updateItemOnRemove(update,count);
         }
 
-        tagCollectedItem.put(item.getTag().getId(), update);
+        getTagCollectedMap().put(item.getTag().getId(), update);
 
     }
 
@@ -245,7 +188,7 @@ public class ListItemCollector implements ItemCollector {
 
     public void addItem(ItemEntity item) {
         if (item.getTag() == null) {
-            freeTextItems.add(new CollectedItem(item));
+            getFreeTextItemList().add(new CollectedItem(item));
             return;
         }
 
@@ -253,12 +196,11 @@ public class ListItemCollector implements ItemCollector {
     }
 
     private void addItemByTag(TagEntity tag, String sourceType, Long dishId) {
-        CollectedItem update = tagCollectedItem.get(tag.getId());
+        CollectedItem update = getTagCollectedMap().get(tag.getId());
 
         if (update == null) {
             update = createItemFromTag(tag, null);
         } else {
-            //MM help here - check for removed
             addTagForExistingItem(update);
         }
 
@@ -267,7 +209,7 @@ public class ListItemCollector implements ItemCollector {
         update.addRawListSource(sourceType);
         update.addRawDishSource(dishId);
         update.incrementAddCount();
-        tagCollectedItem.put(tag.getId(), update);
+        getTagCollectedMap().put(tag.getId(), update);
 
     }
 

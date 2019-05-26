@@ -475,13 +475,16 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     // is there to build the interface, so that MergeConflicts can be added later
     // less painfully.  Right now just going for basic functionality - taking the
     // last modified item.
-    public List<MergeConflicts> mergeFromClient(String userName, MergeList mergeList) {
+    public List<MergeResult> mergeFromClient(String userName, MergeList mergeList) {
     //MM in progress
 
         // get active list for user
+        ShoppingListEntity list = getActiveListForUser(userName);
 
         // ensure active list id equals mergeList
-
+        if (list.getId() != mergeList.getListId()) {
+            logger.error("Trying to merge list which is not currently active! username [" + userName + "], active_id [" + list.getId() + "], merge_list_id [" + mergeList.getListId() + "]");
+        }
         // create MergeCollector from list
 
         // merge from client

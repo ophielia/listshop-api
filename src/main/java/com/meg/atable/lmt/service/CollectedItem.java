@@ -3,6 +3,7 @@ package com.meg.atable.lmt.service;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -25,6 +26,7 @@ public class CollectedItem {
     private boolean isAdded;
 
     private boolean isChanged;
+    private boolean fromClient = false;
 
     public CollectedItem(ItemEntity itemEntity) {
         item = itemEntity;
@@ -268,4 +270,35 @@ public class CollectedItem {
         this.removedCount = this.removedCount + removeCount;
     }
 
+
+    public void setFromClient(boolean fromClient) {
+        this.fromClient = fromClient;
+    }
+
+    public boolean getFromClient() {
+        return fromClient;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        //MM need some work here
+        // needs to compare used count, and all dates of item.
+        // later will need to consider dish/list sources
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CollectedItem that = (CollectedItem) o;
+        return isUpdated == that.isUpdated &&
+                isRemoved == that.isRemoved &&
+                tagId.equals(that.tagId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tagId, isUpdated, isRemoved);
+    }
+
+    public LocalDate getStatusDate() {
+        //MM implement this
+        return null;
+    }
 }
