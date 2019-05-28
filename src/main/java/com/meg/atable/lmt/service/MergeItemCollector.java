@@ -5,6 +5,8 @@ import com.meg.atable.lmt.api.model.ListType;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
+import java.time.Duration;
+import java.time.Period;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +26,7 @@ public class MergeItemCollector extends AbstractItemCollector {
         super(listId);
     }
 
+    // merge collector
     public void addMergeItems(List<ItemEntity> mergeItems) {
         if (mergeItems == null || mergeItems.isEmpty()) {
             return;
@@ -39,9 +42,10 @@ public class MergeItemCollector extends AbstractItemCollector {
                 // if merge item matches an item in the tagCollectedItems
                 mergeItem.setFromClient(true);
                 //  check change
-                if (!serverItem.equals(mergeItem)) {
+                if (!serverItem.equalsWithWindow(2,mergeItem)) {  //MM parameterize this window second
                     //  if change merge
                     CollectedItem merged = mergeChangedItems(serverItem, mergeItem);
+                    merged.setChanged(true);
                     getTagCollectedMap().put(tagId, merged);
                 }
                 //  remove from iterator
@@ -52,38 +56,81 @@ public class MergeItemCollector extends AbstractItemCollector {
         // go through unmatched merge items, adding them to the list
         for (ItemEntity newMergeItem : mergeItems ) {
             // create new collected item
-
-            // copy values into new item from newMergeItem
+            CollectedItem item = new CollectedItem(newMergeItem);
 
             // set added date, and changed
+            item.setIsAdded(true);
 
             // add to TagCollectedMap
+            if (newMergeItem.getTag() != null) {
+                getTagCollectedMap().put(newMergeItem.getTag().getId(), item);
+            } else {
+                getFreeTextItemList().add(item);
+            }
         }
 
     }
 
     private CollectedItem mergeChangedItems(CollectedItem serverItem, CollectedItem mergeItem) {
-        // MM implement this
+        Duration period = Duration.between(serverItem.getStatusDate(), mergeItem.getStatusDate());
 
-        // return most recently changed item
-
-        return null;
-    }
-
-
-    // merge collector
-    public void addTags(List<TagEntity> tagEntityList, Long dishId, String listSource) {
-        for (TagEntity tag : tagEntityList) {
-            addItemByTag(tag, listSource, dishId);
+        if (period.isNegative()) {
+            return serverItem;
         }
+        return mergeItem;
     }
 
-    public void copyExistingItemsIntoList(String sourceType, List<ItemEntity> items, boolean incrementStats) {
-        if (items == null) {
-            return;
-        }
-        items.stream().forEach(item -> copyOrUpdateExistingItem(item, sourceType, incrementStats));
+
+
+
+
+
+    /*
+        private CollectedItem createItemFromTag(TagEntity tag, Long dishId) {
+        CollectedItem item = new CollectedItem(new ItemEntity());
+
+        item.setTag(tag);
+        item.setListId(getListId());
+        item.addRawDishSource(dishId);
+        item.setUsedCount(0);
+        item.setIsAdded(true);
+
+        return item;
     }
+
+    private void addTagForExistingItem(CollectedItem item) {
+        // if this tag has been previously removed, we need to clear that information - because
+        // it's now being added.
+        if (item.isRemoved()) {
+            item.setRemoved(false);
+        }
+        item.setUpdated(true);
+    }
+
+
+    private CollectedItem copyItem(ItemEntity item) {
+        CollectedItem copied = new CollectedItem(new ItemEntity());
+        // resetting count when adding from another list
+        copied.setUsedCount(item.getUsedCount());
+        copied.setTag(item.getTag());
+        copied.setListId(getListId());
+        copied.setFreeText(item.getFreeText());
+        copied.setAddedOn(new Date());
+        return copied;
+    }
+
+    private void removeItem(CollectedItem item) {
+        item.setRemoved(true);
+        item.incrementRemovedCount(item.getUsedCount());
+        item.setUsedCount(0);
+    }
+
+    private void updateItemOnRemove(CollectedItem update, int count) {
+        update.setUpdated(true);
+        update.setUsedCount(count - 1);
+        update.incrementRemovedCount();
+    }
+
 
     private void copyOrUpdateExistingItem(ItemEntity item, String sourceType, boolean incrementStats) {
         // do not copy crossed off items
@@ -117,51 +164,6 @@ public class MergeItemCollector extends AbstractItemCollector {
             }
             getTagCollectedMap().put(item.getTag().getId(), copied);
         }
-    }
-
-    private CollectedItem createItemFromTag(TagEntity tag, Long dishId) {
-        CollectedItem item = new CollectedItem(new ItemEntity());
-
-        item.setTag(tag);
-        item.setListId(getListId());
-        item.addRawDishSource(dishId);
-        item.setUsedCount(0);
-        item.setIsAdded(true);
-
-        return item;
-    }
-
-    private void addTagForExistingItem(CollectedItem item) {
-        // if this tag has been previously removed, we need to clear that information - because
-        // it's now being added.
-        if (item.isRemoved()) {
-            item.setRemoved(false);
-        }
-        item.setUpdated(true);
-    }
-
-    public void removeTagsForDish(Long dishId, List<TagEntity> tagsToRemove) {
-        for (TagEntity tag : tagsToRemove) {
-            removeItemByTagId(tag.getId(), dishId, false);
-        }
-    }
-
-    public void removeItemsFromList(ListType listType, List<ItemEntity> items) {
-        for (ItemEntity item : items) {
-            removeItemWithListSource(item, listType);
-        }
-    }
-
-
-    private CollectedItem copyItem(ItemEntity item) {
-        CollectedItem copied = new CollectedItem(new ItemEntity());
-        // resetting count when adding from another list
-        copied.setUsedCount(item.getUsedCount());
-        copied.setTag(item.getTag());
-        copied.setListId(getListId());
-        copied.setFreeText(item.getFreeText());
-        copied.setAddedOn(new Date());
-        return copied;
     }
 
     public void removeItemByTagId(Long tagId, Long dishId, Boolean removeEntireItem) {
@@ -219,26 +221,6 @@ public class MergeItemCollector extends AbstractItemCollector {
 
     }
 
-    private void removeItem(CollectedItem item) {
-        item.setRemoved(true);
-        item.incrementRemovedCount(item.getUsedCount());
-        item.setUsedCount(0);
-    }
-
-    private void updateItemOnRemove(CollectedItem update, int count) {
-        update.setUpdated(true);
-        update.setUsedCount(count - 1);
-        update.incrementRemovedCount();
-    }
-
-    public void addItem(ItemEntity item) {
-        if (item.getTag() == null) {
-            getFreeTextItemList().add(new CollectedItem(item));
-            return;
-        }
-
-        addItemByTag(item.getTag(), null, null);
-    }
 
     private void addItemByTag(TagEntity tag, String sourceType, Long dishId) {
         CollectedItem update = getTagCollectedMap().get(tag.getId());
@@ -246,7 +228,6 @@ public class MergeItemCollector extends AbstractItemCollector {
         if (update == null) {
             update = createItemFromTag(tag, null);
         } else {
-            //MM help here - check for removed
             addTagForExistingItem(update);
         }
 
@@ -260,7 +241,55 @@ public class MergeItemCollector extends AbstractItemCollector {
     }
 
 
-    public void removeFreeTextItem(ItemEntity itemEntity) {
-        // TODO implement this
+        public void addTags(List<TagEntity> tagEntityList, Long dishId, String listSource) {
+        for (TagEntity tag : tagEntityList) {
+            addItemByTag(tag, listSource, dishId);
+        }
     }
+
+    public void copyExistingItemsIntoList(String sourceType, List<ItemEntity> items, boolean incrementStats) {
+        if (items == null) {
+            return;
+        }
+        items.stream().forEach(item -> copyOrUpdateExistingItem(item, sourceType, incrementStats));
+    }
+
+    public void removeTagsForDish(Long dishId, List<TagEntity> tagsToRemove) {
+        for (TagEntity tag : tagsToRemove) {
+            removeItemByTagId(tag.getId(), dishId, false);
+        }
+    }
+
+    public void removeItemsFromList(ListType listType, List<ItemEntity> items) {
+        for (ItemEntity item : items) {
+            removeItemWithListSource(item, listType);
+        }
+    }
+
+    private CollectedItem copyItem(CollectedItem fromItem, CollectedItem toItem) {
+        CollectedItem copied = new CollectedItem(new ItemEntity());
+        // resetting count when adding from another list
+        copied.setUsedCount(item.getUsedCount());
+        copied.setTag(item.getTag());
+        copied.setListId(getListId());
+        copied.setFreeText(item.getFreeText());
+        copied.setAddedOn(new Date());
+        return copied;
+    }
+
+    public void addItem(ItemEntity item) {
+        if (item.getTag() == null) {
+            getFreeTextItemList().add(new CollectedItem(item));
+            return;
+        }
+
+        addItemByTag(item.getTag(), null, null);
+    }
+
+    public void removeFreeTextItem(ItemEntity itemEntity) {
+
+    }
+
+     */
+
 }

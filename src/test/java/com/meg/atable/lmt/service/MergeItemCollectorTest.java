@@ -1,124 +1,111 @@
 package com.meg.atable.lmt.service;
 
+import com.meg.atable.Application;
 import com.meg.atable.lmt.data.entity.ItemEntity;
+import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
+import com.meg.atable.lmt.service.tag.TagService;
+import com.meg.atable.test.TestConstants;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
-@RunWith(SpringRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
+@Transactional
+@Sql(value = {"/sql/com/meg/atable/lmt/service/MergeItemCollectorTest-rollback.sql",
+        "/sql/com/meg/atable/lmt/service/MergeItemCollectorTest.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/sql/com/meg/atable/lmt/service/MergeItemCollectorTest-rollback.sql"},
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class MergeItemCollectorTest {
 
+    @Autowired
+    private ShoppingListService shoppingListService;
+    @Autowired
+    private TagService tagService;
+
 
     @Test
-    public void testAdd() {
-        ListItemCollector collector = new ListItemCollector(999L, new ArrayList<>());
-        ItemEntity item = createItem(1L, 100L);
+    public void testLoadTestList() {
+        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
 
-        // tested method
-        collector.addItem(item);
-
-        // check results
-        List<ItemEntity> changed = collector.getChangedItems();
-        assertNotNull(changed);
-        assertEquals(1, changed.size());
-
-    }
-
-    @Test
-    public void testUpdate() {
-
-        ItemEntity item = createItem(1L, 100L);
-        ListItemCollector collector = new ListItemCollector(999L, Collections.singletonList(item));
-
-        // tested method
-        ItemEntity itemUpdate = createItem(1L, 100L);
-        collector.addItem(itemUpdate);
-
-        // check results
-        List<ItemEntity> changed = collector.getChangedItems();
-        assertNotNull(changed);
-        assertEquals(1, changed.size());
-        assertNotNull(changed.get(0).getUpdatedOn() );
-
-    }
-
-    @Test
-    public void testDelete() {
-        ItemEntity item = createItem(1L, 100L);
-        ListItemCollector collector = new ListItemCollector(999L, Collections.singletonList(item));
-
-        // tested method
-        collector.removeItemByTagId(1L, null, true);
-
-        // check results
-        List<ItemEntity> changed = collector.getChangedItems();
-        assertNotNull(changed);
-        assertEquals(1, changed.size());
-        assertNotNull(changed.get(0).getRemovedOn() );
+        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
+        // blow up test
+        Assert.assertTrue(1 == 1);
     }
 
 
     @Test
-    public void testAddUpdateDelete() {
-        ItemEntity item = createItem(1L, 100L);
-        ItemEntity item2 = createItem(2L, 200L);
-        List<ItemEntity> items = new ArrayList<>();
-        items.add(item);
-        items.add(item2);
+    public void testMergeWithEmpty() {
+        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
 
-        Date dateCheck = new Date();
+        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
 
-        ListItemCollector collector = new ListItemCollector(999L, items);
+        collector.addMergeItems(new ArrayList<>());
 
-        // tested method(s)
-        ItemEntity item3 = createItem(3L, 300L);
-        // add item 3
-        collector.addItem(item3);
-        // remove item
-        collector.removeItemByTagId(1L, null, true);
-        // update item 2 (by adding it again)
-        collector.addItem(item2);
-
-        // check results
-        List<ItemEntity> changed = collector.getChangedItems();
-        assertNotNull(changed);
-        assertEquals(3, changed.size());
-
-        // check dates
-        int added =0;
-        int updated = 0;
-        int deleted = 0;
-        for (ItemEntity result : changed) {
-            if (result.getRemovedOn() != null) {
-                deleted++;
-            } else if (result.getUpdatedOn() != null) {
-                updated++;
-            } else if (result.getAddedOn() != null) {
-                added++;
-            }
-        }
-        assertTrue(deleted > 0);
-        assertTrue(added > 0);
-        assertTrue(updated > 0);
+        Assert.assertFalse(collector.hasChanges());
+        Assert.assertEquals(4, collector.getAllItems().size());
     }
 
-    private ItemEntity createItem(Long tagId, Long itemId) {
-        TagEntity tag = new TagEntity();
-        tag.setId(tagId);
-        ItemEntity item = new ItemEntity();
-        item.setId(itemId);
-        item.setTag(tag);
-        return item;
+    @Test
+    public void testUpdatesToItem() {
+        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
 
+        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
+        ItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
+        updated.setUpdatedOn(new Date());
+        List<ItemEntity> mergeItems = new ArrayList<>();
+        mergeItems.add(updated);
+
+        collector.addMergeItems(mergeItems);
+
+        Assert.assertTrue(collector.hasChanges());
+        Assert.assertEquals(1, collector.getChangedItems().size());
+        Assert.assertEquals(4, collector.getAllItems().size());
+    }
+
+    @Test
+    public void testAddingNewItem() {
+        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        TagEntity tagEntity = tagService.getTagById(45L);
+
+        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
+        ItemEntity updated = new ItemEntity();
+        updated.setTag(tagEntity);
+        List<ItemEntity> mergeItems = new ArrayList<>();
+        mergeItems.add(updated);
+
+        collector.addMergeItems(mergeItems);
+
+        Assert.assertTrue(collector.hasChanges());
+        Assert.assertEquals(1, collector.getChangedItems().size());
+        Assert.assertEquals(5, collector.getAllItems().size());
+    }
+
+
+    private ItemEntity copyItemForTagId(long tagId, List<ItemEntity> items) {
+        ItemEntity copyFrom = items.stream().filter(i -> i.getTag().getId().equals(tagId)).findFirst().get();
+        ItemEntity returnItem = new ItemEntity();
+        returnItem.setId(copyFrom.getId());
+        returnItem.setListId(copyFrom.getListId());
+        returnItem.setAddedOn(copyFrom.getAddedOn());
+        returnItem.setUpdatedOn(copyFrom.getUpdatedOn());
+        returnItem.setCrossedOff(copyFrom.getCrossedOff());
+        returnItem.setRemovedOn(copyFrom.getRemovedOn());
+        returnItem.setUsedCount(copyFrom.getUsedCount());
+        returnItem.setTag(copyFrom.getTag());
+        return returnItem;
     }
 }

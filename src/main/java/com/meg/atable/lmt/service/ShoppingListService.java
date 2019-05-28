@@ -16,6 +16,8 @@ public interface ShoppingListService {
 
     List<ShoppingListEntity> getListsByUsername(String userName);
 
+    ShoppingListEntity getActiveListForUser(String name, boolean includeRemoved);
+
     ShoppingListEntity createList(String userName, ShoppingListEntity shoppingListEntity);
 
     ShoppingListEntity createList(String userName, ListGenerateProperties listGeneratProperties) throws ShoppingListException;

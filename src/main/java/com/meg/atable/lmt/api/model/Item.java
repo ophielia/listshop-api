@@ -34,6 +34,7 @@ public class Item implements Comparable {
     @JsonProperty("list_id")
     private String listId;
 
+    @JsonProperty("tag_id")
     private String tagId;
 
     @JsonProperty("used_count")
@@ -108,12 +109,10 @@ public class Item implements Comparable {
         return this;
     }
 
-    @JsonIgnore
     public String getTagId() {
         return tagId;
     }
 
-    @JsonProperty("tag_id")
     public void setTagId(String tagId) {
         this.tagId = tagId;
     }

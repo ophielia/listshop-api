@@ -3,7 +3,10 @@ package com.meg.atable.lmt.service;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.*;
 
 /**
@@ -27,6 +30,8 @@ public class CollectedItem {
 
     private boolean isChanged;
     private boolean fromClient = false;
+
+    private long secondComparisonWindow = 2;
 
     public CollectedItem(ItemEntity itemEntity) {
         item = itemEntity;
@@ -82,36 +87,77 @@ public class CollectedItem {
         this.item.setUsedCount(usedCount);
     }
 
-    public Date getAddedOn() {
-        return item.getAddedOn();
+    public LocalDateTime getAddedOn() {
+        if (item.getAddedOn() == null) {
+            return null;
+        }
+        return new java.sql.Timestamp(
+                item.getAddedOn().getTime()).toLocalDateTime();
     }
 
-    public void setAddedOn(Date addedOn) {
-        this.item.setAddedOn(addedOn);
+    public void setAddedOn(LocalDateTime addedOn) {
+        if (addedOn == null) {
+            this.item.setAddedOn(null);
+            return;
+        }
+        this.item.setAddedOn(java.sql.Timestamp.valueOf(addedOn));
     }
 
-    public Date getCrossedOff() {
-        return item.getCrossedOff();
+    public LocalDateTime getCrossedOff() {
+        if (item.getCrossedOff() == null) {
+            return null;
+        }
+        return new java.sql.Timestamp(
+                item.getCrossedOff().getTime()).toLocalDateTime();
+
     }
 
-    public void setCrossedOff(Date crossedOff) {
-        this.item.setCrossedOff(crossedOff);
+    public void setCrossedOff(LocalDateTime crossedOff) {
+        if (crossedOff == null) {
+            this.item.setCrossedOff(null);
+            return;
+        }
+        this.item.setCrossedOff(java.sql.Timestamp.valueOf(crossedOff));
     }
 
-    public Date getRemovedOn() {
-        return item.getRemovedOn();
+    public LocalDateTime getRemovedOn() {
+
+            if (item.getRemovedOn() == null) {
+                return null;
+            }
+            return new java.sql.Timestamp(
+                    item.getRemovedOn().getTime()).toLocalDateTime();
+
+
     }
 
-    public void setRemovedOn(Date removedOn) {
-        this.item.setRemovedOn(removedOn);
+    public void setRemovedOn(LocalDateTime removedOn) {
+        if (removedOn == null) {
+            this.item.setRemovedOn(null);
+            return;
+        }
+        this.item.setRemovedOn(java.sql.Timestamp.valueOf(removedOn));
     }
 
-    public Date getUpdatedOn() {
-        return item.getUpdatedOn();
-    }
+    public LocalDateTime getUpdatedOn()
+        {
 
-    public void setUpdatedOn(Date updatedOn) {
-        this.item.setUpdatedOn(updatedOn);
+            if ( item.getUpdatedOn() == null) {
+                return null;
+            }
+            return new java.sql.Timestamp(item.getUpdatedOn().getTime()).toLocalDateTime();
+
+
+        }
+
+
+    public void setUpdatedOn(LocalDateTime updatedOn)
+    {
+        if (updatedOn == null) {
+            this.item.setUpdatedOn(null);
+            return;
+        }
+        this.item.setUpdatedOn(java.sql.Timestamp.valueOf(updatedOn));
     }
 
     public String getFreeText() {
@@ -202,7 +248,7 @@ public class CollectedItem {
 
     public void setRemoved(boolean removed) {
         if (removed) {
-            this.setRemovedOn(new Date());
+            this.setRemovedOn(LocalDateTime.now());
             this.isRemoved = true;
         } else {
             this.setRemovedOn(null);
@@ -231,6 +277,24 @@ public class CollectedItem {
 
     }
     // convenience methods
+    // get status
+    private CollectedItemStatus getStatus() {
+        if (item.getRemovedOn() != null) {
+            return CollectedItemStatus.REMOVED;
+        }
+        if (item.getAddedOn() != null &&
+                item.getRemovedOn() == null &&
+                item.getCrossedOff() == null &&
+                item.getUpdatedOn() == null) {
+            return CollectedItemStatus.NEW;
+        }
+        if (item.getCrossedOff() != null) {
+            return CollectedItemStatus.CROSSED_OFF;
+        }
+        return CollectedItemStatus.UPDATED;
+    }
+
+
     public void addRawDishSource(Long dishId) {
         if (dishId == null) {
             return;
@@ -281,15 +345,49 @@ public class CollectedItem {
 
     @Override
     public boolean equals(Object o) {
-        //MM need some work here
-        // needs to compare used count, and all dates of item.
-        // later will need to consider dish/list sources
+        // this is just a basic comparison
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CollectedItem that = (CollectedItem) o;
+
+
         return isUpdated == that.isUpdated &&
                 isRemoved == that.isRemoved &&
                 tagId.equals(that.tagId);
+    }
+
+    public boolean equalsWithWindow(int secondCount, Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CollectedItem that = (CollectedItem) o;
+
+        if (dateEquals(2,getStatusDate(), that.getStatusDate())) {
+            return true;
+        }
+
+        return  dateEquals(secondCount,getAddedOn() ,that.getAddedOn()) &&
+                dateEquals(secondCount,getUpdatedOn() ,that.getUpdatedOn()) &&
+                dateEquals(secondCount,getRemovedOn() ,that.getRemovedOn()) &&
+                dateEquals(secondCount,getCrossedOff() ,that.getCrossedOff()) &&
+                getUsedCount() != null && getUsedCount().equals(that.getUsedCount()) &&
+                getFreeText() != null && getFreeText().equals(that.getFreeText()) &&
+             //           getRawDishSources() != null && getRawDishSources().equals(that.getRawDishSources()) &&
+               //         getRawListSources() != null && getRawListSources().equals(that.getRawListSources()) &&
+        tagId.equals(that.tagId) ;
+    }
+
+    private boolean dateEquals(int secondCount, LocalDateTime date1, LocalDateTime date2) {
+        if (date1 == null && date2 == null) {
+            return true;
+        } else if (date1 != null && date2 == null) {
+            return false;
+        } else if (date2 != null && date1 == null) {
+            return false;
+        }
+
+        Duration period = Duration.between(date1, date2);
+        long milliSeconds = Math.abs(period.toMillis());
+        return secondCount * 1000 > milliSeconds;
     }
 
     @Override
@@ -297,8 +395,18 @@ public class CollectedItem {
         return Objects.hash(tagId, isUpdated, isRemoved);
     }
 
-    public LocalDate getStatusDate() {
-        //MM implement this
-        return null;
+
+    public LocalDateTime getStatusDate() {
+        switch (getStatus()) {
+            case NEW:
+                return getAddedOn();
+            case REMOVED:
+                return getRemovedOn();
+            case UPDATED:
+                return getUpdatedOn();
+            case CROSSED_OFF:
+                return getCrossedOff();
+        }
+        return getAddedOn();
     }
 }

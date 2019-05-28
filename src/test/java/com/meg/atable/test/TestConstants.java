@@ -84,6 +84,7 @@ public final class TestConstants {
     public static final Long DISH_4_ID = 503L; // dummy dish, test only
     public static final Long DISH_5_ID = 62L;   // Fish Tacos
     public static final Long DISH_6_ID = 603L; // for testing increment rating
+    public static final Long DISH_7_ID = 500L; // dish belongs to user 1
 
     public static final Long TARGET_3_SLOT_ID = 506L;
 

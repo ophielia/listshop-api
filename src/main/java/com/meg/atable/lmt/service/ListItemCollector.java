@@ -5,6 +5,7 @@ import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -115,7 +116,7 @@ public class ListItemCollector extends AbstractItemCollector {
         copied.setTag(item.getTag());
         copied.setListId(getListId());
         copied.setFreeText(item.getFreeText());
-        copied.setAddedOn(new Date());
+        copied.setAddedOn(LocalDateTime.now());
         return copied;
     }
 

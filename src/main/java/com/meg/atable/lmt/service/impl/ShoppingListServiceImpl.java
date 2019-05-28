@@ -73,9 +73,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return shoppingListRepository.findByUserId(user.getId());
     }
 
-
     @Override
     public ShoppingListEntity getActiveListForUser(String name) {
+        return getActiveListForUser(name, false);
+    }
+
+    @Override
+    public ShoppingListEntity getActiveListForUser(String name, boolean includeRemoved) {
         UserEntity user = userService.getUserByUserEmail(name);
 
         // get all lists
@@ -103,7 +107,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // if the list id exists, retreive and return the list belonging to it
         if (listIdToRetrieve != null) {
-            return getListById(name, listIdToRetrieve);
+            return getListById(name, listIdToRetrieve, includeRemoved);
         }
         // if the list doesn't exist, return a new list
         return createListForUser(name, ListType.ActiveList);
@@ -486,13 +490,24 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             logger.error("Trying to merge list which is not currently active! username [" + userName + "], active_id [" + list.getId() + "], merge_list_id [" + mergeList.getListId() + "]");
         }
         // create MergeCollector from list
+        MergeItemCollector mergeCollector = new MergeItemCollector(list.getId(),list.getItems());
 
         // merge from client
-        List<ItemEntity> mergeItems = mergeList.getMergeItems().stream()
-        .map(i -> ModelMapper.toEntity(i))
-                .collect(Collectors.toList());
+        Map<String, ItemEntity> mergeMap = mergeList.getMergeItems().stream()
+                .filter(i -> i.getTagId() != null)
+                .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
+        Set<Long> tagKeys = mergeMap.keySet().stream().map(k -> Long.valueOf(k)).collect(Collectors.toSet());
+        Map<Long,TagEntity> tagDictionary = tagService.getDictionaryForIds(tagKeys);
+        for (String tagIdString : mergeMap.keySet()) {
+            Long tagId = Long.valueOf(tagIdString);
+            TagEntity tag = tagDictionary.get(tagId);
+            mergeMap.get(tagIdString).setTag(tag);
+        }
+        List<ItemEntity> mergeItems = mergeMap.values().stream().collect(Collectors.toList());
+        mergeCollector.addMergeItems(mergeItems);
 
         // update after merge
+        saveListChanges(list, mergeCollector);
 
         // delete tags by removed on
         LocalDate removedBeforeDate = LocalDate.now().minusDays(mergeDeleteAfterDays);
@@ -806,7 +821,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         itemRepository.saveAll(items);
     }
 
-    private void saveListChanges(ShoppingListEntity shoppingList, ListItemCollector collector) {
+    private void saveListChanges(ShoppingListEntity shoppingList, ItemCollector collector) {
         itemChangeRepository.saveItemChanges(collector, shoppingList.getUserId());
         // make changes in list object
         shoppingList.setItems(collector.getAllItems());
