@@ -402,9 +402,9 @@ public class ShoppingListServiceImplTest {
         int beforeItemCount = before.getItems().size();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(5000L);
+        MergeRequest mergeRequest = createMergeList(5000L);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
@@ -425,12 +425,12 @@ public class ShoppingListServiceImplTest {
         int beforeItemCount = before.getItems().size();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(5000L);
+        MergeRequest mergeRequest = createMergeList(5000L);
         // add one new item to the list
         Item item = createTestItem("45", new Date(), null, null, null);
-        mergeList.getMergeItems().add(item);
+        mergeRequest.getMergeItems().add(item);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
 
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
@@ -455,15 +455,15 @@ public class ShoppingListServiceImplTest {
         int beforeItemCount = before.getItems().size();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(5000L);
+        MergeRequest mergeRequest = createMergeList(5000L);
         // add one new item to the list
 
         Item item = createTestItem("501", 5, 0, 0, 0);
         Item item2 = createTestItem("502", 5, 4, 0, 0);
-        mergeList.getMergeItems().add(item);
-        mergeList.getMergeItems().add(item2);
+        mergeRequest.getMergeItems().add(item);
+        mergeRequest.getMergeItems().add(item2);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
 
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
@@ -484,19 +484,19 @@ public class ShoppingListServiceImplTest {
         int beforeItemCount = before.getItems().size();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(5000L);
+        MergeRequest mergeRequest = createMergeList(5000L);
         // add one new item to the list
 
         Item item = createTestItem("501", 5, 0, 0, 0);
         Item item2 = createTestItem("502", 5, 4, 0, 0);
         Item item3 = createTestItem("503", 5, 4, 3, 0);
         Item item4 = createTestItem("504", 5, 4, 3, 2);
-        mergeList.getMergeItems().add(item);
-        mergeList.getMergeItems().add(item2);
-        mergeList.getMergeItems().add(item3);
-        mergeList.getMergeItems().add(item4);
+        mergeRequest.getMergeItems().add(item);
+        mergeRequest.getMergeItems().add(item2);
+        mergeRequest.getMergeItems().add(item3);
+        mergeRequest.getMergeItems().add(item4);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
 
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
@@ -517,7 +517,7 @@ public class ShoppingListServiceImplTest {
         int beforeItemCount = before.getItems().size();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(5000L);
+        MergeRequest mergeRequest = createMergeList(5000L);
         // add one new item to the list
 
         Item item = createTestItem("501", 5, 0, 0, 0);
@@ -525,13 +525,13 @@ public class ShoppingListServiceImplTest {
         Item item3 = createTestItem("503", 5, 4, 3, 0);
         Item item4 = createTestItem("504", 5, 4, 3, 2);
         Item item5 = createTestItem("45", new Date(), new Date(), null, null);
-        mergeList.getMergeItems().add(item);
-        mergeList.getMergeItems().add(item2);
-        mergeList.getMergeItems().add(item3);
-        mergeList.getMergeItems().add(item4);
-        mergeList.getMergeItems().add(item5);
+        mergeRequest.getMergeItems().add(item);
+        mergeRequest.getMergeItems().add(item2);
+        mergeRequest.getMergeItems().add(item3);
+        mergeRequest.getMergeItems().add(item4);
+        mergeRequest.getMergeItems().add(item5);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
 
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
@@ -557,7 +557,7 @@ public class ShoppingListServiceImplTest {
         int beforeItemCount = before.getItems().size();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(5000L);
+        MergeRequest mergeRequest = createMergeList(5000L);
         // add several new items to the list
 
         Item item = createTestItem("501", 4, 3, 0, 0);
@@ -565,13 +565,13 @@ public class ShoppingListServiceImplTest {
         Item item3 = createTestItem("503", 4, 3, 2, 1);
         Item item4 = createTestItem("504", 99, 0, 0, 0);
         Item item5 = createTestItem("45", new Date(), new Date(), null, null);
-        mergeList.getMergeItems().add(item);
-        mergeList.getMergeItems().add(item2);
-        mergeList.getMergeItems().add(item3);
-        mergeList.getMergeItems().add(item4);
-        mergeList.getMergeItems().add(item5);
+        mergeRequest.getMergeItems().add(item);
+        mergeRequest.getMergeItems().add(item2);
+        mergeRequest.getMergeItems().add(item3);
+        mergeRequest.getMergeItems().add(item4);
+        mergeRequest.getMergeItems().add(item5);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
 
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
@@ -616,9 +616,9 @@ public class ShoppingListServiceImplTest {
         int beforeItemCount = before.getItems().size();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(50001L);
+        MergeRequest mergeRequest = createMergeList(50001L);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
@@ -647,13 +647,13 @@ public class ShoppingListServiceImplTest {
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
         setListActive(before);
 
-        MergeList mergeList = createMergeList(50001L);
+        MergeRequest mergeRequest = createMergeList(50001L);
         // add one new item to the list
 
         Item item = createTestItem("502", 6, 0, 0, 0);
-        mergeList.getMergeItems().add(item);
+        mergeRequest.getMergeItems().add(item);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
@@ -686,13 +686,13 @@ public class ShoppingListServiceImplTest {
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
         setListActive(before);
 
-        MergeList mergeList = createMergeList(50001L);
+        MergeRequest mergeRequest = createMergeList(50001L);
         // add one new item to the list
 
         Item item = createTestItem("6666", 6, 0, 0, 1);
-        mergeList.getMergeItems().add(item);
+        mergeRequest.getMergeItems().add(item);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
@@ -723,9 +723,9 @@ public class ShoppingListServiceImplTest {
         Integer beforeItemUsedCount = beforeItemsByTag.get(55L).getUsedCount();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(50002L);
+        MergeRequest mergeRequest = createMergeList(50002L);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L, true);
@@ -760,11 +760,11 @@ public class ShoppingListServiceImplTest {
         Integer beforeItemUsedCount = beforeItemsByTag.get(55L).getUsedCount();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(50002L);
+        MergeRequest mergeRequest = createMergeList(50002L);
         Item item = createTestItem("6666", 3, 0, 0, 0);
-        mergeList.getMergeItems().add(item);
+        mergeRequest.getMergeItems().add(item);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L, true);
@@ -799,13 +799,13 @@ public class ShoppingListServiceImplTest {
         Integer beforeItemUsedCount = beforeItemsByTag.get(55L).getUsedCount();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(50002L);
+        MergeRequest mergeRequest = createMergeList(50002L);
         Item item = createTestItem("6666", 3, 0, 0, 0);
         Item item2 = createTestItem("55", 3, 99, 0, 0);
-        mergeList.getMergeItems().add(item);
-        mergeList.getMergeItems().add(item2);
+        mergeRequest.getMergeItems().add(item);
+        mergeRequest.getMergeItems().add(item2);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L, true);
@@ -839,13 +839,13 @@ public class ShoppingListServiceImplTest {
         Integer beforeItemUsedCount = beforeItemsByTag.get(6666L).getUsedCount();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(50001L);
+        MergeRequest mergeRequest = createMergeList(50001L);
         Item item = createTestItem("6666", 3, 99, 0, 0);
         Item item2 = createTestItem("55", 3, 99, 0, 0);
-        mergeList.getMergeItems().add(item);
-        mergeList.getMergeItems().add(item2);
+        mergeRequest.getMergeItems().add(item);
+        mergeRequest.getMergeItems().add(item2);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
@@ -878,13 +878,13 @@ public class ShoppingListServiceImplTest {
         Integer beforeItemUsedCount = beforeItemsByTag.get(6666L).getUsedCount();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(50001L);
+        MergeRequest mergeRequest = createMergeList(50001L);
         Item item = createTestItem("6666", 5, 0, 0, 0);
         Item item2 = createTestItem("55", 5, 5, 0, 0);
-        mergeList.getMergeItems().add(item);
-        mergeList.getMergeItems().add(item2);
+        mergeRequest.getMergeItems().add(item);
+        mergeRequest.getMergeItems().add(item2);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
@@ -917,11 +917,11 @@ public class ShoppingListServiceImplTest {
         Integer beforeItemUsedCount = beforeItemsByTag.get(6666L).getUsedCount();
         setListActive(before);
 
-        MergeList mergeList = createMergeList(50001L);
+        MergeRequest mergeRequest = createMergeList(50001L);
         Item item = createTestItem("6666", 5, 0, 0, 0);
-        mergeList.getMergeItems().add(item);
+        mergeRequest.getMergeItems().add(item);
 
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeList);
+        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
         ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
@@ -962,10 +962,10 @@ public class ShoppingListServiceImplTest {
 */
 
 
-    private MergeList createMergeList(long listId) {
-        MergeList testMergeList = new MergeList();
-        testMergeList.setListId(listId);
-        return testMergeList;
+    private MergeRequest createMergeList(long listId) {
+        MergeRequest testMergeRequest = new MergeRequest();
+        testMergeRequest.setListId(listId);
+        return testMergeRequest;
     }
 
 

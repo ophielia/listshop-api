@@ -26,7 +26,7 @@ public class ListItemRepositoryImpl implements ItemChangeRepository {
     @Override
     public void saveItemChanges(ItemCollector collector, Long userId) {
         if (collector instanceof ListItemCollector) {
-            listTagStatisticService.processStatistics(userId, (ListItemCollector) collector);
+            listTagStatisticService.processCollectorStatistics(userId, (ListItemCollector) collector);
         }
 
         List<ItemEntity> toUpdate = collector.getChangedItems();

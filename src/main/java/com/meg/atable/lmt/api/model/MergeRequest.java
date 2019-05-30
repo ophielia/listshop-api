@@ -6,14 +6,17 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MergeList {
+public class MergeRequest {
 
     @JsonProperty("list_id")
     private Long listId;
+
     @JsonProperty("last_changed")
     private LocalDate lastChanged;
+
     @JsonProperty("layout_id")
     private Long layoutId;
+
     @JsonProperty("merge_items")
     private List<Item> mergeItems = new ArrayList<>();
 

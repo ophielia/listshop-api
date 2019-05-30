@@ -26,7 +26,21 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
     private ListTagStatisticRepository listTagStatisticRepo;
 
     @Override
-    public void processStatistics(Long userId, ListItemCollector collector) {
+    public void countTagAddedToDish(Long userId, Long tagId) {
+        ListTagStatistic statistic = listTagStatisticRepo.findByUserIdAndTagId(userId, tagId);
+
+        if (statistic == null) {
+            statistic = new ListTagStatistic();
+            statistic.setTagId(tagId);
+            statistic.setUserId(userId);
+        }
+        int addedCount = statistic.getAddedToDishCount() != null ? statistic.getAddedToDishCount() : 0;
+        statistic.setAddedToDishCount(addedCount + 1);
+        listTagStatisticRepo.save(statistic);
+    }
+
+    @Override
+    public void processCollectorStatistics(Long userId, ListItemCollector collector) {
         // get statistics for tags - hash by tagid
         Map<Long, ListTagStatistic> statLkup = listTagStatisticRepo.findByUserIdAndTagIdIn(userId, collector.getAllTagIds()).stream()
                 .collect(Collectors.toMap(ListTagStatistic::getTagId, Function.identity()));
@@ -74,6 +88,12 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
 
         // save list of stats
         listTagStatisticRepo.saveAll(statList);
+    }
+
+    @Override
+    public List<ListTagStatistic> getStatisticsForUser(Long id) {
+        //MM API implement this
+        return new ArrayList<>();
     }
 
     private ListTagStatistic addCounted(ListTagStatistic statistic) {

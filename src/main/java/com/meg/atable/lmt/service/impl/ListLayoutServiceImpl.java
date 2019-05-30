@@ -440,6 +440,13 @@ Long relationshipId = getCategoryRelationForCategory(category);
         // return
     }
 
+    @Override
+    public List<ListLayoutCategoryEntity> getCategoryChanges(Long listLayoutId, Date changedAfter) {
+        //MM API implement this
+
+        return new ArrayList<>();
+    }
+
     private ListLayoutCategoryEntity getCategoryForSwap(ListLayoutCategoryEntity category, boolean moveUp) throws ListLayoutException {
         // get category relationship
         List<CategoryRelationEntity> relationships = categoryRelationRepository.findCategoryRelationsByChildId(category.getId());

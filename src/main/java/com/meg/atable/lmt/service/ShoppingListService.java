@@ -2,9 +2,12 @@ package com.meg.atable.lmt.service;
 
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
+import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by margaretmartin on 30/10/2017.
@@ -57,10 +60,14 @@ public interface ShoppingListService {
     // is there to build the interface, so that MergeConflicts can be added later
     // less painfully.  Right now just going for basic functionality - taking the
     // last modified item.
-    List<MergeResult> mergeFromClient(String userName, MergeList mergeList);
+    MergeResult mergeFromClient(String userName, MergeRequest mergeRequest);
 
     void addListToList(String name, Long listId, ListType listType);
 
 
     ShoppingListEntity getActiveListForUser(String name);
+
+    List<ItemEntity> getChangedItemsForList(String name, Date changedAfter, Long layoutId);
+
+    Map<Long, ListLayoutCategoryEntity> getCategoryDictionaryForItems(Long layoutId, List<ItemEntity> items);
 }

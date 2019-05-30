@@ -40,6 +40,9 @@ ALTER TABLE tag ADD COLUMN updated_on timestamp with time zone ;
 ALTER TABLE tag ADD COLUMN category_updated_on timestamp with time zone ;
 ALTER TABLE tag ADD COLUMN removed_on timestamp with time zone ;
 
+-- new column in tag statistics
+alter table list_tag_stats add column  added_to_dish integer;
+
 -- update created date on tag
 with created  as (
 select tag_id, created_on, now() - (interval  '1 minute' * tag_id) as created
@@ -68,7 +71,7 @@ where d.tag_id = c.tag_id;
 -- ALTER TABLE tag ADD COLUMN removed_on          ;
 
 -- update dish set created_on = null;
-
+-- alter table list_tag_stats drop column  added_to_dish;
 ------------------------
 -- these are all the timestamp to with timezone changes
 ------------------------

@@ -4,6 +4,7 @@ import com.meg.atable.lmt.api.controller.ListLayoutRestControllerApi;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.ListLayoutEntity;
+import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.service.ListLayoutException;
 import com.meg.atable.lmt.service.ListLayoutService;
 import org.apache.logging.log4j.LogManager;
@@ -22,6 +23,7 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -188,6 +190,22 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> retrieveRefreshedTagToCategoryList(Principal principal, Long listLayoutId, Date changedAfter) {
+        List<ListLayoutCategoryEntity> categoryChanged = this.listLayoutService.getCategoryChanges(listLayoutId, changedAfter);
+
+        List<CategoryItemRefresh> refreshed = new ArrayList<>();
+
+        for (ListLayoutCategoryEntity change : categoryChanged) {
+            for (TagEntity tagChange : change.getTags()) {
+                CategoryItemRefresh refresh = new CategoryItemRefresh(tagChange, change);
+                refreshed.add(refresh);
+            }
+        }
+
+        return new ResponseEntity(refreshed, HttpStatus.OK);
     }
 
 

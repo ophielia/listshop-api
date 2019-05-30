@@ -290,6 +290,15 @@ public class ModelMapper {
 
     }
 
+    public static Statistic toModel(ListTagStatistic statistic) {
+        return new Statistic(statistic.getListTagStatId())
+                .addedCount(statistic.getAddedCount())
+                .addedToDish(statistic.getAddedToDishCount())
+                .removedCount(statistic.getRemovedCount())
+                .tagId(statistic.getTagId())
+                .userId(statistic.getUserId());
+    }
+
     private static Slot toModel(SlotEntity slotEntity) {
         return new Slot(slotEntity.getMealPlanSlotId())
                 .mealPlanId(slotEntity.getMealPlan().getId())
@@ -363,7 +372,7 @@ public class ModelMapper {
         return filledCategories;
     }
 
-    private static Item toModel(ItemEntity itemEntity) {
+    public static Item toModel(ItemEntity itemEntity) {
         return new Item(itemEntity.getId())
                 .tag(toModel(itemEntity.getTag()))
                 .listId(itemEntity.getListId().toString())

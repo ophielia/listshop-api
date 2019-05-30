@@ -84,4 +84,5 @@ public class UserRestController implements UserRestControllerApi {
         return new ResponseEntity(userResource, HttpStatus.OK);
     }
 
+
 }

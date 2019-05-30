@@ -3,7 +3,9 @@ package com.meg.atable.lmt.service.impl;
 import com.meg.atable.Application;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.DishEntity;
+import com.meg.atable.lmt.data.entity.ListTagStatistic;
 import com.meg.atable.lmt.data.entity.TagEntity;
+import com.meg.atable.lmt.data.repository.ListTagStatisticRepository;
 import com.meg.atable.lmt.service.DishService;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.test.TestConstants;
@@ -19,11 +21,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.*;
 
-import static com.meg.atable.test.TestConstants.USER_1_NAME;
-import static com.meg.atable.test.TestConstants.USER_3_NAME;
+import static com.meg.atable.test.TestConstants.*;
 import static java.lang.Thread.sleep;
 
 @RunWith(SpringRunner.class)
@@ -32,6 +32,9 @@ import static java.lang.Thread.sleep;
 public class TagServiceImplTest {
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private ListTagStatisticRepository statRepo;
 
     @Autowired
     private DishService dishService;
@@ -153,7 +156,8 @@ public class TagServiceImplTest {
 
     @Test
     public void testAddTagToDish()  {
-
+        ListTagStatistic stat = statRepo.findByUserIdAndTagId(USER_3_ID, TestConstants.TAG_MEAT);
+        int beforeCount = stat != null && stat.getAddedToDishCount() != null ? stat.getAddedToDishCount() : 0;
         List<TagEntity> originalTags = tagService.getTagsForDish(USER_3_NAME, TestConstants.DISH_1_ID);
 
 
@@ -171,6 +175,12 @@ public class TagServiceImplTest {
             }
         }
         Assert.assertTrue(containsTagA);
+
+        // check stats updated
+        stat = statRepo.findByUserIdAndTagId(USER_3_ID, TestConstants.TAG_MEAT);
+        Assert.assertNotNull(stat);
+        Assert.assertNotNull(stat.getAddedToDishCount());
+        Assert.assertEquals(beforeCount + 1, (long) stat.getAddedToDishCount());
     }
 
 
@@ -321,6 +331,7 @@ public class TagServiceImplTest {
         testTag = tags.stream().filter(t -> t.getId().equals(401L)).findFirst();
         Assert.assertTrue(testTag.isPresent());
     }
+
 
     @Test
     public void testDeleteTag() {

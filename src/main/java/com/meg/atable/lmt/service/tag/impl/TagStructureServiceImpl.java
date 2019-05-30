@@ -277,6 +277,12 @@ public class TagStructureServiceImpl implements TagStructureService {
         return filledIn;
     }
 
+    @Override
+    public List<FatTag> getChangedTagsWithChildren(Date changedAfter) {
+        //MM API implement this
+        return new ArrayList<>();
+    }
+
     private Map<Long, List<Long>> getTagRelationshipLookup(List<TagType> tagTypes) {
         List<Object[]> rawRelations;
         if (tagTypes == null || tagTypes.isEmpty()) {

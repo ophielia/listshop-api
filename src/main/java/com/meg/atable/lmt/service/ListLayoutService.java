@@ -6,6 +6,7 @@ import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.ListLayoutEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,4 +56,5 @@ public interface ListLayoutService {
     void moveCategory(Long categoryId, boolean moveUp) throws ListLayoutException;
 
 
+    List<ListLayoutCategoryEntity> getCategoryChanges(Long listLayoutId, Date changedAfter);
 }

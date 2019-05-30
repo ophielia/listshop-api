@@ -10,6 +10,7 @@ import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.DishSearchCriteria;
 import com.meg.atable.lmt.service.DishSearchService;
 import com.meg.atable.lmt.service.DishService;
+import com.meg.atable.lmt.service.ListTagStatisticService;
 import com.meg.atable.lmt.service.tag.TagChangeListener;
 import com.meg.atable.lmt.service.tag.TagReplaceService;
 import com.meg.atable.lmt.service.tag.TagService;
@@ -45,6 +46,9 @@ public class TagServiceImpl implements TagService {
 
     @Autowired
     private DishService dishService;
+
+    @Autowired
+    private ListTagStatisticService tagStatisticService;
 
     @Override
     public void deleteTagFromDish(String userName, Long dishId, Long tagId) {
@@ -382,6 +386,8 @@ public class TagServiceImpl implements TagService {
         // add tags to dish
         dish.setTags(dishTags);
         dishService.save(dish, false);
+        // update statistic
+        tagStatisticService.countTagAddedToDish(dish.getUserId(), tagId);
     }
 
 

@@ -6,15 +6,13 @@ import com.meg.atable.lmt.api.model.TagDrilldownResource;
 import com.meg.atable.lmt.api.model.TagType;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +31,20 @@ public class TagInfoRestController implements TagInfoRestControllerApi {
     public ResponseEntity<List<TagDrilldownResource>> retrieveTagList(@RequestParam(value = "tag_type", required = false) String tag_type) {
         List<TagType> tagTypes = processTagTypeInput(tag_type);
         List<FatTag> filledTags = tagStructureService.getTagsWithChildren(tagTypes);
+
+        // create taginforesource
+        List<TagDrilldownResource> resource = filledTags.stream()
+                .map(TagDrilldownResource::new)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity(resource, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<TagDrilldownResource>> retrieveTagListRefresh(
+            @RequestParam(value = "after", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date after
+    ) {
+        List<FatTag> filledTags = tagStructureService.getChangedTagsWithChildren(after);
 
         // create taginforesource
         List<TagDrilldownResource> resource = filledTags.stream()

@@ -80,6 +80,18 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
+    public List<ItemEntity> getChangedItemsForList(String name, Date changedAfter, Long layoutId) {
+        //MM API implement this
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Map<Long, ListLayoutCategoryEntity> getCategoryDictionaryForItems(Long layoutId, List<ItemEntity> items) {
+        //MM API implement this
+        return new HashMap<>();
+    }
+
+    @Override
     public ShoppingListEntity getActiveListForUser(String name, boolean includeRemoved) {
         UserEntity user = userService.getUserByUserEmail(name);
 
@@ -431,7 +443,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    public List<Category> categorizeList(String userName, ShoppingListEntity shoppingListEntity, Long highlightDishId, Boolean showPantry, ListType highlightListType) {
+    public List<Category> categorizeList(String userName, ShoppingListEntity shoppingListEntity, Long highlightDishId,
+                                         Boolean showPantry, ListType highlightListType) {
 
 
         if (shoppingListEntity == null) {
@@ -491,20 +504,20 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     // less painfully.  Right now just going for basic functionality - taking the
     // last modified item.
     @Override
-    public List<MergeResult> mergeFromClient(String userName, MergeList mergeList) {
+    public MergeResult mergeFromClient(String userName, MergeRequest mergeRequest) {
 
         // get active list for user
         ShoppingListEntity list = getActiveListForUser(userName);
 
         // ensure active list id equals mergeList
-        if (list.getId() != mergeList.getListId()) {
-            logger.error("Trying to merge list which is not currently active! username [" + userName + "], active_id [" + list.getId() + "], merge_list_id [" + mergeList.getListId() + "]");
+        if (list.getId() != mergeRequest.getListId()) {
+            logger.error("Trying to merge list which is not currently active! username [" + userName + "], active_id [" + list.getId() + "], merge_list_id [" + mergeRequest.getListId() + "]");
         }
         // create MergeCollector from list
         MergeItemCollector mergeCollector = new MergeItemCollector(list.getId(),list.getItems());
 
         // prepare items from client
-        List<ItemEntity> mergeItems = convertClientItemsToItemEntities(mergeList);
+        List<ItemEntity> mergeItems = convertClientItemsToItemEntities(mergeRequest);
 
         // swap out tags which have been replaced - server
         // replace any tags which need to be replaced
@@ -523,7 +536,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         itemRepository.deleteAll(itemsToRemove);
 
 
-        return new ArrayList<>();
+        return new MergeResult();
     }
 
     private void checkReplaceTagsInCollector(ItemCollector mergeCollector) {
@@ -543,8 +556,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    private List<ItemEntity> convertClientItemsToItemEntities(MergeList mergeList) {
-        Map<String, ItemEntity> mergeMap = mergeList.getMergeItems().stream()
+    private List<ItemEntity> convertClientItemsToItemEntities(MergeRequest mergeRequest) {
+        Map<String, ItemEntity> mergeMap = mergeRequest.getMergeItems().stream()
                 .filter(i -> i.getTagId() != null)
                 .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
         Set<Long> tagKeys = mergeMap.keySet().stream().map(k -> Long.valueOf(k)).collect(Collectors.toSet());

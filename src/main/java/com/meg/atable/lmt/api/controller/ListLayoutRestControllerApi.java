@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Date;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -62,5 +63,8 @@ public interface ListLayoutRestControllerApi {
 
     @RequestMapping(method = RequestMethod.POST, value = "/category/{categoryId}", produces = "application/json")
     ResponseEntity<Object> moveCategory(Principal principal, @PathVariable Long categoryId, @RequestParam(value = "move", required = true) String direction);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}/changes", produces = "application/json")
+    ResponseEntity<Object> retrieveRefreshedTagToCategoryList(Principal principal, @PathVariable Long listLayoutId, @RequestParam(value = "after", required = true) Date changedAfter);
 
 }

@@ -5,6 +5,7 @@ import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
+import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 import com.meg.atable.lmt.service.ShoppingListException;
 import com.meg.atable.lmt.service.ShoppingListService;
@@ -16,11 +17,16 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -61,6 +67,48 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             return ResponseEntity.created(URI.create(oneList.getHref())).build();
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @Override
+    public ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest) throws ObjectNotFoundException, ObjectNotYoursException {
+        //MM need handling for different list - error handling!
+        Long listId = mergeRequest.getListId();
+        Long layoutId = mergeRequest.getLayoutId();
+
+        MergeResult mergeResult = this.shoppingListService.mergeFromClient(principal.getName(), mergeRequest);
+
+        // check for conflicts (won't be any until we implement this)
+        if (mergeResult.getMergeConflicts() == null) {
+            // retrieve the list, and put it into the result
+            ShoppingListEntity shoppingList = this.shoppingListService.getListById(principal.getName(), listId);
+            // possibly set layout id in shopping list
+            if (layoutId != null && layoutId != shoppingList.getListLayoutId()) {
+                shoppingList.setListLayoutId(layoutId);
+            }
+            List<Category> categories = shoppingListService.categorizeList(principal.getName(), shoppingList, null, false, null);
+            shoppingListService.fillSources(shoppingList);
+            MergeResultResource resource = new MergeResultResource(mergeResult, shoppingList, categories);
+
+            return new ResponseEntity(resource, HttpStatus.OK);
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> refreshListItems(Principal principal, Long listLayoutId, Date changedAfter) throws ObjectNotFoundException, ObjectNotYoursException {
+        List<ItemEntity> changedItems = shoppingListService.getChangedItemsForList(principal.getName(), changedAfter, listLayoutId);
+        Map<Long, ListLayoutCategoryEntity> itemsToCategories = shoppingListService.getCategoryDictionaryForItems(listLayoutId, changedItems);
+
+        List<ListItemRefreshResource> resourceList = new ArrayList<>();
+        for (ItemEntity item : changedItems) {
+            // get category
+            ListLayoutCategoryEntity category = itemsToCategories.get(item.getId());
+            // make resource, and add to list
+            ListItemRefreshResource resource = new ListItemRefreshResource(item, category);
+            resourceList.add(resource);
+        }
+        return new ResponseEntity(resourceList, HttpStatus.OK);
     }
 
 
