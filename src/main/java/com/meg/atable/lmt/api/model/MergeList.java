@@ -3,6 +3,7 @@ package com.meg.atable.lmt.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MergeList {
@@ -14,7 +15,7 @@ public class MergeList {
     @JsonProperty("layout_id")
     private Long layoutId;
     @JsonProperty("merge_items")
-    private List<Item> mergeItems;
+    private List<Item> mergeItems = new ArrayList<>();
 
     public Long getListId() {
         return listId;

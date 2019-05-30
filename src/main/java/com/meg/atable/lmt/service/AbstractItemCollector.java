@@ -1,6 +1,7 @@
 package com.meg.atable.lmt.service;
 
 import com.meg.atable.lmt.data.entity.ItemEntity;
+import com.meg.atable.lmt.data.entity.TagEntity;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -89,5 +90,74 @@ public abstract class AbstractItemCollector implements ItemCollector {
         return freeTextItems;
     }
 
+    @Override
+    public void replaceOutdatedTags(List<TagEntity> outdatedTags, Map<Long,TagEntity> replacementDictionary) {
+        if (outdatedTags.isEmpty()) {
+            return;
+        }
+            for (TagEntity tag : outdatedTags) {
+                // replace the tag in the tag collector
+                CollectedItem toFix = getTagCollectedMap().get(tag.getId());
+                TagEntity originalTag = toFix.getTag();
+                TagEntity replaceTag = replacementDictionary.get(tag.getReplacementTagId());
+                toFix.setTag(replaceTag);
+                getTagCollectedMap().remove(originalTag.getId());
+                if (getTagCollectedMap().containsKey(replaceTag.getId())) {
+                    addItem(toFix.getItem());
+                } else {
+                    toFix.setChanged(true);
+                    getTagCollectedMap().put(replaceTag.getId(),toFix);
+                }
+            }
 
+    }
+
+    public void addItem(ItemEntity item) {
+        if (item.getTag() == null) {
+            getFreeTextItemList().add(new CollectedItem(item));
+            return;
+        }
+
+        addItemByTag(item.getTag(), null, null);
+    }
+
+    protected void addItemByTag(TagEntity tag, String sourceType, Long dishId) {
+        CollectedItem update = getTagCollectedMap().get(tag.getId());
+
+        if (update == null) {
+            update = createItemFromTag(tag, null);
+        } else {
+            addTagForExistingItem(update);
+        }
+
+        int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
+        update.setUsedCount(count + 1);
+        update.addRawListSource(sourceType);
+        update.addRawDishSource(dishId);
+        update.incrementAddCount();
+        getTagCollectedMap().put(tag.getId(), update);
+
+    }
+
+    private CollectedItem createItemFromTag(TagEntity tag, Long dishId) {
+        CollectedItem item = new CollectedItem(new ItemEntity());
+
+        item.setTag(tag);
+        item.setListId(getListId());
+        item.addRawDishSource(dishId);
+        item.setUsedCount(0);
+        item.setIsAdded(true);
+
+        return item;
+    }
+
+
+    private void addTagForExistingItem(CollectedItem item) {
+        // if this tag has been previously removed, we need to clear that information - because
+        // it's now being added.
+        if (item.isRemoved()) {
+            item.setRemoved(false);
+        }
+        item.setUpdated(true);
+    }
 }

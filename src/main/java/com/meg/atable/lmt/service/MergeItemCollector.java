@@ -45,7 +45,7 @@ public class MergeItemCollector extends AbstractItemCollector {
                 if (!serverItem.equalsWithWindow(2,mergeItem)) {  //MM parameterize this window second
                     //  if change merge
                     CollectedItem merged = mergeChangedItems(serverItem, mergeItem);
-                    merged.setChanged(true);
+
                     getTagCollectedMap().put(tagId, merged);
                 }
                 //  remove from iterator
@@ -77,6 +77,7 @@ public class MergeItemCollector extends AbstractItemCollector {
         if (period.isNegative()) {
             return serverItem;
         }
+        mergeItem.setChanged(true);
         return mergeItem;
     }
 

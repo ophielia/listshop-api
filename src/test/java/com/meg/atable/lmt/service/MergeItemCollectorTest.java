@@ -16,6 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -77,13 +78,29 @@ public class MergeItemCollectorTest {
     }
 
     @Test
-    public void testAddingNewItem() {
+    public void testUpdatesToItemServerMoreRecent() {
         ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
-        TagEntity tagEntity = tagService.getTagById(45L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
-        ItemEntity updated = new ItemEntity();
-        updated.setTag(tagEntity);
+        ItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
+        LocalDateTime dateTime = LocalDateTime.now().minusDays(22L);
+        updated.setUpdatedOn(java.sql.Timestamp.valueOf(dateTime));
+        List<ItemEntity> mergeItems = new ArrayList<>();
+        mergeItems.add(updated);
+
+        collector.addMergeItems(mergeItems);
+
+        Assert.assertFalse(collector.hasChanges());
+        Assert.assertEquals(0, collector.getChangedItems().size());
+        Assert.assertEquals(4, collector.getAllItems().size());
+    }
+
+    @Test
+    public void testAddingNewItem() {
+        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+
+        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
+        ItemEntity updated = createItemForTagId(45L);
         List<ItemEntity> mergeItems = new ArrayList<>();
         mergeItems.add(updated);
 
@@ -94,6 +111,12 @@ public class MergeItemCollectorTest {
         Assert.assertEquals(5, collector.getAllItems().size());
     }
 
+    private ItemEntity createItemForTagId(long tagId) {
+        TagEntity tagEntity = tagService.getTagById(tagId);
+        ItemEntity updated = new ItemEntity();
+        updated.setTag(tagEntity);
+        return updated;
+    }
 
     private ItemEntity copyItemForTagId(long tagId, List<ItemEntity> items) {
         ItemEntity copyFrom = items.stream().filter(i -> i.getTag().getId().equals(tagId)).findFirst().get();

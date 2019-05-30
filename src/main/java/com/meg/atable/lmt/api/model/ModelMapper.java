@@ -449,6 +449,11 @@ public class ModelMapper {
         itemEntity.setFreeText(input.getFreeText());
         itemEntity.setListId(listId);
         itemEntity.setTagId(tagId);
+        itemEntity.setAddedOn(input.getAddedOn());
+        itemEntity.setUpdatedOn(input.getUpdated());
+        itemEntity.setCrossedOff(input.getCrossedOff());
+        itemEntity.setRemovedOn(input.getRemoved());
+        itemEntity.setUsedCount(input.getUsedCount());
         return itemEntity;
     }
 
