@@ -2,6 +2,7 @@ package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
+import com.meg.atable.common.DateUtils;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.*;
@@ -140,7 +141,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingListEntity createList(String userName, ListGenerateProperties listGenerateProperties) throws ShoppingListException {
         // create list
         ShoppingListEntity newList = createListForUser(userName, listGenerateProperties.getListType());
-        ListItemCollector collector = new ListItemCollector(newList.getId(), null);
+        ListItemCollector collector = createListItemCollector(newList.getId(), null);
 
         // get dishes to add
         List<Long> dishIds = new ArrayList<>();
@@ -279,7 +280,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         List<ItemEntity> items = shoppingListEntity.getItems();
-        ListItemCollector collector = new ListItemCollector(listId, items);
+        ListItemCollector collector = createListItemCollector(listId, items);
         // fill in tag, if item contains tag
         TagEntity tag = null;
         if (itemEntity.getTagId() != null) {
@@ -294,6 +295,16 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         collector.addItem(itemEntity);
 
         saveListChanges(shoppingListEntity, collector);
+    }
+
+    private ListItemCollector createListItemCollector(Long listId, List<ItemEntity> items) {
+        ListItemCollector collector = new ListItemCollector(listId, items);
+        checkReplaceTagsInCollector(collector);
+        return collector;
+    }
+
+    private ListItemCollector createListItemCollector(Long listId) {
+        return new ListItemCollector(listId);
     }
 
     @Override
@@ -325,7 +336,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         List<ItemEntity> items = shoppingListEntity.getItems();
-        ListItemCollector collector = new ListItemCollector(listId, items);
+        ListItemCollector collector = createListItemCollector(listId, items);
         ItemEntity item = itemEntityOpt.get();
         if (item.getTag() == null) {
             collector.removeFreeTextItem(item);
@@ -360,7 +371,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         newList.setListType(ListType.General);
         ShoppingListEntity savedNewList = createList(name, newList);
         // create the collector
-        ListItemCollector collector = new ListItemCollector(savedNewList.getId());
+        ListItemCollector collector = createListItemCollector(savedNewList.getId());
 
 
         // add all tags for meal plan
@@ -401,7 +412,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ShoppingListEntity toActive = getListById(username, listId);
 
         // add list to collector
-        ListItemCollector collector = new ListItemCollector(toActive.getId(), toActive.getItems());
+        ListItemCollector collector = createListItemCollector(toActive.getId(), toActive.getItems());
 
         // if generatetype add, add items to current list
         if (generateType == GenerateType.Add && oldActive != null) {
@@ -479,8 +490,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     // is there to build the interface, so that MergeConflicts can be added later
     // less painfully.  Right now just going for basic functionality - taking the
     // last modified item.
+    @Override
     public List<MergeResult> mergeFromClient(String userName, MergeList mergeList) {
-    //MM in progress
 
         // get active list for user
         ShoppingListEntity list = getActiveListForUser(userName);
@@ -492,18 +503,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // create MergeCollector from list
         MergeItemCollector mergeCollector = new MergeItemCollector(list.getId(),list.getItems());
 
+        // prepare items from client
+        List<ItemEntity> mergeItems = convertClientItemsToItemEntities(mergeList);
+
+        // swap out tags which have been replaced - server
+        // replace any tags which need to be replaced
+        checkReplaceTagsInCollector(mergeCollector);
+
         // merge from client
-        Map<String, ItemEntity> mergeMap = mergeList.getMergeItems().stream()
-                .filter(i -> i.getTagId() != null)
-                .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
-        Set<Long> tagKeys = mergeMap.keySet().stream().map(k -> Long.valueOf(k)).collect(Collectors.toSet());
-        Map<Long,TagEntity> tagDictionary = tagService.getDictionaryForIds(tagKeys);
-        for (String tagIdString : mergeMap.keySet()) {
-            Long tagId = Long.valueOf(tagIdString);
-            TagEntity tag = tagDictionary.get(tagId);
-            mergeMap.get(tagIdString).setTag(tag);
-        }
-        List<ItemEntity> mergeItems = mergeMap.values().stream().collect(Collectors.toList());
+        // fill in tags for passed items
         mergeCollector.addMergeItems(mergeItems);
 
         // update after merge
@@ -514,7 +522,81 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<ItemEntity> itemsToRemove = itemRepository.findByRemovedOnBefore(java.sql.Date.valueOf(removedBeforeDate));
         itemRepository.deleteAll(itemsToRemove);
 
+
         return new ArrayList<>();
+    }
+
+    private void checkReplaceTagsInCollector(ItemCollector mergeCollector) {
+        Set<Long> allServerTagIds = new HashSet<>();
+        allServerTagIds.addAll(mergeCollector.getAllTagIds());
+
+        if (allServerTagIds.isEmpty()) {
+            return;
+        }
+        List<TagEntity> outdatedTags = tagService.getReplacedTagsFromIds(allServerTagIds);
+        if (!outdatedTags.isEmpty()) {
+            Set<Long> outdatedIds = outdatedTags.stream().map(TagEntity::getReplacementTagId).collect(Collectors.toSet());
+            Map<Long,TagEntity> outdatedDictionary = tagService.getDictionaryForIds(outdatedIds);
+
+            mergeCollector.replaceOutdatedTags(outdatedTags,outdatedDictionary);
+        }
+
+    }
+
+    private List<ItemEntity> convertClientItemsToItemEntities(MergeList mergeList) {
+        Map<String, ItemEntity> mergeMap = mergeList.getMergeItems().stream()
+                .filter(i -> i.getTagId() != null)
+                .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
+        Set<Long> tagKeys = mergeMap.keySet().stream().map(k -> Long.valueOf(k)).collect(Collectors.toSet());
+
+        if (tagKeys.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<TagEntity> outdatedClientTags = tagService.getReplacedTagsFromIds(tagKeys);
+        Map<Long,TagEntity> outdatedClientDictionary = new HashMap<>();
+        if (!outdatedClientTags.isEmpty()) {
+            Set<Long> outdatedIds = outdatedClientTags.stream().map(TagEntity::getReplacementTagId).collect(Collectors.toSet());
+            outdatedClientDictionary = tagService.getDictionaryForIds(outdatedIds);
+        }
+        Map<Long,TagEntity> tagDictionary = tagService.getDictionaryForIds(tagKeys);
+
+        Map<Long,ItemEntity> itemMap = new HashMap<>();
+        for (Map.Entry<String, ItemEntity> entry : mergeMap.entrySet()) {
+            String tagIdString = entry.getKey();
+            ItemEntity item = entry.getValue();
+            Long tagId = Long.valueOf(tagIdString);
+            TagEntity tag = tagDictionary.get(tagId);
+            if (!outdatedClientDictionary.isEmpty() && tag.getReplacementTagId() != null) {
+                TagEntity replacementTag = outdatedClientDictionary.get(tag.getReplacementTagId());
+                item.setTag(replacementTag);
+                addItemToClientMap(item,itemMap);
+                continue;
+            }
+            item.setTag(tag);
+            addItemToClientMap(item,itemMap);
+        }
+
+        List<ItemEntity> mergeItems = new ArrayList<>(itemMap.values());
+        return mergeItems;
+    }
+
+    private void addItemToClientMap(ItemEntity item, Map<Long, ItemEntity> itemMap) {
+        if (item.getTag() == null) {
+            return;
+        }
+        Long tagId = item.getTag().getId();
+            ItemEntity toAddTo = itemMap.get(tagId);
+        if (itemMap.containsKey(tagId)) {
+            int count = toAddTo.getUsedCount() != null ? toAddTo.getUsedCount() : 0;
+            toAddTo.setUsedCount( count + 1);
+            toAddTo.setRemovedOn(DateUtils.maxDate(toAddTo.getRemovedOn(), item.getRemovedOn()));
+            toAddTo.setCrossedOff(DateUtils.maxDate(toAddTo.getCrossedOff(), item.getCrossedOff()));
+            toAddTo.setUpdatedOn(DateUtils.maxDate(toAddTo.getUpdatedOn(), item.getUpdatedOn()));
+            toAddTo.setAddedOn(DateUtils.maxDate(toAddTo.getAddedOn(), item.getAddedOn()));
+            itemMap.put(tagId,toAddTo);
+            return;
+        }
+        itemMap.put(tagId, item);
     }
 
     private Map<CategoryType, ItemCategory> generateSpecialCategories(String userName,ShoppingListEntity shoppingListEntity,
@@ -637,7 +719,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // create collector
-        ListItemCollector collector = new ListItemCollector(listId, list.getItems());
+        ListItemCollector collector = createListItemCollector(listId, list.getItems());
 
         // add Items from PickUpList
         boolean incrementStats = listType != ListType.BaseList;
@@ -675,7 +757,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ShoppingListEntity list = getListById(name, listId);
 
         // create collector
-        ListItemCollector collector = new ListItemCollector(listId, list.getItems());
+        ListItemCollector collector = createListItemCollector(listId, list.getItems());
 
         addDishToList(name,collector, dishId);
 
@@ -742,7 +824,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ShoppingListEntity shoppingList = getListById(name, listId);
 
         // make collector
-        ListItemCollector collector = new ListItemCollector(listId, shoppingList.getItems());
+        ListItemCollector collector = createListItemCollector(listId, shoppingList.getItems());
 
         List<TagEntity> tagsToRemove = tagService.getTagsForDish(name, dishId);
 
@@ -761,7 +843,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ShoppingListEntity toRemove = getListByUsernameAndType(name, listType);
 
         // make collector
-        ListItemCollector collector = new ListItemCollector(listId, shoppingList.getItems());
+        ListItemCollector collector = createListItemCollector(listId, shoppingList.getItems());
 
         collector.removeItemsFromList(listType, toRemove.getItems());
 

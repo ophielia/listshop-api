@@ -33,6 +33,11 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
 
     List<TagEntity> findTagsByToDeleteTrue();
 
+    @Query(value = "select t.* FROM tag t " +
+            "where t.tag_id in (:tagIds) and t.replacement_tag_id is not null",
+    nativeQuery = true)
+    List<TagEntity> findTagsToBeReplaced(@Param("tagIds") Set<Long> tagIds);
+
 
     @Query(value = "select t.* from dish_tags dt, " +
             "tag t where t.tag_id = dt.tag_id and  t.tag_type = 'Ingredient' and dt.dish_id in (:dishIdList) ", nativeQuery = true)

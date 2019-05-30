@@ -10,8 +10,8 @@ import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.DishSearchCriteria;
 import com.meg.atable.lmt.service.DishSearchService;
 import com.meg.atable.lmt.service.DishService;
-import com.meg.atable.lmt.service.tag.TagReplaceService;
 import com.meg.atable.lmt.service.tag.TagChangeListener;
+import com.meg.atable.lmt.service.tag.TagReplaceService;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,6 +135,15 @@ public class TagServiceImpl implements TagService {
 
         }
         return new HashMap<>();
+    }
+
+    @Override
+    public List<TagEntity> getReplacedTagsFromIds(Set<Long> tagKeys) {
+        List<TagEntity> tags = tagRepository.findTagsToBeReplaced(tagKeys);
+        if (tags == null) {
+            return new ArrayList<>();
+        }
+        return tags;
     }
 
     @Override
@@ -358,7 +367,9 @@ public class TagServiceImpl implements TagService {
 
         TagEntity tag = tagOpt.get();
 
+
         List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
+
         // check if tag exists already
         if (dishTags.contains(tag)) {
             return;
@@ -372,6 +383,7 @@ public class TagServiceImpl implements TagService {
         dish.setTags(dishTags);
         dishService.save(dish, false);
     }
+
 
     private List<TagEntity> getTagsForDish(DishEntity dish, List<TagType> tagtypes) {
         List<TagEntity> results = tagRepository.findTagsByDishes(dish);

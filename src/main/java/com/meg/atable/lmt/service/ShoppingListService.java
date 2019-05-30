@@ -1,9 +1,6 @@
 package com.meg.atable.lmt.service;
 
-import com.meg.atable.lmt.api.model.Category;
-import com.meg.atable.lmt.api.model.GenerateType;
-import com.meg.atable.lmt.api.model.ListGenerateProperties;
-import com.meg.atable.lmt.api.model.ListType;
+import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 
@@ -55,6 +52,12 @@ public interface ShoppingListService {
     void crossOffAllItems(String name, Long listId, boolean crossOff);
 
     void deleteAllItemsFromList(String name, Long listId);
+
+    // Note - this method doesn't check yet for MergeConflicts.  But the signature
+    // is there to build the interface, so that MergeConflicts can be added later
+    // less painfully.  Right now just going for basic functionality - taking the
+    // last modified item.
+    List<MergeResult> mergeFromClient(String userName, MergeList mergeList);
 
     void addListToList(String name, Long listId, ListType listType);
 

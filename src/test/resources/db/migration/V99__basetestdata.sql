@@ -163,8 +163,8 @@ INSERT INTO category_tags (category_id, tag_id) VALUES (501, 505);
 
 
 -- targets
-INSERT INTO target (target, target_id, created, last_updated,last_used, target_name, target_tag_ids, user_id)
-  VALUES ('TargetEntity', 500, '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 20);
+INSERT INTO target (target, target_type,target_id, created, last_updated,last_used, target_name, target_tag_ids, user_id)
+  VALUES ('TargetEntity', 'Standard',500,'2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 20);
 
 -- main dish, chicken broth
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
@@ -179,8 +179,8 @@ VALUES ('TargetSlotEntity', 502, 320, 3, 500, '81');
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
 VALUES ('TargetSlotEntity', 503, 320, 4, 500, '89');
 
-INSERT INTO target (target, target_id, created, last_updated,last_used, target_name, target_tag_ids, user_id)
-  VALUES ('TargetEntity', 501, '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 20);
+INSERT INTO target (target, target_id, target_type,created, last_updated,last_used, target_name, target_tag_ids, user_id)
+  VALUES ('TargetEntity', 501,'Standard', '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 20);
 
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
 VALUES ('TargetSlotEntity', 504, 320, 1, 501, '406');
@@ -191,8 +191,8 @@ VALUES ('TargetSlotEntity', 506, 320, 3, 501, '81');
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
 VALUES ('TargetSlotEntity', 507, 320, 4, 501, '89');
 
-INSERT INTO target (target, target_id, created, last_updated,last_used, target_name, target_tag_ids, user_id)
-  VALUES ('TargetEntity', 502, '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 500);
+INSERT INTO target (target, target_id,target_type, created, last_updated,last_used, target_name, target_tag_ids, user_id)
+  VALUES ('TargetEntity', 502,'Standard', '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 500);
 
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
 VALUES ('TargetSlotEntity', 508, 320, 1, 502, '406;301');
@@ -203,8 +203,8 @@ VALUES ('TargetSlotEntity', 510, 320, 1, 502, '81;301');
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
 VALUES ('TargetSlotEntity', 511, 320, 1, 502, '89;301');
 
-INSERT INTO target (target, target_id, created, expires,last_updated,last_used, target_name, target_tag_ids, user_id)
-  VALUES ('TargetEntity', 503, '2018-05-21 13:15:22.451','2018-05-21 14:15:22.451', NULL, NULL, 'testing', '64;322;399', 500);
+INSERT INTO target (target, target_id, target_type,created, expires,last_updated,last_used, target_name, target_tag_ids, user_id)
+  VALUES ('TargetEntity', 503, 'Standard','2018-05-21 13:15:22.451','2018-05-21 14:15:22.451', NULL, NULL, 'testing', '64;322;399', 500);
 
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
 VALUES ('TargetSlotEntity', 512, 320, 1, 503, '406;301');

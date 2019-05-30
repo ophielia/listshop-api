@@ -1,12 +1,11 @@
 package com.meg.atable.lmt.api;
 
 import com.meg.atable.Application;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.lmt.api.model.ModelMapper;
 import com.meg.atable.lmt.api.model.Target;
 import com.meg.atable.lmt.api.model.TargetSlot;
-import com.meg.atable.auth.data.entity.UserEntity;
-import com.meg.atable.auth.service.impl.JwtUser;
-import com.meg.atable.auth.service.UserService;
+import com.meg.atable.lmt.api.model.TargetType;
 import com.meg.atable.lmt.data.entity.TargetEntity;
 import com.meg.atable.lmt.data.entity.TargetSlotEntity;
 import com.meg.atable.lmt.service.TargetService;
@@ -51,16 +50,12 @@ public class TargetRestControllerTest {
 
     private static UserDetails userDetails;
     private static UserDetails newUserDetails;
-    private static UserEntity newUserAccount;
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
 
     @Autowired
     private WebApplicationContext webApplicationContext;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private TargetService targetService;
@@ -82,23 +77,21 @@ public class TargetRestControllerTest {
 
     @Before
     @WithMockUser
-    public void setup() throws Exception {
+    public void setup() {
         this.mockMvc = webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
                 .build();
 
 
-        UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
-        userDetails = new JwtUser(userAccount.getId(),
-                TestConstants.USER_3_NAME,
+        userDetails = new JwtUser(TestConstants.USER_1_ID,
+                TestConstants.USER_1_NAME,
                 null,
                 null,
                 null,
                 true,
                 null);
-        newUserAccount = userService.getUserById(TestConstants.USER_1_ID);
-        newUserDetails = new JwtUser(newUserAccount.getId(),
-                newUserAccount.getEmail(),
+        newUserDetails = new JwtUser(TestConstants.USER_3_ID,
+                TestConstants.USER_3_NAME,
                 null,
                 null,
                 null,
@@ -113,7 +106,7 @@ public class TargetRestControllerTest {
         Long testId = TestConstants.TARGET_1_ID;
         mockMvc.perform(get("/target/"
                 + testId)
-                .with(user(userDetails)))
+                .with(user(newUserDetails)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
@@ -127,11 +120,11 @@ public class TargetRestControllerTest {
     public void testRetrieveTargets() throws Exception {
 
         mockMvc.perform(get("/target")
-                .with(user(userDetails)))
+                .with(user(newUserDetails)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$._embedded.targetResourceList", hasSize(2)));
+                .andExpect(jsonPath("$._embedded.targetResourceList", hasSize(3)));
     }
 
     @Test
@@ -140,7 +133,7 @@ public class TargetRestControllerTest {
         Long testId = TestConstants.TARGET_2_ID;
         mockMvc.perform(delete("/target/"
                 + testId)
-                .with(user(newUserDetails)))
+                .with(user(userDetails)))
                 .andExpect(status().isNoContent());
 
     }
@@ -150,7 +143,8 @@ public class TargetRestControllerTest {
     public void testCreateTarget() throws Exception {
         TargetEntity targetEntity = new TargetEntity();
         targetEntity.setTargetName("targetCreate");
-        targetEntity.setUserId(newUserAccount.getId());
+        targetEntity.setUserId(TestConstants.USER_3_ID);
+        targetEntity.setTargetType(TargetType.Standard);
         Target target = ModelMapper.toModel(targetEntity);
         String targetJson = json(target);
 
@@ -166,7 +160,8 @@ public class TargetRestControllerTest {
     public void testCreatePickupTarget() throws Exception {
         TargetEntity targetEntity = new TargetEntity();
         targetEntity.setTargetName("targetCreate");
-        targetEntity.setUserId(newUserAccount.getId());
+        targetEntity.setUserId(TestConstants.USER_3_ID);
+        targetEntity.setTargetType(TargetType.PickUp);
         Target target = ModelMapper.toModel(targetEntity);
         String targetJson = json(target);
 
@@ -190,7 +185,7 @@ public class TargetRestControllerTest {
         String targetJson = json(toUpdate);
 
         this.mockMvc.perform(put("/target/" + targetEntity.getTargetId())
-                .with(user(userDetails))
+                .with(user(newUserDetails))
                 .contentType(contentType)
                 .content(targetJson))
                 .andExpect(status().isCreated());
@@ -208,7 +203,7 @@ public class TargetRestControllerTest {
         String url = "/target/" + TestConstants.TARGET_3_ID
                 + "/slot";
         this.mockMvc.perform(post(url)
-                .with(user(userDetails))
+                .with(user(newUserDetails))
                 .contentType(contentType)
                 .content(targetJson))
                 .andExpect(status().isNoContent());
@@ -222,7 +217,7 @@ public class TargetRestControllerTest {
         String url = "/target/" + TestConstants.TARGET_3_ID + "/slot/"
                 + slot.getId();
         this.mockMvc.perform(delete(url)
-                .with(user(userDetails))
+                .with(user(newUserDetails))
                 .contentType(contentType))
                 .andExpect(status().isNoContent());
     }

@@ -257,7 +257,7 @@ public class ShoppingListRestControllerTest {
     @WithMockUser
     public void testAddDishToList() throws Exception {
         Long listId = TestConstants.LIST_1_ID;
-        String url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_1_ID;
+        String url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_7_ID;
         mockMvc.perform(post(url)
                 .with(user(userDetails))
                 .contentType(contentType))

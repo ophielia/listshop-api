@@ -3,6 +3,7 @@ package com.meg.atable.lmt.service.impl;
 import com.meg.atable.Application;
 import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
+import com.meg.atable.lmt.api.model.TargetType;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.entity.TargetEntity;
 import com.meg.atable.lmt.data.entity.TargetSlotEntity;
@@ -176,9 +177,10 @@ targetIdToDelete = result.getTargetId();
     }
 
     @Test
-    public void createTarget_Temporary() throws Exception {
+    public void createTarget_Temporary() {
         TargetEntity newTarget = new TargetEntity();
         newTarget.setTargetName("george");
+        newTarget.setTargetType(TargetType.PickUp);
 
         TargetEntity result = targetService.createTarget(TestConstants.USER_1_NAME, newTarget);
 

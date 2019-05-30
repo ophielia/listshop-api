@@ -34,7 +34,7 @@ private StaleItemCleanupTask staleItemCleanupTaskTest;
 private ItemRepository itemRepository;
 @Test
 public void testCleanupTask() {
-    LocalDate testRemoveDate = LocalDate.now().minusDays(11);
+    LocalDate testRemoveDate = LocalDate.now().minusDays(12);
 
     // 3 items in test data set which are stale
     // get all tags
@@ -48,7 +48,7 @@ public void testCleanupTask() {
     }
     itemRepository.saveAll(staleItems);
 
-    long staleCount = staleItems.size();
+    long staleCount = itemRepository.findByRemovedOnBefore(java.sql.Date.valueOf(LocalDate.now().minusDays(11))).size();
 
     // call cleanup task
     staleItemCleanupTaskTest.removeItemsByRemovedBeforeDate();
