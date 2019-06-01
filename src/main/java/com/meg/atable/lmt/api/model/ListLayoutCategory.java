@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,9 +15,9 @@ public class ListLayoutCategory extends AbstractCategory {
     @JsonProperty("layout_id")
     private Long layoutId;
     @JsonIgnore
-    private List<TagEntity> tagEntities;
+    private List<TagEntity> tagEntities = new ArrayList<>();
     @JsonProperty("tags")
-    private List<Tag> tags;
+    private List<Tag> tags = new ArrayList<>();
 
     public ListLayoutCategory() {
         // empty constructor for jpa
@@ -53,10 +54,12 @@ public class ListLayoutCategory extends AbstractCategory {
         return this;
     }
 
+    @JsonIgnore
     public List<TagEntity> getTagEntities() {
         return tagEntities;
     }
 
+    @JsonIgnore
     public Category tagEntities(List<TagEntity> tagEntities) {
         this.tagEntities = tagEntities;
         return this;

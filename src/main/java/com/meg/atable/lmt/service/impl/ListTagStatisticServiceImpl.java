@@ -91,9 +91,8 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
     }
 
     @Override
-    public List<ListTagStatistic> getStatisticsForUser(Long id) {
-        //MM API implement this
-        return new ArrayList<>();
+    public List<ListTagStatistic> getStatisticsForUser(Long userId) {
+        return listTagStatisticRepo.findByUserId(userId);
     }
 
     private ListTagStatistic addCounted(ListTagStatistic statistic) {

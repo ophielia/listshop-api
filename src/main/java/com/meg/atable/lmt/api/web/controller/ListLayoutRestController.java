@@ -7,9 +7,11 @@ import com.meg.atable.lmt.data.entity.ListLayoutEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.service.ListLayoutException;
 import com.meg.atable.lmt.service.ListLayoutService;
+import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
@@ -193,16 +195,16 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> retrieveRefreshedTagToCategoryList(Principal principal, Long listLayoutId, Date changedAfter) {
-        List<ListLayoutCategoryEntity> categoryChanged = this.listLayoutService.getCategoryChanges(listLayoutId, changedAfter);
+    public ResponseEntity<List<CategoryItemRefresh>> retrieveRefreshedTagToCategoryList(Principal principal, @PathVariable Long listLayoutId,
+                                                                                        @RequestParam(value = "after") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date after) {
+        List<Pair<TagEntity, ListLayoutCategoryEntity>> categoryChanged = this.listLayoutService.getTagCategoryChanges(listLayoutId, after);
+
 
         List<CategoryItemRefresh> refreshed = new ArrayList<>();
 
-        for (ListLayoutCategoryEntity change : categoryChanged) {
-            for (TagEntity tagChange : change.getTags()) {
-                CategoryItemRefresh refresh = new CategoryItemRefresh(tagChange, change);
+        for (Pair<TagEntity, ListLayoutCategoryEntity> change : categoryChanged) {
+            CategoryItemRefresh refresh = new CategoryItemRefresh(change.getKey(), change.getValue());
                 refreshed.add(refresh);
-            }
         }
 
         return new ResponseEntity(refreshed, HttpStatus.OK);

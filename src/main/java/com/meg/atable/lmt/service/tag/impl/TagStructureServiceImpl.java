@@ -167,6 +167,7 @@ public class TagStructureServiceImpl implements TagStructureService {
         return new ArrayList<>();
     }
 
+    @Override
     public List<TagEntity> getSiblingTags(TagEntity tag) {
         // get parent
         TagEntity parent = getParentTag(tag);
@@ -182,7 +183,6 @@ public class TagStructureServiceImpl implements TagStructureService {
                 .collect(Collectors.toList());
 
     }
-
 
     @Override
     public TagEntity getParentTag(TagEntity tag) {
@@ -269,9 +269,14 @@ public class TagStructureServiceImpl implements TagStructureService {
         List<Long> baseTagIds = parentToChildren.containsKey(0L) ? parentToChildren.get(0L) : new ArrayList<>();
 
         // fill in starting with base tags
+        return fillInFromLookup(baseTagIds, parentToChildren, true);
+
+    }
+
+    private List<FatTag> fillInFromLookup(List<Long> baseTagIds, Map<Long, List<Long>> parentToChildren, boolean useCache) {
         List<FatTag> filledIn = new ArrayList<>();
         for (Long tagId : baseTagIds) {
-            FatTag fatTag = fillInTag(tagId, parentToChildren);
+            FatTag fatTag = fillInTag(tagId, parentToChildren, useCache);
             filledIn.add(fatTag);
         }
         return filledIn;
@@ -279,8 +284,25 @@ public class TagStructureServiceImpl implements TagStructureService {
 
     @Override
     public List<FatTag> getChangedTagsWithChildren(Date changedAfter) {
-        //MM API implement this
-        return new ArrayList<>();
+        List<TagEntity> changedTags = tagRepository.getTagsChangedAfter(changedAfter);
+
+        if (changedTags.isEmpty()) {
+            return new ArrayList<>();
+        }
+        // get all tags and ascendant tags
+        Set<Long> relationshipIds = changedTags.stream().map(TagEntity::getId).collect(Collectors.toSet());
+        for (TagEntity tag : changedTags) {
+            relationshipIds.addAll(getAscendantTags(tag, false).stream().map(TagEntity::getId).collect(Collectors.toSet()));
+        }
+
+        // get relationship lookups for ids
+        Map<Long, List<Long>> parentToChildren = getTagRelationshipLookupForIds(relationshipIds);
+
+        // get base tags
+        List<Long> baseTagIds = parentToChildren.containsKey(0L) ? parentToChildren.get(0L) : new ArrayList<>();
+
+        return fillInFromLookup(baseTagIds, parentToChildren, false);
+
     }
 
     private Map<Long, List<Long>> getTagRelationshipLookup(List<TagType> tagTypes) {
@@ -291,6 +313,18 @@ public class TagStructureServiceImpl implements TagStructureService {
             rawRelations = tagRelationRepository.getTagRelationshipsForTagType(tagTypes.stream().map(TagType::name).collect(Collectors.toList()));
         }
 
+        return mapTagRelationshipResults(rawRelations);
+    }
+
+    private Map<Long, List<Long>> getTagRelationshipLookupForIds(Set<Long> tagIds) {
+        List<Object[]> rawRelations = tagRelationRepository.getTagRelationshipsForIds(tagIds);
+
+
+        return mapTagRelationshipResults(rawRelations);
+
+    }
+
+    private Map<Long, List<Long>> mapTagRelationshipResults(List<Object[]> rawRelations) {
         Map<Long, List<Long>> parentToChildren = new HashMap<>();
         for (Object[] result : rawRelations) {
             Long parentId = result[0] == null ? 0L : ((BigInteger) result[0]).longValue();
@@ -302,16 +336,19 @@ public class TagStructureServiceImpl implements TagStructureService {
             children.add(childId);
             parentToChildren.put(parentId, children);
         }
-
         return parentToChildren;
     }
 
-    private FatTag fillInTag(Long tagId, Map<Long, List<Long>> parentToChildren)
+    private FatTag fillInTag(Long tagId, Map<Long, List<Long>> parentToChildren, boolean useCache)
             throws TagStructureException {
         // check for tag in cache
-        FatTag fatTag = tagCache.get(tagId);
-        if (fatTag != null) {
-            return fatTag;
+        FatTag fatTag = null;
+
+        if (useCache) {
+            fatTag = tagCache.get(tagId);
+            if (fatTag != null) {
+                return fatTag;
+            }
         }
 
         // create new FatTag with passed tag
@@ -328,7 +365,7 @@ public class TagStructureServiceImpl implements TagStructureService {
             List<Long> childrenIds = parentToChildren.get(fatTag.getId());
             for (Long childId : childrenIds) {
                 // fill tag
-                FatTag fatChild = fillInTag(childId, parentToChildren);
+                FatTag fatChild = fillInTag(childId, parentToChildren, useCache);
                 // set parent in tag
                 fatChild.setParentId(fatTag.getId());
                 // add to list
@@ -340,7 +377,9 @@ public class TagStructureServiceImpl implements TagStructureService {
         fatTag.addChildren(filledChildren);
 
         // save in cache
-        tagCache.set(fatTag);
+        if (useCache) {
+            tagCache.set(fatTag);
+        }
         // return FatTag
         return fatTag;
     }

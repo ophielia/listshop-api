@@ -177,13 +177,22 @@ public class ModelMapper {
     }
 
     public static ListLayoutCategory toModel(ListLayoutCategoryEntity cat) {
+        return toModel(cat, true);
+
+    }
+
+    public static ListLayoutCategory toModel(ListLayoutCategoryEntity cat, boolean includeTags) {
         if (cat == null) {
             return null;
         }
         ListLayoutCategory returnval = (ListLayoutCategory) new ListLayoutCategory(cat.getId())
                 .name(cat.getName());
         returnval = (ListLayoutCategory) returnval.layoutId(cat.getLayoutId());
-        returnval = (ListLayoutCategory) returnval.tags(toModel(cat.getTags()));
+        if (includeTags) {
+            returnval = (ListLayoutCategory) returnval.tags(toModel(cat.getTags()));
+        } else {
+            returnval = (ListLayoutCategory) returnval.tags(new ArrayList<>());
+        }
         return returnval;
 
     }

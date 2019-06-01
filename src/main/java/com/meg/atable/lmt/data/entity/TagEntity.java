@@ -21,6 +21,12 @@ import java.util.Objects;
                         name = "increment_size",
                         value = "1")}
 )
+@NamedEntityGraph(
+        name = "tag-category-graph",
+        attributeNodes = {
+                @NamedAttributeNode("categories")
+        }
+)
 public class TagEntity {
 
     @Id
@@ -209,6 +215,10 @@ public class TagEntity {
 
     public void setRemovedOn(Date removedOn) {
         this.removedOn = removedOn;
+    }
+
+    public List<ListLayoutCategoryEntity> getCategories() {
+        return categories;
     }
 
     public TagEntity copy() {

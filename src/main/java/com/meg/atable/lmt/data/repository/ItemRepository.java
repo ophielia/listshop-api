@@ -26,4 +26,16 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
 
     @Query(value="select * from list_item i join dish_tags t on t.tag_id = i.tag_id where dish_id = :dishId and list_id = :listId", nativeQuery=true)
     List<ItemEntity> getItemsForDish(@Param("listId") Long listId,@Param("dishId") Long dishId);
+
+    /*    @Query(value = "select * from list_item where (updated_on > :changedAfter" +
+                " or removed_on > :changedAfter " +
+                " or crossed_off > :changedAfter" +
+                " or added_on > :changedAfter" +
+                " ) and list_id = :listId", nativeQuery = true)*/
+//@Query(value = "select * from list_item where list_id = :listId and added_on > :changedAfter", nativeQuery = true)
+    @Query(value = "select i from ItemEntity i where i.listId = :listId and (" +
+            " i.addedOn > :changedAfter or" +
+            " i.removedOn > :changedAfter )"
+    )
+    List<ItemEntity> getItemsChangedAfter(@Param("changedAfter") Date changedAfter, @Param("listId") Long shoppingListId);
 }

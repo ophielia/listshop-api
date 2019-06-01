@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -30,7 +31,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @RequestMapping(method = RequestMethod.GET, value = "/shared/{listLayoutId}", produces = "application/json")
-    ResponseEntity<Object> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId, @RequestParam(value = "after", required = true) Date changedAfter) throws ObjectNotFoundException, ObjectNotYoursException;
+    ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId, @RequestParam(value = "after", required = true) Date changedAfter) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{listId}", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> setListActive(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value = "generateType", required = true) String filter);

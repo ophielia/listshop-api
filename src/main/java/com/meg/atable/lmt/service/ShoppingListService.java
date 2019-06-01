@@ -2,12 +2,10 @@ package com.meg.atable.lmt.service;
 
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
-import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by margaretmartin on 30/10/2017.
@@ -67,7 +65,6 @@ public interface ShoppingListService {
 
     ShoppingListEntity getActiveListForUser(String name);
 
-    List<ItemEntity> getChangedItemsForList(String name, Date changedAfter, Long layoutId);
+    List<ItemEntity> getChangedItemsForActiveList(String name, Date changedAfter, Long layoutId);
 
-    Map<Long, ListLayoutCategoryEntity> getCategoryDictionaryForItems(Long layoutId, List<ItemEntity> items);
 }

@@ -2,9 +2,11 @@ package com.meg.atable.lmt.service;
 
 import com.meg.atable.lmt.api.model.Category;
 import com.meg.atable.lmt.api.model.ListLayoutType;
+import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.ListLayoutEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
+import javafx.util.Pair;
 
 import java.util.Date;
 import java.util.List;
@@ -56,5 +58,7 @@ public interface ListLayoutService {
     void moveCategory(Long categoryId, boolean moveUp) throws ListLayoutException;
 
 
-    List<ListLayoutCategoryEntity> getCategoryChanges(Long listLayoutId, Date changedAfter);
+    List<Pair<TagEntity, ListLayoutCategoryEntity>> getTagCategoryChanges(Long listLayoutId, Date changedAfter);
+
+    List<Pair<ItemEntity, ListLayoutCategoryEntity>> getItemChangesWithCategories(Long listLayoutId, List<ItemEntity> changedItems);
 }

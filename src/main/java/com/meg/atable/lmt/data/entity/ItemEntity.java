@@ -1,12 +1,9 @@
 package com.meg.atable.lmt.data.entity;
 
-import com.meg.atable.lmt.api.model.ItemSourceType;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by margaretmartin on 24/10/2017.

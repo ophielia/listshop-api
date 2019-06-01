@@ -7,11 +7,14 @@ import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
+import com.meg.atable.lmt.service.ListLayoutService;
 import com.meg.atable.lmt.service.ShoppingListException;
 import com.meg.atable.lmt.service.ShoppingListService;
+import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
@@ -26,7 +29,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -40,6 +42,9 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Autowired
     private ShoppingListService shoppingListService;
+
+    @Autowired
+    private ListLayoutService listLayoutService;
 
     public ResponseEntity<Resources<ShoppingListResource>> retrieveLists(Principal principal) {
 
@@ -96,18 +101,19 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<Object> refreshListItems(Principal principal, Long listLayoutId, Date changedAfter) throws ObjectNotFoundException, ObjectNotYoursException {
-        List<ItemEntity> changedItems = shoppingListService.getChangedItemsForList(principal.getName(), changedAfter, listLayoutId);
-        Map<Long, ListLayoutCategoryEntity> itemsToCategories = shoppingListService.getCategoryDictionaryForItems(listLayoutId, changedItems);
+    public ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId,
+                                                                          @RequestParam(value = "after", required = true)
+                                                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date changedAfter) throws ObjectNotFoundException, ObjectNotYoursException {
+        List<ItemEntity> changedItems = shoppingListService.getChangedItemsForActiveList(principal.getName(), changedAfter, listLayoutId);
+
+        List<Pair<ItemEntity, ListLayoutCategoryEntity>> itemsToCategories = listLayoutService.getItemChangesWithCategories(listLayoutId, changedItems);
 
         List<ListItemRefreshResource> resourceList = new ArrayList<>();
-        for (ItemEntity item : changedItems) {
-            // get category
-            ListLayoutCategoryEntity category = itemsToCategories.get(item.getId());
-            // make resource, and add to list
-            ListItemRefreshResource resource = new ListItemRefreshResource(item, category);
-            resourceList.add(resource);
+        for (Pair<ItemEntity, ListLayoutCategoryEntity> change : itemsToCategories) {
+            ListItemRefreshResource refresh = new ListItemRefreshResource(change.getKey(), change.getValue());
+            resourceList.add(refresh);
         }
+
         return new ResponseEntity(resourceList, HttpStatus.OK);
     }
 

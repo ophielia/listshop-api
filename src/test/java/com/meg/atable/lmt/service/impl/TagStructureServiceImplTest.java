@@ -10,13 +10,23 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
+@Transactional
+@Sql(value = {"/sql/com/meg/atable/lmt/service/impl/TagStructureServiceTest-rollback.sql",
+        "/sql/com/meg/atable/lmt/service/impl/TagStructureServiceTest.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/sql/com/meg/atable/lmt/service/impl/TagStructureServiceTest-rollback.sql"},
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class TagStructureServiceImplTest {
 
 
@@ -62,6 +72,33 @@ public class TagStructureServiceImplTest {
 
         Optional<Long> testFind = allTagIds.stream().filter(t-> t.equals(506L)).findFirst();
         Assert.assertFalse(testFind.isPresent());
+    }
+
+    @Test
+    public void testGetChangedTagsWithChildren() {
+        // setup - tag structure
+        // tag 4004
+        //      tag 4000
+        //          tag 4001
+        //              tag 4002
+        //          tag 4003
+        //          tag 4005
+
+        // tag 4002 and 4003 changed
+        LocalDateTime changedAfter = LocalDateTime.now().minusHours(1);
+        List<FatTag> changed = tagStructureService.getChangedTagsWithChildren(java.sql.Timestamp.valueOf(changedAfter));
+
+        Assert.assertNotNull(changed);
+        Assert.assertEquals(1, changed.size());
+
+        List<FatTag> resultList = changed.stream()
+                .flatMap(FatTag::flattened)
+                .collect(Collectors.toList());
+        Map<Long, FatTag> resultMap = resultList.stream().collect(Collectors.toMap(f -> f.getId(), f -> f));
+
+        Assert.assertFalse(resultMap.containsKey(1400005L));
+        Assert.assertTrue(resultMap.containsKey(1400003L));
+        Assert.assertTrue(resultMap.containsKey(1400002L));
     }
 
     private Set<Long> getChildrenIds(FatTag tag) {

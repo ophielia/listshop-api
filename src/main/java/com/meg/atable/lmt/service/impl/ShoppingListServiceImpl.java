@@ -80,15 +80,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<ItemEntity> getChangedItemsForList(String name, Date changedAfter, Long layoutId) {
-        //MM API implement this
-        return new ArrayList<>();
-    }
+    public List<ItemEntity> getChangedItemsForActiveList(String name, Date changedAfter, Long layoutId) {
+        ShoppingListEntity shoppingListEntity = getActiveListForUser(name);
 
-    @Override
-    public Map<Long, ListLayoutCategoryEntity> getCategoryDictionaryForItems(Long layoutId, List<ItemEntity> items) {
-        //MM API implement this
-        return new HashMap<>();
+        return itemRepository.getItemsChangedAfter(changedAfter, shoppingListEntity.getId());
     }
 
     @Override

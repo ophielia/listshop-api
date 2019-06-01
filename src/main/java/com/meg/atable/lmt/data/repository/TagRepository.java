@@ -5,10 +5,12 @@ import com.meg.atable.lmt.api.model.TagType;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -102,4 +104,15 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
             "LIMIT  1 ", nativeQuery = true)
     TagEntity getNextRatingDown(Long parentRatingId, Long currentId);
 
+    @Query(value = "select * from tag where (updated_on > :changedAfter" +
+            " or created_on > :changedAfter" +
+            " or removed_on > :changedAfter " +
+            " )", nativeQuery = true)
+    List<TagEntity> getTagsChangedAfter(Date changedAfter);
+
+    @EntityGraph(value = "tag-category-graph")
+    @Query(value = "select distinct t FROM TagEntity t , ListLayoutCategoryEntity c " +
+            "            where c member of t.categories and c.layoutId = ?2 " +
+            "            and t.categoryUpdatedOn > ?1 ")
+    List<TagEntity> getTagsWithCategoriesChangedAfter(Date changedAfter, Long listLayoutId);
 }

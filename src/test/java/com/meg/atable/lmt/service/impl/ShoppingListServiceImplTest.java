@@ -942,6 +942,19 @@ public class ShoppingListServiceImplTest {
 
     }
 
+    @Test
+    public void testDates() {
+        //LocalDateTime dateTime = LocalDateTime.now().minusMonths(6);
+        //Date date = java.sql.Timestamp.valueOf(dateTime);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -6);
+        Date date = calendar.getTime();
+        List<ItemEntity> items = shoppingListService.getChangedItemsForActiveList(TestConstants.USER_3_NAME, date, 5L);
+        Assert.assertNotNull(items);
+        Assert.assertFalse(items.isEmpty());
+    }
+
     // done - empty merge
     // done - test basic merge - 1 new no replace
     // done - test no change merge
