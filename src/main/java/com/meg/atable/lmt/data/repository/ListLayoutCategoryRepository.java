@@ -86,8 +86,8 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
             "from category_tags ct " +
             "join tag t using (tag_id) " +
             "join list_category c using (category_id) " +
-            "where t.tag_id in (:tagIds) and c.layout_id = :layoutId;", nativeQuery = true)
-    List<Object[]> getTagToCategoryRelationshipsForTagIds(@Param("tagIds") Set<Long> tagIds, Long layoutId);
+            "where c.layout_id = :listLayoutId and t.tag_id in (:tagIds);", nativeQuery = true)
+    List<Object[]> getTagToCategoryRelationshipsForTagIds(@Param("tagIds") Set<Long> tagIds, @Param("listLayoutId") Long listLayoutId);
 
     @Query(value = "select item_id, c.category_id  " +
             "from category_tags ct  " +

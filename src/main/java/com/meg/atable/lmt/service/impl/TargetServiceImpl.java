@@ -235,7 +235,7 @@ public class TargetServiceImpl implements TargetService {
         TargetSlotEntity toCreate = new TargetSlotEntity();
         toCreate.setSlotDishTagId(TagService.MAIN_DISH_TAG_ID);
 
-        TargetSlotEntity slot = createNewSlot(userName,target,toCreate);
+        TargetSlotEntity slot = createNewSlot(target,toCreate);
 
         target.addSlot(slot);
 
@@ -246,7 +246,7 @@ public class TargetServiceImpl implements TargetService {
 
 
 
-    private TargetSlotEntity createNewSlot(String name, TargetEntity targetEntity, TargetSlotEntity targetSlotEntity) {
+    private TargetSlotEntity createNewSlot(TargetEntity targetEntity, TargetSlotEntity targetSlotEntity) {
         targetSlotEntity.setTargetId(targetEntity.getTargetId());
         List<TargetSlotEntity> slots = targetEntity.getSlots();
         if (slots == null) {
