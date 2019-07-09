@@ -259,6 +259,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         } else {
             shoppingListEntityOpt = shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId);
         }
+        // may be a list which doesn't have items.  Check for that here
+        if (!shoppingListEntityOpt.isPresent()) {
+            shoppingListEntityOpt = shoppingListRepository.findById(listId);
+        }
         ShoppingListEntity shoppingListEntity = shoppingListEntityOpt.orElse(null);
         if (shoppingListEntity != null && shoppingListEntity.getUserId().equals(user.getId())) {
             return shoppingListEntity;
@@ -502,10 +506,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public MergeResult mergeFromClient(String userName, MergeRequest mergeRequest) {
 
         // get active list for user
-        ShoppingListEntity list = getActiveListForUser(userName);
+        ShoppingListEntity list = getActiveListForUser(userName, true);
 
         // ensure active list id equals mergeList
-        if (list.getId() != mergeRequest.getListId()) {
+        if (!list.getId().equals(mergeRequest.getListId())) {
             logger.error("Trying to merge list which is not currently active! username [" + userName + "], active_id [" + list.getId() + "], merge_list_id [" + mergeRequest.getListId() + "]");
         }
         // create MergeCollector from list
