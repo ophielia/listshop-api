@@ -349,6 +349,7 @@ public class ModelMapper {
                 .categories(categories)
                 .dishSources(dishSources)
                 .listSources(listSources)
+                .layoutId(String.valueOf(shoppingListEntity.getListLayoutId()))
                 .updated(shoppingListEntity.getLastUpdate())
                 .itemCount(shoppingListEntity.getItems() != null ? shoppingListEntity.getItems().size() : 0)
                 .userId(shoppingListEntity.getUserId());

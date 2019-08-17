@@ -30,6 +30,9 @@ public class MergeItemCollector extends AbstractItemCollector {
         while (mergeIterator.hasNext()) {
             ItemEntity mergeItemEntity = mergeIterator.next();
             Long tagId = mergeItemEntity.getTag().getId();
+            if (tagId.equals(151L)) {
+                Long beep = mergeItemEntity.getTag().getId();
+            }
             if (getTagCollectedMap().containsKey(tagId)) {
                 CollectedItem serverItem = getTagCollectedMap().get(mergeItemEntity.getTag().getId());
                 CollectedItem mergeItem = new CollectedItem(mergeItemEntity);
@@ -71,8 +74,24 @@ public class MergeItemCollector extends AbstractItemCollector {
         if (period.isNegative()) {
             return serverItem;
         }
-        mergeItem.setChanged(true);
-        return mergeItem;
+        copyMergedIntoServerItem(mergeItem, serverItem);
+        serverItem.setChanged(true);
+
+        return serverItem;
+    }
+
+    private void copyMergedIntoServerItem(CollectedItem mergeItem, CollectedItem serverItem) {
+        ItemEntity nakedServer = serverItem.getItem();
+        ItemEntity nakedClient = mergeItem.getItem();
+        nakedServer.setAddedOn(nakedClient.getAddedOn());
+        nakedServer.setCrossedOff(nakedClient.getCrossedOff());
+        nakedServer.setFreeText(nakedClient.getFreeText());
+        nakedServer.setFrequent(nakedClient.isFrequent());
+        nakedServer.setRemovedOn(nakedClient.getRemovedOn());
+        nakedServer.setUpdatedOn(nakedClient.getUpdatedOn());
+        nakedServer.setUsedCount(nakedClient.getUsedCount());
+
+        serverItem.setItem(nakedServer);
     }
 
 

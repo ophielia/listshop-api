@@ -22,6 +22,9 @@ public class ShoppingList {
     @JsonProperty("layout_type")
     private String layoutType;
 
+    @JsonProperty("layout_id")
+    private String layoutId;
+
     @JsonProperty("item_count")
     private Integer itemCount;
 
@@ -111,6 +114,15 @@ public class ShoppingList {
 
     public ShoppingList listSources(List<ItemSource> listSources) {
         this.listSources = listSources;
+        return this;
+    }
+
+    public String getLayoutId() {
+        return layoutId;
+    }
+
+    public ShoppingList layoutId(String layoutId) {
+        this.layoutId = layoutId;
         return this;
     }
 

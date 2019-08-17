@@ -2,8 +2,8 @@ package com.meg.atable.lmt.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MergeRequest {
@@ -12,7 +12,7 @@ public class MergeRequest {
     private Long listId;
 
     @JsonProperty("last_changed")
-    private LocalDate lastChanged;
+    private Date lastChanged;
 
     @JsonProperty("layout_id")
     private Long layoutId;
@@ -28,11 +28,11 @@ public class MergeRequest {
         this.listId = listId;
     }
 
-    public LocalDate getLastChanged() {
+    public Date getLastChanged() {
         return lastChanged;
     }
 
-    public void setLastChanged(LocalDate lastChanged) {
+    public void setLastChanged(Date lastChanged) {
         this.lastChanged = lastChanged;
     }
 

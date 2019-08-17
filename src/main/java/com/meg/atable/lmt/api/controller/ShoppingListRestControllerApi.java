@@ -27,7 +27,7 @@ public interface ShoppingListRestControllerApi {
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) throws ObjectNotFoundException, ObjectNotYoursException;
 
-    @RequestMapping(method = RequestMethod.POST, value = "/shared", produces = "application/json")
+    @RequestMapping(method = RequestMethod.PUT, value = "/shared", produces = "application/json")
     ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @RequestMapping(method = RequestMethod.GET, value = "/shared/{listLayoutId}", produces = "application/json")

@@ -560,6 +560,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .filter(i -> i.getTagId() != null)
                 .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
         Set<Long> tagKeys = mergeMap.keySet().stream().map(k -> Long.valueOf(k)).collect(Collectors.toSet());
+        mergeMap.keySet().forEach(k -> logger.debug("the  List for key [" + k + "] and item [" + mergeMap.get(k).getCrossedOff() + "]"));
+
 
         if (tagKeys.isEmpty()) {
             return new ArrayList<>();
@@ -884,7 +886,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // set crossed off for item - by setting crossedOff date
         if (crossedOff) {
-            item.setCrossedOff(new Date());
+            Date updateDate = new Date();
+            item.setCrossedOff(updateDate);
+            item.setUpdatedOn(updateDate);
             shoppingListEntity.setLastUpdate(new Date());
         } else {
             item.setCrossedOff(null);
