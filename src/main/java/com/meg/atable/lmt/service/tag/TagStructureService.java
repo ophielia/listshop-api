@@ -6,6 +6,7 @@ import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.entity.TagRelationEntity;
 import com.meg.atable.lmt.data.entity.TagSearchGroupEntity;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,4 +56,8 @@ public interface TagStructureService {
     void removeMembersForGroup(Long id, List<Long> toDelete);
 
     List<FatTag> getTagsWithChildren(List<TagType> tagTypes);
+
+    List<FatTag> getChangedTagsWithChildren(Date changedAfter);
+
+
 }

@@ -1,12 +1,9 @@
 package com.meg.atable.lmt.data.entity;
 
-import com.meg.atable.lmt.api.model.ItemSourceType;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by margaretmartin on 24/10/2017.
@@ -31,7 +28,7 @@ public class ItemEntity {
     private Long item_id;
 
     @OneToOne
-    @JoinColumn(name = "tag_id")
+    @JoinColumn(name = "tagId")
     private TagEntity tag;
 
     @Column(name = "dish_sources")
@@ -48,36 +45,19 @@ public class ItemEntity {
 
     private Date addedOn;
 
-    private String freeText;
-
     private Date crossedOff;
 
-    private String listCategory;
+    private Date removedOn;
+
+    private Date updatedOn;
+
+    private String freeText;
 
     @Column(name = "frequent_cross_off")
     private Boolean isFrequent = false;
 
-
     @Transient
-    private Long tag_id;
-
-
-    @Transient
-    private List<DishEntity> dishSources = new ArrayList<>();
-
-    @Transient
-    private List<ShoppingListEntity> listSources = new ArrayList<>();
-
-    private Long categoryId;
-
-    @Transient
-    private int removedCount;
-    @Transient
-    private int addCount;
-    @Transient
-    private boolean isUpdated;
-    @Transient
-    private boolean deleted;
+    private Long tagId;
 
     public ItemEntity(Long id) {
         item_id = id;
@@ -89,6 +69,11 @@ public class ItemEntity {
 
     public Long getId() {
         return item_id;
+    }
+
+    public void setId(Long itemId) {
+        // TODO - this is just for tests - make a DaoUtils so we can remove this method
+        this.item_id = itemId;
     }
 
     public TagEntity getTag() {
@@ -115,6 +100,14 @@ public class ItemEntity {
         this.addedOn = addedOn;
     }
 
+    public Date getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
+    }
+
     public String getFreeText() {
         return freeText;
     }
@@ -131,12 +124,12 @@ public class ItemEntity {
         this.crossedOff = crossedOff;
     }
 
-    public String getListCategory() {
-        return listCategory;
+    public Date getRemovedOn() {
+        return removedOn;
     }
 
-    public void setListCategory(String listCategory) {
-        this.listCategory = listCategory;
+    public void setRemovedOn(Date removedOn) {
+        this.removedOn = removedOn;
     }
 
     public Long getListId() {
@@ -156,37 +149,19 @@ public class ItemEntity {
     }
 
     public Long getTagId() {
-        return tag_id;
+        return tagId;
 
     }
 
-    public void setTagId(Long tag_id) {
-        this.tag_id = tag_id;
-    }
-
-
-    public void addItemSource(ItemSourceType sourceType) {
-        if (this.rawDishSources == null) {
-            this.rawDishSources = sourceType.name();
-            return;
-        }
-        if (this.rawDishSources.contains(sourceType.name())) {
-            return;
-        }
-        this.rawDishSources = this.rawDishSources + ";" + sourceType.name();
-    }
-
-    public Long getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
     }
 
     public boolean isFrequent() {
-
-        return isFrequent == null ? false : isFrequent;
+        if (isFrequent == null) {
+            return false;
+        }
+        return isFrequent;
     }
 
     public void setFrequent(boolean frequent) {
@@ -201,43 +176,6 @@ public class ItemEntity {
         this.rawListSources = rawListSources;
     }
 
-    public List<DishEntity> getDishSources() {
-        return dishSources;
-    }
-
-    public void setDishSources(List<DishEntity> dishSources) {
-        this.dishSources = dishSources;
-    }
-
-    public List<ShoppingListEntity> getListSources() {
-        return listSources;
-    }
-
-    public void setListSources(List<ShoppingListEntity> listSources) {
-        this.listSources = listSources;
-    }
-
-    public void addRawDishSource(Long dishId) {
-        if (dishId == null) {
-            return;
-        }
-        if (rawDishSources == null) {
-            rawDishSources = String.valueOf(dishId);
-        } else {
-            rawDishSources = rawDishSources + ";" + dishId;
-        }
-    }
-
-    public void addRawListSource(String sourceType) {
-        if (sourceType == null) {
-            return;
-        }
-        if (rawListSources == null) {
-            rawListSources = sourceType;
-        } else {
-            rawListSources = rawListSources + ";" + sourceType;
-        }
-    }
 
 
     @Override
@@ -251,59 +189,9 @@ public class ItemEntity {
                 ", addedOn=" + addedOn +
                 ", freeText='" + freeText + '\'' +
                 ", crossedOff=" + crossedOff +
-                ", tag_id=" + tag_id +
                 ", isFrequent=" + isFrequent +
                 '}';
     }
-
-    public boolean isUpdated() {
-        return !isDeleted() && (isUpdated || addCount > 0 || removedCount > 0);
-    }
-
-    public void setUpdated(boolean updated) {
-        this.isUpdated = updated;
-    }
-
-    public boolean isAdded() {
-        return addCount > 0;
-    }
-
-    public int getAddCount() {
-        return addCount;
-    }
-
-    public void incrementAddCount() {
-        this.addCount++;
-    }
-
-    public void incrementAddCount(int addCount) {
-        this.addCount = this.addCount + addCount;
-    }
-
-    public boolean isRemoved() {
-        return removedCount > 0;
-    }
-
-    public int getRemovedCount() {
-        return removedCount;
-    }
-
-    public void incrementRemovedCount() {
-        this.removedCount++;
-    }
-
-    public void incrementRemovedCount(int removeCount) {
-        this.removedCount = this.removedCount + removeCount;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
 
     public String getDisplay() {
         if (this.tag != null) {

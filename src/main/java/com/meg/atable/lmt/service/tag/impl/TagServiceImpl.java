@@ -1,6 +1,6 @@
 package com.meg.atable.lmt.service.tag.impl;
 
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.api.exception.ActionInvalidException;
 import com.meg.atable.lmt.api.model.*;
@@ -10,8 +10,9 @@ import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.DishSearchCriteria;
 import com.meg.atable.lmt.service.DishSearchService;
 import com.meg.atable.lmt.service.DishService;
-import com.meg.atable.lmt.service.TagReplaceService;
+import com.meg.atable.lmt.service.ListTagStatisticService;
 import com.meg.atable.lmt.service.tag.TagChangeListener;
+import com.meg.atable.lmt.service.tag.TagReplaceService;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,9 @@ public class TagServiceImpl implements TagService {
 
     @Autowired
     private DishService dishService;
+
+    @Autowired
+    private ListTagStatisticService tagStatisticService;
 
     @Override
     public void deleteTagFromDish(String userName, Long dishId, Long tagId) {
@@ -138,6 +142,15 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public List<TagEntity> getReplacedTagsFromIds(Set<Long> tagKeys) {
+        List<TagEntity> tags = tagRepository.findTagsToBeReplaced(tagKeys);
+        if (tags == null) {
+            return new ArrayList<>();
+        }
+        return tags;
+    }
+
+    @Override
     public TagEntity updateTag(Long tagId, TagEntity toUpdate) {
         // get tag from db
         Optional<TagEntity> dbTagOpt = tagRepository.findById(tagId);
@@ -154,8 +167,14 @@ public class TagServiceImpl implements TagService {
         dbTag.setSearchSelect(toUpdate.getSearchSelect());
         dbTag.setPower(toUpdate.getPower());
         dbTag.setToDelete(toUpdate.isToDelete());
+        dbTag.setRemovedOn(toUpdate.getRemovedOn());
+        dbTag.setCreatedOn(toUpdate.getCreatedOn());
+        dbTag.setCategoryUpdatedOn(toUpdate.getCategoryUpdatedOn());
         dbTag.setReplacementTagId(toUpdate.getReplacementTagId());
+
+        dbTag.setUpdatedOn(new Date());
         dbTag = tagRepository.save(dbTag);
+
 
         // if change, maintain change
         fireTagUpdatedEvent(beforeChange, dbTag);
@@ -186,7 +205,7 @@ public class TagServiceImpl implements TagService {
             return getParentTagList(tagTypes);
         }
         // get by tag type
-        if (tagTypes != null) {
+        if (tagTypes != null && !tagTypes.isEmpty()) {
             return tagRepository.findTagsByToDeleteFalseAndTagTypeInOrderByName(tagTypes);
         }
         return tagRepository.findTagsByToDeleteFalse(new Sort(Sort.Direction.ASC, "name"));
@@ -214,6 +233,7 @@ public class TagServiceImpl implements TagService {
         newtag.setAssignSelect(true);
         newtag.setSearchSelect(false);
         newtag.setToDelete(false);
+        newtag.setCreatedOn(new Date());
         TagEntity saved = tagRepository.save(newtag);
 
         tagStructureService.createRelation(parentTag, saved);
@@ -263,16 +283,15 @@ public class TagServiceImpl implements TagService {
 
         }
 
-
         // mark tag to be deleted
         tag.setToDelete(true);
+        tag.setRemovedOn(new Date());
+        //MM TEST THIS
         tag.setReplacementTagId(replacement != null ? replacement.getId() : null);
+        // update and replace usage
         updateTag(tagId, tag);
+        tagReplaceService.replaceTag(tag.getId(), tag.getReplacementTagId());
 
-        // delete tag now if immediate delete is activated
-        if (deleteImmediately) {
-            tagReplaceService.replaceTag(tag.getId(), tag.getReplacementTagId());
-        }
     }
 
     public void incrementDishRating(String name, Long dishId, Long ratingId, SortOrMoveDirection moveDirection) {
@@ -352,7 +371,9 @@ public class TagServiceImpl implements TagService {
 
         TagEntity tag = tagOpt.get();
 
+
         List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
+
         // check if tag exists already
         if (dishTags.contains(tag)) {
             return;
@@ -365,7 +386,10 @@ public class TagServiceImpl implements TagService {
         // add tags to dish
         dish.setTags(dishTags);
         dishService.save(dish, false);
+        // update statistic
+        tagStatisticService.countTagAddedToDish(dish.getUserId(), tagId);
     }
+
 
     private List<TagEntity> getTagsForDish(DishEntity dish, List<TagType> tagtypes) {
         List<TagEntity> results = tagRepository.findTagsByDishes(dish);
@@ -398,6 +422,7 @@ public class TagServiceImpl implements TagService {
         // assign Child tag to parent tag
         TagEntity parentTag = tagStructureService.assignTagToParent(childTag, newParentTag);
 
+        childTag.setUpdatedOn(new Date());
         // fire tag changed event
         fireTagParentChangedEvent(originalParent, parentTag, childTag);
 
@@ -433,7 +458,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void replaceTagInDishes(String name, Long fromTagId, Long toTagId) {
-        UserAccountEntity user = userService.getUserByUserName(name);
+        UserEntity user = userService.getUserByUserEmail(name);
         List<DishEntity> dishes;
         TagEntity toTag = getTagById(toTagId);
 

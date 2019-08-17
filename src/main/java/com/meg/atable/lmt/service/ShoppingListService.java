@@ -1,12 +1,10 @@
 package com.meg.atable.lmt.service;
 
-import com.meg.atable.lmt.api.model.Category;
-import com.meg.atable.lmt.api.model.GenerateType;
-import com.meg.atable.lmt.api.model.ListGenerateProperties;
-import com.meg.atable.lmt.api.model.ListType;
+import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,6 +14,8 @@ public interface ShoppingListService {
 
     List<ShoppingListEntity> getListsByUsername(String userName);
 
+    ShoppingListEntity getActiveListForUser(String name, boolean includeRemoved);
+
     ShoppingListEntity createList(String userName, ShoppingListEntity shoppingListEntity);
 
     ShoppingListEntity createList(String userName, ListGenerateProperties listGeneratProperties) throws ShoppingListException;
@@ -23,6 +23,8 @@ public interface ShoppingListService {
     ShoppingListEntity getListByUsernameAndType(String userName, ListType listType);
 
     ShoppingListEntity getListById(String userName, Long listId);
+
+    ShoppingListEntity getListById(String userName, Long listId, boolean includeRemoved);
 
     boolean deleteList(String userName, Long listId);
 
@@ -52,7 +54,17 @@ public interface ShoppingListService {
 
     void deleteAllItemsFromList(String name, Long listId);
 
+    // Note - this method doesn't check yet for MergeConflicts.  But the signature
+    // is there to build the interface, so that MergeConflicts can be added later
+    // less painfully.  Right now just going for basic functionality - taking the
+    // last modified item.
+    MergeResult mergeFromClient(String userName, MergeRequest mergeRequest);
+
     void addListToList(String name, Long listId, ListType listType);
 
+
+    ShoppingListEntity getActiveListForUser(String name);
+
+    List<ItemEntity> getChangedItemsForActiveList(String name, Date changedAfter, Long layoutId);
 
 }

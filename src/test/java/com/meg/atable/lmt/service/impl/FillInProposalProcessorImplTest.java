@@ -3,7 +3,8 @@ package com.meg.atable.lmt.service.impl;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.service.DishSearchService;
 import com.meg.atable.lmt.service.DishTagSearchResult;
-import com.meg.atable.lmt.service.ProcessResult;
+import com.meg.atable.lmt.service.proposal.ProcessResult;
+import com.meg.atable.lmt.service.proposal.ProposalRequest;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
@@ -399,12 +400,6 @@ public class FillInProposalProcessorImplTest {
         Assert.assertEquals(contextIndex, testResult.getCurrentApproach());
         }
 
-
-    // MM
-    // test breakage / robustness
-    // no target tags
-    // slot with no tag
-    // only one target slot
 
     @Test
     public void testFillInProposal_NoTargetTagIds() throws Exception {

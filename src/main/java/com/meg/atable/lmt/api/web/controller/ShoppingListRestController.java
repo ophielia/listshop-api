@@ -5,21 +5,29 @@ import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
+import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
+import com.meg.atable.lmt.service.ListLayoutService;
 import com.meg.atable.lmt.service.ShoppingListException;
 import com.meg.atable.lmt.service.ShoppingListService;
+import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +42,9 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Autowired
     private ShoppingListService shoppingListService;
+
+    @Autowired
+    private ListLayoutService listLayoutService;
 
     public ResponseEntity<Resources<ShoppingListResource>> retrieveLists(Principal principal) {
 
@@ -61,6 +72,49 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             return ResponseEntity.created(URI.create(oneList.getHref())).build();
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @Override
+    public ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest) throws ObjectNotFoundException, ObjectNotYoursException {
+        //MM need handling for different list - error handling!
+        Long listId = mergeRequest.getListId();
+        Long layoutId = mergeRequest.getLayoutId();
+
+        MergeResult mergeResult = this.shoppingListService.mergeFromClient(principal.getName(), mergeRequest);
+
+        // check for conflicts (won't be any until we implement this)
+        if (mergeResult.getMergeConflicts() == null) {
+            // retrieve the list, and put it into the result
+            ShoppingListEntity shoppingList = this.shoppingListService.getListById(principal.getName(), listId);
+            // possibly set layout id in shopping list
+            if (layoutId != null && layoutId != shoppingList.getListLayoutId()) {
+                shoppingList.setListLayoutId(layoutId);
+            }
+            List<Category> categories = shoppingListService.categorizeList(principal.getName(), shoppingList, null, false, null);
+            shoppingListService.fillSources(shoppingList);
+            MergeResultResource resource = new MergeResultResource(mergeResult, shoppingList, categories);
+
+            return new ResponseEntity(resource, HttpStatus.OK);
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    @Override
+    public ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId,
+                                                                          @RequestParam(value = "after", required = true)
+                                                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date changedAfter) throws ObjectNotFoundException, ObjectNotYoursException {
+        List<ItemEntity> changedItems = shoppingListService.getChangedItemsForActiveList(principal.getName(), changedAfter, listLayoutId);
+
+        List<Pair<ItemEntity, ListLayoutCategoryEntity>> itemsToCategories = listLayoutService.getItemChangesWithCategories(listLayoutId, changedItems);
+
+        List<ListItemRefreshResource> resourceList = new ArrayList<>();
+        for (Pair<ItemEntity, ListLayoutCategoryEntity> change : itemsToCategories) {
+            ListItemRefreshResource refresh = new ListItemRefreshResource(change.getKey(), change.getValue());
+            resourceList.add(refresh);
+        }
+
+        return new ResponseEntity(resourceList, HttpStatus.OK);
     }
 
 
@@ -106,6 +160,28 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
+
+
+    @Override
+    public ResponseEntity<ShoppingListResource> retrieveActiveList(Principal principal,
+                                                                 @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
+                                                                 @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
+                                                                 @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry) {
+        ShoppingListEntity result = shoppingListService.getActiveListForUser(principal.getName());
+
+        if ("0".equals(highlightDish)) {
+            highlightDish = null;
+        }
+        ListType listType = null;
+        if (!"0".equals(highlightListType)) {
+            listType = ListType.valueOf(highlightListType);
+        }
+        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, listType);
+        shoppingListService.fillSources(result);
+        return singleResult(result, categories);
+    }
+
+
 
     @Override
     public ResponseEntity<ShoppingList> deleteList(Principal principal, @PathVariable("listId") Long listId) {

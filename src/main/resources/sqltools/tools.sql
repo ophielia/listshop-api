@@ -160,7 +160,12 @@ pg_dump -U bank -d atable -O --column-inserts > test.sql
 pg_dump -U bank -d atable -O --column-inserts > test.sql
 
 
-
+----- make sure all parent tags are not selectable
+update tag set assign_select = false
+where tag_id in (
+select distinct t.tag_id from tag t
+join tag_relation tr on t.tag_id = tr.parent_tag_id
+and assign_select = true);
 
 -- working on copy tags => fine grained
 -- make sure assign select is good for everything

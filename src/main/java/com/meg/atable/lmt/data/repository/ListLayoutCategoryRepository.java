@@ -4,8 +4,10 @@ import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 09/11/2017.
@@ -67,7 +69,31 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
             "order by display_order desc", nativeQuery = true)
     List<ListLayoutCategoryEntity> getSubcategoriesBelow(Long layoutId, Long parentId,int displayOrder);
 
+    @Query(value = "select tr.category_id, tr.tag_id " +
+            "       from category_tags tr " +
+            "       join tag t on t.tag_id = tr.tag_id " +
+            "       join list_category c on c.category_id = tr.category_id " +
+            "       where t.tag_id in (:tagIds)" +
+            "       and c.layout_id = :layoutId;", nativeQuery = true)
+    List<Object[]> getTagRelationshipsForIds(@Param("tagIds") Set<Long> tagIds, @Param("layoutId") Long layoutId);
+
+
     List<ListLayoutCategoryEntity> findByTagsContains(TagEntity tagEntity);
 
     List<ListLayoutCategoryEntity> findByLayoutIdEquals(Long layoutId);
+
+    @Query(value = "select tag_id, category_id " +
+            "from category_tags ct " +
+            "join tag t using (tag_id) " +
+            "join list_category c using (category_id) " +
+            "where c.layout_id = :listLayoutId and t.tag_id in (:tagIds);", nativeQuery = true)
+    List<Object[]> getTagToCategoryRelationshipsForTagIds(@Param("tagIds") Set<Long> tagIds, @Param("listLayoutId") Long listLayoutId);
+
+    @Query(value = "select item_id, c.category_id  " +
+            "from category_tags ct  " +
+            "join tag t on t.tag_id = ct.tag_id " +
+            "join list_item li on li.tag_id = t.tag_id " +
+            "join list_category c on c.category_id = ct.category_id  " +
+            "where c.layout_id = :layoutId and item_id in (:tagIds);", nativeQuery = true)
+    List<Object[]> getItemToCategoryRelationshipsForItemIds(@Param("tagIds") Set<Long> tagIds, @Param("layoutId") Long layoutId);
 }

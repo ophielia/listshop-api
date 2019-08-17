@@ -12,7 +12,7 @@ public final class TestConstants {
     public final static String USER_3_NAME = "me";
     public static final Long USER_3_ID = 20L;
     public final static String USER_4_NAME = "deleteuser";
-    public static final Long USER_4_ID = 503L;
+    public static final Long USER_4_ID = 502L;
 
     public static final Long MEAL_PLAN_1_ID = 500L;
 
@@ -70,7 +70,7 @@ public final class TestConstants {
     public static final Long TAG_SOUP = 301L;
     public static final Long TAG_TO_DELETE = 353L;
     public static final Long TAG_TO_REPLACE = 110L;
-
+    public static final Long TAG_TO_BE_PARENT = 43L; //Rutabegas
 
     public static final Long TARGET_1_ID = 500L;  // status
     public static final Long TARGET_2_ID = 502L; // belongs to user 1 (500) delete
@@ -83,6 +83,8 @@ public final class TestConstants {
     public static final Long DISH_3_ID = 54L; // Beef Broccoli
     public static final Long DISH_4_ID = 503L; // dummy dish, test only
     public static final Long DISH_5_ID = 62L;   // Fish Tacos
+    public static final Long DISH_6_ID = 603L; // for testing increment rating
+    public static final Long DISH_7_ID = 500L; // dish belongs to user 1
 
     public static final Long TARGET_3_SLOT_ID = 506L;
 

@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,6 +20,12 @@ import java.util.Objects;
                 @org.hibernate.annotations.Parameter(
                         name = "increment_size",
                         value = "1")}
+)
+@NamedEntityGraph(
+        name = "tag-category-graph",
+        attributeNodes = {
+                @NamedAttributeNode("categories")
+        }
 )
 public class TagEntity {
 
@@ -50,14 +57,22 @@ public class TagEntity {
 
     private Double power;
 
-    @Transient
-    private List<Long> childrenIds;
-    @Transient
-    private Long parentId;
-
     private Boolean toDelete = false;
 
     private Long replacementTagId;
+
+    private Date createdOn;
+    private Date updatedOn;
+    private Date categoryUpdatedOn;
+    private Date removedOn;
+
+    @Transient
+    private List<Long> childrenIds;
+
+    @Transient
+    private Long parentId;
+
+
 
     public TagEntity() {
         // jpa empty constructor
@@ -75,6 +90,11 @@ public class TagEntity {
 
     public Long getId() {
         return tag_id;
+    }
+
+    public void setId(Long tagId) {
+        // TODO - this is just for tests - make a DaoUtils so we can remove this method
+        this.tag_id = tagId;
     }
 
     public String getName() {
@@ -165,6 +185,41 @@ public class TagEntity {
         this.power = power;
     }
 
+    public Date getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public Date getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
+    }
+
+    public Date getCategoryUpdatedOn() {
+        return categoryUpdatedOn;
+    }
+
+    public void setCategoryUpdatedOn(Date categoryUpdatedOn) {
+        this.categoryUpdatedOn = categoryUpdatedOn;
+    }
+
+    public Date getRemovedOn() {
+        return removedOn;
+    }
+
+    public void setRemovedOn(Date removedOn) {
+        this.removedOn = removedOn;
+    }
+
+    public List<ListLayoutCategoryEntity> getCategories() {
+        return categories;
+    }
 
     public TagEntity copy() {
         TagEntity copy = new TagEntity();

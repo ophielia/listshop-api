@@ -1,5 +1,6 @@
 package com.meg.atable.lmt.api.controller;
 
+import com.meg.atable.lmt.api.model.CategoryItemRefresh;
 import com.meg.atable.lmt.api.model.ListLayout;
 import com.meg.atable.lmt.api.model.ListLayoutCategory;
 import com.meg.atable.lmt.api.model.ListLayoutResource;
@@ -9,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -28,6 +31,9 @@ public interface ListLayoutRestControllerApi {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}", produces = "application/json")
     ResponseEntity<ListLayout> readListLayout(Principal principal, @PathVariable("listLayoutId") Long listLayoutId);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/default", produces = "application/json")
+    ResponseEntity<ListLayout> readDefaultListLayout();
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listLayoutId}", produces = "application/json")
     ResponseEntity<ListLayout> deleteListLayout(Principal principal, @PathVariable("listLayoutId") Long listLayoutId);
@@ -59,5 +65,8 @@ public interface ListLayoutRestControllerApi {
 
     @RequestMapping(method = RequestMethod.POST, value = "/category/{categoryId}", produces = "application/json")
     ResponseEntity<Object> moveCategory(Principal principal, @PathVariable Long categoryId, @RequestParam(value = "move", required = true) String direction);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}/changes", produces = "application/json")
+    ResponseEntity<List<CategoryItemRefresh>> retrieveRefreshedTagToCategoryList(Principal principal, @PathVariable Long listLayoutId, @RequestParam(value = "after", required = true) Date after);
 
 }

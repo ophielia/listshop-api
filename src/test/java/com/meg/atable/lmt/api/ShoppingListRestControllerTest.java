@@ -1,10 +1,11 @@
 package com.meg.atable.lmt.api;
 
 import com.meg.atable.Application;
+import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
 import com.meg.atable.lmt.api.model.Item;
 import com.meg.atable.lmt.api.model.ListGenerateProperties;
 import com.meg.atable.lmt.api.model.ListType;
-import com.meg.atable.auth.service.JwtUser;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -149,8 +150,7 @@ public class ShoppingListRestControllerTest {
                 + "/item";
 
         Item item = new Item()
-                .tagId(String.valueOf(TestConstants.TAG_CARROTS))
-                .itemSource("Manual");
+                .tagId(String.valueOf(TestConstants.TAG_CARROTS));
 
         String itemJson = json(item);
         this.mockMvc.perform(post(url)
@@ -257,7 +257,7 @@ public class ShoppingListRestControllerTest {
     @WithMockUser
     public void testAddDishToList() throws Exception {
         Long listId = TestConstants.LIST_1_ID;
-        String url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_1_ID;
+        String url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_7_ID;
         mockMvc.perform(post(url)
                 .with(user(userDetails))
                 .contentType(contentType))
@@ -268,13 +268,20 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testRemoveDishFromList() throws Exception {
-
+// MM clean this test....
         Long listId = TestConstants.LIST_1_ID;
         String url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_1_ID;
         mockMvc.perform(delete(url)
                 .with(user(userDetails))
                 .contentType(contentType))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isBadRequest());  // bad request, because user doesn't own this dish
+
+        listId = TestConstants.LIST_1_ID;
+        url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_7_ID;
+        mockMvc.perform(delete(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());  // this one is successful
     }
 
 

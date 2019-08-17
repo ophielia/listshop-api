@@ -1,8 +1,8 @@
 package com.meg.atable.lmt.api;
 
 import com.meg.atable.Application;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.auth.service.JwtUser;
+import com.meg.atable.auth.data.entity.UserEntity;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.test.TestConstants;
 import org.junit.Before;
@@ -57,7 +57,7 @@ public class ProposalRestControllerTest {
                 .build();
 
 
-        UserAccountEntity userAccount = userService.getUserByUserName(TestConstants.USER_3_NAME);
+        UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
         userDetails = new JwtUser(userAccount.getId(),
                 TestConstants.USER_3_NAME,
                 null,

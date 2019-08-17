@@ -1,8 +1,7 @@
 package com.meg.atable.auth.service.impl;
 
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.data.repository.UserRepository;
-import com.meg.atable.auth.service.JwtUserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,8 +18,9 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserAccountEntity user = userRepository.findByUsername(username);
+    public UserDetails loadUserByUsername(String username)  {
+        // load by email rather than usernae
+        UserEntity user = userRepository.findByEmail(username);
 
         if (user == null) {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));

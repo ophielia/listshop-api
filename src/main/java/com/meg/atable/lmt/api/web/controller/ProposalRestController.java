@@ -4,8 +4,8 @@ import com.meg.atable.lmt.api.controller.ProposalRestControllerApi;
 import com.meg.atable.lmt.api.exception.ProposalProcessingException;
 import com.meg.atable.lmt.api.model.ProposalResource;
 import com.meg.atable.lmt.data.entity.ProposalEntity;
-import com.meg.atable.lmt.service.ProposalGeneratorService;
-import com.meg.atable.lmt.service.ProposalService;
+import com.meg.atable.lmt.service.proposal.ProposalGeneratorService;
+import com.meg.atable.lmt.service.proposal.ProposalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -85,7 +85,7 @@ public class ProposalRestController implements ProposalRestControllerApi {
 
     @Override
     public ResponseEntity<Object> refreshProposalSlot(Principal principal, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) throws ProposalProcessingException {
-        // MM need to swap out id with number
+        // TODO need to swap out id with number
         this.targetProposalGenerator.addToProposalSlot(principal.getName(), proposalId, slotId.intValue());
 
 

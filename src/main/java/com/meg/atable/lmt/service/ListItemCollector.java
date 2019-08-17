@@ -5,71 +5,29 @@ import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * Created by margaretmartin on 02/11/2017.
  */
-public class ListItemCollector {
-    private final Long listId;
-    private Map<Long, ItemEntity> tagToItem;
-    private List<ItemEntity> freeTextItems;
+public class ListItemCollector extends AbstractItemCollector {
 
-
-    public ListItemCollector(Long savedNewListId, List<ItemEntity> items) {
-        this.listId = savedNewListId;
-        tagToItem = new HashMap<>();
-        freeTextItems = new ArrayList<>();
-        if (items != null) {
-            items.stream().forEach(item -> {
-                if (item.getTag() != null) {
-                    tagToItem.put(item.getTag().getId(), item);
-                } else {
-                    freeTextItems.add(item);
-                }
-            });
-        }
+    public ListItemCollector(Long listId, List<ItemEntity> items) {
+        super(listId, items);
     }
 
     public ListItemCollector(Long listId) {
-        this.listId = listId;
-        tagToItem = new HashMap<>();
-        freeTextItems = new ArrayList<>();
+        super(listId);
     }
 
 
-    public List<ItemEntity> getAllItems() {
-        return Stream.concat(tagToItem.values().stream()
-                .filter(i -> !i.isDeleted()), freeTextItems.stream())
-                .collect(Collectors.toList());
-    }
 
-    public List<ItemEntity> getTagItems() {
-        return tagToItem.values()
-                .stream().filter(i -> i.getTag() != null)
-                .collect(Collectors.toList());
-    }
 
-    public List<Long> getAllTagIds() {
-        return tagToItem.values().stream()
-                .map(i -> i.getTag().getId())
-                .collect(Collectors.toList());
-    }
-
-    public List<ItemEntity> getItemsToUpdate() {
-        return tagToItem.values().stream()
-                .filter(ItemEntity::isUpdated)
-                .collect(Collectors.toList());
-    }
-
-    public List<ItemEntity> getItemsToDelete() {
-        return tagToItem.values().stream()
-                .filter(ItemEntity::isDeleted)
-                .collect(Collectors.toList());
-    }
-
+    // list collector
     public void addTags(List<TagEntity> tagEntityList, Long dishId, String listSource) {
         for (TagEntity tag : tagEntityList) {
             addItemByTag(tag, listSource, dishId);
@@ -89,55 +47,35 @@ public class ListItemCollector {
             return;
         }
         if (item.getTag() == null) {
-            ItemEntity copied = copyItem(item);
+            CollectedItem copied = copyItem(item);
             // free text item
-            freeTextItems.add(copied);
-        } else if (tagToItem.containsKey(item.getTag().getId())) {
-            ItemEntity update = tagToItem.get(item.getTag().getId());
+            getFreeTextItemList().add(copied);
+        } else if (getTagCollectedMap().containsKey(item.getTag().getId())) {
+            CollectedItem update = getTagCollectedMap().get(item.getTag().getId());
             int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
             update.setUsedCount(count + 1);
             update.addRawListSource(sourceType);
+                // mark as updated, so it will be saved
+            update.setUpdated(true);
             if (incrementStats) {
                 update.incrementAddCount(Math.max(item.getUsedCount(), 1));
-            } else {
-                // just mark as updated, so it will be saved
-                update.setUpdated(true);
             }
-            tagToItem.put(item.getTag().getId(), update);
+            getTagCollectedMap().put(item.getTag().getId(), update);
         } else {
-            ItemEntity copied = copyItem(item);
+            CollectedItem copied = copyItem(item);
             int count = item.getUsedCount() != null ? item.getUsedCount() : 0;
+            copied.setIsAdded(true);
             copied.setUsedCount(count);
             copied.addRawListSource(sourceType);
             copied.setRawDishSources(item.getRawDishSources());
             if (incrementStats) {
                 copied.incrementAddCount(Math.max(1, item.getUsedCount()));
-            } else {
-                // just mark as updated, so it will be saved
-                copied.setUpdated(true);
             }
-            tagToItem.put(item.getTag().getId(), copied);
+            getTagCollectedMap().put(item.getTag().getId(), copied);
         }
     }
 
-    private void createItemFromTag(TagEntity tag, Long dishId) {
-        ItemEntity item = new ItemEntity();
-        item.setTag(tag);
-        item.setListId(listId);
-        item.addRawDishSource(dishId);
-        item.setUsedCount(0);
-        item.setAddedOn(new Date());
 
-        tagToItem.put(tag.getId(), item);
-    }
-
-    private void addTagToItem(Long tagid, Long dishId) {
-        ItemEntity item = tagToItem.get(tagid);
-        item.setUsedCount(item.getUsedCount() + 1);
-        item.addRawDishSource(dishId);
-        item.setAddedOn(new Date());
-        tagToItem.put(tagid, item);
-    }
 
 
     public void removeTagsForDish(Long dishId, List<TagEntity> tagsToRemove) {
@@ -153,30 +91,30 @@ public class ListItemCollector {
     }
 
 
-    private ItemEntity copyItem(ItemEntity item) {
-        ItemEntity copied = new ItemEntity();
-        copied.setUsedCount(item.getUsedCount()); // MM resetting count when adding from another list
+    private CollectedItem copyItem(ItemEntity item) {
+        CollectedItem copied = new CollectedItem(new ItemEntity());
+        // resetting count when adding from another list
+        copied.setUsedCount(item.getUsedCount());
         copied.setTag(item.getTag());
-        copied.setListId(listId);
+        copied.setListId(getListId());
         copied.setFreeText(item.getFreeText());
-        copied.setAddedOn(new Date()); // MM also need to think about this
+        copied.setAddedOn(LocalDateTime.now());
         return copied;
     }
 
     public void removeItemByTagId(Long tagId, Long dishId, Boolean removeEntireItem) {
-        if (!tagToItem.containsKey(tagId)) {
+        if (!getTagCollectedMap().containsKey(tagId)) {
             return;
         }
-        ItemEntity update = tagToItem.get(tagId);
+        CollectedItem update = getTagCollectedMap().get(tagId);
 
         int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
         if (count <= 1 || removeEntireItem) {
             // delete item outright
-            update.setDeleted(true);
-            update.incrementRemovedCount(update.getUsedCount());
-            update.setUsedCount(0);
+            removeItem(update);
             return;
         } else {
+            // dish is not removed - it's updated
             if (dishId != null) {
                 Set<String> inflatedDishSources = FlatStringUtils.inflateStringToSet(update.getRawDishSources(), ";");
                 if (inflatedDishSources.contains(String.valueOf(dishId))) {
@@ -185,27 +123,25 @@ public class ListItemCollector {
                     update.setRawDishSources(newSources);
                 }
             }
-            update.setUsedCount(count - 1);
-            update.incrementRemovedCount();
+            updateItemOnRemove(update,count);
         }
 
-        tagToItem.put(tagId, update);
+        getTagCollectedMap().put(tagId, update);
     }
 
     private void removeItemWithListSource(ItemEntity item, ListType listType) {
-        if (!tagToItem.containsKey(item.getTag().getId())) {
+        if (!getTagCollectedMap().containsKey(item.getTag().getId())) {
             return;
         }
-        ItemEntity update = tagToItem.get(item.getTag().getId());
+        CollectedItem update = getTagCollectedMap().get(item.getTag().getId());
 
         int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
         if (count <= 1) {
             // delete item outright
-            update.setDeleted(true);
-            update.incrementRemovedCount(update.getUsedCount());
-            update.setUsedCount(0);
+            removeItem(update);
             return;
         } else {
+            // item has other usages remaining - updated, not deleted
             if (listType != null) {
                 Set<String> inflatedListSources = FlatStringUtils.inflateStringToSet(update.getRawListSources(), ";");
                 if (inflatedListSources.contains(listType.name())) {
@@ -214,43 +150,30 @@ public class ListItemCollector {
                     update.setRawListSources(newSources);
                 }
             }
-            update.setUsedCount(count - 1);
-            update.incrementRemovedCount();
+            updateItemOnRemove(update,count);
         }
 
-        tagToItem.put(item.getTag().getId(), update);
+        getTagCollectedMap().put(item.getTag().getId(), update);
 
     }
 
-
-    public void addItem(ItemEntity item) {
-        if (item.getTag() == null) {
-            freeTextItems.add(item);
-            return;
-        }
-
-        addItemByTag(item.getTag(), null, null);
+    private void removeItem(CollectedItem item) {
+        item.setRemoved(true);
+        item.incrementRemovedCount(item.getUsedCount());
+        item.setUsedCount(0);
     }
 
-    private void addItemByTag(TagEntity tag, String sourceType, Long dishId) {
-        if (!tagToItem.containsKey(tag.getId())) {
-            createItemFromTag(tag, null);
-        }
-        ItemEntity update = tagToItem.get(tag.getId());
-
-
-        int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
-        update.setUsedCount(count + 1);
-        update.addRawListSource(sourceType);
-        update.addRawDishSource(dishId);
-        update.incrementAddCount();
-        tagToItem.put(tag.getId(), update);
-
+    private void updateItemOnRemove(CollectedItem update, int count) {
+        update.setUpdated(true);
+        update.setUsedCount(count - 1);
+        update.incrementRemovedCount();
     }
+
+
 
 
     public void removeFreeTextItem(ItemEntity itemEntity) {
-        // MM implement this
+        // TODO implement this
     }
 
 }

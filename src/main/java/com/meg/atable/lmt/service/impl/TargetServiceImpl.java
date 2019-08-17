@@ -2,7 +2,7 @@ package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.model.TargetType;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.entity.TargetEntity;
@@ -45,7 +45,7 @@ public class TargetServiceImpl implements TargetService {
 
     @Override
     public List<TargetEntity> getTargetsForUserName(String name, boolean includeTemporary) {
-        UserAccountEntity user = userService.getUserByUserName(name);
+        UserEntity user = userService.getUserByUserEmail(name);
         if (includeTemporary) {
             return targetRepository.findTargetsByUserId(user.getId());
         } else {
@@ -59,7 +59,7 @@ public class TargetServiceImpl implements TargetService {
             return null;
         }
 
-        UserAccountEntity user = userService.getUserByUserName(name);
+        UserEntity user = userService.getUserByUserEmail(name);
 
         targetEntity.setUserId(user.getId());
         targetEntity.setCreated(new Date());
@@ -77,7 +77,7 @@ public class TargetServiceImpl implements TargetService {
 
     @Override
     public TargetEntity getTargetById(String name, Long targetId) {
-        UserAccountEntity user = userService.getUserByUserName(name);
+        UserEntity user = userService.getUserByUserEmail(name);
 
         return targetRepository.findTargetByUserIdAndTargetId(user.getId(), targetId);
     }
@@ -176,7 +176,8 @@ public class TargetServiceImpl implements TargetService {
         if (targetEntity == null) {
             return;
         }
-        targetEntity.setProposalId(null); // MM get rid of this
+        // TODO get rid of this
+        targetEntity.setProposalId(null);
         Optional<TargetSlotEntity> targetSlotEntityOpt = targetSlotRepository.findById(slotId);
         if (!targetSlotEntityOpt.isPresent()) {
             throw new ObjectNotFoundException(slotId, "TargetSlotEntity");
@@ -234,7 +235,7 @@ public class TargetServiceImpl implements TargetService {
         TargetSlotEntity toCreate = new TargetSlotEntity();
         toCreate.setSlotDishTagId(TagService.MAIN_DISH_TAG_ID);
 
-        TargetSlotEntity slot = createNewSlot(userName,target,toCreate);
+        TargetSlotEntity slot = createNewSlot(target,toCreate);
 
         target.addSlot(slot);
 
@@ -245,7 +246,7 @@ public class TargetServiceImpl implements TargetService {
 
 
 
-    private TargetSlotEntity createNewSlot(String name, TargetEntity targetEntity, TargetSlotEntity targetSlotEntity) {
+    private TargetSlotEntity createNewSlot(TargetEntity targetEntity, TargetSlotEntity targetSlotEntity) {
         targetSlotEntity.setTargetId(targetEntity.getTargetId());
         List<TargetSlotEntity> slots = targetEntity.getSlots();
         if (slots == null) {

@@ -4,8 +4,9 @@ import com.meg.atable.lmt.api.exception.ProposalProcessingException;
 import com.meg.atable.lmt.api.model.TargetType;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.service.NewRawSlotResult;
-import com.meg.atable.lmt.service.ProcessInformation;
-import com.meg.atable.lmt.service.ProcessResult;
+import com.meg.atable.lmt.service.proposal.ProcessInformation;
+import com.meg.atable.lmt.service.proposal.ProcessResult;
+import com.meg.atable.lmt.service.proposal.ProposalRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 

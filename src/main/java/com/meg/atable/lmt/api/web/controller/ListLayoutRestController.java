@@ -4,11 +4,14 @@ import com.meg.atable.lmt.api.controller.ListLayoutRestControllerApi;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.ListLayoutEntity;
+import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.service.ListLayoutException;
 import com.meg.atable.lmt.service.ListLayoutService;
+import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,7 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,6 +66,20 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
     public ResponseEntity<ListLayout> readListLayout(Principal principal, @PathVariable("listLayoutId") Long listLayoutId) {
         ListLayoutEntity listLayout = this.listLayoutService
                 .getListLayoutById(listLayoutId);
+
+        if (listLayout != null) {
+            List<Category> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
+            ListLayoutResource listLayoutResource = new ListLayoutResource(listLayout, structuredCategories);
+
+            return new ResponseEntity(listLayoutResource, HttpStatus.OK);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+
+    public ResponseEntity<ListLayout> readDefaultListLayout() {
+        ListLayoutEntity listLayout = this.listLayoutService
+                .getDefaultListLayout();
 
         if (listLayout != null) {
             List<Category> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
@@ -174,6 +192,22 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<List<CategoryItemRefresh>> retrieveRefreshedTagToCategoryList(Principal principal, @PathVariable Long listLayoutId,
+                                                                                        @RequestParam(value = "after") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date after) {
+        List<Pair<TagEntity, ListLayoutCategoryEntity>> categoryChanged = this.listLayoutService.getTagCategoryChanges(listLayoutId, after);
+
+
+        List<CategoryItemRefresh> refreshed = new ArrayList<>();
+
+        for (Pair<TagEntity, ListLayoutCategoryEntity> change : categoryChanged) {
+            CategoryItemRefresh refresh = new CategoryItemRefresh(change.getKey(), change.getValue());
+                refreshed.add(refresh);
+        }
+
+        return new ResponseEntity(refreshed, HttpStatus.OK);
     }
 
 

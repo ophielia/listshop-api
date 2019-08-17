@@ -35,6 +35,9 @@ public class ListTagStatistic {
     @Column(name = "removed_count")
     private Integer removedCount;
 
+    @Column(name = "added_to_dish")
+    private Integer addedToDish;
+
     public Long getListTagStatId() {
         return listTagStatId;
     }
@@ -73,5 +76,13 @@ public class ListTagStatistic {
 
     public void setRemovedCount(Integer removedCount) {
         this.removedCount = removedCount;
+    }
+
+    public Integer getAddedToDishCount() {
+        return addedToDish;
+    }
+
+    public void setAddedToDishCount(Integer addedToDish) {
+        this.addedToDish = addedToDish;
     }
 }

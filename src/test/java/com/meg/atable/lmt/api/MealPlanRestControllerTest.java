@@ -4,8 +4,8 @@ import com.meg.atable.Application;
 import com.meg.atable.lmt.api.model.MealPlan;
 import com.meg.atable.lmt.api.model.MealPlanType;
 import com.meg.atable.lmt.api.model.ModelMapper;
-import com.meg.atable.auth.data.entity.UserAccountEntity;
-import com.meg.atable.auth.service.JwtUser;
+import com.meg.atable.auth.data.entity.UserEntity;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.data.entity.MealPlanEntity;
 import com.meg.atable.test.TestConstants;
@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public class MealPlanRestControllerTest {
 
 
-    private static UserAccountEntity userAccount;
+    private static UserEntity userAccount;
     private static UserDetails userDetails;
     private static UserDetails userDetailsDelete;
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
@@ -79,7 +79,7 @@ public class MealPlanRestControllerTest {
                 .apply(springSecurity())
                 .build();
 
-        userAccount = userService.getUserByUserName(TestConstants.USER_3_NAME);
+        userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
         String userName = TestConstants.USER_3_NAME;
         userDetails = new JwtUser(userAccount.getId(),
                 userName,

@@ -1,7 +1,7 @@
 -- base test user - id 1
-insert into users (email, enabled, last_password_reset_date, password, username, user_id) values (null, true,null, 'password', 'testuser', 500);
-insert into users (email, enabled, last_password_reset_date, password, username, user_id) values (null, true,null, 'password', 'adduser', 501);
-insert into users (email, enabled, last_password_reset_date, password, username, user_id) values (null, true,null, 'password', 'deleteuser', 502);
+insert into users (email, enabled, last_password_reset_date, password, username, user_id) values ('testuser', true,null, 'password', 'testuser', 500);
+insert into users (email, enabled, last_password_reset_date, password, username, user_id) values ('adduser', true,null, 'password', 'adduser', 501);
+insert into users (email, enabled, last_password_reset_date, password, username, user_id) values ('deleteuser', true,null, 'password', 'deleteuser', 502);
 
 -- tags - ids 500-504
 insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id) values (true, null,  true, 'tag2', 0, true, 'TagType', false, 501);
@@ -13,43 +13,48 @@ insert into tag (assign_select,  description,  is_verified, name, power, search_
 insert into tag (assign_select,  description,  is_verified, name, power, search_select, tag_type, tag_type_default, tag_id,  to_delete) values (true, null,  true, 'notdisplayed', 0, true, 'Ingredient', false, 506,  true);
 
 
-INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES (9000, 505, 393);  -- assigns no display tag to tag in heirarchy (which contained other tags)
-INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES (9001, 506, 393);  -- assigns no display tag to tag in heirarchy (which contained other tags)
+-- assigns no display tag to tag in heirarchy (which contained other tags)
+INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES (9000, 505, 393);
+-- assigns no display tag to tag in heirarchy (which contained other tags)
+INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES (9001, 506, 393);
 
 
 -- lists - ids 500-503
-insert into list (created_on, list_layout_id, list_types, user_id, list_id) values (current_timestamp(), 1, 'BaseList' , 500, 500);  -- base list - id 500
-insert into list (created_on, list_layout_id, list_types, user_id, list_id) values (current_timestamp(),11, 'ActiveList',  20, 501); -- active list - id 501
-insert into list (created_on, list_layout_id, list_types, user_id, list_id) values (current_timestamp(),11, 'ActiveList', 500, 502);  -- list to be deleted - id 502
+-- base list - id 500
+insert into list (created_on, list_layout_id, list_types, user_id, list_id) values (now(), 1, 'BaseList' , 500, 500);
+-- active list - id 501
+insert into list (created_on, list_layout_id, list_types, user_id, list_id) values (now(),11, 'ActiveList',  20, 501);
+-- list to be deleted - id 502
+insert into list (created_on, list_layout_id, list_types, user_id, list_id) values (now(),11, 'ActiveList', 500, 502);
 
 -- list items - four items, for active list - id 501,502,503,500
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (500,  501, 500,current_timestamp(), null, null,    1,  null, null);
+	VALUES (500,  501, 500,now(), null, null,    1,  null, null);
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (500,  502, 501,current_timestamp(), null, null,    1,  null, null);
+	VALUES (500,  502, 501,now(), null, null,    1,  null, null);
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (500,  503, 502,current_timestamp(), null, null,    1,  null, null);
+	VALUES (500,  503, 502,now(), null, null,    1,  null, null);
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (500,  500, 503,current_timestamp(), null, null,    1,  null, null);
+	VALUES (500,  500, 503,now(), null, null,    1,  null, null);
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (500,  504, 504,current_timestamp(), null, null,    1,  null, null);
+	VALUES (500,  504, 504,now(), null, null,    1,  null, null);
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (501,  16, 505,current_timestamp(), null, null,    1,  '16;90', null);
+	VALUES (501,  16, 505,now(), null, null,    1,  '16;90', null);
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (501,  18, 506,current_timestamp(), null, null,    1,  null, null);
+	VALUES (501,  18, 506,now(), null, null,    1,  null, null);
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (501,  21, 507,current_timestamp(), null, null,    1,  '90', null);
+	VALUES (501,  21, 507,now(), null, null,    1,  '90', null);
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (501,  359, 508,current_timestamp(), null, null,    1,  null, 'PickUpList');
+	VALUES (501,  359, 508,now(), null, null,    1,  null, 'PickUpList');
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (501,  470, 509,current_timestamp(), null, null,    1,  null, 'BaseList');
+	VALUES (501,  470, 509,now(), null, null,    1,  null, 'BaseList');
 
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (501,  210, 510,current_timestamp(), null, null,    1,  null, 'BaseList');
+	VALUES (501,  210, 510,now(), null, null,    1,  null, 'BaseList');
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (501,  211, 511,current_timestamp(), null, null,    1,  null, 'BaseList');
+	VALUES (501,  211, 511,now(), null, null,    1,  null, 'BaseList');
 INSERT INTO list_item(list_id, tag_id, item_id,added_on, crossed_off, free_text,    used_count,  dish_sources, list_sources)
-	VALUES (501,  113, 512,current_timestamp(), null, null,    2,  ';83;', 'BaseList');
+	VALUES (501,  113, 512,now(), null, null,    2,  ';83;', 'BaseList');
 
 
 -- dishes - 3 - ids 500-503
@@ -57,6 +62,7 @@ insert into dish (auto_tag_status, description, dish_name, last_added, user_id, 
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish2', null, 500, 501);
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish3', null, 500, 502);
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish4', null, 500, 503);
+insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish4', null, 500, 603);
 insert into dish (auto_tag_status, description, dish_name, last_added, user_id, dish_id) values (null, null, 'dish4', null, 500, 504);
 insert into dish_tags (dish_id, tag_id) values (500, 500);
 insert into dish_tags (dish_id, tag_id) values (500, 501);
@@ -75,6 +81,16 @@ INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 322);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 396);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 426);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (503, 400);
+
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 353);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 218);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 363);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 419);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 344);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 322);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 396);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 426);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (603, 400);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 353);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 218);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 363);
@@ -87,11 +103,11 @@ INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 400);
 
 
 -- meal plan - 1 - id 500
-insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 1', 500, 500) ;
-insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 1', 501, 501) ;
-insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 1', 20, 503) ;
-insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 2', 20, 504) ;
-insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (current_timestamp(), 'Manual', 'meal plan 5', 500, 505) ;
+insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (now(), 'Manual', 'meal plan 1', 500, 500) ;
+insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (now(), 'Manual', 'meal plan 1', 501, 501) ;
+insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (now(), 'Manual', 'meal plan 1', 20, 503) ;
+insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (now(), 'Manual', 'meal plan 2', 20, 504) ;
+insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (now(), 'Manual', 'meal plan 5', 500, 505) ;
 
 -- slots for meal plan - 
 insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id) values (500, 500, 500);
@@ -147,58 +163,63 @@ INSERT INTO category_tags (category_id, tag_id) VALUES (501, 505);
 
 
 -- targets
-INSERT INTO target (target, target_id, created, last_updated,last_used, target_name, target_tag_ids, user_id)
-  VALUES ('TargetEntity', 500, '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 20);
+INSERT INTO target (target, target_type,target_id, created, last_updated,last_used, target_name, target_tag_ids, user_id)
+  VALUES ('TargetEntity', 'Standard',500,'2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 20);
+
+-- main dish, chicken broth
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 500, 320, 1, 500, '406');
+ -- main dish, yummy
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 501, 320, 2, 500, '321');
+ -- main dish, carrots
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 502, 320, 3, 500, '81');
+ -- main dish, yummy
+INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
+VALUES ('TargetSlotEntity', 503, 320, 4, 500, '89');
+
+INSERT INTO target (target, target_id, target_type,created, last_updated,last_used, target_name, target_tag_ids, user_id)
+  VALUES ('TargetEntity', 501,'Standard', '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 20);
 
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 500, 320, 1, 500, '406');  // main dish, chicken broth
+VALUES ('TargetSlotEntity', 504, 320, 1, 501, '406');
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 501, 320, 2, 500, '321');  // main dish, yummy
+VALUES ('TargetSlotEntity', 505, 320, 2, 501, '321');
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 502, 320, 3, 500, '81');  // main dish, carrots
+VALUES ('TargetSlotEntity', 506, 320, 3, 501, '81');
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 503, 320, 4, 500, '89');  // main dish, yummy
+VALUES ('TargetSlotEntity', 507, 320, 4, 501, '89');
 
-INSERT INTO target (target, target_id, created, last_updated,last_used, target_name, target_tag_ids, user_id)
-  VALUES ('TargetEntity', 501, '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 20);
-
-INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 504, 320, 1, 501, '406');  // main dish
-INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 505, 320, 2, 501, '321');  // main dish
-INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 506, 320, 3, 501, '81');  // main dish
-INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 507, 320, 4, 501, '89');  // main dish
-
-INSERT INTO target (target, target_id, created, last_updated,last_used, target_name, target_tag_ids, user_id)
-  VALUES ('TargetEntity', 502, '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 500);
+INSERT INTO target (target, target_id,target_type, created, last_updated,last_used, target_name, target_tag_ids, user_id)
+  VALUES ('TargetEntity', 502,'Standard', '2018-05-21 13:15:22.451', NULL, NULL, 'testing', '64;322;399', 500);
 
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 508, 320, 1, 502, '406;301');  // main dish
+VALUES ('TargetSlotEntity', 508, 320, 1, 502, '406;301');
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 509, 320, 1, 502, '329;301');  // main dish
+VALUES ('TargetSlotEntity', 509, 320, 1, 502, '329;301');
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 510, 320, 1, 502, '81;301');  // main dish
+VALUES ('TargetSlotEntity', 510, 320, 1, 502, '81;301');
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 511, 320, 1, 502, '89;301');  // main dish
+VALUES ('TargetSlotEntity', 511, 320, 1, 502, '89;301');
 
-INSERT INTO target (target, target_id, created, expires,last_updated,last_used, target_name, target_tag_ids, user_id)
-  VALUES ('TargetEntity', 503, '2018-05-21 13:15:22.451','2018-05-21 14:15:22.451', NULL, NULL, 'testing', '64;322;399', 500);
+INSERT INTO target (target, target_id, target_type,created, expires,last_updated,last_used, target_name, target_tag_ids, user_id)
+  VALUES ('TargetEntity', 503, 'Standard','2018-05-21 13:15:22.451','2018-05-21 14:15:22.451', NULL, NULL, 'testing', '64;322;399', 500);
 
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 512, 320, 1, 503, '406;301');  // main dish
+VALUES ('TargetSlotEntity', 512, 320, 1, 503, '406;301');
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 513, 320, 1, 503, '329;301');  // main dish
+VALUES ('TargetSlotEntity', 513, 320, 1, 503, '329;301');
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 514, 320, 1, 503, '81;301');  // main dish
+VALUES ('TargetSlotEntity', 514, 320, 1, 503, '81;301');
 INSERT INTO target_slot (target, target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids)
-VALUES ('TargetSlotEntity', 515, 320, 1, 503, '89;301');  // main dish
+VALUES ('TargetSlotEntity', 515, 320, 1, 503, '89;301');
 
 
 
 -- proposals
-// proposal 500 for user, and target 500
+
+--  proposal 500 for user, and target 500
 insert into proposal (created, is_refreshable, user_id, proposal_id) values (current_timestamp, false, 20, 500);
 insert into proposal_context (current_approach_index, current_approach_type, meal_plan_id,  proposal_id, target_id, proposal_context_id) values
 (0, 'WHEEL_MIXED', null,  500,  500, 500);
@@ -252,7 +273,7 @@ update proposal_context set current_approach_index=0, current_approach_type='WHE
 
 
 
-// proposal 501 for user, and target 501
+-- proposal 501 for user, and target 501
 insert into proposal (created, is_refreshable, user_id, proposal_id) values (current_timestamp, false, 20, 501);
 insert into proposal_context (current_approach_index, current_approach_type, meal_plan_id,  proposal_id, target_id, proposal_context_id) values
 (0, 'WHEEL_MIXED', null,  501,  501, 501);
@@ -306,7 +327,7 @@ insert into proposal_approach (approach_number, instructions, proposal_context_i
 update proposal_context set current_approach_index=0, current_approach_type='WHEEL_MIXED',  proposal_hash_code='0',target_hash_code='-623001283', target_id=501 where proposal_context_id=501;
 
 
-// proposal 502 for user, and target 501
+-- proposal 502 for user, and target 501
 insert into proposal (created, is_refreshable, user_id, proposal_id) values (current_timestamp, false, 20, 502);
 insert into proposal_context (current_approach_index, current_approach_type, meal_plan_id,  proposal_id, target_id, proposal_context_id) values
 (0, 'WHEEL_MIXED', null,  502,  501, 502);

@@ -2,15 +2,14 @@ package com.meg.atable.lmt.api.controller;
 
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
-import com.meg.atable.lmt.api.model.Item;
-import com.meg.atable.lmt.api.model.ListGenerateProperties;
-import com.meg.atable.lmt.api.model.ShoppingList;
-import com.meg.atable.lmt.api.model.ShoppingListResource;
+import com.meg.atable.lmt.api.model.*;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -28,6 +27,12 @@ public interface ShoppingListRestControllerApi {
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) throws ObjectNotFoundException, ObjectNotYoursException;
 
+    @RequestMapping(method = RequestMethod.PUT, value = "/shared", produces = "application/json")
+    ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest) throws ObjectNotFoundException, ObjectNotYoursException;
+
+    @RequestMapping(method = RequestMethod.GET, value = "/shared/{listLayoutId}", produces = "application/json")
+    ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId, @RequestParam(value = "after", required = true) Date changedAfter) throws ObjectNotFoundException, ObjectNotYoursException;
+
     @RequestMapping(method = RequestMethod.PUT, value = "/{listId}", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> setListActive(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value = "generateType", required = true) String filter);
 
@@ -39,6 +44,13 @@ public interface ShoppingListRestControllerApi {
                                                           @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
                                                           @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
                                                           @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/active", produces = "application/json")
+    ResponseEntity<ShoppingListResource> retrieveActiveList(Principal principal,
+                                                          @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
+                                                          @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
+                                                          @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry);
+
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}", produces = "application/json")
     ResponseEntity<ShoppingList> deleteList(Principal principal, @PathVariable("listId") Long listId);

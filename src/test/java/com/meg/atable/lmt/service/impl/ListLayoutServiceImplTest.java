@@ -3,6 +3,7 @@ package com.meg.atable.lmt.service.impl;
 import com.meg.atable.Application;
 import com.meg.atable.lmt.api.model.Category;
 import com.meg.atable.lmt.api.model.ListLayoutCategory;
+import com.meg.atable.lmt.api.model.ListLayoutType;
 import com.meg.atable.lmt.data.entity.CategoryRelationEntity;
 import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.ListLayoutEntity;
@@ -61,7 +62,7 @@ public class ListLayoutServiceImplTest {
 
 
     @Test
-    public void getListLayoutById() throws Exception {
+    public void getListLayoutById() {
         // get id for retrieve - already set up
         Long id = TestConstants.LIST_LAYOUT_1_ID;
 
@@ -70,6 +71,18 @@ public class ListLayoutServiceImplTest {
         Assert.assertNotNull(check);
         Assert.assertEquals(TestConstants.LIST_LAYOUT_1_ID, check.getId());
         Assert.assertEquals(TestConstants.LIST_LAYOUT_1_NAME, check.getName());
+    }
+
+    @Test
+    public void getDefaultListLayout() {
+        // get id for retrieve - already set up
+        Long id = TestConstants.LIST_LAYOUT_1_ID;
+
+        ListLayoutEntity check = listLayoutService.getDefaultListLayout();
+
+        Assert.assertNotNull(check);
+        Assert.assertEquals(ListLayoutType.RoughGrained, check.getLayoutType());
+
     }
 
     @Test

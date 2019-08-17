@@ -3,10 +3,7 @@ package com.meg.atable.lmt.service.impl;
 import com.meg.atable.lmt.api.model.Category;
 import com.meg.atable.lmt.api.model.ListLayoutCategory;
 import com.meg.atable.lmt.api.model.ListLayoutType;
-import com.meg.atable.lmt.data.entity.CategoryRelationEntity;
-import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
-import com.meg.atable.lmt.data.entity.ListLayoutEntity;
-import com.meg.atable.lmt.data.entity.TagEntity;
+import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.data.repository.CategoryRelationRepository;
 import com.meg.atable.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.atable.lmt.data.repository.ListLayoutRepository;
@@ -14,9 +11,12 @@ import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.ListLayoutException;
 import com.meg.atable.lmt.service.ListLayoutProperties;
 import com.meg.atable.lmt.service.ListLayoutService;
+import com.meg.atable.lmt.service.ShoppingListProperties;
+import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,6 +41,9 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     @Autowired
     private TagRepository tagRepository;
 
+    @Autowired
+    private ShoppingListProperties shoppingListProperties;
+
     @Override
     public List<ListLayoutEntity> getListLayouts() {
         return listLayoutRepository.findAll();
@@ -59,6 +62,18 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     public ListLayoutEntity createListLayout(ListLayoutEntity listLayoutEntity) {
         // createListLayout with repository and return
         return listLayoutRepository.save(listLayoutEntity);
+    }
+
+    @Override
+    public ListLayoutEntity getDefaultListLayout() {
+        ListLayoutType layoutType = shoppingListProperties.getDefaultListLayoutType();
+
+        List<ListLayoutEntity> listLayoutEntity =  listLayoutRepository.findByLayoutType(layoutType);
+
+        if (listLayoutEntity == null || listLayoutEntity.isEmpty()) {
+            return null;
+        }
+        return listLayoutEntity.get(0);
     }
 
     @Override
@@ -208,6 +223,10 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
         // set tags in category
         List<TagEntity> tagsToAdd = tagRepository.findAllById(tagIdsToAdd);
+        for (TagEntity updateTag : tagsToAdd) {
+            updateTag.setCategoryUpdatedOn(new Date());
+            //MM TODO test this
+        }
         tagCategories.addAll(tagsToAdd);
         categoryEntity.setTags(tagCategories);
 
@@ -240,6 +259,11 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
         // set tags in category
         List<TagEntity> filteredTagList = tagRepository.findAllById(filteredList);
+        for (TagEntity tagToUpdate : filteredTagList) {
+            tagToUpdate.setCategoryUpdatedOn(new Date());
+            //MM TODO update this
+        }
+
         categoryEntity.setTags(filteredTagList);
 
         // save category
@@ -413,6 +437,85 @@ Long relationshipId = getCategoryRelationForCategory(category);
         listLayoutCategoryRepository.save(category);
 
         // return
+    }
+
+    @Override
+    public List<Pair<ItemEntity, ListLayoutCategoryEntity>> getItemChangesWithCategories(Long listLayoutId, List<ItemEntity> changedItems) {
+        if (changedItems.isEmpty()) {
+            // nothing to do here but return
+            return new ArrayList<>();
+        }
+        Set<Long> itemIds = changedItems.stream()
+                .map(ItemEntity::getId)
+                .collect(Collectors.toSet());
+
+        List<Object[]> rawRelations = listLayoutCategoryRepository.getItemToCategoryRelationshipsForItemIds(itemIds, listLayoutId);
+
+        Map<Long, Long> itemToCategoryLookup = new HashMap<>();
+        Map<Long, ListLayoutCategoryEntity> categoryLookup = new HashMap<>();
+        for (Object[] result : rawRelations) {
+            Long itemId = result[0] == null ? 0L : ((BigInteger) result[0]).longValue();
+            Long categoryId = ((BigInteger) result[1]).longValue();
+            itemToCategoryLookup.put(itemId, categoryId);
+        }
+
+        // get categories from lookup
+        List<ListLayoutCategoryEntity> categoryEntities =
+                listLayoutCategoryRepository.findAllById(itemToCategoryLookup.values().stream().collect(Collectors.toSet()));
+        categoryEntities.stream().forEach(c -> categoryLookup.put(c.getId(), c));
+
+        List<Pair<ItemEntity, ListLayoutCategoryEntity>> results = new ArrayList<>();
+        for (ItemEntity itemEntity : changedItems) {
+            if (!itemToCategoryLookup.containsKey(itemEntity.getId()) ||
+                    !categoryLookup.containsKey(itemToCategoryLookup.get(itemEntity.getId()))) {
+                continue;
+            }
+            ListLayoutCategoryEntity category = categoryLookup.get(itemToCategoryLookup.get(itemEntity.getId()));
+
+            Pair<ItemEntity, ListLayoutCategoryEntity> pair = new Pair<>(itemEntity, category);
+            results.add(pair);
+        }
+        return results;
+
+    }
+
+
+    @Override
+    public List<Pair<TagEntity, ListLayoutCategoryEntity>> getTagCategoryChanges(Long listLayoutId, Date changedAfter) {
+
+
+        List<TagEntity> changedTags = tagRepository.getTagsWithCategoriesChangedAfter(changedAfter, listLayoutId);
+        Set<Long> tagIds = changedTags.stream()
+                .map(TagEntity::getId)
+                .collect(Collectors.toSet());
+
+        // get category lookup for tag ids
+        List<Object[]> rawRelations = listLayoutCategoryRepository.getTagToCategoryRelationshipsForTagIds(tagIds, listLayoutId);
+
+        Map<Long, Long> tagToCategoryIdLookup = new HashMap<>();
+        Map<Long, ListLayoutCategoryEntity> categoryLookup = new HashMap<>();
+        for (Object[] result : rawRelations) {
+            Long tagId = result[0] == null ? 0L : ((BigInteger) result[0]).longValue();
+            Long categoryId = ((BigInteger) result[1]).longValue();
+            tagToCategoryIdLookup.put(tagId, categoryId);
+        }
+
+        // get categories from lookup
+        List<ListLayoutCategoryEntity> categoryEntities =
+                listLayoutCategoryRepository.findAllById(tagToCategoryIdLookup.values().stream().collect(Collectors.toSet()));
+        categoryEntities.stream().forEach(c -> categoryLookup.put(c.getId(), c));
+
+        List<Pair<TagEntity, ListLayoutCategoryEntity>> results = new ArrayList<>();
+        for (TagEntity tag : changedTags) {
+            if (!tagToCategoryIdLookup.containsKey(tag.getId()) ||
+                    !categoryLookup.containsKey(tagToCategoryIdLookup.get(tag.getId()))) {
+                continue;
+            }
+            ListLayoutCategoryEntity category = categoryLookup.get(tagToCategoryIdLookup.get(tag.getId()));
+            Pair<TagEntity, ListLayoutCategoryEntity> pair = new Pair<>(tag, category);
+            results.add(pair);
+        }
+        return results;
     }
 
     private ListLayoutCategoryEntity getCategoryForSwap(ListLayoutCategoryEntity category, boolean moveUp) throws ListLayoutException {

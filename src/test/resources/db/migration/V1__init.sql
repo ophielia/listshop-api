@@ -1,3 +1,38 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.5.6
+-- Dumped by pg_dump version 9.5.6
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
 
 --
 -- Name: authority; Type: TABLE; Schema: public; Owner: -
@@ -67,7 +102,7 @@ CREATE TABLE dish (
     description character varying(255),
     dish_name character varying(255),
     user_id bigint,
-    last_added timestamp,
+    last_added timestamp without time zone,
     auto_tag_status integer
 );
 
@@ -112,7 +147,7 @@ CREATE SEQUENCE hibernate_sequence
 
 CREATE TABLE list (
     list_id bigint NOT NULL,
-    created_on timestamp,
+    created_on timestamp without time zone,
     list_type integer,
     user_id bigint,
     list_layout_type character varying(255),
@@ -137,8 +172,8 @@ CREATE TABLE list_category (
 
 CREATE TABLE list_item (
     item_id bigint NOT NULL,
-    added_on timestamp,
-    crossed_off timestamp,
+    added_on timestamp without time zone,
+    crossed_off timestamp without time zone,
     free_text character varying(255),
     source character varying(255),
     list_id bigint,
@@ -238,7 +273,7 @@ CREATE SEQUENCE list_tag_stats_sequence
 
 CREATE TABLE meal_plan (
     meal_plan_id bigint NOT NULL,
-    created timestamp,
+    created timestamp without time zone,
     meal_plan_type character varying(255),
     name character varying(255),
     user_id bigint
@@ -377,7 +412,7 @@ CREATE TABLE tag (
     description character varying(255),
     name character varying(255),
     tag_type character varying(255),
-    rating_family character varying(255),
+    Rating_family character varying(255),
     tag_type_default boolean,
     auto_tag_flag integer,
     is_parent_tag boolean,
@@ -442,9 +477,9 @@ CREATE SEQUENCE tag_sequence
 CREATE TABLE target (
     target character varying(31) NOT NULL,
     target_id bigint NOT NULL,
-    created timestamp,
-    last_updated timestamp,
-    last_used timestamp,
+    created timestamp without time zone,
+    last_updated timestamp without time zone,
+    last_used timestamp without time zone,
     target_name character varying(255),
     target_tag_ids character varying(255),
     user_id bigint,
@@ -458,11 +493,11 @@ CREATE TABLE target (
 
 CREATE TABLE target_proposal (
     proposal_id bigint NOT NULL,
-    created timestamp,
+    created timestamp without time zone,
     current_proposal_index integer,
     for_target_id bigint,
-    last_updated timestamp,
-    last_used timestamp,
+    last_updated timestamp without time zone,
+    last_used timestamp without time zone,
     proposal_index_list character varying(255),
     refresh_flag character varying(255),
     regenerate_on_refresh boolean,
@@ -604,7 +639,7 @@ CREATE TABLE users (
     user_id bigint NOT NULL,
     email character varying(255),
     enabled boolean,
-    last_password_reset_date timestamp,
+    last_password_reset_date timestamp without time zone,
     password character varying(255),
     username character varying(255)
 );
@@ -620,6 +655,25 @@ INSERT INTO authority (authority_id, name, user_id) VALUES (3, 'ROLE_USER', 23);
 INSERT INTO authority (authority_id, name, user_id) VALUES (4, 'ROLE_USER', 26);
 INSERT INTO authority (authority_id, name, user_id) VALUES (5, 'ROLE_USER', 29);
 
+
+--
+-- Name: authority_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('authority_seq', 1, false);
+
+
+--
+-- Data for Name: auto_tag_instructions; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Name: auto_tag_instructions_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('auto_tag_instructions_sequence', 1000, false);
 
 
 --
@@ -1426,6 +1480,14 @@ INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag
 INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status) VALUES (113, NULL, 'Side of Rice', 20, '2018-02-24 13:33:40.506', NULL);
 INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status) VALUES (114, NULL, 'peas, carrots and corn', 20, '2018-02-24 13:33:40.506', NULL);
 INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status) VALUES (115, NULL, 'Boo-yah', 20, '2018-02-24 13:33:40.506', NULL);
+
+
+--
+-- Name: dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('dish_sequence', 1000, false);
+
 
 --
 -- Data for Name: dish_tags; Type: TABLE DATA; Schema: public; Owner: -
@@ -2439,6 +2501,7 @@ INSERT INTO dish_tags (dish_id, tag_id) VALUES (21, 344);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (22, 344);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (23, 344);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (24, 344);
+INSERT INTO dish_tags (dish_id, tag_id) VALUES (25, 344);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (26, 344);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (27, 344);
 INSERT INTO dish_tags (dish_id, tag_id) VALUES (28, 344);
@@ -2882,6 +2945,13 @@ INSERT INTO dish_tags (dish_id, tag_id) VALUES (9, 452);
 
 
 --
+-- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('hibernate_sequence', 1, false);
+
+
+--
 -- Data for Name: list; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -2911,12 +2981,40 @@ INSERT INTO list_category (category_id, name, layout_id) VALUES (11, 'All', 11);
 
 
 --
+-- Name: list_item_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('list_item_sequence', 1000, false);
+
+
+--
 -- Data for Name: list_layout; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 INSERT INTO list_layout (layout_id, layout_type, name) VALUES (1, 'FineGrained', 'FineGrained');
 INSERT INTO list_layout (layout_id, layout_type, name) VALUES (5, 'RoughGrained', 'RoughGrained');
 INSERT INTO list_layout (layout_id, layout_type, name) VALUES (11, 'All', 'All');
+
+
+--
+-- Name: list_layout_category_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('list_layout_category_sequence', 1000, false);
+
+
+--
+-- Name: list_layout_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('list_layout_sequence', 1000, false);
+
+
+--
+-- Name: list_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('list_sequence', 1000, false);
 
 
 --
@@ -3323,482 +3421,554 @@ INSERT INTO list_tag_stats (list_tag_stat_id, added_count, removed_count, tag_id
 
 
 --
+-- Name: list_tag_stats_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('list_tag_stats_sequence', 1000, false);
+
+
+--
+-- Data for Name: meal_plan; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Name: meal_plan_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('meal_plan_sequence', 1000, false);
+
+
+--
+-- Data for Name: meal_plan_slot; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Name: meal_plan_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('meal_plan_slot_sequence', 1000, false);
+
+
+--
+-- Data for Name: proposal_context; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Name: proposal_context_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('proposal_context_sequence', 1000, false);
+
+
+--
+-- Data for Name: proposal_context_slot; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Name: proposal_context_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('proposal_context_slot_sequence', 1000, false);
+
+
+--
+-- Data for Name: shadow_tags; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Name: shadow_tags_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('shadow_tags_sequence', 1000, false);
+
+
+--
 -- Data for Name: tag; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (1, NULL, 'green chili - preprepared', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (2, 'dd', 'cheap 5', 'Rating', NULL, NULL, NULL, NULL, true, false, NULL, 5);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (3, NULL, 'salt and pepper shaker', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (4, NULL, 'prepared pie crust', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (5, NULL, 'big envelopes', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (6, NULL, 'duck', 'Ingredient', NULL, NULL, 5, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (7, NULL, 'Finger Food', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (8, NULL, 'Skillet Dish', 'TagType', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (9, NULL, 'Mutton', 'Ingredient', NULL, NULL, 7, NULL, false, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (10, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (11, NULL, 'Mexican', 'TagType', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (12, NULL, 'applesauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (13, NULL, 'rice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (14, NULL, 'Rice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (15, NULL, 'celery', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (16, NULL, 'onion', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (17, NULL, 'vegetable soup', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (18, NULL, 'cheddar cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (19, NULL, 'garlic', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (20, NULL, 'cream', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (21, NULL, 'broccoli', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (22, NULL, 'artichoke hearts', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (23, NULL, 'white wine', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (24, NULL, 'Pasta', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (25, NULL, 'canned corn', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (26, NULL, 'dry red beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (27, NULL, 'prosciutto', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (28, NULL, 'ham hock', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (29, NULL, 'tabasco', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (30, NULL, 'ground lamb', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (31, NULL, 'cordon blue', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (32, NULL, 'lettuce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (33, NULL, 'tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (34, NULL, 'cucumber', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (35, NULL, 'Cultural Roots', 'TagType', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (36, NULL, 'feta cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (37, NULL, 'feta cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (38, NULL, 'salmon', 'Ingredient', NULL, NULL, 4, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (39, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (40, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (41, NULL, 'peanuts', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (42, NULL, 'jelly', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (43, NULL, 'rutabegas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (44, NULL, 'bread', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (45, NULL, 'oranges', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (46, NULL, 'cod', 'Ingredient', NULL, NULL, 4, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (47, NULL, 'cayenne pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (48, NULL, 'chives', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (49, NULL, 'risotto rice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (50, NULL, 'saffron', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (51, NULL, 'mascarpone', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (52, NULL, 'tarragon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (53, NULL, 'snow peas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (54, NULL, 'caraway seeds', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (55, NULL, 'shallot', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (56, NULL, 'leek', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (57, NULL, 'bay leaf', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (58, NULL, 'fresh thyme', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (59, NULL, 'red potatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (60, NULL, 'spinach', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (61, NULL, 'egg noodles', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (62, NULL, 'bread crumbs', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (63, NULL, 'sponge', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (64, NULL, 'cheap 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (65, NULL, 'apples', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (66, NULL, 'muesli', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (67, NULL, 'milk', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (68, NULL, 'yogurt', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (69, NULL, 'eggs', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (70, NULL, 'creme fraiche', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (71, NULL, 'grated swiss cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (72, NULL, 'pie crust', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (73, NULL, 'lardons', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (74, NULL, 'lardons', 'Ingredient', NULL, NULL, 8, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (75, NULL, 'cucumbers', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (76, NULL, 'red pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (77, NULL, 'white vinegar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (78, NULL, 'red lentils', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (79, NULL, 'baking soda', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (80, NULL, 'chocolate chips', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (81, NULL, 'carrots', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (82, NULL, 'dry black beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (83, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (84, NULL, 'yeast', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (85, NULL, 'salt and pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (86, NULL, 'unused', 'TagType', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (87, NULL, 'Occasions', 'TagType', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (88, NULL, 'Prepared Meats', 'Ingredient', NULL, NULL, 7, NULL, false, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (89, NULL, 'merguez', 'Ingredient', NULL, NULL, 8, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (90, NULL, 'frozen hamburgers', 'Ingredient', NULL, NULL, 2, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (91, NULL, 'tortellini', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (92, NULL, 'pesto pasta sauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (93, NULL, 'saram wrap', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (94, NULL, 'dry cat food', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (95, NULL, 'crackers', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (96, NULL, 'brown cookies', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (97, NULL, 'pears', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (98, NULL, 'grapefruit', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (99, NULL, 'kalamata olives', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (100, NULL, 'plum tomato', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (101, NULL, 'fresh basil', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (102, NULL, 'capers', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (103, NULL, 'orange zest', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (104, NULL, 'lemon juice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (105, NULL, 'fusilli', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (106, NULL, 'quail eggs', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (107, NULL, 'fresh dill', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (108, NULL, 'yellow bell pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (109, NULL, 'asparagus', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (110, NULL, 'canned diced tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (111, NULL, 'baby spinach', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (112, NULL, 'garam masala', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (113, NULL, 'canned chickpeas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (114, NULL, 'couscous', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (115, NULL, 'rotisserie chicken', 'Ingredient', NULL, NULL, 3, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (116, NULL, 'butternut squash', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (117, NULL, 'campanelle', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (118, NULL, 'leeks', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (119, NULL, 'fresh oregano', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (120, NULL, 'eggplant', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (121, NULL, 'penne', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (122, NULL, 'goat cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (123, NULL, 'white rice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (124, NULL, 'strip steaks', 'Ingredient', NULL, NULL, 2, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (125, NULL, 'blue cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (126, NULL, 'heavy cream', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (127, NULL, 'roasted red peppers', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (128, NULL, 'light brown sugar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (129, NULL, 'mayonnaise', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (130, NULL, 'sun dried tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (131, NULL, 'parmesan cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (132, NULL, 'pine nuts', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (133, NULL, 'balsamic vinegar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (134, NULL, 'farfalle', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (135, NULL, 'arugula', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (136, NULL, 'salami', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (137, NULL, 'granola bars', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (138, NULL, 'brioche', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (139, NULL, 'nutella', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (140, NULL, 'compote', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (141, NULL, 'toothpaste', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (142, NULL, 'Good For Picnics', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (143, NULL, 'Low Fat', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (144, NULL, 'window cleaner', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (145, NULL, 'mopping fluid', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (146, NULL, 'soft butter', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (147, NULL, 'english muffins', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (148, NULL, 'coffee filters', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (149, NULL, 'page protectors', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (150, NULL, 'blue pen', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (151, NULL, 'clementines', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (152, NULL, 'Low Carbohydrates', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (153, NULL, 'Low Salt', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (154, NULL, 'Low Calorie', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (155, 'dd', 'unused', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (156, NULL, 'Low Glycemic Index', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (157, NULL, 'Preparation Type', 'TagType', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (158, NULL, 'notused1', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (159, NULL, 'gizzards', 'Ingredient', NULL, NULL, 5, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (160, NULL, 'Quick To Prepare', 'Rating', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (161, NULL, 'shell pasta', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (162, NULL, 'sliced ham', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (163, NULL, 'light cream', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (164, NULL, 'canned white kidney beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (165, NULL, 'beef stock', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (166, NULL, 'spaghetti sauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (167, NULL, 'sweet potatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (168, NULL, 'paprika', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (169, NULL, 'mustard powder', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (170, NULL, 'whipping cream', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (171, NULL, 'white pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (172, NULL, 'walnuts', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (173, NULL, 'poulty seasoning', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (174, NULL, 'star spice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (175, NULL, 'marshmallows', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (176, NULL, 'baking chocolate', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (177, NULL, 'powdered cocoa', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (178, NULL, 'confectioners sugar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (179, NULL, 'corn syrup', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (180, NULL, 'oven cleaner', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (181, NULL, 'white sugar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (182, NULL, 'vanilla extract', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (183, NULL, 'salsa', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (184, NULL, 'chili powder', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (185, NULL, 'oregano', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (186, NULL, 'vegetable stock', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (187, NULL, 'green bell pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (188, NULL, 'canned kidney beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (189, NULL, 'canned black beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (190, NULL, 'canned tomato sauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (191, NULL, 'pumpkin puree', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (192, NULL, 'nutmeg', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (193, NULL, 'ground cloves', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (194, NULL, 'ground ginger', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (195, NULL, 'sandwich bags', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (196, NULL, 'loose tea', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (197, NULL, 'Low In ...', 'TagType', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (198, NULL, 'corn tortillas', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (199, NULL, 'Vegetarian', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (200, NULL, 'arrugula', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (201, NULL, 'gnocchi', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (202, NULL, 'gorgonzola', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (203, NULL, 'sour cream', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (204, NULL, 'Fish', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (205, NULL, 'potato chips', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (206, NULL, 'white bread', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (207, NULL, 'dill', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (208, NULL, 'lemon zest', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (209, NULL, 'canned garbanzo beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (210, NULL, 'canned tuna', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (211, NULL, 'scallion', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (212, NULL, 'fresh ginger', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (213, NULL, 'cranberries', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (214, NULL, 'kids shampoo', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (215, NULL, 'light bulb', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (216, NULL, 'Kitchen Supplies', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (217, NULL, 'canned sprouts', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (218, NULL, 'Quick To Prepare 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3.10000000000000009);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (219, NULL, 'Quick To Prepare 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2.10000000000000009);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (220, NULL, 'friday snack', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (221, NULL, 'diet coke', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (222, NULL, 'napkins', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (223, NULL, 'cat food', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (224, NULL, 'dog food', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (225, NULL, 'shampoo', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (226, NULL, 'shower soap', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (227, NULL, 'potatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (228, NULL, 'smoked ham', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (229, NULL, 'pecans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (230, NULL, 'kielbasa', 'Ingredient', NULL, NULL, 8, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (231, NULL, 'canned whole tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (232, NULL, 'cajun seasoning', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (233, NULL, 'ham steak', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (234, NULL, 'green split peas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (235, NULL, 'kitty litter', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (236, NULL, 'toilet paper', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (237, NULL, 'peanut butter', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (238, NULL, 'tortillas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (239, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (240, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (241, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (242, NULL, 'ground coriander', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (243, NULL, 'ground cinnamon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (244, NULL, 'Farro', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (245, NULL, 'frozen peas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (246, NULL, 'Special Diet', 'TagType', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (247, NULL, 'fresh parsley', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (248, NULL, 'boursin cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (249, NULL, 'fresh chives', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (250, NULL, 'white wine vinegar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (251, NULL, 'stew meat', 'Ingredient', NULL, NULL, 2, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (252, NULL, 'guiness beer', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (253, NULL, 'coffee', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (254, NULL, 'gum', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (348, NULL, 'butter', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (349, NULL, 'white mushrooms', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (350, NULL, 'flour', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (351, NULL, 'thyme', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (352, NULL, 'dijon mustard', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (353, NULL, 'diced canned tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (354, NULL, 'parsley', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (355, NULL, 'red bell pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (356, NULL, 'black pitted olives', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (357, NULL, 'lemon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (358, NULL, 'cinnamon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (359, NULL, 'honey', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (360, NULL, 'salt', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (361, NULL, 'brown sugar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (362, 'lll', 'delete', 'Ingredient', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (363, NULL, 'Kids Like It 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (364, NULL, 'Kids Like It 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (365, NULL, 'Kids Like It 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (366, 'ddd', 'delete', 'Ingredient', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (255, NULL, 'ground cumin', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (256, NULL, 'soy sauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (257, NULL, 'round steak', 'Ingredient', NULL, NULL, 2, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (258, NULL, 'beef chuck roast', 'Ingredient', NULL, NULL, 2, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (259, NULL, 'dried marjoram', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (260, NULL, 'black-eyed peas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (261, NULL, 'red wine vinegar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (262, NULL, 'fresh mint', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (263, NULL, 'pistachios', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (264, NULL, 'boxed gravy', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (265, NULL, 'trash bags', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (266, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (267, NULL, 'Christmas', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (268, NULL, 'Thanksgiving', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (269, NULL, 'sliced sausage', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (270, NULL, 'dish soap', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (271, NULL, 'allspice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (272, NULL, 'whole cloves', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (273, NULL, 'cider', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (274, NULL, 'unsweetened chocolate', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (275, NULL, 'bag for Christmas Hats', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (276, NULL, 'envelopes', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (277, NULL, 'romano cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (278, NULL, 'sherry', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (279, NULL, 'gruyere cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (280, NULL, 'radishes', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (281, NULL, 'sea salt', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (282, NULL, 'baguette', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (283, NULL, 'paper towels', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (284, NULL, 'jalapeno pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (285, NULL, 'unsalted cashews', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (286, NULL, 'curry powder', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (287, NULL, 'fresh cilantro', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (288, NULL, 'fresh tarragon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (289, NULL, 'turnips', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (290, NULL, 'Quick To Table', 'Rating', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (291, NULL, 'Ease of Prep', 'Rating', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (292, NULL, 'Elegance', 'Rating', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (293, NULL, 'baking powder', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (294, NULL, 'powdered sugar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (295, NULL, 'chocolate bar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (296, NULL, 'fennel seeds', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (297, NULL, 'cardamon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (298, NULL, 'square baking dish', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (299, NULL, 'dry wipes', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (300, NULL, 'Healthy 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (301, NULL, 'Soup', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (302, '', 'Halal', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (303, '', 'Kosher', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (304, NULL, 'unused', 'TagType', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (305, NULL, 'Healthy', 'Rating', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (306, NULL, 'Kids Like It', 'Rating', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (307, NULL, 'frozen green beans', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (308, NULL, 'bay leaves', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (309, NULL, 'dried thyme', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (310, NULL, 'fresh pumpkin', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (311, NULL, 'pork roast', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (312, NULL, 'diced green chilis', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (313, NULL, 'Household Supplies', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (314, NULL, 'kuggin', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (315, NULL, 'cheap 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (316, NULL, 'Quick To Prepare 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (317, NULL, 'Quick To Prepare 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (318, NULL, 'sesame oil', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (319, NULL, 'Elegance 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (320, '', 'Main Dish', 'DishType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (321, NULL, 'Yummy 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (322, NULL, 'Yummy 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (323, 'rr', 'crockpot', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (324, NULL, 'Yummy 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (325, NULL, 'Yummy 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (326, NULL, 'Yummy 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (327, NULL, 'Kids Like It 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (328, NULL, 'Kids Like It 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (329, NULL, 'Ease of Prep 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (330, NULL, 'Quick To Table 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (331, 'dd', 'Type TAG', 'TagType', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (332, NULL, 'cheap', 'Rating', NULL, true, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (333, NULL, 'Appetizer', 'DishType', NULL, true, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (334, NULL, 'black pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (335, NULL, 'red pepper flakes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (336, NULL, 'olive oil', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (337, NULL, 'egg', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (338, NULL, 'canned white beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (339, NULL, 'canned tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (340, NULL, 'sausage', 'Ingredient', NULL, NULL, 8, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (341, NULL, 'tomato paste', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (342, NULL, 'zucchini', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (343, NULL, 'cumin', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (344, 'rrr', 'cheap 3', 'Rating', NULL, NULL, NULL, NULL, true, false, NULL, 3);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (345, NULL, 'laughing cow cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (346, NULL, 'Meat', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (347, NULL, 'vegetable oil', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (367, NULL, 'Animal Products', 'NonEdible', NULL, NULL, NULL, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (368, NULL, 'Chicken', 'Ingredient', NULL, NULL, 3, true, false, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (369, NULL, 'New', 'TagType', NULL, true, NULL, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (370, NULL, 'New', 'Ingredient', NULL, true, NULL, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (371, 'mmm', 'Meat', 'Ingredient', NULL, NULL, 7, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (372, NULL, 'Beef', 'Ingredient', NULL, NULL, 2, true, false, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (373, NULL, 'Fish', 'Ingredient', NULL, NULL, 4, true, false, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (374, NULL, 'Poultry', 'Ingredient', NULL, NULL, 5, true, false, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (375, NULL, 'Pork', 'Ingredient', NULL, NULL, 6, true, false, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (376, NULL, 'pasta', 'Ingredient', NULL, NULL, 1, true, false, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (377, NULL, 'Spices', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (378, NULL, 'Eggs and Dairy', 'Ingredient', NULL, NULL, NULL, true, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (379, NULL, 'Condiments', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (380, NULL, 'New', 'NonEdible', NULL, true, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (381, NULL, 'Cheese', 'Ingredient', NULL, NULL, NULL, true, false, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (382, NULL, 'Baking', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (383, NULL, 'cleaning supplies', 'NonEdible', NULL, NULL, NULL, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (384, NULL, 'Office Supplies', 'NonEdible', NULL, NULL, NULL, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (385, NULL, 'Oil and Vinegar', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (386, NULL, 'Canned Vegetables', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (387, NULL, 'Difficulty', 'Rating', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (388, NULL, 'Produce', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (389, NULL, 'Personal Hygiene', 'NonEdible', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (390, NULL, 'Vegetables', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (391, NULL, 'Taste Factor', 'Rating', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (392, NULL, 'Drinks', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (393, NULL, 'Milk and Cream', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (394, NULL, 'sausage', 'Ingredient', NULL, NULL, 8, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (395, NULL, 'Elegance 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (396, NULL, 'Elegance 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (397, NULL, 'Elegance 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (398, NULL, 'Elegance 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (399, NULL, 'Ease of Prep 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (400, NULL, 'Ease of Prep 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (401, NULL, 'Ease of Prep 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (402, NULL, 'Ease of Prep 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (403, NULL, 'Frozen', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (404, NULL, 'Holiday', 'TagType', NULL, NULL, NULL, true, false, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (405, NULL, 'Prepared Soup', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (406, NULL, 'chicken breasts', 'Ingredient', NULL, NULL, 3, NULL, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (407, NULL, 'Dish Type', 'TagType', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (408, 'dd', 'notused3', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (409, NULL, 'Bakery - Bread Products', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (410, NULL, 'Nuts', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (411, NULL, 'Spreads', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (412, NULL, 'Tomato and Pasta Sauce', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (413, NULL, 'Snacks', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (414, NULL, 'Coffee and Tea', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (415, NULL, 'cheap 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (416, 'dd', 'Quick to Prepare 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1.10000000000000009);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (417, NULL, 'Healthy 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (418, 'jj', 'notused2', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (419, NULL, 'Healthy 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (420, NULL, 'unused', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (421, NULL, 'lunch meats', 'Ingredient', NULL, NULL, NULL, true, false, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (422, NULL, 'Healthy 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (423, NULL, 'Nuts, Grains and Dry Beans', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (424, NULL, 'Healthy 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (425, NULL, 'Quick To Table 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (426, NULL, 'Quick To Table 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (427, NULL, 'Quick To Table 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (428, NULL, 'Quick To Table 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (429, NULL, 'Meat Type', 'TagType', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (430, NULL, 'Cereals', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (431, NULL, 'Canned Fish', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (432, 'dd', 'Side Dish', 'DishType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (433, 'tt', 'Dessert', 'DishType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (434, NULL, 'chicken', 'Ingredient', NULL, NULL, 3, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (435, NULL, 'ground beef', 'Ingredient', NULL, NULL, 2, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (436, NULL, 'elbow maccaroni', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (437, NULL, 'chicken stock', 'Ingredient', NULL, NULL, 3, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (438, NULL, 'farfalla', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (439, NULL, 'spaghetti', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (440, NULL, 'pancetta', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (441, NULL, 'bacon', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (442, NULL, 'pork chops', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (443, NULL, 'chicken thighs', 'Ingredient', NULL, NULL, 3, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (444, NULL, 'half and half', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (445, NULL, 'unused', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (446, NULL, 'raisin', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (447, NULL, 'jasmine rice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (448, NULL, 'coconut milk', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (449, NULL, 'rice wine vinegar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (450, NULL, 'fish sauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (451, NULL, 'shitake mushrooms', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (452, NULL, 'green onion', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (453, NULL, 'mozzarella', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (454, NULL, 'canned mixed vegetables', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (455, NULL, 'bulgur', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (456, NULL, 'green lentils', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (457, NULL, 'Worcestershire sauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (458, NULL, 'apple juice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (459, NULL, 'canned salmon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (460, NULL, 'cornstarch', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (461, NULL, 'beer', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (462, NULL, 'plain yogurt', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (463, NULL, 'lime', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (464, NULL, 'dried dill', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (465, NULL, 'cabbage', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (466, NULL, 'bowtie pasta', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (467, NULL, 'cherry tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (468, NULL, 'dinner in a bag', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (469, NULL, 'glue', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (470, NULL, 'soft cat food', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (471, NULL, 'pantry dish', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (472, NULL, 'sliced pepperoni', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (473, NULL, 'boneless pork chops', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (1, NULL, 'green chili - preprepared', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (2, 'dd', 'cheap 5', 'Rating', NULL, NULL, NULL, NULL, true, false, NULL, 5);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (3, NULL, 'salt and pepper shaker', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (4, NULL, 'prepared pie crust', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (5, NULL, 'big envelopes', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (6, NULL, 'duck', 'Ingredient', NULL, NULL, 5, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (7, NULL, 'Finger Food', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (8, NULL, 'Skillet Dish', 'TagType', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (9, NULL, 'Mutton', 'Ingredient', NULL, NULL, 7, NULL, false, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (10, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (11, NULL, 'Mexican', 'TagType', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (12, NULL, 'applesauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (13, NULL, 'rice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (14, NULL, 'Rice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (15, NULL, 'celery', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (16, NULL, 'onion', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (17, NULL, 'vegetable soup', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (18, NULL, 'cheddar cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (19, NULL, 'garlic', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (20, NULL, 'cream', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (21, NULL, 'broccoli', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (22, NULL, 'artichoke hearts', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (23, NULL, 'white wine', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (24, NULL, 'Pasta', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (25, NULL, 'canned corn', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (26, NULL, 'dry red beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (27, NULL, 'prosciutto', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (28, NULL, 'ham hock', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (29, NULL, 'tabasco', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (30, NULL, 'ground lamb', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (31, NULL, 'cordon blue', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (32, NULL, 'lettuce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (33, NULL, 'tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (34, NULL, 'cucumber', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (35, NULL, 'Cultural Roots', 'TagType', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (36, NULL, 'feta cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (37, NULL, 'feta cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (38, NULL, 'salmon', 'Ingredient', NULL, NULL, 4, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (39, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (40, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (41, NULL, 'peanuts', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (42, NULL, 'jelly', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (43, NULL, 'rutabegas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (44, NULL, 'bread', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (45, NULL, 'oranges', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (46, NULL, 'cod', 'Ingredient', NULL, NULL, 4, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (47, NULL, 'cayenne pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (48, NULL, 'chives', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (49, NULL, 'risotto rice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (50, NULL, 'saffron', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (51, NULL, 'mascarpone', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (52, NULL, 'tarragon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (53, NULL, 'snow peas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (54, NULL, 'caraway seeds', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (55, NULL, 'shallot', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (56, NULL, 'leek', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (57, NULL, 'bay leaf', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (58, NULL, 'fresh thyme', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (59, NULL, 'red potatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (60, NULL, 'spinach', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (61, NULL, 'egg noodles', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (62, NULL, 'bread crumbs', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (63, NULL, 'sponge', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (64, NULL, 'cheap 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (65, NULL, 'apples', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (66, NULL, 'muesli', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (67, NULL, 'milk', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (68, NULL, 'yogurt', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (69, NULL, 'eggs', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (70, NULL, 'creme fraiche', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (71, NULL, 'grated swiss cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (72, NULL, 'pie crust', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (73, NULL, 'lardons', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (74, NULL, 'lardons', 'Ingredient', NULL, NULL, 8, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (75, NULL, 'cucumbers', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (76, NULL, 'red pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (77, NULL, 'white vinegar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (78, NULL, 'red lentils', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (79, NULL, 'baking soda', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (80, NULL, 'chocolate chips', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (81, NULL, 'carrots', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (82, NULL, 'dry black beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (83, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (84, NULL, 'yeast', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (85, NULL, 'salt and pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (86, NULL, 'unused', 'TagType', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (87, NULL, 'Occasions', 'TagType', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (88, NULL, 'Prepared Meats', 'Ingredient', NULL, NULL, 7, NULL, false, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (89, NULL, 'merguez', 'Ingredient', NULL, NULL, 8, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (90, NULL, 'frozen hamburgers', 'Ingredient', NULL, NULL, 2, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (91, NULL, 'tortellini', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (92, NULL, 'pesto pasta sauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (93, NULL, 'saram wrap', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (94, NULL, 'dry cat food', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (95, NULL, 'crackers', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (96, NULL, 'brown cookies', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (97, NULL, 'pears', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (98, NULL, 'grapefruit', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (99, NULL, 'kalamata olives', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (100, NULL, 'plum tomato', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (101, NULL, 'fresh basil', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (102, NULL, 'capers', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (103, NULL, 'orange zest', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (104, NULL, 'lemon juice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (105, NULL, 'fusilli', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (106, NULL, 'quail eggs', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (107, NULL, 'fresh dill', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (108, NULL, 'yellow bell pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (109, NULL, 'asparagus', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (110, NULL, 'canned diced tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (111, NULL, 'baby spinach', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (112, NULL, 'garam masala', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (113, NULL, 'canned chickpeas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (114, NULL, 'couscous', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (115, NULL, 'rotisserie chicken', 'Ingredient', NULL, NULL, 3, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (116, NULL, 'butternut squash', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (117, NULL, 'campanelle', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (118, NULL, 'leeks', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (119, NULL, 'fresh oregano', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (120, NULL, 'eggplant', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (121, NULL, 'penne', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (122, NULL, 'goat cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (123, NULL, 'white rice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (124, NULL, 'strip steaks', 'Ingredient', NULL, NULL, 2, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (125, NULL, 'blue cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (126, NULL, 'heavy cream', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (127, NULL, 'roasted red peppers', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (128, NULL, 'light brown sugar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (129, NULL, 'mayonnaise', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (130, NULL, 'sun dried tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (131, NULL, 'parmesan cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (132, NULL, 'pine nuts', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (133, NULL, 'balsamic vinegar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (134, NULL, 'farfalle', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (135, NULL, 'arugula', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (136, NULL, 'salami', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (137, NULL, 'granola bars', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (138, NULL, 'brioche', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (139, NULL, 'nutella', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (140, NULL, 'compote', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (141, NULL, 'toothpaste', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (142, NULL, 'Good For Picnics', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (143, NULL, 'Low Fat', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (144, NULL, 'window cleaner', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (145, NULL, 'mopping fluid', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (146, NULL, 'soft butter', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (147, NULL, 'english muffins', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (148, NULL, 'coffee filters', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (149, NULL, 'page protectors', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (150, NULL, 'blue pen', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (151, NULL, 'clementines', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (152, NULL, 'Low Carbohydrates', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (153, NULL, 'Low Salt', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (154, NULL, 'Low Calorie', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (155, 'dd', 'unused', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (156, NULL, 'Low Glycemic Index', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (157, NULL, 'Preparation Type', 'TagType', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (158, NULL, 'notused1', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (159, NULL, 'gizzards', 'Ingredient', NULL, NULL, 5, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (160, NULL, 'Quick To Prepare', 'Rating', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (161, NULL, 'shell pasta', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (162, NULL, 'sliced ham', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (163, NULL, 'light cream', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (164, NULL, 'canned white kidney beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (165, NULL, 'beef stock', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (166, NULL, 'spaghetti sauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (167, NULL, 'sweet potatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (168, NULL, 'paprika', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (169, NULL, 'mustard powder', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (170, NULL, 'whipping cream', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (171, NULL, 'white pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (172, NULL, 'walnuts', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (173, NULL, 'poulty seasoning', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (174, NULL, 'star spice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (175, NULL, 'marshmallows', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (176, NULL, 'baking chocolate', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (177, NULL, 'powdered cocoa', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (178, NULL, 'confectioners sugar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (179, NULL, 'corn syrup', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (180, NULL, 'oven cleaner', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (181, NULL, 'white sugar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (182, NULL, 'vanilla extract', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (183, NULL, 'salsa', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (184, NULL, 'chili powder', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (185, NULL, 'oregano', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (186, NULL, 'vegetable stock', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (187, NULL, 'green bell pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (188, NULL, 'canned kidney beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (189, NULL, 'canned black beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (190, NULL, 'canned tomato sauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (191, NULL, 'pumpkin puree', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (192, NULL, 'nutmeg', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (193, NULL, 'ground cloves', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (194, NULL, 'ground ginger', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (195, NULL, 'sandwich bags', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (196, NULL, 'loose tea', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (197, NULL, 'Low In ...', 'TagType', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (198, NULL, 'corn tortillas', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (199, NULL, 'Vegetarian', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (200, NULL, 'arrugula', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (201, NULL, 'gnocchi', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (202, NULL, 'gorgonzola', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (203, NULL, 'sour cream', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (204, NULL, 'Fish', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (205, NULL, 'potato chips', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (206, NULL, 'white bread', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (207, NULL, 'dill', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (208, NULL, 'lemon zest', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (209, NULL, 'canned garbanzo beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (210, NULL, 'canned tuna', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (211, NULL, 'scallion', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (212, NULL, 'fresh ginger', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (213, NULL, 'cranberries', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (214, NULL, 'kids shampoo', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (215, NULL, 'light bulb', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (216, NULL, 'Kitchen Supplies', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (217, NULL, 'canned sprouts', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (218, NULL, 'Quick To Prepare 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3.10000000000000009);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (219, NULL, 'Quick To Prepare 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2.10000000000000009);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (220, NULL, 'friday snack', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (221, NULL, 'diet coke', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (222, NULL, 'napkins', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (223, NULL, 'cat food', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (224, NULL, 'dog food', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (225, NULL, 'shampoo', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (226, NULL, 'shower soap', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (227, NULL, 'potatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (228, NULL, 'smoked ham', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (229, NULL, 'pecans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (230, NULL, 'kielbasa', 'Ingredient', NULL, NULL, 8, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (231, NULL, 'canned whole tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (232, NULL, 'cajun seasoning', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (233, NULL, 'ham steak', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (234, NULL, 'green split peas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (235, NULL, 'kitty litter', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (236, NULL, 'toilet paper', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (237, NULL, 'peanut butter', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (238, NULL, 'tortillas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (239, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (240, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (241, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (242, NULL, 'ground coriander', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (243, NULL, 'ground cinnamon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (244, NULL, 'Farro', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (245, NULL, 'frozen peas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (246, NULL, 'Special Diet', 'TagType', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (247, NULL, 'fresh parsley', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (248, NULL, 'boursin cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (249, NULL, 'fresh chives', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (250, NULL, 'white wine vinegar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (251, NULL, 'stew meat', 'Ingredient', NULL, NULL, 2, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (252, NULL, 'guiness beer', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (253, NULL, 'coffee', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (254, NULL, 'gum', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (348, NULL, 'butter', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (349, NULL, 'white mushrooms', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (350, NULL, 'flour', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (351, NULL, 'thyme', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (352, NULL, 'dijon mustard', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (353, NULL, 'diced canned tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (354, NULL, 'parsley', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (355, NULL, 'red bell pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (356, NULL, 'black pitted olives', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (357, NULL, 'lemon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (358, NULL, 'cinnamon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (359, NULL, 'honey', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (360, NULL, 'salt', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (361, NULL, 'brown sugar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (362, 'lll', 'delete', 'Ingredient', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (363, NULL, 'Kids Like It 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (364, NULL, 'Kids Like It 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (365, NULL, 'Kids Like It 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (366, 'ddd', 'delete', 'Ingredient', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (255, NULL, 'ground cumin', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (256, NULL, 'soy sauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (257, NULL, 'round steak', 'Ingredient', NULL, NULL, 2, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (258, NULL, 'beef chuck roast', 'Ingredient', NULL, NULL, 2, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (259, NULL, 'dried marjoram', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (260, NULL, 'black-eyed peas', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (261, NULL, 'red wine vinegar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (262, NULL, 'fresh mint', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (263, NULL, 'pistachios', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (264, NULL, 'boxed gravy', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (265, NULL, 'trash bags', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (266, NULL, 'delete', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (267, NULL, 'Christmas', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (268, NULL, 'Thanksgiving', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (269, NULL, 'sliced sausage', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (270, NULL, 'dish soap', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (271, NULL, 'allspice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (272, NULL, 'whole cloves', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (273, NULL, 'cider', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (274, NULL, 'unsweetened chocolate', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (275, NULL, 'bag for Christmas Hats', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (276, NULL, 'envelopes', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (277, NULL, 'romano cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (278, NULL, 'sherry', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (279, NULL, 'gruyere cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (280, NULL, 'radishes', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (281, NULL, 'sea salt', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (282, NULL, 'baguette', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (283, NULL, 'paper towels', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (284, NULL, 'jalapeno pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (285, NULL, 'unsalted cashews', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (286, NULL, 'curry powder', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (287, NULL, 'fresh cilantro', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (288, NULL, 'fresh tarragon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (289, NULL, 'turnips', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (290, NULL, 'Quick To Table', 'Rating', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (291, NULL, 'Ease of Prep', 'Rating', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (292, NULL, 'Elegance', 'Rating', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (293, NULL, 'baking powder', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (294, NULL, 'powdered sugar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (295, NULL, 'chocolate bar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (296, NULL, 'fennel seeds', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (297, NULL, 'cardamon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (298, NULL, 'square baking dish', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (299, NULL, 'dry wipes', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (300, NULL, 'Healthy 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (301, NULL, 'Soup', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (302, '', 'Halal', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (303, '', 'Kosher', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (304, NULL, 'unused', 'TagType', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (305, NULL, 'Healthy', 'Rating', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (306, NULL, 'Kids Like It', 'Rating', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (307, NULL, 'frozen green beans', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (308, NULL, 'bay leaves', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (309, NULL, 'dried thyme', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (310, NULL, 'fresh pumpkin', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (311, NULL, 'pork roast', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (312, NULL, 'diced green chilis', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (313, NULL, 'Household Supplies', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (314, NULL, 'kuggin', 'NonEdible', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (315, NULL, 'cheap 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (316, NULL, 'Quick To Prepare 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (317, NULL, 'Quick To Prepare 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (318, NULL, 'sesame oil', 'Ingredient', NULL, NULL, NULL, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (319, NULL, 'Elegance 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (320, '', 'Main Dish', 'DishType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (321, NULL, 'Yummy 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (322, NULL, 'Yummy 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (323, 'rr', 'crockpot', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (324, NULL, 'Yummy 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (325, NULL, 'Yummy 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (326, NULL, 'Yummy 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (327, NULL, 'Kids Like It 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (328, NULL, 'Kids Like It 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (329, NULL, 'Ease of Prep 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (330, NULL, 'Quick To Table 5', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 5);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (331, 'dd', 'Type TAG', 'TagType', NULL, NULL, NULL, NULL, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (332, NULL, 'cheap', 'Rating', NULL, true, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (333, NULL, 'Appetizer', 'DishType', NULL, true, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (334, NULL, 'black pepper', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (335, NULL, 'red pepper flakes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (336, NULL, 'olive oil', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (337, NULL, 'egg', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (338, NULL, 'canned white beans', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (339, NULL, 'canned tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (340, NULL, 'sausage', 'Ingredient', NULL, NULL, 8, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (341, NULL, 'tomato paste', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (342, NULL, 'zucchini', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (343, NULL, 'cumin', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (344, 'rrr', 'cheap 3', 'Rating', NULL, NULL, NULL, NULL, true, false, NULL, 3);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (345, NULL, 'laughing cow cheese', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (346, NULL, 'Meat', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (347, NULL, 'vegetable oil', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (367, NULL, 'Animal Products', 'NonEdible', NULL, NULL, NULL, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (368, NULL, 'Chicken', 'Ingredient', NULL, NULL, 3, true, false, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (369, NULL, 'New', 'TagType', NULL, true, NULL, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (370, NULL, 'New', 'Ingredient', NULL, true, NULL, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (371, 'mmm', 'Meat', 'Ingredient', NULL, NULL, 7, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (372, NULL, 'Beef', 'Ingredient', NULL, NULL, 2, true, false, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (373, NULL, 'Fish', 'Ingredient', NULL, NULL, 4, true, false, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (374, NULL, 'Poultry', 'Ingredient', NULL, NULL, 5, true, false, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (375, NULL, 'Pork', 'Ingredient', NULL, NULL, 6, true, false, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (376, NULL, 'pasta', 'Ingredient', NULL, NULL, 1, true, false, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (377, NULL, 'Spices', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (378, NULL, 'Eggs and Dairy', 'Ingredient', NULL, NULL, NULL, true, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (379, NULL, 'Condiments', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (380, NULL, 'New', 'NonEdible', NULL, true, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (381, NULL, 'Cheese', 'Ingredient', NULL, NULL, NULL, true, false, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (382, NULL, 'Baking', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (383, NULL, 'cleaning supplies', 'NonEdible', NULL, NULL, NULL, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (384, NULL, 'Office Supplies', 'NonEdible', NULL, NULL, NULL, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (385, NULL, 'Oil and Vinegar', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (386, NULL, 'Canned Vegetables', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (387, NULL, 'Difficulty', 'Rating', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (388, NULL, 'Produce', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (389, NULL, 'Personal Hygiene', 'NonEdible', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (390, NULL, 'Vegetables', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (391, NULL, 'Taste Factor', 'Rating', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (392, NULL, 'Drinks', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (393, NULL, 'Milk and Cream', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (394, NULL, 'sausage', 'Ingredient', NULL, NULL, 8, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (395, NULL, 'Elegance 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (396, NULL, 'Elegance 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (397, NULL, 'Elegance 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (398, NULL, 'Elegance 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (399, NULL, 'Ease of Prep 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (400, NULL, 'Ease of Prep 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (401, NULL, 'Ease of Prep 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (402, NULL, 'Ease of Prep 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (403, NULL, 'Frozen', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (404, NULL, 'Holiday', 'TagType', NULL, NULL, NULL, true, false, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (405, NULL, 'Prepared Soup', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (406, NULL, 'chicken breasts', 'Ingredient', NULL, NULL, 3, NULL, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (407, NULL, 'Dish Type', 'TagType', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (408, 'dd', 'notused3', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (409, NULL, 'Bakery - Bread Products', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (410, NULL, 'Nuts', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (411, NULL, 'Spreads', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (412, NULL, 'Tomato and Pasta Sauce', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (413, NULL, 'Snacks', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (414, NULL, 'Coffee and Tea', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (415, NULL, 'cheap 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (416, 'dd', 'Quick to Prepare 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1.10000000000000009);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (417, NULL, 'Healthy 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (418, 'jj', 'notused2', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (419, NULL, 'Healthy 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (420, NULL, 'unused', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (421, NULL, 'lunch meats', 'Ingredient', NULL, NULL, NULL, true, false, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (422, NULL, 'Healthy 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (423, NULL, 'Nuts, Grains and Dry Beans', 'Ingredient', NULL, NULL, NULL, true, true, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (424, NULL, 'Healthy 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (425, NULL, 'Quick To Table 4', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 4);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (426, NULL, 'Quick To Table 3', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 3);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (427, NULL, 'Quick To Table 2', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 2);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (428, NULL, 'Quick To Table 1', 'Rating', NULL, NULL, NULL, NULL, true, true, NULL, 1);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (429, NULL, 'Meat Type', 'TagType', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (430, NULL, 'Cereals', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (431, NULL, 'Canned Fish', 'Ingredient', NULL, NULL, NULL, true, false, false, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (432, 'dd', 'Side Dish', 'DishType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (433, 'tt', 'Dessert', 'DishType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (434, NULL, 'chicken', 'Ingredient', NULL, NULL, 3, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (435, NULL, 'ground beef', 'Ingredient', NULL, NULL, 2, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (436, NULL, 'elbow maccaroni', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (437, NULL, 'chicken stock', 'Ingredient', NULL, NULL, 3, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (438, NULL, 'farfalla', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (439, NULL, 'spaghetti', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (440, NULL, 'pancetta', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (441, NULL, 'bacon', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (442, NULL, 'pork chops', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (443, NULL, 'chicken thighs', 'Ingredient', NULL, NULL, 3, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (444, NULL, 'half and half', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (445, NULL, 'unused', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (446, NULL, 'raisin', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (447, NULL, 'jasmine rice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (448, NULL, 'coconut milk', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (449, NULL, 'rice wine vinegar', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (450, NULL, 'fish sauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (451, NULL, 'shitake mushrooms', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (452, NULL, 'green onion', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (453, NULL, 'mozzarella', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (454, NULL, 'canned mixed vegetables', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (455, NULL, 'bulgur', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (456, NULL, 'green lentils', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (457, NULL, 'Worcestershire sauce', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (458, NULL, 'apple juice', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (459, NULL, 'canned salmon', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (460, NULL, 'cornstarch', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (461, NULL, 'beer', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (462, NULL, 'plain yogurt', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (463, NULL, 'lime', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (464, NULL, 'dried dill', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (465, NULL, 'cabbage', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (466, NULL, 'bowtie pasta', 'Ingredient', NULL, NULL, 1, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (467, NULL, 'cherry tomatoes', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (468, NULL, 'dinner in a bag', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (469, NULL, 'glue', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (470, NULL, 'soft cat food', 'NonEdible', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (471, NULL, 'pantry dish', 'TagType', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (472, NULL, 'sliced pepperoni', 'Ingredient', NULL, NULL, NULL, NULL, true, true, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, Rating_family, tag_type_default, auto_tag_flag, is_parent_tag, assign_select, search_select, is_verified, power) VALUES (473, NULL, 'boneless pork chops', 'Ingredient', NULL, NULL, 6, NULL, true, true, NULL, NULL);
 
 
 --
@@ -4279,6 +4449,13 @@ INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES (
 
 
 --
+-- Name: tag_relation_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('tag_relation_sequence', 1000, false);
+
+
+--
 -- Data for Name: tag_search_group; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -4515,9 +4692,102 @@ INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (
 INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (231, 376, 466);
 INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (232, 421, 472);
 INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (233, 375, 473);
-INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (234, 372, 443);
-INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id) VALUES (235, 375, 162);
 
+
+--
+-- Name: tag_search_group_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('tag_search_group_sequence', 1, false);
+
+
+--
+-- Name: tag_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('tag_sequence', 1000, false);
+
+
+--
+-- Data for Name: target; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: target_proposal; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: target_proposal_dish; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Name: target_proposal_dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('target_proposal_dish_sequence', 1000, false);
+
+
+--
+-- Name: target_proposal_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('target_proposal_sequence', 1000, false);
+
+
+--
+-- Data for Name: target_proposal_slot; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Name: target_proposal_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('target_proposal_slot_sequence', 1000, false);
+
+
+--
+-- Name: target_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('target_sequence', 1000, false);
+
+
+--
+-- Data for Name: target_slot; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: target_slots; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: target_tags; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Name: user_id_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('user_id_sequence', 1000, false);
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
+--
 
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (1, NULL, true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'rufus');
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (20, NULL, true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'me');
@@ -4526,13 +4796,55 @@ INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, 
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (29, NULL, true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'michelle');
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username) VALUES (2, NULL, NULL, NULL, 'password', 'testname');
 
-insert into shadow_tags (    shadow_tag_id ,dish_id ,tag_id ) values (    1 ,3 ,346 );
-insert into shadow_tags (    shadow_tag_id ,dish_id ,tag_id ) values (    2 ,87 ,199 );
+
+
+-- drop constraints
+ALTER TABLE ONLY authority DROP CONSTRAINT IF EXISTS authority_pkey ;
+ALTER TABLE ONLY authority DROP CONSTRAINT IF EXISTS fkka37hl6mopj61rfbe97si18p8 ;
+ALTER TABLE ONLY auto_tag_instructions DROP CONSTRAINT IF EXISTS auto_tag_instructions_pkey ;
+ALTER TABLE ONLY category_tags DROP CONSTRAINT IF EXISTS  fkns9s1sef980caqqamoee8srdw ;
+ALTER TABLE ONLY category_tags DROP CONSTRAINT IF EXISTS fkclr8vrg8b1cwgwjsgcd5jtj6a ;
+ALTER TABLE ONLY dish DROP CONSTRAINT IF EXISTS dish_pkey ;
+ALTER TABLE ONLY dish DROP CONSTRAINT IF EXISTS fk4cvbymf9m9quckcouehn0p414 ;
+ALTER TABLE ONLY dish_tags DROP CONSTRAINT IF EXISTS  fkpy8j9ypbt3d59bjs0hgl3wcct ;
+ALTER TABLE ONLY dish_tags DROP CONSTRAINT IF EXISTS fkbh371e2vv53a3arqea0hf3jkl ;
+ALTER TABLE ONLY list DROP CONSTRAINT IF EXISTS list_pkey ;
+ALTER TABLE ONLY list_category DROP CONSTRAINT IF EXISTS  fkrhcs3i2p15y79hn00y5ic41gn ;
+ALTER TABLE ONLY list_category DROP CONSTRAINT IF EXISTS list_category_pkey ;
+ALTER TABLE ONLY list_item DROP CONSTRAINT IF EXISTS fk1ddq3ct1ulogjn5ijs8ert7hw ;
+ALTER TABLE ONLY list_item DROP CONSTRAINT IF EXISTS fklcvoij9ynqfllhxgn9v6qpsh8 ;
+ALTER TABLE ONLY list_item DROP CONSTRAINT IF EXISTS list_item_pkey ;
+ALTER TABLE ONLY list_layout DROP CONSTRAINT IF EXISTS list_layout_pkey ;
+ALTER TABLE ONLY list_tag_stats DROP CONSTRAINT IF EXISTS list_tag_stats_pkey ;
+ALTER TABLE ONLY meal_plan DROP CONSTRAINT IF EXISTS meal_plan_pkey ;
+ALTER TABLE ONLY meal_plan_slot DROP CONSTRAINT IF EXISTS fkdit15dhtc9j583c1pp21c8ss0 ;
+ALTER TABLE ONLY meal_plan_slot DROP CONSTRAINT IF EXISTS fkhhja2slk7gr34nhgcnlyw21ge ;
+ALTER TABLE ONLY meal_plan_slot DROP CONSTRAINT IF EXISTS meal_plan_slot_pkey ;
+ALTER TABLE ONLY proposal_context DROP CONSTRAINT IF EXISTS proposal_context_pkey ;
+ALTER TABLE ONLY proposal_context_slot DROP CONSTRAINT IF EXISTS fkd079bghbqgkxaa6ev4si0mh1x ;
+ALTER TABLE ONLY proposal_context_slot DROP CONSTRAINT IF EXISTS fkhgv828ap379mspi2sy46nhym2 ;
+ALTER TABLE ONLY proposal_context_slot DROP CONSTRAINT IF EXISTS proposal_context_slot_pkey ;
+ALTER TABLE ONLY shadow_tags DROP CONSTRAINT IF EXISTS shadow_tags_pkey ;
+ALTER TABLE ONLY tag DROP CONSTRAINT IF EXISTS tag_pkey ;
+ALTER TABLE ONLY tag_relation DROP CONSTRAINT IF EXISTS fk3vyajpbcb8wl8380yntahtgtf ;
+ALTER TABLE ONLY tag_relation DROP CONSTRAINT IF EXISTS fk6x8vvlp985udfs7g15uuxj42c ;
+ALTER TABLE ONLY tag_relation DROP CONSTRAINT IF EXISTS tag_relation_pkey ;
+ALTER TABLE ONLY tag_search_group DROP CONSTRAINT IF EXISTS tag_search_group_pkey ;
+ALTER TABLE ONLY target DROP CONSTRAINT IF EXISTS target_pkey ;
+ALTER TABLE ONLY target_proposal DROP CONSTRAINT IF EXISTS target_proposal_pkey ;
+ALTER TABLE ONLY target_proposal_dish DROP CONSTRAINT IF EXISTS fknru4508d44i3jxrbnlj9p4eer ;
+ALTER TABLE ONLY target_proposal_dish DROP CONSTRAINT IF EXISTS target_proposal_dish_pkey ;
+ALTER TABLE ONLY target_proposal_slot DROP CONSTRAINT IF EXISTS target_proposal_slot_pkey ;
+ALTER TABLE ONLY target_slot DROP CONSTRAINT IF EXISTS target_slot_pkey ;
+ALTER TABLE ONLY target_slots DROP CONSTRAINT IF EXISTS fkcoy8wmmbb7og08ydch06gt42o ;
+ALTER TABLE ONLY target_slots DROP CONSTRAINT IF EXISTS fkivtoroma7ffnyomikiqoxbkcf ;
+ALTER TABLE ONLY target_slots DROP CONSTRAINT IF EXISTS uk_r6ms6yd0im7k5olg94b35nu;
+
 --
 -- Name: authority_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE authority
+ALTER TABLE ONLY authority
     ADD CONSTRAINT authority_pkey PRIMARY KEY (authority_id);
 
 
@@ -4540,7 +4852,7 @@ ALTER TABLE authority
 -- Name: auto_tag_instructions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE auto_tag_instructions
+ALTER TABLE ONLY auto_tag_instructions
     ADD CONSTRAINT auto_tag_instructions_pkey PRIMARY KEY (instruction_id);
 
 
@@ -4548,7 +4860,7 @@ ALTER TABLE auto_tag_instructions
 -- Name: dish_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE dish
+ALTER TABLE ONLY dish
     ADD CONSTRAINT dish_pkey PRIMARY KEY (dish_id);
 
 
@@ -4556,7 +4868,7 @@ ALTER TABLE dish
 -- Name: list_category_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE list_category
+ALTER TABLE ONLY list_category
     ADD CONSTRAINT list_category_pkey PRIMARY KEY (category_id);
 
 
@@ -4564,7 +4876,7 @@ ALTER TABLE list_category
 -- Name: list_item_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE list_item
+ALTER TABLE ONLY list_item
     ADD CONSTRAINT list_item_pkey PRIMARY KEY (item_id);
 
 
@@ -4572,7 +4884,7 @@ ALTER TABLE list_item
 -- Name: list_layout_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE list_layout
+ALTER TABLE ONLY list_layout
     ADD CONSTRAINT list_layout_pkey PRIMARY KEY (layout_id);
 
 
@@ -4580,7 +4892,7 @@ ALTER TABLE list_layout
 -- Name: list_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE list
+ALTER TABLE ONLY list
     ADD CONSTRAINT list_pkey PRIMARY KEY (list_id);
 
 
@@ -4588,7 +4900,7 @@ ALTER TABLE list
 -- Name: list_tag_stats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE list_tag_stats
+ALTER TABLE ONLY list_tag_stats
     ADD CONSTRAINT list_tag_stats_pkey PRIMARY KEY (list_tag_stat_id);
 
 
@@ -4596,7 +4908,7 @@ ALTER TABLE list_tag_stats
 -- Name: meal_plan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE meal_plan
+ALTER TABLE ONLY meal_plan
     ADD CONSTRAINT meal_plan_pkey PRIMARY KEY (meal_plan_id);
 
 
@@ -4604,7 +4916,7 @@ ALTER TABLE meal_plan
 -- Name: meal_plan_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE meal_plan_slot
+ALTER TABLE ONLY meal_plan_slot
     ADD CONSTRAINT meal_plan_slot_pkey PRIMARY KEY (meal_plan_slot_id);
 
 
@@ -4612,7 +4924,7 @@ ALTER TABLE meal_plan_slot
 -- Name: proposal_context_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE proposal_context
+ALTER TABLE ONLY proposal_context
     ADD CONSTRAINT proposal_context_pkey PRIMARY KEY (proposal_context_id);
 
 
@@ -4620,7 +4932,7 @@ ALTER TABLE proposal_context
 -- Name: proposal_context_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE proposal_context_slot
+ALTER TABLE ONLY proposal_context_slot
     ADD CONSTRAINT proposal_context_slot_pkey PRIMARY KEY (proposal_context_slot_id);
 
 
@@ -4628,7 +4940,7 @@ ALTER TABLE proposal_context_slot
 -- Name: shadow_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE shadow_tags
+ALTER TABLE ONLY shadow_tags
     ADD CONSTRAINT shadow_tags_pkey PRIMARY KEY (shadow_tag_id);
 
 
@@ -4636,7 +4948,7 @@ ALTER TABLE shadow_tags
 -- Name: tag_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE tag
+ALTER TABLE ONLY tag
     ADD CONSTRAINT tag_pkey PRIMARY KEY (tag_id);
 
 
@@ -4644,7 +4956,7 @@ ALTER TABLE tag
 -- Name: tag_relation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE tag_relation
+ALTER TABLE ONLY tag_relation
     ADD CONSTRAINT tag_relation_pkey PRIMARY KEY (tag_relation_id);
 
 
@@ -4652,7 +4964,7 @@ ALTER TABLE tag_relation
 -- Name: tag_search_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE tag_search_group
+ALTER TABLE ONLY tag_search_group
     ADD CONSTRAINT tag_search_group_pkey PRIMARY KEY (tag_search_group_id);
 
 
@@ -4660,7 +4972,7 @@ ALTER TABLE tag_search_group
 -- Name: target_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE target
+ALTER TABLE ONLY target
     ADD CONSTRAINT target_pkey PRIMARY KEY (target_id);
 
 
@@ -4668,7 +4980,7 @@ ALTER TABLE target
 -- Name: target_proposal_dish_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE target_proposal_dish
+ALTER TABLE ONLY target_proposal_dish
     ADD CONSTRAINT target_proposal_dish_pkey PRIMARY KEY (proposal_dish_id);
 
 
@@ -4676,7 +4988,7 @@ ALTER TABLE target_proposal_dish
 -- Name: target_proposal_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE target_proposal
+ALTER TABLE ONLY target_proposal
     ADD CONSTRAINT target_proposal_pkey PRIMARY KEY (proposal_id);
 
 
@@ -4684,7 +4996,7 @@ ALTER TABLE target_proposal
 -- Name: target_proposal_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE target_proposal_slot
+ALTER TABLE ONLY target_proposal_slot
     ADD CONSTRAINT target_proposal_slot_pkey PRIMARY KEY (slot_id);
 
 
@@ -4692,7 +5004,7 @@ ALTER TABLE target_proposal_slot
 -- Name: target_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE target_slot
+ALTER TABLE ONLY target_slot
     ADD CONSTRAINT target_slot_pkey PRIMARY KEY (target_slot_id);
 
 
@@ -4700,7 +5012,7 @@ ALTER TABLE target_slot
 -- Name: uk_19cigef2k4i5c1ls7a1m2lndw; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE target_tags
+ALTER TABLE ONLY target_tags
     ADD CONSTRAINT uk_19cigef2k4i5c1ls7a1m2lndw UNIQUE (tags_target_slot_id);
 
 
@@ -4708,7 +5020,7 @@ ALTER TABLE target_tags
 -- Name: uk_r6ms6yd0im7k5olg94b35nuku; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE target_slots
+ALTER TABLE ONLY target_slots
     ADD CONSTRAINT uk_r6ms6yd0im7k5olg94b35nuku UNIQUE (slots_target_slot_id);
 
 
@@ -4716,7 +5028,7 @@ ALTER TABLE target_slots
 -- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE users
+ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (user_id);
 
 
@@ -4724,7 +5036,7 @@ ALTER TABLE users
 -- Name: fk1ddq3ct1ulogjn5ijs8ert7hw; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE list_item
+ALTER TABLE ONLY list_item
     ADD CONSTRAINT fk1ddq3ct1ulogjn5ijs8ert7hw FOREIGN KEY (list_id) REFERENCES list(list_id);
 
 
@@ -4732,7 +5044,7 @@ ALTER TABLE list_item
 -- Name: fk3vyajpbcb8wl8380yntahtgtf; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE tag_relation
+ALTER TABLE ONLY tag_relation
     ADD CONSTRAINT fk3vyajpbcb8wl8380yntahtgtf FOREIGN KEY (parent_tag_id) REFERENCES tag(tag_id);
 
 
@@ -4740,7 +5052,7 @@ ALTER TABLE tag_relation
 -- Name: fk4cvbymf9m9quckcouehn0p414; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE dish
+ALTER TABLE ONLY dish
     ADD CONSTRAINT fk4cvbymf9m9quckcouehn0p414 FOREIGN KEY (user_id) REFERENCES users(user_id);
 
 
@@ -4748,7 +5060,7 @@ ALTER TABLE dish
 -- Name: fk6x8vvlp985udfs7g15uuxj42c; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE tag_relation
+ALTER TABLE ONLY tag_relation
     ADD CONSTRAINT fk6x8vvlp985udfs7g15uuxj42c FOREIGN KEY (child_tag_id) REFERENCES tag(tag_id);
 
 
@@ -4756,7 +5068,7 @@ ALTER TABLE tag_relation
 -- Name: fkbh371e2vv53a3arqea0hf3jkl; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE dish_tags
+ALTER TABLE ONLY dish_tags
     ADD CONSTRAINT fkbh371e2vv53a3arqea0hf3jkl FOREIGN KEY (dish_id) REFERENCES dish(dish_id);
 
 
@@ -4764,7 +5076,7 @@ ALTER TABLE dish_tags
 -- Name: fkclr8vrg8b1cwgwjsgcd5jtj6a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE category_tags
+ALTER TABLE ONLY category_tags
     ADD CONSTRAINT fkclr8vrg8b1cwgwjsgcd5jtj6a FOREIGN KEY (tag_id) REFERENCES tag(tag_id);
 
 
@@ -4772,7 +5084,7 @@ ALTER TABLE category_tags
 -- Name: fkcoy8wmmbb7og08ydch06gt42o; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE target_slots
+ALTER TABLE ONLY target_slots
     ADD CONSTRAINT fkcoy8wmmbb7og08ydch06gt42o FOREIGN KEY (slots_target_slot_id) REFERENCES target_slot(target_slot_id);
 
 
@@ -4780,7 +5092,7 @@ ALTER TABLE target_slots
 -- Name: fkd079bghbqgkxaa6ev4si0mh1x; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE proposal_context_slot
+ALTER TABLE ONLY proposal_context_slot
     ADD CONSTRAINT fkd079bghbqgkxaa6ev4si0mh1x FOREIGN KEY (proposal_context_id) REFERENCES proposal_context(proposal_context_id);
 
 
@@ -4788,7 +5100,7 @@ ALTER TABLE proposal_context_slot
 -- Name: fkdit15dhtc9j583c1pp21c8ss0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE meal_plan_slot
+ALTER TABLE ONLY meal_plan_slot
     ADD CONSTRAINT fkdit15dhtc9j583c1pp21c8ss0 FOREIGN KEY (dish_dish_id) REFERENCES dish(dish_id);
 
 
@@ -4796,7 +5108,7 @@ ALTER TABLE meal_plan_slot
 -- Name: fkhgv828ap379mspi2sy46nhym2; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE proposal_context_slot
+ALTER TABLE ONLY proposal_context_slot
     ADD CONSTRAINT fkhgv828ap379mspi2sy46nhym2 FOREIGN KEY (dish_dish_id) REFERENCES dish(dish_id);
 
 
@@ -4804,7 +5116,7 @@ ALTER TABLE proposal_context_slot
 -- Name: fkhhja2slk7gr34nhgcnlyw21ge; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE meal_plan_slot
+ALTER TABLE ONLY meal_plan_slot
     ADD CONSTRAINT fkhhja2slk7gr34nhgcnlyw21ge FOREIGN KEY (meal_plan_id) REFERENCES meal_plan(meal_plan_id);
 
 
@@ -4812,7 +5124,7 @@ ALTER TABLE meal_plan_slot
 -- Name: fkivtoroma7ffnyomikiqoxbkcf; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE target_slots
+ALTER TABLE ONLY target_slots
     ADD CONSTRAINT fkivtoroma7ffnyomikiqoxbkcf FOREIGN KEY (target_entity_target_id) REFERENCES target(target_id);
 
 
@@ -4820,7 +5132,7 @@ ALTER TABLE target_slots
 -- Name: fkka37hl6mopj61rfbe97si18p8; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE authority
+ALTER TABLE ONLY authority
     ADD CONSTRAINT fkka37hl6mopj61rfbe97si18p8 FOREIGN KEY (user_id) REFERENCES users(user_id);
 
 
@@ -4828,7 +5140,7 @@ ALTER TABLE authority
 -- Name: fklcvoij9ynqfllhxgn9v6qpsh8; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE list_item
+ALTER TABLE ONLY list_item
     ADD CONSTRAINT fklcvoij9ynqfllhxgn9v6qpsh8 FOREIGN KEY (tag_id) REFERENCES tag(tag_id);
 
 
@@ -4836,7 +5148,7 @@ ALTER TABLE list_item
 -- Name: fknru4508d44i3jxrbnlj9p4eer; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE target_proposal_dish
+ALTER TABLE ONLY target_proposal_dish
     ADD CONSTRAINT fknru4508d44i3jxrbnlj9p4eer FOREIGN KEY (target_proposal_slot_slot_id) REFERENCES target_proposal_slot(slot_id);
 
 
@@ -4844,31 +5156,31 @@ ALTER TABLE target_proposal_dish
 -- Name: fkns9s1sef980caqqamoee8srdw; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE category_tags
-    ADD CONSTRAINT fkns9s1sef980caqqamoee8srdw FOREIGN KEY (category_id) REFERENCES list_category(category_id);
+ALTER TABLE ONLY category_tags
+    ADD CONSTRAINT  fkns9s1sef980caqqamoee8srdw FOREIGN KEY (category_id) REFERENCES list_category(category_id);
 
 
 --
 -- Name: fkpy8j9ypbt3d59bjs0hgl3wcct; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE dish_tags
-    ADD CONSTRAINT fkpy8j9ypbt3d59bjs0hgl3wcct FOREIGN KEY (tag_id) REFERENCES tag(tag_id);
+ALTER TABLE ONLY dish_tags
+    ADD CONSTRAINT  fkpy8j9ypbt3d59bjs0hgl3wcct FOREIGN KEY (tag_id) REFERENCES tag(tag_id);
 
 
 --
 -- Name: fkrhcs3i2p15y79hn00y5ic41gn; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE list_category
-    ADD CONSTRAINT fkrhcs3i2p15y79hn00y5ic41gn FOREIGN KEY (layout_id) REFERENCES list_layout(layout_id);
+ALTER TABLE ONLY list_category
+    ADD CONSTRAINT  fkrhcs3i2p15y79hn00y5ic41gn FOREIGN KEY (layout_id) REFERENCES list_layout(layout_id);
 
 
 --
 -- Name: fks91g1q59v13b5q04mlc7b9k3i; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE target_proposal_slot
+ALTER TABLE ONLY target_proposal_slot
     ADD CONSTRAINT fks91g1q59v13b5q04mlc7b9k3i FOREIGN KEY (target_proposal_proposal_id) REFERENCES target_proposal(proposal_id);
 
 
@@ -4877,8 +5189,20 @@ ALTER TABLE target_proposal_slot
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: -; Owner: -
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres REVOKE ALL ON TABLES  FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres REVOKE ALL ON TABLES  FROM postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT ALL ON TABLES  TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT ALL ON TABLES  TO bankuser;
 
 
 --

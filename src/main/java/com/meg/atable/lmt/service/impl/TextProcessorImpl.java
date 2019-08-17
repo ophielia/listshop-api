@@ -42,10 +42,13 @@ public class TextProcessorImpl extends AbstractAutoTagProcessor {
         TextInstructionEntity instruction = (TextInstructionEntity)instr;
 
 
+
         // determine if search term match exists
         boolean match = false;
         for (String term: instruction.getTextSearchTerms()) {
-            match = subject.getDish().getDishName().toLowerCase().contains(term);
+            if (subject.getDish().getDishName() != null) {
+                match = subject.getDish().getDishName().toLowerCase().contains(term);
+            }
             if (subject.getDish().getDescription()!=null)  {
                 match |= subject.getDish().getDescription().toLowerCase().contains(term);
             }

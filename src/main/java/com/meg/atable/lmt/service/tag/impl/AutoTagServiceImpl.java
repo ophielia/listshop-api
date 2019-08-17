@@ -1,6 +1,6 @@
 package com.meg.atable.lmt.service.tag.impl;
 
-import com.meg.atable.auth.data.entity.UserAccountEntity;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.ShadowTags;
@@ -13,7 +13,6 @@ import com.meg.atable.lmt.service.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +46,7 @@ public class AutoTagServiceImpl implements AutoTagService {
             return;
         }
         // get user
-        UserAccountEntity user = userService.getUserById(dishEntity.getUserId());
+        UserEntity user = userService.getUserById(dishEntity.getUserId());
 
         // pull tagswithflags
         Set<Long> tagIdsForDish = tagRepository.getTagIdsForDish(dishEntity.getId());
@@ -76,7 +75,7 @@ public class AutoTagServiceImpl implements AutoTagService {
             return;
         }
 
-        addTagsToDish(user.getUsername(), subject);
+        addTagsToDish(user.getEmail(), subject);
         createShadowTagsForDish(subject);
     }
 

@@ -1,5 +1,7 @@
 package com.meg.atable.lmt.api.model;
 
+import com.meg.atable.auth.api.model.User;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.*;
 
@@ -25,6 +27,14 @@ public class ModelMapper {
                     .userId(dishEntity.getUserId());
         }
         return new Dish();
+    }
+
+    public static User toModel(UserEntity userEntity) {
+        if (userEntity != null) {
+            return new User(userEntity.getUsername(), userEntity.getEmail())
+                    .creationDate(userEntity.getCreationDate());
+        }
+        return new User(null, null);
     }
 
     public static Dish toModel(DishEntity dishEntity, List<TagEntity> tagEntities) {
@@ -167,13 +177,22 @@ public class ModelMapper {
     }
 
     public static ListLayoutCategory toModel(ListLayoutCategoryEntity cat) {
+        return toModel(cat, true);
+
+    }
+
+    public static ListLayoutCategory toModel(ListLayoutCategoryEntity cat, boolean includeTags) {
         if (cat == null) {
             return null;
         }
         ListLayoutCategory returnval = (ListLayoutCategory) new ListLayoutCategory(cat.getId())
                 .name(cat.getName());
         returnval = (ListLayoutCategory) returnval.layoutId(cat.getLayoutId());
-        returnval = (ListLayoutCategory) returnval.tags(toModel(cat.getTags()));
+        if (includeTags) {
+            returnval = (ListLayoutCategory) returnval.tags(toModel(cat.getTags()));
+        } else {
+            returnval = (ListLayoutCategory) returnval.tags(new ArrayList<>());
+        }
         return returnval;
 
     }
@@ -280,6 +299,15 @@ public class ModelMapper {
 
     }
 
+    public static Statistic toModel(ListTagStatistic statistic) {
+        return new Statistic(statistic.getListTagStatId())
+                .addedCount(statistic.getAddedCount())
+                .addedToDish(statistic.getAddedToDishCount())
+                .removedCount(statistic.getRemovedCount())
+                .tagId(statistic.getTagId())
+                .userId(statistic.getUserId());
+    }
+
     private static Slot toModel(SlotEntity slotEntity) {
         return new Slot(slotEntity.getMealPlanSlotId())
                 .mealPlanId(slotEntity.getMealPlan().getId())
@@ -321,6 +349,7 @@ public class ModelMapper {
                 .categories(categories)
                 .dishSources(dishSources)
                 .listSources(listSources)
+                .layoutId(String.valueOf(shoppingListEntity.getListLayoutId()))
                 .updated(shoppingListEntity.getLastUpdate())
                 .itemCount(shoppingListEntity.getItems() != null ? shoppingListEntity.getItems().size() : 0)
                 .userId(shoppingListEntity.getUserId());
@@ -353,16 +382,16 @@ public class ModelMapper {
         return filledCategories;
     }
 
-    private static Item toModel(ItemEntity itemEntity) {
+    public static Item toModel(ItemEntity itemEntity) {
         return new Item(itemEntity.getId())
                 .tag(toModel(itemEntity.getTag()))
-                .itemSource(itemEntity.getRawDishSources())
                 .listId(itemEntity.getListId().toString())
                 .addedOn(itemEntity.getAddedOn())
+                .updated(itemEntity.getUpdatedOn())
+                .removed(itemEntity.getRemovedOn())
                 .crossedOff(itemEntity.getCrossedOff())
                 .usedCount(itemEntity.getUsedCount())
-                .freeText(itemEntity.getFreeText())
-                .listCategory(itemEntity.getListCategory());
+                .freeText(itemEntity.getFreeText());
     }
 
     public static TagEntity toEntity(Tag tag) {
@@ -437,9 +466,13 @@ public class ModelMapper {
         ItemEntity itemEntity = new ItemEntity(id);
         itemEntity.setTag(toEntity(input.getTag()));
         itemEntity.setFreeText(input.getFreeText());
-        itemEntity.setRawDishSources(input.getItemSource());
         itemEntity.setListId(listId);
         itemEntity.setTagId(tagId);
+        itemEntity.setAddedOn(input.getAddedOn());
+        itemEntity.setUpdatedOn(input.getUpdated());
+        itemEntity.setCrossedOff(input.getCrossedOff());
+        itemEntity.setRemovedOn(input.getRemoved());
+        itemEntity.setUsedCount(input.getUsedCount());
         return itemEntity;
     }
 
@@ -503,9 +536,4 @@ public class ModelMapper {
         return result;
     }
 
-    public static RatingUpdateInfo toModel(RatingUpdateInfo ratingUpdateInfo) {
-        //MM implement this!!!
-
-        return null;
-    }
 }

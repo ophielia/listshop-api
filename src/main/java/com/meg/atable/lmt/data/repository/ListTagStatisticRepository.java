@@ -12,4 +12,6 @@ public interface ListTagStatisticRepository extends JpaRepository<ListTagStatist
     ListTagStatistic findByUserIdAndTagId(Long userId, Long tagId);
 
     List<ListTagStatistic> findByUserIdAndTagIdIn(Long userId, List<Long> tagIds);
+
+    List<ListTagStatistic> findByUserId(Long userId);
 }

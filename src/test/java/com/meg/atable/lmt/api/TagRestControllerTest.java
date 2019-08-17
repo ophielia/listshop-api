@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.meg.atable.Application;
 import com.meg.atable.lmt.api.model.Tag;
 import com.meg.atable.lmt.api.model.TagType;
-import com.meg.atable.auth.service.JwtUser;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.test.TestConstants;
@@ -93,17 +93,6 @@ public class TagRestControllerTest {
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.tag.tag_id", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.tag.tag_id").value(testId));
-
-    }
-
-    @Test
-    public void readInactiveTags() throws Exception {
-        String url = "/tag/inactive";
-        mockMvc.perform(get(url))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.tag.tag_id", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.tag.tag_id").value(TestConstants.TAG_ID_INACTIVE));
 
     }
 

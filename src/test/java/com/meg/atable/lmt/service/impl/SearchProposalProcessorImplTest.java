@@ -4,7 +4,9 @@ import com.meg.atable.lmt.api.model.TargetType;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.service.DishSearchService;
 import com.meg.atable.lmt.service.DishTagSearchResult;
-import com.meg.atable.lmt.service.ProcessResult;
+import com.meg.atable.lmt.service.proposal.ProcessResult;
+import com.meg.atable.lmt.service.proposal.ProposalRequest;
+import com.meg.atable.lmt.service.proposal.impl.SearchProposalProcessorImpl;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
@@ -297,13 +299,6 @@ public class SearchProposalProcessorImplTest {
         Assert.assertTrue(testResult.getResultApproaches().size() > 1);
         Assert.assertTrue(noFilteredDishMatch);
     }
-
-
-    // MM
-    // test breakage / robustness
-    // no target tags
-    // slot with no tag
-    // only one target slot
 
     @Test
     public void processProposal_NoTargetTagIds() throws Exception {
