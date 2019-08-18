@@ -124,14 +124,6 @@
         </dependency>
 
 
-        <!-- flyway test
-        <dependency>
-            <groupId>org.flywaydb.flyway-test-extensions</groupId>
-            <artifactId>flyway-spring-test</artifactId>
-            <version>5.0.0</version>
-            <scope>test</scope>
-        </dependency>
--->
         <!-- haiku for auto names -->
         <dependency>
             <groupId>me.atrox.haikunator</groupId>

@@ -1,5 +1,9 @@
 FROM openjdk:8-jre-alpine
 VOLUME /tmp
+
+# adding bash
+RUN apk add --no-cache bash
+
 ARG APP_DIRECTORY=/Users/margaretmartin/projects/myproject-atable
 ARG DEPENDENCY=target/dependency
 COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
