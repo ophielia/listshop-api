@@ -50,7 +50,7 @@ public class Dish {
         return dishName;
     }
 
-    @JsonProperty("dishName")
+    @JsonProperty("name")
     public void setDishName(String dishName) {
         this.dishName = dishName;
     }

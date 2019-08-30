@@ -58,6 +58,9 @@ public interface ShoppingListRestControllerApi {
     @RequestMapping(method = RequestMethod.POST, value = "/{listId}/item", produces = "application/json")
     ResponseEntity<Object> addItemToList(Principal principal, @PathVariable Long listId, @RequestBody Item input);
 
+    @RequestMapping(method = RequestMethod.POST, value = "/{listId}/tag/{tagId}", produces = "application/json")
+    ResponseEntity<Object> addItemToListByTag(Principal principal, @PathVariable Long listId, @PathVariable Long tagId);
+
     @RequestMapping(method = RequestMethod.POST, value = "/{listId}/listtype/{listType}", produces = "application/json")
     ResponseEntity<Object> addToListByListType(Principal principal, @PathVariable Long listId, @PathVariable String listType);
 

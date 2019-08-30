@@ -308,6 +308,26 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         saveListChanges(shoppingListEntity, collector);
     }
 
+    public void addItemToListByTag(String name, Long listId, Long tagId) {
+        ShoppingListEntity shoppingListEntity = getListById(name, listId);
+        if (shoppingListEntity == null) {
+            return;
+        }
+
+        List<ItemEntity> items = shoppingListEntity.getItems();
+        ListItemCollector collector = createListItemCollector(listId, items);
+        // fill in tag, if item contains tag
+        TagEntity tag = null;
+        tag = tagService.getTagById(tagId);
+        ItemEntity item = new ItemEntity();
+        item.setTag(tag);
+
+        collector.addItem(item);
+
+        saveListChanges(shoppingListEntity, collector);
+
+    }
+
     private ListItemCollector createListItemCollector(Long listId, List<ItemEntity> items) {
         ListItemCollector collector = new ListItemCollector(listId, items);
         checkReplaceTagsInCollector(collector);

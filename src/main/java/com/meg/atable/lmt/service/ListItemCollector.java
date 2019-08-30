@@ -1,15 +1,12 @@
 package com.meg.atable.lmt.service;
 
-import com.meg.atable.lmt.api.model.ListType;
 import com.meg.atable.common.FlatStringUtils;
+import com.meg.atable.lmt.api.model.ListType;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 02/11/2017.
@@ -92,13 +89,10 @@ public class ListItemCollector extends AbstractItemCollector {
 
 
     private CollectedItem copyItem(ItemEntity item) {
-        CollectedItem copied = new CollectedItem(new ItemEntity());
-        // resetting count when adding from another list
-        copied.setUsedCount(item.getUsedCount());
-        copied.setTag(item.getTag());
-        copied.setListId(getListId());
+        ItemEntity copiedItem = item.clone();
+
+        CollectedItem copied = new CollectedItem(copiedItem);
         copied.setFreeText(item.getFreeText());
-        copied.setAddedOn(LocalDateTime.now());
         return copied;
     }
 

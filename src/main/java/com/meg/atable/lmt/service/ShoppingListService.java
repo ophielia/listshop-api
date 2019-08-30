@@ -30,6 +30,8 @@ public interface ShoppingListService {
 
     void addItemToList(String name, Long listId, ItemEntity itemEntity);
 
+    void addItemToListByTag(String name, Long listId, Long tagId);
+
     void deleteItemFromList(String name, Long listId, Long itemId, Boolean removeEntireItem, Long dishSourceId);
 
     ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId);

@@ -201,6 +201,11 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.noContent().build();
     }
 
+    public ResponseEntity<Object> addItemToListByTag(Principal principal, @PathVariable Long listId, @PathVariable Long tagId) {
+        this.shoppingListService.addItemToListByTag(principal.getName(), listId, tagId);
+        return ResponseEntity.noContent().build();
+    }
+
     @Override
     public ResponseEntity<Object> addToListByListType(Principal principal, @PathVariable Long listId, @PathVariable String listType) {
         ListType listTypeEnum = ListType.valueOf(listType);

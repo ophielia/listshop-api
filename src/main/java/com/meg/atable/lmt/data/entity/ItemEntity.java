@@ -193,6 +193,22 @@ public class ItemEntity {
                 '}';
     }
 
+    public ItemEntity clone() {
+        ItemEntity cloned = new ItemEntity();
+        cloned.setFrequent(this.isFrequent());
+        cloned.setAddedOn(this.getAddedOn());
+        cloned.setCrossedOff(this.getCrossedOff());
+        cloned.setRemovedOn(this.getRemovedOn());
+        cloned.setUpdatedOn(this.getUpdatedOn());
+        cloned.setUsedCount(this.getUsedCount());
+        cloned.setListId(this.getListId());
+        cloned.setFreeText(this.getFreeText());
+        cloned.setRawDishSources(this.getRawDishSources());
+        cloned.setRawListSources(this.getRawListSources());
+        cloned.setTag(this.getTag());
+        return cloned;
+    }
+
     public String getDisplay() {
         if (this.tag != null) {
             return this.tag.getName();
