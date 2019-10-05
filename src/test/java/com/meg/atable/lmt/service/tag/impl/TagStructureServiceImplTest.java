@@ -1,4 +1,4 @@
-package com.meg.atable.lmt.service.impl;
+package com.meg.atable.lmt.service.tag.impl;
 
 import com.meg.atable.Application;
 import com.meg.atable.lmt.api.model.FatTag;

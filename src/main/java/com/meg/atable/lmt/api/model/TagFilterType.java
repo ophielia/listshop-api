@@ -8,7 +8,7 @@ public enum TagFilterType {
     All("All"),
     ForSelectAssign("ForSelect"),
     ForSelectSearch("ForSearchSelect"),
-    BaseTags("Base"),
+    //BaseTags("Base"),
     ParentTags("ParentTags");
 
     private final String display;

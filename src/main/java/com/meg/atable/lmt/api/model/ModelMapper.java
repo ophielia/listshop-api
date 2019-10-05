@@ -289,6 +289,23 @@ public class ModelMapper {
                 .searchSelect(tagEntity.getSearchSelect());
     }
 
+    public static Tag toModel(TagExtendedEntity tagEntity) {
+        if (tagEntity == null) {
+            return null;
+        }
+
+        return new Tag(tagEntity.getId())
+                .name(tagEntity.getName())
+                .description(tagEntity.getDescription())
+                .tagType(tagEntity.getTagType().name())
+                .power(tagEntity.getPower())
+                // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
+                .assignSelect(tagEntity.getAssignSelect())
+                .parentId(String.valueOf(tagEntity.getParentId()))
+                .toDelete(tagEntity.getToDelete())
+                .searchSelect(tagEntity.getSearchSelect());
+    }
+
     public static MealPlan toModel(MealPlanEntity mealPlanEntity) {
         List<Slot> slots = slotsToModel(mealPlanEntity.getSlots());
         return new MealPlan(mealPlanEntity.getId())

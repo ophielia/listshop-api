@@ -15,8 +15,6 @@ import java.util.Set;
  * Created by margaretmartin on 13/05/2017.
  */
 public interface TagStructureService {
-    List<TagEntity> getBaseTagList(List<TagType> tagTypes);
-
     TagRelationEntity createRelation(TagEntity parentTag, TagEntity childTag);
 
     TagEntity assignTagToParent(TagEntity childTag, TagEntity newParentTag);

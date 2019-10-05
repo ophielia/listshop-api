@@ -1,11 +1,11 @@
 package com.meg.atable.lmt.service.tag;
 
-import com.meg.atable.lmt.api.exception.ActionInvalidException;
 import com.meg.atable.lmt.api.model.RatingUpdateInfo;
 import com.meg.atable.lmt.api.model.SortOrMoveDirection;
 import com.meg.atable.lmt.api.model.TagFilterType;
 import com.meg.atable.lmt.api.model.TagType;
 import com.meg.atable.lmt.data.entity.TagEntity;
+import com.meg.atable.lmt.data.entity.TagExtendedEntity;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
@@ -23,6 +23,8 @@ public interface TagService {
 
     TagEntity getTagById(Long dishId);
 
+
+    List<TagExtendedEntity> getTagExtendedList(TagFilterType tagFilterType, List<TagType> tagTypes);
 
     TagEntity createTag(TagEntity parent, String name);
 

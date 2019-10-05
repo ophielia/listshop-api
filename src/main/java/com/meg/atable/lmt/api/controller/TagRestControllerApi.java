@@ -18,7 +18,7 @@ public interface TagRestControllerApi {
     @RequestMapping(method = RequestMethod.GET)
     ResponseEntity<TagResource> retrieveTagList(@RequestParam(value = "filter", required = false) String filter,
                                                 @RequestParam(value = "tag_type", required = false) String tagType,
-                                                @RequestParam(value = "fill_tags", required = false) Boolean fillTags);
+                                                @RequestParam(value = "extended", required = false) Boolean extended);
 
     @RequestMapping(value = "/delete/{tagId}", method = RequestMethod.DELETE)
     ResponseEntity<Object> saveTagForDelete(@PathVariable("tagId") Long tagId, @RequestParam(value = "replacementTagId", required = true) Long replacementTagId);

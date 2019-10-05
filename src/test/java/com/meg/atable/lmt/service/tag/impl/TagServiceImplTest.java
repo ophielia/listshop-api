@@ -1,10 +1,11 @@
-package com.meg.atable.lmt.service.impl;
+package com.meg.atable.lmt.service.tag.impl;
 
 import com.meg.atable.Application;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.ListTagStatistic;
 import com.meg.atable.lmt.data.entity.TagEntity;
+import com.meg.atable.lmt.data.entity.TagExtendedEntity;
 import com.meg.atable.lmt.data.repository.ListTagStatisticRepository;
 import com.meg.atable.lmt.service.DishService;
 import com.meg.atable.lmt.service.tag.TagService;
@@ -92,11 +93,188 @@ public class TagServiceImplTest {
 
 
     @Test
-    public void getTagById()  {
+    public void getTagList_AssignTagsFilter() {
+        TagFilterType filter = TagFilterType.ForSelectAssign;
+        List<TagType> tagTypes = new ArrayList<>();
+        tagTypes.add(TagType.NonEdible);
+        tagTypes.add(TagType.Rating);
+
+        // test call
+        List<TagEntity> result = tagService.getTagList(filter, tagTypes);
+
+        // confirm results
+        // should not include Produce and Personal Hygiene (388 and 389)
+        Assert.assertFalse(resultsInclude(388L, result));
+        Assert.assertFalse(resultsInclude(389L, result));
+        // should not include Quick To Table and Occasions (290 and 35)
+        Assert.assertFalse(resultsInclude(290L, result));
+        Assert.assertFalse(resultsInclude(35L, result));
+        // should not include finger food and pantry dish (7 and 471)
+        Assert.assertFalse(resultsInclude(7L, result));
+        Assert.assertFalse(resultsInclude(471L, result));
+        // should  include ease of prep 4 and soft cat food (399 and 470)
+        Assert.assertTrue(resultsInclude(399L, result));
+        Assert.assertTrue(resultsInclude(470L, result));
+
+        // test call without call types
+        List<TagEntity> resultsNoFilter = tagService.getTagList(filter, null);
+
+        // confirm results
+        // should not include Produce and Personal Hygiene (388 and 389)
+        Assert.assertFalse(resultsInclude(388L, resultsNoFilter));
+        Assert.assertFalse(resultsInclude(389L, resultsNoFilter));
+        // should not include Quick To Table and Occasions (290 and 35)
+        Assert.assertFalse(resultsInclude(290L, resultsNoFilter));
+        Assert.assertFalse(resultsInclude(35L, resultsNoFilter));
+        // should  include finger food and pantry dish (7 and 471)
+        Assert.assertTrue(resultsInclude(7L, resultsNoFilter));
+        Assert.assertTrue(resultsInclude(471L, resultsNoFilter));
+        // should  include heavy cream and red lentils (78 and 126)
+        Assert.assertTrue(resultsInclude(78L, resultsNoFilter));
+        Assert.assertTrue(resultsInclude(126L, resultsNoFilter));
+
     }
 
     @Test
-    public void getTagList()  {
+    public void getTagList_SearchTagsFilter() {
+        TagFilterType filter = TagFilterType.ForSelectSearch;
+        List<TagType> tagTypes = new ArrayList<>();
+        tagTypes.add(TagType.Ingredient);
+        tagTypes.add(TagType.TagType);
+
+        // test call
+        List<TagEntity> result = tagService.getTagList(filter, tagTypes);
+
+        // confirm results
+        // should  include light cream and lardons (163 and 74)
+        Assert.assertTrue(resultsInclude(163L, result));
+        Assert.assertTrue(resultsInclude(74L, result));
+        // should not include coffee filters and ease of prep 2 (401 and 148)
+        Assert.assertFalse(resultsInclude(401L, result));
+        Assert.assertFalse(resultsInclude(148L, result));
+        // should not include cultural roots and frozen (403 and 35)
+        Assert.assertFalse(resultsInclude(403L, result));
+        Assert.assertFalse(resultsInclude(35L, result));
+        // should not  include ease of prep 4 and soft cat food (3 and 63)
+        Assert.assertFalse(resultsInclude(3L, result));
+        Assert.assertFalse(resultsInclude(63L, result));
+
+        // test call without call types
+        List<TagEntity> resultsNoFilter = tagService.getTagList(filter, null);
+
+        // confirm results
+        // should  include light cream and lardons (163 and 74)
+        Assert.assertTrue(resultsInclude(163L, resultsNoFilter));
+        Assert.assertTrue(resultsInclude(74L, resultsNoFilter));
+        // should  include coffee filters and ease of prep 2 (401 and 148)
+        Assert.assertTrue(resultsInclude(401L, resultsNoFilter));
+        Assert.assertTrue(resultsInclude(148L, resultsNoFilter));
+        // should not include cultural roots and frozen (403 and 35)
+        Assert.assertFalse(resultsInclude(403L, resultsNoFilter));
+        Assert.assertFalse(resultsInclude(35L, resultsNoFilter));
+        // should not  include ease of prep 4 and soft cat food (3 and 63)
+        Assert.assertFalse(resultsInclude(3L, resultsNoFilter));
+        Assert.assertFalse(resultsInclude(63L, resultsNoFilter));
+
+    }
+
+    @Test
+    public void getTagExtendedList_ParentTagsFilter() {
+        TagFilterType filter = TagFilterType.ParentTags;
+        List<TagType> tagTypes = new ArrayList<>();
+        tagTypes.add(TagType.Ingredient);
+        tagTypes.add(TagType.NonEdible);
+
+        // test call
+        List<TagExtendedEntity> result = tagService.getTagExtendedList(filter, tagTypes);
+
+        // confirm results
+        // should not include rice and prepared meat (14 and 88)
+        Assert.assertFalse(tagExtendedResultsInclude(14L, result));
+        Assert.assertFalse(tagExtendedResultsInclude(88L, result));
+        // should not include preparation type and special diet (157 and 246)
+        Assert.assertFalse(tagExtendedResultsInclude(157L, result));
+        Assert.assertFalse(tagExtendedResultsInclude(246L, result));
+        // should  include cultural roots but not frozen (403 and 35)
+        Assert.assertTrue(tagExtendedResultsInclude(403L, result));
+        Assert.assertFalse(tagExtendedResultsInclude(35L, result));
+        // should not  include ease of prep 4 and soft cat food (3 and 63)
+        Assert.assertFalse(tagExtendedResultsInclude(3L, result));
+        Assert.assertFalse(tagExtendedResultsInclude(63L, result));
+
+        // test call without call types
+        List<TagExtendedEntity> resultsNoFilter = tagService.getTagExtendedList(filter, null);
+
+        // confirm results
+        // should  include rice and prepared meat (14 and 88)
+        Assert.assertFalse(tagExtendedResultsInclude(14L, resultsNoFilter));
+        Assert.assertFalse(tagExtendedResultsInclude(88L, resultsNoFilter));
+        // should not include preparation type and special diet (157 and 246)
+        Assert.assertTrue(tagExtendedResultsInclude(157L, resultsNoFilter));
+        Assert.assertTrue(tagExtendedResultsInclude(246L, resultsNoFilter));
+        // should not include cultural roots and frozen (403 and 35)
+        Assert.assertTrue(tagExtendedResultsInclude(403L, resultsNoFilter));
+        Assert.assertTrue(tagExtendedResultsInclude(35L, resultsNoFilter));
+        // should not  include ease of prep 4 and soft cat food (3 and 63)
+        Assert.assertFalse(tagExtendedResultsInclude(3L, resultsNoFilter));
+        Assert.assertFalse(tagExtendedResultsInclude(63L, resultsNoFilter));
+
+    }
+
+    @Test
+    public void getTagList_All() {
+        TagFilterType filter = TagFilterType.All;
+        List<TagType> tagTypes = new ArrayList<>();
+        tagTypes.add(TagType.Ingredient);
+        tagTypes.add(TagType.NonEdible);
+
+        // test call
+        List<TagEntity> result = tagService.getTagList(filter, tagTypes);
+
+        // confirm results
+        // should  include rice and prepared meat (14 and 88)
+        Assert.assertTrue(resultsInclude(163L, result));
+        Assert.assertTrue(resultsInclude(74L, result));
+        // should not include preparation type and special diet (157 and 246)
+        Assert.assertFalse(resultsInclude(157L, result));
+        Assert.assertFalse(resultsInclude(246L, result));
+        // should not include cultural roots and frozen (403 and 35)
+        Assert.assertTrue(resultsInclude(403L, result));
+        Assert.assertFalse(resultsInclude(35L, result));
+        // should include sponge and salt and pepper shaker (3 and 63)
+        Assert.assertTrue(resultsInclude(3L, result));
+        Assert.assertTrue(resultsInclude(63L, result));
+
+        // should not included deleted
+        // test call without call types
+        List<TagEntity> resultsNoFilter = tagService.getTagList(filter, null);
+
+        // confirm results
+        // should  include rice and prepared meat (14 and 88)
+        Assert.assertTrue(resultsInclude(163L, resultsNoFilter));
+        Assert.assertTrue(resultsInclude(74L, resultsNoFilter));
+        // should  include preparation type and special diet (157 and 246)
+        Assert.assertTrue(resultsInclude(157L, resultsNoFilter));
+        Assert.assertTrue(resultsInclude(246L, resultsNoFilter));
+        // should  include cultural roots and frozen (403 and 35)
+        Assert.assertTrue(resultsInclude(403L, resultsNoFilter));
+        Assert.assertTrue(resultsInclude(35L, resultsNoFilter));
+        // should include sponge and salt and pepper shaker (3 and 63)
+        Assert.assertTrue(resultsInclude(3L, result));
+        Assert.assertTrue(resultsInclude(63L, result));
+
+
+    }
+
+
+    private boolean resultsInclude(Long tagId, List<TagEntity> tagList) {
+        Optional<TagEntity> foundTag = tagList.stream().filter(tag -> tag.getId().equals(tagId)).findFirst();
+        return foundTag.isPresent();
+    }
+
+    private boolean tagExtendedResultsInclude(Long tagId, List<TagExtendedEntity> tagList) {
+        Optional<TagExtendedEntity> foundTag = tagList.stream().filter(tag -> tag.getId().equals(tagId)).findFirst();
+        return foundTag.isPresent();
     }
 
     @Test
@@ -381,5 +559,38 @@ public class TagServiceImplTest {
         Assert.assertTrue(containsTagA);
         Assert.assertTrue(containsTagB);*/
     }
+
+
+    @Test
+    public void getTagById() {
+        // get tag carrots
+        TagEntity result = tagService.getTagById(TAG_CARROTS);
+        Assert.assertNotNull(result);
+        Assert.assertEquals("carrots", result.getName());
+    }
+
+
+    //MM to implement
+    @Test
+    public void getDictionaryForIds() {
+    }
+
+
+    @Test
+    public void saveTagForDelete() {
+    }
+
+
+    @Test
+    public void assignTagToParent() {
+    }
+
+
+    @Test
+    public void replaceTagInDishes() {
+    }
+
+
+
 
 }

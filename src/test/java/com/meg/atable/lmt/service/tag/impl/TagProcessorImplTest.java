@@ -1,4 +1,4 @@
-package com.meg.atable.lmt.service.impl;
+package com.meg.atable.lmt.service.tag.impl;
 
 import com.meg.atable.Application;
 import com.meg.atable.lmt.data.entity.DishEntity;
@@ -7,7 +7,6 @@ import com.meg.atable.lmt.service.DishService;
 import com.meg.atable.lmt.service.Instruction;
 import com.meg.atable.lmt.service.tag.AutoTagSubject;
 import com.meg.atable.lmt.service.tag.TagService;
-import com.meg.atable.lmt.service.tag.impl.TagProcessorImpl;
 import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Test;

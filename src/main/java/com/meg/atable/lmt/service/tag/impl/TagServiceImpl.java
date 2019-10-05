@@ -6,6 +6,8 @@ import com.meg.atable.lmt.api.exception.ActionInvalidException;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
+import com.meg.atable.lmt.data.entity.TagExtendedEntity;
+import com.meg.atable.lmt.data.repository.TagExtendedRepository;
 import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.lmt.service.DishSearchCriteria;
 import com.meg.atable.lmt.service.DishSearchService;
@@ -17,7 +19,6 @@ import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,8 @@ public class TagServiceImpl implements TagService {
     boolean deleteImmediately;
     @Autowired
     private TagRepository tagRepository;
+    @Autowired
+    private TagExtendedRepository tagExtendedRepository;
     @Autowired
     private TagReplaceService tagReplaceService;
     @Autowired
@@ -187,28 +190,19 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagEntity> getTagList(TagFilterType tagFilterType, List<TagType> tagTypes) {
+        // assign_select
+        Boolean assignSelect = tagFilterType == TagFilterType.ForSelectAssign ? true : null;
+        Boolean searchSelect = tagFilterType == TagFilterType.ForSelectSearch ? true : null;
+        return tagRepository.findTagsByCriteria(tagTypes, assignSelect, searchSelect);
 
-        // skim off base tag requests
-        if (tagFilterType != null && TagFilterType.BaseTags.equals(tagFilterType)) {
-            return tagStructureService.getBaseTagList(tagTypes);
-        }
-        // this is by selectable tags - assign
-        if (tagFilterType != null && TagFilterType.ForSelectAssign.equals(tagFilterType)) {
-            return getAssignSelectableTagList(tagTypes);
-        }
-        // this is by selectable tags - search
-        if (tagFilterType != null && TagFilterType.ForSelectSearch.equals(tagFilterType)) {
-            return getSearchSelectableTagList(tagTypes);
-        }
-        // this is by parent tags
-        if (tagFilterType != null && TagFilterType.ParentTags.equals(tagFilterType)) {
-            return getParentTagList(tagTypes);
-        }
-        // get by tag type
-        if (tagTypes != null && !tagTypes.isEmpty()) {
-            return tagRepository.findTagsByToDeleteFalseAndTagTypeInOrderByName(tagTypes);
-        }
-        return tagRepository.findTagsByToDeleteFalse(new Sort(Sort.Direction.ASC, "name"));
+    }
+
+    @Override
+    public List<TagExtendedEntity> getTagExtendedList(TagFilterType tagFilterType, List<TagType> tagTypes) {
+        // assign_select
+        Boolean parentsOnly = tagFilterType == TagFilterType.ParentTags ? true : null;
+        return tagExtendedRepository.findTagsByCriteria(tagTypes, parentsOnly);
+
     }
 
 
@@ -554,35 +548,6 @@ public class TagServiceImpl implements TagService {
         for (TagChangeListener listener : listeners) {
             listener.onTagAdd(changed);
         }
-    }
-
-    private List<TagEntity> getParentTagList(List<TagType> tagTypes) {
-        if (tagTypes != null) {
-            List<String> tagTypeStrings = tagTypes.stream().map(TagType::name).collect(Collectors.toList());
-            return tagRepository.findParentTagsByTagTypes(tagTypeStrings);
-        } else {
-            return tagRepository.findParentTags();
-        }
-    }
-
-
-    private List<TagEntity> getSearchSelectableTagList(List<TagType> tagTypes) {
-        if (tagTypes == null) {
-            return tagRepository.findTagsBySearchSelectAndToDeleteFalse(true);
-        } else {
-            return tagRepository.findTagsBySearchSelectAndTagTypeIsInAndToDeleteFalse(true, tagTypes);
-        }
-
-    }
-
-
-    private List<TagEntity> getAssignSelectableTagList(List<TagType> tagTypes) {
-        if (tagTypes == null) {
-            return tagRepository.findTagsByAssignSelectAndToDeleteFalse(true);
-        } else {
-            return tagRepository.findTagsByAssignSelectAndTagTypeIsInAndToDeleteFalse(true, tagTypes);
-        }
-
     }
 
     private class LookupInformation {

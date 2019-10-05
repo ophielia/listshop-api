@@ -3,9 +3,9 @@ package com.meg.atable.lmt.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.meg.atable.Application;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.lmt.api.model.Tag;
 import com.meg.atable.lmt.api.model.TagType;
-import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.repository.TagRepository;
 import com.meg.atable.test.TestConstants;
@@ -24,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -101,6 +102,19 @@ public class TagRestControllerTest {
         mockMvc.perform(get("/tag"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentTypeWithHal));
+
+    }
+
+    @Test
+    public void readTags_extended() throws Exception {
+        MvcResult result = mockMvc.perform(get("/tag?extended=true"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentTypeWithHal))
+                .andReturn();
+        Assert.assertNotNull(result);
+        String resultString = result.getResponse().getContentAsString();
+        Assert.assertTrue(resultString.contains("parent_id\":\"null\""));
+        Assert.assertTrue(resultString.contains("parent_id\":\"393\""));
     }
 
     @Test

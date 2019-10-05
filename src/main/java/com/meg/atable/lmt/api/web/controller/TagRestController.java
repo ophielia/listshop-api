@@ -1,12 +1,9 @@
 package com.meg.atable.lmt.api.web.controller;
 
 import com.meg.atable.lmt.api.controller.TagRestControllerApi;
-import com.meg.atable.lmt.api.exception.ActionInvalidException;
-import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
-import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
-import com.meg.atable.lmt.api.exception.ProposalProcessingException;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.TagEntity;
+import com.meg.atable.lmt.data.entity.TagExtendedEntity;
 import com.meg.atable.lmt.service.DishService;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.tag.TagStructureService;
@@ -50,16 +47,29 @@ public class TagRestController implements TagRestControllerApi {
 
     public ResponseEntity<TagResource> retrieveTagList(@RequestParam(value = "filter", required = false) String filter,
                                                        @RequestParam(value = "tag_type", required = false) String tagType,
-                                                       @RequestParam(value = "fill_tags", required = false) Boolean fillTags) {
+                                                       @RequestParam(value = "extended", required = false) Boolean extended) {
         List<TagType> tagTypeFilter = processTagTypeInput(tagType);
-        TagFilterType tagFilterTypeFilter = filter != null ? TagFilterType.valueOf(filter) : null;
-        if (fillTags == null) {
-            fillTags = false;
+        TagFilterType tagFilterTypeFilter = filter != null ? TagFilterType.valueOf(filter) : TagFilterType.All;
+        if (extended == null) {
+            extended = false;
         }
+        if (extended || tagFilterTypeFilter == TagFilterType.ParentTags) {
+            return retrieveTagExtendedList(tagFilterTypeFilter, tagTypeFilter);
+        }
+
         List<TagEntity> tagList = tagService.getTagList(tagFilterTypeFilter, tagTypeFilter);
-        if (fillTags) {
-            tagList = tagStructureService.fillInRelationshipInfo(tagList);
-        }
+
+        List<TagResource> tagResourceRaw = tagList
+                .stream().map(TagResource::new)
+                .collect(Collectors.toList());
+
+        Resources<TagResource> tagResourceList = new Resources<>(tagResourceRaw);
+        return new ResponseEntity(tagResourceList, HttpStatus.OK);
+    }
+
+    private ResponseEntity<TagResource> retrieveTagExtendedList(TagFilterType tagFilterTypeFilter, List<TagType> tagTypeFilter) {
+        List<TagExtendedEntity> tagList = tagService.getTagExtendedList(tagFilterTypeFilter, tagTypeFilter);
+
         List<TagResource> tagResourceRaw = tagList
                 .stream().map(TagResource::new)
                 .collect(Collectors.toList());

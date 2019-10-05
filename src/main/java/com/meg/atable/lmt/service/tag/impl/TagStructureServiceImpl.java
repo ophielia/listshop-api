@@ -203,20 +203,6 @@ public class TagStructureServiceImpl implements TagStructureService {
         return !exists.isEmpty();
     }
 
-    public List<TagEntity> getBaseTagList(List<TagType> tagTypes) {
-
-        if (tagTypes != null) {
-            return tagRelationRepository.findByParentIsNullAndTagTypeIn(tagTypes)
-                    .stream()
-                    .map(TagRelationEntity::getChild)
-                    .collect(Collectors.toList());
-        }
-        return tagRelationRepository.findByParentIsNull()
-                .stream()
-                .map(TagRelationEntity::getChild)
-                .collect(Collectors.toList());
-
-    }
 
     @Override
     public List<TagSearchGroupEntity> buildGroupAssignments(Long groupId, List<TagEntity> members) {
