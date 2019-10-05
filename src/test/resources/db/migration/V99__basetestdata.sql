@@ -384,4 +384,3 @@ update proposal_context set current_approach_index=0, current_approach_type='WHE
  INSERT INTO public.auto_tag_instructions(  instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) VALUES (  'TAG', 4, 199, 'true', '9;434;88;375;372', 433);
 
 
-update dish set auto_tag_status = 1;

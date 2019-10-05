@@ -34,10 +34,10 @@ public class StaleItemCleanupTask {
         LocalDate removedBeforeDate = LocalDate.now().minusDays(deleteAfterDays);
 
         List<ItemEntity> itemsToRemove = itemRepository.findByRemovedOnBefore(Date.valueOf(removedBeforeDate));
-    int removeCount = itemsToRemove != null ? itemsToRemove.size() : 0;
+        int removeCount = itemsToRemove != null ? itemsToRemove.size() : 0;
         logger.info("... found [" + removeCount + "] items to delete.");
 
-    itemRepository.deleteAll(itemsToRemove);
+        itemRepository.deleteAll(itemsToRemove);
         logger.info("StaleItemCleanupTask complete.");
     }
 

@@ -33,5 +33,13 @@ where tag_id in (
          join tag_relation tr on t.tag_id = tr.parent_tag_id
     and assign_select = true);
 
+-- fixing autotag
+update auto_tag_instructions
+set instruction_type = upper(instruction_type);
+
+INSERT INTO auto_tag_instructions(instruction_type, instruction_id, assign_tag_id, is_invert, search_terms)
+VALUES ('TAG', nextval('auto_tag_instructions_sequence'), 346, false, '9;88;368;372;374;375');
 
 -- LISTSHOP-236 rollback --
+
+-- drop view public.tag_extended;

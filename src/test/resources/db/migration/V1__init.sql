@@ -1365,9 +1365,12 @@ INSERT INTO category_tags (category_id, tag_id) VALUES (11, 468);
 -- Data for Name: dish; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status) VALUES (1, NULL, 'Israeli Couscous', 20, NULL, NULL);
-INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status) VALUES (2, NULL, 'Breakfast Casserole', 20, NULL, NULL);
-INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status) VALUES (3, NULL, 'dijon-tarragon cream chicken', 20, NULL, NULL);
+INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status)
+VALUES (1, NULL, 'Israeli CousIIcous', 20, NULL, 105);
+INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status)
+VALUES (2, NULL, 'Breakfast Casserole', 20, NULL, 105);
+INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status)
+VALUES (3, NULL, 'dijon-tarragon cream chicken', 20, NULL, 105);
 INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status) VALUES (4, NULL, 'Thai Chicken with Basil Stir-Fry', 20, NULL, NULL);
 INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status) VALUES (5, NULL, 'red beans and rice', 20, NULL, NULL);
 INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status) VALUES (6, NULL, 'chicken estragon', 20, NULL, NULL);

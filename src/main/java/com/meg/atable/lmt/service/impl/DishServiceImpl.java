@@ -16,6 +16,8 @@ import com.meg.atable.lmt.service.tag.AutoTagService;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -160,5 +162,11 @@ public class DishServiceImpl implements DishService {
         DishEntity dishEntity = dish.get();
         dishEntity.setLastAdded(new Date());
         dishRepository.save(dishEntity);
+    }
+
+    @Override
+    public List<DishEntity> getDishesToAutotag(Long statusFlag, int dishLimit) {
+        Pageable limit = PageRequest.of(0, dishLimit);
+        return dishRepository.findDishesToAutotag(statusFlag, limit);
     }
 }

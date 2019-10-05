@@ -1,8 +1,5 @@
 package com.meg.atable.lmt.service;
 
-import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
-import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
-import com.meg.atable.lmt.api.exception.UserNotFoundException;
 import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
@@ -31,4 +28,6 @@ public interface DishService {
     List<TagEntity> getDishesForTagChildren(Long tagId, String name);
 
     void updateLastAddedForDish(Long dishId);
+
+    List<DishEntity> getDishesToAutotag(Long statusFlag, int dishLimit);
 }

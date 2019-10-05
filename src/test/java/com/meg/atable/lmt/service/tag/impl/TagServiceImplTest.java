@@ -573,6 +573,18 @@ public class TagServiceImplTest {
     //MM to implement
     @Test
     public void getDictionaryForIds() {
+        // make list of 5 ids
+        Set<Long> testTagIds = new HashSet();
+        testTagIds.add(TAG_CARROTS);
+        testTagIds.add(TAG_CROCKPOT);
+        testTagIds.add(TAG_SOUP);
+
+        // method under test
+        Map<Long, TagEntity> dictionary = tagService.getDictionaryForIds(testTagIds);
+
+        // check for dictionary with 5 elements
+        Assert.assertNotNull(dictionary);
+        Assert.assertEquals(3L, dictionary.size());
     }
 
 

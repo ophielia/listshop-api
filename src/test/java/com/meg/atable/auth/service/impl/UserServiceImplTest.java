@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -48,8 +49,11 @@ public class UserServiceImplTest {
         UserEntity testUser = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
         testUser.setEmail("email@test.com");
         userService.save(testUser);
-        UserEntity testResult = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
+        UserEntity testResult = userService.getUserByUserEmail(testName);
         assertEquals(testName, testResult.getEmail());
+        // reset to original value
+        testUser.setEmail(TestConstants.USER_3_NAME);
+        userService.save(testUser);
     }
 
     @Test
@@ -63,6 +67,6 @@ public class UserServiceImplTest {
         assertNotNull(result.getPassword());
         assertNotNull(result.getCreationDate());
         assertNotEquals(result.getPassword(), password);
-        assertEquals("$2a$10$NH7iIw4T517hii0kjk/RruJ5n3Puq4k/PkAZLPPZM.KT9ONHspwRm",result.getPassword());
+        assertTrue(BCrypt.checkpw(password, result.getPassword()));
     }
 }

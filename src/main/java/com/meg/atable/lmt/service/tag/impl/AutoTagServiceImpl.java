@@ -6,6 +6,7 @@ import com.meg.atable.lmt.data.entity.DishEntity;
 import com.meg.atable.lmt.data.entity.ShadowTags;
 import com.meg.atable.lmt.data.repository.ShadowTagRepository;
 import com.meg.atable.lmt.data.repository.TagRepository;
+import com.meg.atable.lmt.service.DishService;
 import com.meg.atable.lmt.service.tag.AutoTagProcessor;
 import com.meg.atable.lmt.service.tag.AutoTagService;
 import com.meg.atable.lmt.service.tag.AutoTagSubject;
@@ -31,6 +32,9 @@ public class AutoTagServiceImpl implements AutoTagService {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    DishService dishService;
 
     @Autowired
     TagService tagService;
@@ -77,6 +81,15 @@ public class AutoTagServiceImpl implements AutoTagService {
 
         addTagsToDish(user.getEmail(), subject);
         createShadowTagsForDish(subject);
+    }
+
+    @Override
+    public List<DishEntity> getDishesToAutotag(int dishToAutotagCount) {
+
+        Long maxProcessedStatusFlag = processorList.stream().map(processor -> processor.getProcessIdentifier())
+                .reduce(1L, (a, b) -> a * b);
+
+        return dishService.getDishesToAutotag(maxProcessedStatusFlag, dishToAutotagCount);
     }
 
 

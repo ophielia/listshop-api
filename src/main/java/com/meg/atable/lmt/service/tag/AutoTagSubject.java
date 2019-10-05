@@ -58,7 +58,7 @@ public class AutoTagSubject {
     }
 
     public boolean hasBeenProcessedBy(Long processIdentifier) {
-        Long dishAutotagStatus = dish.getAutoTagStatus();
+        Long dishAutotagStatus = dish.getAutoTagStatus() == null ? 1 : dish.getAutoTagStatus();
         return dishAutotagStatus % processIdentifier == 0;
     }
 
