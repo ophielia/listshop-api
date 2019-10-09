@@ -1,14 +1,12 @@
 package com.meg.atable.lmt.api;
 
 import com.meg.atable.Application;
-import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.lmt.api.model.Item;
 import com.meg.atable.lmt.api.model.ListGenerateProperties;
 import com.meg.atable.lmt.api.model.ListType;
-import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -310,23 +308,6 @@ public class ShoppingListRestControllerTest {
                 .contentType(contentType))
                 .andExpect(status().isNoContent());
 
-    }
-
-    @Test
-    @WithMockUser
-    public void removeListItemsFromList() throws Exception {
-//      @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/listtype/{listType}", produces = "application/json")
-        //      ResponseEntity<Object> removeListItemsFromList(Principal principal, @PathVariable Long listId, @PathVariable String listType);
-  /*
-        Long listId = TestConstants.LIST_1_ID;
-        String url = "/shoppinglist/" + listId + "/layout/" + TestConstants.LIST_LAYOUT_2_ID;
-        mockMvc.perform(post(url)
-                .with(user(userDetails))
-                .contentType(contentType))
-                .andExpect(status().isNoContent());
-
-*/
-        Assert.assertEquals(1, 2);
     }
 
 

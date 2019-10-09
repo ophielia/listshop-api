@@ -34,7 +34,7 @@ public class ListLayoutCategoryEntity {
     @JoinTable(name = "CATEGORY_TAGS",
             joinColumns = @JoinColumn(name = "CATEGORY_ID"),
             inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
-    private List<TagEntity> tags;
+    private List<TagEntity> tags = new ArrayList<>();
 
     @Column(name = "layout_id")
     private Long layoutId;
@@ -46,6 +46,8 @@ public class ListLayoutCategoryEntity {
     private List<ListLayoutCategoryEntity> subCategories = new ArrayList<>();
 
     private Integer displayOrder;
+
+    private Boolean isDefault;
 
     public ListLayoutCategoryEntity(Long categoryId) {
         this.categoryId = categoryId;
@@ -106,5 +108,13 @@ public class ListLayoutCategoryEntity {
 
     public void setDisplayOrder(Integer displayOrder) {
         this.displayOrder = displayOrder;
+    }
+
+    public Boolean getDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(Boolean aDefault) {
+        isDefault = aDefault;
     }
 }

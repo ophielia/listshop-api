@@ -35,8 +35,8 @@ public interface TagRestControllerApi {
     @RequestMapping(value = "{parentId}/child/{childId}", method = RequestMethod.PUT, produces = "application/json")
     ResponseEntity assignChildToParent(@PathVariable("parentId") Long parentId, @PathVariable("childId") Long childId);
 
-    @RequestMapping(value = "/basetag/child/{childId}", method = RequestMethod.PUT, produces = "application/json")
-    ResponseEntity assignChildToBaseTag(@PathVariable("childId") Long childId);
+    @RequestMapping(value = "/base/{tagId}", method = RequestMethod.PUT, produces = "application/json")
+    ResponseEntity assignChildToBaseTag(@PathVariable("tagId") Long tagId);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{tagId}", produces = "application/json")
     ResponseEntity<Tag> readTag(@PathVariable("tagId") Long tagId);
@@ -44,7 +44,7 @@ public interface TagRestControllerApi {
     @RequestMapping(method = RequestMethod.PUT, value = "/{tagId}", consumes = "application/json")
     ResponseEntity<Object> updateTag(@PathVariable Long tagId, @RequestBody Tag input);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{tagId}/children/dish", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "/{tagId}/dish", produces = "application/json")
     ResponseEntity<TagResource> getChildrenTagDishAssignments(Principal principal, @PathVariable("tagId") Long tagId);
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{fromTagId}/dish/{toTagId}", produces = "application/json")

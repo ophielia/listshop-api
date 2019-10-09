@@ -12,6 +12,7 @@ import com.meg.atable.lmt.service.ListLayoutException;
 import com.meg.atable.lmt.service.ListLayoutProperties;
 import com.meg.atable.lmt.service.ListLayoutService;
 import com.meg.atable.lmt.service.ShoppingListProperties;
+import com.meg.atable.lmt.service.tag.TagService;
 import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,23 +27,31 @@ import java.util.stream.Collectors;
 @Service
 public class ListLayoutServiceImpl implements ListLayoutService {
 
-    @Autowired
+
     private ListLayoutCategoryRepository listLayoutCategoryRepository;
-
-    @Autowired
     private ListLayoutProperties listLayoutProperties;
-
-    @Autowired
     private CategoryRelationRepository categoryRelationRepository;
-
-    @Autowired
     private ListLayoutRepository listLayoutRepository;
-
-    @Autowired
     private TagRepository tagRepository;
+    private TagService tagService;
+    private ShoppingListProperties shoppingListProperties;
 
     @Autowired
-    private ShoppingListProperties shoppingListProperties;
+    public ListLayoutServiceImpl(ListLayoutCategoryRepository listLayoutCategoryRepository,
+                                 ListLayoutProperties listLayoutProperties,
+                                 CategoryRelationRepository categoryRelationRepository,
+                                 ListLayoutRepository listLayoutRepository,
+                                 TagRepository tagRepository,
+                                 TagService tagService,
+                                 ShoppingListProperties shoppingListProperties) {
+        this.listLayoutCategoryRepository = listLayoutCategoryRepository;
+        this.listLayoutProperties = listLayoutProperties;
+        this.categoryRelationRepository = categoryRelationRepository;
+        this.listLayoutRepository = listLayoutRepository;
+        this.tagRepository = tagRepository;
+        this.tagService = tagService;
+        this.shoppingListProperties = shoppingListProperties;
+    }
 
     @Override
     public List<ListLayoutEntity> getListLayouts() {
@@ -225,7 +234,6 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         List<TagEntity> tagsToAdd = tagRepository.findAllById(tagIdsToAdd);
         for (TagEntity updateTag : tagsToAdd) {
             updateTag.setCategoryUpdatedOn(new Date());
-            //MM TODO test this
         }
         tagCategories.addAll(tagsToAdd);
         categoryEntity.setTags(tagCategories);
@@ -479,6 +487,24 @@ Long relationshipId = getCategoryRelationForCategory(category);
 
     }
 
+    @Override
+    public void assignTagToDefaultCategories(TagEntity newtag) {
+        // repull tag from db
+        TagEntity tagToUpdate = tagService.getTagById(newtag.getId());
+        // get default categories for all list layouts
+        List<ListLayoutCategoryEntity> defaultCategories = getAllDefaultCategories();
+
+        // for each category, assign the category to the tag, and the tag to the category
+        for (ListLayoutCategoryEntity category : defaultCategories) {
+            tagToUpdate.getCategories().add(category);
+            category.getTags().add(tagToUpdate);
+        }
+
+        tagService.save(tagToUpdate);
+        listLayoutCategoryRepository.saveAll(defaultCategories);
+
+    }
+
 
     @Override
     public List<Pair<TagEntity, ListLayoutCategoryEntity>> getTagCategoryChanges(Long listLayoutId, Date changedAfter) {
@@ -572,5 +598,7 @@ Long relationshipId = getCategoryRelationForCategory(category);
 
     }
 
-
+    private List<ListLayoutCategoryEntity> getAllDefaultCategories() {
+        return listLayoutCategoryRepository.findByIsDefaultTrue();
+    }
 }

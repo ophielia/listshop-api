@@ -9,16 +9,14 @@ import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.entity.TagExtendedEntity;
 import com.meg.atable.lmt.data.repository.TagExtendedRepository;
 import com.meg.atable.lmt.data.repository.TagRepository;
-import com.meg.atable.lmt.service.DishSearchCriteria;
-import com.meg.atable.lmt.service.DishSearchService;
-import com.meg.atable.lmt.service.DishService;
-import com.meg.atable.lmt.service.ListTagStatisticService;
+import com.meg.atable.lmt.service.*;
 import com.meg.atable.lmt.service.tag.TagChangeListener;
 import com.meg.atable.lmt.service.tag.TagReplaceService;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,25 +31,40 @@ import java.util.stream.Collectors;
 @Transactional
 public class TagServiceImpl implements TagService {
 
-    @Autowired
-    private UserService userService;
-    private final List<TagChangeListener> listeners = new CopyOnWriteArrayList<>();
     @Value("${service.tagservice.delete.tag.immediately:false}")
     boolean deleteImmediately;
-    @Autowired
-    private TagRepository tagRepository;
-    @Autowired
-    private TagExtendedRepository tagExtendedRepository;
-    @Autowired
-    private TagReplaceService tagReplaceService;
-    @Autowired
-    private TagStructureService tagStructureService;
 
-    @Autowired
+    private final List<TagChangeListener> listeners = new CopyOnWriteArrayList<>();
+
     private DishService dishService;
+    private ListTagStatisticService tagStatisticService;
+    private TagExtendedRepository tagExtendedRepository;
+    private TagReplaceService tagReplaceService;
+    private TagRepository tagRepository;
+    private TagStructureService tagStructureService;
+    private UserService userService;
+    private ListLayoutService listLayoutService;
 
     @Autowired
-    private ListTagStatisticService tagStatisticService;
+    public TagServiceImpl(ListTagStatisticService tagStatisticService,
+                          @Lazy DishService dishService,
+                          TagStructureService tagStructureService,
+                          @Lazy TagReplaceService tagReplaceService,
+                          TagExtendedRepository tagExtendedRepository,
+                          TagRepository tagRepository,
+                          UserService userService) {
+        this.dishService = dishService;
+        this.tagStatisticService = tagStatisticService;
+        this.tagExtendedRepository = tagExtendedRepository;
+        this.tagReplaceService = tagReplaceService;
+        this.tagRepository = tagRepository;
+        this.tagStructureService = tagStructureService;
+        this.userService = userService;
+
+    }
+
+
+
 
     @Override
     public void deleteTagFromDish(String userName, Long dishId, Long tagId) {
@@ -232,6 +245,7 @@ public class TagServiceImpl implements TagService {
 
         tagStructureService.createRelation(parentTag, saved);
 
+
         fireTagAddedEvent(saved);
         return newtag;
     }
@@ -281,7 +295,7 @@ public class TagServiceImpl implements TagService {
         tag.setToDelete(true);
         tag.setRemovedOn(new Date());
         //MM TEST THIS
-        tag.setReplacementTagId(replacement != null ? replacement.getId() : null);
+        tag.setReplacementTagId(replacement.getId());
         // update and replace usage
         updateTag(tagId, tag);
         tagReplaceService.replaceTag(tag.getId(), tag.getReplacementTagId());

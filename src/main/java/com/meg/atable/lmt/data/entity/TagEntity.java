@@ -221,6 +221,10 @@ public class TagEntity {
         return categories;
     }
 
+    public void setCategories(List<ListLayoutCategoryEntity> categories) {
+        this.categories = categories;
+    }
+
     public TagEntity copy() {
         TagEntity copy = new TagEntity();
         copy.setName(getName());

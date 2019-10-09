@@ -40,6 +40,25 @@ set instruction_type = upper(instruction_type);
 INSERT INTO auto_tag_instructions(instruction_type, instruction_id, assign_tag_id, is_invert, search_terms)
 VALUES ('TAG', nextval('auto_tag_instructions_sequence'), 346, false, '9;88;368;372;374;375');
 
+
+-- default column for listLayoutCategory
+alter table list_category
+  add column is_default boolean;
+
+-- insert default categories for lists
+insert into list_category (category_id, name, layout_id, is_default, display_order)
+select nextval('list_layout_category_sequence') as category_id,
+       'Not (yet) categorized'                  as name,
+       layout_id,
+       true                                     as is_default,
+       999                                      as display_order
+from list_layout;
+
 -- LISTSHOP-236 rollback --
 
 -- drop view public.tag_extended;
+
+--alter table list_category
+--   drop column is_default;
+
+-- delete from list_category where display_order = 999;

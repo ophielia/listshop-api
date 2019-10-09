@@ -4,9 +4,12 @@ import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.*;
-import com.meg.atable.lmt.data.repository.*;
-import com.meg.atable.lmt.service.tag.TagReplaceService;
+import com.meg.atable.lmt.data.repository.DishSlotRepository;
+import com.meg.atable.lmt.data.repository.ProposalSlotRepository;
+import com.meg.atable.lmt.data.repository.TagInstructionRepository;
+import com.meg.atable.lmt.data.repository.TargetRepository;
 import com.meg.atable.lmt.service.TargetService;
+import com.meg.atable.lmt.service.tag.TagReplaceService;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,9 +37,6 @@ public class TagReplaceServiceImpl implements TagReplaceService {
     private TargetRepository targetRepository;
 
     @Autowired
-    private TagRepository tagRepository;
-
-    @Autowired
     private TagInstructionRepository tagInstructionRepository;
 
     @Autowired
@@ -47,7 +47,6 @@ public class TagReplaceServiceImpl implements TagReplaceService {
 
     @Autowired
     private TargetService targetService;
-
 
     @Autowired
     private UserService userService;
@@ -70,12 +69,12 @@ public class TagReplaceServiceImpl implements TagReplaceService {
         replaceTagsInTargets(toReplaceId, replaceWithId);
         replaceTagsInProposal(toReplaceId, replaceWithId);
         replaceAutotagInstruction(toReplaceId, replaceWithId);
-
+        replaceStatistics(toReplaceId, replaceWithId);
 
         // category tag id
         removeCategoryTags(toReplaceId);
         // list tag statistic - shadow tags
-        removeStatsAndShadowTags(toReplaceId);
+        removeShadowTags(toReplaceId);
          // tag relation
         removeTagRelation(toReplaceId);
         // tag search group
@@ -106,7 +105,7 @@ public class TagReplaceServiceImpl implements TagReplaceService {
         query.executeUpdate();
     }
 
-    private void removeStatsAndShadowTags(Long toReplaceId) {
+    private void removeShadowTags(Long toReplaceId) {
         //MM change - don't want to delete this - want to combine it with previous
         // 3 steps
         // merge thosw eith duplicates
@@ -148,6 +147,7 @@ public class TagReplaceServiceImpl implements TagReplaceService {
         }
         tagInstructionRepository.saveAll(candidates);
     }
+
 
     private List<TagInstructionEntity> findAutoTagCandidates(Long toReplaceId) {
         return tagInstructionRepository.findByAssignTagId(toReplaceId);
@@ -367,6 +367,58 @@ public class TagReplaceServiceImpl implements TagReplaceService {
         }
 
         proposalSlotRepository.saveAll(toSave);
+
+    }
+
+    private void replaceStatistics(Long toReplaceId, Long replaceWithId) {
+        // TODO add logging
+        boolean joinOnMin = replaceWithId < toReplaceId;
+        // write sql for delete
+
+        StringBuilder withSQL = new StringBuilder("with new_stats as ( ");
+        withSQL.append("select user_id,  ");
+        withSQL.append(" sum(added_count) as new_added, ");
+        withSQL.append(" sum(removed_count) as new_removed, ");
+        withSQL.append(" sum(added_to_dish) as new_added_dish, ");
+        withSQL.append(" min(tag_id), max(tag_id),count(*)  ");
+        withSQL.append("from list_tag_stats s ");
+        withSQL.append("where tag_id in (12,13) ");
+        withSQL.append("group by user_id ) ");
+
+
+        StringBuilder mergeSQL = new StringBuilder();
+        mergeSQL.append(withSQL);
+        mergeSQL.append("update list_tag_stats s ");
+        mergeSQL.append("set added_count = new_added, ");
+        mergeSQL.append(" removed_count = new_removed, ");
+        mergeSQL.append(" added_to_dish = new_added_dish ");
+        mergeSQL.append("from new_stats n ");
+        mergeSQL.append("where ");
+        if (joinOnMin) {
+            mergeSQL.append(" n.min = s.tag_id ");
+        } else {
+            mergeSQL.append(" n.max = s.tag_id ");
+
+        }
+        mergeSQL.append("and n.user_id = s.user_id");
+        mergeSQL.append(" and n.count > 1;");
+
+        // execute sql for merge
+        Query query = entityManager.createNativeQuery(mergeSQL.toString());
+        query.executeUpdate();
+
+
+        // now we've merged where there are both tags
+        // delete any remaining entries for tag to replace
+        StringBuilder baseSql = new StringBuilder();
+        StringBuilder deleteSQL = new StringBuilder("delete from list_tag_stats where tag_id =");
+        deleteSQL.append(toReplaceId);
+        deleteSQL.append(";");
+
+        // execute sql for delete
+        query = entityManager.createNativeQuery(deleteSQL.toString());
+        query.executeUpdate();
+
 
     }
 

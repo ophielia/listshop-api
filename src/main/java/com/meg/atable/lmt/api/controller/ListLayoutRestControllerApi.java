@@ -66,7 +66,7 @@ public interface ListLayoutRestControllerApi {
     @RequestMapping(method = RequestMethod.POST, value = "/category/{categoryId}", produces = "application/json")
     ResponseEntity<Object> moveCategory(Principal principal, @PathVariable Long categoryId, @RequestParam(value = "move", required = true) String direction);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}/changes", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}/tag/refreshed", produces = "application/json")
     ResponseEntity<List<CategoryItemRefresh>> retrieveRefreshedTagToCategoryList(Principal principal, @PathVariable Long listLayoutId, @RequestParam(value = "after", required = true) Date after);
 
 }

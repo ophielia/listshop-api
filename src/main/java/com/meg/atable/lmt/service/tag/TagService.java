@@ -21,7 +21,7 @@ public interface TagService {
 
     TagEntity save(TagEntity tag);
 
-    TagEntity getTagById(Long dishId);
+    TagEntity getTagById(Long tagId);
 
 
     List<TagExtendedEntity> getTagExtendedList(TagFilterType tagFilterType, List<TagType> tagTypes);

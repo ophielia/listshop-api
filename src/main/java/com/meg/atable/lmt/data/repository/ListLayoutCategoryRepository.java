@@ -82,6 +82,8 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
 
     List<ListLayoutCategoryEntity> findByLayoutIdEquals(Long layoutId);
 
+    List<ListLayoutCategoryEntity> findByIsDefaultTrue();
+
     @Query(value = "select tag_id, category_id " +
             "from category_tags ct " +
             "join tag t using (tag_id) " +

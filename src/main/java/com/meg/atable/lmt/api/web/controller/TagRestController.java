@@ -131,8 +131,8 @@ public class TagRestController implements TagRestControllerApi {
     }
 
     @Override
-    public ResponseEntity assignChildToBaseTag(@PathVariable("childId") Long childId) {
-        TagEntity tag = this.tagService.getTagById(childId);
+    public ResponseEntity assignChildToBaseTag(@PathVariable("tagId") Long tagId) {
+        TagEntity tag = this.tagService.getTagById(tagId);
 
         if (this.tagStructureService.assignTagToTopLevel(tag)) {
             return ResponseEntity.ok().build();
