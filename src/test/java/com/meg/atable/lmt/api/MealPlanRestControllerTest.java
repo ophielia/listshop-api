@@ -1,12 +1,12 @@
 package com.meg.atable.lmt.api;
 
 import com.meg.atable.Application;
+import com.meg.atable.auth.data.entity.UserEntity;
+import com.meg.atable.auth.service.UserService;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.lmt.api.model.MealPlan;
 import com.meg.atable.lmt.api.model.MealPlanType;
 import com.meg.atable.lmt.api.model.ModelMapper;
-import com.meg.atable.auth.data.entity.UserEntity;
-import com.meg.atable.auth.service.impl.JwtUser;
-import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.data.entity.MealPlanEntity;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
@@ -126,10 +126,10 @@ public class MealPlanRestControllerTest {
     @Test
     @WithMockUser
     public void testDeleteMealPlan() throws Exception {
-        Long testId = TestConstants.MENU_PLAN_2_ID;
+        Long testId = 506L; //TestConstants.MENU_PLAN_2_ID;
         mockMvc.perform(delete("/mealplan/"
                 + testId)
-                .with(user(userDetailsDelete)))
+                .with(user(userDetails)))
                 .andExpect(status().isNoContent());
 
     }

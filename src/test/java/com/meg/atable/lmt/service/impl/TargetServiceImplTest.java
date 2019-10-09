@@ -9,8 +9,8 @@ import com.meg.atable.lmt.data.entity.TargetEntity;
 import com.meg.atable.lmt.data.entity.TargetSlotEntity;
 import com.meg.atable.lmt.data.repository.TargetRepository;
 import com.meg.atable.lmt.data.repository.TargetSlotRepository;
-import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.TargetService;
+import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;
@@ -257,7 +257,6 @@ targetIdToDelete = result.getTargetId();
 
     @Test
     public void addTagToTargetSlot() throws Exception {
-       //MM next failing test
         TargetEntity target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
         TargetSlotEntity slot = target.getSlots().get(0);
         Long slotId = slot.getId();
@@ -266,7 +265,9 @@ targetIdToDelete = result.getTargetId();
         targetService.addTagToTargetSlot(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID, slotId, TestConstants.TAG_CROCKPOT);
 
         target = targetService.getTargetById(TestConstants.USER_1_NAME, TestConstants.TARGET_2_ID);
-        slot = target.getSlots().get(0);
+        Optional<TargetSlotEntity> slotOpt = target.getSlots().stream().filter(sl -> sl.getId().equals(slotId)).findFirst();
+        Assert.assertTrue(slotOpt.isPresent());
+        slot = slotOpt.get();
         slottags = slot.getTargetTagIds();
         Assert.assertNotNull(slottags);
         Assert.assertTrue(slottags.contains(String.valueOf(TestConstants.TAG_CROCKPOT)));

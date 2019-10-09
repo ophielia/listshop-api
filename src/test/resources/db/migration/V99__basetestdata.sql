@@ -104,9 +104,12 @@ INSERT INTO dish_tags (dish_id, tag_id) VALUES (62, 400);
 
 -- meal plan - 1 - id 500
 insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (now(), 'Manual', 'meal plan 1', 500, 500) ;
-insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (now(), 'Manual', 'meal plan 1', 501, 501) ;
+insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id)
+values (now(), 'Manual', 'meal plan 2', 500, 501);
 insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (now(), 'Manual', 'meal plan 1', 20, 503) ;
 insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (now(), 'Manual', 'meal plan 2', 20, 504) ;
+insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id)
+values (now(), 'Manual', 'meal plan 2', 20, 506);
 insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id) values (now(), 'Manual', 'meal plan 5', 500, 505) ;
 
 -- slots for meal plan - 

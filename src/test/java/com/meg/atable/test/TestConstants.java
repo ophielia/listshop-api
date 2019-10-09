@@ -15,6 +15,7 @@ public final class TestConstants {
     public static final Long USER_4_ID = 502L;
 
     public static final Long MEAL_PLAN_1_ID = 500L;
+    public static final Long MEAL_PLAN_2_ID = 501L;
 
     public static final Long ITEM_1_ID = 500L;
 

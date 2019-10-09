@@ -117,23 +117,24 @@ public class MealPlanServiceImplTest {
         List<MealPlanEntity> list = mealPlanService.getMealPlansForUserName(userAccount.getEmail());
 
         Assert.assertNotNull(list);
-        Assert.assertEquals(2L, list.size());
+        Assert.assertTrue(list.size() >= 2);
     }
 
     @Test
     public void testAddDishToMealPlan() throws Exception {
-        DishEntity dish = new DishEntity(modifyUserAccount.getId(), "added slot");
+        DishEntity dish = new DishEntity(userAccount.getId(), "added slot");
         dish = dishRepository.save(dish);
 
+
         MealPlanEntity beginMealPlan = mealPlanService
-                .getMealPlanById(modifyUserAccount.getEmail(), TestConstants.MENU_PLAN_2_ID);
+                .getMealPlanById(userAccount.getEmail(), TestConstants.MENU_PLAN_2_ID);
         List<SlotEntity> beginSlots = beginMealPlan.getSlots();
         Integer beginSlotCount = beginSlots.size();
 
-        mealPlanService.addDishToMealPlan(modifyUserAccount.getEmail(), TestConstants.MENU_PLAN_2_ID, dish.getId());
+        mealPlanService.addDishToMealPlan(userAccount.getEmail(), TestConstants.MENU_PLAN_2_ID, dish.getId());
 
         MealPlanEntity testMealPlan = mealPlanService
-                .getMealPlanById(modifyUserAccount.getEmail(), TestConstants.MENU_PLAN_2_ID);
+                .getMealPlanById(userAccount.getEmail(), TestConstants.MENU_PLAN_2_ID);
         List<SlotEntity> testSlots = testMealPlan.getSlots();
         Integer newSlotCount = testSlots.size();
 
@@ -150,14 +151,14 @@ public class MealPlanServiceImplTest {
 
     @Test
     public void testDeleteDishFromMealPlan() {
-        MealPlanEntity mealPlan = mealPlanService.getMealPlanById(modifyUserAccount.getEmail(), TestConstants.MENU_PLAN_2_ID);
+        MealPlanEntity mealPlan = mealPlanService.getMealPlanById(userAccount.getEmail(), TestConstants.MENU_PLAN_2_ID);
         List<SlotEntity> slots = mealPlan.getSlots();
         Long toBeRemoved = slots.get(0).getDish().getId();
         int origSize = slots.size();
 
-        mealPlanService.deleteDishFromMealPlan(modifyUserAccount.getEmail(), TestConstants.MENU_PLAN_2_ID, toBeRemoved);
+        mealPlanService.deleteDishFromMealPlan(userAccount.getEmail(), TestConstants.MENU_PLAN_2_ID, toBeRemoved);
 
-        MealPlanEntity result = mealPlanService.getMealPlanById(modifyUserAccount.getEmail(), TestConstants.MENU_PLAN_2_ID);
+        MealPlanEntity result = mealPlanService.getMealPlanById(userAccount.getEmail(), TestConstants.MENU_PLAN_2_ID);
         Assert.assertNotNull(result);
         if (origSize == 1) {
             Assert.assertNull(result.getSlots());
