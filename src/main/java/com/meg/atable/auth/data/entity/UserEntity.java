@@ -58,7 +58,7 @@ public class UserEntity {
         this.enabled = true;
     }
 
-    UserEntity() {
+    public UserEntity() {
         // jpa empty constructor
     }
 
@@ -67,6 +67,9 @@ public class UserEntity {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;

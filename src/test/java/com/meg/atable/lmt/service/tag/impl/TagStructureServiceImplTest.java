@@ -89,7 +89,7 @@ public class TagStructureServiceImplTest {
         List<FatTag> changed = tagStructureService.getChangedTagsWithChildren(java.sql.Timestamp.valueOf(changedAfter));
 
         Assert.assertNotNull(changed);
-        Assert.assertEquals(1, changed.size());
+        Assert.assertTrue(changed.size() >= 1);
 
         List<FatTag> resultList = changed.stream()
                 .flatMap(FatTag::flattened)

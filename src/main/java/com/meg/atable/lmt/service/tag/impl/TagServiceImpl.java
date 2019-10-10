@@ -44,6 +44,8 @@ public class TagServiceImpl implements TagService {
     private TagStructureService tagStructureService;
     private UserService userService;
     private ListLayoutService listLayoutService;
+    private DishSearchService dishSearchService;
+
 
     @Autowired
     public TagServiceImpl(ListTagStatisticService tagStatisticService,
@@ -52,7 +54,8 @@ public class TagServiceImpl implements TagService {
                           @Lazy TagReplaceService tagReplaceService,
                           TagExtendedRepository tagExtendedRepository,
                           TagRepository tagRepository,
-                          UserService userService) {
+                          UserService userService,
+                          DishSearchService dishSearchService) {
         this.dishService = dishService;
         this.tagStatisticService = tagStatisticService;
         this.tagExtendedRepository = tagExtendedRepository;
@@ -60,6 +63,7 @@ public class TagServiceImpl implements TagService {
         this.tagRepository = tagRepository;
         this.tagStructureService = tagStructureService;
         this.userService = userService;
+        this.dishSearchService = dishSearchService;
 
     }
 
@@ -85,8 +89,6 @@ public class TagServiceImpl implements TagService {
         dish.setTags(dishTagsDeletedTag);
         dishService.save(dish, false);
     }
-    @Autowired
-    private DishSearchService dishSearchService;
 
     @Override
     public TagEntity save(TagEntity tag) {
