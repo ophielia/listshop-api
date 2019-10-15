@@ -98,9 +98,24 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagEntity getTagById(Long tagId) {
 
+        return getTagById(tagId, false);
+    }
+
+    @Override
+    public TagEntity getTagById(Long tagId, Boolean swapIfReplaced) {
+
         Optional<TagEntity> tagOpt = tagRepository.findById(tagId);
 
-        return tagOpt.isPresent() ? tagOpt.get() : null;
+        if (!tagOpt.isPresent()) {
+            return null;
+        }
+
+        TagEntity tag = tagOpt.get();
+        if (tag.isToDelete()) {
+            Long newTagId = tag.getReplacementTagId();
+            return getTagById(newTagId);
+        }
+        return tag;
     }
 
     public RatingUpdateInfo getRatingUpdateInfoForDishIds(String userName, List<Long> dishIdList) {
@@ -374,12 +389,7 @@ public class TagServiceImpl implements TagService {
             return;
         }
         // get tag
-        Optional<TagEntity> tagOpt = tagRepository.findById(tagId);
-        if (!tagOpt.isPresent()) {
-            return;
-        }
-
-        TagEntity tag = tagOpt.get();
+        TagEntity tag = getTagById(tagId, true);
 
 
         List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);

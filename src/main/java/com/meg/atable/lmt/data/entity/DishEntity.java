@@ -120,4 +120,8 @@ public class DishEntity {
     public void setAutoTagStatus(Long autoTagStatus) {
         this.autoTagStatus = autoTagStatus;
     }
+
+    public Date getCreatedOn() {
+        return createdOn;
+    }
 }

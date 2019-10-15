@@ -1,13 +1,12 @@
 package com.meg.atable.lmt.api;
 
 import com.meg.atable.Application;
-import com.meg.atable.lmt.api.model.Dish;
 import com.meg.atable.auth.data.entity.UserEntity;
-import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.auth.service.UserService;
+import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.common.FlatStringUtils;
+import com.meg.atable.lmt.api.model.Dish;
 import com.meg.atable.lmt.data.entity.DishEntity;
-import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.service.DishService;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
@@ -26,6 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -104,6 +104,19 @@ public class DishRestControllerTest {
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.dish.dish_id", Matchers.isA(Number.class)))
                 .andExpect(jsonPath("$.dish.dish_id").value(testId));
+
+    }
+
+    @Test
+    @WithMockUser
+    public void readSingleDish_ObjectNotFoundException() throws Exception {
+        //MM work here
+        Long testId = TestConstants.DISH_7_ID;
+        MvcResult result = mockMvc.perform(get("/dish/"
+                + testId)
+                .with(user(userDetails)))
+                .andExpect(status().isBadRequest())
+                .andReturn();
 
     }
 

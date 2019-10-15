@@ -63,6 +63,8 @@ public interface TagService {
 
     void saveTagForDelete(Long tagId, Long replacementTagId);
 
+    TagEntity getTagById(Long tagId, Boolean swapIfReplaced);
+
     RatingUpdateInfo getRatingUpdateInfoForDishIds(String username, List<Long> dishIdList);
 
     void incrementDishRating(String name, Long dishId, Long ratingId, SortOrMoveDirection moveDirection);

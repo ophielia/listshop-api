@@ -216,6 +216,40 @@ public class TagServiceImplMockTest {
 
     @Test
     public void replaceTagInDishes() {
+        String userName = "userName";
+        Long dishId = 10000L;
+        Set<Long> tagIds = new HashSet<>();
+        tagIds.add(100L);
+        tagIds.add(200L);
+        tagIds.add(300L);
+
+        DishEntity testDish = new DishEntity();
+        List<TagEntity> dishTags = new ArrayList<>();
+        List<TagEntity> dishTagsAfterDelete = new ArrayList<>();
+        TagEntity tag1 = new TagEntity();
+        tag1.setId(100L);
+        TagEntity tag2 = new TagEntity();
+        tag2.setId(200L);
+        TagEntity tag3 = new TagEntity();
+        tag3.setId(300L);
+        TagEntity tag4 = new TagEntity();
+        tag4.setId(400L);
+        dishTags.add(tag1);
+        dishTags.add(tag2);
+        dishTags.add(tag3);
+        dishTags.add(tag4);
+        dishTagsAfterDelete.add(tag4);
+
+        Mockito.when(dishService.getDishForUserById(userName, dishId))
+                .thenReturn(testDish, testDish, testDish);
+        Mockito.when(tagRepository.findTagsByDishes(testDish))
+                .thenReturn(dishTags, dishTags, dishTags);
+
+        // call under test
+        tagService.removeTagsFromDish(userName, dishId, tagIds);
+
+        Mockito.verify(dishService, times(3)).save(testDish, false);
+
     }
 
 
@@ -365,6 +399,29 @@ public class TagServiceImplMockTest {
 
     }
 
+    @Test
+    public void testGetByIdWithReplace() {
+        Long tagId = 99L;
+        Long replacementTagId = 100L;
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+        tag.setToDelete(true);
+        tag.setReplacementTagId(replacementTagId);
+        TagEntity replaceTag = new TagEntity();
+        replaceTag.setId(replacementTagId);
+
+        Mockito.when(tagRepository.findById(tagId))
+                .thenReturn(Optional.of(tag));
+
+        Mockito.when(tagRepository.findById(replacementTagId))
+                .thenReturn(Optional.of(replaceTag));
+
+        // call to be tested
+        TagEntity result = tagService.getTagById(tagId, true);
+
+        Assert.assertNotNull(result);
+        Assert.assertEquals(replacementTagId, result.getId());
+    }
     private List<TagEntity> dummyTagEntities(int count) {
         List<TagEntity> returnList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
