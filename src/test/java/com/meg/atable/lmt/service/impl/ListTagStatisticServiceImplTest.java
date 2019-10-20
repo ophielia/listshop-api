@@ -31,7 +31,7 @@ public class ListTagStatisticServiceImplTest {
 
     @Test
     public void testGetStatisticsForUser() {
-        List<ListTagStatistic> list = listTagStatisticService.getStatisticsForUser(TestConstants.USER_3_ID);
+        List<ListTagStatistic> list = listTagStatisticService.getStatisticsForUser(TestConstants.USER_3_ID, 100);
         Assert.assertNotNull(list);
         Assert.assertEquals(3, list.size());
     }

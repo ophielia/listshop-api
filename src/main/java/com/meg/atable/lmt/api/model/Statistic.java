@@ -22,6 +22,13 @@ public class Statistic {
         this.listTagStatId = listTagStatId;
     }
 
+    public Statistic() {
+    }
+
+    public Long getListTagStatId() {
+        return listTagStatId;
+    }
+
     public Long getUserId() {
         return userId;
     }

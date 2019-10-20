@@ -447,6 +447,22 @@ public class ModelMapper {
         return targetEntity;
     }
 
+    public static ListTagStatistic toEntity(Statistic statistic) {
+        if (statistic == null) {
+            return null;
+        }
+
+        ListTagStatistic statEntity = new ListTagStatistic();
+        statEntity.setListTagStatId(statistic.getListTagStatId());
+        statEntity.setUserId(statistic.getUserId());
+        statEntity.setTagId(statistic.getTagId());
+        statEntity.setAddedToDishCount(statistic.getAddedToDish());
+        statEntity.setRemovedCount(statistic.getRemovedCount());
+        statEntity.setAddedCount(statistic.getAddedCount());
+
+        return statEntity;
+    }
+
     public static TargetSlotEntity toEntity(TargetSlot targetSlot) {
         if (targetSlot == null) {
             return null;

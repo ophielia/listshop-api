@@ -97,7 +97,7 @@ public class MealPlanServiceImplTest {
         Assert.assertNotNull(check);
         Assert.assertEquals(500L, check.getId().longValue());
         Long timeSinceCreated = (new Date().getTime() -  check.getCreated().getTime())/1000;
-        Assert.assertTrue(timeSinceCreated < 15);// created 10 seconds ago
+        Assert.assertTrue(timeSinceCreated < 45);// created 10 seconds ago
         Assert.assertEquals(userAccount.getId(), check.getUserId());
         Assert.assertEquals(TestConstants.MENU_PLAN_1_NAME, check.getName());
     }

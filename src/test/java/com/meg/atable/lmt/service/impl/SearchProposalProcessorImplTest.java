@@ -10,6 +10,7 @@ import com.meg.atable.lmt.service.proposal.impl.SearchProposalProcessorImpl;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import com.meg.atable.test.TestConstants;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -46,6 +47,7 @@ public class SearchProposalProcessorImplTest {
 
 
     @Test
+    @Ignore
     public void processProposal_NoExistingProposal() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4,2,3);
         target.setTargetType(TargetType.Standard);

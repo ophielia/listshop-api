@@ -1,5 +1,8 @@
 package com.meg.atable.lmt.service.impl;
 
+import com.meg.atable.auth.data.entity.UserEntity;
+import com.meg.atable.lmt.api.model.ModelMapper;
+import com.meg.atable.lmt.api.model.Statistic;
 import com.meg.atable.lmt.data.entity.ListTagStatistic;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.repository.ListTagStatisticRepository;
@@ -91,8 +94,29 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
     }
 
     @Override
-    public List<ListTagStatistic> getStatisticsForUser(Long userId) {
-        return listTagStatisticRepo.findByUserId(userId);
+    public List<ListTagStatistic> getStatisticsForUser(Long userId, int resultLimit) {
+
+        List<ListTagStatistic> statistics = listTagStatisticRepo.findByUserId(userId);
+        if (statistics.size() > resultLimit) {
+            return statistics.subList(0, resultLimit);
+        }
+        return statistics;
+    }
+
+    @Override
+    public List<ListTagStatistic> createStatisticsForUser(UserEntity user, List<Statistic> statisticList) {
+        // this is done from a context in which the user has just been created, and doesn't
+        // have any statistics
+        if (statisticList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<ListTagStatistic> createdStatistics = new ArrayList<>();
+        for (Statistic statistic : statisticList) {
+            ListTagStatistic statisticEntity = ModelMapper.toEntity(statistic);
+            statisticEntity.setUserId(user.getId());
+            createdStatistics.add(statisticEntity);
+        }
+        return listTagStatisticRepo.saveAll(createdStatistics);
     }
 
     private ListTagStatistic addCounted(ListTagStatistic statistic) {

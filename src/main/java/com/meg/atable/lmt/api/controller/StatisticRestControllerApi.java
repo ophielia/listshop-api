@@ -1,12 +1,10 @@
 package com.meg.atable.lmt.api.controller;
 
+import com.meg.atable.lmt.api.model.StatisticListPost;
 import com.meg.atable.lmt.api.model.StatisticListResource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -21,5 +19,9 @@ public interface StatisticRestControllerApi {
 
 
     @GetMapping(produces = "application/json")
-    ResponseEntity<Resources<StatisticListResource>> getUserStatistics(Principal principal);
+    ResponseEntity<Resources<StatisticListResource>> getUserStatistics(Principal principal, @RequestParam(value = "limit", required = false) String limit);
+
+    @PostMapping(produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> createUserStatistics(Principal principal, @RequestBody StatisticListPost statisticList);
+
 }

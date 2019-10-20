@@ -54,6 +54,21 @@ select nextval('list_layout_category_sequence') as category_id,
        999                                      as display_order
 from list_layout;
 
+-- LISTSHOP-238 changes
+update list_tag_stats
+set added_to_dish = 0
+where added_to_dish is null;
+
+ALTER TABLE list_tag_stats
+  ALTER COLUMN added_to_dish SET DEFAULT 0;
+
+update list_tag_stats
+set added_to_dish = 0
+where added_to_dish is null;
+
+ALTER TABLE list_tag_stats
+  ALTER COLUMN added_to_dish SET DEFAULT 0;
+
 -- LISTSHOP-236 rollback --
 
 -- drop view public.tag_extended;
@@ -62,3 +77,11 @@ from list_layout;
 --   drop column is_default;
 
 -- delete from list_category where display_order = 999;
+
+
+-- LISTSHOP-238 rollback --
+--ALTER TABLE list_tag_stats
+--     ALTER COLUMN added_to_dish SET DEFAULT null;
+
+--ALTER TABLE list_tag_stats
+--     ALTER COLUMN added_count SET DEFAULT null;

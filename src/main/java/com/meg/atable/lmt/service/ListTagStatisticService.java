@@ -1,5 +1,7 @@
 package com.meg.atable.lmt.service;
 
+import com.meg.atable.auth.data.entity.UserEntity;
+import com.meg.atable.lmt.api.model.Statistic;
 import com.meg.atable.lmt.data.entity.ListTagStatistic;
 
 import java.util.List;
@@ -17,5 +19,7 @@ public interface ListTagStatisticService {
 
     void processCollectorStatistics(Long userId, ListItemCollector collector);
 
-    List<ListTagStatistic> getStatisticsForUser(Long id);
+    List<ListTagStatistic> getStatisticsForUser(Long id, int resultLimit);
+
+    List<ListTagStatistic> createStatisticsForUser(UserEntity user, List<Statistic> statisticList);
 }
