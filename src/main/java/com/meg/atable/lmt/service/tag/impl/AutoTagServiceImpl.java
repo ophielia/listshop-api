@@ -73,7 +73,7 @@ public class AutoTagServiceImpl implements AutoTagService {
         Long processedStatusFlag = subject.getProcessedBySet().stream()
                 .reduce(1L, (a, b) -> a * b);
         dishEntity.setAutoTagStatus(processedStatusFlag);
-
+        dishService.save(dishEntity, false);
         // check for results
         if (subject.getTagsToAssign()== null || subject.getTagsToAssign().isEmpty()) {
             return;
@@ -112,6 +112,7 @@ public class AutoTagServiceImpl implements AutoTagService {
         for (Long tagId : subject.getTagsToAssign()) {
             tagService.addTagToDish(userName, dishId, tagId);
         }
+
 
     }
 }
