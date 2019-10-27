@@ -64,7 +64,7 @@ public interface ShoppingListService {
     // last modified item.
     MergeResult mergeFromClient(String userName, MergeRequest mergeRequest);
 
-    void addListToList(String name, Long listId, ListType listType);
+    void addListToList(String name, Long listId, Long fromListId);
 
 
     ShoppingListEntity getActiveListForUser(String name);

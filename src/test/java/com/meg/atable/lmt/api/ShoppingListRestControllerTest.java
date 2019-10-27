@@ -4,7 +4,6 @@ import com.meg.atable.Application;
 import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.lmt.api.model.Item;
 import com.meg.atable.lmt.api.model.ListGenerateProperties;
-import com.meg.atable.lmt.api.model.ListType;
 import com.meg.atable.lmt.api.model.ShoppingList;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
@@ -26,7 +25,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -44,7 +42,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-@Transactional
 @ActiveProfiles("test")
 @Sql(value = {"/sql/com/meg/atable/lmt/api/ShoppingListRestControllerTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -119,20 +116,6 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentType(contentType));
-    }
-
-
-    @Test
-    @WithMockUser
-    public void testRetrieveListByType() throws Exception {
-        Long testId = TestConstants.LIST_1_ID;
-
-        mockMvc.perform(get("/shoppinglist/type/ActiveList")
-                .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.shopping_list.list_id").value(testId));
     }
 
     @Test
@@ -322,30 +305,6 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testSetListActive() throws Exception {
-
-        Long listId = TestConstants.LIST_1_ID;
-        String url = "/shoppinglist/" + listId + "?generateType=Add";
-        mockMvc.perform(put(url)
-                .with(user(userDetails))
-                .contentType(contentType))
-                .andExpect(status().isCreated());
-    }
-
-    @Test
-    @WithMockUser
-    public void testAddToListByListType() throws Exception {
-        Long listId = TestConstants.LIST_1_ID;
-        String url = "/shoppinglist/" + listId + "/listtype/" + ListType.BaseList;
-        mockMvc.perform(post(url)
-                .with(user(userDetails))
-                .contentType(contentType))
-                .andExpect(status().isNoContent());
-
-    }
-
-    @Test
-    @WithMockUser
     public void testSetCrossedOffForItem() throws Exception {
         Long listId = TestConstants.LIST_1_ID;
         String url = "/shoppinglist/" + listId + "/item/shop/" + TestConstants.ITEM_1_ID
@@ -368,6 +327,36 @@ public class ShoppingListRestControllerTest {
                 .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    @WithMockUser
+    public void testAddListToList() throws Exception {
+        Long listId = TestConstants.LIST_3_ID;
+        Long fromListId = TestConstants.LIST_1_ID;
+
+        String url = "/shoppinglist/" + listId + "/list/" + fromListId;
+        mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        // retrieve list and verify
+        // now retrieve old starter list and ensure that isStarter is false
+        MvcResult result = mockMvc.perform(get("/shoppinglist/" + listId)
+                .with(user(userDetails)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
+                .andExpect(jsonPath("$.shopping_list.list_id").value(listId))
+                .andReturn();
+        //.andExpect(jsonPath("$.shopping_list.is_starter_list").value(false));
+
+        String listAfterAdd = result.getResponse().getContentAsString();
+        Assert.assertTrue(listAfterAdd.contains("\"list_sources\":[{\"id\":500,\"display\":\"Shopping List 1\",\"type\":\"List\"}]"));
+
+    }
+
 
     @Test
     @WithMockUser

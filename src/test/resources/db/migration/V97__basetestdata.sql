@@ -242,6 +242,18 @@ VALUES (505, 'FirstChild', 5, 11);
 INSERT INTO list_category (category_id, name, layout_id, display_order)
 VALUES (506, 'SecondChild', 5, 12);
 
+INSERT INTO list_category (category_id, name, layout_id, display_order)
+VALUES (510, 'One', 11, 1);
+INSERT INTO list_category (category_id, name, layout_id, display_order)
+VALUES (511, 'Two', 11, 3);
+INSERT INTO list_category (category_id, name, layout_id, display_order)
+VALUES (512, 'Three', 11, 5);
+INSERT INTO list_category (category_id, name, layout_id, display_order)
+VALUES (513, 'Four', 11, 7);
+INSERT INTO list_category (category_id, name, layout_id, display_order)
+VALUES (514, 'Parent', 11, 9);
+
+
 -- list layout subcategories
 INSERT INTO category_relation (category_relation_id, child_category_id, parent_category_id)
 VALUES (500, 1, 2);
@@ -272,6 +284,16 @@ VALUES (501, 500);
 INSERT INTO category_tags (category_id, tag_id)
 VALUES (501, 505);
 
+INSERT INTO category_tags (category_id, tag_id)
+VALUES (510, 500);
+INSERT INTO category_tags (category_id, tag_id)
+VALUES (511, 501);
+INSERT INTO category_tags (category_id, tag_id)
+VALUES (512, 502);
+INSERT INTO category_tags (category_id, tag_id)
+VALUES (513, 503);
+INSERT INTO category_tags (category_id, tag_id)
+VALUES (514, 504);
 
 -- targets
 INSERT INTO target (target, target_type, target_id, created, last_updated, last_used, target_name, target_tag_ids,

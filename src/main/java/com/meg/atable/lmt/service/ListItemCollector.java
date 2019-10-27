@@ -22,8 +22,6 @@ public class ListItemCollector extends AbstractItemCollector {
     }
 
 
-
-
     // list collector
     public void addTags(List<TagEntity> tagEntityList, Long dishId) {
         for (TagEntity tag : tagEntityList) {
@@ -31,14 +29,14 @@ public class ListItemCollector extends AbstractItemCollector {
         }
     }
 
-    public void copyExistingItemsIntoList(String fromListIdAsString, List<ItemEntity> items, boolean incrementStats) {
+    public void copyExistingItemsIntoList(Long fromListId, List<ItemEntity> items, boolean incrementStats) {
         if (items == null) {
             return;
         }
-        items.stream().forEach(item -> copyOrUpdateExistingItem(item, fromListIdAsString, incrementStats));
+        items.stream().forEach(item -> copyOrUpdateExistingItem(item, fromListId, incrementStats));
     }
 
-    private void copyOrUpdateExistingItem(ItemEntity item, String fromListIdAsString, boolean incrementStats) {
+    private void copyOrUpdateExistingItem(ItemEntity item, Long fromListId, boolean incrementStats) {
         // do not copy crossed off items
         if (item.getCrossedOff() != null) {
             return;
@@ -51,7 +49,7 @@ public class ListItemCollector extends AbstractItemCollector {
             CollectedItem update = getTagCollectedMap().get(item.getTag().getId());
             int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
             update.setUsedCount(count + 1);
-            update.addRawListSource(fromListIdAsString);
+            update.addRawListSource(String.valueOf(fromListId));
                 // mark as updated, so it will be saved
             update.setUpdated(true);
             if (incrementStats) {
@@ -63,7 +61,7 @@ public class ListItemCollector extends AbstractItemCollector {
             int count = item.getUsedCount() != null ? item.getUsedCount() : 0;
             copied.setIsAdded(true);
             copied.setUsedCount(count);
-            copied.addRawListSource(fromListIdAsString);
+            copied.addRawListSource(String.valueOf(fromListId));
             copied.setRawDishSources(item.getRawDishSources());
             if (incrementStats) {
                 copied.incrementAddCount(Math.max(1, item.getUsedCount()));

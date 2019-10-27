@@ -69,8 +69,8 @@ public interface ShoppingListRestControllerApi {
     @RequestMapping(method = RequestMethod.POST, value = "/{listId}/tag/{tagId}", produces = "application/json")
     ResponseEntity<Object> addItemToListByTag(Principal principal, @PathVariable Long listId, @PathVariable Long tagId);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{listId}/listtype/{listType}", produces = "application/json")
-    ResponseEntity<Object> addToListByListType(Principal principal, @PathVariable Long listId, @PathVariable String listType);
+    @RequestMapping(method = RequestMethod.POST, value = "/{listId}/list/{fromListId}", produces = "application/json")
+    ResponseEntity<Object> addToListFromList(Principal principal, @PathVariable Long listId, @PathVariable Long fromListId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/item/{itemId}", produces = "application/json")
     ResponseEntity<Object> deleteItemFromList(Principal principal, @PathVariable Long listId, @PathVariable Long itemId,

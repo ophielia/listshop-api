@@ -75,7 +75,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest) throws ObjectNotFoundException, ObjectNotYoursException {
+    public ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest) {
         //MM need handling for different list - error handling!
         Long listId = mergeRequest.getListId();
         Long layoutId = mergeRequest.getLayoutId();
@@ -182,11 +182,12 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
 
+    @Deprecated
     @Override
     public ResponseEntity<ShoppingListResource> retrieveActiveList(Principal principal,
-                                                                 @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
-                                                                 @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
-                                                                 @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry) {
+                                                                   @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
+                                                                   @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
+                                                                   @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry) {
         ShoppingListEntity result = shoppingListService.getActiveListForUser(principal.getName());
 
         if ("0".equals(highlightDish)) {
@@ -227,9 +228,9 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<Object> addToListByListType(Principal principal, @PathVariable Long listId, @PathVariable String listType) {
-        ListType listTypeEnum = ListType.valueOf(listType);
-        this.shoppingListService.addListToList(principal.getName(), listId, listTypeEnum);
+    public ResponseEntity<Object> addToListFromList(Principal principal, @PathVariable Long listId, @PathVariable Long fromListId) {
+
+        this.shoppingListService.addListToList(principal.getName(), listId, fromListId);
 
         return ResponseEntity.noContent().build();
     }

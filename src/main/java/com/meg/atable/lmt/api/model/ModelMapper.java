@@ -219,6 +219,9 @@ public class ModelMapper {
         }
         Set<String> uniqueListSources = FlatStringUtils.inflateStringToSet(rawItemSources, ";");
         for (String listId : uniqueListSources) {
+            if (listId.isEmpty()) {
+                continue;
+            }
             if (listSourceMap.containsKey(Long.valueOf(listId))) {
                 ShoppingListEntity list = listSourceMap.get(Long.valueOf(listId));
 

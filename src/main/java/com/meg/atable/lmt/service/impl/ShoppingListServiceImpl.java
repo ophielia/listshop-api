@@ -194,7 +194,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             // add Items from BaseList
             ShoppingListEntity baseList = getStarterList(userName);
             if (baseList != null) {
-                collector.copyExistingItemsIntoList(String.valueOf(baseList.getId()), baseList.getItems(), false);
+                collector.copyExistingItemsIntoList(baseList.getId(), baseList.getItems(), false);
             }
         }
 
@@ -455,7 +455,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // add Items from BaseList
         ShoppingListEntity baseList = getListByUsernameAndType(name, ListType.BaseList);
         if (baseList != null) {
-            collector.copyExistingItemsIntoList(String.valueOf(baseList.getId()), baseList.getItems(), false);
+            collector.copyExistingItemsIntoList(baseList.getId(), baseList.getItems(), false);
         }
 
         // update the last added date for dishes
@@ -564,12 +564,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     //MM come back to this
     @Override
-    public void addListToList(String name, Long listId, ListType listType) {
+    public void addListToList(String name, Long listId, Long fromListId) {
         // get the target list
         ShoppingListEntity list = getListById(name, listId);
 
         // get the list to add
-        ShoppingListEntity toAdd = getListByUsernameAndType(name, listType);
+        ShoppingListEntity toAdd = getListById(name, fromListId);
         if (toAdd == null) {
             return;
         }
@@ -578,8 +578,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ListItemCollector collector = createListItemCollector(listId, list.getItems());
 
         // add Items from PickUpList
-        boolean incrementStats = listType != ListType.BaseList; //MM starter list
-        collector.copyExistingItemsIntoList(listType.name(), toAdd.getItems(), incrementStats);
+        boolean incrementStats = !toAdd.getIsStarterList();
+        collector.copyExistingItemsIntoList(fromListId, toAdd.getItems(), incrementStats);
 
         // save list
         saveListChanges(list, collector);
@@ -634,7 +634,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             }
             // put into set
             Set<String> listSourceSet = FlatStringUtils.inflateStringToSet(source, ";");
-            List<Long> sourceListIds = listSourceSet.stream().map(stringval -> Long.valueOf(stringval)).collect(Collectors.toList());
+            List<Long> sourceListIds = listSourceSet.stream()
+                    .filter(val -> !val.isEmpty())
+                    .map(stringval -> Long.valueOf(stringval)).collect(Collectors.toList());
             if (sourceListIds != null && !sourceListIds.isEmpty()) {
                 List<ShoppingListEntity> sourceLists = shoppingListRepository.findAllById(sourceListIds);
                 // set in shopping list
