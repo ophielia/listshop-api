@@ -343,12 +343,7 @@ public class ShoppingListServiceImplTest {
         Assert.assertTrue(test.isPresent()); // cheeseburger maccaroni there
         test = shoppingListEntity.getDishSources().stream().filter(d -> d.getId().equals(90L)).findFirst();
         Assert.assertTrue(test.isPresent()); // scoozi there
-        // list sources should be 2 - pickuplist and baselist
-        Assert.assertEquals(2, shoppingListEntity.getListSources().size());
-        Optional<String> testListSource = shoppingListEntity.getListSources().stream().filter(d -> d.equals(ItemSourceType.BaseList.name())).findFirst();
-        Assert.assertTrue(testListSource.isPresent()); // base list there
-        testListSource = shoppingListEntity.getListSources().stream().filter(d -> d.equals(ItemSourceType.PickUpList.name())).findFirst();
-        Assert.assertTrue(testListSource.isPresent()); // pickup list there
+
     }
 
     @Test

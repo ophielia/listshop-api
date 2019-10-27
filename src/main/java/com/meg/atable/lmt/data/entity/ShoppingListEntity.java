@@ -67,7 +67,7 @@ public class ShoppingListEntity {
     private List<DishEntity> dishSources = new ArrayList<>();
 
     @Transient
-    private List<String> listSources = new ArrayList<>();
+    private List<ShoppingListEntity> listSources = new ArrayList<>();
 
     @Transient
     private String mealPlanName = "";
@@ -134,11 +134,11 @@ public class ShoppingListEntity {
         this.dishSources = dishSources;
     }
 
-    public List<String> getListSources() {
+    public List<ShoppingListEntity> getListSources() {
         return listSources;
     }
 
-    public void setListSources(List<String> listSources) {
+    public void setListSources(List<ShoppingListEntity> listSources) {
         this.listSources = listSources;
     }
 

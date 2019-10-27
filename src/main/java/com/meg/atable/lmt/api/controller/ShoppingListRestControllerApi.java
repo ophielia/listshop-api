@@ -36,20 +36,22 @@ public interface ShoppingListRestControllerApi {
     @RequestMapping(method = RequestMethod.PUT, value = "/{listId}", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> setListActive(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value = "generateType", required = true) String filter);
 
+    @Deprecated
     @RequestMapping(method = RequestMethod.GET, value = "/type/{listType}", produces = "application/json")
     ResponseEntity<ShoppingListResource> retrieveListByType(Principal principal, @PathVariable("listType") String listType);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{listId}", produces = "application/json")
     ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId,
                                                           @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
-                                                          @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
+                                                          @RequestParam(value = "highlightListId", required = false, defaultValue = "0") Long highlightListId,
                                                           @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry);
 
+    @Deprecated
     @RequestMapping(method = RequestMethod.GET, value = "/active", produces = "application/json")
     ResponseEntity<ShoppingListResource> retrieveActiveList(Principal principal,
-                                                          @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
-                                                          @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
-                                                          @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry);
+                                                            @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
+                                                            @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
+                                                            @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry);
 
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}", produces = "application/json")

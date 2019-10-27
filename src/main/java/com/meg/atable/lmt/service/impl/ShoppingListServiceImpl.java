@@ -473,7 +473,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     public List<Category> categorizeList(String userName, ShoppingListEntity shoppingListEntity, Long highlightDishId,
-                                         Boolean showPantry, ListType highlightListType) {
+                                         Boolean showPantry, Long highlightListId) {
 
 
         if (shoppingListEntity == null) {
@@ -507,7 +507,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 dictionary,
                 highlightDishId,
                 showPantry,
-                highlightListType);
+                highlightListId);
 
 
         // sort items in filled categories
@@ -640,10 +640,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             }
             // put into set
             Set<String> listSourceSet = FlatStringUtils.inflateStringToSet(source, ";");
-            List<String> listSources = new ArrayList<>();
-            listSources.addAll(listSourceSet);
-            // set in shopping list
-            result.setListSources(listSources);
+            List<Long> sourceListIds = listSourceSet.stream().map(stringval -> Long.valueOf(stringval)).collect(Collectors.toList());
+            if (sourceListIds != null && !sourceListIds.isEmpty()) {
+                List<ShoppingListEntity> sourceLists = shoppingListRepository.findAllById(sourceListIds);
+                // set in shopping list
+                result.setListSources(sourceLists);
+
+            }
         }
     }
 
@@ -836,9 +839,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private Map<CategoryType, ItemCategory> generateSpecialCategories(String userName, ShoppingListEntity shoppingListEntity,
                                                                       Map<Long, Category> filledCategories,
                                                                       Map<Long, Long> dictionary,
-                                                                      Long highlightDishId, Boolean showPantry, ListType highlightListType) {
+                                                                      Long highlightDishId, Boolean showPantry,
+                                                                      Long highlightListId) {
         boolean isHighlightDish = highlightDishId != null && !highlightDishId.equals(0L);
-        boolean isHighlightList = !isHighlightDish && highlightListType != null;
+        boolean isHighlightList = !isHighlightDish && highlightListId != null;
         boolean separateFrequent = showPantry != null && showPantry;
         String highlightName = getHighlightDishName(userName, isHighlightDish, highlightDishId);
         Set<Long> dishItemIds = getHighlightDishItemIds(isHighlightDish, shoppingListEntity, highlightDishId);
@@ -856,8 +860,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 uncategorized.addItemEntity(item);
             } else if (isHighlightDish && dishItemIds.contains(item.getId())) {
                 highlight.addItemEntity(item);
-            } else if (isHighlightList && item.getRawListSources().contains(highlightListType.name())) {
-                //MM will need re-work here
+            } else if (isHighlightList && item.getRawListSources().contains(String.valueOf(highlightListId))) {
                 highlightList.addItemEntity(item);
             } else {
 

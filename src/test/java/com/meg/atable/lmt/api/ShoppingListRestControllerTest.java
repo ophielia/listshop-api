@@ -7,6 +7,7 @@ import com.meg.atable.lmt.api.model.ListGenerateProperties;
 import com.meg.atable.lmt.api.model.ListType;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +20,11 @@ import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -40,6 +43,10 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
+@Sql(value = {"/sql/com/meg/atable/lmt/api/ShoppingListRestControllerTest.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/sql/com/meg/atable/lmt/api/ShoppingListRestControllerTest_rollback.sql"},
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class ShoppingListRestControllerTest {
 
     private static UserDetails userDetails;
@@ -130,6 +137,24 @@ public class ShoppingListRestControllerTest {
                 .andExpect(jsonPath("$.shopping_list.list_id").value(testId));
     }
 
+    @Test
+    @WithMockUser
+    public void testRetrieveListById_HighlightList() throws Exception {
+        Long testId = 509990L;
+
+        MvcResult result = mockMvc.perform(get("/shoppinglist/" + testId + "?highlightListId=509991")
+                .with(user(meUserDetails)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andReturn();
+
+        String jsonResponse = result.getResponse().getContentAsString();
+        // verify contains category highlight list
+        Assert.assertTrue(jsonResponse.contains("\"category_type\":\"HighlightList\""));
+        // asserts that the result contains the list source
+        Assert.assertTrue(jsonResponse.contains("\"list_sources\":[{\"id\":509991,\"display\":\"added from\",\"type\":\"List\"}]"));
+
+    }
 
     @Test
     @WithMockUser

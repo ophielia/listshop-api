@@ -76,20 +76,20 @@ INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text
 VALUES (501, 21, 507, now(), null, null, 1, '90', null);
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
-VALUES (501, 359, 508, now(), null, null, 1, null, 'PickUpList');
+VALUES (501, 359, 508, now(), null, null, 1, null, '501');
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
-VALUES (501, 470, 509, now(), null, null, 1, null, 'BaseList');
+VALUES (501, 470, 509, now(), null, null, 1, null, '500');
 
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
-VALUES (501, 210, 510, now(), null, null, 1, null, 'BaseList');
+VALUES (501, 210, 510, now(), null, null, 1, null, '500');
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
-VALUES (501, 211, 511, now(), null, null, 1, null, 'BaseList');
+VALUES (501, 211, 511, now(), null, null, 1, null, '500');
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
-VALUES (501, 113, 512, now(), null, null, 2, ';83;', 'BaseList');
+VALUES (501, 113, 512, now(), null, null, 2, ';83;', '500');
 
 
 -- dishes - 3 - ids 500-503

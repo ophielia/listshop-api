@@ -131,12 +131,13 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.badRequest().build();
     }
 
+    @Deprecated
     @Override
     public ResponseEntity<ShoppingListResource> retrieveListByType(Principal principal, @PathVariable("listType") String listTypeString) {
         ListType listType = ListType.valueOf(listTypeString);
         ShoppingListEntity result = shoppingListService.getListByUsernameAndType(principal.getName(), listType);
 
-        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, null, false, listType);
+        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, null, false, 0L); //MM dummy until removed
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
 
@@ -145,18 +146,17 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     @Override
     public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId,
                                                                  @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
-                                                                 @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
+                                                                 @RequestParam(value = "highlightListId", required = false, defaultValue = "0") Long highlightListId,
                                                                  @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry) {
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
 
         if ("0".equals(highlightDish)) {
             highlightDish = null;
         }
-        ListType listType = null;
-        if (!"0".equals(highlightListType)) {
-            listType = ListType.valueOf(highlightListType);
+        if ("0".equals(highlightListId)) {
+            highlightListId = null;
         }
-        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, listType);
+        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, highlightListId);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
@@ -176,7 +176,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         if (!"0".equals(highlightListType)) {
             listType = ListType.valueOf(highlightListType);
         }
-        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, listType);
+        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, 0L); //MM note - dummy highlightdishid
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }

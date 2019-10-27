@@ -196,7 +196,7 @@ public class ModelMapper {
 
     }
 
-    private static List<Item> simpleItemsToModel(List<ItemEntity> items, Map<Long, DishEntity> dishSources) {
+    private static List<Item> simpleItemsToModel(List<ItemEntity> items, Map<Long, DishEntity> dishSources, Map<Long, ShoppingListEntity> listSourceMap) {
         List<Item> itemList = new ArrayList<>();
         if (items == null) {
             return itemList;
@@ -205,24 +205,26 @@ public class ModelMapper {
             Item item = toModel(entity);
             List<ItemSource> sources = toDishSourceModels(entity.getRawDishSources(), dishSources);
             item.setDishSources(sources);
-            List<ItemSource> listSources = toListSourceModels(entity.getRawListSources());
+            List<ItemSource> listSources = toListSourceModels(entity.getRawListSources(), listSourceMap);
             item.setListSources(listSources);
             itemList.add(item);
         }
         return itemList;
     }
 
-    private static List<ItemSource> toListSourceModels(String rawItemSources) {
+    private static List<ItemSource> toListSourceModels(String rawItemSources, Map<Long, ShoppingListEntity> listSourceMap) {
         List<ItemSource> result = new ArrayList<>();
         if (rawItemSources == null) {
             return result;
         }
-        Set<String> uniqueSources = FlatStringUtils.inflateStringToSet(rawItemSources, ";");
-        for (String listsource : uniqueSources) {
-            ItemSource source = new ItemSource();
-            source.setDisplay(listsource);
-            source.setType("List");
-            result.add(source);
+        Set<String> uniqueListSources = FlatStringUtils.inflateStringToSet(rawItemSources, ";");
+        for (String listId : uniqueListSources) {
+            if (listSourceMap.containsKey(Long.valueOf(listId))) {
+                ShoppingListEntity list = listSourceMap.get(Long.valueOf(listId));
+
+                ItemSource source = toListSourceModel(list);
+                result.add(source);
+            }
         }
         return result;
     }
@@ -230,6 +232,15 @@ public class ModelMapper {
     private static ItemSource toListSourceModel(String listsource) {
         ItemSource source = new ItemSource();
         source.setDisplay(listsource);
+        source.setType("List");
+
+        return source;
+    }
+
+    private static ItemSource toListSourceModel(ShoppingListEntity listsource) {
+        ItemSource source = new ItemSource();
+        source.setDisplay(listsource.getName());
+        source.setId(listsource.getId());
         source.setType("List");
 
         return source;
@@ -343,6 +354,7 @@ public class ModelMapper {
 
     public static ShoppingList toModel(ShoppingListEntity shoppingListEntity, List<Category> itemCategories) {
         HashMap<Long, DishEntity> dishSourceDictionary = new HashMap<>();
+        HashMap<Long, ShoppingListEntity> listSourceDictionary = new HashMap<>();
         List<ItemSource> dishSources = new ArrayList<>();
         if (shoppingListEntity.getDishSources() != null) {
             shoppingListEntity.getDishSources().forEach(d -> {
@@ -354,10 +366,15 @@ public class ModelMapper {
         }
         List<ItemSource> listSources = new ArrayList<>();
         if (shoppingListEntity.getListSources() != null) {
-            shoppingListEntity.getListSources().forEach(d -> listSources.add(toListSourceModel(d)));
+            shoppingListEntity.getListSources().forEach(d -> {
+                Long id = d.getId();
+                listSourceDictionary.put(id, d);
+                listSources.add(toListSourceModel(d));
+
+            });
         }
 
-        List<Category> categories = itemCategoriesToModel(itemCategories, dishSourceDictionary);
+        List<Category> categories = itemCategoriesToModel(itemCategories, dishSourceDictionary, listSourceDictionary);
 
         return new ShoppingList(shoppingListEntity.getId())
                 .createdOn(shoppingListEntity.getCreatedOn())
@@ -373,7 +390,10 @@ public class ModelMapper {
 
     }
 
-    private static List<Category> itemCategoriesToModel(List<Category> filledCategories, Map<Long, DishEntity> dishSources) {
+    private static List<Category> itemCategoriesToModel(List<Category> filledCategories,
+                                                        Map<Long, DishEntity> dishSources,
+                                                        Map<Long, ShoppingListEntity> listSources
+    ) {
         if (filledCategories == null) {
             return filledCategories;
         }
@@ -385,14 +405,14 @@ public class ModelMapper {
             ItemCategory cm = (ItemCategory) categoryModel;
             List<Item> items = new ArrayList<>();
             if (cm.getItemEntities() != null && !cm.getItemEntities().isEmpty()) {
-                items = simpleItemsToModel(cm.getItemEntities(), dishSources);
+                items = simpleItemsToModel(cm.getItemEntities(), dishSources, listSources);
             }
             cm.items(items);
             cm.itemEntities(null);
 
             // now - subcategories
             if (!categoryModel.getSubCategories().isEmpty()) {
-                List<Category> filledSubCats = itemCategoriesToModel(categoryModel.getSubCategories(), dishSources);
+                List<Category> filledSubCats = itemCategoriesToModel(categoryModel.getSubCategories(), dishSources, listSources);
                 categoryModel.subCategories(filledSubCats);
             }
         }
