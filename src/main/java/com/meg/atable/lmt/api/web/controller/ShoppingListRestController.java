@@ -63,7 +63,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
         ShoppingListEntity result = null;
         try {
-            result = shoppingListService.createList(principal.getName(), listGenerateProperties);
+            result = shoppingListService.generateListForUser(principal.getName(), listGenerateProperties);
         } catch (ShoppingListException e) {
             logger.error("Exception while creating List.",e);
         }

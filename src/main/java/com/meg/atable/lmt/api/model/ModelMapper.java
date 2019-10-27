@@ -365,6 +365,8 @@ public class ModelMapper {
                 .listType(shoppingListEntity.getListType().name())
                 .categories(categories)
                 .dishSources(dishSources)
+                .isStarterList(shoppingListEntity.getIsStarterList())
+                .name(shoppingListEntity.getName())
                 .listSources(listSources)
                 .layoutId(String.valueOf(shoppingListEntity.getListLayoutId()))
                 .updated(shoppingListEntity.getLastUpdate())
@@ -515,6 +517,8 @@ public class ModelMapper {
         shoppingListEntity.setListType(listType);
         shoppingListEntity.setUserId(shoppingList.getUserId());
         // not setting items here, since items will be updated individually from client
+        shoppingListEntity.setName(shoppingList.getName());
+        shoppingListEntity.setIsStarterList(shoppingList.getStarterList());
         return shoppingListEntity;
     }
 

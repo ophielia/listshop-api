@@ -77,11 +77,7 @@ public class ShoppingListServiceImplTest {
         Assert.assertTrue(results.isEmpty());
         result = shoppingListService.getActiveListForUser(TestConstants.USER_4_NAME);
         Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getListType());
-        Assert.assertEquals(ListType.ActiveList, result.getListType());
         Assert.assertTrue(result.getItems().isEmpty());
-        //  Assert.assertNotNull(results);
-        //Assert.assertTrue(results.size() == 2);
     }
 
     @Test
@@ -119,11 +115,10 @@ public class ShoppingListServiceImplTest {
         properties.setRawListType("PickUpList");
 
 
-        ShoppingListEntity result = shoppingListService.createList(addUserAccount.getEmail(), properties);
+        ShoppingListEntity result = shoppingListService.generateListForUser(addUserAccount.getEmail(), properties);
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getCreatedOn());
-        Assert.assertEquals(ListType.PickUpList, result.getListType());
         Assert.assertNotNull(result.getId());
     }
 

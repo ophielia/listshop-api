@@ -26,6 +26,9 @@ public class ListGenerateProperties {
     @JsonProperty("generate_mealplan")
     private Boolean generateMealplan;
 
+    @JsonProperty("list_name")
+    private String listName;
+
     public ListGenerateProperties() {
         // empty constructor
     }
@@ -94,5 +97,13 @@ public class ListGenerateProperties {
 
     public void setRawListType(String rawListType) {
         this.rawListType = rawListType;
+    }
+
+    public String getListName() {
+        return listName;
+    }
+
+    public void setListName(String listName) {
+        this.listName = listName;
     }
 }

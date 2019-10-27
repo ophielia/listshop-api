@@ -4,6 +4,7 @@ import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.DateUtils;
 import com.meg.atable.common.FlatStringUtils;
+import com.meg.atable.common.StringTools;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.data.repository.ItemChangeRepository;
@@ -52,6 +53,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Value("${service.shoppinglistservice.merge.items.deleted.after.days}")
     int mergeDeleteAfterDays = 6;
+
+    @Value("${service.shoppinglistservice.default.list.name}")
+    String defaultShoppingListName;
 
     @Autowired
     public ShoppingListServiceImpl(UserService userService, TagService tagService, DishService dishService, ShoppingListRepository shoppingListRepository, ListLayoutService listLayoutService, ListSearchService listSearchService, MealPlanService mealPlanService, ItemRepository itemRepository, ItemChangeRepository itemChangeRepository, ShoppingListProperties shoppingListProperties) {
@@ -118,36 +122,35 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             return getListById(name, listIdToRetrieve, includeRemoved);
         }
         // if the list doesn't exist, return a new list
-        return createListForUser(name, ListType.ActiveList);
+        return createList(name, defaultShoppingListName);
     }
 
-    @Override
-    public ShoppingListEntity createList(String userName, ShoppingListEntity shoppingList) {
+    private ShoppingListEntity createList(String userName, String listName) {
         UserEntity user = userService.getUserByUserEmail(userName);
-        // get list layout for user, list_type
-        ListLayoutEntity listLayout = getListLayout(shoppingList.getListType(), null);
-        shoppingList.setListLayoutId(listLayout.getId());
-        shoppingList.setCreatedOn(new Date());
-        shoppingList.setUserId(user.getId());
-        return shoppingListRepository.save(shoppingList);
+        return createList(user.getId(), listName);
+
     }
 
-    private ShoppingListEntity createListForUser(String userName, ListType listType) {
-        UserEntity user = userService.getUserByUserEmail(userName);
+    private ShoppingListEntity createList(Long userId, String listName) {
         ShoppingListEntity newList = new ShoppingListEntity();
-        newList.setListType(listType != null ? listType : ListType.General);
         // get list layout for user, list_type
-        ListLayoutEntity listLayout = getListLayout(listType, null);
+        ListLayoutEntity listLayout = getListLayout(ListType.BaseList, null);
         newList.setListLayoutId(listLayout.getId());
+        newList.setName(listName);
+        newList.setIsStarterList(false);
         newList.setCreatedOn(new Date());
-        newList.setUserId(user.getId());
+        newList.setUserId(userId);
         return shoppingListRepository.save(newList);
     }
 
     @Override
-    public ShoppingListEntity createList(String userName, ListGenerateProperties listGenerateProperties) throws ShoppingListException {
+    public ShoppingListEntity generateListForUser(String userName, ListGenerateProperties listGenerateProperties) throws ShoppingListException {
+        UserEntity user = userService.getUserByUserEmail(userName);
+
+        // check list name
+        String listName = ensureListNameIsUnique(user.getId(), listGenerateProperties.getListName());
         // create list
-        ShoppingListEntity newList = createListForUser(userName, listGenerateProperties.getListType());
+        ShoppingListEntity newList = createList(userName, listName);
         ListItemCollector collector = createListItemCollector(newList.getId(), null);
 
         // get dishes to add
@@ -170,22 +173,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             addDishToList(userName,collector, id);
         }
 
-        // add base list - if desired
+        // add starter list - if desired
         if (listGenerateProperties.getAddFromBase()) {
             // add Items from BaseList
             ShoppingListEntity baseList = getListByUsernameAndType(userName, ListType.BaseList);
             if (baseList != null) {
                 collector.copyExistingItemsIntoList(ItemSourceType.BaseList.name(), baseList.getItems(), false);
-            }
-        }
-
-        // add pickup list - if desired
-        // add base list - if desired
-        if (listGenerateProperties.getAddFromBase()) {
-            // add Items from BaseList
-            ShoppingListEntity baseList = getListByUsernameAndType(userName, ListType.PickUpList);
-            if (baseList != null) {
-                collector.copyExistingItemsIntoList(ItemSourceType.PickUpList.name(), baseList.getItems(), true);
             }
         }
 
@@ -196,6 +189,23 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         saveListChanges(newList, collector);
         return newList;
 
+    }
+
+    private String ensureListNameIsUnique(Long userId, String listName) {
+        // does this name already exist for the user?
+        List<ShoppingListEntity> existing = shoppingListRepository.findByUserIdAndName(userId, listName);
+
+        if (existing.isEmpty()) {
+            return listName;
+        }
+
+        // if so, get all lists with names starting with the listName
+        List<ShoppingListEntity> similar = shoppingListRepository.findByUserIdAndNameLike(userId, listName + "%");
+        List<String> similarNames = similar.stream()
+                .map(list -> list.getName().trim().toLowerCase()).collect(Collectors.toList());
+        // use handy StringTools method to get first unique name
+
+        return StringTools.makeUniqueName(listName, similarNames);
     }
 
     private void generateMealPlanOnListCreate(String userName, ListGenerateProperties listGenerateProperties) {
@@ -391,16 +401,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             return null;
         }
 
-        ListLayoutEntity listLayoutEntity = listLayoutEntityOptional.get();
-
         // get the mealplan
         MealPlanEntity mealPlan = mealPlanService.getMealPlanById(name, mealPlanId);
 
         // create new inprocess list
-        ShoppingListEntity newList = new ShoppingListEntity();
-        newList.setListLayoutId(listLayoutEntity.getId());
-        newList.setListType(ListType.General);
-        ShoppingListEntity savedNewList = createList(name, newList);
+        ShoppingListEntity savedNewList = createList(name, defaultShoppingListName);
         // create the collector
         ListItemCollector collector = createListItemCollector(savedNewList.getId());
 
@@ -420,16 +425,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             collector.copyExistingItemsIntoList(ItemSourceType.BaseList.name(), baseList.getItems(), false);
         }
 
-        // add Items from PickUpList
-        ShoppingListEntity pickupList = getListByUsernameAndType(name, ListType.PickUpList);
-        if (pickupList != null) {
-            collector.copyExistingItemsIntoList(ItemSourceType.PickUpList.name(), pickupList.getItems(), true);
-        }
-
         // update the last added date for dishes
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
-        saveListChanges(newList, collector);
-        Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(newList.getId());
+        saveListChanges(savedNewList, collector);
+        Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(savedNewList.getId());
         return shoppingListEntity.orElse(null);
 
     }
@@ -558,189 +557,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return new MergeResult();
     }
 
-    private void checkReplaceTagsInCollector(ItemCollector mergeCollector) {
-        Set<Long> allServerTagIds = new HashSet<>();
-        allServerTagIds.addAll(mergeCollector.getAllTagIds());
-
-        if (allServerTagIds.isEmpty()) {
-            return;
-        }
-        List<TagEntity> outdatedTags = tagService.getReplacedTagsFromIds(allServerTagIds);
-        if (!outdatedTags.isEmpty()) {
-            Set<Long> outdatedIds = outdatedTags.stream().map(TagEntity::getReplacementTagId).collect(Collectors.toSet());
-            Map<Long,TagEntity> outdatedDictionary = tagService.getDictionaryForIds(outdatedIds);
-
-            mergeCollector.replaceOutdatedTags(outdatedTags,outdatedDictionary);
-        }
-
-    }
-
-    private List<ItemEntity> convertClientItemsToItemEntities(MergeRequest mergeRequest) {
-        Map<String, ItemEntity> mergeMap = mergeRequest.getMergeItems().stream()
-                .filter(i -> i.getTagId() != null)
-                .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
-        Set<Long> tagKeys = mergeMap.keySet().stream().map(k -> Long.valueOf(k)).collect(Collectors.toSet());
-        mergeMap.keySet().forEach(k -> logger.debug("the  List for key [" + k + "] and item [" + mergeMap.get(k).getCrossedOff() + "]"));
-
-
-        if (tagKeys.isEmpty()) {
-            return new ArrayList<>();
-        }
-        List<TagEntity> outdatedClientTags = tagService.getReplacedTagsFromIds(tagKeys);
-        Map<Long,TagEntity> outdatedClientDictionary = new HashMap<>();
-        if (!outdatedClientTags.isEmpty()) {
-            Set<Long> outdatedIds = outdatedClientTags.stream().map(TagEntity::getReplacementTagId).collect(Collectors.toSet());
-            outdatedClientDictionary = tagService.getDictionaryForIds(outdatedIds);
-        }
-        Map<Long,TagEntity> tagDictionary = tagService.getDictionaryForIds(tagKeys);
-
-        Map<Long,ItemEntity> itemMap = new HashMap<>();
-        for (Map.Entry<String, ItemEntity> entry : mergeMap.entrySet()) {
-            String tagIdString = entry.getKey();
-            ItemEntity item = entry.getValue();
-            Long tagId = Long.valueOf(tagIdString);
-            TagEntity tag = tagDictionary.get(tagId);
-            if (!outdatedClientDictionary.isEmpty() && tag.getReplacementTagId() != null) {
-                TagEntity replacementTag = outdatedClientDictionary.get(tag.getReplacementTagId());
-                item.setTag(replacementTag);
-                addItemToClientMap(item,itemMap);
-                continue;
-            }
-            item.setTag(tag);
-            addItemToClientMap(item,itemMap);
-        }
-
-        List<ItemEntity> mergeItems = new ArrayList<>(itemMap.values());
-        return mergeItems;
-    }
-
-    private void addItemToClientMap(ItemEntity item, Map<Long, ItemEntity> itemMap) {
-        if (item.getTag() == null) {
-            return;
-        }
-        Long tagId = item.getTag().getId();
-            ItemEntity toAddTo = itemMap.get(tagId);
-        if (itemMap.containsKey(tagId)) {
-            int count = toAddTo.getUsedCount() != null ? toAddTo.getUsedCount() : 0;
-            toAddTo.setUsedCount( count + 1);
-            toAddTo.setRemovedOn(DateUtils.maxDate(toAddTo.getRemovedOn(), item.getRemovedOn()));
-            toAddTo.setCrossedOff(DateUtils.maxDate(toAddTo.getCrossedOff(), item.getCrossedOff()));
-            toAddTo.setUpdatedOn(DateUtils.maxDate(toAddTo.getUpdatedOn(), item.getUpdatedOn()));
-            toAddTo.setAddedOn(DateUtils.maxDate(toAddTo.getAddedOn(), item.getAddedOn()));
-            itemMap.put(tagId,toAddTo);
-            return;
-        }
-        itemMap.put(tagId, item);
-    }
-
-    private Map<CategoryType, ItemCategory> generateSpecialCategories(String userName,ShoppingListEntity shoppingListEntity,
-                                                                      Map<Long, Category> filledCategories,
-                                                                      Map<Long, Long> dictionary,
-                                                                      Long highlightDishId, Boolean showPantry, ListType highlightListType) {
-        boolean isHighlightDish = highlightDishId != null && !highlightDishId.equals(0L);
-        boolean isHighlightList = !isHighlightDish && highlightListType != null;
-        boolean separateFrequent = showPantry != null && showPantry;
-        String highlightName = getHighlightDishName(userName, isHighlightDish, highlightDishId);
-        Set<Long> dishItemIds = getHighlightDishItemIds(isHighlightDish, shoppingListEntity, highlightDishId);
-
-
-        HashMap<CategoryType, ItemCategory> specialCategories = new HashMap<>();
-        ItemCategory frequent = createDefaultCategoryByType(CategoryType.Frequent, null);
-        ItemCategory uncategorized = createDefaultCategoryByType(CategoryType.UnCategorized, null);
-        ItemCategory highlight = createDefaultCategoryByType(CategoryType.Highlight, highlightName);
-        ItemCategory highlightList = createDefaultCategoryByType(CategoryType.HighlightList, null);
-        for (ItemEntity item : shoppingListEntity.getItems()) {
-            if (item.isFrequent() && separateFrequent && !isHighlightDish) {
-                frequent.addItemEntity(item);
-            } else if (!dictionary.containsKey(item.getTag().getId())) {
-                uncategorized.addItemEntity(item);
-            } else if (isHighlightDish && dishItemIds.contains(item.getId())) {
-                highlight.addItemEntity(item);
-            } else if (isHighlightList && item.getRawListSources().contains(highlightListType.name())) {
-                highlightList.addItemEntity(item);
-            } else {
-
-                ItemCategory category = (ItemCategory) filledCategories.get(dictionary.get(item.getTag().getId()));
-                if (category == null) {
-                    uncategorized.addItemEntity(item);
-                } else {
-                    category.addItemEntity(item);
-                }
-
-            }
-        }
-
-        specialCategories.put(CategoryType.Highlight,highlight);
-        specialCategories.put(CategoryType.HighlightList,highlightList);
-        specialCategories.put(CategoryType.Frequent,frequent);
-        specialCategories.put(CategoryType.UnCategorized,uncategorized);
-
-        return specialCategories;
-    }
-
-    private ItemCategory createDefaultCategoryByType(CategoryType categoryType, String highlightName) {
-        String categoryName = shoppingListProperties.getCategoryNameByType(categoryType);
-        if (categoryName == null) {
-            categoryName = highlightName;
-        }
-        Long idAndSort = shoppingListProperties.getIdAndSortByType(categoryType);
-        Integer idAndSortInt = idAndSort.intValue();
-
-        return new ItemCategory(   categoryName, idAndSort,idAndSortInt,categoryType);
-
-    }
-
-    private List<Category> cleanUpResults(Map<Long, Category> filledCategories) {
-        List<Category> result = new ArrayList<>();
-        for (Category cat : filledCategories.values()) {
-            ItemCategory c = (ItemCategory) cat;
-            if (!c.isEmpty()) {
-                result.add(c);
-            }
-        }
-
-        // return list of categories
-        result.sort(Comparator.comparing(Category::getDisplayOrder));
-        return result;
-    }
-
-    private void addCategoryIfNotEmpty(Map<Long, Category> filledCategories, ItemCategory category) {
-        if (category != null && !category.isEmpty()) {
-            filledCategories.put(category.getId(), category);
-        }
-    }
-
-    private Set<Long> getHighlightDishItemIds(boolean isHighlightDish, ShoppingListEntity shoppingListEntity, Long highlightDishId) {
-        Set<Long> results = new HashSet<>();
-
-        if (!isHighlightDish || highlightDishId == null) {
-            return results;
-        }
-        return getDishItemIds(shoppingListEntity, highlightDishId);
-
-    }
-
-    private String getHighlightDishName(String userName, boolean isHighlightDish, Long highlightDishId)  {
-        if (!isHighlightDish || highlightDishId == null) {
-            return "";
-        }
-
-        DishEntity dish = dishService.getDishForUserById(userName,highlightDishId);
-
-        return dish.getDishName();
-
-    }
-
-    private Set<Long> getDishItemIds(ShoppingListEntity shoppingListEntity, Long dishId) {
-        Set<Long> dishItemIds = new HashSet<>();
-        List<ItemEntity> items = itemRepository.getItemsForDish(shoppingListEntity.getId(), dishId);
-        if (items == null || items.isEmpty()) {
-            return dishItemIds;
-        }
-        dishItemIds = items.stream().map(ItemEntity::getId).collect(Collectors.toSet());
-        return dishItemIds;
-    }
-
     @Override
     public void addListToList(String name, Long listId, ListType listType) {
         // get the target list
@@ -761,28 +577,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // save list
         saveListChanges(list, collector);
-    }
-
-    private void addDishToList(String name,ListItemCollector collector, Long dishId) throws ShoppingListException {
-        // gather tags for dish to add
-        if (dishId == null) {
-            logger.error("No dish found for null dishId");
-            throw new ShoppingListException("No dish found for null dishId.");
-        }
-        List<TagEntity> tagsForDish = tagService.getTagsForDish(name, dishId).stream()
-                .filter(t -> t.getTagType().equals(TagType.Ingredient) || t.getTagType().equals(TagType.NonEdible))
-                .collect(Collectors.toList());
-        if (tagsForDish == null || tagsForDish.isEmpty()) {
-            logger.info("No tags found for dishId [" + dishId + "]");
-            return;
-        }
-
-
-        // add new dish tags to list
-        collector.addTags(tagsForDish, dishId, null);
-
-        // update last added date for dish
-        this.dishService.updateLastAddedForDish(dishId);
     }
 
     @Override
@@ -951,6 +745,212 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     private Map<Long, Long> getCategoryDictionary(Long layoutId, List<TagEntity> tagList) {
         return listSearchService.getTagToCategoryMap(layoutId, tagList);
+    }
+
+    private void checkReplaceTagsInCollector(ItemCollector mergeCollector) {
+        Set<Long> allServerTagIds = new HashSet<>();
+        allServerTagIds.addAll(mergeCollector.getAllTagIds());
+
+        if (allServerTagIds.isEmpty()) {
+            return;
+        }
+        List<TagEntity> outdatedTags = tagService.getReplacedTagsFromIds(allServerTagIds);
+        if (!outdatedTags.isEmpty()) {
+            Set<Long> outdatedIds = outdatedTags.stream().map(TagEntity::getReplacementTagId).collect(Collectors.toSet());
+            Map<Long, TagEntity> outdatedDictionary = tagService.getDictionaryForIds(outdatedIds);
+
+            mergeCollector.replaceOutdatedTags(outdatedTags, outdatedDictionary);
+        }
+
+    }
+
+    private List<ItemEntity> convertClientItemsToItemEntities(MergeRequest mergeRequest) {
+        Map<String, ItemEntity> mergeMap = mergeRequest.getMergeItems().stream()
+                .filter(i -> i.getTagId() != null)
+                .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
+        Set<Long> tagKeys = mergeMap.keySet().stream().map(k -> Long.valueOf(k)).collect(Collectors.toSet());
+        mergeMap.keySet().forEach(k -> logger.debug("the  List for key [" + k + "] and item [" + mergeMap.get(k).getCrossedOff() + "]"));
+
+
+        if (tagKeys.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<TagEntity> outdatedClientTags = tagService.getReplacedTagsFromIds(tagKeys);
+        Map<Long, TagEntity> outdatedClientDictionary = new HashMap<>();
+        if (!outdatedClientTags.isEmpty()) {
+            Set<Long> outdatedIds = outdatedClientTags.stream().map(TagEntity::getReplacementTagId).collect(Collectors.toSet());
+            outdatedClientDictionary = tagService.getDictionaryForIds(outdatedIds);
+        }
+        Map<Long, TagEntity> tagDictionary = tagService.getDictionaryForIds(tagKeys);
+
+        Map<Long, ItemEntity> itemMap = new HashMap<>();
+        for (Map.Entry<String, ItemEntity> entry : mergeMap.entrySet()) {
+            String tagIdString = entry.getKey();
+            ItemEntity item = entry.getValue();
+            Long tagId = Long.valueOf(tagIdString);
+            TagEntity tag = tagDictionary.get(tagId);
+            if (!outdatedClientDictionary.isEmpty() && tag.getReplacementTagId() != null) {
+                TagEntity replacementTag = outdatedClientDictionary.get(tag.getReplacementTagId());
+                item.setTag(replacementTag);
+                addItemToClientMap(item, itemMap);
+                continue;
+            }
+            item.setTag(tag);
+            addItemToClientMap(item, itemMap);
+        }
+
+        List<ItemEntity> mergeItems = new ArrayList<>(itemMap.values());
+        return mergeItems;
+    }
+
+    private void addItemToClientMap(ItemEntity item, Map<Long, ItemEntity> itemMap) {
+        if (item.getTag() == null) {
+            return;
+        }
+        Long tagId = item.getTag().getId();
+        ItemEntity toAddTo = itemMap.get(tagId);
+        if (itemMap.containsKey(tagId)) {
+            int count = toAddTo.getUsedCount() != null ? toAddTo.getUsedCount() : 0;
+            toAddTo.setUsedCount(count + 1);
+            toAddTo.setRemovedOn(DateUtils.maxDate(toAddTo.getRemovedOn(), item.getRemovedOn()));
+            toAddTo.setCrossedOff(DateUtils.maxDate(toAddTo.getCrossedOff(), item.getCrossedOff()));
+            toAddTo.setUpdatedOn(DateUtils.maxDate(toAddTo.getUpdatedOn(), item.getUpdatedOn()));
+            toAddTo.setAddedOn(DateUtils.maxDate(toAddTo.getAddedOn(), item.getAddedOn()));
+            itemMap.put(tagId, toAddTo);
+            return;
+        }
+        itemMap.put(tagId, item);
+    }
+
+    private Map<CategoryType, ItemCategory> generateSpecialCategories(String userName, ShoppingListEntity shoppingListEntity,
+                                                                      Map<Long, Category> filledCategories,
+                                                                      Map<Long, Long> dictionary,
+                                                                      Long highlightDishId, Boolean showPantry, ListType highlightListType) {
+        boolean isHighlightDish = highlightDishId != null && !highlightDishId.equals(0L);
+        boolean isHighlightList = !isHighlightDish && highlightListType != null;
+        boolean separateFrequent = showPantry != null && showPantry;
+        String highlightName = getHighlightDishName(userName, isHighlightDish, highlightDishId);
+        Set<Long> dishItemIds = getHighlightDishItemIds(isHighlightDish, shoppingListEntity, highlightDishId);
+
+
+        HashMap<CategoryType, ItemCategory> specialCategories = new HashMap<>();
+        ItemCategory frequent = createDefaultCategoryByType(CategoryType.Frequent, null);
+        ItemCategory uncategorized = createDefaultCategoryByType(CategoryType.UnCategorized, null);
+        ItemCategory highlight = createDefaultCategoryByType(CategoryType.Highlight, highlightName);
+        ItemCategory highlightList = createDefaultCategoryByType(CategoryType.HighlightList, null);
+        for (ItemEntity item : shoppingListEntity.getItems()) {
+            if (item.isFrequent() && separateFrequent && !isHighlightDish) {
+                frequent.addItemEntity(item);
+            } else if (!dictionary.containsKey(item.getTag().getId())) {
+                uncategorized.addItemEntity(item);
+            } else if (isHighlightDish && dishItemIds.contains(item.getId())) {
+                highlight.addItemEntity(item);
+            } else if (isHighlightList && item.getRawListSources().contains(highlightListType.name())) {
+                highlightList.addItemEntity(item);
+            } else {
+
+                ItemCategory category = (ItemCategory) filledCategories.get(dictionary.get(item.getTag().getId()));
+                if (category == null) {
+                    uncategorized.addItemEntity(item);
+                } else {
+                    category.addItemEntity(item);
+                }
+
+            }
+        }
+
+        specialCategories.put(CategoryType.Highlight, highlight);
+        specialCategories.put(CategoryType.HighlightList, highlightList);
+        specialCategories.put(CategoryType.Frequent, frequent);
+        specialCategories.put(CategoryType.UnCategorized, uncategorized);
+
+        return specialCategories;
+    }
+
+    private ItemCategory createDefaultCategoryByType(CategoryType categoryType, String highlightName) {
+        String categoryName = shoppingListProperties.getCategoryNameByType(categoryType);
+        if (categoryName == null) {
+            categoryName = highlightName;
+        }
+        Long idAndSort = shoppingListProperties.getIdAndSortByType(categoryType);
+        Integer idAndSortInt = idAndSort.intValue();
+
+        return new ItemCategory(categoryName, idAndSort, idAndSortInt, categoryType);
+
+    }
+
+    private List<Category> cleanUpResults(Map<Long, Category> filledCategories) {
+        List<Category> result = new ArrayList<>();
+        for (Category cat : filledCategories.values()) {
+            ItemCategory c = (ItemCategory) cat;
+            if (!c.isEmpty()) {
+                result.add(c);
+            }
+        }
+
+        // return list of categories
+        result.sort(Comparator.comparing(Category::getDisplayOrder));
+        return result;
+    }
+
+    private void addCategoryIfNotEmpty(Map<Long, Category> filledCategories, ItemCategory category) {
+        if (category != null && !category.isEmpty()) {
+            filledCategories.put(category.getId(), category);
+        }
+    }
+
+    private Set<Long> getHighlightDishItemIds(boolean isHighlightDish, ShoppingListEntity shoppingListEntity, Long highlightDishId) {
+        Set<Long> results = new HashSet<>();
+
+        if (!isHighlightDish || highlightDishId == null) {
+            return results;
+        }
+        return getDishItemIds(shoppingListEntity, highlightDishId);
+
+    }
+
+    private String getHighlightDishName(String userName, boolean isHighlightDish, Long highlightDishId) {
+        if (!isHighlightDish || highlightDishId == null) {
+            return "";
+        }
+
+        DishEntity dish = dishService.getDishForUserById(userName, highlightDishId);
+
+        return dish.getDishName();
+
+    }
+
+    private Set<Long> getDishItemIds(ShoppingListEntity shoppingListEntity, Long dishId) {
+        Set<Long> dishItemIds = new HashSet<>();
+        List<ItemEntity> items = itemRepository.getItemsForDish(shoppingListEntity.getId(), dishId);
+        if (items == null || items.isEmpty()) {
+            return dishItemIds;
+        }
+        dishItemIds = items.stream().map(ItemEntity::getId).collect(Collectors.toSet());
+        return dishItemIds;
+    }
+
+
+    private void addDishToList(String name, ListItemCollector collector, Long dishId) throws ShoppingListException {
+        // gather tags for dish to add
+        if (dishId == null) {
+            logger.error("No dish found for null dishId");
+            throw new ShoppingListException("No dish found for null dishId.");
+        }
+        List<TagEntity> tagsForDish = tagService.getTagsForDish(name, dishId).stream()
+                .filter(t -> t.getTagType().equals(TagType.Ingredient) || t.getTagType().equals(TagType.NonEdible))
+                .collect(Collectors.toList());
+        if (tagsForDish == null || tagsForDish.isEmpty()) {
+            logger.info("No tags found for dishId [" + dishId + "]");
+            return;
+        }
+
+
+        // add new dish tags to list
+        collector.addTags(tagsForDish, dishId, null);
+
+        // update last added date for dish
+        this.dishService.updateLastAddedForDish(dishId);
     }
 
 }

@@ -59,6 +59,10 @@ public class ShoppingListEntity {
     @Column(name = "meal_plan_id")
     private Long mealPlanId;
 
+    private Boolean isStarterList;
+
+    private String name;
+
     @Transient
     private List<DishEntity> dishSources = new ArrayList<>();
 
@@ -162,10 +166,28 @@ public class ShoppingListEntity {
         this.mealPlanName = mealPlanName;
     }
 
+    public Boolean getIsStarterList() {
+        return isStarterList;
+    }
+
+    public void setIsStarterList(Boolean starterList) {
+        isStarterList = starterList;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "ShoppingListEntity{" +
                 "listId=" + listId +
+                ", name=" + name +
+                ", isStarterList=" + isStarterList +
                 ", createdOn=" + createdOn +
                 ", listType=" + listType +
                 ", userId=" + userId +

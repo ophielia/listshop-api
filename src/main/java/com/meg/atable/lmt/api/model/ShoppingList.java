@@ -40,6 +40,12 @@ public class ShoppingList {
     @JsonProperty("user_id")
     private Long userId;
 
+    @JsonProperty("is_starter_list")
+    private Boolean isStarterList;
+
+    @JsonProperty("name")
+    private String name;
+
     public ShoppingList() {
         // empty constructor
     }
@@ -132,6 +138,24 @@ public class ShoppingList {
 
     public ShoppingList updated(Date updated) {
         this.updated = updated;
+        return this;
+    }
+
+    public Boolean getStarterList() {
+        return isStarterList;
+    }
+
+    public ShoppingList isStarterList(Boolean starterList) {
+        isStarterList = starterList;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ShoppingList name(String name) {
+        this.name = name;
         return this;
     }
 }
