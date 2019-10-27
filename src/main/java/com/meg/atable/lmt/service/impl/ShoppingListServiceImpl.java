@@ -134,7 +134,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private ShoppingListEntity createList(Long userId, String listName) {
         ShoppingListEntity newList = new ShoppingListEntity();
         // get list layout for user, list_type
-        ListLayoutEntity listLayout = getListLayout(ListType.BaseList, null);
+        ListLayoutEntity listLayout = getListLayout(null);
         newList.setListLayoutId(listLayout.getId());
         newList.setName(listName);
         newList.setIsStarterList(false);
@@ -220,19 +220,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
     }
 
-    private ListLayoutEntity getListLayout(ListType listType, ListLayoutType listLayoutType) {
+    private ListLayoutEntity getListLayout(ListLayoutType listLayoutType) {
         // nothing yet for user - eventually, we could consider user preferences / properties here
 
         ListLayoutType resultlayout = listLayoutType;
         if (resultlayout != null) {
             return listLayoutService.getListLayoutByType(resultlayout);
         }
-            resultlayout = shoppingListProperties.getDefaultLayouts().get(listType);
-        if (resultlayout != null) {
-            return listLayoutService.getListLayoutByType(resultlayout);
-        }
-
-        resultlayout = shoppingListProperties.getDefaultListLayoutType();
+        resultlayout = shoppingListProperties.getDefaultLayout();
         if (resultlayout != null) {
             return listLayoutService.getListLayoutByType(resultlayout);
         }
@@ -391,7 +386,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) {
         // get list layout by type
-        ListLayoutType generalLayout = shoppingListProperties.getDefaultLayouts().get(ListType.General);
+        ListLayoutType generalLayout = shoppingListProperties.getDefaultLayout();
         Optional<ListLayoutEntity> listLayoutEntityOptional = listLayoutService.getListLayouts()
                 .stream()
                 .filter(t -> t.getLayoutType().equals(generalLayout))

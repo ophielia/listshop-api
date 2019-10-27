@@ -206,8 +206,6 @@ public class ShoppingListServiceImplTest {
         Assert.assertNotNull(shoppingListProperties);
         Assert.assertNotNull(shoppingListProperties.getTestValue());
         Assert.assertEquals("beep", shoppingListProperties.getTestValue());
-        Assert.assertNotNull(shoppingListProperties.getDefaultLayouts());
-        Assert.assertEquals(5, shoppingListProperties.getDefaultLayouts().entrySet().size());
     }
 
     @Test

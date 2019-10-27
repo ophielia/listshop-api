@@ -2,12 +2,10 @@ package com.meg.atable.lmt.service;
 
 import com.meg.atable.lmt.api.model.CategoryType;
 import com.meg.atable.lmt.api.model.ListLayoutType;
-import com.meg.atable.lmt.api.model.ListType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -19,8 +17,7 @@ public class ShoppingListProperties {
 
     private String testValue;
 
-    private final Map<String, String> rawDefaultLayouts = new HashMap<>();
-    private Map<ListType, ListLayoutType> defaultLayouts;
+
 
     private String frequentCategoryName = "frequent";
     private Integer frequentIdAndSort = -2;
@@ -42,18 +39,8 @@ public class ShoppingListProperties {
         this.testValue = testValue;
     }
 
-    public Map<String, String> getRawDefaultLayouts() {
-        return rawDefaultLayouts;
-    }
-
-    public Map<ListType, ListLayoutType> getDefaultLayouts() {
-        this.defaultLayouts = new HashMap<>();
-        for (Map.Entry<String, String> entry : this.rawDefaultLayouts.entrySet()) {
-            ListType listType = ListType.valueOf(entry.getKey());
-            ListLayoutType listLayoutType = ListLayoutType.valueOf(entry.getValue());
-            defaultLayouts.put(listType, listLayoutType);
-        }
-        return this.defaultLayouts;
+    public ListLayoutType getDefaultLayout() {
+        return ListLayoutType.valueOf(this.defaultListLayout);
     }
 
     public String getFrequentCategoryName() {
