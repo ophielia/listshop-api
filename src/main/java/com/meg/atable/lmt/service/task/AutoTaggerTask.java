@@ -19,6 +19,8 @@ public class AutoTaggerTask {
 
     private static final Logger logger = LogManager.getLogger(AutoTaggerTask.class);
 
+    @Value("${component.autotaggertask.is.active}")
+    boolean taskIsActive;
 
     @Value("${component.autotaggertask.dish.to.autotag.count}")
     int dishToAutotagCount = 5;
@@ -28,6 +30,10 @@ public class AutoTaggerTask {
 
     @Scheduled(fixedDelay = 300000)
     public void autoTagDishes() {
+        if (!taskIsActive) {
+            return;
+        }
+
         // get dishes to autotag
         List<DishEntity> dishes = autoTagService.getDishesToAutotag(dishToAutotagCount);
         logger.info("About to start autotag task for " + dishToAutotagCount + " dishes.");

@@ -18,7 +18,6 @@ public class ModelMapper {
     public static Dish toModel(DishEntity dishEntity) {
         if (dishEntity != null) {
             List<Tag> tags = new ArrayList<>();
-            //List<TAG> tags = toModel(dishEntity.getSlots());
             return new Dish(dishEntity.getId())
                     .description(dishEntity.getDescription())
                     .dishName(dishEntity.getDishName())
@@ -167,7 +166,7 @@ public class ModelMapper {
             return null;
         }
 
-        // receive pre-filled.  Just need to check for subcategories;
+        // this is received pre-filled.  Just need to check for subcategories;
         if (cat.getSubCategories() == null || cat.getSubCategories().isEmpty()) {
             return cat;
         }
@@ -362,7 +361,6 @@ public class ModelMapper {
 
         return new ShoppingList(shoppingListEntity.getId())
                 .createdOn(shoppingListEntity.getCreatedOn())
-                .listType(shoppingListEntity.getListType().name())
                 .categories(categories)
                 .dishSources(dishSources)
                 .isStarterList(shoppingListEntity.getIsStarterList())
@@ -480,7 +478,7 @@ public class ModelMapper {
         if (mealPlan == null) {
             return null;
         }
-        Long mealPlanId = mealPlan != null && mealPlan.getMealPlanId() != null ? mealPlan.getMealPlanId() : null;
+        Long mealPlanId = (mealPlan != null && mealPlan.getMealPlanId() != null) ? mealPlan.getMealPlanId() : null;
         MealPlanEntity mealPlanEntity = new MealPlanEntity(mealPlanId);
 
         mealPlanEntity.setName(mealPlan.getName());

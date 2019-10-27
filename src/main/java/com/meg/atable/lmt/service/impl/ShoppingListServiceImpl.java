@@ -148,7 +148,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         UserEntity user = userService.getUserByUserEmail(userName);
 
         // check list name
-        String listName = ensureListNameIsUnique(user.getId(), listGenerateProperties.getListName());
+        String listNameFromProperties = listGenerateProperties.getListName();
+        if (listNameFromProperties == null) {
+            listNameFromProperties = defaultShoppingListName;
+        }
+        String listName = ensureListNameIsUnique(user.getId(), listNameFromProperties);
         // create list
         ShoppingListEntity newList = createList(userName, listName);
         ListItemCollector collector = createListItemCollector(newList.getId(), null);
@@ -176,9 +180,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // add starter list - if desired
         if (listGenerateProperties.getAddFromBase()) {
             // add Items from BaseList
-            ShoppingListEntity baseList = getListByUsernameAndType(userName, ListType.BaseList);
+            ShoppingListEntity baseList = getStarterList(userName);
             if (baseList != null) {
-                collector.copyExistingItemsIntoList(ItemSourceType.BaseList.name(), baseList.getItems(), false);
+                collector.copyExistingItemsIntoList(String.valueOf(baseList.getId()), baseList.getItems(), false);
             }
         }
 
@@ -243,6 +247,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         UserEntity user = userService.getUserByUserEmail(userName);
 
         return shoppingListRepository.findWithItemsByUserIdAndListType(user.getId(), listType);
+    }
+
+    @Override
+    public ShoppingListEntity getStarterList(String userName) {
+        UserEntity user = userService.getUserByUserEmail(userName);
+
+        List<ShoppingListEntity> foundLists = shoppingListRepository.findByUserIdAndIsStarterListTrue(user.getId());
+        if (!foundLists.isEmpty()) {
+            return foundLists.get(0);
+        }
+        return null;
     }
 
     @Override
@@ -411,13 +426,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         tagTypeList.add(TagType.NonEdible);
         for (SlotEntity slot : mealPlan.getSlots()) {
             List<TagEntity> tags = tagService.getTagsForDish(name, slot.getDish().getId(), tagTypeList);
-            collector.addTags(tags, slot.getDish().getId(), null);
+            collector.addTags(tags, slot.getDish().getId());
         }
 
         // add Items from BaseList
         ShoppingListEntity baseList = getListByUsernameAndType(name, ListType.BaseList);
         if (baseList != null) {
-            collector.copyExistingItemsIntoList(ItemSourceType.BaseList.name(), baseList.getItems(), false);
+            collector.copyExistingItemsIntoList(String.valueOf(baseList.getId()), baseList.getItems(), false);
         }
 
         // update the last added date for dishes
@@ -428,6 +443,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
+    @Deprecated
     @Transactional
     public ShoppingListEntity setListActive(String username, Long listId, GenerateType generateType) {
         UserEntity user = userService.getUserByUserEmail(username);
@@ -552,6 +568,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return new MergeResult();
     }
 
+    //MM come back to this
     @Override
     public void addListToList(String name, Long listId, ListType listType) {
         // get the target list
@@ -567,7 +584,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ListItemCollector collector = createListItemCollector(listId, list.getItems());
 
         // add Items from PickUpList
-        boolean incrementStats = listType != ListType.BaseList;
+        boolean incrementStats = listType != ListType.BaseList; //MM starter list
         collector.copyExistingItemsIntoList(listType.name(), toAdd.getItems(), incrementStats);
 
         // save list
@@ -794,8 +811,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             addItemToClientMap(item, itemMap);
         }
 
-        List<ItemEntity> mergeItems = new ArrayList<>(itemMap.values());
-        return mergeItems;
+        return new ArrayList<>(itemMap.values());
     }
 
     private void addItemToClientMap(ItemEntity item, Map<Long, ItemEntity> itemMap) {
@@ -841,6 +857,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             } else if (isHighlightDish && dishItemIds.contains(item.getId())) {
                 highlight.addItemEntity(item);
             } else if (isHighlightList && item.getRawListSources().contains(highlightListType.name())) {
+                //MM will need re-work here
                 highlightList.addItemEntity(item);
             } else {
 
@@ -942,7 +959,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
 
         // add new dish tags to list
-        collector.addTags(tagsForDish, dishId, null);
+        collector.addTags(tagsForDish, dishId);
 
         // update last added date for dish
         this.dishService.updateLastAddedForDish(dishId);

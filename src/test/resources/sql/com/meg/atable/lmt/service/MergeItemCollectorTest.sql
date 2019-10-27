@@ -1,5 +1,5 @@
-insert into list (created_on, list_layout_id, list_types, user_id, list_id)
-values (now(), 1, 'BaseList' , 500, 5000);
+insert into list (created_on, list_layout_id, list_types, user_id, list_id, name)
+values (now(), 1, 'BaseList', 500, 5000, 'Hopping sit 2');
 
 INSERT INTO list_item(
 list_id, tag_id, item_id, added_on, crossed_off, removed_on, updated_on, free_text, used_count, dish_sources, list_sources)

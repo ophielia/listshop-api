@@ -118,10 +118,10 @@ public abstract class AbstractItemCollector implements ItemCollector {
             return;
         }
 
-        addItemByTag(item.getTag(), null, null);
+        addItemByTag(item.getTag(), null);
     }
 
-    protected void addItemByTag(TagEntity tag, String sourceType, Long dishId) {
+    protected void addItemByTag(TagEntity tag, Long dishId) {
         CollectedItem update = getTagCollectedMap().get(tag.getId());
 
         if (update == null) {
@@ -132,7 +132,7 @@ public abstract class AbstractItemCollector implements ItemCollector {
 
         int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
         update.setUsedCount(count + 1);
-        update.addRawListSource(sourceType);
+        update.addRawListSource(null);
         update.addRawDishSource(dishId);
         update.incrementAddCount();
         getTagCollectedMap().put(tag.getId(), update);

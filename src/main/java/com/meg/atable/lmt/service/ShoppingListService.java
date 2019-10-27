@@ -20,6 +20,8 @@ public interface ShoppingListService {
 
     ShoppingListEntity getListByUsernameAndType(String userName, ListType listType);
 
+    ShoppingListEntity getStarterList(String userName);
+
     ShoppingListEntity getListById(String userName, Long listId);
 
     ShoppingListEntity getListById(String userName, Long listId, boolean includeRemoved);

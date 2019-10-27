@@ -31,6 +31,7 @@ public class AutoTaggerTaskTest {
 
     @Test
     public void autoTagDishes() {
+        autoTaggerTask.taskIsActive = true;
         List<DishEntity> dummyDishList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             dummyDishList.add(new DishEntity());
