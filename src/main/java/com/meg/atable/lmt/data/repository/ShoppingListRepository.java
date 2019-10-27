@@ -26,6 +26,8 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
 
     List<ShoppingListEntity> findByUserIdAndIsStarterListTrue(Long userid);
 
+    List<ShoppingListEntity> findByUserIdOrderByCreatedOnDesc(Long userid);
+
     List<ShoppingListEntity> findByUserIdAndName(Long userid, String name);
 
     List<ShoppingListEntity> findByUserIdAndNameLike(Long userid, String name);

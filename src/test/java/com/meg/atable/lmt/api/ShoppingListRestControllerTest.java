@@ -51,6 +51,7 @@ public class ShoppingListRestControllerTest {
 
     private static UserDetails userDetails;
     private static UserDetails meUserDetails;
+    private static UserDetails noStarterUserDetails;
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
@@ -95,6 +96,14 @@ public class ShoppingListRestControllerTest {
                 true,
                 null);
 
+        noStarterUserDetails = new JwtUser(TestConstants.USER_4_ID,
+                TestConstants.USER_4_NAME,
+                null,
+                null,
+                null,
+                true,
+                null);
+
     }
 
 
@@ -123,6 +132,39 @@ public class ShoppingListRestControllerTest {
                 .andExpect(jsonPath("$.shopping_list.list_id").value(testId));
     }
 
+    @Test
+    @WithMockUser
+    public void testRetrieveMostRecentList() throws Exception {
+        Long testId = 509990L;
+
+        mockMvc.perform(get("/shoppinglist/mostrecent")
+                .with(user(meUserDetails)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
+                .andExpect(jsonPath("$.shopping_list.list_id").value(testId));
+    }
+
+    @Test
+    @WithMockUser
+    public void testRetrieveStarterList() throws Exception {
+        Long testId = 509991L;
+
+        mockMvc.perform(get("/shoppinglist/starter")
+                .with(user(meUserDetails)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
+                .andExpect(jsonPath("$.shopping_list.list_id").value(testId));
+    }
+
+    @Test
+    @WithMockUser
+    public void testRetrieveStarterListNotFound() throws Exception {
+        mockMvc.perform(get("/shoppinglist/starter")
+                .with(user(noStarterUserDetails)))
+                .andExpect(status().isBadRequest());
+    }
 
     @Test
     @WithMockUser

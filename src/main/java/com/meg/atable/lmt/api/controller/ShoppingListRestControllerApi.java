@@ -40,6 +40,12 @@ public interface ShoppingListRestControllerApi {
     @RequestMapping(method = RequestMethod.GET, value = "/type/{listType}", produces = "application/json")
     ResponseEntity<ShoppingListResource> retrieveListByType(Principal principal, @PathVariable("listType") String listType);
 
+    @RequestMapping(method = RequestMethod.GET, value = "/mostrecent", produces = "application/json")
+    ResponseEntity<ShoppingListResource> retrieveMostRecentList(Principal principal);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/starter", produces = "application/json")
+    ResponseEntity<ShoppingListResource> retrieveStarterList(Principal principal);
+
     @RequestMapping(method = RequestMethod.GET, value = "/{listId}", produces = "application/json")
     ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId,
                                                           @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,

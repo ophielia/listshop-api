@@ -22,6 +22,8 @@ public interface ShoppingListService {
 
     ShoppingListEntity getStarterList(String userName);
 
+    ShoppingListEntity getMostRecentList(String userName);
+
     ShoppingListEntity getListById(String userName, Long listId);
 
     ShoppingListEntity getListById(String userName, Long listId, boolean includeRemoved);

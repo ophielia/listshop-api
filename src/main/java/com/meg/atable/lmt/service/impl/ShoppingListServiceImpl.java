@@ -261,6 +261,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
+    public ShoppingListEntity getMostRecentList(String userName) {
+        UserEntity user = userService.getUserByUserEmail(userName);
+
+        List<ShoppingListEntity> foundLists = shoppingListRepository.findByUserIdOrderByCreatedOnDesc(user.getId());
+        if (!foundLists.isEmpty()) {
+            return foundLists.get(0);
+        }
+        return null;
+    }
+
+    @Override
     public ShoppingListEntity getListById(String userName, Long listId) {
         return getListById(userName, listId, false);
     }

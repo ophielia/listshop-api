@@ -143,6 +143,27 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     }
 
+
+    public ResponseEntity<ShoppingListResource> retrieveMostRecentList(Principal principal) {
+        ShoppingListEntity result = shoppingListService.getMostRecentList(principal.getName());
+        if (result == null) {
+            throw new ObjectNotFoundException("No lists found for user [" + principal.getName() + "] in retrieveMostRecentList()");
+        }
+        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, null, false, null);
+        shoppingListService.fillSources(result);
+        return singleResult(result, categories);
+    }
+
+    public ResponseEntity<ShoppingListResource> retrieveStarterList(Principal principal) {
+        ShoppingListEntity result = shoppingListService.getStarterList(principal.getName());
+        if (result == null) {
+            throw new ObjectNotFoundException("No lists found for user [" + principal.getName() + "] in retrieveStarterList()");
+        }
+        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, null, false, null);
+        shoppingListService.fillSources(result);
+        return singleResult(result, categories);
+    }
+
     @Override
     public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId,
                                                                  @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
