@@ -4,10 +4,9 @@ import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
-import java.util.*;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by margaretmartin on 02/11/2017.
@@ -311,7 +310,7 @@ public class CollectedItem {
             return;
         }
         if (item.getRawListSources() == null) {
-            item.setRawListSources(String.valueOf(sourceType));
+            item.setRawListSources(sourceType);
         } else {
             item.setRawListSources(item.getRawListSources() + ";" + sourceType);
         }

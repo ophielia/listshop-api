@@ -30,6 +30,8 @@ public interface ShoppingListService {
 
     boolean deleteList(String userName, Long listId);
 
+    ShoppingListEntity updateList(String name, Long listId, ShoppingListEntity updateFrom);
+
     void addItemToList(String name, Long listId, ItemEntity itemEntity);
 
     void addItemToListByTag(String name, Long listId, Long tagId);
@@ -37,8 +39,6 @@ public interface ShoppingListService {
     void deleteItemFromList(String name, Long listId, Long itemId, Boolean removeEntireItem, Long dishSourceId);
 
     ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId);
-
-    ShoppingListEntity setListActive(String username, Long listId, GenerateType generateType);
 
     List<Category> categorizeList(String userName, ShoppingListEntity shoppingListEntity, Long highlightDishId, Boolean showPantry, Long highlightListId);
 
@@ -70,5 +70,6 @@ public interface ShoppingListService {
     ShoppingListEntity getActiveListForUser(String name);
 
     List<ItemEntity> getChangedItemsForActiveList(String name, Date changedAfter, Long layoutId);
+
 
 }

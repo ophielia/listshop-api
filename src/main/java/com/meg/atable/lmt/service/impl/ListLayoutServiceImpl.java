@@ -89,7 +89,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     public ListLayoutEntity getListLayoutById(Long listLayoutId) {
 
         Optional<ListLayoutEntity> listLayoutEntityOpt =  listLayoutRepository.findById(listLayoutId);
-        return listLayoutEntityOpt.isPresent()?listLayoutEntityOpt.get():null;
+        return listLayoutEntityOpt.orElse(null);
     }
 
     @Override
@@ -318,9 +318,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
         // structure subcategories
         structureCategories(allCategories, listLayout.getId(), false);
-        List<Category> mainCategorySort = allCategories.values().stream().collect(Collectors.toList());
-        mainCategorySort
-                .sort(Comparator.comparing(Category::getDisplayOrder));
+        List<Category> mainCategorySort = allCategories.values().stream().sorted(Comparator.comparing(Category::getDisplayOrder)).collect(Collectors.toList());
         return mainCategorySort;
     }
 

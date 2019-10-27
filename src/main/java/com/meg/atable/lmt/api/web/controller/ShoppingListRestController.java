@@ -119,14 +119,13 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
     @Override
-    public ResponseEntity<Object> setListActive(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value = "generateType", required = true) String filter) {
-        GenerateType generateType = GenerateType.valueOf(filter);
+    public ResponseEntity<Object> updateList(Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingList shoppingList) {
+        ShoppingListEntity updateFrom = ModelMapper.toEntity(shoppingList);
 
-        ShoppingListEntity result = shoppingListService.setListActive(principal.getName(), listId, generateType);
+        ShoppingListEntity result = shoppingListService.updateList(principal.getName(), listId, updateFrom);
         if (result != null) {
-
             Link oneList = new ShoppingListResource(result, null).getLink("self");
-            return ResponseEntity.created(URI.create(oneList.getHref())).build();
+            return ResponseEntity.ok(URI.create(oneList.getHref()));
         }
         return ResponseEntity.badRequest().build();
     }

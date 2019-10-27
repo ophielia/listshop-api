@@ -34,7 +34,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId, @RequestParam(value = "after", required = true) Date changedAfter) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{listId}", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> setListActive(Principal principal, @PathVariable("listId") Long listId, @RequestParam(value = "generateType", required = true) String filter);
+    ResponseEntity<Object> updateList(Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingList shoppingList);
 
     @Deprecated
     @RequestMapping(method = RequestMethod.GET, value = "/type/{listType}", produces = "application/json")

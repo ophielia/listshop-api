@@ -65,7 +65,7 @@ public class DishTagSearchResult {
     @Override
     public String toString() {
         return "DishTagSearchResult{" +
-                "dishId=" + Long.toString(dishId) +
+                "dishId=" + dishId +
                 '}';
     }
 

@@ -5,6 +5,7 @@ import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.DateUtils;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.common.StringTools;
+import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.data.repository.ItemChangeRepository;
@@ -17,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -125,22 +125,34 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return createList(name, defaultShoppingListName);
     }
 
-    private ShoppingListEntity createList(String userName, String listName) {
-        UserEntity user = userService.getUserByUserEmail(userName);
-        return createList(user.getId(), listName);
+    @Override
+    public ShoppingListEntity updateList(String name, Long listId, ShoppingListEntity updateFrom) {
+        UserEntity user = userService.getUserByUserEmail(name);
 
-    }
+        // get list
+        List<ShoppingListEntity> byUserNameAndId = shoppingListRepository.findByListIdAndUserId(listId, user.getId());
+        if (byUserNameAndId.isEmpty()) {
+            throw new ObjectNotFoundException("List [" + listId + "] not found for user [" + user.getId() + "] in updateList");
+        }
+        ShoppingListEntity copyTo = byUserNameAndId.get(0);
 
-    private ShoppingListEntity createList(Long userId, String listName) {
-        ShoppingListEntity newList = new ShoppingListEntity();
-        // get list layout for user, list_type
-        ListLayoutEntity listLayout = getListLayout(null);
-        newList.setListLayoutId(listLayout.getId());
-        newList.setName(listName);
-        newList.setIsStarterList(false);
-        newList.setCreatedOn(new Date());
-        newList.setUserId(userId);
-        return shoppingListRepository.save(newList);
+        // check starter list change
+        boolean starterListChanged = updateFrom.getIsStarterList() && !copyTo.getIsStarterList();
+
+        // copy fields from updateFrom
+        copyTo.setIsStarterList(updateFrom.getIsStarterList());
+        copyTo.setName(updateFrom.getName());
+
+        if (starterListChanged) {
+            ShoppingListEntity oldStarter = getStarterList(name);
+            if (oldStarter != null) {
+                oldStarter.setIsStarterList(false);
+                shoppingListRepository.save(oldStarter);
+            }
+        }
+
+        // save changed list
+        return shoppingListRepository.save(copyTo);
     }
 
     @Override
@@ -451,35 +463,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         saveListChanges(savedNewList, collector);
         Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(savedNewList.getId());
         return shoppingListEntity.orElse(null);
-
-    }
-
-    @Deprecated
-    @Transactional
-    public ShoppingListEntity setListActive(String username, Long listId, GenerateType generateType) {
-        UserEntity user = userService.getUserByUserEmail(username);
-        // get active list
-        ShoppingListEntity oldActive = shoppingListRepository.findWithItemsByUserIdAndListType(user.getId(), ListType.ActiveList);
-        // get list to set active
-        ShoppingListEntity toActive = getListById(username, listId);
-
-        // add list to collector
-        ListItemCollector collector = createListItemCollector(toActive.getId(), toActive.getItems());
-
-        // if generatetype add, add items to current list
-        if (generateType == GenerateType.Add && oldActive != null) {
-            collector.copyExistingItemsIntoList(null, oldActive.getItems(), false);
-        }
-
-        // delete old active list
-        if (oldActive != null) {
-            deleteList(username, oldActive.getId());
-        }
-        // set current list active
-        toActive.setListType(ListType.ActiveList);
-        // save active list
-        saveListChanges(toActive, collector);
-        return getListById(username, listId);
 
     }
 
@@ -978,5 +961,25 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // update last added date for dish
         this.dishService.updateLastAddedForDish(dishId);
     }
+
+
+    private ShoppingListEntity createList(String userName, String listName) {
+        UserEntity user = userService.getUserByUserEmail(userName);
+        return createList(user.getId(), listName);
+
+    }
+
+    private ShoppingListEntity createList(Long userId, String listName) {
+        ShoppingListEntity newList = new ShoppingListEntity();
+        // get list layout for user, list_type
+        ListLayoutEntity listLayout = getListLayout(null);
+        newList.setListLayoutId(listLayout.getId());
+        newList.setName(listName);
+        newList.setIsStarterList(false);
+        newList.setCreatedOn(new Date());
+        newList.setUserId(userId);
+        return shoppingListRepository.save(newList);
+    }
+
 
 }

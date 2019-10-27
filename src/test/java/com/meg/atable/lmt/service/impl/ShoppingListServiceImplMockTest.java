@@ -120,4 +120,34 @@ public class ShoppingListServiceImplMockTest {
         Assert.assertNotNull(result);
          */
     }
+
+    @Test
+    public void testUpdateList() {
+        String userName = "george";
+        Long listId = 99L;
+        ShoppingListEntity updateFrom = new ShoppingListEntity();
+        updateFrom.setName("has been updated");
+        updateFrom.setIsStarterList(false);
+
+        ShoppingListEntity originalList = new ShoppingListEntity();
+        originalList.setName("originalList");
+        originalList.setIsStarterList(true);
+
+
+        UserEntity user = new UserEntity();
+        user.setId(999L);
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+
+        ArgumentCaptor<ShoppingListEntity> listArgument = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        Mockito.when(shoppingListRepository.findByListIdAndUserId(listId, 999L))
+                .thenReturn(Collections.singletonList(originalList));
+        Mockito.when(shoppingListRepository.save(listArgument.capture()))
+                .thenReturn(updateFrom);
+
+        shoppingListService.updateList(userName, listId, updateFrom);
+
+        Assert.assertEquals("has been updated", listArgument.getValue().getName());
+        Assert.assertEquals(false, listArgument.getValue().getIsStarterList());
+    }
 }

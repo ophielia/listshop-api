@@ -531,8 +531,8 @@ public class ModelMapper {
 
     public static ShoppingListEntity toEntity(ShoppingList shoppingList) {
         ShoppingListEntity shoppingListEntity = new ShoppingListEntity(shoppingList.getList_id());
-        ListType listType = ListType.valueOf(shoppingList.getListType());
-        shoppingListEntity.setListType(listType);
+        //MM remove thisListType listType = ListType.valueOf(shoppingList.getListType());
+        //MM and this shoppingListEntity.setListType(listType);
         shoppingListEntity.setUserId(shoppingList.getUserId());
         // not setting items here, since items will be updated individually from client
         shoppingListEntity.setName(shoppingList.getName());

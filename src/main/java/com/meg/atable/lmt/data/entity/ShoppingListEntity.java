@@ -167,7 +167,7 @@ public class ShoppingListEntity {
     }
 
     public Boolean getIsStarterList() {
-        return isStarterList;
+        return isStarterList != null ? isStarterList : false;
     }
 
     public void setIsStarterList(Boolean starterList) {

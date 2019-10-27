@@ -141,6 +141,7 @@ public class ShoppingList {
         return this;
     }
 
+    @JsonProperty("is_starter_list")
     public Boolean getStarterList() {
         return isStarterList;
     }

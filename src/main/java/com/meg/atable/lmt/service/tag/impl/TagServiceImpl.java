@@ -141,9 +141,7 @@ public class TagServiceImpl implements TagService {
                     Optional<RatingInfo> ratingInfoOpt = entry.getValue()
                             .stream()
                             .filter(r -> r.equals(headerTag)).findFirst();
-                    if (ratingInfoOpt.isPresent()) {
-                        entry.getKey().addRating(ratingInfoOpt.get());
-                    }
+                    ratingInfoOpt.ifPresent(ratingInfo -> entry.getKey().addRating(ratingInfo));
                 } else {
                     // dish does not have this rating -
                     // create this tag for the dish, and add it to the DishRatingInfo

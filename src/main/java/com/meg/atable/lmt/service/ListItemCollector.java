@@ -139,7 +139,7 @@ public class ListItemCollector extends AbstractItemCollector {
             if (listType != null) {
                 Set<String> inflatedListSources = FlatStringUtils.inflateStringToSet(update.getRawListSources(), ";");
                 if (inflatedListSources.contains(listType.name())) {
-                    inflatedListSources.remove(String.valueOf(listType.name()));
+                    inflatedListSources.remove(listType.name());
                     String newSources = FlatStringUtils.flattenSetToString(inflatedListSources, ";");
                     update.setRawListSources(newSources);
                 }
