@@ -2,6 +2,7 @@ package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.data.repository.UserRepository;
+import com.meg.atable.common.StringTools;
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
 import com.meg.atable.lmt.api.exception.UserNotFoundException;
@@ -30,18 +31,35 @@ import java.util.stream.Collectors;
 public class DishServiceImpl implements DishService {
 
     public static final Comparator<DishEntity> DISHNAME = (DishEntity o1, DishEntity o2) -> o1.getDishName().toLowerCase().compareTo(o2.getDishName().toLowerCase());
-    @Autowired
+
     private DishRepository dishRepository;
-    @Autowired
+
     private DishSearchService dishSearchService;
-    @Autowired
+
     private UserRepository userRepository;
-    @Autowired
+
     private AutoTagService autoTagService;
-    @Autowired
+
     private TagService tagService;
-    @Autowired
+
     private TagStructureService tagStructureService;
+
+    @Autowired
+    public DishServiceImpl(
+            DishRepository dishRepository,
+            DishSearchService dishSearchService,
+            UserRepository userRepository,
+            AutoTagService autoTagService,
+            TagService tagService,
+            TagStructureService tagStructureService
+    ) {
+        this.dishRepository = dishRepository;
+        this.dishSearchService = dishSearchService;
+        this.userRepository = userRepository;
+        this.autoTagService = autoTagService;
+        this.tagService = tagService;
+        this.tagStructureService = tagStructureService;
+    }
 
     @Override
     public List<DishEntity> getDishesForUserName(String userName) {
@@ -86,6 +104,32 @@ public class DishServiceImpl implements DishService {
             autoTagService.doAutoTag(dish, true);
         }
         return dishRepository.save(dish);
+    }
+
+    @Override
+    public DishEntity create(DishEntity dish) {
+        // check name before saving
+        String name = ensureDishNameIsUnique(dish.getUserId(), dish.getDishName());
+        dish.setDishName(name);
+        return dishRepository.save(dish);
+    }
+
+    private String ensureDishNameIsUnique(Long userId, String dishName) {
+        // does this name already exist for the user?
+        List<DishEntity> existing = dishRepository.findByUserIdAndDishName(userId, dishName.toLowerCase());
+
+        if (existing.isEmpty()) {
+            return dishName;
+        }
+
+        // if so, get all lists with names starting with the listName
+        List<DishEntity> similar = dishRepository.findByUserIdAndDishNameLike(userId,
+                dishName.toLowerCase() + "%");
+        List<String> similarNames = similar.stream()
+                .map(list -> list.getDishName().trim().toLowerCase()).collect(Collectors.toList());
+        // use handy StringTools method to get first unique name
+
+        return StringTools.makeUniqueName(dishName, similarNames);
     }
 
     @Override

@@ -88,11 +88,11 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     public ResponseEntity<Object> createDish(Principal principal, @RequestBody Dish input) {
-
+        //MM Validation to be done here
         UserEntity user = userService.getUserByUserEmail(principal.getName());
-        DishEntity result = dishService.save(new DishEntity(user.getId(),
+        DishEntity result = dishService.create(new DishEntity(user.getId(),
                 input.getDishName(),
-                input.getDescription()), false);
+                input.getDescription()));
         List<Tag> tagInputs = input.getTags();
         if (tagInputs !=null && !tagInputs.isEmpty()) {
             Set<Long> tagIds = tagInputs.stream()
