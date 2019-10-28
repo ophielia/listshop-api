@@ -8,7 +8,11 @@ values (now() - interval '3 days', 11, 'General', 20, 509991, 'added from', true
 -- user 504 doesn't have a starter list
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
 values (now() - interval '3 days', 11, 'General', 504, 509999, 'added from', false);
-
+-- test list for removing from lists
+insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
+values (now(), 1, 'General', 500, 609990, 'added to', false);
+insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
+values (now(), 1, 'General', 500, 609991, 'remove from this list', false);
 
 
 -- list items - four items, for active list - id 501,502,503,500
@@ -45,3 +49,27 @@ VALUES (509999, 500, 509983, now(), null, null, 1, null, null);
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
 VALUES (509999, 504, 509984, now(), null, null, 1, null, '509991');
+
+-- list items for list from which to delete a list
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (609990, 501, 609990, now(), null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (609990, 502, 609991, now(), null, null, 1, null, '609991');
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (609990, 503, 609992, now(), null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (609990, 500, 609993, now(), null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (609990, 504, 609994, now(), null, null, 1, null, '609991');
+
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (609991, 501, 609980, now(), null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (609991, 504, 609984, now(), null, null, 1, null, null);

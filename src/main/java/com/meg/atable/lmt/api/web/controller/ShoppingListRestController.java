@@ -2,7 +2,6 @@ package com.meg.atable.lmt.api.web.controller;
 
 import com.meg.atable.lmt.api.controller.ShoppingListRestControllerApi;
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
-import com.meg.atable.lmt.api.exception.ObjectNotYoursException;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
@@ -58,7 +57,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<Object> createList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) throws ObjectNotFoundException, ObjectNotYoursException {
+    public ResponseEntity<Object> createList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) {
 
 
         ShoppingListEntity result = null;
@@ -103,7 +102,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     @Override
     public ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId,
                                                                           @RequestParam(value = "after", required = true)
-                                                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date changedAfter) throws ObjectNotFoundException, ObjectNotYoursException {
+                                                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date changedAfter) {
         List<ItemEntity> changedItems = shoppingListService.getChangedItemsForActiveList(principal.getName(), changedAfter, listLayoutId);
 
         List<Pair<ItemEntity, ListLayoutCategoryEntity>> itemsToCategories = listLayoutService.getItemChangesWithCategories(listLayoutId, changedItems);
@@ -130,6 +129,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.badRequest().build();
     }
 
+    //MM come back and delete
     @Deprecated
     @Override
     public ResponseEntity<ShoppingListResource> retrieveListByType(Principal principal, @PathVariable("listType") String listTypeString) {
@@ -170,18 +170,13 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
                                                                  @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry) {
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
 
-        if ("0".equals(highlightDish)) {
-            highlightDish = null;
-        }
-        if ("0".equals(highlightListId)) {
-            highlightListId = null;
-        }
+
         List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, highlightListId);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
 
-
+    //MM come back and delete
     @Deprecated
     @Override
     public ResponseEntity<ShoppingListResource> retrieveActiveList(Principal principal,
@@ -190,13 +185,6 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
                                                                    @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry) {
         ShoppingListEntity result = shoppingListService.getActiveListForUser(principal.getName());
 
-        if ("0".equals(highlightDish)) {
-            highlightDish = null;
-        }
-        ListType listType = null;
-        if (!"0".equals(highlightListType)) {
-            listType = ListType.valueOf(highlightListType);
-        }
         List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, 0L); //MM note - dummy highlightdishid
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
@@ -224,14 +212,6 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     public ResponseEntity<Object> addItemToListByTag(Principal principal, @PathVariable Long listId, @PathVariable Long tagId) {
         this.shoppingListService.addItemToListByTag(principal.getName(), listId, tagId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @Override
-    public ResponseEntity<Object> addToListFromList(Principal principal, @PathVariable Long listId, @PathVariable Long fromListId) {
-
-        this.shoppingListService.addListToList(principal.getName(), listId, fromListId);
-
         return ResponseEntity.noContent().build();
     }
 
@@ -276,7 +256,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
     @Override
-    public ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId) throws ObjectNotFoundException, ObjectNotYoursException {
+    public ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId) {
         ShoppingListEntity shoppingListEntity = this.shoppingListService.generateListFromMealPlan(principal.getName(), mealPlanId);
         if (shoppingListEntity != null) {
             Link listLink = new ShoppingListResource(shoppingListEntity, null).getLink("self");
@@ -305,9 +285,19 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> removeListItemsFromList(Principal principal, @PathVariable Long listId, @PathVariable String listType) {
-        ListType listTypeEnum = ListType.valueOf(listType);
-        this.shoppingListService.removeListItemsFromList(principal.getName(), listId, listTypeEnum);
+
+    @Override
+    public ResponseEntity<Object> addToListFromList(Principal principal, @PathVariable Long listId, @PathVariable Long fromListId) {
+
+        this.shoppingListService.addListToList(principal.getName(), listId, fromListId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> removeFromListByList(Principal principal, @PathVariable Long listId, @PathVariable Long fromListId) {
+
+        this.shoppingListService.removeListItemsFromList(principal.getName(), listId, fromListId);
 
         return ResponseEntity.noContent().build();
     }

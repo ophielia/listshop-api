@@ -357,6 +357,41 @@ public class ShoppingListRestControllerTest {
 
     }
 
+    @Test
+    @WithMockUser
+    public void testRemoveListFromList() throws Exception {
+        Long listId = 609990L;
+        Long fromListId = 609991L;
+
+        String url = "/shoppinglist/" + listId + "/list/" + fromListId;
+        mockMvc.perform(delete(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        // retrieve list and verify
+        MvcResult result = mockMvc.perform(get("/shoppinglist/" + listId)
+                .with(user(userDetails)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
+                .andExpect(jsonPath("$.shopping_list.list_id").value(listId))
+                .andReturn();
+
+
+        String listAfterDelete = result.getResponse().getContentAsString();
+        // contains empty list sources
+        Assert.assertTrue(listAfterDelete.contains("\"list_sources\":[],"));
+        // contains tag ids 500, 503
+        Assert.assertTrue(listAfterDelete.contains("\"tag_id\":\"503\","));
+        Assert.assertTrue(listAfterDelete.contains("\"tag_id\":\"500\","));
+
+        // doesn't contain tagIds 501, 502, 504
+        Assert.assertFalse(listAfterDelete.contains("\"tag_id\":\"501\","));
+        Assert.assertFalse(listAfterDelete.contains("\"tag_id\":\"502\","));
+        Assert.assertFalse(listAfterDelete.contains("\"tag_id\":\"504\","));
+    }
 
     @Test
     @WithMockUser

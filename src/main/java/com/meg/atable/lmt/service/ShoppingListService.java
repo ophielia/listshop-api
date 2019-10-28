@@ -50,7 +50,7 @@ public interface ShoppingListService {
 
     void removeDishFromList(String name, Long listId, Long dishId);
 
-    void removeListItemsFromList(String name, Long listId, ListType listType);
+    void removeListItemsFromList(String name, Long listId, Long fromListId);
 
     void updateItemCrossedOff(String name, Long listId, Long itemId, Boolean crossedOff);
 

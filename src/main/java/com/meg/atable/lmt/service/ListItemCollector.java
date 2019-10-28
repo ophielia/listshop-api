@@ -1,12 +1,14 @@
 package com.meg.atable.lmt.service;
 
 import com.meg.atable.common.FlatStringUtils;
-import com.meg.atable.lmt.api.model.ListType;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 02/11/2017.
@@ -79,10 +81,26 @@ public class ListItemCollector extends AbstractItemCollector {
         }
     }
 
-    public void removeItemsFromList(ListType listType, List<ItemEntity> items) {
-        for (ItemEntity item : items) {
-            removeItemWithListSource(item, listType);
+    public void removeItemsFromList(Long fromListId, List<ItemEntity> fromListItems) {
+        Set<Long> fromTagIds = new HashSet<>();
+        if (fromListItems != null) {
+            fromTagIds = fromListItems.stream().map(itemEntity -> itemEntity.getTag().getId()).collect(Collectors.toSet());
         }
+        // go through all collected items
+        // check for existence in fromList items
+        // check for listSource in item
+        // if either, remove
+
+        for (Map.Entry<Long, CollectedItem> tagCollectedEntry : getTagCollectedMap().entrySet()) {
+            boolean fromListMatch = fromTagIds.contains(tagCollectedEntry.getKey());
+            ItemEntity item = tagCollectedEntry.getValue().getItem();
+            String entryListSource = item.getRawListSources();
+            boolean listSourceMatch = entryListSource.contains(String.valueOf(fromListId));
+            if (fromListMatch || listSourceMatch) {
+                removeItemWithListSource(item, fromListId);
+            }
+        }
+
     }
 
 
@@ -121,7 +139,7 @@ public class ListItemCollector extends AbstractItemCollector {
         getTagCollectedMap().put(tagId, update);
     }
 
-    private void removeItemWithListSource(ItemEntity item, ListType listType) {
+    private void removeItemWithListSource(ItemEntity item, Long fromListId) {
         if (!getTagCollectedMap().containsKey(item.getTag().getId())) {
             return;
         }
@@ -134,10 +152,10 @@ public class ListItemCollector extends AbstractItemCollector {
             return;
         } else {
             // item has other usages remaining - updated, not deleted
-            if (listType != null) {
+            if (fromListId != null) {
                 Set<String> inflatedListSources = FlatStringUtils.inflateStringToSet(update.getRawListSources(), ";");
-                if (inflatedListSources.contains(listType.name())) {
-                    inflatedListSources.remove(listType.name());
+                if (inflatedListSources.contains(String.valueOf(fromListId))) {
+                    inflatedListSources.remove(String.valueOf(fromListId));
                     String newSources = FlatStringUtils.flattenSetToString(inflatedListSources, ";");
                     update.setRawListSources(newSources);
                 }

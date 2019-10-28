@@ -562,7 +562,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return new MergeResult();
     }
 
-    //MM come back to this
+
     @Override
     public void addListToList(String name, Long listId, Long fromListId) {
         // get the target list
@@ -674,17 +674,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public void removeListItemsFromList(String name, Long listId, ListType listType) {
+    public void removeListItemsFromList(String name, Long listId, Long fromListId) {
         // get list
         ShoppingListEntity shoppingList = getListById(name, listId);
 
         // get list to remove
-        ShoppingListEntity toRemove = getListByUsernameAndType(name, listType);
+        ShoppingListEntity listToRemove = getListById(name, fromListId);
 
         // make collector
         ListItemCollector collector = createListItemCollector(listId, shoppingList.getItems());
 
-        collector.removeItemsFromList(listType, toRemove.getItems());
+        collector.removeItemsFromList(fromListId, listToRemove.getItems());
 
         saveListChanges(shoppingList, collector);
     }
