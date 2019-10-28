@@ -79,50 +79,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public ShoppingListEntity getActiveListForUser(String name) {
-        return getActiveListForUser(name, false);
-    }
-
-    @Override
-    public List<ItemEntity> getChangedItemsForActiveList(String name, Date changedAfter, Long layoutId) {
-        ShoppingListEntity shoppingListEntity = getActiveListForUser(name);
+    public List<ItemEntity> getChangedItemsForMostRecentList(String name, Date changedAfter, Long layoutId) {
+        //MM placeholder - because this could be interesting - but not yet called.
+        ShoppingListEntity shoppingListEntity = getMostRecentList(name);
 
         return itemRepository.getItemsChangedAfter(changedAfter, shoppingListEntity.getId());
-    }
-
-    @Override
-    public ShoppingListEntity getActiveListForUser(String name, boolean includeRemoved) {
-        UserEntity user = userService.getUserByUserEmail(name);
-
-        // get all lists
-        List<ShoppingListEntity> userLists = shoppingListRepository.findByUserId(user.getId());
-
-        // put them in a map
-        Map<String, List<ShoppingListEntity>> listMap = new HashMap<>();
-        for (ShoppingListEntity list : userLists) {
-            String type = list.getListType() != null ? list.getListType().name() : "no_type";
-            if (!listMap.containsKey(type)) {
-                listMap.put(type,new ArrayList<>());
-            }
-            listMap.get(type).add(list);
-        }
-
-        Long listIdToRetrieve = null;
-        // find list to retrieve
-        List<String> orderedTypes = Arrays.asList(ListType.ActiveList.name(), ListType.General.name(), "no_type");
-        for (String key : orderedTypes) {
-            if (listMap.containsKey(key)) {
-                listIdToRetrieve = listMap.get(key).get(0).getId();
-                break;
-            }
-        }
-
-        // if the list id exists, retreive and return the list belonging to it
-        if (listIdToRetrieve != null) {
-            return getListById(name, listIdToRetrieve, includeRemoved);
-        }
-        // if the list doesn't exist, return a new list
-        return createList(name, defaultShoppingListName);
     }
 
     @Override
@@ -252,13 +213,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return listLayoutService.getListLayoutByType(ListLayoutType.All);
 
 
-    }
-
-    @Override
-    public ShoppingListEntity getListByUsernameAndType(String userName, ListType listType) {
-        UserEntity user = userService.getUserByUserEmail(userName);
-
-        return shoppingListRepository.findWithItemsByUserIdAndListType(user.getId(), listType);
     }
 
     @Override
@@ -453,7 +407,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // add Items from BaseList
-        ShoppingListEntity baseList = getListByUsernameAndType(name, ListType.BaseList);
+        ShoppingListEntity baseList = getStarterList(name);
         if (baseList != null) {
             collector.copyExistingItemsIntoList(baseList.getId(), baseList.getItems(), false);
         }

@@ -232,14 +232,6 @@ public class ModelMapper {
         return result;
     }
 
-    private static ItemSource toListSourceModel(String listsource) {
-        ItemSource source = new ItemSource();
-        source.setDisplay(listsource);
-        source.setType("List");
-
-        return source;
-    }
-
     private static ItemSource toListSourceModel(ShoppingListEntity listsource) {
         ItemSource source = new ItemSource();
         source.setDisplay(listsource.getName());
@@ -534,8 +526,6 @@ public class ModelMapper {
 
     public static ShoppingListEntity toEntity(ShoppingList shoppingList) {
         ShoppingListEntity shoppingListEntity = new ShoppingListEntity(shoppingList.getList_id());
-        //MM remove thisListType listType = ListType.valueOf(shoppingList.getListType());
-        //MM and this shoppingListEntity.setListType(listType);
         shoppingListEntity.setUserId(shoppingList.getUserId());
         // not setting items here, since items will be updated individually from client
         shoppingListEntity.setName(shoppingList.getName());

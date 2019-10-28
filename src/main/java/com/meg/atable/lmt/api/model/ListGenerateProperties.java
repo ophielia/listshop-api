@@ -14,9 +14,6 @@ public class ListGenerateProperties {
     @JsonProperty("meal_plan_source")
     private String mealPlanSourceId;
 
-    @JsonProperty("list_type")
-    private String rawListType;
-
     @JsonProperty("add_from_base")
     private Boolean addFromBase;
 
@@ -82,21 +79,6 @@ public class ListGenerateProperties {
 
     public void setGenerateMealplan(Boolean generateMealplan) {
         this.generateMealplan = generateMealplan;
-    }
-
-    public String getRawListType() {
-        return rawListType;
-    }
-
-    public ListType getListType() {
-        if (rawListType == null) {
-            return null;
-        }
-        return ListType.valueOf(rawListType);
-    }
-
-    public void setRawListType(String rawListType) {
-        this.rawListType = rawListType;
     }
 
     public String getListName() {

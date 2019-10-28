@@ -286,7 +286,6 @@ public class ShoppingListRestControllerTest {
     @WithMockUser
     public void testNewCreateList() throws Exception {
         ListGenerateProperties properties = new ListGenerateProperties();
-        properties.setRawListType("General");
         properties.setAddFromBase(true);
         properties.setAddFromPickup(true);
         properties.setGenerateMealplan(false);

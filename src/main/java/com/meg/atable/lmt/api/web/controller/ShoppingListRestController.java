@@ -103,7 +103,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId,
                                                                           @RequestParam(value = "after", required = true)
                                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date changedAfter) {
-        List<ItemEntity> changedItems = shoppingListService.getChangedItemsForActiveList(principal.getName(), changedAfter, listLayoutId);
+        List<ItemEntity> changedItems = shoppingListService.getChangedItemsForMostRecentList(principal.getName(), changedAfter, listLayoutId);
 
         List<Pair<ItemEntity, ListLayoutCategoryEntity>> itemsToCategories = listLayoutService.getItemChangesWithCategories(listLayoutId, changedItems);
 
@@ -128,20 +128,6 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         }
         return ResponseEntity.badRequest().build();
     }
-
-    //MM come back and delete
-    @Deprecated
-    @Override
-    public ResponseEntity<ShoppingListResource> retrieveListByType(Principal principal, @PathVariable("listType") String listTypeString) {
-        ListType listType = ListType.valueOf(listTypeString);
-        ShoppingListEntity result = shoppingListService.getListByUsernameAndType(principal.getName(), listType);
-
-        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, null, false, 0L); //MM dummy until removed
-        shoppingListService.fillSources(result);
-        return singleResult(result, categories);
-
-    }
-
 
     public ResponseEntity<ShoppingListResource> retrieveMostRecentList(Principal principal) {
         ShoppingListEntity result = shoppingListService.getMostRecentList(principal.getName());
@@ -175,21 +161,6 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
-
-    //MM come back and delete
-    @Deprecated
-    @Override
-    public ResponseEntity<ShoppingListResource> retrieveActiveList(Principal principal,
-                                                                   @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
-                                                                   @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
-                                                                   @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry) {
-        ShoppingListEntity result = shoppingListService.getActiveListForUser(principal.getName());
-
-        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, 0L); //MM note - dummy highlightdishid
-        shoppingListService.fillSources(result);
-        return singleResult(result, categories);
-    }
-
 
 
     @Override

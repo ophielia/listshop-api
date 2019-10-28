@@ -1,6 +1,9 @@
 package com.meg.atable.lmt.service;
 
-import com.meg.atable.lmt.api.model.*;
+import com.meg.atable.lmt.api.model.Category;
+import com.meg.atable.lmt.api.model.ListGenerateProperties;
+import com.meg.atable.lmt.api.model.MergeRequest;
+import com.meg.atable.lmt.api.model.MergeResult;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 
@@ -14,11 +17,7 @@ public interface ShoppingListService {
 
     List<ShoppingListEntity> getListsByUsername(String userName);
 
-    ShoppingListEntity getActiveListForUser(String name, boolean includeRemoved);
-
     ShoppingListEntity generateListForUser(String userName, ListGenerateProperties listGeneratProperties) throws ShoppingListException;
-
-    ShoppingListEntity getListByUsernameAndType(String userName, ListType listType);
 
     ShoppingListEntity getStarterList(String userName);
 
@@ -66,10 +65,7 @@ public interface ShoppingListService {
 
     void addListToList(String name, Long listId, Long fromListId);
 
-
-    ShoppingListEntity getActiveListForUser(String name);
-
-    List<ItemEntity> getChangedItemsForActiveList(String name, Date changedAfter, Long layoutId);
+    List<ItemEntity> getChangedItemsForMostRecentList(String name, Date changedAfter, Long layoutId);
 
 
 }

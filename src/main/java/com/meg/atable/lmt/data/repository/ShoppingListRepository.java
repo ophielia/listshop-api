@@ -1,6 +1,5 @@
 package com.meg.atable.lmt.data.repository;
 
-import com.meg.atable.lmt.api.model.ListType;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,8 +12,6 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
     List<ShoppingListEntity> findByUserId(Long userid);
 
 
-    List<ShoppingListEntity> findByUserIdAndListType(Long userid, ListType listType);
-
     List<ShoppingListEntity> findByListIdAndUserId(Long listId, Long userId);
 
     @EntityGraph(value="list-entity-graph")
@@ -22,10 +19,6 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
 
     @EntityGraph(value="list-entity-graph")
     Optional<ShoppingListEntity> getWithItemsByListIdAndItemsRemovedOnIsNull(Long listid);
-
-    @EntityGraph(value="list-entity-graph")
-    ShoppingListEntity findWithItemsByUserIdAndListType(Long userid, ListType listType);
-
 
     List<ShoppingListEntity> findByUserIdAndIsStarterListTrue(Long userid);
 

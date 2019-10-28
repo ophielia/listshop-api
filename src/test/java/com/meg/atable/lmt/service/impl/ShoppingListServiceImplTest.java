@@ -63,24 +63,6 @@ public class ShoppingListServiceImplTest {
     }
 
     @Test
-    public void testGetActiveListForUser() {
-        // 20 should find active list with id 501 3
-        ShoppingListEntity result = shoppingListService.getActiveListForUser(TestConstants.USER_3_NAME);
-        Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getListType());
-        Assert.assertEquals(ListType.ActiveList, result.getListType());
-        Assert.assertEquals(Long.valueOf(501L), Long.valueOf(result.getId()));
-
-        // test user 4 doesn't have any lists. should return a new active list
-        List<ShoppingListEntity> results = shoppingListService.getListsByUsername(TestConstants.USER_4_NAME);
-        Assert.assertNotNull(results);
-        Assert.assertTrue(results.isEmpty());
-        result = shoppingListService.getActiveListForUser(TestConstants.USER_4_NAME);
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result.getItems().isEmpty());
-    }
-
-    @Test
     public void testGetListsByUsername() {
         List<ShoppingListEntity> results = shoppingListService.getListsByUsername(TestConstants.USER_1_NAME);
 
@@ -94,7 +76,6 @@ public class ShoppingListServiceImplTest {
 
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(ListType.BaseList, result.getListType());
         Assert.assertEquals(TestConstants.LIST_1_ID, result.getId());
     }
 
@@ -112,8 +93,6 @@ public class ShoppingListServiceImplTest {
     @Test
     public void testCreateList() throws ShoppingListException {
         ListGenerateProperties properties = new ListGenerateProperties();
-        properties.setRawListType("PickUpList");
-
 
         ShoppingListEntity result = shoppingListService.generateListForUser(addUserAccount.getEmail(), properties);
 
@@ -388,7 +367,7 @@ public class ShoppingListServiceImplTest {
         ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(5000L);
 
@@ -411,7 +390,7 @@ public class ShoppingListServiceImplTest {
         ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(5000L);
         // add one new item to the list
@@ -441,7 +420,7 @@ public class ShoppingListServiceImplTest {
         ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(5000L);
         // add one new item to the list
@@ -470,7 +449,7 @@ public class ShoppingListServiceImplTest {
         ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(5000L);
         // add one new item to the list
@@ -503,7 +482,7 @@ public class ShoppingListServiceImplTest {
         ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(5000L);
         // add one new item to the list
@@ -543,7 +522,7 @@ public class ShoppingListServiceImplTest {
         ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(5000L);
         // add several new items to the list
@@ -602,7 +581,7 @@ public class ShoppingListServiceImplTest {
         ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(50001L);
 
@@ -633,7 +612,7 @@ public class ShoppingListServiceImplTest {
         int beforeItemCount = before.getItems().size();
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(50001L);
         // add one new item to the list
@@ -672,7 +651,7 @@ public class ShoppingListServiceImplTest {
         int beforeItemCount = before.getItems().size();
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(50001L);
         // add one new item to the list
@@ -709,7 +688,7 @@ public class ShoppingListServiceImplTest {
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
         Integer beforeItemUsedCount = beforeItemsByTag.get(55L).getUsedCount();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(50002L);
 
@@ -746,7 +725,7 @@ public class ShoppingListServiceImplTest {
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
         Integer beforeItemUsedCount = beforeItemsByTag.get(55L).getUsedCount();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(50002L);
         Item item = createTestItem("6666", 3, 0, 0, 0);
@@ -785,7 +764,7 @@ public class ShoppingListServiceImplTest {
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
         Integer beforeItemUsedCount = beforeItemsByTag.get(55L).getUsedCount();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(50002L);
         Item item = createTestItem("6666", 3, 0, 0, 0);
@@ -825,7 +804,7 @@ public class ShoppingListServiceImplTest {
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
         Integer beforeItemUsedCount = beforeItemsByTag.get(6666L).getUsedCount();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(50001L);
         Item item = createTestItem("6666", 3, 99, 0, 0);
@@ -864,7 +843,7 @@ public class ShoppingListServiceImplTest {
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
         Integer beforeItemUsedCount = beforeItemsByTag.get(6666L).getUsedCount();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(50001L);
         Item item = createTestItem("6666", 5, 0, 0, 0);
@@ -903,7 +882,7 @@ public class ShoppingListServiceImplTest {
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
         Integer beforeItemUsedCount = beforeItemsByTag.get(6666L).getUsedCount();
-        setListActive(before);
+
 
         MergeRequest mergeRequest = createMergeList(50001L);
         Item item = createTestItem("6666", 5, 0, 0, 0);
@@ -938,7 +917,7 @@ public class ShoppingListServiceImplTest {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, -6);
         Date date = calendar.getTime();
-        List<ItemEntity> items = shoppingListService.getChangedItemsForActiveList(TestConstants.USER_3_NAME, date, 5L);
+        List<ItemEntity> items = shoppingListService.getChangedItemsForMostRecentList(TestConstants.USER_3_NAME, date, 5L);
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
     }
@@ -1006,15 +985,5 @@ public class ShoppingListServiceImplTest {
         return java.sql.Timestamp.valueOf(newDate);
     }
 
-
-    private void setListActive(ShoppingListEntity list) {
-
-        List<ShoppingListEntity> actives = shoppingListRepository.findByUserIdAndListType(list.getUserId(), ListType.ActiveList);
-        actives.forEach(l -> l.setListType(ListType.BaseList));
-        shoppingListRepository.saveAll(actives);
-
-        list.setListType(ListType.ActiveList);
-        shoppingListRepository.save(list);
-    }
 
 }

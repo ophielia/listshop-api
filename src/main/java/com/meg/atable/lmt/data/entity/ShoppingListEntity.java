@@ -1,6 +1,5 @@
 package com.meg.atable.lmt.data.entity;
 
-import com.meg.atable.lmt.api.model.ListType;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -41,8 +40,7 @@ public class ShoppingListEntity {
 
 
     @Column(name = "list_types")
-    @Enumerated(EnumType.STRING)
-    private ListType listType;
+    private String listType;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "list_id", referencedColumnName = "list_id")
@@ -94,11 +92,11 @@ public class ShoppingListEntity {
         this.createdOn = createdOn;
     }
 
-    public ListType getListType() {
+    public String getListType() {
         return listType;
     }
 
-    public void setListType(ListType listType) {
+    public void setListType(String listType) {
         this.listType = listType;
     }
 

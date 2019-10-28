@@ -34,10 +34,6 @@ public interface ShoppingListRestControllerApi {
     @PutMapping(value = "/{listId}", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> updateList(Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingList shoppingList);
 
-    @Deprecated
-    @GetMapping(value = "/type/{listType}", produces = "application/json")
-    ResponseEntity<ShoppingListResource> retrieveListByType(Principal principal, @PathVariable("listType") String listType);
-
     @GetMapping(value = "/mostrecent", produces = "application/json")
     ResponseEntity<ShoppingListResource> retrieveMostRecentList(Principal principal);
 
@@ -49,13 +45,6 @@ public interface ShoppingListRestControllerApi {
                                                           @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
                                                           @RequestParam(value = "highlightListId", required = false, defaultValue = "0") Long highlightListId,
                                                           @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry);
-
-    @Deprecated
-    @GetMapping(value = "/active", produces = "application/json")
-    ResponseEntity<ShoppingListResource> retrieveActiveList(Principal principal,
-                                                            @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
-                                                            @RequestParam(value = "highlightListType", required = false, defaultValue = "0") String highlightListType,
-                                                            @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry);
 
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}", produces = "application/json")
