@@ -25,13 +25,13 @@ public interface ShoppingListRestControllerApi {
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties);
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/shared", produces = "application/json")
+    @PutMapping(value = "/shared", produces = "application/json")
     ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest);
 
     @GetMapping(value = "/shared/{listLayoutId}", produces = "application/json")
     ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId, @RequestParam(value = "after", required = true) Date changedAfter);
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/{listId}", produces = "application/json", consumes = "application/json")
+    @PutMapping(value = "/{listId}", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> updateList(Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingList shoppingList);
 
     @Deprecated

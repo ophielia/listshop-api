@@ -528,14 +528,20 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     // last modified item.
     @Override
     public MergeResult mergeFromClient(String userName, MergeRequest mergeRequest) {
-
-        // get active list for user
-        ShoppingListEntity list = getActiveListForUser(userName, true);
-
-        // ensure active list id equals mergeList
-        if (!list.getId().equals(mergeRequest.getListId())) {
-            logger.error("Trying to merge list which is not currently active! username [" + userName + "], active_id [" + list.getId() + "], merge_list_id [" + mergeRequest.getListId() + "]");
+        Long listToMergeId = mergeRequest.getListId();
+        if (listToMergeId == null) {
+            // oops - no list id
+            throw new ObjectNotFoundException("List to merge has empty listId for user [" + userName + "]");
         }
+
+        // get list to merge
+        ShoppingListEntity list = getListById(userName, listToMergeId, true);
+
+        if (list == null) {
+            // oops - list isn't here any more to merge
+            throw new ObjectNotFoundException("List to merge [" + listToMergeId + "] not found for user [" + userName + "]");
+        }
+
         // create MergeCollector from list
         MergeItemCollector mergeCollector = new MergeItemCollector(list.getId(),list.getItems());
 

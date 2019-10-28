@@ -75,7 +75,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest) {
-        //MM need handling for different list - error handling!
+
         Long listId = mergeRequest.getListId();
         Long layoutId = mergeRequest.getLayoutId();
 
