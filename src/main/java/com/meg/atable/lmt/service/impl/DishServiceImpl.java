@@ -17,6 +17,7 @@ import com.meg.atable.lmt.service.tag.AutoTagService;
 import com.meg.atable.lmt.service.tag.TagService;
 import com.meg.atable.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,7 +50,7 @@ public class DishServiceImpl implements DishService {
             DishRepository dishRepository,
             DishSearchService dishSearchService,
             UserRepository userRepository,
-            AutoTagService autoTagService,
+            @Lazy AutoTagService autoTagService,
             TagService tagService,
             TagStructureService tagStructureService
     ) {

@@ -26,14 +26,27 @@ import java.util.stream.Collectors;
 @Service
 public class TagStructureServiceImpl implements TagStructureService {
 
-    @Autowired
+
     TagCache tagCache;
-    @Autowired
+
     private TagSearchGroupRepository tagSearchGroupRepository;
-    @Autowired
+
     private TagRelationRepository tagRelationRepository;
-    @Autowired
+
     private TagRepository tagRepository;
+
+    @Autowired
+    public TagStructureServiceImpl(
+            TagCache tagCache,
+            TagSearchGroupRepository tagSearchGroupRepository,
+            TagRelationRepository tagRelationRepository,
+            TagRepository tagRepository
+    ) {
+        this.tagCache = tagCache;
+        this.tagSearchGroupRepository = tagSearchGroupRepository;
+        this.tagRelationRepository = tagRelationRepository;
+        this.tagRepository = tagRepository;
+    }
 
     @Override
     public TagRelationEntity createRelation(TagEntity parentTag, TagEntity childTag) {

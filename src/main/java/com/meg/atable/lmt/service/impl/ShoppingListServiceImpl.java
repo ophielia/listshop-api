@@ -122,7 +122,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // check list name
         String listNameFromProperties = listGenerateProperties.getListName();
-        if (listNameFromProperties == null) {
+        if (listNameFromProperties == null || listNameFromProperties.isEmpty()) {
             listNameFromProperties = defaultShoppingListName;
         }
         String listName = ensureListNameIsUnique(user.getId(), listNameFromProperties);
@@ -151,7 +151,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // add starter list - if desired
-        if (listGenerateProperties.getAddFromBase()) {
+        if (listGenerateProperties.getAddFromStarter()) {
             // add Items from BaseList
             ShoppingListEntity baseList = getStarterList(userName);
             if (baseList != null) {
@@ -596,7 +596,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             Set<String> listSourceSet = FlatStringUtils.inflateStringToSet(source, ";");
             List<Long> sourceListIds = listSourceSet.stream()
                     .filter(val -> !val.isEmpty())
-                    .map(stringval -> Long.valueOf(stringval)).collect(Collectors.toList());
+                    .map(stringval -> StringTools.stringToLong(stringval))
+                    .filter(val -> val >= 0)
+                    .collect(Collectors.toList());
             if (sourceListIds != null && !sourceListIds.isEmpty()) {
                 List<ShoppingListEntity> sourceLists = shoppingListRepository.findAllById(sourceListIds);
                 // set in shopping list
@@ -605,6 +607,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             }
         }
     }
+
 
     @Override
     public void changeListLayout(String name, Long listId, Long layoutId) {
@@ -798,9 +801,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                                                                       Long highlightDishId, Boolean showPantry,
                                                                       Long highlightListId) {
         boolean isHighlightDish = highlightDishId != null && !highlightDishId.equals(0L);
-        boolean isHighlightList = !isHighlightDish && highlightListId != null;
+        boolean isHighlightList = !isHighlightDish && !(highlightListId == null) && !highlightListId.equals(0L);
         boolean separateFrequent = showPantry != null && showPantry;
-        String highlightName = getHighlightDishName(userName, isHighlightDish, highlightDishId);
+        String highlightName = getHighlightName(userName, isHighlightDish, isHighlightList, highlightDishId, highlightListId);
         Set<Long> dishItemIds = getHighlightDishItemIds(isHighlightDish, shoppingListEntity, highlightDishId);
 
 
@@ -808,7 +811,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ItemCategory frequent = createDefaultCategoryByType(CategoryType.Frequent, null);
         ItemCategory uncategorized = createDefaultCategoryByType(CategoryType.UnCategorized, null);
         ItemCategory highlight = createDefaultCategoryByType(CategoryType.Highlight, highlightName);
-        ItemCategory highlightList = createDefaultCategoryByType(CategoryType.HighlightList, null);
+        ItemCategory highlightList = createDefaultCategoryByType(CategoryType.HighlightList, highlightName);
         for (ItemEntity item : shoppingListEntity.getItems()) {
             if (item.isFrequent() && separateFrequent && !isHighlightDish) {
                 frequent.addItemEntity(item);
@@ -837,6 +840,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         return specialCategories;
     }
+
 
     private ItemCategory createDefaultCategoryByType(CategoryType categoryType, String highlightName) {
         String categoryName = shoppingListProperties.getCategoryNameByType(categoryType);
@@ -870,6 +874,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
     }
 
+
     private Set<Long> getHighlightDishItemIds(boolean isHighlightDish, ShoppingListEntity shoppingListEntity, Long highlightDishId) {
         Set<Long> results = new HashSet<>();
 
@@ -880,16 +885,20 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    private String getHighlightDishName(String userName, boolean isHighlightDish, Long highlightDishId) {
-        if (!isHighlightDish || highlightDishId == null) {
-            return "";
+
+    private String getHighlightName(String userName, boolean isHighlightDish, boolean isHighlightList, Long highlightDishId, Long highlightListId) {
+        if (isHighlightDish && highlightDishId != null && highlightDishId > 0) {
+            DishEntity dish = dishService.getDishForUserById(userName, highlightDishId);
+
+            return dish.getDishName();
         }
-
-        DishEntity dish = dishService.getDishForUserById(userName, highlightDishId);
-
-        return dish.getDishName();
-
+        if (isHighlightList && highlightListId != null && highlightListId > 0) {
+            ShoppingListEntity list = getListById(userName, highlightListId);
+            return list.getName();
+        }
+        return null;
     }
+
 
     private Set<Long> getDishItemIds(ShoppingListEntity shoppingListEntity, Long dishId) {
         Set<Long> dishItemIds = new HashSet<>();

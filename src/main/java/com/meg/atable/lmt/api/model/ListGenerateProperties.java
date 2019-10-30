@@ -14,11 +14,8 @@ public class ListGenerateProperties {
     @JsonProperty("meal_plan_source")
     private String mealPlanSourceId;
 
-    @JsonProperty("add_from_base")
-    private Boolean addFromBase;
-
-    @JsonProperty("add_from_pickup")
-    private Boolean addFromPickup;
+    @JsonProperty("add_from_starter")
+    private Boolean addFromStarter;
 
     @JsonProperty("generate_mealplan")
     private Boolean generateMealplan;
@@ -57,20 +54,12 @@ public class ListGenerateProperties {
         this.mealPlanSourceId = mealPlanSourceId;
     }
 
-    public Boolean getAddFromBase() {
-        return addFromBase==null?false:addFromBase;
+    public Boolean getAddFromStarter() {
+        return addFromStarter == null ? false : addFromStarter;
     }
 
-    public void setAddFromBase(Boolean addFromBase) {
-        this.addFromBase = addFromBase;
-    }
-
-    public Boolean getAddFromPickup() {
-        return addFromPickup==null?false:addFromPickup;
-    }
-
-    public void setAddFromPickup(Boolean addFromPickup) {
-        this.addFromPickup = addFromPickup;
+    public void setAddFromStarter(Boolean addFromBase) {
+        this.addFromStarter = addFromBase;
     }
 
     public Boolean getGenerateMealplan() {

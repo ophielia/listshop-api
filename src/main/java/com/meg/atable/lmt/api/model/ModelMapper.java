@@ -3,6 +3,7 @@ package com.meg.atable.lmt.api.model;
 import com.meg.atable.auth.api.model.User;
 import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.common.FlatStringUtils;
+import com.meg.atable.common.StringTools;
 import com.meg.atable.lmt.data.entity.*;
 
 import java.util.*;
@@ -222,7 +223,7 @@ public class ModelMapper {
             if (listId.isEmpty()) {
                 continue;
             }
-            if (listSourceMap.containsKey(Long.valueOf(listId))) {
+            if (listSourceMap.containsKey(StringTools.stringToLong(listId))) {
                 ShoppingListEntity list = listSourceMap.get(Long.valueOf(listId));
 
                 ItemSource source = toListSourceModel(list);
@@ -524,9 +525,9 @@ public class ModelMapper {
         return itemEntity;
     }
 
-    public static ShoppingListEntity toEntity(ShoppingList shoppingList) {
+    public static ShoppingListEntity toEntity(ShoppingListPut shoppingList) {
         ShoppingListEntity shoppingListEntity = new ShoppingListEntity(shoppingList.getList_id());
-        shoppingListEntity.setUserId(shoppingList.getUserId());
+
         // not setting items here, since items will be updated individually from client
         shoppingListEntity.setName(shoppingList.getName());
         shoppingListEntity.setIsStarterList(shoppingList.getStarterList());

@@ -118,7 +118,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
     @Override
-    public ResponseEntity<Object> updateList(Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingList shoppingList) {
+    public ResponseEntity<Object> updateList(Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList) {
         ShoppingListEntity updateFrom = ModelMapper.toEntity(shoppingList);
 
         ShoppingListEntity result = shoppingListService.updateList(principal.getName(), listId, updateFrom);
@@ -155,7 +155,12 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
                                                                  @RequestParam(value = "highlightListId", required = false, defaultValue = "0") Long highlightListId,
                                                                  @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry) {
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
-
+        if (highlightListId == 0) {
+            highlightListId = null;
+        }
+        if (highlightDish == 0) {
+            highlightDish = null;
+        }
 
         List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, highlightListId);
         shoppingListService.fillSources(result);

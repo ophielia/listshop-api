@@ -142,6 +142,6 @@ public class ShoppingListProperties {
         idMapByType.put(CategoryType.Frequent,getFrequentIdAndSortAsLong());
         idMapByType.put(CategoryType.UnCategorized,getUncategorizedIdAndSortAsLong());
         idMapByType.put(CategoryType.Highlight,getHighlightIdAndSortAsLong());
-        idMapByType.put(CategoryType.Highlight,getHighlightListIdAndSortAsLong());
+        idMapByType.put(CategoryType.HighlightList, getHighlightListIdAndSortAsLong());
     }
 }

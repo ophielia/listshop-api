@@ -16,9 +16,6 @@ public class ShoppingList {
     @JsonProperty("updated")
     private Date updated;
 
-    @JsonProperty("list_type")
-    private String listType;
-
     @JsonProperty("layout_type")
     private String layoutType;
 
@@ -68,14 +65,6 @@ public class ShoppingList {
         return this;
     }
 
-    public String getListType() {
-        return listType;
-    }
-
-    public ShoppingList listType(String listType) {
-        this.listType = listType;
-        return this;
-    }
 
     public java.util.List<Category> getCategories() {
         return categories;

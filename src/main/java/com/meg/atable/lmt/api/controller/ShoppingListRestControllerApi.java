@@ -32,7 +32,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId, @RequestParam(value = "after", required = true) Date changedAfter);
 
     @PutMapping(value = "/{listId}", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> updateList(Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingList shoppingList);
+    ResponseEntity<Object> updateList(Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList);
 
     @GetMapping(value = "/mostrecent", produces = "application/json")
     ResponseEntity<ShoppingListResource> retrieveMostRecentList(Principal principal);

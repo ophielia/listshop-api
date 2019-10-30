@@ -27,7 +27,9 @@ WHERE n.list_id = l.list_id;
 ALTER TABLE public.list
   ALTER COLUMN name SET NOT NULL;
 
-
+-- remove all "bad" list sources
+update list_item
+set list_sources = null;
 
 ---- rollback
 

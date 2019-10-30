@@ -4,7 +4,7 @@ import com.meg.atable.Application;
 import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.lmt.api.model.Item;
 import com.meg.atable.lmt.api.model.ListGenerateProperties;
-import com.meg.atable.lmt.api.model.ShoppingList;
+import com.meg.atable.lmt.api.model.ShoppingListPut;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -189,7 +189,7 @@ public class ShoppingListRestControllerTest {
     public void testUpdateList() throws Exception {
         Long testId = 509991L;
 
-        ShoppingList shoppingList = new ShoppingList(testId)
+        ShoppingListPut shoppingList = new ShoppingListPut(testId)
                 .name("updated list")
                 .isStarterList(false);
 
@@ -209,7 +209,7 @@ public class ShoppingListRestControllerTest {
         Long testId = 509990L;
         Long oldStarterId = 509991L;
 
-        ShoppingList shoppingList = new ShoppingList(testId)
+        ShoppingListPut shoppingList = new ShoppingListPut(testId)
                 .name("now is starter list")
                 .isStarterList(true);
 
@@ -286,8 +286,7 @@ public class ShoppingListRestControllerTest {
     @WithMockUser
     public void testNewCreateList() throws Exception {
         ListGenerateProperties properties = new ListGenerateProperties();
-        properties.setAddFromBase(true);
-        properties.setAddFromPickup(true);
+        properties.setAddFromStarter(true);
         properties.setGenerateMealplan(false);
 
         String jsonProperties = json(properties);
