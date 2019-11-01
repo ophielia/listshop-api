@@ -30,9 +30,7 @@ public class MergeItemCollector extends AbstractItemCollector {
         while (mergeIterator.hasNext()) {
             ItemEntity mergeItemEntity = mergeIterator.next();
             Long tagId = mergeItemEntity.getTag().getId();
-            if (tagId.equals(151L)) {
-                Long beep = mergeItemEntity.getTag().getId();
-            }
+
             if (getTagCollectedMap().containsKey(tagId)) {
                 CollectedItem serverItem = getTagCollectedMap().get(mergeItemEntity.getTag().getId());
                 CollectedItem mergeItem = new CollectedItem(mergeItemEntity);
@@ -57,6 +55,7 @@ public class MergeItemCollector extends AbstractItemCollector {
 
             // set added date, and changed
             item.setIsAdded(true);
+
 
             // add to TagCollectedMap
             if (newMergeItem.getTag() != null) {

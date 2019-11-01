@@ -708,7 +708,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     private void saveListChanges(ShoppingListEntity shoppingList, ItemCollector collector) {
-        itemChangeRepository.saveItemChanges(collector, shoppingList.getUserId());
+        itemChangeRepository.saveItemChanges(shoppingList, collector, shoppingList.getUserId());
         // make changes in list object
         shoppingList.setItems(collector.getAllItems());
         if (collector.hasChanges()) {

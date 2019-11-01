@@ -1,6 +1,7 @@
 package com.meg.atable.lmt.data.repository.impl;
 
 import com.meg.atable.lmt.data.entity.ItemEntity;
+import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 import com.meg.atable.lmt.data.repository.ItemChangeRepository;
 import com.meg.atable.lmt.data.repository.ItemRepository;
 import com.meg.atable.lmt.service.ItemCollector;
@@ -24,12 +25,13 @@ public class ListItemRepositoryImpl implements ItemChangeRepository {
     private ItemRepository itemRepository;
 
     @Override
-    public void saveItemChanges(ItemCollector collector, Long userId) {
+    public void saveItemChanges(ShoppingListEntity shoppingList, ItemCollector collector, Long userId) {
         if (collector instanceof ListItemCollector) {
             listTagStatisticService.processCollectorStatistics(userId, (ListItemCollector) collector);
         }
 
         List<ItemEntity> toUpdate = collector.getChangedItems();
+        toUpdate.stream().forEach(item -> item.setListId(shoppingList.getId()));
 
         if (!toUpdate.isEmpty()) {
             itemRepository.saveAll(toUpdate);

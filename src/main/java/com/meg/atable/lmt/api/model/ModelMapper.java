@@ -507,8 +507,9 @@ public class ModelMapper {
     }
 
     public static ItemEntity toEntity(Item input) {
-        Long id = input.getId();
-        Long listId = input.getListId() != null ?
+        Long id = input.getId() != null && input.getId() > 0 ?
+                input.getId() : null;
+        Long listId = input.getListId() != null && !input.getListId().equals("0") ?
                 Long.valueOf(input.getListId()) : null;
         Long tagId = input.getTagId() != null ?
                 Long.valueOf(input.getTagId()) : null;
