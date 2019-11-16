@@ -58,4 +58,13 @@ public class ServiceTestUtils {
         layoutCategoryEntity.setName(name);
         return layoutCategoryEntity;
     }
+
+    public static ItemEntity buildItem(Long itemId, TagEntity tagEntity, Long listId) {
+        ItemEntity itemEntity = new ItemEntity(itemId);
+        itemEntity.setTag(tagEntity);
+        itemEntity.setListId(listId);
+        itemEntity.setAddedOn(new Date());
+
+        return itemEntity;
+    }
 }

@@ -52,6 +52,12 @@ public class MealPlan {
         return created;
     }
 
+
+    public MealPlan created(Date created) {
+        this.created = created;
+        return this;
+    }
+
     @JsonProperty("user_id")
     public String getUserId() {
         return userId;

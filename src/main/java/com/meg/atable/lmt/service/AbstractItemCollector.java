@@ -1,7 +1,10 @@
 package com.meg.atable.lmt.service;
 
+import com.meg.atable.lmt.api.model.ContextType;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -95,6 +98,8 @@ public abstract class AbstractItemCollector implements ItemCollector {
         if (outdatedTags.isEmpty()) {
             return;
         }
+
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified).build();
             for (TagEntity tag : outdatedTags) {
                 // replace the tag in the tag collector
                 CollectedItem toFix = getTagCollectedMap().get(tag.getId());
@@ -103,7 +108,7 @@ public abstract class AbstractItemCollector implements ItemCollector {
                 toFix.setTag(replaceTag);
                 getTagCollectedMap().remove(originalTag.getId());
                 if (getTagCollectedMap().containsKey(replaceTag.getId())) {
-                    addItem(toFix.getItem());
+                    addItem(toFix.getItem(), context);
                 } else {
                     toFix.setChanged(true);
                     getTagCollectedMap().put(replaceTag.getId(),toFix);
@@ -112,52 +117,44 @@ public abstract class AbstractItemCollector implements ItemCollector {
 
     }
 
-    public void addItem(ItemEntity item) {
+    public void addItem(ItemEntity item, CollectorContext context) {
         if (item.getTag() == null) {
             getFreeTextItemList().add(new CollectedItem(item));
             return;
         }
 
-        addItemByTag(item.getTag(), null);
+        addItemByTag(item.getTag(), context);
     }
 
-    protected void addItemByTag(TagEntity tag, Long dishId) {
-        CollectedItem update = getTagCollectedMap().get(tag.getId());
+    protected void addItemByTag(TagEntity tag, CollectorContext context) {
+        Pair<Boolean, CollectedItem> collectedItemPair = findOrCreateItemByTagId(tag);
 
-        if (update == null) {
-            update = createItemFromTag(tag, null);
-        } else {
-            addTagForExistingItem(update);
-        }
+        CollectedItem update = collectedItemPair.getRight();
+        Boolean isNew = collectedItemPair.getLeft();
 
-        int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
-        update.setUsedCount(count + 1);
-        update.addRawListSource(null);
-        update.addRawDishSource(dishId);
-        update.incrementAddCount();
+        update.resetRemoved();
+        update.add(context, isNew);
         getTagCollectedMap().put(tag.getId(), update);
 
     }
 
-    private CollectedItem createItemFromTag(TagEntity tag, Long dishId) {
+    protected Pair<Boolean, CollectedItem> findOrCreateItemByTagId(TagEntity tag) {
+        CollectedItem update = getTagCollectedMap().get(tag.getId());
+
+        if (update != null) {
+            Pair<Boolean, CollectedItem> collectedItemPair = new ImmutablePair<>(false, update);
+            return collectedItemPair;
+        }
+
+        // doesn't exist - we need to create it
         CollectedItem item = new CollectedItem(new ItemEntity());
 
         item.setTag(tag);
         item.setListId(getListId());
-        item.addRawDishSource(dishId);
         item.setUsedCount(0);
         item.setIsAdded(true);
-
-        return item;
+        Pair<Boolean, CollectedItem> collectedItemPair = new ImmutablePair<>(true, item);
+        return collectedItemPair;
     }
 
-
-    private void addTagForExistingItem(CollectedItem item) {
-        // if this tag has been previously removed, we need to clear that information - because
-        // it's now being added.
-        if (item.isRemoved()) {
-            item.setRemoved(false);
-        }
-        item.setUpdated(true);
-    }
 }

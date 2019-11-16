@@ -61,7 +61,7 @@ public class MealPlanServiceImpl implements MealPlanService {
         // get user
         UserEntity user = userService.getUserByUserEmail(username);
 
-        return mealPlanRepository.findByUserId(user.getId());
+        return mealPlanRepository.findByUserIdOrderByCreated(user.getId());
     }
 
     public MealPlanEntity createMealPlan(String username, MealPlanEntity mealPlanEntity) {

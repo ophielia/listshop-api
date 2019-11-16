@@ -68,4 +68,5 @@ public interface ShoppingListService {
     List<ItemEntity> getChangedItemsForMostRecentList(String name, Date changedAfter, Long layoutId);
 
 
+    ShoppingListEntity addToListFromMealPlan(String name, Long listId, Long mealPlanId);
 }

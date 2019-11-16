@@ -1,5 +1,6 @@
 package com.meg.atable.lmt.service;
 
+import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
@@ -7,6 +8,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 02/11/2017.
@@ -30,7 +32,7 @@ public class CollectedItem {
     private boolean isChanged;
     private boolean fromClient = false;
 
-    private long secondComparisonWindow = 2;
+    private int secondComparisonWindow = 2;
 
     public CollectedItem(ItemEntity itemEntity) {
         item = itemEntity;
@@ -175,6 +177,71 @@ public class CollectedItem {
         this.item.setFrequent(frequent);
     }
 
+
+    // Collector Item methods
+    public void remove(CollectorContext context) {
+        int count = getUsedCount() != null ? getUsedCount() : 0;
+        if (count <= 1 || context.isRemoveEntireItem()) {
+            // delete item outright
+            setRemoved(true);
+            incrementRemovedCount(getUsedCount());
+            setUsedCount(0);
+            return;
+        }
+        // (possibly) remove list sources
+        boolean updateListSources = context.hasListId() && context.eligibleForListSourceChange();
+        if (updateListSources) {
+            Set<String> inflatedListSources = FlatStringUtils.inflateStringToSet(getRawListSources(), ";");
+            if (inflatedListSources.contains(String.valueOf(context.getListId()))) {
+                inflatedListSources.remove(String.valueOf(context.getListId()));
+                String newSources = FlatStringUtils.flattenSetToString(inflatedListSources, ";");
+                setRawListSources(newSources);
+            }
+        }
+        // (possibly) remove list sources
+        boolean updateDishSources = context.hasDishId() && context.eligibleForDishSourceChange();
+        if (updateDishSources) {
+            Set<String> inflatedDishSources = FlatStringUtils.inflateStringToSet(getRawDishSources(), ";");
+            if (inflatedDishSources.contains(String.valueOf(context.getDishId()))) {
+                inflatedDishSources.remove(String.valueOf(context.getDishId()));
+                String newSources = FlatStringUtils.flattenSetToString(inflatedDishSources, ";");
+                setRawDishSources(newSources);
+            }
+        }
+        setUpdated(true);
+        setUsedCount(getUsedCount() - 1);
+        incrementRemovedCount();
+
+    }
+
+
+    public void add(CollectorContext context) {
+        add(context, false);
+    }
+
+    public void add(CollectorContext context, Boolean isNew) {
+        int count = getUsedCount() != null ? getUsedCount() : 0;
+        boolean updateListSources = context.hasListId() && context.eligibleForListSourceChange();
+        if (updateListSources) {
+            Set<String> inflatedListSources = FlatStringUtils.inflateStringToSet(getRawListSources(), ";");
+            inflatedListSources.add(String.valueOf(context.getListId()));
+            String newSources = FlatStringUtils.flattenSetToString(inflatedListSources, ";");
+            setRawListSources(newSources);
+        }
+        boolean updateDishSources = context.hasDishId() && context.eligibleForDishSourceChange();
+        if (updateDishSources) {
+            Set<String> inflatedDishSources = FlatStringUtils.inflateStringToSet(getRawDishSources(), ";");
+            inflatedDishSources.add(String.valueOf(context.getListId()));
+            String newSources = FlatStringUtils.flattenSetToString(inflatedDishSources, ";");
+            setRawDishSources(newSources);
+        }
+        setUsedCount(count + 1);
+        incrementAddCount();
+        if (!isNew) {
+            setUpdated(true);
+        }
+
+    }
 
     // Collector Item values
 
@@ -360,7 +427,7 @@ public class CollectedItem {
         if (o == null || getClass() != o.getClass()) return false;
         CollectedItem that = (CollectedItem) o;
 
-        if (dateEquals(2,getStatusDate(), that.getStatusDate())) {
+        if (dateEquals(secondComparisonWindow, getStatusDate(), that.getStatusDate())) {
             return true;
         }
 
@@ -408,4 +475,15 @@ public class CollectedItem {
         }
         return getAddedOn();
     }
+
+    public void resetRemoved() {
+        // if this tag has been previously removed, we need to clear that information - because
+        // it's now being added.
+        if (isRemoved()) {
+            setRemoved(false);
+            setUpdated(true);
+        }
+
+    }
+
 }

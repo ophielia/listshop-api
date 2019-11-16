@@ -4,8 +4,8 @@ import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
 import com.meg.atable.lmt.api.model.ListGenerateProperties;
 import com.meg.atable.lmt.api.model.ListLayoutType;
-import com.meg.atable.lmt.data.entity.ListLayoutEntity;
-import com.meg.atable.lmt.data.entity.ShoppingListEntity;
+import com.meg.atable.lmt.api.model.TagType;
+import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.data.repository.ItemChangeRepository;
 import com.meg.atable.lmt.data.repository.ItemRepository;
 import com.meg.atable.lmt.data.repository.ShoppingListRepository;
@@ -23,8 +23,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -114,11 +118,230 @@ public class ShoppingListServiceImplMockTest {
 
     @Test
     public void testGenerateListFromMealPlan() {
-        /*
+        String username = "Eustace";
+        Long listId = 99L;
+        Long mealPlanId = 999L;
+        Long userId = 9L;
+        String listName = "list name";
 
-        ShoppingListEntity result = shoppingListService.generateListFromMealPlan(userAccount.getEmail(), TestConstants.MEAL_PLAN_1_ID);
-        Assert.assertNotNull(result);
-         */
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setEmail(username);
+
+        ShoppingListEntity createdShoppingList = emptyShoppingList(listId, userId, listName);
+        List<TagType> tagTypeList = new ArrayList<>();
+        tagTypeList.add(TagType.Ingredient);
+        tagTypeList.add(TagType.NonEdible);
+
+        // fixtures
+        ListLayoutEntity listLayoutEntity = new ListLayoutEntity();
+        listLayoutEntity.setLayoutType(ListLayoutType.All);
+        MealPlanEntity mealPlan = new MealPlanEntity(mealPlanId);
+        // make 6 tags
+        TagEntity tag1 = ServiceTestUtils.buildTag(1L, "first tag", TagType.Ingredient);
+        TagEntity tag2 = ServiceTestUtils.buildTag(2L, "second tag", TagType.Ingredient);
+        TagEntity tag3 = ServiceTestUtils.buildTag(3L, "third tag", TagType.Ingredient);
+        TagEntity tag4 = ServiceTestUtils.buildTag(4L, "fourth tag", TagType.Ingredient);
+        TagEntity tag5 = ServiceTestUtils.buildTag(5L, "fifth tag", TagType.Ingredient);
+        TagEntity tag6 = ServiceTestUtils.buildTag(6L, "outlier tag", TagType.NonEdible);
+        // make 2 dishes
+        DishEntity dish1 = ServiceTestUtils.buildDish(userId, "dish one", Arrays.asList(tag1, tag2));
+        DishEntity dish2 = ServiceTestUtils.buildDish(userId, "dish two", Arrays.asList(tag1, tag3, tag4, tag5, tag6));
+        dish1.setId(1212L);
+        dish2.setId(2323L);
+        // make 2 slots
+        SlotEntity slot1 = ServiceTestUtils.buildDishSlot(mealPlan, dish1);
+        SlotEntity slot2 = ServiceTestUtils.buildDishSlot(mealPlan, dish2);
+        mealPlan.getSlots().add(slot1);
+        mealPlan.getSlots().add(slot2);
+
+        ArgumentCaptor<ShoppingListEntity> argument = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        // expectations
+        Mockito.when(userService.getUserByUserEmail(username))
+                .thenReturn(userEntity);
+        Mockito.when(shoppingListProperties.getDefaultLayout())
+                .thenReturn(ListLayoutType.All);
+        Mockito.when(listLayoutService.getListLayouts())
+                .thenReturn(Collections.singletonList(listLayoutEntity));
+        Mockito.when(listLayoutService.getListLayoutByType(ListLayoutType.All))
+                .thenReturn(listLayoutEntity);
+        Mockito.when(mealPlanService.getMealPlanById(username, mealPlanId))
+                .thenReturn(mealPlan);
+        Mockito.when(shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId))
+                .thenReturn(Optional.of(createdShoppingList));
+        Mockito.when(tagService.getTagsForDish(username, dish1.getId(), tagTypeList))
+                .thenReturn(Arrays.asList(tag1, tag2));
+        Mockito.when(tagService.getTagsForDish(username, dish2.getId(), tagTypeList))
+                .thenReturn(Arrays.asList(tag1, tag3, tag4, tag5));
+        mealPlanService.updateLastAddedDateForDishes(mealPlan);
+
+        itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId));
+        Mockito.when(shoppingListRepository.save(argument.capture()))
+                .thenReturn(createdShoppingList);
+        Mockito.when(shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId))
+                .thenReturn(Optional.of(createdShoppingList));
+
+
+        // call
+        shoppingListService.generateListFromMealPlan(username, mealPlanId);
+
+        // verification afterwards
+        // note - checking captured list
+        // list is not null
+        ShoppingListEntity listResult = argument.getValue();
+        Assert.assertNotNull(listResult);
+        // list should contain 6 items
+        //Assert.assertEquals(6, listResult.getItems().size());
+        // verify items
+        // put items into map
+        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(resultMap);
+        // tag 1 should be there - twise
+        Assert.assertNotNull(resultMap.get(1L));
+        Assert.assertEquals(2, resultMap.get(1L).getUsedCount().longValue());
+        // tags 3 and 4 should be there
+        Assert.assertNotNull(resultMap.get(3L));
+        Assert.assertEquals(1, resultMap.get(3L).getUsedCount().longValue());
+        Assert.assertNotNull(resultMap.get(4L));
+        Assert.assertEquals(1, resultMap.get(4L).getUsedCount().longValue());
+        // tag 8 should not be there (once)
+        Assert.assertNull(resultMap.get(8L));
+        // tag 6 should NOT be there
+        Assert.assertNull(resultMap.get(6L));
+
+    }
+
+    private ShoppingListEntity emptyShoppingList(Long listId, Long userId, String listName) {
+        ShoppingListEntity newList = new ShoppingListEntity();
+        // get list layout for user, list_type
+        newList.setListLayoutId(33L);
+        newList.setName(listName);
+        newList.setIsStarterList(false);
+        newList.setCreatedOn(new Date());
+        newList.setUserId(userId);
+        return newList;
+    }
+
+    @Test
+    public void testAddToListFromMealPlan() {
+        String username = "Eustace";
+        Long listId = 99L;
+        Long mealPlanId = 999L;
+        Long userId = 9L;
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setEmail(username);
+
+        ShoppingListEntity shoppingList = dummyShoppingList(listId, userId);
+        List<TagType> tagTypeList = new ArrayList<>();
+        tagTypeList.add(TagType.Ingredient);
+        tagTypeList.add(TagType.NonEdible);
+
+        // fixtures
+        MealPlanEntity mealPlan = new MealPlanEntity(mealPlanId);
+        // make 6 tags
+        TagEntity tag1 = ServiceTestUtils.buildTag(1L, "first tag", TagType.Ingredient);
+        TagEntity tag2 = ServiceTestUtils.buildTag(2L, "second tag", TagType.Ingredient);
+        TagEntity tag3 = ServiceTestUtils.buildTag(3L, "third tag", TagType.Ingredient);
+        TagEntity tag4 = ServiceTestUtils.buildTag(4L, "fourth tag", TagType.Ingredient);
+        TagEntity tag5 = ServiceTestUtils.buildTag(5L, "fifth tag", TagType.Ingredient);
+        TagEntity tag6 = ServiceTestUtils.buildTag(6L, "outlier tag", TagType.NonEdible);
+        // make 2 dishes
+        DishEntity dish1 = ServiceTestUtils.buildDish(userId, "dish one", Arrays.asList(tag1, tag2));
+        DishEntity dish2 = ServiceTestUtils.buildDish(userId, "dish two", Arrays.asList(tag1, tag3, tag4, tag5, tag6));
+        dish1.setId(1212L);
+        dish2.setId(2323L);
+        // make 2 slots
+        SlotEntity slot1 = ServiceTestUtils.buildDishSlot(mealPlan, dish1);
+        SlotEntity slot2 = ServiceTestUtils.buildDishSlot(mealPlan, dish2);
+        mealPlan.getSlots().add(slot1);
+        mealPlan.getSlots().add(slot2);
+
+        ArgumentCaptor<ShoppingListEntity> argument = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        // expectations
+        Mockito.when(userService.getUserByUserEmail(username))
+                .thenReturn(userEntity);
+        Mockito.when(mealPlanService.getMealPlanById(username, mealPlanId))
+                .thenReturn(mealPlan);
+        Mockito.when(shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId))
+                .thenReturn(Optional.of(shoppingList));
+        Mockito.when(tagService.getTagsForDish(username, dish1.getId(), tagTypeList))
+                .thenReturn(Arrays.asList(tag1, tag2));
+        Mockito.when(tagService.getTagsForDish(username, dish2.getId(), tagTypeList))
+                .thenReturn(Arrays.asList(tag1, tag3, tag4, tag5));
+        mealPlanService.updateLastAddedDateForDishes(mealPlan);
+
+        itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId));
+        Mockito.when(shoppingListRepository.save(argument.capture()))
+                .thenReturn(shoppingList);
+        Mockito.when(shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId))
+                .thenReturn(Optional.of(shoppingList));
+
+        // verifications before
+        // list contain doesn't item from meal plan
+        Optional<ItemEntity> mealPlanItem = shoppingList.getItems().stream()
+                .filter(item -> item.getTag().getId().longValue() == 1L)
+                .findFirst();
+        Assert.assertFalse(mealPlanItem.isPresent());
+
+        // call
+        shoppingListService.addToListFromMealPlan(username, listId, mealPlanId);
+
+        // verification afterwards
+        // note - checking captured list
+        // list is not null
+        ShoppingListEntity listResult = argument.getValue();
+        Assert.assertNotNull(listResult);
+        // list should contain 6 items
+        //Assert.assertEquals(6, listResult.getItems().size());
+        // verify items
+        // put items into map
+        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(resultMap);
+        // tag 1 should be there - twise
+        Assert.assertNotNull(resultMap.get(1L));
+        Assert.assertEquals(2, resultMap.get(1L).getUsedCount().longValue());
+        // tags 3 and 4 should be there twice
+        Assert.assertNotNull(resultMap.get(3L));
+        Assert.assertEquals(2, resultMap.get(3L).getUsedCount().longValue());
+        Assert.assertNotNull(resultMap.get(4L));
+        Assert.assertEquals(2, resultMap.get(4L).getUsedCount().longValue());
+        // tag 8 should be there (once)
+        Assert.assertNotNull(resultMap.get(8L));
+        Assert.assertEquals(1, resultMap.get(8L).getUsedCount().longValue());
+        // tag 6 should NOT be there
+        Assert.assertNull(resultMap.get(6L));
+
+    }
+
+
+    private ShoppingListEntity dummyShoppingList(Long shoppingListId, Long userId) {
+        // make empty meal plan
+        ShoppingListEntity listEntity = new ShoppingListEntity(shoppingListId);
+        listEntity.setUserId(userId);
+        listEntity.setCreatedOn(new Date());
+
+        // make 3 tags
+        TagEntity tag3 = ServiceTestUtils.buildTag(3L, "third tag", TagType.Ingredient);
+        TagEntity tag4 = ServiceTestUtils.buildTag(4L, "fourth tag", TagType.Ingredient);
+        TagEntity tag8 = ServiceTestUtils.buildTag(8L, "outlier tag", TagType.Ingredient);
+        // make 3 items
+        ItemEntity item3 = ServiceTestUtils.buildItem(33333L, tag3, shoppingListId);
+        ItemEntity item4 = ServiceTestUtils.buildItem(44444L, tag4, shoppingListId);
+        ItemEntity item8 = ServiceTestUtils.buildItem(88888L, tag8, shoppingListId);
+        item8.setUsedCount(1);
+        item4.setUsedCount(1);
+        item3.setUsedCount(1);
+        // add items to list
+        listEntity.getItems().addAll(Arrays.asList(item3, item4, item8));
+
+        return listEntity;
+
     }
 
     @Test

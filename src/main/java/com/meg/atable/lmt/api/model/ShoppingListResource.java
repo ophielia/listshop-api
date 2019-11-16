@@ -1,8 +1,10 @@
 package com.meg.atable.lmt.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meg.atable.lmt.api.web.controller.ShoppingListRestController;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
@@ -15,7 +17,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public class ShoppingListResource extends ResourceSupport {
 
     @JsonProperty("shopping_list")
-    private final ShoppingList shoppingList;
+    private ShoppingList shoppingList;
 
     public ShoppingListResource(ShoppingListEntity shoppingListEntity, List<Category> categories) {
         this.shoppingList = ModelMapper.toModel(shoppingListEntity, categories);
@@ -31,5 +33,13 @@ public class ShoppingListResource extends ResourceSupport {
 
     public ShoppingList getShoppingList() {
         return shoppingList;
+    }
+
+    public ShoppingListResource() {
+    }
+
+    @JsonIgnore
+    public List<Link> getLinks() {
+        return super.getLinks();
     }
 }

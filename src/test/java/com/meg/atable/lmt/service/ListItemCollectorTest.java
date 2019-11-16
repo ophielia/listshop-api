@@ -1,5 +1,6 @@
 package com.meg.atable.lmt.service;
 
+import com.meg.atable.lmt.api.model.ContextType;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import org.junit.Test;
@@ -7,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -25,8 +25,9 @@ public class ListItemCollectorTest {
         ListItemCollector collector = new ListItemCollector(999L, new ArrayList<>());
         ItemEntity item = createItem(1L, 100L);
 
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified).build();
         // tested method
-        collector.addItem(item);
+        collector.addItem(item, context);
 
         // check results
         List<ItemEntity> changed = collector.getChangedItems();
@@ -43,7 +44,8 @@ public class ListItemCollectorTest {
 
         // tested method
         ItemEntity itemUpdate = createItem(1L, 100L);
-        collector.addItem(itemUpdate);
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified).build();
+        collector.addItem(itemUpdate, context);
 
         // check results
         List<ItemEntity> changed = collector.getChangedItems();
@@ -57,9 +59,10 @@ public class ListItemCollectorTest {
     public void testDelete() {
         ItemEntity item = createItem(1L, 100L);
         ListItemCollector collector = new ListItemCollector(999L, Collections.singletonList(item));
-
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+                .build();
         // tested method
-        collector.removeItemByTagId(1L, null, true);
+        collector.removeItemByTagId(1L, context);
 
         // check results
         List<ItemEntity> changed = collector.getChangedItems();
@@ -78,17 +81,19 @@ public class ListItemCollectorTest {
         items.add(item2);
 
         Date dateCheck = new Date();
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+                .build();
 
         ListItemCollector collector = new ListItemCollector(999L, items);
 
         // tested method(s)
         ItemEntity item3 = createItem(3L, 300L);
         // add item 3
-        collector.addItem(item3);
+        collector.addItem(item3, context);
         // remove item
-        collector.removeItemByTagId(1L, null, true);
+        collector.removeItemByTagId(1L, context);
         // update item 2 (by adding it again)
-        collector.addItem(item2);
+        collector.addItem(item2, context);
 
         // check results
         List<ItemEntity> changed = collector.getChangedItems();
@@ -104,7 +109,8 @@ public class ListItemCollectorTest {
                 deleted++;
             } else if (result.getUpdatedOn() != null) {
                 updated++;
-            } else if (result.getAddedOn() != null) {
+            }
+            if (result.getAddedOn() != null) {
                 added++;
             }
         }

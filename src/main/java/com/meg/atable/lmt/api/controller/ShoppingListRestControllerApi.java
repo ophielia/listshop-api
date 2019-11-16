@@ -77,6 +77,9 @@ public interface ShoppingListRestControllerApi {
     @RequestMapping(method = RequestMethod.POST, value = "/mealplan/{mealPlanId}", produces = "application/json")
     ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId);
 
+    @RequestMapping(method = RequestMethod.PUT, value = "/{listId}/mealplan/{mealPlanId}", produces = "application/json")
+    ResponseEntity<Object> addToListFromMealPlan(Principal principal, @PathVariable Long listId, @PathVariable Long mealPlanId);
+
     @RequestMapping(method = RequestMethod.POST, value = "/{listId}/dish/{dishId}", produces = "application/json")
     ResponseEntity<Object> addDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId);
 

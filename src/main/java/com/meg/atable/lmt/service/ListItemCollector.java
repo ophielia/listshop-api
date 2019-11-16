@@ -1,6 +1,6 @@
 package com.meg.atable.lmt.service;
 
-import com.meg.atable.common.FlatStringUtils;
+import com.meg.atable.lmt.api.model.ContextType;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 
@@ -25,9 +25,9 @@ public class ListItemCollector extends AbstractItemCollector {
 
 
     // list collector
-    public void addTags(List<TagEntity> tagEntityList, Long dishId) {
+    public void addTags(List<TagEntity> tagEntityList, CollectorContext context) {
         for (TagEntity tag : tagEntityList) {
-            addItemByTag(tag, dishId);
+            addItemByTag(tag, context);
         }
     }
 
@@ -72,16 +72,33 @@ public class ListItemCollector extends AbstractItemCollector {
         }
     }
 
+    private CollectedItem copyItem(ItemEntity item) {
+        //MM start here
+        ItemEntity copiedItem = item.clone();
 
-
-
-    public void removeTagsForDish(Long dishId, List<TagEntity> tagsToRemove) {
-        for (TagEntity tag : tagsToRemove) {
-            removeItemByTagId(tag.getId(), dishId, false);
-        }
+        CollectedItem copied = new CollectedItem(copiedItem);
+        copied.setFreeText(item.getFreeText());
+        return copied;
     }
 
-    public void removeItemsFromList(Long fromListId, List<ItemEntity> fromListItems) {
+
+    public void removeItemByTagId(Long tagId, CollectorContext context) {
+        if (!getTagCollectedMap().containsKey(tagId)) {
+            return;
+        }
+        CollectedItem update = getTagCollectedMap().get(tagId);
+
+        update.remove(context);
+
+        getTagCollectedMap().put(tagId, update);
+    }
+
+    public void removeFreeTextItem(ItemEntity itemEntity) {
+        // TODO implement this
+    }
+
+    public void removeItemsFromList(List<ItemEntity> fromListItems, CollectorContext context) {
+        Long fromListId = context.getListId();
         Set<Long> fromTagIds = new HashSet<>();
         if (fromListItems != null) {
             fromTagIds = fromListItems.stream().map(itemEntity -> itemEntity.getTag().getId()).collect(Collectors.toSet());
@@ -97,93 +114,27 @@ public class ListItemCollector extends AbstractItemCollector {
             String entryListSource = item.getRawListSources();
             boolean listSourceMatch = entryListSource.contains(String.valueOf(fromListId));
             if (fromListMatch || listSourceMatch) {
-                removeItemWithListSource(item, fromListId);
+                tagCollectedEntry.getValue().remove(context);
+                getTagCollectedMap().put(item.getTag().getId(), tagCollectedEntry.getValue());
             }
         }
 
     }
 
+    public void removeTagsForDish(Long dishId, List<TagEntity> tagsToRemove) {
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+                .withDishId(dishId)
+                .withRemoveEntireItem(false)
+                .withIncrementStatistics(false)
+                .build();
 
-    private CollectedItem copyItem(ItemEntity item) {
-        ItemEntity copiedItem = item.clone();
-
-        CollectedItem copied = new CollectedItem(copiedItem);
-        copied.setFreeText(item.getFreeText());
-        return copied;
-    }
-
-    public void removeItemByTagId(Long tagId, Long dishId, Boolean removeEntireItem) {
-        if (!getTagCollectedMap().containsKey(tagId)) {
-            return;
+        for (TagEntity tag : tagsToRemove) {
+            removeItemByTagId(tag.getId(), context);
         }
-        CollectedItem update = getTagCollectedMap().get(tagId);
-
-        int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
-        if (count <= 1 || removeEntireItem) {
-            // delete item outright
-            removeItem(update);
-            return;
-        } else {
-            // dish is not removed - it's updated
-            if (dishId != null) {
-                Set<String> inflatedDishSources = FlatStringUtils.inflateStringToSet(update.getRawDishSources(), ";");
-                if (inflatedDishSources.contains(String.valueOf(dishId))) {
-                    inflatedDishSources.remove(String.valueOf(dishId));
-                    String newSources = FlatStringUtils.flattenSetToString(inflatedDishSources, ";");
-                    update.setRawDishSources(newSources);
-                }
-            }
-            updateItemOnRemove(update,count);
-        }
-
-        getTagCollectedMap().put(tagId, update);
-    }
-
-    private void removeItemWithListSource(ItemEntity item, Long fromListId) {
-        if (!getTagCollectedMap().containsKey(item.getTag().getId())) {
-            return;
-        }
-        CollectedItem update = getTagCollectedMap().get(item.getTag().getId());
-
-        int count = update.getUsedCount() != null ? update.getUsedCount() : 0;
-        if (count <= 1) {
-            // delete item outright
-            removeItem(update);
-            return;
-        } else {
-            // item has other usages remaining - updated, not deleted
-            if (fromListId != null) {
-                Set<String> inflatedListSources = FlatStringUtils.inflateStringToSet(update.getRawListSources(), ";");
-                if (inflatedListSources.contains(String.valueOf(fromListId))) {
-                    inflatedListSources.remove(String.valueOf(fromListId));
-                    String newSources = FlatStringUtils.flattenSetToString(inflatedListSources, ";");
-                    update.setRawListSources(newSources);
-                }
-            }
-            updateItemOnRemove(update,count);
-        }
-
-        getTagCollectedMap().put(item.getTag().getId(), update);
-
-    }
-
-    private void removeItem(CollectedItem item) {
-        item.setRemoved(true);
-        item.incrementRemovedCount(item.getUsedCount());
-        item.setUsedCount(0);
-    }
-
-    private void updateItemOnRemove(CollectedItem update, int count) {
-        update.setUpdated(true);
-        update.setUsedCount(count - 1);
-        update.incrementRemovedCount();
     }
 
 
 
 
-    public void removeFreeTextItem(ItemEntity itemEntity) {
-        // TODO implement this
-    }
 
 }

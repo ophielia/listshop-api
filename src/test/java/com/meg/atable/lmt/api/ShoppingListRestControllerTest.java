@@ -5,6 +5,9 @@ import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.lmt.api.model.Item;
 import com.meg.atable.lmt.api.model.ListGenerateProperties;
 import com.meg.atable.lmt.api.model.ShoppingListPut;
+import com.meg.atable.lmt.data.entity.ItemEntity;
+import com.meg.atable.lmt.data.entity.ShoppingListEntity;
+import com.meg.atable.lmt.service.ShoppingListService;
 import com.meg.atable.test.TestConstants;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -30,6 +33,9 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -61,6 +67,9 @@ public class ShoppingListRestControllerTest {
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     @Autowired
+    ShoppingListService shoppingListService;
+
+    @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
         this.mappingJackson2HttpMessageConverter = Arrays.stream(converters)
 
@@ -73,7 +82,7 @@ public class ShoppingListRestControllerTest {
 
     @Before
     @WithMockUser
-    public void setup() throws Exception {
+    public void setup() {
 
         this.mockMvc = webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
@@ -402,6 +411,44 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
 
     }
+
+    @Test
+    @WithMockUser
+    public void testAddMealPlanToList() throws Exception {
+
+        Long listId = 51000L;
+        Long mealPlanId = 65505L;
+
+        String url = "/shoppinglist/" + listId + "/mealplan/" + mealPlanId;
+        mockMvc.perform(put(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+        ;// .andExpect(status().isNoContent());
+
+        // now, retrieve the list
+        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_NAME, listId);
+        Map<Long, ItemEntity> resultMap = resultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(resultMap);
+        // check tag occurences in result
+        // 501 - 1
+        Assert.assertNotNull(resultMap.get(81L));
+        Assert.assertTrue(resultMap.get(81L).getUsedCount() == 1);
+
+        // 502 - 3
+        Assert.assertNotNull(resultMap.get(1L));
+        Assert.assertTrue(resultMap.get(1L).getUsedCount() == 3);  // showing 1 in result map
+        // 503 - 2
+        Assert.assertNotNull(resultMap.get(12L));
+        Assert.assertTrue(resultMap.get(12L).getUsedCount() == 2); // showing 1 in result map
+        // 436 - 1
+        Assert.assertNotNull(resultMap.get(436L));
+        Assert.assertTrue(resultMap.get(436L).getUsedCount() == 1);
+
+    }
+
+
+
 
     @Test
     @WithMockUser

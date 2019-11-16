@@ -299,8 +299,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             tag = tagService.getTagById(itemEntity.getTag().getId());
             itemEntity.setTag(tag);
         }
-        // TODO need list type to itemsource translation
-        collector.addItem(itemEntity);
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
+                .withListId(listId)
+                .build();
+        collector.addItem(itemEntity, context);
 
         saveListChanges(shoppingListEntity, collector);
     }
@@ -319,7 +321,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ItemEntity item = new ItemEntity();
         item.setTag(tag);
 
-        collector.addItem(item);
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified).build();
+        collector.addItem(item, context);
 
         saveListChanges(shoppingListEntity, collector);
 
@@ -362,15 +365,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (!itemEntityOpt.isPresent()) {
             return;
         }
-
         List<ItemEntity> items = shoppingListEntity.getItems();
         ListItemCollector collector = createListItemCollector(listId, items);
         ItemEntity item = itemEntityOpt.get();
         if (item.getTag() == null) {
             collector.removeFreeTextItem(item);
         }
-
-        collector.removeItemByTagId(item.getTag().getId(), dishSourceId, removeEntireItem);
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+                .withDishId(dishSourceId)
+                .withRemoveEntireItem(removeEntireItem)
+                .build();
+        collector.removeItemByTagId(item.getTag().getId(), context);
 
         saveListChanges(shoppingListEntity, collector);
     }
@@ -393,29 +398,44 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // create new inprocess list
         ShoppingListEntity savedNewList = createList(name, defaultShoppingListName);
+
+        // add to the new list
+        return addToListFromMealPlan(name, savedNewList, mealPlan);
+
+    }
+
+    public ShoppingListEntity addToListFromMealPlan(String name, Long listId, Long mealPlanId) {
+        // get the mealplan
+        MealPlanEntity mealPlan = mealPlanService.getMealPlanById(name, mealPlanId);
+
+        // create new inprocess list
+        ShoppingListEntity shoppingList = getListById(name, listId);
+
+        return addToListFromMealPlan(name, shoppingList, mealPlan);
+    }
+
+    private ShoppingListEntity addToListFromMealPlan(String name, ShoppingListEntity shoppingList, MealPlanEntity mealPlan) {
         // create the collector
-        ListItemCollector collector = createListItemCollector(savedNewList.getId());
+        ListItemCollector collector = createListItemCollector(shoppingList.getId(), shoppingList.getItems());
 
 
         // add all tags for meal plan
         List<TagType> tagTypeList = new ArrayList<>();
         tagTypeList.add(TagType.Ingredient);
         tagTypeList.add(TagType.NonEdible);
-        for (SlotEntity slot : mealPlan.getSlots()) {
-            List<TagEntity> tags = tagService.getTagsForDish(name, slot.getDish().getId(), tagTypeList);
-            collector.addTags(tags, slot.getDish().getId());
-        }
 
-        // add Items from BaseList
-        ShoppingListEntity baseList = getStarterList(name);
-        if (baseList != null) {
-            collector.copyExistingItemsIntoList(baseList.getId(), baseList.getItems(), false);
+        for (SlotEntity slot : mealPlan.getSlots()) {
+            CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+                    .withDishId(slot.getDish().getId())
+                    .build();
+            List<TagEntity> tags = tagService.getTagsForDish(name, slot.getDish().getId(), tagTypeList);
+            collector.addTags(tags, context);
         }
 
         // update the last added date for dishes
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
-        saveListChanges(savedNewList, collector);
-        Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(savedNewList.getId());
+        saveListChanges(shoppingList, collector);
+        Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(shoppingList.getId());
         return shoppingListEntity.orElse(null);
 
     }
@@ -646,8 +666,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // make collector
         ListItemCollector collector = createListItemCollector(listId, shoppingList.getItems());
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
+                .withListId(listId)
+                .withIncrementStatistics(false)
+                .build();
 
-        collector.removeItemsFromList(fromListId, listToRemove.getItems());
+        collector.removeItemsFromList(listToRemove.getItems(), context);
 
         saveListChanges(shoppingList, collector);
     }
@@ -927,7 +951,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
 
         // add new dish tags to list
-        collector.addTags(tagsForDish, dishId);
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+                .withDishId(dishId)
+                .build();
+        collector.addTags(tagsForDish, context);
 
         // update last added date for dish
         this.dishService.updateLastAddedForDish(dishId);

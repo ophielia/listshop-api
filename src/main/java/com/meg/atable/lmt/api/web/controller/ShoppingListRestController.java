@@ -243,6 +243,12 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
+    public ResponseEntity<Object> addToListFromMealPlan(Principal principal, @PathVariable Long listId, @PathVariable Long mealPlanId) {
+        ShoppingListEntity shoppingListEntity = this.shoppingListService.addToListFromMealPlan(principal.getName(), listId, mealPlanId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
     public ResponseEntity<Object> addDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId) {
         try {
             this.shoppingListService.addDishToList(principal.getName(), listId, dishId);

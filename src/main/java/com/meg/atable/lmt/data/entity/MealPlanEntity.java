@@ -37,7 +37,7 @@ public class MealPlanEntity {
     private MealPlanType mealPlanType;
 
     @OneToMany(mappedBy = "mealPlan", fetch = FetchType.EAGER)
-    private List<SlotEntity> slots;
+    private List<SlotEntity> slots = new ArrayList<>();
 
     private Long targetId;
 

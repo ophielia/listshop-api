@@ -9,7 +9,7 @@ import java.util.List;
  * Created by margaretmartin on 21/10/2017.
  */
 public interface MealPlanRepository extends JpaRepository<MealPlanEntity, Long> {
-    List<MealPlanEntity> findByUserId(Long id);
+    List<MealPlanEntity> findByUserIdOrderByCreated(Long id);
 
 
 }
