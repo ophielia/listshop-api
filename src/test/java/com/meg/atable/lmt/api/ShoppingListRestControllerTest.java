@@ -9,6 +9,7 @@ import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 import com.meg.atable.lmt.service.ShoppingListService;
 import com.meg.atable.test.TestConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,6 +34,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -282,13 +284,40 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testGenerateFromMealPlan() throws Exception {
-        Long mealPlanId = TestConstants.MEAL_PLAN_1_ID;
-        String url = "/shoppinglist/mealplan/" + mealPlanId;
 
-        this.mockMvc.perform(post(url)
+        Long listId = 51000L;
+        Long mealPlanId = 65505L;
+
+        String url = "/shoppinglist/mealplan/" + mealPlanId;
+        MvcResult result = this.mockMvc.perform(post(url)
                 .with(user(userDetails))
                 .contentType(contentType))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        List<String> responses = result.getResponse().getHeaders("Location");
+        Assert.assertNotNull(responses);
+        Assert.assertTrue(responses.size() > 0);
+        String[] urlTokens = StringUtils.split(responses.get(0), "/");
+        Long newListId = Long.valueOf(urlTokens[(urlTokens).length - 1]);
+
+        // now, retrieve the list
+        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_NAME, newListId);
+        Map<Long, ItemEntity> resultMap = resultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(resultMap);
+        // check tag occurences in result
+
+        // 502 - 3
+        Assert.assertNotNull(resultMap.get(1L));
+        Assert.assertTrue(resultMap.get(1L).getUsedCount() == 2);  // showing 1 in result map
+        // 503 - 2
+        Assert.assertNotNull(resultMap.get(12L));
+        Assert.assertTrue(resultMap.get(12L).getUsedCount() == 1); // showing 1 in result map
+        // 436 - 1
+        Assert.assertNotNull(resultMap.get(436L));
+        Assert.assertTrue(resultMap.get(436L).getUsedCount() == 1);
+
     }
 
     @Test
@@ -360,7 +389,7 @@ public class ShoppingListRestControllerTest {
         //.andExpect(jsonPath("$.shopping_list.is_starter_list").value(false));
 
         String listAfterAdd = result.getResponse().getContentAsString();
-        Assert.assertTrue(listAfterAdd.contains("\"list_sources\":[{\"id\":500,\"display\":\"Shopping List 1\",\"type\":\"List\"}]"));
+        Assert.assertTrue(listAfterAdd.contains("\"list_sources\":[{\"id\":500,\"display\":\"list3\",\"type\":\"List\"}]"));
 
     }
 
@@ -423,7 +452,7 @@ public class ShoppingListRestControllerTest {
         mockMvc.perform(put(url)
                 .with(user(userDetails))
                 .contentType(contentType))
-        ;// .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent());
 
         // now, retrieve the list
         ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_NAME, listId);

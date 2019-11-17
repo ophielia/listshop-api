@@ -155,7 +155,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             // add Items from BaseList
             ShoppingListEntity baseList = getStarterList(userName);
             if (baseList != null) {
-                collector.copyExistingItemsIntoList(baseList.getId(), baseList.getItems(), false);
+                CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
+                        .withListId(baseList.getId())
+                        .withIncrementStatistics(false)
+                        .build();
+                collector.copyExistingItemsIntoList(baseList.getItems(), context);
             }
         }
 
@@ -334,9 +338,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return collector;
     }
 
-    private ListItemCollector createListItemCollector(Long listId) {
-        return new ListItemCollector(listId);
-    }
 
     @Override
     public void deleteAllItemsFromList(String name, Long listId) {
@@ -559,7 +560,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // add Items from PickUpList
         boolean incrementStats = !toAdd.getIsStarterList();
-        collector.copyExistingItemsIntoList(fromListId, toAdd.getItems(), incrementStats);
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
+                .withListId(fromListId)
+                .withIncrementStatistics(incrementStats)
+                .build();
+        collector.copyExistingItemsIntoList(toAdd.getItems(), context);
 
         // save list
         saveListChanges(list, collector);
@@ -616,7 +621,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             Set<String> listSourceSet = FlatStringUtils.inflateStringToSet(source, ";");
             List<Long> sourceListIds = listSourceSet.stream()
                     .filter(val -> !val.isEmpty())
-                    .map(stringval -> StringTools.stringToLong(stringval))
+                    .map(Long::valueOf)
                     .filter(val -> val >= 0)
                     .collect(Collectors.toList());
             if (sourceListIds != null && !sourceListIds.isEmpty()) {
@@ -667,7 +672,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // make collector
         ListItemCollector collector = createListItemCollector(listId, shoppingList.getItems());
         CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
-                .withListId(listId)
+                .withListId(fromListId)
                 .withIncrementStatistics(false)
                 .build();
 
@@ -766,7 +771,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         Map<String, ItemEntity> mergeMap = mergeRequest.getMergeItems().stream()
                 .filter(i -> i.getTagId() != null)
                 .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
-        Set<Long> tagKeys = mergeMap.keySet().stream().map(k -> Long.valueOf(k)).collect(Collectors.toSet());
+        Set<Long> tagKeys = mergeMap.keySet().stream().map(Long::valueOf).collect(Collectors.toSet());
         mergeMap.keySet().forEach(k -> logger.debug("the  List for key [" + k + "] and item [" + mergeMap.get(k).getCrossedOff() + "]"));
 
 
@@ -825,7 +830,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                                                                       Long highlightDishId, Boolean showPantry,
                                                                       Long highlightListId) {
         boolean isHighlightDish = highlightDishId != null && !highlightDishId.equals(0L);
-        boolean isHighlightList = !isHighlightDish && !(highlightListId == null) && !highlightListId.equals(0L);
+        boolean isHighlightList = !isHighlightDish && (highlightListId != null) && !highlightListId.equals(0L);
         boolean separateFrequent = showPantry != null && showPantry;
         String highlightName = getHighlightName(userName, isHighlightDish, isHighlightList, highlightDishId, highlightListId);
         Set<Long> dishItemIds = getHighlightDishItemIds(isHighlightDish, shoppingListEntity, highlightDishId);

@@ -1,4 +1,14 @@
-﻿with upd as (select t.tag_id, p.name from tag t join tag_relation r on r.parent_tag_id = t.tag_id
+﻿select t.name, ((removed_count * 1.0) / added_count * 1.0) * 100.0 as test, s.*
+from list_tag_stats s
+       join tag t using (tag_id)
+where added_count is not null
+  and added_count > 0
+order by test desc;
+
+
+
+
+with upd as (select t.tag_id, p.name from tag t join tag_relation r on r.parent_tag_id = t.tag_id
 join tag p on r.child_tag_id = p.tag_id
 where t.tag_type = 'RATING')
 update tag  p

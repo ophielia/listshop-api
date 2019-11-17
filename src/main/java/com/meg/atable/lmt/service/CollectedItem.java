@@ -44,8 +44,8 @@ public class CollectedItem {
         return item.getId();
     }
 
-    public void setId(Long item_id) {
-        this.item.setId(item_id);
+    public void setId(Long itemId) {
+        this.item.setId(itemId);
     }
 
     public TagEntity getTag() {
@@ -220,6 +220,11 @@ public class CollectedItem {
     }
 
     public void add(CollectorContext context, Boolean isNew) {
+        add(1, context, isNew);
+
+    }
+
+    private void add(int newCount, CollectorContext context, boolean isNew) {
         int count = getUsedCount() != null ? getUsedCount() : 0;
         boolean updateListSources = context.hasListId() && context.eligibleForListSourceChange();
         if (updateListSources) {
@@ -231,11 +236,11 @@ public class CollectedItem {
         boolean updateDishSources = context.hasDishId() && context.eligibleForDishSourceChange();
         if (updateDishSources) {
             Set<String> inflatedDishSources = FlatStringUtils.inflateStringToSet(getRawDishSources(), ";");
-            inflatedDishSources.add(String.valueOf(context.getListId()));
+            inflatedDishSources.add(String.valueOf(context.getDishId()));
             String newSources = FlatStringUtils.flattenSetToString(inflatedDishSources, ";");
             setRawDishSources(newSources);
         }
-        setUsedCount(count + 1);
+        setUsedCount(count + newCount);
         incrementAddCount();
         if (!isNew) {
             setUpdated(true);
@@ -243,6 +248,12 @@ public class CollectedItem {
 
     }
 
+    public void add(ItemEntity item, CollectorContext context, boolean isNew) {
+
+        int newCount = item.getUsedCount() != null ? getUsedCount() : 1;
+        add(newCount, context, isNew);
+
+    }
     // Collector Item values
 
     public Long getTagId() {
@@ -437,8 +448,6 @@ public class CollectedItem {
                 dateEquals(secondCount,getCrossedOff() ,that.getCrossedOff()) &&
                 getUsedCount() != null && getUsedCount().equals(that.getUsedCount()) &&
                 getFreeText() != null && getFreeText().equals(that.getFreeText()) &&
-             //           getRawDishSources() != null && getRawDishSources().equals(that.getRawDishSources()) &&
-               //         getRawListSources() != null && getRawListSources().equals(that.getRawListSources()) &&
         tagId.equals(that.tagId) ;
     }
 
@@ -447,7 +456,7 @@ public class CollectedItem {
             return true;
         } else if (date1 != null && date2 == null) {
             return false;
-        } else if (date2 != null && date1 == null) {
+        } else if (date1 == null) {
             return false;
         }
 
@@ -485,5 +494,6 @@ public class CollectedItem {
         }
 
     }
+
 
 }
