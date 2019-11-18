@@ -36,6 +36,8 @@ public class TagExtendedEntity {
 
     private Boolean toDelete = false;
 
+    private Boolean isParent = false;
+
     private Long replacementTagId;
 
     private Date createdOn;
@@ -143,6 +145,7 @@ public class TagExtendedEntity {
                 ", isVerified=" + isVerified +
                 ", power=" + power +
                 ", parentId=" + parentId +
+                ", isParent=" + isParent +
                 '}';
     }
 

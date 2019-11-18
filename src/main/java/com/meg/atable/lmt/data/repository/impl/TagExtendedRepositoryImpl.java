@@ -28,7 +28,7 @@ public class TagExtendedRepositoryImpl implements TagExtendedRepositoryCustom {
         List<Predicate> predicates = new ArrayList<>();
 
         if (parentsOnly != null) {
-            predicates.add(cb.isNull(tagEntityRoot.get("parentId")));
+            predicates.add(cb.isTrue(tagEntityRoot.get("isParent")));
         }
         ParameterExpression<Collection> paramTagTypes = cb.parameter(Collection.class);
         if (tagTypes != null && !tagTypes.isEmpty()) {
