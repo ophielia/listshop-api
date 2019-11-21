@@ -234,7 +234,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public ShoppingListEntity getMostRecentList(String userName) {
         UserEntity user = userService.getUserByUserEmail(userName);
 
-        List<ShoppingListEntity> foundLists = shoppingListRepository.findByUserIdOrderByCreatedOnDesc(user.getId());
+        List<ShoppingListEntity> foundLists = shoppingListRepository.findByUserIdOrderByLastUpdateDesc(user.getId());
         if (!foundLists.isEmpty()) {
             return foundLists.get(0);
         }
