@@ -517,13 +517,39 @@ public class ShoppingListRestControllerTest {
     @WithMockUser
     public void deleteAllItemsFromList() throws Exception {
 
-        Long listId = TestConstants.LIST_1_ID;
-        String url = "/shoppinglist/" + listId + "/item";
-        mockMvc.perform(delete(url)
+        ListGenerateProperties properties = new ListGenerateProperties();
+        properties.setAddFromStarter(true);
+        properties.setGenerateMealplan(false);
+
+        String jsonProperties = json(properties);
+
+        String url = "/shoppinglist";
+
+        MvcResult result = this.mockMvc.perform(post(url)
+                .with(user(userDetails))
+                .contentType(contentType)
+                .content(jsonProperties))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        List<String> responses = result.getResponse().getHeaders("Location");
+        Assert.assertNotNull(responses);
+        Assert.assertTrue(responses.size() > 0);
+        String[] urlTokens = StringUtils.split(responses.get(0), "/");
+        Long listId = Long.valueOf(urlTokens[(urlTokens).length - 1]);
+
+        String clearUrl = "/shoppinglist/" + listId + "/item";
+        mockMvc.perform(delete(clearUrl)
                 .with(user(userDetails))
                 .contentType(contentType))
                 .andExpect(status().isNoContent());
 
+        // now, retrieve the list
+        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_NAME, listId);
+        Map<Long, ItemEntity> resultMap = resultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(resultMap);
+        Assert.assertTrue(resultMap.isEmpty());
     }
 
 

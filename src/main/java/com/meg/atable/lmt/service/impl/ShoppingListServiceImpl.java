@@ -167,7 +167,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         generateMealPlanOnListCreate(userName, listGenerateProperties);
 
         // save changes
-        saveListChanges(newList, collector);
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
+                .build();
+        saveListChanges(newList, collector, context);
         return newList;
 
     }
@@ -258,7 +260,16 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (includeRemoved) {
             shoppingListEntityOpt = shoppingListRepository.getWithItemsByListId(listId);
         } else {
-            shoppingListEntityOpt = shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId);
+
+            ShoppingListEntity listEntity = shoppingListRepository.getOne(listId);
+            if (listEntity == null) {
+                return null;
+            }
+            List<ItemEntity> items = itemRepository.findByListIdAAndRemovedOnIsNull(listId);
+            listEntity.setItems(items);
+            shoppingListEntityOpt = Optional.of(listEntity);
+
+
         }
         // may be a list which doesn't have items.  Check for that here
         if (!shoppingListEntityOpt.isPresent()) {
@@ -308,7 +319,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .build();
         collector.addItem(itemEntity, context);
 
-        saveListChanges(shoppingListEntity, collector);
+        saveListChanges(shoppingListEntity, collector, context);
     }
 
     public void addItemToListByTag(String name, Long listId, Long tagId) {
@@ -328,7 +339,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified).build();
         collector.addItem(item, context);
 
-        saveListChanges(shoppingListEntity, collector);
+        saveListChanges(shoppingListEntity, collector, context);
 
     }
 
@@ -350,10 +361,16 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             return;
         }
 
-        itemRepository.deleteAll(itemEntities);
-        shoppingListEntity.setItems(null);
-        shoppingListEntity.setLastUpdate(new Date());
-        shoppingListRepository.save(shoppingListEntity);
+
+        ListItemCollector collector = createListItemCollector(listId, itemEntities);
+        CollectorContext context = new CollectorContext(ContextType.NonSpecified,
+                listId,
+                null,
+                false,
+                true);
+        collector.removeItemsFromList(itemEntities, context);
+
+        saveListChanges(shoppingListEntity, collector, context);
     }
 
     @Override
@@ -378,7 +395,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .build();
         collector.removeItemByTagId(item.getTag().getId(), context);
 
-        saveListChanges(shoppingListEntity, collector);
+        saveListChanges(shoppingListEntity, collector, context);
     }
 
     @Override
@@ -435,7 +452,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // update the last added date for dishes
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
-        saveListChanges(shoppingList, collector);
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+                .withIncrementStatistics(true)
+                .build();
+        saveListChanges(shoppingList, collector, context);
         Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(shoppingList.getId());
         return shoppingListEntity.orElse(null);
 
@@ -532,7 +552,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         mergeCollector.addMergeItems(mergeItems);
 
         // update after merge
-        saveListChanges(list, mergeCollector);
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+                .build();
+        saveListChanges(list, mergeCollector, context);
 
         // delete tags by removed on
         LocalDate removedBeforeDate = LocalDate.now().minusDays(mergeDeleteAfterDays);
@@ -567,7 +589,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         collector.copyExistingItemsIntoList(toAdd.getItems(), context);
 
         // save list
-        saveListChanges(list, collector);
+        saveListChanges(list, collector, context);
     }
 
     @Override
@@ -580,7 +602,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         addDishToList(name,collector, dishId);
 
-        saveListChanges(list, collector);
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+                .withDishId(dishId)
+                .withIncrementStatistics(true)
+                .build();
+        saveListChanges(list, collector, context);
     }
 
     @Override
@@ -656,8 +682,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<TagEntity> tagsToRemove = tagService.getTagsForDish(name, dishId);
 
         collector.removeTagsForDish(dishId, tagsToRemove);
-
-        saveListChanges(shoppingList, collector);
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+                .withDishId(dishId)
+                .withIncrementStatistics(false)
+                .build();
+        saveListChanges(shoppingList, collector, context);
 
     }
 
@@ -678,7 +707,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         collector.removeItemsFromList(listToRemove.getItems(), context);
 
-        saveListChanges(shoppingList, collector);
+        saveListChanges(shoppingList, collector, context);
     }
 
     @Override
@@ -736,8 +765,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         itemRepository.saveAll(items);
     }
 
-    private void saveListChanges(ShoppingListEntity shoppingList, ItemCollector collector) {
-        itemChangeRepository.saveItemChanges(shoppingList, collector, shoppingList.getUserId());
+    private void saveListChanges(ShoppingListEntity shoppingList, ItemCollector collector, CollectorContext context) {
+        itemChangeRepository.saveItemChanges(shoppingList, collector, shoppingList.getUserId(), context);
         // make changes in list object
         shoppingList.setItems(collector.getAllItems());
         if (collector.hasChanges()) {

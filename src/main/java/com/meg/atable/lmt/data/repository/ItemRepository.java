@@ -13,6 +13,9 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
 
     List<ItemEntity> findByListId(Long listId);
 
+    @Query(value = "select * from list_item where list_id = :listid and removed_on is null", nativeQuery = true)
+    List<ItemEntity> findByListIdAAndRemovedOnIsNull(@Param("listid") Long listId);
+
     List<ItemEntity> findByRemovedOnBefore(Date removedOnDate);
 
     @Query(value="select * from list_item where list_id = :listid and tag_id = :tagid", nativeQuery=true)

@@ -4,6 +4,7 @@ import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 import com.meg.atable.lmt.data.repository.ItemChangeRepository;
 import com.meg.atable.lmt.data.repository.ItemRepository;
+import com.meg.atable.lmt.service.CollectorContext;
 import com.meg.atable.lmt.service.ItemCollector;
 import com.meg.atable.lmt.service.ListItemCollector;
 import com.meg.atable.lmt.service.ListTagStatisticService;
@@ -25,8 +26,8 @@ public class ListItemRepositoryImpl implements ItemChangeRepository {
     private ItemRepository itemRepository;
 
     @Override
-    public void saveItemChanges(ShoppingListEntity shoppingList, ItemCollector collector, Long userId) {
-        if (collector instanceof ListItemCollector) {
+    public void saveItemChanges(ShoppingListEntity shoppingList, ItemCollector collector, Long userId, CollectorContext context) {
+        if (collector instanceof ListItemCollector && context.isIncrementStatistics()) {
             listTagStatisticService.processCollectorStatistics(userId, (ListItemCollector) collector);
         }
 

@@ -176,7 +176,7 @@ public class ShoppingListServiceImplMockTest {
                 .thenReturn(Arrays.asList(tag1, tag3, tag4, tag5));
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
 
-        itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId));
+        itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
         Mockito.when(shoppingListRepository.save(argument.capture()))
                 .thenReturn(createdShoppingList);
         Mockito.when(shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId))
@@ -275,7 +275,7 @@ public class ShoppingListServiceImplMockTest {
                 .thenReturn(Arrays.asList(tag1, tag3, tag4, tag5));
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
 
-        itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId));
+        itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
         Mockito.when(shoppingListRepository.save(argument.capture()))
                 .thenReturn(shoppingList);
         Mockito.when(shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId))
