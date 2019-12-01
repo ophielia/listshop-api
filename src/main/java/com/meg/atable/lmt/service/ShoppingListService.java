@@ -1,9 +1,6 @@
 package com.meg.atable.lmt.service;
 
-import com.meg.atable.lmt.api.model.Category;
-import com.meg.atable.lmt.api.model.ListGenerateProperties;
-import com.meg.atable.lmt.api.model.MergeRequest;
-import com.meg.atable.lmt.api.model.MergeResult;
+import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 
@@ -30,6 +27,8 @@ public interface ShoppingListService {
     boolean deleteList(String userName, Long listId);
 
     ShoppingListEntity updateList(String name, Long listId, ShoppingListEntity updateFrom);
+
+    void performItemOperation(String userName, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId);
 
     void addItemToList(String name, Long listId, ItemEntity itemEntity);
 

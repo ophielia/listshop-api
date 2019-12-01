@@ -8,6 +8,10 @@ values (now() - interval '3 days', 11, 'General', 20, 509991, 'added from', true
 -- user 504 doesn't have a starter list
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
 values (now() - interval '3 days', 11, 'General', 504, 509999, 'added from', false);
+-- user 504 doesn't have a starter list
+insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
+values (now() - interval '3 days', 11, 'General', 20, 500777, 'merge test', false);
+
 
 -- test list for removing from lists
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
@@ -75,6 +79,23 @@ INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text
                       list_sources)
 VALUES (609991, 504, 609984, now(), null, null, 1, null, null);
 
+
+-- merge list items - four items, for active list - id 501,502,503,500
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (500777, 501, 500770, '2019-07-12', null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (500777, 502, 500771, '2019-07-12', null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (500777, 503, 500772, '2019-07-12', null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (500777, 500, 500773, '2019-07-12', null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (500777, 504, 500774, '2019-07-12', null, null, 1, null, null);
 
 -- test add to list from meal plan
 -- list 51000 with 3 items

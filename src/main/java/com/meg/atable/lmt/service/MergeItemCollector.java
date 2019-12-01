@@ -53,8 +53,9 @@ public class MergeItemCollector extends AbstractItemCollector {
             // create new collected item
             CollectedItem item = new CollectedItem(newMergeItem);
 
-            // set added date, and changed
+            // set added date, and changed, and null out the id
             item.setIsAdded(true);
+            item.setId(null);
 
 
             // add to TagCollectedMap

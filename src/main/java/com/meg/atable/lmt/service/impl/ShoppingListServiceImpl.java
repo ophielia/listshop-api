@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
  * Created by margaretmartin on 13/05/2017.
  */
 @Service
+@Transactional
 public class ShoppingListServiceImpl implements ShoppingListService {
     private static final Logger logger = LogManager.getLogger(ShoppingListServiceImpl.class);
 
@@ -113,7 +115,49 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // save changed list
+        copyTo.setLastUpdate(new Date());
         return shoppingListRepository.save(copyTo);
+    }
+
+    public void performItemOperation(String userName, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId) {
+        if (tagIds == null) {
+            return;
+        }
+        // get source list
+        ShoppingListEntity sourceList = getListById(userName, sourceListId);
+
+        // convert tagids to tag entities
+        Set<Long> tagSet = new HashSet<>(tagIds);
+        Map<Long, TagEntity> tagDictionary = tagService.getDictionaryForIds(tagSet);
+        List<TagEntity> tagList = new ArrayList(tagDictionary.values());
+
+        // if operation requires copy, get destinationList and copy
+        if (operationType.equals(ItemOperationType.Copy) ||
+                operationType.equals(ItemOperationType.Move)) {
+            ShoppingListEntity targetList = getListById(userName, destinationListId);
+            List<ItemEntity> items = targetList.getItems();
+
+
+            CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
+                    .withListId(sourceListId)
+                    .withRemoveEntireItem(true)
+                    .build();
+            ListItemCollector collector = createListItemCollector(destinationListId, items);
+            collector.addTags(tagList, context);
+            saveListChanges(targetList, collector, context);
+        }
+
+        // if operation requires remove, remove from source
+        if (operationType.equals(ItemOperationType.Move) ||
+                operationType.equals(ItemOperationType.Remove)) {
+            List<ItemEntity> items = sourceList.getItems();
+            CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
+                    .build();
+            ListItemCollector collector = createListItemCollector(sourceListId, items);
+            collector.removeItemsByTagIds(tagIds, context);
+            saveListChanges(sourceList, collector, context);
+        }
+
     }
 
     @Override

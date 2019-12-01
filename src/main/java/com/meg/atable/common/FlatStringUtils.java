@@ -15,7 +15,9 @@ public class FlatStringUtils {
         }
 
         Set<String> idList = new HashSet<>();
-        idList.addAll(Arrays.asList(flatlist.split(delimiter)));
+        idList = Arrays.asList(flatlist.split(delimiter)).stream()
+                .filter(i -> !i.isEmpty())
+                .collect(Collectors.toSet());
         return idList;
     }
 

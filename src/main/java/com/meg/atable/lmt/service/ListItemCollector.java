@@ -71,6 +71,12 @@ public class ListItemCollector extends AbstractItemCollector {
         getTagCollectedMap().put(tagId, update);
     }
 
+    public void removeItemsByTagIds(List<Long> tagIds, CollectorContext context) {
+        for (Long id : tagIds) {
+            removeItemByTagId(id, context);
+        }
+    }
+
     public void removeFreeTextItem(ItemEntity itemEntity) {
         // TODO implement this
 

@@ -1,0 +1,46 @@
+{
+  "last_changed": "2019-01-01",
+  "layout_id": "5",
+  "list_id": "500777",
+  "merge_items": [
+    {
+      "item_id": 5999996,
+      "added": "2019-07-12T20:18:06.537+0000",
+      "removed": null,
+      "updated": null,
+      "free_text": null,
+      "crossed_off": null,
+      "list_id": "500777",
+      "tag_id": 363,
+      "used_count": 1,
+      "dish_sources": [],
+      "list_sources": []
+    },
+    {
+      "item_id": 5999997,
+      "added": "2019-07-12T20:18:06.537+0000",
+      "removed": null,
+      "updated": null,
+      "free_text": null,
+      "crossed_off": null,
+      "list_id": "500777",
+      "tag_id": 501,
+      "used_count": 1,
+      "dish_sources": [],
+      "list_sources": []
+    },
+    {
+      "item_id": 5999996,
+      "added": "2019-07-12T20:18:06.537+0000",
+      "removed": null,
+      "updated": null,
+      "free_text": null,
+      "crossed_off": null,
+      "list_id": "500777",
+      "tag_id": 502,
+      "used_count": 1,
+      "dish_sources": [],
+      "list_sources": []
+    }
+  ]
+}
