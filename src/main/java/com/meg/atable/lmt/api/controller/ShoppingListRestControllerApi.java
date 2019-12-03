@@ -34,6 +34,9 @@ public interface ShoppingListRestControllerApi {
     @PutMapping(value = "/{listId}", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> updateList(Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList);
 
+    @PutMapping(value = "/{listId}/item", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> updateItems(Principal principal, @PathVariable("listId") Long listId, @RequestBody ItemOperationPut itemOperation);
+
     @GetMapping(value = "/mostrecent", produces = "application/json")
     ResponseEntity<ShoppingListResource> retrieveMostRecentList(Principal principal);
 

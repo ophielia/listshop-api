@@ -165,6 +165,13 @@
             <version>1.9.4</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <!-- for enums -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>26.0-jre</version>
+        </dependency>
 
     </dependencies>
 

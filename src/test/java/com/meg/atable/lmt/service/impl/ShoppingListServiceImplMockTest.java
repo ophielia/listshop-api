@@ -268,7 +268,7 @@ public class ShoppingListServiceImplMockTest {
                 .thenReturn(userEntity);
         Mockito.when(mealPlanService.getMealPlanById(username, mealPlanId))
                 .thenReturn(mealPlan);
-        Mockito.when(shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId))
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId))
                 .thenReturn(Optional.of(shoppingList));
         Mockito.when(tagService.getTagsForDish(username, dish1.getId(), tagTypeList))
                 .thenReturn(Arrays.asList(tag1, tag2));
@@ -343,8 +343,8 @@ public class ShoppingListServiceImplMockTest {
         // expectations
         Mockito.when(userService.getUserByUserEmail(username))
                 .thenReturn(userEntity);
-        Mockito.when(shoppingListRepository.getOne(sourceListId))
-                .thenReturn(sourceList);
+        Mockito.when(shoppingListRepository.findById(sourceListId))
+                .thenReturn(Optional.of(sourceList));
         Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(sourceListId))
                 .thenReturn(sourceList.getItems());
 
@@ -415,10 +415,10 @@ public class ShoppingListServiceImplMockTest {
         // expectations
         Mockito.when(userService.getUserByUserEmail(username))
                 .thenReturn(userEntity);
-        Mockito.when(shoppingListRepository.getOne(sourceListId))
-                .thenReturn(sourceList);
-        Mockito.when(shoppingListRepository.getOne(destinationListId))
-                .thenReturn(destinationList);
+        Mockito.when(shoppingListRepository.findById(sourceListId))
+                .thenReturn(Optional.of(sourceList));
+        Mockito.when(shoppingListRepository.findById(destinationListId))
+                .thenReturn(Optional.of(destinationList));
         Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(sourceListId))
                 .thenReturn(sourceList.getItems());
         Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(destinationListId))
@@ -468,22 +468,101 @@ public class ShoppingListServiceImplMockTest {
         Assert.assertEquals(2, resultMap.get(8L).getUsedCount().longValue());
         Assert.assertNull(resultMap.get(8L).getRemovedOn());
 
-        // source list should not containt tagids 4 and 8
+        // source list should not containttagids 4 and 8
         List<ItemEntity> sourceItems = secondCallResult.getItems();
         Assert.assertNotNull(sourceItems);
         Assert.assertFalse(sourceItems.isEmpty());
         Assert.assertTrue(sourceItems.size() == 3);
         // put sourceItems into map
-        Map<Long, ItemEntity> sourceResultMap = firstCallResult.getItems().stream()
+        Map<Long, ItemEntity> sourceResultMap = sourceItems.stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(sourceResultMap);
-        // tags 4 and 8 should be there, twice
+        // tags 4 and 8 should not be there
         Assert.assertNotNull(sourceResultMap.get(4L));
         Assert.assertEquals(0, sourceResultMap.get(4L).getUsedCount().longValue());
         Assert.assertNotNull(sourceResultMap.get(4L).getRemovedOn());
         Assert.assertNotNull(sourceResultMap.get(8L));
         Assert.assertEquals(0, sourceResultMap.get(8L).getUsedCount().longValue());
         Assert.assertNotNull(sourceResultMap.get(8L).getRemovedOn());
+
+    }
+
+    @Test
+    public void testPerformItemOperation_Copy() {
+        String username = "Eustace";
+        Long sourceListId = 99L;
+        Long destinationListId = 96L;
+        List<Long> operationTagIds = Arrays.asList(4L, 5L, 8L);
+
+        Long userId = 9L;
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setEmail(username);
+
+        // 3 items, tagIds 3,4,8
+        ShoppingListEntity sourceList = dummyShoppingList(sourceListId, userId);
+        // 3 items, tagIds 4,8,7
+        ShoppingListEntity destinationList = dummyShoppingList(destinationListId, userId, Arrays.asList(4L, 8L, 7L));
+
+        List<TagType> tagTypeList = new ArrayList<>();
+        tagTypeList.add(TagType.Ingredient);
+        tagTypeList.add(TagType.NonEdible);
+
+
+        // tags for operation
+        Map<Long, TagEntity> tagDictionary = dummyTagDictionary(operationTagIds);
+
+        ArgumentCaptor<ShoppingListEntity> argument = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        // expectations
+        Mockito.when(userService.getUserByUserEmail(username))
+                .thenReturn(userEntity);
+        Mockito.when(shoppingListRepository.findById(destinationListId))
+                .thenReturn(Optional.of(destinationList));
+        Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(destinationListId))
+                .thenReturn(destinationList.getItems());
+        Mockito.when(tagService.getDictionaryForIds(new HashSet(operationTagIds)))
+                .thenReturn(tagDictionary);
+
+        itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
+        Mockito.when(shoppingListRepository.save(argument.capture()))
+                .thenReturn(sourceList);
+
+        // call under test
+        shoppingListService.performItemOperation(username, sourceListId, ItemOperationType.Copy, operationTagIds, destinationListId);
+
+        // list is not null
+        List<ShoppingListEntity> resultLists = argument.getAllValues();
+        ShoppingListEntity firstCallResult = resultLists.get(0);
+        Assert.assertNotNull(firstCallResult);
+
+        // after remove, the destination list should contain three items
+        // result list should contain original 4,7,8 plus moved 4,5,8
+        // so - 4 and 8 (twice) and 5 (once) and 7 (once)
+        // list should contain 1 items - id 3
+        List<ItemEntity> items = firstCallResult.getItems();
+        Assert.assertNotNull(items);
+        Assert.assertFalse(items.isEmpty());
+        Assert.assertTrue(items.size() == 4);
+        // put items into map
+        Map<Long, ItemEntity> resultMap = firstCallResult.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(resultMap);
+        // tag 5 and 7 should be there - once
+        Assert.assertNotNull(resultMap.get(5L));
+        Assert.assertEquals(1, resultMap.get(5L).getUsedCount().longValue());
+        Assert.assertNull(resultMap.get(5L).getRemovedOn());
+        Assert.assertNotNull(resultMap.get(7L));
+        Assert.assertEquals(1, resultMap.get(7L).getUsedCount().longValue());
+        Assert.assertNull(resultMap.get(7L).getRemovedOn());
+        // tags 4 and 8 should be there, twice
+        Assert.assertNotNull(resultMap.get(4L));
+        Assert.assertEquals(2, resultMap.get(4L).getUsedCount().longValue());
+        Assert.assertNull(resultMap.get(4L).getRemovedOn());
+        Assert.assertNotNull(resultMap.get(8L));
+        Assert.assertEquals(2, resultMap.get(8L).getUsedCount().longValue());
+        Assert.assertNull(resultMap.get(8L).getRemovedOn());
 
     }
 

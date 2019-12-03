@@ -2,9 +2,7 @@ package com.meg.atable.lmt.api;
 
 import com.meg.atable.Application;
 import com.meg.atable.auth.service.impl.JwtUser;
-import com.meg.atable.lmt.api.model.Item;
-import com.meg.atable.lmt.api.model.ListGenerateProperties;
-import com.meg.atable.lmt.api.model.ShoppingListPut;
+import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 import com.meg.atable.lmt.service.ShoppingListService;
@@ -614,6 +612,135 @@ public class ShoppingListRestControllerTest {
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
         Assert.assertTrue(resultMap.isEmpty());
+    }
+
+    @Test
+    @WithMockUser
+    public void deleteItemOperation_Move() throws Exception {
+        Long sourceListId = 7777L;  // 500, 501, 502
+        Long destinationListId = 6666L;  // 501, 502, 503
+        List<Long> tagIdsForUpdate = Arrays.asList(500L, 503L, 504L);
+
+        ItemOperationPut operationUpdate = new ItemOperationPut();
+        operationUpdate.setDestinationListId(destinationListId);
+        operationUpdate.setOperation(ItemOperationType.Move.name());
+        operationUpdate.setTagIds(tagIdsForUpdate);
+
+        String jsonProperties = json(operationUpdate);
+
+        String url = "/shoppinglist/" + sourceListId + "/item";
+
+        MvcResult result = this.mockMvc.perform(put(url)
+                .with(user(meUserDetails))
+                .contentType(contentType)
+                .content(jsonProperties))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // now, retrieve the list
+        ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
+        Map<Long, ItemEntity> sourceResultMap = sourceResultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(sourceResultMap);
+        Assert.assertEquals(2, sourceResultMap.keySet().size());
+        // 500 shouldn't be there
+        Assert.assertFalse(sourceResultMap.keySet().contains(500L));
+        // check destination list
+        ShoppingListEntity destinationResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, destinationListId);
+        Map<Long, ItemEntity> destinationResultMap = destinationResultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(destinationResultMap);
+        Assert.assertEquals(5, destinationResultMap.keySet().size());
+        // 500 and 504 should be there with count 1
+        Assert.assertTrue(destinationResultMap.containsKey(500L));
+        ItemEntity testElement = destinationResultMap.get(500L);
+        Assert.assertEquals(new Long(1), Long.valueOf(testElement.getUsedCount()));
+        testElement = destinationResultMap.get(504L);
+        Assert.assertEquals(new Long(1), Long.valueOf(testElement.getUsedCount()));
+        // 503 should be there with a count of 2
+        testElement = destinationResultMap.get(503L);
+        Assert.assertEquals(new Long(2), Long.valueOf(testElement.getUsedCount()));
+
+    }
+
+    @Test
+    @WithMockUser
+    public void deleteItemOperation_Copy() throws Exception {
+        Long sourceListId = 7777L;  // 500, 501, 502
+        Long destinationListId = 6666L;  // 501, 502, 503
+        List<Long> tagIdsForUpdate = Arrays.asList(500L, 503L, 504L);
+
+        ItemOperationPut operationUpdate = new ItemOperationPut();
+        operationUpdate.setDestinationListId(destinationListId);
+        operationUpdate.setOperation(ItemOperationType.Copy.name());
+        operationUpdate.setTagIds(tagIdsForUpdate);
+
+        String jsonProperties = json(operationUpdate);
+
+        String url = "/shoppinglist/" + sourceListId + "/item";
+
+        MvcResult result = this.mockMvc.perform(put(url)
+                .with(user(meUserDetails))
+                .contentType(contentType)
+                .content(jsonProperties))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // now, retrieve the list
+        ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
+        Map<Long, ItemEntity> sourceResultMap = sourceResultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(sourceResultMap);
+        Assert.assertEquals(3, sourceResultMap.keySet().size());
+        // check destination list
+        ShoppingListEntity destinationResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, destinationListId);
+        Map<Long, ItemEntity> destinationResultMap = destinationResultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(destinationResultMap);
+        Assert.assertEquals(5, destinationResultMap.keySet().size());
+        // 500 and 504 should be there with count 1
+        Assert.assertTrue(destinationResultMap.containsKey(500L));
+        ItemEntity testElement = destinationResultMap.get(500L);
+        Assert.assertEquals(new Long(1), Long.valueOf(testElement.getUsedCount()));
+        testElement = destinationResultMap.get(504L);
+        Assert.assertEquals(new Long(1), Long.valueOf(testElement.getUsedCount()));
+        // 503 should be there with a count of 2
+        testElement = destinationResultMap.get(503L);
+        Assert.assertEquals(new Long(2), Long.valueOf(testElement.getUsedCount()));
+
+    }
+
+    @Test
+    @WithMockUser
+    public void deleteItemOperation_Remove() throws Exception {
+        Long sourceListId = 7777L;  // 500, 501, 502
+        List<Long> tagIdsForUpdate = Arrays.asList(500L, 503L, 504L);
+
+        ItemOperationPut operationUpdate = new ItemOperationPut();
+        operationUpdate.setDestinationListId(null);
+        operationUpdate.setOperation(ItemOperationType.Remove.name());
+        operationUpdate.setTagIds(tagIdsForUpdate);
+
+        String jsonProperties = json(operationUpdate);
+
+        String url = "/shoppinglist/" + sourceListId + "/item";
+
+        MvcResult result = this.mockMvc.perform(put(url)
+                .with(user(meUserDetails))
+                .contentType(contentType)
+                .content(jsonProperties))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // now, retrieve the list
+        ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
+        Map<Long, ItemEntity> sourceResultMap = sourceResultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(sourceResultMap);
+        Assert.assertEquals(2, sourceResultMap.keySet().size());
+        // 500 shouldn't be there
+        Assert.assertFalse(sourceResultMap.keySet().contains(500L));
+
     }
 
 

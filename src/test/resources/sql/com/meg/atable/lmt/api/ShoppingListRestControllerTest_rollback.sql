@@ -1,9 +1,9 @@
 delete
 from list_item
-where list_id in (509990, 509991, 509999, 609990, 609991, 51000);
+where list_id in (509990, 509991, 509999, 609990, 609991, 51000, 6666, 7777);
 delete
 from list
-where list_id in (509990, 509991, 509999, 609990, 609991, 51000);
+where list_id in (509990, 509991, 509999, 609990, 609991, 51000, 6666, 7777);
 
 
 -- delete objects related to add menu plan to new or existing list

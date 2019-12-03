@@ -123,8 +123,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (tagIds == null) {
             return;
         }
-        // get source list
-        ShoppingListEntity sourceList = getListById(userName, sourceListId);
 
         // convert tagids to tag entities
         Set<Long> tagSet = new HashSet<>(tagIds);
@@ -134,7 +132,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // if operation requires copy, get destinationList and copy
         if (operationType.equals(ItemOperationType.Copy) ||
                 operationType.equals(ItemOperationType.Move)) {
-            ShoppingListEntity targetList = getListById(userName, destinationListId);
+            ShoppingListEntity targetList = getListById(userName, destinationListId, true);
             List<ItemEntity> items = targetList.getItems();
 
 
@@ -150,6 +148,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // if operation requires remove, remove from source
         if (operationType.equals(ItemOperationType.Move) ||
                 operationType.equals(ItemOperationType.Remove)) {
+            // get source list
+            ShoppingListEntity sourceList = getListById(userName, sourceListId, true);
+
             List<ItemEntity> items = sourceList.getItems();
             CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
                     .build();
@@ -471,7 +472,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         MealPlanEntity mealPlan = mealPlanService.getMealPlanById(name, mealPlanId);
 
         // create new inprocess list
-        ShoppingListEntity shoppingList = getListById(name, listId);
+        ShoppingListEntity shoppingList = getListById(name, listId, true);
 
         return addToListFromMealPlan(name, shoppingList, mealPlan);
     }

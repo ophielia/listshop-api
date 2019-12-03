@@ -1,5 +1,6 @@
 package com.meg.atable.lmt.api.web.controller;
 
+import com.google.common.base.Enums;
 import com.meg.atable.lmt.api.controller.ShoppingListRestControllerApi;
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.model.*;
@@ -127,6 +128,26 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             return ResponseEntity.ok(URI.create(oneList.getHref()));
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> updateItems(Principal principal, @PathVariable("listId") Long listId, @RequestBody ItemOperationPut itemOperation) {
+        if (itemOperation == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        // get operation type as enum
+        String operationString = itemOperation.getOperation();
+        ItemOperationType operationType = Enums.getIfPresent(ItemOperationType.class, operationString).orNull();
+        if (operationType == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // make service call
+        Long destinationListId = itemOperation.getDestinationListId();
+        List<Long> tagIdsForUpdate = itemOperation.getTagIds();
+        shoppingListService.performItemOperation(principal.getName(), listId, operationType, tagIdsForUpdate, destinationListId);
+        // return
+        return ResponseEntity.ok().build();
     }
 
     public ResponseEntity<ShoppingListResource> retrieveMostRecentList(Principal principal) {
