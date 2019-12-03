@@ -524,18 +524,18 @@ public class ShoppingListRestControllerTest {
         Assert.assertNotNull(resultMap);
         // check tag occurences in result
         // 501 - 1
-        Assert.assertNotNull(resultMap.get(81L));
-        Assert.assertTrue(resultMap.get(81L).getUsedCount() == 1);
+        Assert.assertNotNull(resultMap.get(363L));
+        Assert.assertTrue(resultMap.get(363L).getUsedCount() == 1);
 
         // 502 - 3
-        Assert.assertNotNull(resultMap.get(1L));
-        Assert.assertTrue(resultMap.get(1L).getUsedCount() == 3);  // showing 1 in result map
+        Assert.assertNotNull(resultMap.get(502L));
+        Assert.assertTrue(resultMap.get(502L).getUsedCount() == 1);  // showing 1 in result map
         // 503 - 2
-        Assert.assertNotNull(resultMap.get(12L));
-        Assert.assertTrue(resultMap.get(12L).getUsedCount() == 2); // showing 1 in result map
+        Assert.assertNotNull(resultMap.get(503L));
+        Assert.assertTrue(resultMap.get(503L).getUsedCount() == 1); // showing 1 in result map
         // 436 - 1
-        Assert.assertNotNull(resultMap.get(436L));
-        Assert.assertTrue(resultMap.get(436L).getUsedCount() == 1);
+        Assert.assertNotNull(resultMap.get(501L));
+        Assert.assertTrue(resultMap.get(501L).getUsedCount() == 2);
 
     }
 
