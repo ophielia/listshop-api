@@ -160,17 +160,10 @@ public class ShoppingListServiceImplTest {
 
         // retrieve active list
         result = shoppingListService.getListById(userAccount.getEmail(), TestConstants.LIST_1_ID);
-        ShoppingListEntity withRemoved = shoppingListService.getListById(userAccount.getEmail(), TestConstants.LIST_1_ID, true);
 
-        // ensure item is  there - when retrieving with removed
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getItems());
-        Assert.assertEquals(sizeBefore , result.getItems().size());
-        Assert.assertEquals(sizeBefore, withRemoved.getItems().size());
-
-        // ensure item is NOT  there - when retrieving without removed
-        ShoppingListEntity withoutRemoved = shoppingListService.getListById(userAccount.getEmail(), TestConstants.LIST_1_ID);
-        Assert.assertEquals(sizeBefore, withoutRemoved.getItems().size());
+        Assert.assertEquals(sizeBefore - 1, result.getItems().size());
 
     }
 

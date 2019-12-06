@@ -437,6 +437,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withDishId(dishSourceId)
                 .withRemoveEntireItem(removeEntireItem)
+                .withIncrementStatistics(true)
                 .build();
         collector.removeItemByTagId(item.getTag().getId(), context);
 

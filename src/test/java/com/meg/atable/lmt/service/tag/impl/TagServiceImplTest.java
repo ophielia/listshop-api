@@ -189,9 +189,9 @@ public class TagServiceImplTest {
         List<TagExtendedEntity> result = tagService.getTagExtendedList(filter, tagTypes);
 
         // confirm results
-        // should not include rice and prepared meat (14 and 88)
-        Assert.assertFalse(tagExtendedResultsInclude(14L, result));
-        Assert.assertFalse(tagExtendedResultsInclude(88L, result));
+        // should include rice and prepared meat (14 and 88)
+        Assert.assertTrue(tagExtendedResultsInclude(14L, result));
+        Assert.assertTrue(tagExtendedResultsInclude(88L, result));
         // should not include preparation type and special diet (157 and 246)
         Assert.assertFalse(tagExtendedResultsInclude(157L, result));
         Assert.assertFalse(tagExtendedResultsInclude(246L, result));
@@ -207,8 +207,8 @@ public class TagServiceImplTest {
 
         // confirm results
         // should  include rice and prepared meat (14 and 88)
-        Assert.assertFalse(tagExtendedResultsInclude(14L, resultsNoFilter));
-        Assert.assertFalse(tagExtendedResultsInclude(88L, resultsNoFilter));
+        Assert.assertTrue(tagExtendedResultsInclude(14L, resultsNoFilter));
+        Assert.assertTrue(tagExtendedResultsInclude(88L, resultsNoFilter));
         // should not include preparation type and special diet (157 and 246)
         Assert.assertTrue(tagExtendedResultsInclude(157L, resultsNoFilter));
         Assert.assertTrue(tagExtendedResultsInclude(246L, resultsNoFilter));

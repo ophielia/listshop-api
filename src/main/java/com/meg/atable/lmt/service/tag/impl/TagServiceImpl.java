@@ -236,15 +236,8 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagEntity createTag(TagEntity parent, String name) {
-        return createTag(parent, name, null);
-
-    }
-
-    @Override
-    public TagEntity createTag(TagEntity parent, String name, String description) {
         TagEntity tagEntity = new TagEntity();
         tagEntity.setName(name);
-        tagEntity.setDescription(description);
 
         return createTag(parent, tagEntity);
     }

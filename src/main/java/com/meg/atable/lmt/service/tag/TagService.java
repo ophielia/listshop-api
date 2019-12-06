@@ -28,8 +28,6 @@ public interface TagService {
 
     TagEntity createTag(TagEntity parent, String name);
 
-    TagEntity createTag(TagEntity parent, String name, String description);
-
     TagEntity createTag(TagEntity parent, TagEntity newTag);
 
     List<TagEntity> getTagsForDish(String username, Long dishId);
