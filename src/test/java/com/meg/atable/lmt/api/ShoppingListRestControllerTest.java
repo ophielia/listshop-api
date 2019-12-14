@@ -276,6 +276,7 @@ public class ShoppingListRestControllerTest {
         mockMvc.perform(delete("/shoppinglist/" + testId)
                 .with(user(meUserDetails)))
                 .andExpect(status().isNoContent());
+
     }
 
     @Test

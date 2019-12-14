@@ -3,6 +3,8 @@ package com.meg.atable.lmt.data.repository;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,4 +29,8 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
     List<ShoppingListEntity> findByUserIdAndName(Long userid, String name);
 
     List<ShoppingListEntity> findByUserIdAndNameLike(Long userid, String name);
+
+    @Modifying
+    @Query("delete from ShoppingListEntity t where t.listId = ?1")
+    void delete(Long entityId);
 }
