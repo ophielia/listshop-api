@@ -331,10 +331,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public boolean deleteList(String userName, Long listId) {
         ShoppingListEntity toDelete = getListById(userName, listId);
         if (toDelete != null) {
-            List<ItemEntity> items = toDelete.getItems();
+            List<ItemEntity> items = itemRepository.findByListId(listId);
             itemRepository.deleteAll(items);
             toDelete.setItems(new ArrayList<>());
-            shoppingListRepository.delete(toDelete);
+            shoppingListRepository.save(toDelete);
+            toDelete = getListById(userName, listId, true);
+            shoppingListRepository.delete(toDelete.getId());
+            shoppingListRepository.flush();
             return true;
         }
         return false;

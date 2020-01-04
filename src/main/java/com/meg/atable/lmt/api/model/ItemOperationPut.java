@@ -42,4 +42,13 @@ public class ItemOperationPut {
     public void setOperation(String operation) {
         this.operation = operation;
     }
+
+    @Override
+    public String toString() {
+        return "ItemOperationPut{" +
+                "operation='" + operation + '\'' +
+                ", tagIds=" + tagIds +
+                ", destinationListId=" + destinationListId +
+                '}';
+    }
 }
