@@ -68,4 +68,6 @@ public interface ShoppingListService {
 
 
     ShoppingListEntity addToListFromMealPlan(String name, Long listId, Long mealPlanId);
+
+    void updateItemCount(String name, Long listId, Long tagId, Integer usedCount);
 }

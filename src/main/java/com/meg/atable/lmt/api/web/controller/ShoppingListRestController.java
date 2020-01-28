@@ -88,7 +88,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             // retrieve the list, and put it into the result
             ShoppingListEntity shoppingList = this.shoppingListService.getListById(principal.getName(), listId);
             // possibly set layout id in shopping list
-            if (layoutId != null && layoutId != shoppingList.getListLayoutId()) {
+            if (layoutId != null && !layoutId.equals(shoppingList.getListLayoutId())) {
                 shoppingList.setListLayoutId(layoutId);
             }
             List<Category> categories = shoppingListService.categorizeList(principal.getName(), shoppingList, null, false, null);
@@ -209,6 +209,15 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
         this.shoppingListService.addItemToList(principal.getName(), listId, itemEntity);
 
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> updateItemCountByTag(Principal principal, @PathVariable Long listId,
+                                                       @PathVariable Long tagId,
+                                                       @PathVariable Integer usedCount
+    ) {
+        this.shoppingListService.updateItemCount(principal.getName(), listId, tagId, usedCount);
         return ResponseEntity.noContent().build();
     }
 

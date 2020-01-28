@@ -24,6 +24,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -564,6 +566,65 @@ public class ShoppingListServiceImplMockTest {
         Assert.assertEquals(2, resultMap.get(8L).getUsedCount().longValue());
         Assert.assertNull(resultMap.get(8L).getRemovedOn());
 
+    }
+
+    @Test
+    public void testUpdateItemCount() {
+        final Integer usedCount = 6;
+        final Long shoppingListId = 89L;
+        final Long tagId = 889L;
+        final Long userId = 2L;
+        final String userEmail = "me@my.mine";
+        LocalDate date = LocalDate.of(2020, 01, 01);
+        Date lastUpdate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        ShoppingListEntity shoppingList = dummyShoppingList(shoppingListId, userId, Arrays.asList(tagId));
+        shoppingList.setLastUpdate(lastUpdate);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setEmail(userEmail);
+
+        ItemEntity item = new ItemEntity();
+        item.setTagId(tagId);
+        item.setCrossedOff(new Date());
+        item.setRemovedOn(new Date());
+        item.setUsedCount(1);
+
+        // expectations
+        Mockito.when(userService.getUserByUserEmail(userEmail))
+                .thenReturn(userEntity);
+        Mockito.when(shoppingListRepository.getOne(shoppingListId))
+                .thenReturn(shoppingList);
+        Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(shoppingListId))
+                .thenReturn(shoppingList.getItems());
+        Mockito.when(itemRepository.getItemByListAndTag(shoppingListId, tagId))
+                .thenReturn(item);
+        ArgumentCaptor<ItemEntity> saveItemCapture = ArgumentCaptor.forClass(ItemEntity.class);
+        Mockito.when(itemRepository.save(saveItemCapture.capture()))
+                .thenReturn(item);
+
+        ArgumentCaptor<ShoppingListEntity> saveListCapture = ArgumentCaptor.forClass(ShoppingListEntity.class);
+        Mockito.when(shoppingListRepository.save(saveListCapture.capture()))
+                .thenReturn(shoppingList);
+
+        // call
+        shoppingListService.updateItemCount(userEmail, shoppingListId, tagId, usedCount);
+
+        // Assert item is correct
+        ItemEntity resultItem = saveItemCapture.getValue();
+        Assert.assertNotNull(resultItem);
+        Assert.assertNull(resultItem.getCrossedOff());
+        Assert.assertNull(resultItem.getRemovedOn());
+        Long itemTimeDiff = (new Date()).getTime() - item.getUpdatedOn().getTime();
+        Assert.assertTrue(itemTimeDiff < 1000);
+
+        Assert.assertEquals(usedCount, resultItem.getUsedCount());
+        // Assert last update is set in shopping list
+        ShoppingListEntity resultList = saveListCapture.getValue();
+        Assert.assertNotNull(resultList);
+        Date updateDate = resultList.getLastUpdate();
+        Long timeDiff = (new Date()).getTime() - updateDate.getTime();
+        Assert.assertTrue(timeDiff < 1000);
     }
 
     private Map<Long, TagEntity> dummyTagDictionary(List<Long> tagIds) {

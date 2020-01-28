@@ -5,6 +5,7 @@ import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.DateUtils;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.common.StringTools;
+import com.meg.atable.lmt.api.exception.ActionInvalidException;
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.*;
@@ -398,6 +399,35 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return collector;
     }
 
+    @Override
+    public void updateItemCount(String name, Long listId, Long tagId, Integer usedCount) {
+        if (usedCount == null) {
+            throw new ActionInvalidException("usedCount is null in updateItemCount.");
+        }
+
+        ShoppingListEntity shoppingListEntity = getListById(name, listId);
+        if (shoppingListEntity == null) {
+            return;
+        }
+
+        ItemEntity item = itemRepository.getItemByListAndTag(listId, tagId);
+        if (item == null) {
+            throw new ObjectNotFoundException("no item found in list [" + listId + "] with tagid [" + tagId + "]");
+        }
+
+        // set fields in item
+        item.setUsedCount(usedCount);
+        item.setUpdatedOn(new Date());
+        item.setRemovedOn(null);
+        item.setCrossedOff(null);
+
+        // update item
+        itemRepository.save(item);
+
+        // update list date
+        shoppingListEntity.setLastUpdate(new Date());
+        shoppingListRepository.save(shoppingListEntity);
+    }
 
     @Override
     public void deleteAllItemsFromList(String name, Long listId) {
@@ -776,7 +806,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ItemEntity item = itemOpt.get();
 
         // ensure item belongs to list
-        if (!item.getListId().equals(shoppingListEntity.getId())) {
+        if (item.getListId() == null && !item.getListId().equals(shoppingListEntity.getId())) {
             return;
         }
 

@@ -5,6 +5,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +23,7 @@ public interface ShoppingListRestControllerApi {
     @GetMapping(produces = "application/json")
     ResponseEntity<Resources<ShoppingListResource>> retrieveLists(Principal principal);
 
-    @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @PostMapping(produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties);
 
     @PutMapping(value = "/shared", produces = "application/json")
@@ -50,54 +51,60 @@ public interface ShoppingListRestControllerApi {
                                                           @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry);
 
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}", produces = "application/json")
+    @DeleteMapping(value = "/{listId}", produces = "application/json")
     ResponseEntity<ShoppingList> deleteList(Principal principal, @PathVariable("listId") Long listId);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{listId}/item", produces = "application/json")
+    @PostMapping(value = "/{listId}/item", produces = "application/json")
     ResponseEntity<Object> addItemToList(Principal principal, @PathVariable Long listId, @RequestBody Item input);
 
     @PostMapping(value = "/{listId}/tag/{tagId}", produces = "application/json")
     ResponseEntity<Object> addItemToListByTag(Principal principal, @PathVariable Long listId, @PathVariable Long tagId);
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/item/{itemId}", produces = "application/json")
+    @DeleteMapping(value = "/{listId}/item/{itemId}", produces = "application/json")
     ResponseEntity<Object> deleteItemFromList(Principal principal, @PathVariable Long listId, @PathVariable Long itemId,
                                               @RequestParam(value = "removeEntireItem", required = false, defaultValue = "false") Boolean removeEntireItem,
                                               @RequestParam(value = "sourceId", required = false, defaultValue = "0") String sourceId
     );
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{listId}/item/shop/{itemId}", produces = "application/json")
+    @PostMapping(value = "/{listId}/item/shop/{itemId}", produces = "application/json")
     ResponseEntity<Object> setCrossedOffForItem(Principal principal, @PathVariable Long listId, @PathVariable Long itemId,
                                               @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff
     );
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{listId}/item/shop", produces = "application/json")
+    @PostMapping(value = "/{listId}/item/shop", produces = "application/json")
     ResponseEntity<Object> crossOffAllItemsOnList(Principal principal, @PathVariable Long listId,
                                                   @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff);
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/item", produces = "application/json")
+    @DeleteMapping(value = "/{listId}/item", produces = "application/json")
     ResponseEntity<Object> deleteAllItemsFromList(Principal principal, @PathVariable Long listId);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/mealplan/{mealPlanId}", produces = "application/json")
+    @PostMapping(value = "/mealplan/{mealPlanId}", produces = "application/json")
     ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId);
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/{listId}/mealplan/{mealPlanId}", produces = "application/json")
+    @PutMapping(value = "/{listId}/mealplan/{mealPlanId}", produces = "application/json")
     ResponseEntity<Object> addToListFromMealPlan(Principal principal, @PathVariable Long listId, @PathVariable Long mealPlanId);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{listId}/dish/{dishId}", produces = "application/json")
+    @PostMapping(value = "/{listId}/dish/{dishId}", produces = "application/json")
     ResponseEntity<Object> addDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId);
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/dish/{dishId}", produces = "application/json")
+    @DeleteMapping(value = "/{listId}/dish/{dishId}", produces = "application/json")
     ResponseEntity<Object> removeDishFromList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId);
 
     @PostMapping(value = "/{listId}/list/{fromListId}", produces = "application/json")
     ResponseEntity<Object> addToListFromList(Principal principal, @PathVariable Long listId, @PathVariable Long fromListId);
 
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{listId}/list/{fromListId}", produces = "application/json")
+    @DeleteMapping(value = "/{listId}/list/{fromListId}", produces = "application/json")
     ResponseEntity<Object> removeFromListByList(Principal principal, @PathVariable Long listId, @PathVariable Long fromListId);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{listId}/layout/{layoutId}", produces = "application/json")
+    @PostMapping(value = "/{listId}/layout/{layoutId}", produces = "application/json")
     ResponseEntity<Object> changeListLayout(Principal principal, @PathVariable Long listId, @PathVariable Long layoutId);
+
+    @PutMapping(value = "/{listId}/tag/{tagId}/count/{usedCount}", produces = "application/json")
+    ResponseEntity<Object> updateItemCountByTag(Principal principal, @PathVariable Long listId,
+                                                @PathVariable Long tagId,
+                                                @PathVariable @NotNull Integer usedCount
+    );
 
 
 }
