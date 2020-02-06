@@ -17,9 +17,11 @@ public interface ListTagStatisticService {
 
     void countTagAddedToDish(Long userId, Long tagId);
 
-    void processCollectorStatistics(Long userId, ListItemCollector collector);
+    void processCollectorStatistics(Long userId, ItemCollector collector, CollectorContext context);
 
     List<ListTagStatistic> getStatisticsForUser(Long id, int resultLimit);
 
     List<ListTagStatistic> createStatisticsForUser(UserEntity user, List<Statistic> statisticList);
+
+    List<Long> findFrequentIdsForList(Long listId, Long userId);
 }

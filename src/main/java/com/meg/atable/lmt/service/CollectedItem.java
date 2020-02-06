@@ -257,11 +257,7 @@ public class CollectedItem {
     // Collector Item values
 
     public Long getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(Long tagId) {
-        this.tagId = tagId;
+        return getTag().getId();
     }
 
     public int getRemovedCount() {

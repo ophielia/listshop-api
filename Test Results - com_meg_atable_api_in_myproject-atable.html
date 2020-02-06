@@ -670,35 +670,84 @@ objc[3290]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 2018-06-23 07:25:17.571  INFO macbook-pro.home --- [           main] o.f.c.i.c.DbMigrate                      : Migrating schema &amp;quot;PUBLIC&amp;quot; to version 98 - inprocess
 2018-06-23 07:25:17.587  INFO macbook-pro.home --- [           main] o.f.c.i.c.DbMigrate                      : Migrating schema &amp;quot;PUBLIC&amp;quot; to version 99 - basetestdata
 2018-06-23 07:25:17.602  INFO macbook-pro.home --- [           main] o.f.c.i.c.DbMigrate                      : Successfully applied 9 migrations to schema &amp;quot;PUBLIC&amp;quot; (execution time 00:01.441s)
-2018-06-23 07:25:17.890  INFO macbook-pro.home --- [           main] j.LocalContainerEntityManagerFactoryBean : Building JPA container EntityManagerFactory for persistence unit &amp;#39;default&amp;#39;
-2018-06-23 07:25:17.919  INFO macbook-pro.home --- [           main] o.h.j.i.u.LogHelper                      : HHH000204: Processing PersistenceUnitInfo [
-	name: default
-	...]
-2018-06-23 07:25:18.052  INFO macbook-pro.home --- [           main] o.h.Version                              : HHH000412: Hibernate Core {5.2.16.Final}
-2018-06-23 07:25:18.055  INFO macbook-pro.home --- [           main] o.h.c.Environment                        : HHH000206: hibernate.properties not found
-2018-06-23 07:25:18.138  INFO macbook-pro.home --- [           main] o.h.a.c.Version                          : HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
-2018-06-23 07:25:18.403  INFO macbook-pro.home --- [           main] o.h.d.Dialect                            : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
-2018-06-23 07:25:20.035  INFO macbook-pro.home --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit &amp;#39;default&amp;#39;
-2018-06-23 07:25:21.805  INFO macbook-pro.home --- [           main] o.h.h.i.QueryTranslatorFactoryInitiator  : HHH000397: Using ASTQueryTranslatorFactory
-2018-06-23 07:25:22.372  WARN macbook-pro.home --- [           main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: protected static final int com.meg.atable.lmt.service.impl.AbstractProposalProcessor.SEARCH_DISH_RESULT_COUNT
-2018-06-23 07:25:22.372  WARN macbook-pro.home --- [           main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: protected static final int com.meg.atable.lmt.service.impl.AbstractProposalProcessor.EMPTY_COUNT
-2018-06-23 07:25:22.372  WARN macbook-pro.home --- [           main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: protected static final int com.meg.atable.lmt.service.impl.AbstractProposalProcessor.FILL_IN_INCREMENT
-2018-06-23 07:25:22.636  WARN macbook-pro.home --- [           main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: protected static final int com.meg.atable.lmt.service.impl.AbstractProposalProcessor.SEARCH_DISH_RESULT_COUNT
-2018-06-23 07:25:22.636  WARN macbook-pro.home --- [           main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: protected static final int com.meg.atable.lmt.service.impl.AbstractProposalProcessor.EMPTY_COUNT
-2018-06-23 07:25:22.636  WARN macbook-pro.home --- [           main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: protected static final int com.meg.atable.lmt.service.impl.AbstractProposalProcessor.FILL_IN_INCREMENT
-2018-06-23 07:25:22.642  WARN macbook-pro.home --- [           main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: protected static final int com.meg.atable.lmt.service.impl.AbstractProposalProcessor.SEARCH_DISH_RESULT_COUNT
-2018-06-23 07:25:22.642  WARN macbook-pro.home --- [           main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: protected static final int com.meg.atable.lmt.service.impl.AbstractProposalProcessor.EMPTY_COUNT
-2018-06-23 07:25:22.642  WARN macbook-pro.home --- [           main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired annotation is not supported on static fields: protected static final int com.meg.atable.lmt.service.impl.AbstractProposalProcessor.FILL_IN_INCREMENT
-2018-06-23 07:25:23.090 DEBUG macbook-pro.home --- [           main] eGlobalAuthenticationAutowiredConfigurer : Eagerly initializing {webSecurityConfig=com.meg.atable.configuration.WebSecurityConfig$$EnhancerBySpringCGLIB$$d1273624@52f43225}
-2018-06-23 07:25:23.325 DEBUG macbook-pro.home --- [           main] edFilterInvocationSecurityMetadataSource : Adding web access control expression &amp;#39;permitAll&amp;#39;, for Ant [pattern=&amp;#39;/auth/**&amp;#39;]
-2018-06-23 07:25:23.326 DEBUG macbook-pro.home --- [           main] edFilterInvocationSecurityMetadataSource : Adding web access control expression &amp;#39;permitAll&amp;#39;, for Ant [pattern=&amp;#39;/h2-console/**&amp;#39;]
-2018-06-23 07:25:23.326 DEBUG macbook-pro.home --- [           main] edFilterInvocationSecurityMetadataSource : Adding web access control expression &amp;#39;permitAll&amp;#39;, for Ant [pattern=&amp;#39;/tag/**&amp;#39;]
-2018-06-23 07:25:23.327 DEBUG macbook-pro.home --- [           main] edFilterInvocationSecurityMetadataSource : Adding web access control expression &amp;#39;permitAll&amp;#39;, for Ant [pattern=&amp;#39;/taginfo/**&amp;#39;]
-2018-06-23 07:25:23.327 DEBUG macbook-pro.home --- [           main] edFilterInvocationSecurityMetadataSource : Adding web access control expression &amp;#39;permitAll&amp;#39;, for Ant [pattern=&amp;#39;/**&amp;#39;, OPTIONS]
-2018-06-23 07:25:23.327 DEBUG macbook-pro.home --- [           main] edFilterInvocationSecurityMetadataSource : Adding web access control expression &amp;#39;authenticated&amp;#39;, for org.springframework.security.web.util.matcher.AnyRequestMatcher@1
-2018-06-23 07:25:23.340 DEBUG macbook-pro.home --- [           main] o.s.s.w.a.i.FilterSecurityInterceptor    : Validated configuration attributes
-2018-06-23 07:25:23.341 DEBUG macbook-pro.home --- [           main] o.s.s.w.a.i.FilterSecurityInterceptor    : Validated configuration attributes
-2018-06-23 07:25:23.354  INFO macbook-pro.home --- [           main] o.s.s.w.DefaultSecurityFilterChain       : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4cc89246, org.springframework.security.web.context.SecurityContextPersistenceFilter@73da303e, org.springframework.security.web.header.HeaderWriterFilter@3b347439, org.springframework.web.filter.CorsFilter@413eaf5d, org.springframework.security.web.authentication.logout.LogoutFilter@4449b273, com.meg.atable.auth.service.impl.JwtAuthenticationTokenFilter@7c682e26, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@32513dea, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5034681f, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3e28af44, org.springframework.security.web.session.SessionManagementFilter@53a09566, org.springframework.security.web.access.ExceptionTranslationFilter@1dd64243, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@2aa07d80]
+2018-06-23 07:25:17.890 INFO macbook-pro.home --- [ main] j.LocalContainerEntityManagerFactoryBean : Building JPA
+    container EntityManagerFactory for persistence unit &amp;#39;default&amp;#39;
+    2018-06-23 07:25:17.919 INFO macbook-pro.home --- [ main] o.h.j.i.u.LogHelper : HHH000204: Processing
+    PersistenceUnitInfo [
+    name: default
+    ...]
+    2018-06-23 07:25:18.052 INFO macbook-pro.home --- [ main] o.h.Version : HHH000412: Hibernate Core {5.2.16.Final}
+    2018-06-23 07:25:18.055 INFO macbook-pro.home --- [ main] o.h.c.Environment : HHH000206: hibernate.properties not
+    found
+    2018-06-23 07:25:18.138 INFO macbook-pro.home --- [ main] o.h.a.c.Version : HCANN000001: Hibernate Commons
+    Annotations {5.0.1.Final}
+    2018-06-23 07:25:18.403 INFO macbook-pro.home --- [ main] o.h.d.Dialect : HHH000400: Using dialect:
+    org.hibernate.dialect.H2Dialect
+    2018-06-23 07:25:20.035 INFO macbook-pro.home --- [ main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA
+    EntityManagerFactory for persistence unit &amp;#39;default&amp;#39;
+    2018-06-23 07:25:21.805 INFO macbook-pro.home --- [ main] o.h.h.i.QueryTranslatorFactoryInitiator : HHH000397: Using
+    ASTQueryTranslatorFactory
+    2018-06-23 07:25:22.372 WARN macbook-pro.home --- [ main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired
+    annotation is not supported on static fields: protected static final int
+    com.meg.atable.lmt.service.proposal.impl.AbstractProposalProcessor.SEARCH_DISH_RESULT_COUNT
+    2018-06-23 07:25:22.372 WARN macbook-pro.home --- [ main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired
+    annotation is not supported on static fields: protected static final int
+    com.meg.atable.lmt.service.proposal.impl.AbstractProposalProcessor.EMPTY_COUNT
+    2018-06-23 07:25:22.372 WARN macbook-pro.home --- [ main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired
+    annotation is not supported on static fields: protected static final int
+    com.meg.atable.lmt.service.proposal.impl.AbstractProposalProcessor.FILL_IN_INCREMENT
+    2018-06-23 07:25:22.636 WARN macbook-pro.home --- [ main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired
+    annotation is not supported on static fields: protected static final int
+    com.meg.atable.lmt.service.proposal.impl.AbstractProposalProcessor.SEARCH_DISH_RESULT_COUNT
+    2018-06-23 07:25:22.636 WARN macbook-pro.home --- [ main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired
+    annotation is not supported on static fields: protected static final int
+    com.meg.atable.lmt.service.proposal.impl.AbstractProposalProcessor.EMPTY_COUNT
+    2018-06-23 07:25:22.636 WARN macbook-pro.home --- [ main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired
+    annotation is not supported on static fields: protected static final int
+    com.meg.atable.lmt.service.proposal.impl.AbstractProposalProcessor.FILL_IN_INCREMENT
+    2018-06-23 07:25:22.642 WARN macbook-pro.home --- [ main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired
+    annotation is not supported on static fields: protected static final int
+    com.meg.atable.lmt.service.proposal.impl.AbstractProposalProcessor.SEARCH_DISH_RESULT_COUNT
+    2018-06-23 07:25:22.642 WARN macbook-pro.home --- [ main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired
+    annotation is not supported on static fields: protected static final int
+    com.meg.atable.lmt.service.proposal.impl.AbstractProposalProcessor.EMPTY_COUNT
+    2018-06-23 07:25:22.642 WARN macbook-pro.home --- [ main] f.a.AutowiredAnnotationBeanPostProcessor : Autowired
+    annotation is not supported on static fields: protected static final int
+    com.meg.atable.lmt.service.proposal.impl.AbstractProposalProcessor.FILL_IN_INCREMENT
+    2018-06-23 07:25:23.090 DEBUG macbook-pro.home --- [ main] eGlobalAuthenticationAutowiredConfigurer : Eagerly
+    initializing
+    {webSecurityConfig=com.meg.atable.configuration.WebSecurityConfig$$EnhancerBySpringCGLIB$$d1273624@52f43225}
+    2018-06-23 07:25:23.325 DEBUG macbook-pro.home --- [ main] edFilterInvocationSecurityMetadataSource : Adding web
+    access control expression &amp;#39;permitAll&amp;#39;, for Ant [pattern=&amp;#39;/auth/**&amp;#39;]
+    2018-06-23 07:25:23.326 DEBUG macbook-pro.home --- [ main] edFilterInvocationSecurityMetadataSource : Adding web
+    access control expression &amp;#39;permitAll&amp;#39;, for Ant [pattern=&amp;#39;/h2-console/**&amp;#39;]
+    2018-06-23 07:25:23.326 DEBUG macbook-pro.home --- [ main] edFilterInvocationSecurityMetadataSource : Adding web
+    access control expression &amp;#39;permitAll&amp;#39;, for Ant [pattern=&amp;#39;/tag/**&amp;#39;]
+    2018-06-23 07:25:23.327 DEBUG macbook-pro.home --- [ main] edFilterInvocationSecurityMetadataSource : Adding web
+    access control expression &amp;#39;permitAll&amp;#39;, for Ant [pattern=&amp;#39;/taginfo/**&amp;#39;]
+    2018-06-23 07:25:23.327 DEBUG macbook-pro.home --- [ main] edFilterInvocationSecurityMetadataSource : Adding web
+    access control expression &amp;#39;permitAll&amp;#39;, for Ant [pattern=&amp;#39;/**&amp;#39;, OPTIONS]
+    2018-06-23 07:25:23.327 DEBUG macbook-pro.home --- [ main] edFilterInvocationSecurityMetadataSource : Adding web
+    access control expression &amp;#39;authenticated&amp;#39;, for
+    org.springframework.security.web.util.matcher.AnyRequestMatcher@1
+    2018-06-23 07:25:23.340 DEBUG macbook-pro.home --- [ main] o.s.s.w.a.i.FilterSecurityInterceptor : Validated
+    configuration attributes
+    2018-06-23 07:25:23.341 DEBUG macbook-pro.home --- [ main] o.s.s.w.a.i.FilterSecurityInterceptor : Validated
+    configuration attributes
+    2018-06-23 07:25:23.354 INFO macbook-pro.home --- [ main] o.s.s.w.DefaultSecurityFilterChain : Creating filter
+    chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1,
+    [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4cc89246,
+    org.springframework.security.web.context.SecurityContextPersistenceFilter@73da303e,
+    org.springframework.security.web.header.HeaderWriterFilter@3b347439,
+    org.springframework.web.filter.CorsFilter@413eaf5d,
+    org.springframework.security.web.authentication.logout.LogoutFilter@4449b273,
+    com.meg.atable.auth.service.impl.JwtAuthenticationTokenFilter@7c682e26,
+    org.springframework.security.web.savedrequest.RequestCacheAwareFilter@32513dea,
+    org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5034681f,
+    org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3e28af44,
+    org.springframework.security.web.session.SessionManagementFilter@53a09566,
+    org.springframework.security.web.access.ExceptionTranslationFilter@1dd64243,
+    org.springframework.security.web.access.intercept.FilterSecurityInterceptor@2aa07d80]
 2018-06-23 07:25:23.390 DEBUG macbook-pro.home --- [           main] o.s.s.a.i.a.MethodSecurityInterceptor    : Validated configuration attributes
 2018-06-23 07:25:23.889  INFO macbook-pro.home --- [           main] o.s.w.s.h.SimpleUrlHandlerMapping        : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
 2018-06-23 07:25:24.533  INFO macbook-pro.home --- [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.web.context.support.GenericWebApplicationContext@66c61024: startup date [Sat Jun 23 07:25:11 CEST 2018]; root of context hierarchy

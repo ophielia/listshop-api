@@ -1,6 +1,7 @@
 package com.meg.atable.lmt.service;
 
 import com.meg.atable.lmt.api.model.ContextType;
+import com.meg.atable.lmt.api.model.StatisticCountType;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import org.apache.commons.lang3.tuple.Pair;
@@ -119,7 +120,7 @@ public class ListItemCollector extends AbstractItemCollector {
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withDishId(dishId)
                 .withRemoveEntireItem(false)
-                .withIncrementStatistics(false)
+                .withStatisticCountType(StatisticCountType.Dish)
                 .build();
 
         for (TagEntity tag : tagsToRemove) {

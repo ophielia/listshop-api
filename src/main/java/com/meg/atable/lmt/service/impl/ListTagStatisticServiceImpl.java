@@ -4,26 +4,38 @@ import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.lmt.api.model.ModelMapper;
 import com.meg.atable.lmt.api.model.Statistic;
 import com.meg.atable.lmt.data.entity.ListTagStatistic;
-import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.data.repository.ListTagStatisticRepository;
-import com.meg.atable.lmt.service.CollectedItem;
-import com.meg.atable.lmt.service.ListItemCollector;
+import com.meg.atable.lmt.service.CollectorContext;
+import com.meg.atable.lmt.service.ItemCollector;
 import com.meg.atable.lmt.service.ListTagStatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import javax.transaction.Transactional;
+import java.util.*;
 
 /**
  * Created by margaretmartin on 20/10/2017.
  */
 @Service
+@Transactional
 public class ListTagStatisticServiceImpl implements ListTagStatisticService {
 
+    private static final String TAG_LIST_PARAM = "tagidlist";
+    private static final String USER_ID_PARAMETER = "useridparam";
+
+    private final String MISSING_STAT_SELECT = "select t.tag_id  " +
+            " from  tag t " +
+            " left outer join list_tag_stats s on s.tag_id = t.tag_id " +
+            " AND s.user_id = :" + USER_ID_PARAMETER +
+            " where  t.tag_id in (:" + TAG_LIST_PARAM +
+            ")" +
+            " AND s is null";
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
     private ListTagStatisticRepository listTagStatisticRepo;
@@ -43,54 +55,35 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
     }
 
     @Override
-    public void processCollectorStatistics(Long userId, ListItemCollector collector) {
-        // get statistics for tags - hash by tagid
-        Map<Long, ListTagStatistic> statLkup = listTagStatisticRepo.findByUserIdAndTagIdIn(userId, collector.getAllTagIds()).stream()
-                .collect(Collectors.toMap(ListTagStatistic::getTagId, Function.identity()));
+    public void processCollectorStatistics(Long userId, ItemCollector collector, CollectorContext context) {
+        // pull tagIds for removed and created tags
+        List<Long> removedIds = new ArrayList<>();
+        List<Long> addedIds = new ArrayList<>();
+        collector.getCollectedTagItems().stream()
+                .filter(item -> item.isChanged())
+                .forEach(item -> {
+                    if (item.isAdded()) {
+                        addedIds.add(item.getTagId());
+                    } else if (item.isRemoved() && item.getCrossedOff() == null) {
+                        removedIds.add(item.getTagId());
+                    }
+                });
 
-        // go through list tags - return list of stats
-        List<ListTagStatistic> statList = new ArrayList<>();
-        List<CollectedItem> itemList = collector.getCollectedTagItems();
-
-        for (CollectedItem item : itemList) {
-            if (!item.isUpdated() & !item.isRemoved()) {
-                continue;
-            }
-            TagEntity tag = item.getTag();
-            if (item.isAdded()) {
-                if (statLkup.containsKey(tag.getId())) {
-                    ListTagStatistic stat = statLkup.get(tag.getId());
-                    boolean frequentCrossOff = isFrequentCrossOff(stat);
-                    item.setFrequent(frequentCrossOff);
-                }
-                ListTagStatistic stat = addOrRemoveItem(statLkup, userId, tag.getId(), item.getAddCount(), 0);
-                statList.add(stat);
-            } else if (item.isRemoved()) {
-                if (statLkup.containsKey(tag.getId())) {
-                    ListTagStatistic stat = statLkup.get(tag.getId());
-                    boolean frequentCrossOff = isFrequentCrossOff(stat);
-                    item.setFrequent(frequentCrossOff);
-
-
-                }
-                ListTagStatistic stat = addOrRemoveItem(statLkup, userId, tag.getId(), 0, item.getRemovedCount());
-                statList.add(stat);
-            } else if (item.isRemoved()) {
-                if (statLkup.containsKey(tag.getId())) {
-                    ListTagStatistic stat = statLkup.get(tag.getId());
-                    boolean frequentCrossOff = isFrequentCrossOff(stat);
-                    item.setFrequent(frequentCrossOff);
-
-
-                }
-                ListTagStatistic stat = addOrRemoveItem(statLkup, userId, tag.getId(), 0, item.getRemovedCount());
-                statList.add(stat);
-            }
-
+        if (removedIds.isEmpty() && addedIds.isEmpty()) {
+            return;
         }
 
-        // save list of stats
-        listTagStatisticRepo.saveAll(statList);
+        // check for and create missing statistics
+        checkForAndCreateMissingStatistics(collector, userId);
+
+        // update removed
+        if (!removedIds.isEmpty()) {
+            updateStatistics(StatisticOperationType.remove, removedIds, context, userId);
+        }
+        // update added
+        if (!addedIds.isEmpty()) {
+            updateStatistics(StatisticOperationType.add, addedIds, context, userId);
+        }
     }
 
     @Override
@@ -119,57 +112,114 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         return listTagStatisticRepo.saveAll(createdStatistics);
     }
 
-    private ListTagStatistic addCounted(ListTagStatistic statistic) {
-        Integer counted = statistic.getAddedCount() == null ? 0 : statistic.getAddedCount();
-        statistic.setAddedCount(counted + 1);
-        return statistic;
-    }
+    @Override
+    public List<Long> findFrequentIdsForList(Long listId, Long userId) {
+        String sql = new StringBuilder("select i.tag_id  ")
+                .append(" from list_item i ")
+                .append(" join calculated_stats s using (tag_id) ")
+                .append(" where i.list_id = ")
+                .append(" :listId")
+                .append(" and s.user_id = ")
+                .append(" :userId")
+                .append(" and factored_frequency > frequent_threshold;")
+                .toString();
 
-    private ListTagStatistic addRemoved(ListTagStatistic stat) {
-        Integer counted = stat.getRemovedCount() == null ? 0 : stat.getRemovedCount();
-        stat.setRemovedCount(counted + 1);
-        return stat;
-    }
-
-    public boolean isFrequentCrossOff(ListTagStatistic listTagStatistic) {
-        // return less than 3
-        if (listTagStatistic.getAddedCount() < 3) {
-            return false;
-        }
-        Integer addedCount = listTagStatistic.getAddedCount();
-        Double percentage = (listTagStatistic.getRemovedCount().doubleValue() / addedCount.doubleValue()) * 100.0;
-        // process 3 - 5
-        if (addedCount <= 5) {
-            return percentage >= 65.0;
-        } else if (addedCount <= 10) {
-            return percentage >= 75.0;
-        }
-        return percentage >= 70.0;
-
-    }
-
-    private ListTagStatistic addOrRemoveItem(Map<Long, ListTagStatistic> statLkup, Long userId, Long tagId, int addCount, int removeCount) {
-
-        // get statistic for tag
-        ListTagStatistic statistic = statLkup.get(tagId);
-        // if it doesn't exist, create it
-        if (statistic == null) {
-            statistic = new ListTagStatistic();
-            statistic.setUserId(userId);
-            statistic.setTagId(tagId);
-            statistic.setAddedCount(0);
-            statistic.setRemovedCount(0);
-        }
-
-        // increment added or removed
-        if (addCount > 0) {
-            statistic = addCounted(statistic);
-        } else if (removeCount > 0) {
-            statistic = addRemoved(statistic);
-        }
-        // save statistic
-        return statistic;
+        Map<String, Long> parameters = new HashMap<>();
+        parameters.put(":listId", listId);
+        parameters.put(":userId", userId);
+        return jdbcTemplate.queryForList(sql, parameters, Long.class);
     }
 
 
+    private void updateStatistics(StatisticOperationType operation, List<Long> updateIds, CollectorContext context, Long userId) {
+        String fieldPrefix = "added_";
+        if (operation == StatisticOperationType.remove) {
+            fieldPrefix = "removed_";
+        }
+
+        String field = getFieldNameForContext(context);
+        if (field == null) {
+            return;
+        }
+        String fieldName = new StringBuilder(fieldPrefix).append(field).toString();
+
+
+        String sql = constructStatisticUpdateSql(fieldName);
+
+        Map updateParams = new HashMap<>();
+        updateParams.put(USER_ID_PARAMETER, userId);
+        updateParams.put(TAG_LIST_PARAM, updateIds);
+        jdbcTemplate.update(sql, updateParams);
+
+
+    }
+
+    private String constructStatisticInsertSql(Long userId) {
+        StringBuilder builder = new StringBuilder("insert into list_tag_stats (list_tag_stat_id, tag_id, user_id) ")
+                .append(" select nextval('list_tag_stats_sequence') , tag_id , ")
+                .append(userId)
+                .append(" as user_id")
+                .append(" from tag where tag_id in (:")
+                .append(TAG_LIST_PARAM)
+                .append(");");
+        return builder.toString();
+    }
+
+    private String constructStatisticUpdateSql(String fieldName) {
+        StringBuilder builder = new StringBuilder("UPDATE list_tag_stats s SET added_count = added_count + 1, ")
+                .append(fieldName)
+                .append(" = ")
+                .append(fieldName)
+                .append(" + 1  WHERE s.user_id =  :")
+                .append(USER_ID_PARAMETER)
+                .append(" AND tag_id in ( :")
+                .append(TAG_LIST_PARAM)
+                .append(") ");
+        return builder.toString();
+
+    }
+
+    private String getFieldNameForContext(CollectorContext context) {
+        if (context.getStatisticCountType() == null) {
+            return null;
+        }
+        switch (context.getStatisticCountType()) {
+            case Dish:
+                return "dish";
+            case List:
+                return "list";
+            case Single:
+                return "single";
+            case StarterList:
+                return "starterlist";
+        }
+        return null;
+
+
+    }
+
+    private void checkForAndCreateMissingStatistics(ItemCollector collector, Long userId) {
+        Map parameters = new HashMap<String, Object>();
+        parameters.put(TAG_LIST_PARAM, collector.getAllTagIds());
+        parameters.put(USER_ID_PARAMETER, userId);
+
+        MapSqlParameterSource parametersT = new MapSqlParameterSource();
+        parametersT.addValue(TAG_LIST_PARAM, collector.getAllTagIds());
+
+        String testsql = "select t.tag_id  " +
+                " from  tag t " +
+                " where  t.tag_id in (:" + TAG_LIST_PARAM +
+                ")";
+        List<Long> missingIds = jdbcTemplate.queryForList(MISSING_STAT_SELECT, parameters, Long.class);
+        //List<Long> missingIds = jdbcTemplate.queryForList(testsql, parameters, Long.class);
+
+
+        if (missingIds == null || missingIds.isEmpty()) {
+            return;
+        }
+
+        String insertSql = constructStatisticInsertSql(userId);
+        Map insertParams = Collections.singletonMap(TAG_LIST_PARAM, missingIds);
+        jdbcTemplate.update(insertSql, insertParams);
+    }
 }
