@@ -5,6 +5,7 @@ import com.meg.atable.lmt.api.model.ModelMapper;
 import com.meg.atable.lmt.api.model.Statistic;
 import com.meg.atable.lmt.data.entity.ListTagStatistic;
 import com.meg.atable.lmt.data.repository.ListTagStatisticRepository;
+import com.meg.atable.lmt.service.CollectedItem;
 import com.meg.atable.lmt.service.CollectorContext;
 import com.meg.atable.lmt.service.ItemCollector;
 import com.meg.atable.lmt.service.ListTagStatisticService;
@@ -26,7 +27,7 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
     private static final String TAG_LIST_PARAM = "tagidlist";
     private static final String USER_ID_PARAMETER = "useridparam";
 
-    private final String MISSING_STAT_SELECT = "select t.tag_id  " +
+    private static final String MISSING_STAT_SELECT = "select t.tag_id  " +
             " from  tag t " +
             " left outer join list_tag_stats s on s.tag_id = t.tag_id " +
             " AND s.user_id = :" + USER_ID_PARAMETER +
@@ -60,7 +61,7 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         List<Long> removedIds = new ArrayList<>();
         List<Long> addedIds = new ArrayList<>();
         collector.getCollectedTagItems().stream()
-                .filter(item -> item.isChanged())
+                .filter(CollectedItem::isChanged)
                 .forEach(item -> {
                     if (item.isAdded()) {
                         addedIds.add(item.getTagId());
@@ -125,15 +126,16 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
                 .toString();
 
         Map<String, Long> parameters = new HashMap<>();
-        parameters.put(":listId", listId);
-        parameters.put(":userId", userId);
+        parameters.put("listId", listId);
+        parameters.put("userId", userId);
         return jdbcTemplate.queryForList(sql, parameters, Long.class);
     }
 
 
     private void updateStatistics(StatisticOperationType operation, List<Long> updateIds, CollectorContext context, Long userId) {
         String fieldPrefix = "added_";
-        if (operation == StatisticOperationType.remove) {
+        boolean isRemove = operation == StatisticOperationType.remove;
+        if (isRemove) {
             fieldPrefix = "removed_";
         }
 
@@ -144,7 +146,7 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         String fieldName = new StringBuilder(fieldPrefix).append(field).toString();
 
 
-        String sql = constructStatisticUpdateSql(fieldName);
+        String sql = constructstatisticupdatesql(!isRemove, fieldName);
 
         Map updateParams = new HashMap<>();
         updateParams.put(USER_ID_PARAMETER, userId);
@@ -165,8 +167,12 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         return builder.toString();
     }
 
-    private String constructStatisticUpdateSql(String fieldName) {
-        StringBuilder builder = new StringBuilder("UPDATE list_tag_stats s SET added_count = added_count + 1, ")
+    private String constructstatisticupdatesql(boolean isAdd, String fieldName) {
+        String totalFieldName = isAdd ? "added_count" : "removed_count";
+
+        StringBuilder builder = new StringBuilder("UPDATE list_tag_stats s SET ")
+                .append(totalFieldName)
+                .append(" = added_count + 1, ")
                 .append(fieldName)
                 .append(" = ")
                 .append(fieldName)
@@ -192,8 +198,9 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
                 return "single";
             case StarterList:
                 return "starterlist";
+            default:
+                return null;
         }
-        return null;
 
 
     }
@@ -206,15 +213,9 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         MapSqlParameterSource parametersT = new MapSqlParameterSource();
         parametersT.addValue(TAG_LIST_PARAM, collector.getAllTagIds());
 
-        String testsql = "select t.tag_id  " +
-                " from  tag t " +
-                " where  t.tag_id in (:" + TAG_LIST_PARAM +
-                ")";
         List<Long> missingIds = jdbcTemplate.queryForList(MISSING_STAT_SELECT, parameters, Long.class);
-        //List<Long> missingIds = jdbcTemplate.queryForList(testsql, parameters, Long.class);
 
-
-        if (missingIds == null || missingIds.isEmpty()) {
+        if (missingIds.isEmpty()) {
             return;
         }
 

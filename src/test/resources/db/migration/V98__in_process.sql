@@ -10,6 +10,9 @@ ALTER TABLE LIST_TAG_STATS
     ADD COLUMN REMOVED_LIST        BIGINT DEFAULT 0,
     ADD COLUMN REMOVED_STARTERLIST BIGINT DEFAULT 0;
 
+ALTER TABLE List_item
+    drop column frequent_cross_off;
+
 -- config table for view
 
 create table list_stat_configs
@@ -85,3 +88,8 @@ where (
 --     DROP COLUMN REMOVED_STARTERLIST ;
 
 -- drop table list_stat_configs;
+
+-- drop view calculated_stats;
+
+-- ALTER TABLE List_item
+--     add column frequent_cross_off boolean;

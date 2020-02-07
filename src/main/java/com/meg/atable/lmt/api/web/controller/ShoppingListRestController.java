@@ -7,7 +7,6 @@ import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
-import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.service.ListLayoutService;
 import com.meg.atable.lmt.service.ShoppingListException;
 import com.meg.atable.lmt.service.ShoppingListService;
@@ -133,7 +132,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> updateItems(Principal principal, @PathVariable("listId") Long listId, @RequestBody ItemOperationPut itemOperation) {
-        logger.debug("beginning updateItems for input: " + itemOperation);
+        String message = String.format("beginning updateItems for input: %@", itemOperation);
+        logger.debug(message);
         if (itemOperation == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -184,10 +184,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         if (highlightDish == 0) {
             highlightDish = null;
         }
-        //MM debug only
-        List<ItemEntity> items = result.getItems();
-        List<Long> tempids = items.stream().map(ItemEntity::getTag).map(TagEntity::getId).collect(Collectors.toList());
-        logger.debug("tagIds are: " + tempids);
+
         List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, highlightListId);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);

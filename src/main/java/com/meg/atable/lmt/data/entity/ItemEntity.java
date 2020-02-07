@@ -4,6 +4,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 24/10/2017.
@@ -43,6 +45,10 @@ public class ItemEntity {
     @Column(name = "used_count")
     private Integer usedCount;
 
+    @Transient
+    private Set<String> handles;
+
+
     private Date addedOn;
 
     private Date crossedOff;
@@ -53,8 +59,6 @@ public class ItemEntity {
 
     private String freeText;
 
-    @Column(name = "frequent_cross_off")
-    private Boolean isFrequent = false;
 
     @Transient
     private Long tagId;
@@ -157,16 +161,6 @@ public class ItemEntity {
         this.tagId = tagId;
     }
 
-    public boolean isFrequent() {
-        if (isFrequent == null) {
-            return false;
-        }
-        return isFrequent;
-    }
-
-    public void setFrequent(boolean frequent) {
-        isFrequent = frequent;
-    }
 
     public String getRawListSources() {
         return rawListSources != null ? rawListSources : "";
@@ -176,7 +170,16 @@ public class ItemEntity {
         this.rawListSources = rawListSources;
     }
 
+    public Set<String> getHandles() {
+        return handles != null ? handles : new HashSet<>();
+    }
 
+    public void addHandle(String handle) {
+        if (this.handles == null) {
+            this.handles = new HashSet<>();
+        }
+        handles.add(handle);
+    }
 
     @Override
     public String toString() {
@@ -189,13 +192,11 @@ public class ItemEntity {
                 ", addedOn=" + addedOn +
                 ", freeText='" + freeText + '\'' +
                 ", crossedOff=" + crossedOff +
-                ", isFrequent=" + isFrequent +
                 '}';
     }
 
     public ItemEntity clone() {
         ItemEntity cloned = new ItemEntity();
-        cloned.setFrequent(this.isFrequent());
         cloned.setAddedOn(this.getAddedOn());
         cloned.setCrossedOff(this.getCrossedOff());
         cloned.setRemovedOn(this.getRemovedOn());

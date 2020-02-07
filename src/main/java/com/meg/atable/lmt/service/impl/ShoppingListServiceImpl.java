@@ -260,7 +260,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             for (Long ds : listGenerateProperties.getDishSourcesIds()) {
                 mealPlanService.addDishToMealPlan(userName, mp.getId(), ds);
             }
-            // TODO add link to shopping list here
         }
     }
 
@@ -651,7 +650,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         mergeCollector.addMergeItems(mergeItems);
 
         // update after merge
-        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Merge)
                 .withStatisticCountType(StatisticCountType.Single)
                 .build();
         saveListChanges(list, mergeCollector, context);
@@ -681,7 +680,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ListItemCollector collector = createListItemCollector(listId, list.getItems());
 
         // add Items from PickUpList
-        boolean incrementStats = !toAdd.getIsStarterList();
         CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
                 .withListId(fromListId)
                 .withStatisticCountType(StatisticCountType.List)
@@ -831,7 +829,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // set crossed off for item - by setting crossedOff date
-        if (crossedOff) {
+        if (Boolean.TRUE.equals(crossedOff)) {
             Date updateDate = new Date();
             item.setCrossedOff(updateDate);
             item.setUpdatedOn(updateDate);
@@ -966,12 +964,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         List<Long> frequentTagIds = listTagStatisticService.findFrequentIdsForList(shoppingListEntity.getId(), shoppingListEntity.getUserId());
 
-        HashMap<CategoryType, ItemCategory> specialCategories = new HashMap<>();
+        EnumMap specialCategories = new EnumMap(CategoryType.class);
         ItemCategory frequent = createDefaultCategoryByType(CategoryType.Frequent, null);
         ItemCategory uncategorized = createDefaultCategoryByType(CategoryType.UnCategorized, null);
         ItemCategory highlight = createDefaultCategoryByType(CategoryType.Highlight, highlightName);
         ItemCategory highlightList = createDefaultCategoryByType(CategoryType.HighlightList, highlightName);
         for (ItemEntity item : shoppingListEntity.getItems()) {
+            if (frequentTagIds.contains(item.getTag().getId())) {
+                item.addHandle(ShoppingListService.FREQUENT);
+            }
             if (separateFrequent && !isHighlightDish && frequentTagIds.contains(item.getTag().getId())) {
                 frequent.addItemEntity(item);
             } else if (!dictionary.containsKey(item.getTag().getId())) {

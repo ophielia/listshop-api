@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 29/10/2017.
@@ -45,6 +46,8 @@ public class Item implements Comparable {
 
     @JsonProperty("list_sources")
     private List<ItemSource> listSources;
+
+    private Set<String> handles;
 
     public Item(Long id) {
         this.item_id = id;
@@ -178,5 +181,12 @@ public class Item implements Comparable {
         return listSources;
     }
 
-    
+    public Set<String> getHandles() {
+        return handles;
+    }
+
+    public Item handles(Set<String> handles) {
+        this.handles = handles;
+        return this;
+    }
 }

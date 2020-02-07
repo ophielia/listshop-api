@@ -81,17 +81,7 @@ public class MergeItemCollector extends AbstractItemCollector {
     }
 
     private void copyMergedIntoServerItem(CollectedItem mergeItem, CollectedItem serverItem) {
-        ItemEntity nakedServer = serverItem.getItem();
-        ItemEntity nakedClient = mergeItem.getItem();
-        nakedServer.setAddedOn(nakedClient.getAddedOn());
-        nakedServer.setCrossedOff(nakedClient.getCrossedOff());
-        nakedServer.setFreeText(nakedClient.getFreeText());
-        nakedServer.setFrequent(nakedClient.isFrequent());
-        nakedServer.setRemovedOn(nakedClient.getRemovedOn());
-        nakedServer.setUpdatedOn(nakedClient.getUpdatedOn());
-        nakedServer.setUsedCount(nakedClient.getUsedCount());
-
-        serverItem.setItem(nakedServer);
+        serverItem.mergeFrom(mergeItem);
     }
 
 
@@ -99,52 +89,6 @@ public class MergeItemCollector extends AbstractItemCollector {
 
 
 
-    /*
-        private CollectedItem createItemFromTag(TagEntity tag, Long dishId) {
-        CollectedItem item = new CollectedItem(new ItemEntity());
-
-        item.setTag(tag);
-        item.setListId(getListId());
-        item.addRawDishSource(dishId);
-        item.setUsedCount(0);
-        item.setIsAdded(true);
-
-        return item;
-    }
-
-    private void addTagForExistingItem(CollectedItem item) {
-        // if this tag has been previously removed, we need to clear that information - because
-        // it's now being added.
-        if (item.isRemoved()) {
-            item.setRemoved(false);
-        }
-        item.setUpdated(true);
-    }
-
-
-    private CollectedItem copyItem(ItemEntity item) {
-        CollectedItem copied = new CollectedItem(new ItemEntity());
-        // resetting count when adding from another list
-        copied.setUsedCount(item.getUsedCount());
-        copied.setTag(item.getTag());
-        copied.setListId(getListId());
-        copied.setFreeText(item.getFreeText());
-        copied.setAddedOn(new Date());
-        return copied;
-    }
-
-    private void removeItem(CollectedItem item) {
-        item.setRemoved(true);
-        item.incrementRemovedCount(item.getUsedCount());
-        item.setUsedCount(0);
-    }
-
-    private void updateItemOnRemove(CollectedItem update, int count) {
-        update.setUpdated(true);
-        update.setUsedCount(count - 1);
-        update.incrementRemovedCount();
-    }
-*/
 
 
 }

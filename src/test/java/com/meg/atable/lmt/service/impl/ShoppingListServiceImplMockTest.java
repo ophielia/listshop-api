@@ -59,6 +59,8 @@ public class ShoppingListServiceImplMockTest {
     private ItemRepository itemRepository;
     @MockBean
     private ItemChangeRepository itemChangeRepository;
+    @MockBean
+    private ListTagStatisticService listTagStatisticService;
 
     @Before
     public void setUp() {
@@ -72,7 +74,8 @@ public class ShoppingListServiceImplMockTest {
                 mealPlanService,
                 itemRepository,
                 itemChangeRepository,
-                shoppingListProperties);
+                shoppingListProperties,
+                listTagStatisticService);
     }
 
 

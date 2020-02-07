@@ -7,7 +7,6 @@ import com.meg.atable.lmt.data.repository.ItemChangeRepository;
 import com.meg.atable.lmt.data.repository.ItemRepository;
 import com.meg.atable.lmt.service.CollectorContext;
 import com.meg.atable.lmt.service.ItemCollector;
-import com.meg.atable.lmt.service.ListItemCollector;
 import com.meg.atable.lmt.service.ListTagStatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,8 +27,8 @@ public class ListItemRepositoryImpl implements ItemChangeRepository {
 
     @Override
     public void saveItemChanges(ShoppingListEntity shoppingList, ItemCollector collector, Long userId, CollectorContext context) {
-        if (collector instanceof ListItemCollector && context.getStatisticCountType() != StatisticCountType.None) {
-            listTagStatisticService.processCollectorStatistics(userId, (ListItemCollector) collector, context);
+        if (context.getStatisticCountType() != StatisticCountType.None) {
+            listTagStatisticService.processCollectorStatistics(userId, collector, context);
         }
 
         List<ItemEntity> toUpdate = collector.getChangedItems();

@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface ShoppingListService {
 
+    static String FREQUENT = "frequent";
+
     List<ShoppingListEntity> getListsByUsername(String userName);
 
     ShoppingListEntity generateListForUser(String userName, ListGenerateProperties listGeneratProperties) throws ShoppingListException;
