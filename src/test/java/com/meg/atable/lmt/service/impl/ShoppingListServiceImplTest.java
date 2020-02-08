@@ -508,66 +508,6 @@ public class ShoppingListServiceImplTest {
 
     }
 
-
-    @Test
-    public void testMerge_AllChangedOneNewFromClient() {
-        // pull list before merge and save updated, item count
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
-        Date beforeDate = before.getLastUpdate();
-        int beforeItemCount = before.getItems().size();
-
-
-        MergeRequest mergeRequest = createMergeList(5000L);
-        // add several new items to the list
-
-        Item item = createTestItem("501", 4, 3, 0, 0);
-        Item item2 = createTestItem("502", 4, 3, 2, 0);
-        Item item3 = createTestItem("503", 4, 3, 2, 1);
-        Item item4 = createTestItem("504", 99, 0, 0, 0);
-        Item item5 = createTestItem("45", new Date(), new Date(), null, null);
-        mergeRequest.getMergeItems().add(item);
-        mergeRequest.getMergeItems().add(item2);
-        mergeRequest.getMergeItems().add(item3);
-        mergeRequest.getMergeItems().add(item4);
-        mergeRequest.getMergeItems().add(item5);
-
-        shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
-
-        // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
-        Date afterDate = after.getLastUpdate();
-        int afterItemCount = after.getItems().size();
-
-        // expect change in last update date, item count increased by 1
-        Assert.assertNotEquals(beforeDate, afterDate);
-        Assert.assertEquals(beforeItemCount + 1, afterItemCount);
-        // assert that new tag is in the list
-        Map<Long, ItemEntity> itemsByTag = new HashMap<>();
-        after.getItems().forEach(e -> itemsByTag.put(e.getTag().getId(), e));
-        Assert.assertTrue(itemsByTag.containsKey(45L));
-        // assert tag 504 has no removed date
-        Assert.assertTrue(itemsByTag.containsKey(504L));
-        ItemEntity testItem = itemsByTag.get(504L);
-        Assert.assertNotNull(testItem.getAddedOn());
-        Assert.assertNull(testItem.getRemovedOn());
-
-        // assert tag 503 has removed date
-        Assert.assertTrue(itemsByTag.containsKey(503L));
-        testItem = itemsByTag.get(503L);
-        Assert.assertNotNull(testItem.getRemovedOn());
-
-        // assert tag 502 has crossed off date
-        Assert.assertTrue(itemsByTag.containsKey(502L));
-        testItem = itemsByTag.get(502L);
-        Assert.assertNotNull(testItem.getCrossedOff());
-
-        // assert tag 501 has updated date
-        Assert.assertTrue(itemsByTag.containsKey(501L));
-        testItem = itemsByTag.get(501L);
-        Assert.assertNotNull(testItem.getUpdatedOn());
-
-    }
-
     @Test
     public void testMerge_ReplaceServerEmptyClient() {
         // pull list before merge and save updated, item count

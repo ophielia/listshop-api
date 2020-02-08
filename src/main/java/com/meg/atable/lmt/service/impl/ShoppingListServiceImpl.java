@@ -641,10 +641,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // prepare items from client
         List<ItemEntity> mergeItems = convertClientItemsToItemEntities(mergeRequest);
 
-        // swap out tags which have been replaced - server
-        // replace any tags which need to be replaced
-        checkReplaceTagsInCollector(mergeCollector);
-
         // merge from client
         // fill in tags for passed items
         mergeCollector.addMergeItems(mergeItems);
@@ -899,8 +895,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .filter(i -> i.getTagId() != null)
                 .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
         Set<Long> tagKeys = mergeMap.keySet().stream().map(Long::valueOf).collect(Collectors.toSet());
-        mergeMap.keySet().forEach(k -> logger.debug("the  List for key [" + k + "] and item [" + mergeMap.get(k).getCrossedOff() + "]"));
-
 
         if (tagKeys.isEmpty()) {
             return new ArrayList<>();
