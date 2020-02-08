@@ -132,7 +132,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> updateItems(Principal principal, @PathVariable("listId") Long listId, @RequestBody ItemOperationPut itemOperation) {
-        String message = String.format("beginning updateItems for input: %@", itemOperation);
+        String message = String.format("beginning updateItems for input: %S", itemOperation);
         logger.debug(message);
         if (itemOperation == null) {
             return ResponseEntity.badRequest().build();
