@@ -146,7 +146,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // if operation requires copy, get destinationList and copy
         if (operationType.equals(ItemOperationType.Copy) ||
                 operationType.equals(ItemOperationType.Move)) {
-            ShoppingListEntity targetList = getListById(userName, destinationListId, true);
+            ShoppingListEntity targetList = getListById(userName, destinationListId);
             List<ItemEntity> items = targetList.getItems();
 
 
@@ -164,7 +164,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (operationType.equals(ItemOperationType.Move) ||
                 operationType.equals(ItemOperationType.Remove)) {
             // get source list
-            ShoppingListEntity sourceList = getListById(userName, sourceListId, true);
+            ShoppingListEntity sourceList = getListById(userName, sourceListId);
 
             List<ItemEntity> items = sourceList.getItems();
             CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
@@ -303,34 +303,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return null;
     }
 
+
     @Override
     public ShoppingListEntity getListById(String userName, Long listId) {
-        return getListById(userName, listId, false);
-    }
-
-
-    @Override
-    public ShoppingListEntity getListById(String userName, Long listId, boolean includeRemoved) {
         logger.debug("Retrieving List for id [" + listId + "] and name [" + userName + "]");
         UserEntity user = userService.getUserByUserEmail(userName);
         if (user == null) {
             return null;
         }
         Optional<ShoppingListEntity> shoppingListEntityOpt;
-        if (includeRemoved) {
-            shoppingListEntityOpt = shoppingListRepository.getWithItemsByListId(listId);
-        } else {
+        shoppingListEntityOpt = shoppingListRepository.getWithItemsByListId(listId);
 
-            ShoppingListEntity listEntity = shoppingListRepository.getOne(listId);
-            if (listEntity == null) {
-                return null;
-            }
-            List<ItemEntity> items = itemRepository.findByListIdAAndRemovedOnIsNull(listId);
-            listEntity.setItems(items);
-            shoppingListEntityOpt = Optional.of(listEntity);
-
-
-        }
         // may be a list which doesn't have items.  Check for that here
         if (!shoppingListEntityOpt.isPresent()) {
             shoppingListEntityOpt = shoppingListRepository.findById(listId);
@@ -351,7 +334,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             itemRepository.deleteAll(items);
             toDelete.setItems(new ArrayList<>());
             shoppingListRepository.save(toDelete);
-            toDelete = getListById(userName, listId, true);
+            toDelete = getListById(userName, listId);
             shoppingListRepository.delete(toDelete.getId());
             shoppingListRepository.flush();
             return true;
@@ -524,7 +507,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         MealPlanEntity mealPlan = mealPlanService.getMealPlanById(name, mealPlanId);
 
         // create new inprocess list
-        ShoppingListEntity shoppingList = getListById(name, listId, true);
+        ShoppingListEntity shoppingList = getListById(name, listId);
 
         return addToListFromMealPlan(name, shoppingList, mealPlan);
     }
@@ -628,7 +611,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // get list to merge
-        ShoppingListEntity list = getListById(userName, listToMergeId, true);
+        ShoppingListEntity list = getListById(userName, listToMergeId);
 
         if (list == null) {
             // oops - list isn't here any more to merge
@@ -851,7 +834,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         Date crossOffDate = crossOff ? new Date() : null;
 
-        items.forEach(i -> i.setCrossedOff(crossOffDate));
+        items.stream().filter(i -> i.getRemovedOn() == null)
+                .forEach(i -> i.setCrossedOff(crossOffDate));
 
         if (crossOff) {
             shoppingListEntity.setLastUpdate(new Date());
@@ -964,6 +948,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ItemCategory highlight = createDefaultCategoryByType(CategoryType.Highlight, highlightName);
         ItemCategory highlightList = createDefaultCategoryByType(CategoryType.HighlightList, highlightName);
         for (ItemEntity item : shoppingListEntity.getItems()) {
+            if (item.getRemovedOn() != null) {
+                continue;
+            }
             if (frequentTagIds.contains(item.getTag().getId())) {
                 item.addHandle(ShoppingListService.FREQUENT);
             }

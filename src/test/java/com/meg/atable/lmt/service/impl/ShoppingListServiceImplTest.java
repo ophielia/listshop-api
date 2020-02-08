@@ -357,7 +357,7 @@ public class ShoppingListServiceImplTest {
     public void testMerge_EmptyMerge() {
         //  test empty merge - empty client list
         // pull list before merge and save updated, item count
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
 
@@ -367,7 +367,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
         Date afterDate = after.getLastUpdate();
         int afterItemCount = after.getItems().size();
 
@@ -380,7 +380,7 @@ public class ShoppingListServiceImplTest {
     @Test
     public void testMerge_NewFromClient() {
         // pull list before merge and save updated, item count
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
 
@@ -393,7 +393,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
 
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
         Date afterDate = after.getLastUpdate();
         int afterItemCount = after.getItems().size();
 
@@ -410,7 +410,7 @@ public class ShoppingListServiceImplTest {
     @Test
     public void testMerge_NoChangeFromClient() {
         // pull list before merge and save updated, item count
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
 
@@ -426,7 +426,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
 
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
         Date afterDate = after.getLastUpdate();
         int afterItemCount = after.getItems().size();
 
@@ -439,7 +439,7 @@ public class ShoppingListServiceImplTest {
     @Test
     public void testMerge_UpdatedAndNewFromClient() {
         // pull list before merge and save updated, item count
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
 
@@ -459,7 +459,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
 
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
         Date afterDate = after.getLastUpdate();
         int afterItemCount = after.getItems().size();
 
@@ -472,7 +472,7 @@ public class ShoppingListServiceImplTest {
     @Test
     public void testMerge_AllUpdatedNoChangeOneNewFromClient() {
         // pull list before merge and save updated, item count
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
 
@@ -494,7 +494,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
 
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
         Date afterDate = after.getLastUpdate();
         int afterItemCount = after.getItems().size();
 
@@ -511,7 +511,7 @@ public class ShoppingListServiceImplTest {
     @Test
     public void testMerge_ReplaceServerEmptyClient() {
         // pull list before merge and save updated, item count
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
 
@@ -521,7 +521,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L);
         Date afterDate = after.getLastUpdate();
         int afterItemCount = after.getItems().size();
 
@@ -540,7 +540,7 @@ public class ShoppingListServiceImplTest {
     @Test
     public void testMerge_ReplaceServerNonEmptyNonCollidingClient() {
         // pull list before merge and save updated, item count
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
@@ -556,7 +556,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L);
         Date afterDate = after.getLastUpdate();
         int afterItemCount = after.getItems().size();
 
@@ -579,7 +579,7 @@ public class ShoppingListServiceImplTest {
     @Test
     public void testMerge_ReplaceServerNonEmptyCollidingClient() {
         // pull list before merge and save updated, item count
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L);
         Date beforeDate = before.getLastUpdate();
         int beforeItemCount = before.getItems().size();
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
@@ -595,7 +595,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L);
         int afterItemCount = after.getItems().size();
 
         // expect no change in last update date, item count
@@ -616,7 +616,7 @@ public class ShoppingListServiceImplTest {
     public void testMerge_ReplaceTagServerExists() {
         // the replace tag already exists in the list.
         // pull list before merge and save updated, item count
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L);
         int beforeItemCount = before.getItems().size();
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
@@ -628,7 +628,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L);
         int afterItemCount = after.getItems().size();
 
         // expect no change in last update date, item count
@@ -653,7 +653,7 @@ public class ShoppingListServiceImplTest {
         // client sends only replace tag - more recent than server
         // should result in usedcount 2
         // pull list before merge and save updated, item count
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L);
         int beforeItemCount = before.getItems().size();
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
@@ -667,7 +667,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L);
         int afterItemCount = after.getItems().size();
 
         // expect no change in last update date, item count
@@ -692,7 +692,7 @@ public class ShoppingListServiceImplTest {
         // client sends replace tag and replaced with tag - more recent than server
         // should result in usedcount 2
         // pull list before merge and save updated, item count
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L);
         int beforeItemCount = before.getItems().size();
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
@@ -708,7 +708,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50002L);
         int afterItemCount = after.getItems().size();
 
         // expect no change in last update date, item count
@@ -732,7 +732,7 @@ public class ShoppingListServiceImplTest {
         // the replace tag 55 doesn't exist in the list.
         // client sends replace tag and replaced with tag - more recent than server
         // should result in usedcount 2
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L);
         int beforeItemCount = before.getItems().size();
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
@@ -748,7 +748,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L);
         int afterItemCount = after.getItems().size();
 
         // expect no change in last update date, item count
@@ -771,7 +771,7 @@ public class ShoppingListServiceImplTest {
         // the replace tag 55 doesn't exist in the list.
         // client sends replace tag and replaced with tag - NOT more recent than server
         // should result in usedcount 1
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L);
         int beforeItemCount = before.getItems().size();
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
@@ -787,7 +787,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L);
         int afterItemCount = after.getItems().size();
 
         // expect no change in last update date, item count
@@ -810,7 +810,7 @@ public class ShoppingListServiceImplTest {
         // the replace tag 55 doesn't exist in the list.
         // client sends replaced (6666) with tag - NOT more recent than server
         // should result in usedcount 1
-        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
+        ShoppingListEntity before = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L);
         int beforeItemCount = before.getItems().size();
         Map<Long, ItemEntity> beforeItemsByTag = new HashMap<>();
         before.getItems().forEach(e -> beforeItemsByTag.put(e.getTag().getId(), e));
@@ -824,7 +824,7 @@ public class ShoppingListServiceImplTest {
         shoppingListService.mergeFromClient(TestConstants.USER_1_NAME, mergeRequest);
         shoppingListRepository.flush();
         // pull list after merge
-        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L, true);
+        ShoppingListEntity after = shoppingListService.getListById(TestConstants.USER_1_NAME, 50001L);
         int afterItemCount = after.getItems().size();
 
         // expect no change in last update date, item count
