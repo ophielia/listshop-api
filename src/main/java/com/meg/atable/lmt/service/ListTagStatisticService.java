@@ -21,7 +21,7 @@ public interface ListTagStatisticService {
 
     List<ListTagStatistic> getStatisticsForUser(Long id, int resultLimit);
 
-    List<ListTagStatistic> createStatisticsForUser(UserEntity user, List<Statistic> statisticList);
+    void createStatisticsForUser(UserEntity user, List<Statistic> statisticList);
 
     List<Long> findFrequentIdsForList(Long listId, Long userId);
 }

@@ -1,7 +1,9 @@
 package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.Application;
+import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.lmt.api.model.ContextType;
+import com.meg.atable.lmt.api.model.Statistic;
 import com.meg.atable.lmt.api.model.StatisticCountType;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ListTagStatistic;
@@ -45,6 +47,21 @@ public class ListTagStatisticServiceImplTest {
         Assert.assertNotNull(list);
         Assert.assertEquals(3, list.size());
     }
+
+    @Test
+    @Sql(value = {"/sql/com/meg/atable/lmt/service/impl/ListTagStatisticServiceTest-rollback.sql"})
+    public void createStatisticsForUser_AllAdd() {
+        List<Long> tagIds = Arrays.asList(16L, 18L, 20L);
+        Long userId = 99L;
+        List<Statistic> stats = dummyStatistics(tagIds);
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        // call
+        listTagStatisticService.createStatisticsForUser(user, stats);
+
+    }
+
 
     @Test
     public void processCollectorStatistics_NoChange() {
@@ -283,4 +300,16 @@ public class ListTagStatisticServiceImplTest {
         return dummyItems;
     }
 
+
+    private List<Statistic> dummyStatistics(List<Long> tagIds) {
+        List<Statistic> dummyStats = new ArrayList<>();
+        for (Long dummyId : tagIds) {
+            Statistic stat = new Statistic()
+                    .addedCount(1)
+                    .removedCount(1)
+                    .tagId(dummyId);
+            dummyStats.add(stat);
+        }
+        return dummyStats;
+    }
 }

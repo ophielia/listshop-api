@@ -1,7 +1,6 @@
 package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.auth.data.entity.UserEntity;
-import com.meg.atable.lmt.api.model.ModelMapper;
 import com.meg.atable.lmt.api.model.Statistic;
 import com.meg.atable.lmt.data.entity.ListTagStatistic;
 import com.meg.atable.lmt.data.repository.ListTagStatisticRepository;
@@ -10,12 +9,13 @@ import com.meg.atable.lmt.service.CollectorContext;
 import com.meg.atable.lmt.service.ItemCollector;
 import com.meg.atable.lmt.service.ListTagStatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 20/10/2017.
@@ -26,6 +26,9 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
 
     private static final String TAG_LIST_PARAM = "tagidlist";
     private static final String USER_ID_PARAMETER = "useridparam";
+    private static final String TAG_ID_PARAMETER = "tagidparam";
+    private static final String REMOVED_COUNT_PARAMETER = "removedcountparam";
+    private static final String ADDED_COUNT_PARAMETER = "addedcountparam";
 
     private static final String MISSING_STAT_SELECT = "select t.tag_id  " +
             " from  tag t " +
@@ -75,7 +78,7 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         }
 
         // check for and create missing statistics
-        checkForAndCreateMissingStatistics(collector, userId);
+        checkForAndCreateMissingStatistics(collector.getAllTagIds(), userId);
 
         // update removed
         if (!removedIds.isEmpty()) {
@@ -98,19 +101,35 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
     }
 
     @Override
-    public List<ListTagStatistic> createStatisticsForUser(UserEntity user, List<Statistic> statisticList) {
+    public void createStatisticsForUser(UserEntity user, List<Statistic> statisticList) {
         // this is done from a context in which the user has just been created, and doesn't
         // have any statistics
         if (statisticList.isEmpty()) {
-            return new ArrayList<>();
+            return;
         }
-        List<ListTagStatistic> createdStatistics = new ArrayList<>();
-        for (Statistic statistic : statisticList) {
-            ListTagStatistic statisticEntity = ModelMapper.toEntity(statistic);
-            statisticEntity.setUserId(user.getId());
-            createdStatistics.add(statisticEntity);
+
+        // put statistic objects into hash
+        Map<Long, Statistic> statMap = statisticList.stream()
+                .collect(Collectors.toMap(Statistic::getTagId, Function.identity()));
+
+        // find which statistic objects already exist
+        Map parameters = new HashMap<String, Object>();
+        parameters.put(TAG_LIST_PARAM, statMap.keySet());
+        parameters.put(USER_ID_PARAMETER, user.getId());
+
+        List<Long> idsToInsert = jdbcTemplate.queryForList(MISSING_STAT_SELECT, parameters, Long.class);
+
+        // return if nothing to insert
+        if (idsToInsert == null) {
+            return;
         }
-        return listTagStatisticRepo.saveAll(createdStatistics);
+
+        // insert all statistics
+        for (Long insertId : idsToInsert) {
+            Statistic insertStat = statMap.get(insertId);
+            insertUserStatistic(insertId, user.getId(), insertStat.getAddedCount(), insertStat.getRemovedCount());
+        }
+        return;
     }
 
     @Override
@@ -131,6 +150,16 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         return jdbcTemplate.queryForList(sql, parameters, Long.class);
     }
 
+    private void insertUserStatistic(Long tagId, Long userId, Integer addedCount, Integer removedCount) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(USER_ID_PARAMETER, userId);
+        parameters.put(TAG_ID_PARAMETER, userId);
+        parameters.put(ADDED_COUNT_PARAMETER, addedCount);
+        parameters.put(REMOVED_COUNT_PARAMETER, removedCount);
+
+        String sql = constructStatisticInsertSql(tagId, userId, addedCount, removedCount);
+        jdbcTemplate.update(sql, parameters);
+    }
 
     private void updateStatistics(StatisticOperationType operation, List<Long> updateIds, CollectorContext context, Long userId) {
         String fieldPrefix = "added_";
@@ -146,13 +175,33 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         String fieldName = new StringBuilder(fieldPrefix).append(field).toString();
 
 
-        String sql = constructstatisticupdatesql(!isRemove, fieldName);
+        String sql = constructStatisticUpdateSql(!isRemove, fieldName);
 
         Map updateParams = new HashMap<>();
         updateParams.put(USER_ID_PARAMETER, userId);
         updateParams.put(TAG_LIST_PARAM, updateIds);
         jdbcTemplate.update(sql, updateParams);
 
+
+    }
+
+    private String constructStatisticUpdateSql(boolean isAdd, String fieldName) {
+        String totalFieldName = isAdd ? "added_count" : "removed_count";
+
+        StringBuilder builder = new StringBuilder("UPDATE list_tag_stats s SET ")
+                .append(totalFieldName)
+                .append(" = ")
+                .append(fieldName)
+                .append(" + 1, ")
+                .append(fieldName)
+                .append(" = ")
+                .append(fieldName)
+                .append(" + 1  WHERE s.user_id =  :")
+                .append(USER_ID_PARAMETER)
+                .append(" AND tag_id in ( :")
+                .append(TAG_LIST_PARAM)
+                .append(") ");
+        return builder.toString();
 
     }
 
@@ -167,22 +216,24 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         return builder.toString();
     }
 
-    private String constructstatisticupdatesql(boolean isAdd, String fieldName) {
-        String totalFieldName = isAdd ? "added_count" : "removed_count";
-
-        StringBuilder builder = new StringBuilder("UPDATE list_tag_stats s SET ")
-                .append(totalFieldName)
-                .append(" = added_count + 1, ")
-                .append(fieldName)
-                .append(" = ")
-                .append(fieldName)
-                .append(" + 1  WHERE s.user_id =  :")
+    private String constructStatisticInsertSql(Long tagId, Long userId, Integer addedCount, Integer removedCount) {
+        StringBuilder builder = new StringBuilder("insert into list_tag_stats (list_tag_stat_id, tag_id, user_id, ")
+                .append(" added_single, added_count, removed_single, removed_count) ")
+                .append(" select nextval('list_tag_stats_sequence') , tag_id , :")
                 .append(USER_ID_PARAMETER)
-                .append(" AND tag_id in ( :")
-                .append(TAG_LIST_PARAM)
-                .append(") ");
+                .append(" as user_id, :")
+                .append(ADDED_COUNT_PARAMETER)
+                .append(" as added_single, :")
+                .append(ADDED_COUNT_PARAMETER)
+                .append(" as added_count, :")
+                .append(REMOVED_COUNT_PARAMETER)
+                .append(" as removed_single, :")
+                .append(REMOVED_COUNT_PARAMETER)
+                .append(" as removed_count")
+                .append(" from tag where tag_id = :")
+                .append(TAG_ID_PARAMETER)
+                .append(";");
         return builder.toString();
-
     }
 
     private String getFieldNameForContext(CollectorContext context) {
@@ -205,13 +256,10 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
 
     }
 
-    private void checkForAndCreateMissingStatistics(ItemCollector collector, Long userId) {
+    private void checkForAndCreateMissingStatistics(List<Long> tagIds, Long userId) {
         Map parameters = new HashMap<String, Object>();
-        parameters.put(TAG_LIST_PARAM, collector.getAllTagIds());
+        parameters.put(TAG_LIST_PARAM, tagIds);
         parameters.put(USER_ID_PARAMETER, userId);
-
-        MapSqlParameterSource parametersT = new MapSqlParameterSource();
-        parametersT.addValue(TAG_LIST_PARAM, collector.getAllTagIds());
 
         List<Long> missingIds = jdbcTemplate.queryForList(MISSING_STAT_SELECT, parameters, Long.class);
 
