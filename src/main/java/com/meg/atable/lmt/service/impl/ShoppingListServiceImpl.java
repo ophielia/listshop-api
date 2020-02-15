@@ -620,6 +620,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // create MergeCollector from list
         MergeItemCollector mergeCollector = new MergeItemCollector(list.getId(),list.getItems());
+        checkReplaceTagsInCollector(mergeCollector);
 
         // prepare items from client
         List<ItemEntity> mergeItems = convertClientItemsToItemEntities(mergeRequest);

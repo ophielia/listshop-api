@@ -151,23 +151,6 @@ public class ShoppingListServiceImplTest {
     }
 
     @Test
-    public void testDeleteItemFromList() {
-        ShoppingListEntity result = shoppingListService.getListById(userAccount.getEmail(), TestConstants.LIST_1_ID);
-        int sizeBefore = result.getItems().size();
-
-        // delete from active list
-        shoppingListService.deleteItemFromList(userAccount.getEmail(), TestConstants.LIST_1_ID, TestConstants.ITEM_1_ID, false, null);
-
-        // retrieve active list
-        result = shoppingListService.getListById(userAccount.getEmail(), TestConstants.LIST_1_ID);
-
-        Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getItems());
-        Assert.assertEquals(sizeBefore - 1, result.getItems().size());
-
-    }
-
-    @Test
     public void testGenerateListFromMealPlan() {
         ShoppingListEntity result = shoppingListService.generateListFromMealPlan(userAccount.getEmail(), TestConstants.MEAL_PLAN_1_ID);
         Assert.assertNotNull(result);

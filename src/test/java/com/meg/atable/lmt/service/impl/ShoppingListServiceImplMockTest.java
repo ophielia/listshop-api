@@ -568,7 +568,7 @@ public class ShoppingListServiceImplMockTest {
 
         LocalDate date = LocalDate.of(2020, 01, 01);
         Date lastUpdate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        ShoppingListEntity shoppingList = expectGetShoppingListById(shoppingListId, userId, Arrays.asList(tagId), userEmail, false);
+        ShoppingListEntity shoppingList = expectGetShoppingListById(shoppingListId, userId, Arrays.asList(tagId), userEmail);
         shoppingList.setLastUpdate(lastUpdate);
 
         ItemEntity item = new ItemEntity();
@@ -608,7 +608,7 @@ public class ShoppingListServiceImplMockTest {
         Assert.assertTrue(timeDiff < 1000);
     }
 
-    private ShoppingListEntity expectGetShoppingListById(Long shoppingListId, Long userId, List<Long> tagIds, String userEmail, boolean includeRemoved) {
+    private ShoppingListEntity expectGetShoppingListById(Long shoppingListId, Long userId, List<Long> tagIds, String userEmail) {
         ShoppingListEntity shoppingList = dummyShoppingList(shoppingListId, userId, tagIds);
 
         UserEntity userEntity = new UserEntity();
@@ -620,14 +620,8 @@ public class ShoppingListServiceImplMockTest {
                 .thenReturn(userEntity);
         Mockito.when(shoppingListRepository.getOne(shoppingListId))
                 .thenReturn(shoppingList);
-        if (includeRemoved) {
             Mockito.when(shoppingListRepository.getWithItemsByListId(shoppingListId))
                     .thenReturn(Optional.of(shoppingList));
-        } else {
-
-            Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(shoppingListId))
-                    .thenReturn(shoppingList.getItems());
-        }
 
         return shoppingList;
     }
@@ -642,7 +636,7 @@ public class ShoppingListServiceImplMockTest {
 
         LocalDate date = LocalDate.of(2020, 01, 01);
         Date addedDate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        ShoppingListEntity shoppingList = expectGetShoppingListById(serverListId, userId, Arrays.asList(serverTagIds), userEmail, true);
+        ShoppingListEntity shoppingList = expectGetShoppingListById(serverListId, userId, Arrays.asList(serverTagIds), userEmail);
         shoppingList.getItems().stream().forEach(item -> item.setAddedOn(addedDate));
 
 
@@ -705,7 +699,7 @@ public class ShoppingListServiceImplMockTest {
         final String userEmail = "me@mine.ours";
 
         Date removedDate = getDateForInterval(1);
-        ShoppingListEntity shoppingList = expectGetShoppingListById(serverListId, userId, Arrays.asList(serverTagIds), userEmail, true);
+        ShoppingListEntity shoppingList = expectGetShoppingListById(serverListId, userId, Arrays.asList(serverTagIds), userEmail);
         shoppingList.getItems().stream().forEach(item -> item.setRemovedOn(removedDate));
 
 
@@ -757,6 +751,56 @@ public class ShoppingListServiceImplMockTest {
         Assert.assertNotNull(testItem2);
         Assert.assertFalse(testItem2.isChanged());
         Assert.assertNotNull(testItem2.getRemovedOn());
+
+    }
+
+    @Test
+    public void testDeleteItemFromList() {
+        Long deleteFromListId = 9999L;
+        final String userEmail = "me@mine.ours";
+        final Long userId = 2L;
+        final Long[] listTagIds = {501L, 502L, 503L};
+        final Long itemIdToRemove = 501L * 1111111;
+
+        Date addedDate = getDateForInterval(1);
+        ShoppingListEntity shoppingList = expectGetShoppingListById(deleteFromListId, userId, Arrays.asList(listTagIds), userEmail);
+        shoppingList.getItems().stream().forEach(item -> item.setAddedOn(addedDate));
+
+        final Optional<ItemEntity> itemToRemoveOpt = shoppingList.getItems()
+                .stream()
+                .filter(item -> item.getId().equals(itemIdToRemove))
+                .findFirst();
+
+
+        ArgumentCaptor<ItemCollector> collectorCapture = ArgumentCaptor.forClass(ItemCollector.class);
+
+        Mockito.when(itemRepository.findById(itemIdToRemove))
+                .thenReturn(itemToRemoveOpt);
+
+        Mockito.when(shoppingListRepository.save(any(ShoppingListEntity.class)))
+                .thenReturn(shoppingList);
+
+        shoppingListService.deleteItemFromList(userEmail, deleteFromListId, itemIdToRemove, false, null);
+
+
+        // for testing after call
+        Mockito.verify(itemChangeRepository).saveItemChanges(any(ShoppingListEntity.class),
+                collectorCapture.capture(),
+                any(Long.class),
+                any(CollectorContext.class));
+
+        Assert.assertNotNull(collectorCapture);
+        Assert.assertNotNull(collectorCapture.getValue());
+        ListItemCollector capturedToVerify = (ListItemCollector) collectorCapture.getValue();
+        Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
+
+        Assert.assertEquals(3, itemMap.keySet().size());
+        // assert 501 is there, with removed
+        CollectedItem testItem = itemMap.get(501L);
+        Assert.assertNotNull(testItem);
+        Assert.assertTrue(testItem.isChanged());
+        Assert.assertTrue(testItem.isRemoved());
+
 
     }
 

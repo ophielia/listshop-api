@@ -76,6 +76,10 @@ where (
                   added_list * added_list_factor) + (
                   added_starterlist * added_starterlist_factor)) > 0;
 
+update list_item
+set used_count = 1
+where used_count = 0;
+
 -- ROLLBACK
 -- ALTER TABLE LIST_TAG_STATS
 --     DROP COLUMN ADDED_SINGLE ,

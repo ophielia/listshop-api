@@ -662,12 +662,16 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
-        Map<Long, ItemEntity> sourceResultMap = sourceResultList.getItems().stream()
+        Map<Long, ItemEntity> allSourceResultMap = sourceResultList.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(sourceResultMap);
-        Assert.assertEquals(2, sourceResultMap.keySet().size());
+        Map<Long, ItemEntity> withoutRemovedResultMap = sourceResultList.getItems().stream()
+                .filter(item -> item.getRemovedOn() == null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(allSourceResultMap);
+        Assert.assertEquals(3, allSourceResultMap.keySet().size());
+        Assert.assertEquals(2, withoutRemovedResultMap.keySet().size());
         // 500 shouldn't be there
-        Assert.assertFalse(sourceResultMap.keySet().contains(500L));
+        Assert.assertFalse(withoutRemovedResultMap.keySet().contains(500L));
         // check destination list
         ShoppingListEntity destinationResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, destinationListId);
         Map<Long, ItemEntity> destinationResultMap = destinationResultList.getItems().stream()
@@ -757,12 +761,17 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
-        Map<Long, ItemEntity> sourceResultMap = sourceResultList.getItems().stream()
+        Map<Long, ItemEntity> allSourceResultMap = sourceResultList.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(sourceResultMap);
-        Assert.assertEquals(2, sourceResultMap.keySet().size());
+        Map<Long, ItemEntity> withoutRemovedResultMap = sourceResultList.getItems().stream()
+                .filter(item -> item.getRemovedOn() == null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+
+        Assert.assertNotNull(allSourceResultMap);
+        Assert.assertEquals(3, allSourceResultMap.keySet().size());
+        Assert.assertEquals(2, withoutRemovedResultMap.keySet().size());
         // 500 shouldn't be there
-        Assert.assertFalse(sourceResultMap.keySet().contains(500L));
+        Assert.assertFalse(withoutRemovedResultMap.keySet().contains(500L));
 
     }
 
