@@ -214,6 +214,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
                                                        @PathVariable Long tagId,
                                                        @PathVariable Integer usedCount
     ) {
+        logger.info("Update count for tag [%d] to [%d] in list [%d]", tagId, usedCount, listId);
         this.shoppingListService.updateItemCount(principal.getName(), listId, tagId, usedCount);
         return ResponseEntity.noContent().build();
     }
