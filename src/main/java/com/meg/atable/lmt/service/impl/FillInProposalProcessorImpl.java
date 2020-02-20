@@ -7,6 +7,7 @@ import com.meg.atable.lmt.service.NewRawSlotResult;
 import com.meg.atable.lmt.service.proposal.ProcessInformation;
 import com.meg.atable.lmt.service.proposal.ProcessResult;
 import com.meg.atable.lmt.service.proposal.ProposalRequest;
+import com.meg.atable.lmt.service.proposal.impl.AbstractProposalProcessor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 

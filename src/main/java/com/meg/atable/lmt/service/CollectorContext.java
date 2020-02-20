@@ -1,6 +1,7 @@
 package com.meg.atable.lmt.service;
 
 import com.meg.atable.lmt.api.model.ContextType;
+import com.meg.atable.lmt.api.model.StatisticCountType;
 
 /**
  * Created by margaretmartin on 02/11/2017.
@@ -10,19 +11,12 @@ public class CollectorContext {
     private ContextType contextType;
     private Long listId;
     private Long dishId;
-    private boolean incrementStatistics;
+    private StatisticCountType statisticCountType = StatisticCountType.None;
+
     private boolean removeEntireItem;
 
-
-    public CollectorContext(ContextType contextType, Long listId, Long dishId, boolean incrementStatistics, boolean removeEntireItem) {
-        this.contextType = contextType;
-        this.listId = listId;
-        this.dishId = dishId;
-        this.incrementStatistics = incrementStatistics;
-
-    }
-
     public CollectorContext() {
+
     }
 
     public ContextType getContextType() {
@@ -49,14 +43,6 @@ public class CollectorContext {
         this.dishId = dishId;
     }
 
-    public boolean isIncrementStatistics() {
-        return incrementStatistics;
-    }
-
-    public void setIncrementStatistics(boolean incrementStatistics) {
-        this.incrementStatistics = incrementStatistics;
-    }
-
     public boolean isRemoveEntireItem() {
         return removeEntireItem;
     }
@@ -81,5 +67,11 @@ public class CollectorContext {
         return contextType == ContextType.Dish || contextType == ContextType.Merge;
     }
 
+    public StatisticCountType getStatisticCountType() {
+        return statisticCountType;
+    }
 
+    public void setStatisticCountType(StatisticCountType statisticCountType) {
+        this.statisticCountType = statisticCountType;
+    }
 }

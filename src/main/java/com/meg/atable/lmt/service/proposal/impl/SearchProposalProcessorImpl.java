@@ -3,16 +3,21 @@ package com.meg.atable.lmt.service.proposal.impl;
 import com.meg.atable.lmt.api.exception.ProposalProcessingException;
 import com.meg.atable.lmt.api.model.ApproachType;
 import com.meg.atable.lmt.api.model.TargetType;
-import com.meg.atable.lmt.data.entity.*;
-import com.meg.atable.lmt.service.*;
-import com.meg.atable.lmt.service.impl.AbstractProposalProcessor;
+import com.meg.atable.lmt.data.entity.ContextApproachEntity;
+import com.meg.atable.lmt.data.entity.ProposalSlotEntity;
+import com.meg.atable.lmt.data.entity.SlotEntity;
+import com.meg.atable.lmt.data.entity.TargetSlotEntity;
+import com.meg.atable.lmt.service.NewRawSlotResult;
 import com.meg.atable.lmt.service.proposal.ProcessInformation;
 import com.meg.atable.lmt.service.proposal.ProcessResult;
 import com.meg.atable.lmt.service.proposal.ProposalRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by margaretmartin on 24/05/2018.

@@ -17,12 +17,6 @@ public class CollectedItem {
 
     private ItemEntity item;
 
-    private Long tagId;
-
-    private int removedCount;
-
-    private int addCount;
-
     private boolean isUpdated;
 
     private boolean isRemoved;
@@ -33,6 +27,7 @@ public class CollectedItem {
     private boolean fromClient = false;
 
     private int secondComparisonWindow = 2;
+
 
     public CollectedItem(ItemEntity itemEntity) {
         item = itemEntity;
@@ -169,22 +164,12 @@ public class CollectedItem {
         this.item.setFreeText(freeText);
     }
 
-    public Boolean getFrequent() {
-        return item.isFrequent();
-    }
-
-    public void setFrequent(Boolean frequent) {
-        this.item.setFrequent(frequent);
-    }
-
-
     // Collector Item methods
     public void remove(CollectorContext context) {
         int count = getUsedCount() != null ? getUsedCount() : 0;
         if (count <= 1 || context.isRemoveEntireItem()) {
             // delete item outright
             setRemoved(true);
-            incrementRemovedCount(getUsedCount());
             setUsedCount(0);
             return;
         }
@@ -210,7 +195,6 @@ public class CollectedItem {
         }
         setUpdated(true);
         setUsedCount(getUsedCount() - 1);
-        incrementRemovedCount();
 
     }
 
@@ -241,7 +225,6 @@ public class CollectedItem {
             setRawDishSources(newSources);
         }
         setUsedCount(count + newCount);
-        incrementAddCount();
         if (!isNew) {
             setUpdated(true);
         }
@@ -257,31 +240,8 @@ public class CollectedItem {
     // Collector Item values
 
     public Long getTagId() {
-        return tagId;
+        return getTag().getId();
     }
-
-    public void setTagId(Long tagId) {
-        this.tagId = tagId;
-    }
-
-    public int getRemovedCount() {
-        return removedCount;
-    }
-
-    public void setRemovedCount(int removedCount) {
-        this.removedCount = removedCount;
-    }
-
-    public int getAddCount() {
-        return addCount;
-    }
-
-    public void setAddCount(int addCount) {
-        this.addCount = addCount;
-    }
-
-
-
 
     public boolean isChanged() {
         return isChanged;
@@ -372,52 +332,9 @@ public class CollectedItem {
     }
 
 
-    public void addRawDishSource(Long dishId) {
-        if (dishId == null) {
-            return;
-        }
-        if (item.getRawDishSources() == null) {
-            item.setRawDishSources(String.valueOf(dishId));
-        } else {
-            item.setRawDishSources(item.getRawDishSources() + ";" + dishId);
-        }
-    }
-
-    public void addRawListSource(String sourceType) {
-        if (sourceType == null) {
-            return;
-        }
-        if (item.getRawListSources() == null) {
-            item.setRawListSources(sourceType);
-        } else {
-            item.setRawListSources(item.getRawListSources() + ";" + sourceType);
-        }
-    }
-
-    public void incrementAddCount() {
-        this.addCount++;
-    }
-
-    public void incrementAddCount(int addCount) {
-        this.addCount = this.removedCount + addCount;
-    }
-
-
-    public void incrementRemovedCount() {
-        this.removedCount++;
-    }
-
-    public void incrementRemovedCount(int removeCount) {
-        this.removedCount = this.removedCount + removeCount;
-    }
-
 
     public void setFromClient(boolean fromClient) {
         this.fromClient = fromClient;
-    }
-
-    public boolean getFromClient() {
-        return fromClient;
     }
 
     @Override
@@ -430,7 +347,7 @@ public class CollectedItem {
 
         return isUpdated == that.isUpdated &&
                 isRemoved == that.isRemoved &&
-                tagId.equals(that.tagId);
+                getTag().getId().equals(that.getTag().getId());
     }
 
     public boolean equalsWithWindow(int secondCount, Object o) {
@@ -442,13 +359,13 @@ public class CollectedItem {
             return true;
         }
 
-        return  dateEquals(secondCount,getAddedOn() ,that.getAddedOn()) &&
-                dateEquals(secondCount,getUpdatedOn() ,that.getUpdatedOn()) &&
-                dateEquals(secondCount,getRemovedOn() ,that.getRemovedOn()) &&
-                dateEquals(secondCount,getCrossedOff() ,that.getCrossedOff()) &&
+        return dateEquals(secondCount, getAddedOn(), that.getAddedOn()) &&
+                dateEquals(secondCount, getUpdatedOn(), that.getUpdatedOn()) &&
+                dateEquals(secondCount, getRemovedOn(), that.getRemovedOn()) &&
+                dateEquals(secondCount, getCrossedOff(), that.getCrossedOff()) &&
                 getUsedCount() != null && getUsedCount().equals(that.getUsedCount()) &&
                 getFreeText() != null && getFreeText().equals(that.getFreeText()) &&
-        tagId.equals(that.tagId) ;
+                getTag().getId().equals(that.getTag().getId());
     }
 
     private boolean dateEquals(int secondCount, LocalDateTime date1, LocalDateTime date2) {
@@ -467,7 +384,7 @@ public class CollectedItem {
 
     @Override
     public int hashCode() {
-        return Objects.hash(tagId, isUpdated, isRemoved);
+        return Objects.hash(getTag().getId(), isUpdated, isRemoved);
     }
 
 
@@ -496,4 +413,36 @@ public class CollectedItem {
     }
 
 
+    public void mergeFrom(CollectedItem clientItem) {
+        ItemEntity nakedServer = getItem();
+        ItemEntity nakedClient = clientItem.getItem();
+        nakedServer.setAddedOn(nakedClient.getAddedOn());
+        nakedServer.setCrossedOff(nakedClient.getCrossedOff());
+        nakedServer.setFreeText(nakedClient.getFreeText());
+        nakedServer.setRemovedOn(nakedClient.getRemovedOn());
+        nakedServer.setUpdatedOn(nakedClient.getUpdatedOn());
+        nakedServer.setUsedCount(nakedClient.getUsedCount());
+
+        // copy current state
+        CollectedItemStatus clientStatus = clientItem.getStatus();
+        LocalDateTime statusDate = clientItem.getStatusDate();
+        switch (clientStatus) {
+            case NEW:
+                setAddedOn(statusDate);
+                setIsAdded(true);
+                break;
+            case REMOVED:
+                setRemovedOn(statusDate);
+                setRemoved(true);
+                break;
+            case UPDATED:
+                setUpdatedOn(statusDate);
+                setUpdated(true);
+                break;
+            case CROSSED_OFF:
+                setCrossedOff(statusDate);
+                setUpdated(true);
+                break;
+        }
+    }
 }

@@ -12,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,11 +69,9 @@ public class StatisticRestController implements StatisticRestControllerApi {
             throw new ActionInvalidException("null statistic list received in createUserStatistics");
         }
         // pass list of statistics to service
-        List<ListTagStatistic> statistics = listTagStatisticService.createStatisticsForUser(user, statisticList.getStatisticList());
-        Link resourceLink = new StatisticListResource(statistics).getLink("self");
-        URI uri = null;
+        listTagStatisticService.createStatisticsForUser(user, statisticList.getStatisticList());
         try {
-            uri = new URI("/statistics");
+            URI uri = new URI("/statistics");
             return ResponseEntity.created(uri).build();
         } catch (URISyntaxException e) {
             logger.error("can't make a uri");

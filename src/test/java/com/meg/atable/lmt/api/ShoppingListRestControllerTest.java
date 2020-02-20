@@ -5,6 +5,7 @@ import com.meg.atable.auth.service.impl.JwtUser;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
+import com.meg.atable.lmt.data.repository.ItemRepository;
 import com.meg.atable.lmt.service.ShoppingListService;
 import com.meg.atable.test.TestConstants;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -57,7 +57,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sql/com/meg/atable/lmt/api/ShoppingListRestControllerTest_rollback.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-@Transactional
 public class ShoppingListRestControllerTest {
 
     private static UserDetails userDetails;
@@ -71,6 +70,9 @@ public class ShoppingListRestControllerTest {
 
     @Autowired
     ShoppingListService shoppingListService;
+
+    @Autowired
+    ItemRepository itemRepository;
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
@@ -368,8 +370,8 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testSetCrossedOffForItem() throws Exception {
-        Long listId = TestConstants.LIST_1_ID;
-        String url = "/shoppinglist/" + listId + "/item/shop/" + TestConstants.ITEM_1_ID
+        Long listId = 6666L;
+        String url = "/shoppinglist/" + listId + "/item/shop/" + 60660L
                 + "?crossOff=true";
         mockMvc.perform(post(url)
                 .with(user(userDetails))
@@ -466,6 +468,26 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
 
     }
+
+    @Test
+    @WithMockUser
+    public void testUpdateItemUsedCount() throws Exception {
+
+        Long listId = 7777L;
+        Long tagId = 500L;
+        Integer usedCount = 6;
+        String url = "/shoppinglist/" + listId + "/tag/" + tagId + "/count/" + usedCount;
+        mockMvc.perform(put(url)
+                .with(user(meUserDetails))
+                .contentType(contentType))
+                .andExpect(status().isNoContent());
+
+        // make sure the item has been updated
+        ItemEntity resultItem = itemRepository.getItemByListAndTag(listId, tagId);
+
+        Assert.assertEquals(usedCount, resultItem.getUsedCount());
+    }
+
 
     @Test
     @WithMockUser
@@ -640,12 +662,16 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
-        Map<Long, ItemEntity> sourceResultMap = sourceResultList.getItems().stream()
+        Map<Long, ItemEntity> allSourceResultMap = sourceResultList.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(sourceResultMap);
-        Assert.assertEquals(2, sourceResultMap.keySet().size());
+        Map<Long, ItemEntity> withoutRemovedResultMap = sourceResultList.getItems().stream()
+                .filter(item -> item.getRemovedOn() == null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(allSourceResultMap);
+        Assert.assertEquals(3, allSourceResultMap.keySet().size());
+        Assert.assertEquals(2, withoutRemovedResultMap.keySet().size());
         // 500 shouldn't be there
-        Assert.assertFalse(sourceResultMap.keySet().contains(500L));
+        Assert.assertFalse(withoutRemovedResultMap.keySet().contains(500L));
         // check destination list
         ShoppingListEntity destinationResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, destinationListId);
         Map<Long, ItemEntity> destinationResultMap = destinationResultList.getItems().stream()
@@ -735,12 +761,17 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
-        Map<Long, ItemEntity> sourceResultMap = sourceResultList.getItems().stream()
+        Map<Long, ItemEntity> allSourceResultMap = sourceResultList.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(sourceResultMap);
-        Assert.assertEquals(2, sourceResultMap.keySet().size());
+        Map<Long, ItemEntity> withoutRemovedResultMap = sourceResultList.getItems().stream()
+                .filter(item -> item.getRemovedOn() == null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+
+        Assert.assertNotNull(allSourceResultMap);
+        Assert.assertEquals(3, allSourceResultMap.keySet().size());
+        Assert.assertEquals(2, withoutRemovedResultMap.keySet().size());
         // 500 shouldn't be there
-        Assert.assertFalse(sourceResultMap.keySet().contains(500L));
+        Assert.assertFalse(withoutRemovedResultMap.keySet().contains(500L));
 
     }
 

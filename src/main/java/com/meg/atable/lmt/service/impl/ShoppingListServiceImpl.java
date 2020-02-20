@@ -5,6 +5,7 @@ import com.meg.atable.auth.service.UserService;
 import com.meg.atable.common.DateUtils;
 import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.common.StringTools;
+import com.meg.atable.lmt.api.exception.ActionInvalidException;
 import com.meg.atable.lmt.api.exception.ObjectNotFoundException;
 import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.*;
@@ -47,6 +48,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     MealPlanService mealPlanService;
     private final
     ItemRepository itemRepository;
+    private final
+    ListTagStatisticService listTagStatisticService;
 
     private final
     ItemChangeRepository itemChangeRepository;
@@ -60,7 +63,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     String defaultShoppingListName;
 
     @Autowired
-    public ShoppingListServiceImpl(UserService userService, TagService tagService, DishService dishService, ShoppingListRepository shoppingListRepository, ListLayoutService listLayoutService, ListSearchService listSearchService, MealPlanService mealPlanService, ItemRepository itemRepository, ItemChangeRepository itemChangeRepository, ShoppingListProperties shoppingListProperties) {
+    public ShoppingListServiceImpl(UserService userService,
+                                   TagService tagService,
+                                   DishService dishService,
+                                   ShoppingListRepository shoppingListRepository,
+                                   ListLayoutService listLayoutService,
+                                   ListSearchService listSearchService,
+                                   MealPlanService mealPlanService,
+                                   ItemRepository itemRepository,
+                                   ItemChangeRepository itemChangeRepository,
+                                   ShoppingListProperties shoppingListProperties,
+                                   ListTagStatisticService listTagStatisticService) {
         this.userService = userService;
         this.tagService = tagService;
         this.dishService = dishService;
@@ -71,6 +84,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.itemRepository = itemRepository;
         this.itemChangeRepository = itemChangeRepository;
         this.shoppingListProperties = shoppingListProperties;
+        this.listTagStatisticService = listTagStatisticService;
     }
 
     @Override
@@ -132,13 +146,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // if operation requires copy, get destinationList and copy
         if (operationType.equals(ItemOperationType.Copy) ||
                 operationType.equals(ItemOperationType.Move)) {
-            ShoppingListEntity targetList = getListById(userName, destinationListId, true);
+            ShoppingListEntity targetList = getListById(userName, destinationListId);
             List<ItemEntity> items = targetList.getItems();
 
 
             CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
                     .withListId(sourceListId)
                     .withRemoveEntireItem(true)
+                    .withStatisticCountType(StatisticCountType.None)
                     .build();
             ListItemCollector collector = createListItemCollector(destinationListId, items);
             collector.addTags(tagList, context);
@@ -149,11 +164,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (operationType.equals(ItemOperationType.Move) ||
                 operationType.equals(ItemOperationType.Remove)) {
             // get source list
-            ShoppingListEntity sourceList = getListById(userName, sourceListId, true);
+            ShoppingListEntity sourceList = getListById(userName, sourceListId);
 
             List<ItemEntity> items = sourceList.getItems();
             CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
-                    .build();
+                    .withStatisticCountType(StatisticCountType.Single).build();
             ListItemCollector collector = createListItemCollector(sourceListId, items);
             collector.removeItemsByTagIds(tagIds, context);
             saveListChanges(sourceList, collector, context);
@@ -202,7 +217,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             if (baseList != null) {
                 CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
                         .withListId(baseList.getId())
-                        .withIncrementStatistics(false)
+                        .withStatisticCountType(StatisticCountType.StarterList)
                         .build();
                 collector.copyExistingItemsIntoList(baseList.getItems(), context);
             }
@@ -213,6 +228,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // save changes
         CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
+                .withStatisticCountType(StatisticCountType.List)
                 .build();
         saveListChanges(newList, collector, context);
         return newList;
@@ -244,7 +260,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             for (Long ds : listGenerateProperties.getDishSourcesIds()) {
                 mealPlanService.addDishToMealPlan(userName, mp.getId(), ds);
             }
-            // TODO add link to shopping list here
         }
     }
 
@@ -288,34 +303,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return null;
     }
 
+
     @Override
     public ShoppingListEntity getListById(String userName, Long listId) {
-        return getListById(userName, listId, false);
-    }
-
-
-    @Override
-    public ShoppingListEntity getListById(String userName, Long listId, boolean includeRemoved) {
         logger.debug("Retrieving List for id [" + listId + "] and name [" + userName + "]");
         UserEntity user = userService.getUserByUserEmail(userName);
         if (user == null) {
             return null;
         }
         Optional<ShoppingListEntity> shoppingListEntityOpt;
-        if (includeRemoved) {
-            shoppingListEntityOpt = shoppingListRepository.getWithItemsByListId(listId);
-        } else {
+        shoppingListEntityOpt = shoppingListRepository.getWithItemsByListId(listId);
 
-            ShoppingListEntity listEntity = shoppingListRepository.getOne(listId);
-            if (listEntity == null) {
-                return null;
-            }
-            List<ItemEntity> items = itemRepository.findByListIdAAndRemovedOnIsNull(listId);
-            listEntity.setItems(items);
-            shoppingListEntityOpt = Optional.of(listEntity);
-
-
-        }
         // may be a list which doesn't have items.  Check for that here
         if (!shoppingListEntityOpt.isPresent()) {
             shoppingListEntityOpt = shoppingListRepository.findById(listId);
@@ -336,7 +334,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             itemRepository.deleteAll(items);
             toDelete.setItems(new ArrayList<>());
             shoppingListRepository.save(toDelete);
-            toDelete = getListById(userName, listId, true);
+            toDelete = getListById(userName, listId);
             shoppingListRepository.delete(toDelete.getId());
             shoppingListRepository.flush();
             return true;
@@ -364,6 +362,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             itemEntity.setTag(tag);
         }
         CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
+                .withStatisticCountType(StatisticCountType.Single)
                 .withListId(listId)
                 .build();
         collector.addItem(itemEntity, context);
@@ -385,7 +384,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ItemEntity item = new ItemEntity();
         item.setTag(tag);
 
-        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified).build();
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
+                .withStatisticCountType(StatisticCountType.Single).build();
         collector.addItem(item, context);
 
         saveListChanges(shoppingListEntity, collector, context);
@@ -398,6 +398,35 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return collector;
     }
 
+    @Override
+    public void updateItemCount(String name, Long listId, Long tagId, Integer usedCount) {
+        if (usedCount == null) {
+            throw new ActionInvalidException("usedCount is null in updateItemCount.");
+        }
+
+        ShoppingListEntity shoppingListEntity = getListById(name, listId);
+        if (shoppingListEntity == null) {
+            return;
+        }
+
+        ItemEntity item = itemRepository.getItemByListAndTag(listId, tagId);
+        if (item == null) {
+            throw new ObjectNotFoundException("no item found in list [" + listId + "] with tagid [" + tagId + "]");
+        }
+
+        // set fields in item
+        item.setUsedCount(usedCount);
+        item.setUpdatedOn(new Date());
+        item.setRemovedOn(null);
+        item.setCrossedOff(null);
+
+        // update item
+        itemRepository.save(item);
+
+        // update list date
+        shoppingListEntity.setLastUpdate(new Date());
+        shoppingListRepository.save(shoppingListEntity);
+    }
 
     @Override
     public void deleteAllItemsFromList(String name, Long listId) {
@@ -412,11 +441,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
 
         ListItemCollector collector = createListItemCollector(listId, itemEntities);
-        CollectorContext context = new CollectorContext(ContextType.NonSpecified,
-                listId,
-                null,
-                false,
-                true);
+        CollectorContext context = new CollectorContextBuilder()
+                .create(ContextType.NonSpecified)
+                .withListId(listId)
+                .withStatisticCountType(StatisticCountType.List)
+                .withRemoveEntireItem(true)
+                .build();
         collector.removeItemsFromList(itemEntities, context);
 
         saveListChanges(shoppingListEntity, collector, context);
@@ -441,7 +471,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withDishId(dishSourceId)
                 .withRemoveEntireItem(removeEntireItem)
-                .withIncrementStatistics(true)
+                .withStatisticCountType(StatisticCountType.Single)
                 .build();
         collector.removeItemByTagId(item.getTag().getId(), context);
 
@@ -477,7 +507,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         MealPlanEntity mealPlan = mealPlanService.getMealPlanById(name, mealPlanId);
 
         // create new inprocess list
-        ShoppingListEntity shoppingList = getListById(name, listId, true);
+        ShoppingListEntity shoppingList = getListById(name, listId);
 
         return addToListFromMealPlan(name, shoppingList, mealPlan);
     }
@@ -495,6 +525,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         for (SlotEntity slot : mealPlan.getSlots()) {
             CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                     .withDishId(slot.getDish().getId())
+                    .withStatisticCountType(StatisticCountType.Dish)
                     .build();
             List<TagEntity> tags = tagService.getTagsForDish(name, slot.getDish().getId(), tagTypeList);
             collector.addTags(tags, context);
@@ -503,7 +534,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // update the last added date for dishes
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
-                .withIncrementStatistics(true)
+                .withStatisticCountType(StatisticCountType.Dish)
                 .build();
         saveListChanges(shoppingList, collector, context);
         Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(shoppingList.getId());
@@ -580,7 +611,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // get list to merge
-        ShoppingListEntity list = getListById(userName, listToMergeId, true);
+        ShoppingListEntity list = getListById(userName, listToMergeId);
 
         if (list == null) {
             // oops - list isn't here any more to merge
@@ -589,20 +620,18 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // create MergeCollector from list
         MergeItemCollector mergeCollector = new MergeItemCollector(list.getId(),list.getItems());
+        checkReplaceTagsInCollector(mergeCollector);
 
         // prepare items from client
         List<ItemEntity> mergeItems = convertClientItemsToItemEntities(mergeRequest);
-
-        // swap out tags which have been replaced - server
-        // replace any tags which need to be replaced
-        checkReplaceTagsInCollector(mergeCollector);
 
         // merge from client
         // fill in tags for passed items
         mergeCollector.addMergeItems(mergeItems);
 
         // update after merge
-        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Merge)
+                .withStatisticCountType(StatisticCountType.Single)
                 .build();
         saveListChanges(list, mergeCollector, context);
 
@@ -631,10 +660,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ListItemCollector collector = createListItemCollector(listId, list.getItems());
 
         // add Items from PickUpList
-        boolean incrementStats = !toAdd.getIsStarterList();
         CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
                 .withListId(fromListId)
-                .withIncrementStatistics(incrementStats)
+                .withStatisticCountType(StatisticCountType.List)
                 .build();
         collector.copyExistingItemsIntoList(toAdd.getItems(), context);
 
@@ -654,7 +682,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withDishId(dishId)
-                .withIncrementStatistics(true)
+                .withStatisticCountType(StatisticCountType.Dish)
                 .build();
         saveListChanges(list, collector, context);
     }
@@ -734,7 +762,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         collector.removeTagsForDish(dishId, tagsToRemove);
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withDishId(dishId)
-                .withIncrementStatistics(false)
+                .withStatisticCountType(StatisticCountType.Dish)
                 .build();
         saveListChanges(shoppingList, collector, context);
 
@@ -752,7 +780,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ListItemCollector collector = createListItemCollector(listId, shoppingList.getItems());
         CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
                 .withListId(fromListId)
-                .withIncrementStatistics(false)
+                .withStatisticCountType(StatisticCountType.List)
                 .build();
 
         collector.removeItemsFromList(listToRemove.getItems(), context);
@@ -776,12 +804,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ItemEntity item = itemOpt.get();
 
         // ensure item belongs to list
-        if (!item.getListId().equals(shoppingListEntity.getId())) {
+        if (item.getListId() == null && !item.getListId().equals(shoppingListEntity.getId())) {
             return;
         }
 
         // set crossed off for item - by setting crossedOff date
-        if (crossedOff) {
+        if (Boolean.TRUE.equals(crossedOff)) {
             Date updateDate = new Date();
             item.setCrossedOff(updateDate);
             item.setUpdatedOn(updateDate);
@@ -807,7 +835,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         Date crossOffDate = crossOff ? new Date() : null;
 
-        items.forEach(i -> i.setCrossedOff(crossOffDate));
+        items.stream().filter(i -> i.getRemovedOn() == null)
+                .forEach(i -> i.setCrossedOff(crossOffDate));
 
         if (crossOff) {
             shoppingListEntity.setLastUpdate(new Date());
@@ -851,8 +880,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .filter(i -> i.getTagId() != null)
                 .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
         Set<Long> tagKeys = mergeMap.keySet().stream().map(Long::valueOf).collect(Collectors.toSet());
-        mergeMap.keySet().forEach(k -> logger.debug("the  List for key [" + k + "] and item [" + mergeMap.get(k).getCrossedOff() + "]"));
-
 
         if (tagKeys.isEmpty()) {
             return new ArrayList<>();
@@ -914,14 +941,21 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         String highlightName = getHighlightName(userName, isHighlightDish, isHighlightList, highlightDishId, highlightListId);
         Set<Long> dishItemIds = getHighlightDishItemIds(isHighlightDish, shoppingListEntity, highlightDishId);
 
+        List<Long> frequentTagIds = listTagStatisticService.findFrequentIdsForList(shoppingListEntity.getId(), shoppingListEntity.getUserId());
 
-        HashMap<CategoryType, ItemCategory> specialCategories = new HashMap<>();
+        EnumMap specialCategories = new EnumMap(CategoryType.class);
         ItemCategory frequent = createDefaultCategoryByType(CategoryType.Frequent, null);
         ItemCategory uncategorized = createDefaultCategoryByType(CategoryType.UnCategorized, null);
         ItemCategory highlight = createDefaultCategoryByType(CategoryType.Highlight, highlightName);
         ItemCategory highlightList = createDefaultCategoryByType(CategoryType.HighlightList, highlightName);
         for (ItemEntity item : shoppingListEntity.getItems()) {
-            if (item.isFrequent() && separateFrequent && !isHighlightDish) {
+            if (item.getRemovedOn() != null) {
+                continue;
+            }
+            if (frequentTagIds.contains(item.getTag().getId())) {
+                item.addHandle(ShoppingListService.FREQUENT);
+            }
+            if (separateFrequent && !isHighlightDish && frequentTagIds.contains(item.getTag().getId())) {
                 frequent.addItemEntity(item);
             } else if (!dictionary.containsKey(item.getTag().getId())) {
                 uncategorized.addItemEntity(item);
@@ -1037,6 +1071,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // add new dish tags to list
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withDishId(dishId)
+                .withStatisticCountType(StatisticCountType.Dish)
                 .build();
         collector.addTags(tagsForDish, context);
 

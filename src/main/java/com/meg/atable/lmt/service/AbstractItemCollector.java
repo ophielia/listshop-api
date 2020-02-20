@@ -1,6 +1,7 @@
 package com.meg.atable.lmt.service;
 
 import com.meg.atable.lmt.api.model.ContextType;
+import com.meg.atable.lmt.api.model.StatisticCountType;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.TagEntity;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -99,17 +100,19 @@ public abstract class AbstractItemCollector implements ItemCollector {
             return;
         }
 
-        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified).build();
-            for (TagEntity tag : outdatedTags) {
-                // replace the tag in the tag collector
-                CollectedItem toFix = getTagCollectedMap().get(tag.getId());
-                TagEntity originalTag = toFix.getTag();
-                TagEntity replaceTag = replacementDictionary.get(tag.getReplacementTagId());
-                toFix.setTag(replaceTag);
-                getTagCollectedMap().remove(originalTag.getId());
-                if (getTagCollectedMap().containsKey(replaceTag.getId())) {
-                    addItem(toFix.getItem(), context);
-                } else {
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
+                .withStatisticCountType(StatisticCountType.None)
+                .build();
+        for (TagEntity tag : outdatedTags) {
+            // replace the tag in the tag collector
+            CollectedItem toFix = getTagCollectedMap().get(tag.getId());
+            TagEntity originalTag = toFix.getTag();
+            TagEntity replaceTag = replacementDictionary.get(tag.getReplacementTagId());
+            toFix.setTag(replaceTag);
+            getTagCollectedMap().remove(originalTag.getId());
+            if (getTagCollectedMap().containsKey(replaceTag.getId())) {
+                addItem(toFix.getItem(), context);
+            } else {
                     toFix.setChanged(true);
                     getTagCollectedMap().put(replaceTag.getId(),toFix);
                 }

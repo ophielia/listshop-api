@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface ShoppingListService {
 
+    static String FREQUENT = "frequent";
+
     List<ShoppingListEntity> getListsByUsername(String userName);
 
     ShoppingListEntity generateListForUser(String userName, ListGenerateProperties listGeneratProperties) throws ShoppingListException;
@@ -21,8 +23,6 @@ public interface ShoppingListService {
     ShoppingListEntity getMostRecentList(String userName);
 
     ShoppingListEntity getListById(String userName, Long listId);
-
-    ShoppingListEntity getListById(String userName, Long listId, boolean includeRemoved);
 
     boolean deleteList(String userName, Long listId);
 
@@ -68,4 +68,6 @@ public interface ShoppingListService {
 
 
     ShoppingListEntity addToListFromMealPlan(String name, Long listId, Long mealPlanId);
+
+    void updateItemCount(String name, Long listId, Long tagId, Integer usedCount);
 }

@@ -1,10 +1,13 @@
-package com.meg.atable.lmt.service.impl;
+package com.meg.atable.lmt.service.proposal.impl;
 
+import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.api.exception.ProposalProcessingException;
 import com.meg.atable.lmt.api.model.ApproachType;
-import com.meg.atable.common.FlatStringUtils;
 import com.meg.atable.lmt.data.entity.*;
-import com.meg.atable.lmt.service.*;
+import com.meg.atable.lmt.service.AttemptGenerator;
+import com.meg.atable.lmt.service.DishSearchService;
+import com.meg.atable.lmt.service.DishTagSearchResult;
+import com.meg.atable.lmt.service.NewRawSlotResult;
 import com.meg.atable.lmt.service.proposal.ProcessInformation;
 import com.meg.atable.lmt.service.proposal.ProposalAttempt;
 import com.meg.atable.lmt.service.proposal.ProposalProcessor;

@@ -2,10 +2,7 @@ package com.meg.atable.lmt.service.impl;
 
 import com.meg.atable.auth.data.entity.UserEntity;
 import com.meg.atable.auth.service.UserService;
-import com.meg.atable.lmt.api.model.ItemOperationType;
-import com.meg.atable.lmt.api.model.ListGenerateProperties;
-import com.meg.atable.lmt.api.model.ListLayoutType;
-import com.meg.atable.lmt.api.model.TagType;
+import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.*;
 import com.meg.atable.lmt.data.repository.ItemChangeRepository;
 import com.meg.atable.lmt.data.repository.ItemRepository;
@@ -24,6 +21,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -57,6 +57,8 @@ public class ShoppingListServiceImplMockTest {
     private ItemRepository itemRepository;
     @MockBean
     private ItemChangeRepository itemChangeRepository;
+    @MockBean
+    private ListTagStatisticService listTagStatisticService;
 
     @Before
     public void setUp() {
@@ -70,7 +72,8 @@ public class ShoppingListServiceImplMockTest {
                 mealPlanService,
                 itemRepository,
                 itemChangeRepository,
-                shoppingListProperties);
+                shoppingListProperties,
+                listTagStatisticService);
     }
 
 
@@ -212,17 +215,6 @@ public class ShoppingListServiceImplMockTest {
         // tag 6 should NOT be there
         Assert.assertNull(resultMap.get(6L));
 
-    }
-
-    private ShoppingListEntity emptyShoppingList(Long listId, Long userId, String listName) {
-        ShoppingListEntity newList = new ShoppingListEntity();
-        // get list layout for user, list_type
-        newList.setListLayoutId(33L);
-        newList.setName(listName);
-        newList.setIsStarterList(false);
-        newList.setCreatedOn(new Date());
-        newList.setUserId(userId);
-        return newList;
     }
 
     @Test
@@ -566,6 +558,307 @@ public class ShoppingListServiceImplMockTest {
 
     }
 
+    @Test
+    public void testUpdateItemCount() {
+        final Integer usedCount = 6;
+        final Long shoppingListId = 89L;
+        final Long tagId = 889L;
+        final Long userId = 2L;
+        final String userEmail = "me@mine.ours";
+
+        LocalDate date = LocalDate.of(2020, 01, 01);
+        Date lastUpdate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        ShoppingListEntity shoppingList = expectGetShoppingListById(shoppingListId, userId, Arrays.asList(tagId), userEmail);
+        shoppingList.setLastUpdate(lastUpdate);
+
+        ItemEntity item = new ItemEntity();
+        item.setTagId(tagId);
+        item.setCrossedOff(new Date());
+        item.setRemovedOn(new Date());
+        item.setUsedCount(1);
+
+        // expectations
+        Mockito.when(itemRepository.getItemByListAndTag(shoppingListId, tagId))
+                .thenReturn(item);
+        ArgumentCaptor<ItemEntity> saveItemCapture = ArgumentCaptor.forClass(ItemEntity.class);
+        Mockito.when(itemRepository.save(saveItemCapture.capture()))
+                .thenReturn(item);
+
+        ArgumentCaptor<ShoppingListEntity> saveListCapture = ArgumentCaptor.forClass(ShoppingListEntity.class);
+        Mockito.when(shoppingListRepository.save(saveListCapture.capture()))
+                .thenReturn(shoppingList);
+
+        // call
+        shoppingListService.updateItemCount(userEmail, shoppingListId, tagId, usedCount);
+
+        // Assert item is correct
+        ItemEntity resultItem = saveItemCapture.getValue();
+        Assert.assertNotNull(resultItem);
+        Assert.assertNull(resultItem.getCrossedOff());
+        Assert.assertNull(resultItem.getRemovedOn());
+        Long itemTimeDiff = (new Date()).getTime() - item.getUpdatedOn().getTime();
+        Assert.assertTrue(itemTimeDiff < 1000);
+
+        Assert.assertEquals(usedCount, resultItem.getUsedCount());
+        // Assert last update is set in shopping list
+        ShoppingListEntity resultList = saveListCapture.getValue();
+        Assert.assertNotNull(resultList);
+        Date updateDate = resultList.getLastUpdate();
+        Long timeDiff = (new Date()).getTime() - updateDate.getTime();
+        Assert.assertTrue(timeDiff < 1000);
+    }
+
+    private ShoppingListEntity expectGetShoppingListById(Long shoppingListId, Long userId, List<Long> tagIds, String userEmail) {
+        ShoppingListEntity shoppingList = dummyShoppingList(shoppingListId, userId, tagIds);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setEmail(userEmail);
+
+        // expectations
+        Mockito.when(userService.getUserByUserEmail(userEmail))
+                .thenReturn(userEntity);
+        Mockito.when(shoppingListRepository.getOne(shoppingListId))
+                .thenReturn(shoppingList);
+            Mockito.when(shoppingListRepository.getWithItemsByListId(shoppingListId))
+                    .thenReturn(Optional.of(shoppingList));
+
+        return shoppingList;
+    }
+
+    @Test
+    public void testMerge_AllChangedOneNewFromClient() {
+        Long mergeListId = 9999L;
+        final Long serverListId = 9999L;
+        final Long[] serverTagIds = {8887L, 8888L, 8889L};
+        final Long userId = 2L;
+        final String userEmail = "me@mine.ours";
+
+        LocalDate date = LocalDate.of(2020, 01, 01);
+        Date addedDate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        ShoppingListEntity shoppingList = expectGetShoppingListById(serverListId, userId, Arrays.asList(serverTagIds), userEmail);
+        shoppingList.getItems().stream().forEach(item -> item.setAddedOn(addedDate));
+
+
+        // add several new items to the list
+        MergeRequest clientMergeRequest = new MergeRequest();
+        clientMergeRequest.setListId(mergeListId);
+        Map<Long, TagEntity> tagDictionary = new HashMap<>();
+        for (long i = 500; i < 504; i++) {
+            clientMergeRequest.getMergeItems().add(createMergeTestItem(String.valueOf(i), 4, 0, 0, 0));
+            TagEntity tag = new TagEntity(i);
+            tag.setName(String.valueOf(i));
+            tagDictionary.put(i, tag);
+        }
+
+        ArgumentCaptor<ItemCollector> collectorCapture = ArgumentCaptor.forClass(ItemCollector.class);
+
+        Mockito.when(tagService.getReplacedTagsFromIds(any(Set.class)))
+                .thenReturn(new ArrayList<Long>());
+        Mockito.when(tagService.getDictionaryForIds(any(Set.class)))
+                .thenReturn(tagDictionary);
+
+        Mockito.when(shoppingListRepository.save(any(ShoppingListEntity.class)))
+                .thenReturn(shoppingList);
+
+        shoppingListService.mergeFromClient(userEmail, clientMergeRequest);
+
+
+        // for testing after call
+        Mockito.verify(itemChangeRepository).saveItemChanges(any(ShoppingListEntity.class),
+                collectorCapture.capture(),
+                any(Long.class),
+                any(CollectorContext.class));
+
+        Assert.assertNotNull(collectorCapture);
+        Assert.assertNotNull(collectorCapture.getValue());
+        MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
+        Assert.assertEquals(Long.valueOf(9999L), Long.valueOf(capturedToVerify.getListId()));
+        Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
+
+        Assert.assertEquals(7, itemMap.keySet().size());
+        // assert 8888 is there, and unchanged
+        CollectedItem testItem = itemMap.get(8888L);
+        Assert.assertNotNull(testItem);
+        Assert.assertFalse(testItem.isChanged());
+
+        // assert 501 is there, with added = true
+        CollectedItem testItem2 = itemMap.get(501L);
+        Assert.assertNotNull(testItem2);
+        Assert.assertTrue(testItem2.isChanged());
+        Assert.assertTrue(testItem2.isAdded());
+
+    }
+
+    @Test
+    public void testMerge_ChangesServerSide() {
+        Long mergeListId = 9999L;
+        final Long serverListId = 9999L;
+        final Long[] serverTagIds = {501L, 502L, 503L};
+        final Long userId = 2L;
+        final String userEmail = "me@mine.ours";
+
+        Date removedDate = getDateForInterval(1);
+        ShoppingListEntity shoppingList = expectGetShoppingListById(serverListId, userId, Arrays.asList(serverTagIds), userEmail);
+        shoppingList.getItems().stream().forEach(item -> item.setRemovedOn(removedDate));
+
+
+        // add several new items to the list
+        MergeRequest clientMergeRequest = new MergeRequest();
+        clientMergeRequest.setListId(mergeListId);
+        Map<Long, TagEntity> tagDictionary = new HashMap<>();
+        for (long i = 500; i < 504; i++) {
+            clientMergeRequest.getMergeItems().add(createMergeTestItem(String.valueOf(i), 4, 0, 0, 0));
+            TagEntity tag = new TagEntity(i);
+            tag.setName(String.valueOf(i));
+            tagDictionary.put(i, tag);
+        }
+
+        ArgumentCaptor<ItemCollector> collectorCapture = ArgumentCaptor.forClass(ItemCollector.class);
+
+        Mockito.when(tagService.getReplacedTagsFromIds(any(Set.class)))
+                .thenReturn(new ArrayList<Long>());
+        Mockito.when(tagService.getDictionaryForIds(any(Set.class)))
+                .thenReturn(tagDictionary);
+
+        Mockito.when(shoppingListRepository.save(any(ShoppingListEntity.class)))
+                .thenReturn(shoppingList);
+
+        shoppingListService.mergeFromClient(userEmail, clientMergeRequest);
+
+
+        // for testing after call
+        Mockito.verify(itemChangeRepository).saveItemChanges(any(ShoppingListEntity.class),
+                collectorCapture.capture(),
+                any(Long.class),
+                any(CollectorContext.class));
+
+        Assert.assertNotNull(collectorCapture);
+        Assert.assertNotNull(collectorCapture.getValue());
+        MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
+        Assert.assertEquals(Long.valueOf(9999L), Long.valueOf(capturedToVerify.getListId()));
+        Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
+
+        Assert.assertEquals(4, itemMap.keySet().size());
+        // assert 500 is there, with added
+        CollectedItem testItem = itemMap.get(500L);
+        Assert.assertNotNull(testItem);
+        Assert.assertTrue(testItem.isChanged());
+        Assert.assertTrue(testItem.isAdded());
+
+        // assert 501 is there, with changed false
+        CollectedItem testItem2 = itemMap.get(501L);
+        Assert.assertNotNull(testItem2);
+        Assert.assertFalse(testItem2.isChanged());
+        Assert.assertNotNull(testItem2.getRemovedOn());
+
+    }
+
+    @Test
+    public void testDeleteItemFromList() {
+        Long deleteFromListId = 9999L;
+        final String userEmail = "me@mine.ours";
+        final Long userId = 2L;
+        final Long[] listTagIds = {501L, 502L, 503L};
+        final Long itemIdToRemove = 501L * 1111111;
+
+        Date addedDate = getDateForInterval(1);
+        ShoppingListEntity shoppingList = expectGetShoppingListById(deleteFromListId, userId, Arrays.asList(listTagIds), userEmail);
+        shoppingList.getItems().stream().forEach(item -> item.setAddedOn(addedDate));
+
+        final Optional<ItemEntity> itemToRemoveOpt = shoppingList.getItems()
+                .stream()
+                .filter(item -> item.getId().equals(itemIdToRemove))
+                .findFirst();
+
+
+        ArgumentCaptor<ItemCollector> collectorCapture = ArgumentCaptor.forClass(ItemCollector.class);
+
+        Mockito.when(itemRepository.findById(itemIdToRemove))
+                .thenReturn(itemToRemoveOpt);
+
+        Mockito.when(shoppingListRepository.save(any(ShoppingListEntity.class)))
+                .thenReturn(shoppingList);
+
+        shoppingListService.deleteItemFromList(userEmail, deleteFromListId, itemIdToRemove, false, null);
+
+
+        // for testing after call
+        Mockito.verify(itemChangeRepository).saveItemChanges(any(ShoppingListEntity.class),
+                collectorCapture.capture(),
+                any(Long.class),
+                any(CollectorContext.class));
+
+        Assert.assertNotNull(collectorCapture);
+        Assert.assertNotNull(collectorCapture.getValue());
+        ListItemCollector capturedToVerify = (ListItemCollector) collectorCapture.getValue();
+        Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
+
+        Assert.assertEquals(3, itemMap.keySet().size());
+        // assert 501 is there, with removed
+        CollectedItem testItem = itemMap.get(501L);
+        Assert.assertNotNull(testItem);
+        Assert.assertTrue(testItem.isChanged());
+        Assert.assertTrue(testItem.isRemoved());
+
+
+    }
+
+    @Test
+    public void testUpdateList() {
+        String userName = "george";
+        Long listId = 99L;
+        ShoppingListEntity updateFrom = new ShoppingListEntity();
+        updateFrom.setName("has been updated");
+        updateFrom.setIsStarterList(false);
+
+        ShoppingListEntity originalList = new ShoppingListEntity();
+        originalList.setName("originalList");
+        originalList.setIsStarterList(true);
+
+
+        UserEntity user = new UserEntity();
+        user.setId(999L);
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+
+        ArgumentCaptor<ShoppingListEntity> listArgument = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        Mockito.when(shoppingListRepository.findByListIdAndUserId(listId, 999L))
+                .thenReturn(Collections.singletonList(originalList));
+        Mockito.when(shoppingListRepository.save(listArgument.capture()))
+                .thenReturn(updateFrom);
+
+        shoppingListService.updateList(userName, listId, updateFrom);
+
+        Assert.assertEquals("has been updated", listArgument.getValue().getName());
+        Assert.assertEquals(false, listArgument.getValue().getIsStarterList());
+    }
+
+    private Item createMergeTestItem(String tagId, int addedDateInterval, int updatedDateInterval, int crossedOffDateInterval, int removedDateInterval) {
+        Item item = new Item();
+        item.setTagId(tagId);
+        item.usedCount(1);
+        item.addedOn(getDateForInterval(addedDateInterval));
+        item.updated(getDateForInterval(updatedDateInterval));
+        item.crossedOff(getDateForInterval(crossedOffDateInterval));
+        item.removed(getDateForInterval(removedDateInterval));
+        return item;
+    }
+
+    private Date getDateForInterval(int interval) {
+        LocalDateTime now = LocalDateTime.now();
+        if (interval == 0) {
+            return null;
+        }
+        if (interval == 99) {
+            // cheating for test - 5 seconds in the future
+            LocalDateTime newDate = now.plusSeconds(5);
+            return java.sql.Timestamp.valueOf(newDate);
+        }
+        LocalDateTime newDate = now.minusDays(interval);
+        return java.sql.Timestamp.valueOf(newDate);
+    }
+
     private Map<Long, TagEntity> dummyTagDictionary(List<Long> tagIds) {
         Map<Long, TagEntity> resultMap = new HashMap<>();
 
@@ -604,33 +897,16 @@ public class ShoppingListServiceImplMockTest {
 
     }
 
-    @Test
-    public void testUpdateList() {
-        String userName = "george";
-        Long listId = 99L;
-        ShoppingListEntity updateFrom = new ShoppingListEntity();
-        updateFrom.setName("has been updated");
-        updateFrom.setIsStarterList(false);
-
-        ShoppingListEntity originalList = new ShoppingListEntity();
-        originalList.setName("originalList");
-        originalList.setIsStarterList(true);
-
-
-        UserEntity user = new UserEntity();
-        user.setId(999L);
-        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
-
-        ArgumentCaptor<ShoppingListEntity> listArgument = ArgumentCaptor.forClass(ShoppingListEntity.class);
-
-        Mockito.when(shoppingListRepository.findByListIdAndUserId(listId, 999L))
-                .thenReturn(Collections.singletonList(originalList));
-        Mockito.when(shoppingListRepository.save(listArgument.capture()))
-                .thenReturn(updateFrom);
-
-        shoppingListService.updateList(userName, listId, updateFrom);
-
-        Assert.assertEquals("has been updated", listArgument.getValue().getName());
-        Assert.assertEquals(false, listArgument.getValue().getIsStarterList());
+    private ShoppingListEntity emptyShoppingList(Long listId, Long userId, String listName) {
+        ShoppingListEntity newList = new ShoppingListEntity();
+        // get list layout for user, list_type
+        newList.setListLayoutId(33L);
+        newList.setName(listName);
+        newList.setIsStarterList(false);
+        newList.setCreatedOn(new Date());
+        newList.setUserId(userId);
+        return newList;
     }
+
+
 }

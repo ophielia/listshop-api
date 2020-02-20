@@ -50,7 +50,7 @@ public class MergeItemCollectorTest {
 
     @Test
     public void testMergeWithEmpty() {
-        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
 
@@ -62,7 +62,7 @@ public class MergeItemCollectorTest {
 
     @Test
     public void testUpdatesToItem() {
-        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
         ItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
@@ -79,7 +79,7 @@ public class MergeItemCollectorTest {
 
     @Test
     public void testUpdatesToItemServerMoreRecent() {
-        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
         ItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
@@ -97,7 +97,7 @@ public class MergeItemCollectorTest {
 
     @Test
     public void testAddingNewItem() {
-        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L, true);
+        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_NAME, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
         ItemEntity updated = createItemForTagId(45L);

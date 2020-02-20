@@ -425,14 +425,15 @@ public class ModelMapper {
                 .removed(itemEntity.getRemovedOn())
                 .crossedOff(itemEntity.getCrossedOff())
                 .usedCount(itemEntity.getUsedCount())
-                .freeText(itemEntity.getFreeText());
+                .freeText(itemEntity.getFreeText())
+                .handles(itemEntity.getHandles());
     }
 
     public static TagEntity toEntity(Tag tag) {
         if (tag == null) {
             return null;
         }
-        Long tagId = tag.getId() != null ? new Long(tag.getId()) : null;
+        Long tagId = tag.getId() != null ? Long.valueOf(tag.getId()) : null;
         TagEntity tagEntity = new TagEntity(tagId);
 
         tagEntity.setName(tag.getName().trim());
@@ -495,13 +496,13 @@ public class ModelMapper {
         if (mealPlan == null) {
             return null;
         }
-        Long mealPlanId = (mealPlan != null && mealPlan.getMealPlanId() != null) ? mealPlan.getMealPlanId() : null;
+        Long mealPlanId = (mealPlan.getMealPlanId() != null) ? mealPlan.getMealPlanId() : null;
         MealPlanEntity mealPlanEntity = new MealPlanEntity(mealPlanId);
 
         mealPlanEntity.setName(mealPlan.getName());
         mealPlanEntity.setMealPlanType(MealPlanType.valueOf(mealPlan.getMealPlanType()));
         if (mealPlan.getUserId() != null) {
-            mealPlanEntity.setUserId(new Long(mealPlan.getUserId()));
+            mealPlanEntity.setUserId(Long.valueOf(mealPlan.getUserId()));
         }
 
         return mealPlanEntity;

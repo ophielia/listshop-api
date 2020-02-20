@@ -7,7 +7,6 @@ import com.meg.atable.lmt.api.model.*;
 import com.meg.atable.lmt.data.entity.ItemEntity;
 import com.meg.atable.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.atable.lmt.data.entity.ShoppingListEntity;
-import com.meg.atable.lmt.data.entity.TagEntity;
 import com.meg.atable.lmt.service.ListLayoutService;
 import com.meg.atable.lmt.service.ShoppingListException;
 import com.meg.atable.lmt.service.ShoppingListService;
@@ -88,7 +87,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             // retrieve the list, and put it into the result
             ShoppingListEntity shoppingList = this.shoppingListService.getListById(principal.getName(), listId);
             // possibly set layout id in shopping list
-            if (layoutId != null && layoutId != shoppingList.getListLayoutId()) {
+            if (layoutId != null && !layoutId.equals(shoppingList.getListLayoutId())) {
                 shoppingList.setListLayoutId(layoutId);
             }
             List<Category> categories = shoppingListService.categorizeList(principal.getName(), shoppingList, null, false, null);
@@ -133,7 +132,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> updateItems(Principal principal, @PathVariable("listId") Long listId, @RequestBody ItemOperationPut itemOperation) {
-        logger.debug("beginning updateItems for input: " + itemOperation);
+        String message = String.format("beginning updateItems for input: %S", itemOperation);
+        logger.debug(message);
         if (itemOperation == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -184,10 +184,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         if (highlightDish == 0) {
             highlightDish = null;
         }
-        //MM debug only
-        List<ItemEntity> items = result.getItems();
-        List<Long> tempids = items.stream().map(ItemEntity::getTag).map(TagEntity::getId).collect(Collectors.toList());
-        logger.debug("tagIds are: " + tempids);
+
         List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, highlightListId);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
@@ -209,6 +206,16 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
         this.shoppingListService.addItemToList(principal.getName(), listId, itemEntity);
 
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> updateItemCountByTag(Principal principal, @PathVariable Long listId,
+                                                       @PathVariable Long tagId,
+                                                       @PathVariable Integer usedCount
+    ) {
+        logger.info("Update count for tag [%d] to [%d] in list [%d]", tagId, usedCount, listId);
+        this.shoppingListService.updateItemCount(principal.getName(), listId, tagId, usedCount);
         return ResponseEntity.noContent().build();
     }
 
