@@ -47,7 +47,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     private ListLayoutService listLayoutService;
 
     public ResponseEntity<Resources<ShoppingListResource>> retrieveLists(Principal principal) {
-
+        String message = String.format("Retrieving all lists for user [%S]", principal.getName());
+        logger.info(message);
         List<ShoppingListResource> shoppingListResources = shoppingListService
                 .getListsByUsername(principal.getName())
                 .stream()
@@ -59,13 +60,14 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> createList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) {
-
+        String message = String.format("Creating list for user [%S]", principal.getName());
+        logger.info(message);
 
         ShoppingListEntity result = null;
         try {
             result = shoppingListService.generateListForUser(principal.getName(), listGenerateProperties);
         } catch (ShoppingListException e) {
-            logger.error("Exception while creating List.",e);
+            logger.error("Exception while creating List.", e);
         }
         if (result != null) {
             Link oneList = new ShoppingListResource(result, null).getLink("self");
@@ -76,6 +78,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest) {
+        String message = String.format("Merging list for user [%S]", principal.getName());
+        logger.info(message);
 
         Long listId = mergeRequest.getListId();
         Long layoutId = mergeRequest.getLayoutId();
@@ -104,6 +108,9 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId,
                                                                           @RequestParam(value = "after", required = true)
                                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date changedAfter) {
+        String message = String.format("Refreshing list ites for user [%S]", principal.getName());
+        logger.info(message);
+
         List<ItemEntity> changedItems = shoppingListService.getChangedItemsForMostRecentList(principal.getName(), changedAfter, listLayoutId);
 
         List<Pair<ItemEntity, ListLayoutCategoryEntity>> itemsToCategories = listLayoutService.getItemChangesWithCategories(listLayoutId, changedItems);

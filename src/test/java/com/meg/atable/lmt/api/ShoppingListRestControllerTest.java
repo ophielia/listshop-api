@@ -35,6 +35,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -775,6 +776,83 @@ public class ShoppingListRestControllerTest {
 
     }
 
+    @Test
+    @WithMockUser
+    public void deleteItemOperation_RemoveCrossedOff() throws Exception {
+        Long sourceListId = 77777L;  // 500, 501, 502
+
+        ItemOperationPut operationUpdate = new ItemOperationPut();
+        operationUpdate.setDestinationListId(null);
+        operationUpdate.setOperation(ItemOperationType.RemoveCrossedOff.name());
+        operationUpdate.setTagIds(new ArrayList<>());
+
+        String jsonProperties = json(operationUpdate);
+
+        String url = "/shoppinglist/" + sourceListId + "/item";
+
+        MvcResult result = this.mockMvc.perform(put(url)
+                .with(user(meUserDetails))
+                .contentType(contentType)
+                .content(jsonProperties))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // now, retrieve the list
+        ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
+        Map<Long, ItemEntity> allSourceResultMap = sourceResultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Map<Long, ItemEntity> withoutRemovedResultMap = sourceResultList.getItems().stream()
+                .filter(item -> item.getRemovedOn() == null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+
+        Assert.assertNotNull(allSourceResultMap);
+        Assert.assertEquals(3, allSourceResultMap.keySet().size());
+        Assert.assertEquals(1, withoutRemovedResultMap.keySet().size());
+        // 500 shouldn't be there
+        Assert.assertFalse(withoutRemovedResultMap.keySet().contains(500L));
+        Assert.assertFalse(withoutRemovedResultMap.keySet().contains(502L));
+        Assert.assertTrue(withoutRemovedResultMap.keySet().contains(501L));
+
+    }
+
+    @Test
+    @WithMockUser
+    public void deleteItemOperation_RemoveAll() throws Exception {
+        Long sourceListId = 77777L;  // 500, 501, 502
+
+        ItemOperationPut operationUpdate = new ItemOperationPut();
+        operationUpdate.setDestinationListId(null);
+        operationUpdate.setOperation(ItemOperationType.RemoveAll.name());
+        operationUpdate.setTagIds(new ArrayList<>());
+
+        String jsonProperties = json(operationUpdate);
+
+        String url = "/shoppinglist/" + sourceListId + "/item";
+
+        MvcResult result = this.mockMvc.perform(put(url)
+                .with(user(meUserDetails))
+                .contentType(contentType)
+                .content(jsonProperties))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // now, retrieve the list
+        ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
+        Map<Long, ItemEntity> allSourceResultMap = sourceResultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Map<Long, ItemEntity> withoutRemovedResultMap = sourceResultList.getItems().stream()
+                .filter(item -> item.getRemovedOn() == null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+
+        Assert.assertNotNull(allSourceResultMap);
+        Assert.assertEquals(3, allSourceResultMap.keySet().size());
+        Assert.assertEquals(0, withoutRemovedResultMap.keySet().size());
+        // 500 shouldn't be there
+        Assert.assertFalse(withoutRemovedResultMap.keySet().contains(500L));
+        Assert.assertFalse(withoutRemovedResultMap.keySet().contains(502L));
+        Assert.assertFalse(withoutRemovedResultMap.keySet().contains(501L));
+
+    }
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

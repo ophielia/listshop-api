@@ -112,7 +112,9 @@ public class ShoppingListServiceImplTest {
     public void testAddItemToList() {
         // make item (unsaved)
         ItemEntity itemEntity = new ItemEntity();
-        itemEntity.setTagId(tag1.getId());
+        TagEntity tagEntity = new TagEntity();
+        tagEntity.setId(tag1.getId());
+        itemEntity.setTag(tagEntity);
 
         // add to baseList
         shoppingListService.addItemToList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, itemEntity);
@@ -136,7 +138,9 @@ public class ShoppingListServiceImplTest {
         // add existing item
         // get initial item count
         int initialCount = result.getItems().size();
-        itemEntity.setTagId(cheddarTag.getId());
+        TagEntity tagEntity1 = new TagEntity();
+        tagEntity1.setId(cheddarTag.getId());
+        itemEntity.setTag(tagEntity1);
         shoppingListService.addItemToList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, itemEntity);
 
         // retrieve baselist
