@@ -1,6 +1,9 @@
 package com.meg.atable.auth.api.web;
 
 import com.meg.atable.auth.api.controller.AuthenticationRestControllerApi;
+import com.meg.atable.auth.api.model.UserResource;
+import com.meg.atable.auth.data.entity.UserEntity;
+import com.meg.atable.auth.service.UserService;
 import com.meg.atable.auth.service.impl.JwtAuthenticationRequest;
 import com.meg.atable.auth.service.impl.JwtAuthenticationResponse;
 import com.meg.atable.auth.service.impl.JwtTokenUtil;
@@ -26,6 +29,10 @@ public class AuthenticationRestController implements AuthenticationRestControlle
     @Value("${jwt.header}")
     private String tokenHeader;
 
+
+    @Autowired
+    private UserService userService;
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -48,11 +55,12 @@ public class AuthenticationRestController implements AuthenticationRestControlle
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Reload password post-security so we can generate token
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-        final String token = jwtTokenUtil.generateToken(userDetails, device);
+        UserEntity userEntity = userService.getUserByUserEmail(authenticationRequest.getUsername());
+        final String token = jwtTokenUtil.generateToken(userEntity, device);
 
         // Return the token
-        return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+        final UserResource user = new UserResource(userEntity, token);
+        return ResponseEntity.ok(user);
     }
 
     public ResponseEntity<Object> refreshAndGetAuthenticationToken(HttpServletRequest request) {

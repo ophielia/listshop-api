@@ -422,7 +422,7 @@ public class CollectedItem {
         nakedServer.setRemovedOn(nakedClient.getRemovedOn());
         nakedServer.setUpdatedOn(nakedClient.getUpdatedOn());
         nakedServer.setUsedCount(nakedClient.getUsedCount());
-
+        nakedServer.setUsedCount(nakedClient.getUsedCount());
         // copy current state
         CollectedItemStatus clientStatus = clientItem.getStatus();
         LocalDateTime statusDate = clientItem.getStatusDate();
@@ -440,8 +440,8 @@ public class CollectedItem {
                 setUpdated(true);
                 break;
             case CROSSED_OFF:
-                setCrossedOff(statusDate);
                 setUpdated(true);
+                setCrossedOff(statusDate);
                 break;
         }
     }

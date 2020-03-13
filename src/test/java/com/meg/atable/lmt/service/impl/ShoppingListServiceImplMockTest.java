@@ -378,6 +378,129 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
+    public void testPerformItemOperation_RemoveCrossedOff() {
+        String username = "Eustace";
+        Long sourceListId = 99L;
+        List<Long> operationTagIds = Arrays.asList(4L, 5L, 8L);
+
+        Long userId = 9L;
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setEmail(username);
+
+        // 3 items, tagIds 3,4,8 - 3 and 8 are crossed off
+        ShoppingListEntity sourceList = dummyShoppingList(sourceListId, userId);
+        Map<Long, ItemEntity> sourceItems = sourceList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        sourceItems.get(3L).setCrossedOff(new Date());
+        sourceItems.get(8L).setCrossedOff(new Date());
+        List<TagType> tagTypeList = new ArrayList<>();
+        tagTypeList.add(TagType.Ingredient);
+        tagTypeList.add(TagType.NonEdible);
+
+        ArgumentCaptor<ShoppingListEntity> argument = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        // expectations
+        Mockito.when(userService.getUserByUserEmail(username))
+                .thenReturn(userEntity);
+        Mockito.when(shoppingListRepository.findById(sourceListId))
+                .thenReturn(Optional.of(sourceList));
+        Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(sourceListId))
+                .thenReturn(sourceList.getItems());
+
+        itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
+        Mockito.when(shoppingListRepository.save(argument.capture()))
+                .thenReturn(sourceList);
+
+        // call under test
+        shoppingListService.performItemOperation(username, sourceListId, ItemOperationType.RemoveCrossedOff, operationTagIds, null);
+
+        // after remove, the list should contain only one item - id 4
+        // list is not null
+        ShoppingListEntity listResult = argument.getValue();
+        Assert.assertNotNull(listResult);
+        // list should contain 1 items - id 3
+        List<ItemEntity> items = listResult.getItems();
+        Assert.assertNotNull(items);
+        Assert.assertFalse(items.isEmpty());
+        Assert.assertTrue(items.size() == 3);
+        // put items into map
+        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(resultMap);
+        // tag 3 should be removed
+        Assert.assertNotNull(resultMap.get(3L));
+        Assert.assertNotNull(resultMap.get(3L).getRemovedOn());
+        // tag 8 should be removed
+        Assert.assertNotNull(resultMap.get(8L));
+        Assert.assertNotNull(resultMap.get(8L).getRemovedOn());
+        // tags 4 should be there, not removed
+        Assert.assertNotNull(resultMap.get(4L));
+        Assert.assertNull(resultMap.get(4L).getRemovedOn());
+
+    }
+
+    @Test
+    public void testPerformItemOperation_RemoveAll() {
+        String username = "Eustace";
+        Long sourceListId = 99L;
+
+        Long userId = 9L;
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setEmail(username);
+
+        // 3 items, tagIds 3,4,8 - 3, 4 and 8 are crossed off
+        ShoppingListEntity sourceList = dummyShoppingList(sourceListId, userId);
+        List<TagType> tagTypeList = new ArrayList<>();
+        tagTypeList.add(TagType.Ingredient);
+        tagTypeList.add(TagType.NonEdible);
+
+        ArgumentCaptor<ShoppingListEntity> argument = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        // expectations
+        Mockito.when(userService.getUserByUserEmail(username))
+                .thenReturn(userEntity);
+        Mockito.when(shoppingListRepository.findById(sourceListId))
+                .thenReturn(Optional.of(sourceList));
+        Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(sourceListId))
+                .thenReturn(sourceList.getItems());
+
+        itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
+        Mockito.when(shoppingListRepository.save(argument.capture()))
+                .thenReturn(sourceList);
+
+        // call under test
+        shoppingListService.performItemOperation(username, sourceListId, ItemOperationType.RemoveAll, new ArrayList<>(), null);
+
+        // after remove, the list should contain only one item - id 4
+        // list is not null
+        ShoppingListEntity listResult = argument.getValue();
+        Assert.assertNotNull(listResult);
+        // list should contain 1 items - id 3
+        List<ItemEntity> items = listResult.getItems();
+        Assert.assertNotNull(items);
+        Assert.assertFalse(items.isEmpty());
+        Assert.assertTrue(items.size() == 3);
+        // put items into map
+        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(resultMap);
+        // tag 3 should be removed
+        Assert.assertNotNull(resultMap.get(3L));
+        Assert.assertNotNull(resultMap.get(3L).getRemovedOn());
+        // tag 8 should be removed
+        Assert.assertNotNull(resultMap.get(8L));
+        Assert.assertNotNull(resultMap.get(8L).getRemovedOn());
+        // tags 4 should be there, not removed
+        Assert.assertNotNull(resultMap.get(4L));
+        Assert.assertNotNull(resultMap.get(4L).getRemovedOn());
+
+    }
+
+    @Test
     public void testPerformItemOperation_Move() {
         String username = "Eustace";
         Long sourceListId = 99L;

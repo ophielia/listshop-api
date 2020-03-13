@@ -134,6 +134,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     public void performItemOperation(String userName, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId) {
+        // get source list
+        ShoppingListEntity sourceList = getListById(userName, sourceListId);
+
+        if (operationType.equals(ItemOperationType.RemoveCrossedOff) ||
+                operationType.equals(ItemOperationType.RemoveAll)) {
+            tagIds = getTagIdsForOperationType(operationType, sourceList);
+        }
+
         if (tagIds == null) {
             return;
         }
@@ -162,9 +170,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // if operation requires remove, remove from source
         if (operationType.equals(ItemOperationType.Move) ||
-                operationType.equals(ItemOperationType.Remove)) {
-            // get source list
-            ShoppingListEntity sourceList = getListById(userName, sourceListId);
+                operationType.equals(ItemOperationType.Remove) ||
+                operationType.equals(ItemOperationType.RemoveCrossedOff) ||
+                operationType.equals(ItemOperationType.RemoveAll)) {
+
 
             List<ItemEntity> items = sourceList.getItems();
             CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
@@ -174,6 +183,24 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             saveListChanges(sourceList, collector, context);
         }
 
+    }
+
+    private List<Long> getTagIdsForOperationType(ItemOperationType operationType, ShoppingListEntity sourceList) {
+        if (operationType.equals(ItemOperationType.RemoveCrossedOff)) {
+            return sourceList.getItems().stream()
+                    .filter(item -> item.getCrossedOff() != null)
+                    .map(ItemEntity::getTag)
+                    .filter(Objects::nonNull)
+                    .map(TagEntity::getId)
+                    .collect(Collectors.toList());
+        } else if (operationType.equals(ItemOperationType.RemoveAll)) {
+            return sourceList.getItems().stream()
+                    .map(ItemEntity::getTag)
+                    .filter(Objects::nonNull)
+                    .map(TagEntity::getId)
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
     }
 
     @Override

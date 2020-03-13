@@ -6,7 +6,9 @@ package com.meg.atable.lmt.api.model;
 public enum ItemOperationType {
     Move("Move"),
     Remove("Remove"),
-    Copy("Copy");
+    Copy("Copy"),
+    RemoveAll("RemoveAll"),
+    RemoveCrossedOff("RemoveCrossedOff");
 
     private final String display;
 

@@ -70,16 +70,16 @@ public class UserRestController implements UserRestControllerApi {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Reload password post-security so we can generate token
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(newUser.getEmail());
+        final UserEntity userDetails = userService.getUserByUserEmail(newUser.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails, device);
 
         // Return the token
-        return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+        return ResponseEntity.ok(new UserResource(userDetails, token));
     }
 
     public ResponseEntity<UserResource> getUser(Principal principal) {
         UserEntity user = this.userService.getUserByUserEmail(principal.getName());
-        UserResource userResource = new UserResource(user);
+        UserResource userResource = new UserResource(user, "");
 
         return new ResponseEntity(userResource, HttpStatus.OK);
     }

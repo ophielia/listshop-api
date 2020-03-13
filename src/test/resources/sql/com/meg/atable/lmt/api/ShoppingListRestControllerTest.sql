@@ -17,7 +17,9 @@ values (now() - interval '3 days', 11, 'General', 20, 7777, 'list operations - s
 -- copy from / to: destinationList
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
 values (now() - interval '3 days', 11, 'General', 20, 6666, 'list operations - source', false);
-
+-- copy from / to: sourceList
+insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
+values (now() - interval '3 days', 11, 'General', 20, 77777, 'list operations - source', false);
 
 -- test list for removing from lists
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
@@ -113,6 +115,18 @@ VALUES (7777, 501, 70770, '2019-07-12', null, null, 1, null, null);
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
 VALUES (7777, 502, 70771, '2019-07-12', null, null, 1, null, null);
+
+-- operation list items, source - three items- id 500,501,502
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (77777, 500, 770773, '2019-07-12', '2019-07-12', null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (77777, 501, 770770, '2019-07-12', null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (77777, 502, 770771, '2019-07-12', '2019-07-12', null, 1, null, null);
+
 
 -- operation list items, source - three items- id 500,501,502
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
