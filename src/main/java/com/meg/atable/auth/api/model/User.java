@@ -15,6 +15,8 @@ public class User {
     private String username;
 
     private String password;
+    private String[] roles ;
+    private String token;
 
     public User(String username, String email) {
         this.email = email;
@@ -46,6 +48,25 @@ public class User {
         this.creationDate = creationDate;
         return this;
     }
+
+    public User roles(String[] roles) {
+        this.roles = roles;
+        return this;
+    }
+
+    public String[] getRoles() {
+        return roles;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public User token(String token) {
+        this.token = token;
+        return this;
+    }
+
     public User email(String email) {
         this.email = email;
         return this;
