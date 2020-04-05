@@ -11,8 +11,8 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.meg.atable" level="debug" additivity="false">
-            <AppenderRef ref="ConsoleAppender" />
+        <Logger name="com.meg.listshop" level="debug" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
         </Logger>
 
         <Root level="info">
