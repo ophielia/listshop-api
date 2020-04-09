@@ -14,6 +14,8 @@ public class Dish {
 
     private String description;
 
+    private String reference;
+
     private List<Tag> tags = new ArrayList<>();
 
     private Long userId;
@@ -95,7 +97,16 @@ public class Dish {
     }
 
     public Dish lastAdded(Date date) {
-            this.lastAdded = date;
-            return this;
+        this.lastAdded = date;
+        return this;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public Dish reference(String reference) {
+        this.reference = reference;
+        return this;
     }
 }
