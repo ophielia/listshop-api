@@ -114,7 +114,7 @@ public class DishRestController implements DishRestControllerApi {
 
         dish.setDescription(input.getDescription());
         dish.setDishName(input.getDishName());
-
+        dish.setReference(input.getReference());
         dishService.save(dish, true);
 
         return ResponseEntity.noContent().build();

@@ -10,6 +10,7 @@ import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +31,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -151,17 +151,21 @@ public class DishRestControllerTest {
         DishEntity toUpdate = dishService.getDishForUserById(TestConstants.USER_3_NAME, TestConstants.DISH_1_ID);
         String updateName = "updated:" + toUpdate.getDishName();
         String updateDescription = "updated:" + (toUpdate.getDescription() == null ? "" : toUpdate.getDescription());
-        toUpdate.setDishName(updateName);
-        toUpdate.setDescription(updateDescription);
-        toUpdate.setUserId(TestConstants.USER_3_ID);
-        toUpdate.setTags(new ArrayList<>());
-        String dishJson = json(toUpdate);
+        Dish updateDish = new Dish(toUpdate.getUserId(), updateName);
+        updateDish.reference("reference");
+        updateDish.description(updateDescription);
+        String dishJson = json(updateDish);
 
         this.mockMvc.perform(put("/dish/" + toUpdate.getId())
                 .with(user(userDetails))
                 .contentType(contentType)
                 .content(dishJson))
                 .andExpect(status().is2xxSuccessful());
+
+        DishEntity result = dishService.getDishForUserById(TestConstants.USER_3_NAME, TestConstants.DISH_1_ID);
+        Assert.assertEquals(updateName, result.getDishName());
+        Assert.assertEquals(updateDescription, result.getDescription());
+        Assert.assertEquals("reference", result.getReference());
     }
 
     @Test
