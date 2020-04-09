@@ -391,6 +391,12 @@ public class ModelMapper {
 
         List<Category> categories = itemCategoriesToModel(itemCategories, dishSourceDictionary, listSourceDictionary);
 
+        long itemCount = 0;
+        if (shoppingListEntity.getItems() != null) {
+            itemCount = shoppingListEntity.getItems().stream()
+                    .filter(item -> item.getRemovedOn() == null)
+                    .count();
+        }
         return new ShoppingList(shoppingListEntity.getId())
                 .createdOn(shoppingListEntity.getCreatedOn())
                 .categories(categories)
@@ -400,7 +406,7 @@ public class ModelMapper {
                 .listSources(listSources)
                 .layoutId(String.valueOf(shoppingListEntity.getListLayoutId()))
                 .updated(shoppingListEntity.getLastUpdate())
-                .itemCount(shoppingListEntity.getItems() != null ? shoppingListEntity.getItems().size() : 0)
+                .itemCount((int) itemCount)
                 .userId(shoppingListEntity.getUserId());
 
     }
