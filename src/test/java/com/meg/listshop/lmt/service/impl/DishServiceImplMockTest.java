@@ -60,6 +60,7 @@ public class DishServiceImplMockTest {
         String testDishName = "test mock dish";
         DishEntity dish = new DishEntity();
         dish.setDishName(testDishName);
+        dish.setReference("reference");
         dish.setUserId(99L);
 
         ArgumentCaptor<DishEntity> argument = ArgumentCaptor.forClass(DishEntity.class);
@@ -75,7 +76,7 @@ public class DishServiceImplMockTest {
         DishEntity dishSaved = argument.getValue();
         Assert.assertEquals(testDishName, dishSaved.getDishName());
         Assert.assertEquals(Long.valueOf(99L), dishSaved.getUserId());
-
+        Assert.assertEquals("reference", dishSaved.getReference());
     }
 
     @Test
