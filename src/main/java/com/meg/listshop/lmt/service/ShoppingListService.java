@@ -30,8 +30,6 @@ public interface ShoppingListService {
 
     void performItemOperation(String userName, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId);
 
-    void addItemToList(String name, Long listId, ItemEntity itemEntity);
-
     void addItemToListByTag(String name, Long listId, Long tagId);
 
     void deleteItemFromList(String name, Long listId, Long itemId, Boolean removeEntireItem, Long dishSourceId);
