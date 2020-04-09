@@ -378,6 +378,74 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
+    public void testPerformItemOperation_RemoveMultipleCount() {
+        String username = "Eustace";
+        Long sourceListId = 99L;
+        List<Long> operationTagIds = Arrays.asList(4L, 5L, 8L);
+
+        Long userId = 9L;
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setEmail(username);
+
+        // 3 items, tagIds 3,4,8
+        ShoppingListEntity sourceList = dummyShoppingList(sourceListId, userId);
+        // make all items multiple counts
+        sourceList.getItems().forEach(item -> item.setUsedCount(5));
+
+        List<TagType> tagTypeList = new ArrayList<>();
+        tagTypeList.add(TagType.Ingredient);
+        tagTypeList.add(TagType.NonEdible);
+
+        ArgumentCaptor<ShoppingListEntity> argument = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        // expectations
+        Mockito.when(userService.getUserByUserEmail(username))
+                .thenReturn(userEntity);
+        Mockito.when(shoppingListRepository.findById(sourceListId))
+                .thenReturn(Optional.of(sourceList));
+        Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(sourceListId))
+                .thenReturn(sourceList.getItems());
+
+        itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
+        Mockito.when(shoppingListRepository.save(argument.capture()))
+                .thenReturn(sourceList);
+
+        // call under test
+        shoppingListService.performItemOperation(username, sourceListId, ItemOperationType.Remove, operationTagIds, null);
+
+        // after remove, the list should contain only one item - id 3
+        // list is not null
+        ShoppingListEntity listResult = argument.getValue();
+        Assert.assertNotNull(listResult);
+        // list should contain 1 non-removed item - id 3
+        List<ItemEntity> items = listResult.getItems();
+        Assert.assertNotNull(items);
+        Assert.assertFalse(items.isEmpty());
+        Assert.assertTrue(items.size() == 3);
+        // put items into map
+        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(resultMap);
+        // tag 3 should be there - with used count of 5
+        Assert.assertNotNull(resultMap.get(3L));
+        Assert.assertEquals(5, resultMap.get(3L).getUsedCount().longValue());
+        Assert.assertNull(resultMap.get(3L).getRemovedOn());
+        // tags 4 and 8 should be there, but removed
+        Assert.assertNotNull(resultMap.get(4L));
+        Assert.assertEquals(0, resultMap.get(4L).getUsedCount().longValue());
+        Assert.assertNotNull(resultMap.get(4L).getRemovedOn());
+        Assert.assertNotNull(resultMap.get(8L));
+        Assert.assertEquals(0, resultMap.get(8L).getUsedCount().longValue());
+        Assert.assertNotNull(resultMap.get(8L).getRemovedOn());
+
+        Long tagId = items.get(0).getTag().getId();
+        Assert.assertEquals(Long.valueOf(3L), Long.valueOf(tagId));
+
+    }
+
+    @Test
     public void testPerformItemOperation_RemoveCrossedOff() {
         String username = "Eustace";
         Long sourceListId = 99L;
