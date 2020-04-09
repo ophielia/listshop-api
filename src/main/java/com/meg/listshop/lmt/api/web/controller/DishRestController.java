@@ -90,17 +90,16 @@ public class DishRestController implements DishRestControllerApi {
     public ResponseEntity<Object> createDish(Principal principal, @RequestBody Dish input) {
         //MM Validation to be done here
         UserEntity user = userService.getUserByUserEmail(principal.getName());
-        DishEntity result = dishService.create(new DishEntity(user.getId(),
-                input.getDishName(),
-                input.getDescription()));
+        DishEntity inputDish = ModelMapper.toEntity(input);
+        DishEntity result = dishService.create(inputDish);
         List<Tag> tagInputs = input.getTags();
-        if (tagInputs !=null && !tagInputs.isEmpty()) {
+        if (tagInputs != null && !tagInputs.isEmpty()) {
             Set<Long> tagIds = tagInputs.stream()
                     .filter(t -> t.getId() != null)
                     .map(t -> new Long(t.getId()))
                     .collect(Collectors.toSet());
-            tagService.addTagsToDish(principal.getName(),result.getId(),tagIds);
-            result = dishService.getDishForUserById(principal.getName(),result.getId());
+            tagService.addTagsToDish(principal.getName(), result.getId(), tagIds);
+            result = dishService.getDishForUserById(principal.getName(), result.getId());
         }
         Link forOneDish = new DishResource(result).getLink("self");
         return ResponseEntity.created(URI.create(forOneDish.getHref())).build();

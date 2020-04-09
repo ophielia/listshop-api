@@ -108,11 +108,19 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public DishEntity create(DishEntity dish) {
+    public DishEntity create(DishEntity createDish) {
         // check name before saving
-        String name = ensureDishNameIsUnique(dish.getUserId(), dish.getDishName());
-        dish.setDishName(name);
-        return dishRepository.save(dish);
+        String name = ensureDishNameIsUnique(createDish.getUserId(), createDish.getDishName());
+        createDish.setDishName(name);
+
+        // copy creation fields into new DishEntity, since createDish came straight
+        // from user input and may be tainted
+        DishEntity newDish = new DishEntity(createDish.getUserId(),
+                createDish.getDishName(),
+                createDish.getDescription());
+        newDish.setReference(createDish.getReference());
+
+        return dishRepository.save(newDish);
     }
 
     private String ensureDishNameIsUnique(Long userId, String dishName) {
