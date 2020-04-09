@@ -109,52 +109,6 @@ public class ShoppingListServiceImplTest {
     }
 
     @Test
-    public void testAddItemToList() {
-        // make item (unsaved)
-        ItemEntity itemEntity = new ItemEntity();
-        TagEntity tagEntity = new TagEntity();
-        tagEntity.setId(tag1.getId());
-        itemEntity.setTag(tagEntity);
-
-        // add to baseList
-        shoppingListService.addItemToList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, itemEntity);
-
-        // retrieve baselist
-        ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
-
-        // ensure item is there
-        Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getItems());
-        Assert.assertTrue(result.getItems().size() > 0);
-
-        boolean newTagExists = false;
-        for (ItemEntity item : result.getItems()) {
-            if (item.getTag().getId().equals(tag1.getId())) {
-                newTagExists = true;
-            }
-        }
-        Assert.assertTrue(newTagExists);
-
-        // add existing item
-        // get initial item count
-        int initialCount = result.getItems().size();
-        TagEntity tagEntity1 = new TagEntity();
-        tagEntity1.setId(cheddarTag.getId());
-        itemEntity.setTag(tagEntity1);
-        shoppingListService.addItemToList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, itemEntity);
-
-        // retrieve baselist
-        result = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
-        Assert.assertEquals(initialCount, result.getItems().size());
-
-        for (ItemEntity item : result.getItems()) {
-            if (item.getTag().getId().equals(cheddarTag.getId())) {
-                Assert.assertEquals(2L, item.getUsedCount().longValue());
-            }
-        }
-    }
-
-    @Test
     public void testGenerateListFromMealPlan() {
         ShoppingListEntity result = shoppingListService.generateListFromMealPlan(userAccount.getEmail(), TestConstants.MEAL_PLAN_1_ID);
         Assert.assertNotNull(result);

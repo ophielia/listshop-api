@@ -54,9 +54,6 @@ public interface ShoppingListRestControllerApi {
     @DeleteMapping(value = "/{listId}", produces = "application/json")
     ResponseEntity<ShoppingList> deleteList(Principal principal, @PathVariable("listId") Long listId);
 
-    @PostMapping(value = "/{listId}/item", produces = "application/json")
-    ResponseEntity<Object> addItemToList(Principal principal, @PathVariable Long listId, @RequestBody Item input);
-
     @PostMapping(value = "/{listId}/tag/{tagId}", produces = "application/json")
     ResponseEntity<Object> addItemToListByTag(Principal principal, @PathVariable Long listId, @PathVariable Long tagId);
 

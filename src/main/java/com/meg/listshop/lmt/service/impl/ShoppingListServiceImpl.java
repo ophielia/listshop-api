@@ -370,34 +370,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return false;
     }
 
-    @Override
-    public void addItemToList(String name, Long listId, ItemEntity itemEntity) {
-        ShoppingListEntity shoppingListEntity = getListById(name, listId);
-        if (shoppingListEntity == null) {
-            return;
-        }
-
-        List<ItemEntity> items = shoppingListEntity.getItems();
-        ListItemCollector collector = createListItemCollector(listId, items);
-        // fill in tag, if item contains tag
-        TagEntity tag = null;
-        if (itemEntity.getTagId() != null) {
-            tag = tagService.getTagById(itemEntity.getTagId());
-            itemEntity.setTag(tag);
-        }
-        if (tag == null && itemEntity.getTag().getId() != null) {
-            tag = tagService.getTagById(itemEntity.getTag().getId());
-            itemEntity.setTag(tag);
-        }
-        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
-                .withStatisticCountType(StatisticCountType.Single)
-                .withListId(listId)
-                .build();
-        collector.addItem(itemEntity, context);
-
-        saveListChanges(shoppingListEntity, collector, context);
-    }
-
     public void addItemToListByTag(String name, Long listId, Long tagId) {
         ShoppingListEntity shoppingListEntity = getListById(name, listId);
         if (shoppingListEntity == null) {
