@@ -572,15 +572,20 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         });
 
         // split out items into special categories
-        Map<CategoryType, ItemCategory> specialCategories = generateSpecialCategories(userName,shoppingListEntity,
+        Map<CategoryType, ItemCategory> specialCategories = generateSpecialCategories(userName, shoppingListEntity,
                 filledCategories,
                 dictionary,
                 highlightDishId,
                 showPantry,
                 highlightListId);
 
+        // add frequent and uncategorized
+        addCategoryIfNotEmpty(filledCategories, specialCategories.get(CategoryType.Frequent));
+        addCategoryIfNotEmpty(filledCategories, specialCategories.get(CategoryType.UnCategorized));
+        addCategoryIfNotEmpty(filledCategories, specialCategories.get(CategoryType.Highlight));
+        addCategoryIfNotEmpty(filledCategories, specialCategories.get(CategoryType.HighlightList));
 
-        // sort items in filled categories
+        // sort items in filled categories - content sort
         for (Map.Entry entry : filledCategories.entrySet()) {
             ((ItemCategory) entry.getValue()).sortItems();
         }
@@ -588,13 +593,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // structure categories
         listLayoutService.structureCategories(filledCategories, shoppingListEntity.getListLayoutId(), true);
 
-        // add frequent and uncategorized
-        addCategoryIfNotEmpty(filledCategories,specialCategories.get(CategoryType.Frequent));
-        addCategoryIfNotEmpty(filledCategories,specialCategories.get(CategoryType.UnCategorized));
-        addCategoryIfNotEmpty(filledCategories,specialCategories.get(CategoryType.Highlight));
-        addCategoryIfNotEmpty(filledCategories,specialCategories.get(CategoryType.HighlightList));
-
-        // prune and sort categories
+        // prune and sort categories - sorts the categories themselves, not the contents
         return cleanUpResults(filledCategories);
     }
 

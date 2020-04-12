@@ -394,7 +394,7 @@ public class ModelMapper {
         long itemCount = 0;
         if (shoppingListEntity.getItems() != null) {
             itemCount = shoppingListEntity.getItems().stream()
-                    .filter(item -> item.getRemovedOn() == null)
+                    .filter(item -> item.getRemovedOn() == null && item.getCrossedOff() == null)
                     .count();
         }
         return new ShoppingList(shoppingListEntity.getId())

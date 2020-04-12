@@ -208,15 +208,6 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<Object> addItemToList(Principal principal, @PathVariable Long listId, @RequestBody Item input) {
-        ItemEntity itemEntity = ModelMapper.toEntity(input);
-
-        this.shoppingListService.addItemToList(principal.getName(), listId, itemEntity);
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @Override
     public ResponseEntity<Object> updateItemCountByTag(Principal principal, @PathVariable Long listId,
                                                        @PathVariable Long tagId,
                                                        @PathVariable Integer usedCount
