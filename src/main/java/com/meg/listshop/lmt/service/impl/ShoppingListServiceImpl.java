@@ -177,6 +177,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
             List<ItemEntity> items = sourceList.getItems();
             CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
+                    .withRemoveEntireItem(true)
                     .withStatisticCountType(StatisticCountType.Single).build();
             ListItemCollector collector = createListItemCollector(sourceListId, items);
             collector.removeItemsByTagIds(tagIds, context);
