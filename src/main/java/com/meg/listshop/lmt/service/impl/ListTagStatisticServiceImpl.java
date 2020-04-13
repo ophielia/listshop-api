@@ -66,9 +66,9 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
         collector.getCollectedTagItems().stream()
                 .filter(CollectedItem::isChanged)
                 .forEach(item -> {
-                    if (item.isAdded()) {
+                    if (item.isAdded() || item.isCountAdded()) {
                         addedIds.add(item.getTagId());
-                    } else if (item.isRemoved() && item.getCrossedOff() == null) {
+                    } else if ((item.isRemoved() || item.isCountDecreased()) && item.getCrossedOff() == null) {
                         removedIds.add(item.getTagId());
                     }
                 });

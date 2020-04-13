@@ -267,29 +267,27 @@ INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id)
 
 
 with find_tags as (
-  select regexp_split_to_table(search_terms, E'\;') as to_find
-  from auto_tag_instructions
-  where instruction_id = 3)
+    select regexp_split_to_table(search_terms, E'\;') as to_find
+    from auto_tag_instructions
+    where instruction_id = 3)
 select *
 from find_tags f
-       join tag t on t.tag_id = cast(f.to_find as bigint);
+         join tag t on t.tag_id = cast(f.to_find as bigint);
 
 select regexp_split_to_table(search_terms, E'\;'), a.*
 from auto_tag_instructions a;
 
+----- reset statistics
 
-1. backup dishdev
-2. copy dishsnap to dishdev
-3. move migrate scripts to dev
-4. mvn flyway:migrate
-5. fire up
-6. merge merge_tags => develop
-7. merge develop => master
-8. checkout master
-9. mvn flyway:migrate dishsnap
-
-
-
+delete
+from list_tag_stats
+where tag_id in (
+    select t.tag_id
+    from calculated_stats s
+             join tag t using (tag_id)
+    where user_id = 20
+      and factored_frequency > 1)
+  and user_id = 20;
 
 
 

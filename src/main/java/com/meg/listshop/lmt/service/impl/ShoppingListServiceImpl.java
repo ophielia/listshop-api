@@ -161,7 +161,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
                     .withListId(sourceListId)
                     .withRemoveEntireItem(true)
-                    .withStatisticCountType(StatisticCountType.None)
+                    .withStatisticCountType(StatisticCountType.Single)
                     .build();
             ListItemCollector collector = createListItemCollector(destinationListId, items);
             collector.addTags(tagList, context);
