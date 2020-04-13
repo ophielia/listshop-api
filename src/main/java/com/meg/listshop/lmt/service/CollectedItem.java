@@ -31,6 +31,7 @@ public class CollectedItem {
 
     public CollectedItem(ItemEntity itemEntity) {
         item = itemEntity;
+        isRemoved = item.getRemovedOn() != null;
     }
     
     //** Item Accessors **/
@@ -408,6 +409,9 @@ public class CollectedItem {
         if (isRemoved()) {
             setRemoved(false);
             setUpdated(true);
+            item.setRawDishSources(null);
+            item.setRawListSources(null);
+            setUsedCount(0);
         }
 
     }

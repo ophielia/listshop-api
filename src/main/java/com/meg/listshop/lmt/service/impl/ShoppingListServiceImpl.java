@@ -516,7 +516,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // create the collector
         ListItemCollector collector = createListItemCollector(shoppingList.getId(), shoppingList.getItems());
 
-
         // add all tags for meal plan
         List<TagType> tagTypeList = new ArrayList<>();
         tagTypeList.add(TagType.Ingredient);
