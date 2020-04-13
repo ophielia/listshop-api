@@ -13,7 +13,8 @@ import com.meg.listshop.lmt.service.ListLayoutProperties;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.lmt.service.ShoppingListProperties;
 import com.meg.listshop.lmt.service.tag.TagService;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -478,7 +479,7 @@ Long relationshipId = getCategoryRelationForCategory(category);
             }
             ListLayoutCategoryEntity category = categoryLookup.get(itemToCategoryLookup.get(itemEntity.getId()));
 
-            Pair<ItemEntity, ListLayoutCategoryEntity> pair = new Pair<>(itemEntity, category);
+            Pair<ItemEntity, ListLayoutCategoryEntity> pair = new ImmutablePair<>(itemEntity, category);
             results.add(pair);
         }
         return results;
@@ -536,7 +537,7 @@ Long relationshipId = getCategoryRelationForCategory(category);
                 continue;
             }
             ListLayoutCategoryEntity category = categoryLookup.get(tagToCategoryIdLookup.get(tag.getId()));
-            Pair<TagEntity, ListLayoutCategoryEntity> pair = new Pair<>(tag, category);
+            Pair<TagEntity, ListLayoutCategoryEntity> pair = new ImmutablePair<>(tag, category);
             results.add(pair);
         }
         return results;
