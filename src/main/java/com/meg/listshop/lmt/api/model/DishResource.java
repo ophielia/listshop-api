@@ -6,6 +6,7 @@ import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import org.springframework.hateoas.ResourceSupport;
 
+import java.security.Principal;
 import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -15,15 +16,15 @@ public class DishResource extends ResourceSupport {
 
     private final Dish dish;
 
-    public DishResource(DishEntity dishEntity) {
+    public DishResource(Principal principal, DishEntity dishEntity) {
         this.dish = ModelMapper.toModel(dishEntity);
 
         Long userId = dishEntity.getUserId();
         this.add(linkTo(DishRestControllerApi.class, userId).withRel("dish"));
         this.add(linkTo(methodOn(DishRestControllerApi.class, userId)
-          .readDish( null,dish.getId())).withSelfRel());
+                .readDish(principal, dish.getId())).withSelfRel());
         this.add(linkTo(methodOn(DishRestControllerApi.class, userId)
-                .getTagsByDishId(null,dish.getId())).withRel("tags"));
+                .getTagsByDishId(principal, dish.getId())).withRel("tags"));
     }
 
     public DishResource(DishEntity dishEntity, List<TagEntity> tags) {

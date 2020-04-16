@@ -76,13 +76,13 @@ public class DishRestController implements DishRestControllerApi {
             criteria.setExcludedTagIds(tagIdList);
         }
         return dishSearchService.findDishes(criteria)
-                .stream().map(DishResource::new)
+                .stream().map(d -> new DishResource(principal, d))
                 .collect(Collectors.toList());
     }
 
     private List<DishResource> getAllDishes(Principal principal) {
         return dishService.getDishesForUserName(principal.getName())
-                .stream().map(DishResource::new)
+                .stream().map(d -> new DishResource(principal, d))
                 .collect(Collectors.toList());
 
     }
@@ -91,6 +91,7 @@ public class DishRestController implements DishRestControllerApi {
         //MM Validation to be done here
         UserEntity user = userService.getUserByUserEmail(principal.getName());
         DishEntity inputDish = ModelMapper.toEntity(input);
+        inputDish.setUserId(user.getId());
         DishEntity result = dishService.create(inputDish);
         List<Tag> tagInputs = input.getTags();
         if (tagInputs != null && !tagInputs.isEmpty()) {
@@ -101,7 +102,7 @@ public class DishRestController implements DishRestControllerApi {
             tagService.addTagsToDish(principal.getName(), result.getId(), tagIds);
             result = dishService.getDishForUserById(principal.getName(), result.getId());
         }
-        Link forOneDish = new DishResource(result).getLink("self");
+        Link forOneDish = new DishResource(principal, result).getLink("self");
         return ResponseEntity.created(URI.create(forOneDish.getHref())).build();
     }
 

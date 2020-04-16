@@ -2,7 +2,10 @@ package com.meg.listshop.lmt.api;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.impl.JwtUser;
-import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.api.model.ItemOperationPut;
+import com.meg.listshop.lmt.api.model.ItemOperationType;
+import com.meg.listshop.lmt.api.model.ListGenerateProperties;
+import com.meg.listshop.lmt.api.model.ShoppingListPut;
 import com.meg.listshop.lmt.data.entity.ItemEntity;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
@@ -281,24 +284,6 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
 
     }
-
-    @Test
-    @WithMockUser
-    public void testAddItemToList() throws Exception {
-        String url = "/shoppinglist/" + TestConstants.LIST_1_ID
-                + "/item";
-
-        Item item = new Item()
-                .tagId(String.valueOf(TestConstants.TAG_CARROTS));
-
-        String itemJson = json(item);
-        this.mockMvc.perform(post(url)
-                .with(user(userDetails))
-                .contentType(contentType)
-                .content(itemJson))
-                .andExpect(status().isNoContent());
-    }
-
 
     @Test
     @WithMockUser
