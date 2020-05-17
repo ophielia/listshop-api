@@ -47,11 +47,11 @@ public class TagChangeToCategoryListener implements TagChangeListener {
         }
 
         // if the original parent was not the default, return
-        if (origParentTag == null) {
+        if (origParentTag == null || origParentTag.getTagTypeDefault() == null) {
             return;
         }
-        boolean origTagDefault = origParentTag.getTagTypeDefault();
-        if (!origTagDefault) {
+
+        if (!origParentTag.getTagTypeDefault()) {
             return;
         }
 
