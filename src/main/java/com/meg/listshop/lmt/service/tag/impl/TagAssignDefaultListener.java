@@ -48,7 +48,7 @@ public class TagAssignDefaultListener implements TagChangeListener {
     }
 
     @Override
-    public void onTagAdd(TagEntity newTag) {
+    public void onTagAdd(TagEntity newTag, TagEntity parentTag) {
         listLayoutService.assignTagToDefaultCategories(newTag);
     }
 

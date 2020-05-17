@@ -16,6 +16,7 @@ import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +32,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -160,6 +162,25 @@ public class ListLayoutRestControllerTest {
                 .with(user(userDetails)))
                 .andExpect(status().isNoContent());
 
+
+    }
+
+    @Test
+    @WithMockUser
+    public void getTagForCategory() throws Exception {
+        String listLayoutId = "5";
+        String tagId = "89";
+
+
+        MvcResult result = mockMvc.perform(get("/listlayout/"
+                + listLayoutId + "/tag/"
+                + tagId + "/category"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assert.assertNotNull(result);
+        String content = result.getResponse().getContentAsString();
+        Assert.assertTrue(content.contains("category_id\":5"));
 
     }
 

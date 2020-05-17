@@ -133,7 +133,7 @@ public class StandardTagChangeListener implements TagChangeListener {
     }
 
     @Override
-    public void onTagAdd(TagEntity newTag) {
+    public void onTagAdd(TagEntity newTag, TagEntity parentTag) {
         // not used in this implementation
     }
 

@@ -254,7 +254,7 @@ public class TagServiceImpl implements TagService {
         tagStructureService.createRelation(parentTag, saved);
 
 
-        fireTagAddedEvent(saved);
+        fireTagAddedEvent(parentTag, saved);
         return newtag;
     }
 
@@ -561,9 +561,9 @@ public class TagServiceImpl implements TagService {
         }
     }
 
-    private void fireTagAddedEvent(TagEntity changed) {
+    private void fireTagAddedEvent(TagEntity parentTag, TagEntity changed) {
         for (TagChangeListener listener : listeners) {
-            listener.onTagAdd(changed);
+            listener.onTagAdd(changed, parentTag);
         }
     }
 

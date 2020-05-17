@@ -59,8 +59,11 @@ public interface ListLayoutRestControllerApi {
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listLayoutId}/category/{layoutCategoryId}/tag", produces = "application/json")
     ResponseEntity<Object> deleteTagsFromCategory(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId, @RequestParam(value = "tags", required = true) String commaSeparatedIds);
 
+    @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}/tag/{tagId}/category", produces = "application/json")
+    ResponseEntity<Object> getCategoryForTag(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long tagId);
+
     @RequestMapping(method = RequestMethod.POST, value = "/category/{layoutCategoryId}/parent/{parentCategoryId}", produces = "application/json")
-    ResponseEntity<Object> addSubcategoryToCategory(Principal principal,  @PathVariable Long layoutCategoryId,
+    ResponseEntity<Object> addSubcategoryToCategory(Principal principal, @PathVariable Long layoutCategoryId,
                                                     @PathVariable Long parentCategoryId);
 
     @RequestMapping(method = RequestMethod.POST, value = "/category/{categoryId}", produces = "application/json")

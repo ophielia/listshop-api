@@ -170,13 +170,26 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
     }
 
+    //    @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}/tag/{tagId}/category", produces = "application/json")
+    public ResponseEntity<Object> getCategoryForTag(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long tagId) {
+        ListLayoutCategoryEntity layoutCategory = this.listLayoutService
+                .getLayoutCategoryForTag(listLayoutId, tagId);
+        if (layoutCategory == null) {
+            return ResponseEntity.notFound().build();
+        }
+        CategoryResource result = new CategoryResource(layoutCategory);
+        return new ResponseEntity(result, HttpStatus.OK);
+
+    }
+
+
     //@RequestMapping(method = RequestMethod.POST, value = "/category/{layoutCategoryId}/parent/{parentCategoryId}", produces = "application/json")
     public ResponseEntity<Object> addSubcategoryToCategory(Principal principal, @PathVariable Long layoutCategoryId,
                                                            @PathVariable Long parentCategoryId) {
         try {
             this.listLayoutService.addCategoryToParent(layoutCategoryId, parentCategoryId);
         } catch (ListLayoutException e) {
-            logger.error("Unable to add Category [" + layoutCategoryId + "] to Parent [" + parentCategoryId + "].",e);
+            logger.error("Unable to add Category [" + layoutCategoryId + "] to Parent [" + parentCategoryId + "].", e);
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.noContent().build();

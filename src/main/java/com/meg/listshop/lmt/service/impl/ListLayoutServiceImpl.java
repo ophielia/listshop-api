@@ -8,10 +8,7 @@ import com.meg.listshop.lmt.data.repository.CategoryRelationRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.ListLayoutException;
-import com.meg.listshop.lmt.service.ListLayoutProperties;
-import com.meg.listshop.lmt.service.ListLayoutService;
-import com.meg.listshop.lmt.service.ShoppingListProperties;
+import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -36,6 +33,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     private TagRepository tagRepository;
     private TagService tagService;
     private ShoppingListProperties shoppingListProperties;
+    private final ListSearchService listSearchService;
 
     @Autowired
     public ListLayoutServiceImpl(ListLayoutCategoryRepository listLayoutCategoryRepository,
@@ -44,7 +42,8 @@ public class ListLayoutServiceImpl implements ListLayoutService {
                                  ListLayoutRepository listLayoutRepository,
                                  TagRepository tagRepository,
                                  TagService tagService,
-                                 ShoppingListProperties shoppingListProperties) {
+                                 ShoppingListProperties shoppingListProperties,
+                                 ListSearchService listSearchService) {
         this.listLayoutCategoryRepository = listLayoutCategoryRepository;
         this.listLayoutProperties = listLayoutProperties;
         this.categoryRelationRepository = categoryRelationRepository;
@@ -52,6 +51,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         this.tagRepository = tagRepository;
         this.tagService = tagService;
         this.shoppingListProperties = shoppingListProperties;
+        this.listSearchService = listSearchService;
     }
 
     @Override
@@ -501,6 +501,21 @@ Long relationshipId = getCategoryRelationForCategory(category);
 
         tagService.save(tagToUpdate);
         listLayoutCategoryRepository.saveAll(defaultCategories);
+
+    }
+
+    @Override
+    public ListLayoutCategoryEntity getLayoutCategoryForTag(Long listLayoutId, Long tagId) {
+        TagEntity tagEntity = tagService.getTagById(tagId);
+        List<TagEntity> tagList = Collections.singletonList(tagEntity);
+
+        Map<Long, Long> dictionary = listSearchService.getTagToCategoryMap(listLayoutId, tagList);
+        if (!dictionary.containsKey(tagId)) {
+            return null;
+        }
+
+        Long categoryId = dictionary.get(tagId);
+        return listLayoutCategoryRepository.getOne(categoryId);
 
     }
 

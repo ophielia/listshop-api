@@ -23,6 +23,7 @@ public class ModelMapper {
             return new Dish(dishEntity.getId())
                     .description(dishEntity.getDescription())
                     .dishName(dishEntity.getDishName())
+                    .reference(dishEntity.getReference())
                     .tags(tags)
                     .lastAdded(dishEntity.getLastAdded())
                     .userId(dishEntity.getUserId());

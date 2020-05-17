@@ -63,4 +63,6 @@ public interface ListLayoutService {
     List<Pair<ItemEntity, ListLayoutCategoryEntity>> getItemChangesWithCategories(Long listLayoutId, List<ItemEntity> changedItems);
 
     void assignTagToDefaultCategories(TagEntity newtag);
+
+    ListLayoutCategoryEntity getLayoutCategoryForTag(Long listLayoutId, Long tagId);
 }

@@ -50,7 +50,7 @@ public class TagChangeCacheListener implements TagChangeListener {
     }
 
     @Override
-    public void onTagAdd(TagEntity newTag) {
+    public void onTagAdd(TagEntity newTag, TagEntity parentTag) {
         removeCacheForTag(newTag);
     }
 

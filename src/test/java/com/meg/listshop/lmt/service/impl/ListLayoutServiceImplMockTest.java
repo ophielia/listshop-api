@@ -8,6 +8,7 @@ import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.ListLayoutProperties;
+import com.meg.listshop.lmt.service.ListSearchService;
 import com.meg.listshop.lmt.service.ShoppingListProperties;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.junit.Before;
@@ -51,10 +52,13 @@ public class ListLayoutServiceImplMockTest {
     @MockBean
     private ShoppingListProperties shoppingListProperties;
 
+    @MockBean
+    private ListSearchService listSearchService;
+
     @Before
     public void setUp() {
         listLayoutService = new ListLayoutServiceImpl(listLayoutCategoryRepository, listLayoutProperties, categoryRelationRepository, listLayoutRepository,
-                tagRepository, tagService, shoppingListProperties);
+                tagRepository, tagService, shoppingListProperties, listSearchService);
     }
 
 

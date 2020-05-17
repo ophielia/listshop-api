@@ -60,7 +60,7 @@ public class RatingTagChangeListener implements TagChangeListener {
     }
 
     @Override
-    public void onTagAdd(TagEntity newTag) {
+    public void onTagAdd(TagEntity newTag, TagEntity parentTag) {
         // not used in this implementation
     }
 
@@ -81,13 +81,10 @@ public class RatingTagChangeListener implements TagChangeListener {
         List<Long> existingGroupIds = tagStructureService.getSearchGroupIdsByMember(tagEntity.getId());
 
         // get eligible groups - all siblings with power less than current tag
-        List<Long> eligibleGroupIds = new ArrayList<>();
-        if (siblingGroups != null) {
-            siblingGroups.stream()
-                    .filter(t -> t.getPower() != null && t.getPower() < tagEntity.getPower())
-                    .map(TagEntity::getId)
-                    .collect(Collectors.toList());
-        }
+        List<Long> eligibleGroupIds = siblingGroups.stream()
+                .filter(t -> t.getPower() != null && t.getPower() < tagEntity.getPower())
+                .map(TagEntity::getId)
+                .collect(Collectors.toList());
 
         adjustGroups(tagEntity, existingGroupIds, eligibleGroupIds);
 
@@ -107,7 +104,7 @@ public class RatingTagChangeListener implements TagChangeListener {
     }
 
     private void adjustGroups(TagEntity tag, List<Long> existingGroupIds, List<Long> eligibleGroupIds) {
-        List<Long> toDelete = new ArrayList<>();
+
         List<Long> toAdd = new ArrayList<>();
         // go through eligible groups, seeing what exists, and what doesn't
         for (Long eligible : eligibleGroupIds) {
@@ -120,7 +117,7 @@ public class RatingTagChangeListener implements TagChangeListener {
                 toAdd.add(eligible);
             }
         }
-        toDelete.addAll(existingGroupIds);
+        List<Long> toDelete = new ArrayList<>(existingGroupIds);
         if (!toAdd.isEmpty()) {
             tagStructureService.createGroupsForMember(tag.getId(), toAdd);
         }
@@ -130,7 +127,7 @@ public class RatingTagChangeListener implements TagChangeListener {
     }
 
     private void adjustMembers(TagEntity tag, List<Long> existingMemberIds, List<Long> eligibleMemberIds) {
-        List<Long> toDelete = new ArrayList<>();
+
         List<Long> toAdd = new ArrayList<>();
         // go through eligible groups, seeing what exists, and what doesn't
         for (Long eligible : eligibleMemberIds) {
@@ -143,7 +140,7 @@ public class RatingTagChangeListener implements TagChangeListener {
                 toAdd.add(eligible);
             }
         }
-        toDelete.addAll(existingMemberIds);
+        List<Long> toDelete = new ArrayList<>(existingMemberIds);
         if (!toAdd.isEmpty()) {
             tagStructureService.createMembersForGroup(tag.getId(), toAdd);
         }

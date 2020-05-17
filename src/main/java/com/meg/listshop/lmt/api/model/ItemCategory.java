@@ -21,6 +21,7 @@ public class ItemCategory extends AbstractCategory {
 
     private String categoryType;
 
+
     @JsonIgnore
     List<ItemEntity> itemEntities = new ArrayList<>();
 
@@ -69,6 +70,13 @@ public class ItemCategory extends AbstractCategory {
 
     public void setCategoryType(String categoryType) {
         this.categoryType = categoryType;
+    }
+
+    @JsonProperty("tags")
+    public List<String> getTags() {
+        // client requires tags - empty in this implementation
+        return new ArrayList<>();
+
     }
 
     @Override

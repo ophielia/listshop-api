@@ -50,7 +50,7 @@ public class TagChangeToCategoryListener implements TagChangeListener {
         if (origParentTag == null) {
             return;
         }
-        boolean origTagDefault = (origParentTag.getTagTypeDefault() == null) ? false : origParentTag.getTagTypeDefault();
+        boolean origTagDefault = origParentTag.getTagTypeDefault();
         if (!origTagDefault) {
             return;
         }
@@ -58,7 +58,29 @@ public class TagChangeToCategoryListener implements TagChangeListener {
         // we know that this tag is being assigned out of the default
         // we'll look for siblings in the new parent, then assign the first category we find there
         // to this tag for every available list layout
+        assignFromSibling(newParentTag, childTag);
 
+
+    }
+
+
+    @Override
+    public void onTagUpdate(TagEntity beforeChange, TagEntity updatedTag) {
+        // no implentation for this listener
+    }
+
+    @Override
+    public void onTagAdd(TagEntity newTag, TagEntity parentTag) {
+        assignFromSibling(parentTag, newTag);
+    }
+
+    @Override
+    public void onTagDelete(TagEntity deletedTag) {
+// not used in this implementation
+    }
+
+
+    private void assignFromSibling(TagEntity newParentTag, TagEntity childTag) {
         // get sibling
         List<TagEntity> siblings = tagStructureService.getDescendantTags(newParentTag, false);
         if (siblings == null) {
@@ -80,21 +102,5 @@ public class TagChangeToCategoryListener implements TagChangeListener {
             // assign childTag to this layout
             listLayoutService.addTagsToCategory(tagCategory.getLayoutId(), tagCategory.getId(), toAdd);
         }
-
-    }
-
-    @Override
-    public void onTagUpdate(TagEntity beforeChange, TagEntity updatedTag) {
-        // no implentation for this listener
-    }
-
-    @Override
-    public void onTagAdd(TagEntity newTag) {
-        // not used in this implementation
-    }
-
-    @Override
-    public void onTagDelete(TagEntity deletedTag) {
-// not used in this implementation
     }
 }

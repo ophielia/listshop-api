@@ -11,7 +11,7 @@ public interface TagChangeListener {
 
     void onTagUpdate(TagEntity beforeChange, TagEntity changed);
 
-    void onTagAdd(TagEntity newTag);
+    void onTagAdd(TagEntity newTag, TagEntity parentTag);
 
     void onTagDelete(TagEntity deletedTag);
 }
