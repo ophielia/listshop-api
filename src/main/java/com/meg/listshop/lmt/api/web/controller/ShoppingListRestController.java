@@ -94,7 +94,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             if (layoutId != null && !layoutId.equals(shoppingList.getListLayoutId())) {
                 shoppingList.setListLayoutId(layoutId);
             }
-            List<Category> categories = shoppingListService.categorizeList(principal.getName(), shoppingList, null, false, null);
+            List<Category> categories = shoppingListService.categorizeList(shoppingList);
             shoppingListService.fillSources(shoppingList);
             MergeResultResource resource = new MergeResultResource(mergeResult, shoppingList, categories);
 
@@ -106,7 +106,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId,
-                                                                          @RequestParam(value = "after", required = true)
+                                                                          @RequestParam(value = "after")
                                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date changedAfter) {
         String message = String.format("Refreshing list ites for user [%S]", principal.getName());
         logger.info(message);
@@ -164,7 +164,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         if (result == null) {
             throw new ObjectNotFoundException("No lists found for user [" + principal.getName() + "] in retrieveMostRecentList()");
         }
-        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, null, false, null);
+        List<Category> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
@@ -174,25 +174,16 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         if (result == null) {
             throw new ObjectNotFoundException("No lists found for user [" + principal.getName() + "] in retrieveStarterList()");
         }
-        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, null, false, null);
+        List<Category> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
 
     @Override
-    public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId,
-                                                                 @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
-                                                                 @RequestParam(value = "highlightListId", required = false, defaultValue = "0") Long highlightListId,
-                                                                 @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry) {
+    public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId) {
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
-        if (highlightListId == 0) {
-            highlightListId = null;
-        }
-        if (highlightDish == 0) {
-            highlightDish = null;
-        }
 
-        List<Category> categories = shoppingListService.categorizeList(principal.getName(), result, highlightDish, showPantry, highlightListId);
+        List<Category> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
@@ -212,7 +203,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
                                                        @PathVariable Long tagId,
                                                        @PathVariable Integer usedCount
     ) {
-        logger.info("Update count for tag [%d] to [%d] in list [%d]", tagId, usedCount, listId);
+        final String message = String.format("Update count for tag [%d] to [%d] in list [%d]", tagId, usedCount, listId);
+        logger.info(message);
         this.shoppingListService.updateItemCount(principal.getName(), listId, tagId, usedCount);
         return ResponseEntity.noContent().build();
     }

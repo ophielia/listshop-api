@@ -45,10 +45,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<ShoppingListResource> retrieveStarterList(Principal principal);
 
     @GetMapping(value = "/{listId}", produces = "application/json")
-    ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId,
-                                                          @RequestParam(value = "highlightDish", required = false, defaultValue = "0") Long highlightDish,
-                                                          @RequestParam(value = "highlightListId", required = false, defaultValue = "0") Long highlightListId,
-                                                          @RequestParam(value = "showPantry", required = false, defaultValue = "false") Boolean showPantry);
+    ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId);
 
 
     @DeleteMapping(value = "/{listId}", produces = "application/json")

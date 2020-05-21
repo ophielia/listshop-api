@@ -125,7 +125,7 @@ public class ShoppingListServiceImplTest {
     public void testCategorizeList() {
         ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID);
 
-        List<Category> categoryEntities = shoppingListService.categorizeList(userAccount.getEmail(), result, null, false, null);
+        List<Category> categoryEntities = shoppingListService.categorizeList(result);
         Assert.assertNotNull(categoryEntities);
 
         // count items and subcategories
@@ -273,26 +273,7 @@ public class ShoppingListServiceImplTest {
         Assert.assertNotEquals(origLayout, check.getListLayoutId());
     }
 
-    @Test
-    public void testHighlightDish() throws ShoppingListException {
 
-        shoppingListService.addDishToList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, 110L);
-        ShoppingListEntity result = shoppingListService.getListById(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID);
-
-        List<Category> categoryEntities = shoppingListService.categorizeList(TestConstants.USER_3_NAME, result, 110L, false, null);
-        Assert.assertNotNull(categoryEntities);
-
-        // should find category with category id -1
-        boolean highlightCategoryFound = false;
-        for (Category categoryResult : categoryEntities) {
-            ItemCategory cr = (ItemCategory) categoryResult;
-            if (CategoryType.Highlight.name().equals(cr.getCategoryType())) {
-                highlightCategoryFound = true;
-                break;
-            }
-        }
-        Assert.assertTrue(highlightCategoryFound);
-    }
 
     @Test
     public void testMerge_EmptyMerge() {
