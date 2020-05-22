@@ -12,7 +12,6 @@ public class ShoppingList {
     @JsonProperty("created")
     private Date createdOn;
 
-
     @JsonProperty("updated")
     private Date updated;
 
@@ -25,11 +24,8 @@ public class ShoppingList {
     @JsonProperty("item_count")
     private Integer itemCount;
 
-    @JsonProperty("dish_sources")
-    private List<ItemSource> dishSources;
-
-    @JsonProperty("list_sources")
-    private List<ItemSource> listSources;
+    @JsonProperty("legend")
+    private List<LegendSource> legendSources;
 
     private java.util.List<Category>
             categories;
@@ -102,14 +98,14 @@ public class ShoppingList {
         return this;
     }
 
-    public ShoppingList dishSources(List<ItemSource> dishSources) {
-        this.dishSources = dishSources;
+
+    public ShoppingList legendSources(List<LegendSource> legendSources) {
+        this.legendSources = legendSources;
         return this;
     }
 
-    public ShoppingList listSources(List<ItemSource> listSources) {
-        this.listSources = listSources;
-        return this;
+    public List<LegendSource> getLegendSources() {
+        return legendSources;
     }
 
     public String getLayoutId() {

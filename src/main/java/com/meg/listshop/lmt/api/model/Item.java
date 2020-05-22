@@ -41,11 +41,8 @@ public class Item implements Comparable {
     @JsonProperty("used_count")
     private Integer usedCount;
 
-    @JsonProperty("dish_sources")
-    private List<ItemSource> dishSources;
-
-    @JsonProperty("list_sources")
-    private List<ItemSource> listSources;
+    @JsonProperty("source_keys")
+    private List<String> sourceKeys;
 
     private Set<String> handles;
 
@@ -165,20 +162,13 @@ public class Item implements Comparable {
         return name.toLowerCase().compareTo(comparename.toLowerCase());
     }
 
-    public void setDishSources(List<ItemSource> dishSources) {
-        this.dishSources = dishSources;
+    public Item sourceKeys(List<String> sourceKeys) {
+        this.sourceKeys = sourceKeys;
+        return this;
     }
 
-    public List<ItemSource> getDishSources() {
-        return dishSources;
-    }
-
-    public void setListSources(List<ItemSource> listSources) {
-        this.listSources = listSources;
-    }
-
-    public List<ItemSource> getListSources() {
-        return listSources;
+    public List<String> getSourceKeys() {
+        return sourceKeys;
     }
 
     public Set<String> getHandles() {

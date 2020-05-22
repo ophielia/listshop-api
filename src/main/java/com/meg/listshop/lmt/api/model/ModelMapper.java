@@ -4,15 +4,21 @@ import com.meg.listshop.auth.api.model.User;
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.common.FlatStringUtils;
-import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.data.entity.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 15/09/2017.
  */
 public class ModelMapper {
+    private static final String DISH_PREFIX = "d";
+    private static final String LIST_PREFIX = "l";
+    private static final String SPECIAL_PREFIX = "s";
+
     private ModelMapper() {
         throw new IllegalAccessError("Utility class");
     }
@@ -52,7 +58,7 @@ public class ModelMapper {
         for (AuthorityEntity authority : authorities) {
             roleList.add(authority.getName().name());
         }
-        return roleList.toArray(new String[roleList.size()]);
+        return roleList.toArray(new String[0]);
     }
 
     public static Dish toModel(DishEntity dishEntity, List<TagEntity> tagEntities) {
@@ -186,7 +192,7 @@ public class ModelMapper {
             return null;
         }
 
-        // this is received pre-filled.  Just need to check for subcategories;
+        // this is received pre-filled.  Just need to check for subcategories
         if (cat.getSubCategories() == null || cat.getSubCategories().isEmpty()) {
             return cat;
         }
@@ -216,74 +222,39 @@ public class ModelMapper {
 
     }
 
-    private static List<Item> simpleItemsToModel(List<ItemEntity> items, Map<Long, DishEntity> dishSources, Map<Long, ShoppingListEntity> listSourceMap) {
+    private static List<Item> simpleItemsToModel(List<ItemEntity> items) {
         List<Item> itemList = new ArrayList<>();
         if (items == null) {
             return itemList;
         }
         for (ItemEntity entity : items) {
             Item item = toModel(entity);
-            List<ItemSource> sources = toDishSourceModels(entity.getRawDishSources(), dishSources);
-            item.setDishSources(sources);
-            List<ItemSource> listSources = toListSourceModels(entity.getRawListSources(), listSourceMap);
-            item.setListSources(listSources);
+            List<String> sources = toListItemSourceKeys(ModelMapper.DISH_PREFIX, entity.getRawDishSources());
+            sources.addAll(toListItemSourceKeys(ModelMapper.LIST_PREFIX, entity.getRawListSources()));
+            sources.addAll(toListItemSourceKeys(ModelMapper.SPECIAL_PREFIX, entity.getHandles()));
+            item.sourceKeys(sources);
             itemList.add(item);
         }
         return itemList;
     }
 
-    private static List<ItemSource> toListSourceModels(String rawItemSources, Map<Long, ShoppingListEntity> listSourceMap) {
-        List<ItemSource> result = new ArrayList<>();
-        if (rawItemSources == null) {
-            return result;
-        }
-        Set<String> uniqueListSources = FlatStringUtils.inflateStringToSet(rawItemSources, ";");
-        for (String listId : uniqueListSources) {
-            if (listId.isEmpty()) {
-                continue;
-            }
-            if (listSourceMap.containsKey(StringTools.stringToLong(listId))) {
-                ShoppingListEntity list = listSourceMap.get(Long.valueOf(listId));
+    private static List<String> toListItemSourceKeys(String keyPrefix, Set<String> idSet) {
+        List<String> sources = new ArrayList<>();
 
-                ItemSource source = toListSourceModel(list);
-                result.add(source);
-            }
+        for (String id : idSet) {
+            String key = keyPrefix + id;
+            sources.add(key);
+
         }
-        return result;
+        return sources;
     }
 
-    private static ItemSource toListSourceModel(ShoppingListEntity listsource) {
-        ItemSource source = new ItemSource();
-        source.setDisplay(listsource.getName());
-        source.setId(listsource.getId());
-        source.setType("List");
-
-        return source;
-    }
-
-    private static List<ItemSource> toDishSourceModels(String rawDishSources, Map<Long, DishEntity> dishSources) {
-        List<ItemSource> result = new ArrayList<>();
-        if (rawDishSources == null) {
-            return result;
+    private static List<String> toListItemSourceKeys(String keyPrefix, String delimitedIdList) {
+        if (delimitedIdList == null || delimitedIdList.isEmpty()) {
+            return new ArrayList<>();
         }
-        Set<String> uniqueDishSources = FlatStringUtils.inflateStringToSet(rawDishSources, ";");
-        for (String dishId : uniqueDishSources) {
-            if (dishSources.containsKey(Long.valueOf(dishId))) {
-                DishEntity dish = dishSources.get(Long.valueOf(dishId));
-
-                ItemSource source = toDishSourceModel( dish);
-                result.add(source);
-            }
-        }
-        return result;
-    }
-
-    private static ItemSource toDishSourceModel( DishEntity dish) {
-        ItemSource source = new ItemSource();
-        source.setDisplay(dish.getDishName());
-        source.setId(dish.getId());
-        source.setType("Dish");
-        return source;
+        Set<String> idSet = FlatStringUtils.inflateStringToSet(delimitedIdList, ";");
+        return toListItemSourceKeys(keyPrefix, idSet);
     }
 
     private static List<Tag> toModel(List<TagEntity> tagEntities) {
@@ -369,28 +340,30 @@ public class ModelMapper {
     }
 
     public static ShoppingList toModel(ShoppingListEntity shoppingListEntity, List<Category> itemCategories) {
-        HashMap<Long, DishEntity> dishSourceDictionary = new HashMap<>();
-        HashMap<Long, ShoppingListEntity> listSourceDictionary = new HashMap<>();
-        List<ItemSource> dishSources = new ArrayList<>();
-        if (shoppingListEntity.getDishSources() != null) {
+        List<LegendSource> legendSources = new ArrayList<>();
+        if (shoppingListEntity.getDishSources() != null &&
+                !shoppingListEntity.getDishSources().isEmpty()) {
+            Set<LegendSource> dishLegends = new HashSet<>();
             shoppingListEntity.getDishSources().forEach(d -> {
-                Long id = d.getId();
-                dishSourceDictionary.put(id, d);
-                dishSources.add(toDishSourceModel( d));
+                String key = ModelMapper.DISH_PREFIX + d.getId();
 
+                dishLegends.add(new LegendSource(key, d.getDishName()));
             });
+            legendSources.addAll(dishLegends);
         }
-        List<ItemSource> listSources = new ArrayList<>();
-        if (shoppingListEntity.getListSources() != null) {
+        if (shoppingListEntity.getListSources() != null &&
+                !shoppingListEntity.getListSources().isEmpty()) {
+            Set<LegendSource> listLegends = new HashSet<>();
             shoppingListEntity.getListSources().forEach(d -> {
-                Long id = d.getId();
-                listSourceDictionary.put(id, d);
-                listSources.add(toListSourceModel(d));
+                String key = ModelMapper.LIST_PREFIX + d.getId();
 
+                listLegends.add(new LegendSource(key, d.getName()));
             });
+            legendSources.addAll(listLegends);
         }
+        //MM?? open for now - how to know if item frequent exists?
 
-        List<Category> categories = itemCategoriesToModel(itemCategories, dishSourceDictionary, listSourceDictionary);
+        List<Category> categories = itemCategoriesToModel(itemCategories);
 
         long itemCount = 0;
         if (shoppingListEntity.getItems() != null) {
@@ -401,10 +374,9 @@ public class ModelMapper {
         return new ShoppingList(shoppingListEntity.getId())
                 .createdOn(shoppingListEntity.getCreatedOn())
                 .categories(categories)
-                .dishSources(dishSources)
+                .legendSources(legendSources)
                 .isStarterList(shoppingListEntity.getIsStarterList())
                 .name(shoppingListEntity.getName())
-                .listSources(listSources)
                 .layoutId(String.valueOf(shoppingListEntity.getListLayoutId()))
                 .updated(shoppingListEntity.getLastUpdate())
                 .itemCount((int) itemCount)
@@ -412,9 +384,7 @@ public class ModelMapper {
 
     }
 
-    private static List<Category> itemCategoriesToModel(List<Category> filledCategories,
-                                                        Map<Long, DishEntity> dishSources,
-                                                        Map<Long, ShoppingListEntity> listSources
+    private static List<Category> itemCategoriesToModel(List<Category> filledCategories
     ) {
         if (filledCategories == null) {
             return filledCategories;
@@ -427,14 +397,14 @@ public class ModelMapper {
             ItemCategory cm = (ItemCategory) categoryModel;
             List<Item> items = new ArrayList<>();
             if (cm.getItemEntities() != null && !cm.getItemEntities().isEmpty()) {
-                items = simpleItemsToModel(cm.getItemEntities(), dishSources, listSources);
+                items = simpleItemsToModel(cm.getItemEntities());
             }
             cm.items(items);
             cm.itemEntities(null);
 
             // now - subcategories
             if (!categoryModel.getSubCategories().isEmpty()) {
-                List<Category> filledSubCats = itemCategoriesToModel(categoryModel.getSubCategories(), dishSources, listSources);
+                List<Category> filledSubCats = itemCategoriesToModel(categoryModel.getSubCategories());
                 categoryModel.subCategories(filledSubCats);
             }
         }
@@ -458,7 +428,7 @@ public class ModelMapper {
         if (dish == null) {
             return null;
         }
-        Long dishId = dish.getId() != null ? Long.valueOf(dish.getId()) : null;
+        Long dishId = dish.getId();
         DishEntity dishEntity = new DishEntity(dishId, dish.getDishName());
 
         dishEntity.setReference(dish.getReference());
@@ -503,21 +473,6 @@ public class ModelMapper {
         return targetEntity;
     }
 
-    public static ListTagStatistic toEntity(Statistic statistic) {
-        if (statistic == null) {
-            return null;
-        }
-
-        ListTagStatistic statEntity = new ListTagStatistic();
-        statEntity.setListTagStatId(statistic.getListTagStatId());
-        statEntity.setUserId(statistic.getUserId());
-        statEntity.setTagId(statistic.getTagId());
-        statEntity.setAddedToDishCount(statistic.getAddedToDish());
-        statEntity.setRemovedCount(statistic.getRemovedCount());
-        statEntity.setAddedCount(statistic.getAddedCount());
-
-        return statEntity;
-    }
 
     public static TargetSlotEntity toEntity(TargetSlot targetSlot) {
         if (targetSlot == null) {
@@ -534,7 +489,7 @@ public class ModelMapper {
         if (mealPlan == null) {
             return null;
         }
-        Long mealPlanId = (mealPlan.getMealPlanId() != null) ? mealPlan.getMealPlanId() : null;
+        Long mealPlanId = mealPlan.getMealPlanId();
         MealPlanEntity mealPlanEntity = new MealPlanEntity(mealPlanId);
 
         mealPlanEntity.setName(mealPlan.getName());
@@ -624,6 +579,24 @@ public class ModelMapper {
         result.childrenList(children);
 
         return result;
+    }
+
+
+    // possibly unused
+    public static ListTagStatistic toEntity(Statistic statistic) {
+        if (statistic == null) {
+            return null;
+        }
+
+        ListTagStatistic statEntity = new ListTagStatistic();
+        statEntity.setListTagStatId(statistic.getListTagStatId());
+        statEntity.setUserId(statistic.getUserId());
+        statEntity.setTagId(statistic.getTagId());
+        statEntity.setAddedToDishCount(statistic.getAddedToDish());
+        statEntity.setRemovedCount(statistic.getRemovedCount());
+        statEntity.setAddedCount(statistic.getAddedCount());
+
+        return statEntity;
     }
 
 }
