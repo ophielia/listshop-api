@@ -197,32 +197,18 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testRetrieveListById() throws Exception {
-        Long testId = TestConstants.LIST_1_ID;
+        Long testId = TestConstants.LIST_2_ID;
 
-        mockMvc.perform(get("/shoppinglist/" + TestConstants.LIST_1_ID)
-                .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.shopping_list.list_id").value(testId));
-    }
-
-    @Test
-    @WithMockUser
-    public void testRetrieveListById_HighlightList() throws Exception {
-        Long testId = 509990L;
-
-        MvcResult result = mockMvc.perform(get("/shoppinglist/" + testId + "?highlightListId=509991")
+        MvcResult result = mockMvc.perform(get("/shoppinglist/" + TestConstants.LIST_2_ID)
                 .with(user(meUserDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
+                .andExpect(jsonPath("$.shopping_list.legend", Matchers.hasSize(8)))
+                .andExpect(jsonPath("$.shopping_list.legend[*].key",
+                        Matchers.containsInAnyOrder("d54", "d83", "d55", "d90", "l501", "l402", "d56", "d16")))
                 .andReturn();
 
-        String jsonResponse = result.getResponse().getContentAsString();
-        // verify contains category highlight list
-        Assert.assertTrue(jsonResponse.contains("\"category_type\":\"HighlightList\""));
-        // asserts that the result contains the list source
-        Assert.assertTrue(jsonResponse.contains("\"list_sources\":[{\"id\":509991,\"display\":\"added from\",\"type\":\"List\"}]"));
 
     }
 
@@ -403,7 +389,6 @@ public class ShoppingListRestControllerTest {
         //.andExpect(jsonPath("$.shopping_list.is_starter_list").value(false));
 
         String listAfterAdd = result.getResponse().getContentAsString();
-        Assert.assertTrue(listAfterAdd.contains("\"list_sources\":[{\"id\":500,\"display\":\"list3\",\"type\":\"List\"}]"));
 
     }
 
@@ -431,8 +416,6 @@ public class ShoppingListRestControllerTest {
 
 
         String listAfterDelete = result.getResponse().getContentAsString();
-        // contains empty list sources
-        Assert.assertTrue(listAfterDelete.contains("\"list_sources\":[],"));
         // contains tag ids 500, 503
         Assert.assertTrue(listAfterDelete.contains("\"tag_id\":\"503\","));
         Assert.assertTrue(listAfterDelete.contains("\"tag_id\":\"500\","));
@@ -844,5 +827,6 @@ public class ShoppingListRestControllerTest {
         this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();
     }
+
 
 }

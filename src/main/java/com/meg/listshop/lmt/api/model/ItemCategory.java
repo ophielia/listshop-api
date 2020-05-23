@@ -25,6 +25,8 @@ public class ItemCategory extends AbstractCategory {
     @JsonIgnore
     List<ItemEntity> itemEntities = new ArrayList<>();
 
+    public ItemCategory() {
+    }
 
     public ItemCategory(String name) {
         super(name);

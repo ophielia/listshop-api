@@ -143,7 +143,7 @@ public class ShoppingListServiceImplTest {
             }
 
         }
-        Assert.assertEquals(5, itemcount);
+        Assert.assertEquals(4, itemcount);
         Assert.assertEquals(2, subcatcount);
     }
 
