@@ -39,4 +39,11 @@ public class DateUtils {
         }
         return date2;
     }
+
+    public static boolean isAfter(Date dateBefore, Date dateAfter) {
+        if (dateBefore == null || dateAfter == null) {
+            return false;
+        }
+        return dateAfter.getTime() > dateBefore.getTime();
+    }
 }

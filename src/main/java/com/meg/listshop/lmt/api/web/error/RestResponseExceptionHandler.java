@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.web.error;
 
+import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.api.exception.ProposalProcessingException;
@@ -41,7 +42,7 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
     }
 
 
-    @ExceptionHandler({ ProposalProcessingException.class })
+    @ExceptionHandler({ProposalProcessingException.class})
     public ResponseEntity<Object> handleProposalProcessingException(final Exception ex, final WebRequest request) {
         final String message = "Error occured generating proposal.";
         logger.info(ex.getClass().getName());
@@ -51,8 +52,17 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
+    @ExceptionHandler({AuthenticationException.class})
+    public ResponseEntity<Object> handleAuthenticationException(final Exception ex, final WebRequest request) {
+        final String message = "Error occured authenticating.";
+        logger.info(ex.getClass().getName());
+        logger.error(message, ex);
+        //
+        final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, ex.getLocalizedMessage(), message);
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
 
-    @ExceptionHandler({ Exception.class })
+    @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {
         logger.info(ex.getClass().getName());
         logger.error("error", ex);

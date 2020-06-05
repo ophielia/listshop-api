@@ -1,7 +1,8 @@
 package com.meg.listshop.auth.api.controller;
 
-import com.meg.listshop.auth.api.model.User;
+import com.meg.listshop.auth.api.model.PutCreateUser;
 import com.meg.listshop.auth.api.model.UserResource;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ import java.security.Principal;
 public interface UserRestControllerApi {
 
     @PostMapping(produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> createUser(@RequestBody User input);
+    ResponseEntity<Object> createUser(@RequestBody PutCreateUser input) throws BadParameterException;
 
 
     @GetMapping(produces = "application/json")

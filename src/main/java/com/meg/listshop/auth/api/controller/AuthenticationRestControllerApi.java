@@ -1,23 +1,24 @@
 package com.meg.listshop.auth.api.controller;
 
-import com.meg.listshop.auth.service.impl.JwtAuthenticationRequest;
+import com.meg.listshop.auth.service.impl.JwtAuthorizationRequest;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mobile.device.Device;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by margaretmartin on 23/09/2017.
  */
-public interface  AuthenticationRestControllerApi {
+@RequestMapping("/auth")
+public interface AuthenticationRestControllerApi {
 
-    @PostMapping(value = "${jwt.route.authentication.path}", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, Device device);
+    @PostMapping(produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> authorizeUser(@RequestBody JwtAuthorizationRequest authorizationRequest) throws BadParameterException;
 
-    @GetMapping(value = "${jwt.route.authentication.refresh}")
-    ResponseEntity<Object> refreshAndGetAuthenticationToken(HttpServletRequest request);
+    @PostMapping(value = "/authenticate", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> authenticateUser(HttpServletRequest request) throws BadParameterException;
 
 }

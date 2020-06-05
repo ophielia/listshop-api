@@ -3,7 +3,7 @@ package com.meg.listshop.auth.api;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtAuthenticationRequest;
+import com.meg.listshop.auth.service.impl.JwtAuthorizationRequest;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.api.model.Dish;
@@ -101,7 +101,7 @@ public class AuthenticationRestControllerTest {
     @WithMockUser
     public void testCreateAuthenticationToken() throws Exception {
         Device device = new LiteDevice(DeviceType.NORMAL);
-        JwtAuthenticationRequest jwtAuthenticationRequest = new JwtAuthenticationRequest(TestConstants.USER_3_NAME,"Passw0rd");
+        JwtAuthorizationRequest jwtAuthenticationRequest = new JwtAuthorizationRequest(TestConstants.USER_3_NAME, "Passw0rd");
 
                 String deviceJson = json(device);
                 String authReqJson = json(jwtAuthenticationRequest);

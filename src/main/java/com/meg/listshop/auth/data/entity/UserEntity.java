@@ -39,6 +39,7 @@ public class UserEntity {
 
     private Date creationDate;
 
+    private Date lastLogin;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<AuthorityEntity> authorities;
@@ -128,5 +129,27 @@ public class UserEntity {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public Date getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(Date lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", creationDate=" + creationDate +
+                ", lastLogin=" + lastLogin +
+                ", authorities=" + authorities +
+                ", enabled=" + enabled +
+                ", lastPasswordResetDate=" + lastPasswordResetDate +
+                '}';
     }
 }

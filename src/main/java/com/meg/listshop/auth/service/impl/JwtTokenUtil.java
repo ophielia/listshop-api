@@ -1,11 +1,12 @@
 package com.meg.listshop.auth.service.impl;
 
+import com.meg.listshop.auth.api.model.ClientDeviceInfo;
+import com.meg.listshop.auth.api.model.ClientType;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mobile.device.Device;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -104,14 +105,14 @@ public class JwtTokenUtil implements Serializable {
         return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
 
-    private String generateAudience(Device device) {
+    private String generateAudience(ClientDeviceInfo device) {
         String audience = AUDIENCE_UNKNOWN;
-        if (device.isNormal()) {
+        if (device.getClientType() == ClientType.Web) {
             audience = AUDIENCE_WEB;
-        } else if (device.isTablet()) {
-            audience = AUDIENCE_TABLET;
-        } else if (device.isMobile()) {
+        } else if (device.getClientType() == ClientType.Mobile) {
             audience = AUDIENCE_MOBILE;
+        } else {
+            audience = AUDIENCE_UNKNOWN;
         }
         return audience;
     }
@@ -121,18 +122,10 @@ public class JwtTokenUtil implements Serializable {
         return (AUDIENCE_TABLET.equals(audience) || AUDIENCE_MOBILE.equals(audience));
     }
 
-    public String generateToken(UserDetails userDetails, Device device) {
+    public String generateToken(UserEntity userEntity, ClientDeviceInfo clientDeviceInfo) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
-        claims.put(CLAIM_KEY_AUDIENCE, generateAudience(device));
-        claims.put(CLAIM_KEY_CREATED, new Date());
-        return generateToken(claims);
-    }
-
-    public String generateToken(UserEntity userEntity, Device device) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME, userEntity.getEmail());
-        claims.put(CLAIM_KEY_AUDIENCE, generateAudience(device));
+        claims.put(CLAIM_KEY_USERNAME, userEntity.getUsername());
+        claims.put(CLAIM_KEY_AUDIENCE, generateAudience(clientDeviceInfo));
         claims.put(CLAIM_KEY_CREATED, new Date());
         return generateToken(claims);
     }
