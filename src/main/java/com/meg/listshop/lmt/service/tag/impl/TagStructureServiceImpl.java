@@ -206,6 +206,9 @@ public class TagStructureServiceImpl implements TagStructureService {
     }
 
     private boolean hasCircularReference(TagEntity parentTag, TagEntity tag) {
+        if (parentTag.getId().equals(tag.getId())) {
+            return true;
+        }
         // circular reference exists if ascendants of parentTag include
         // the (new) childTag
         List<TagEntity> grandparents = getAscendantTags(parentTag, false);

@@ -7,7 +7,6 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtAuthorizationRequest;
 import com.meg.listshop.auth.service.impl.JwtUser;
-import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,10 +20,10 @@ import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -44,6 +43,10 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
+@Sql(value = {"/sql/com/meg/atable/auth/api/AuthenticationRestControllerTest.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/sql/com/meg/atable/auth/api/AuthenticationRestControllerTest_rollback.sql"},
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class AuthenticationRestControllerTest {
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
@@ -52,9 +55,8 @@ public class AuthenticationRestControllerTest {
     private MockMvc mockMvc;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private UserDetails userDetails;
+    private final String validToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZSIsImF1ZGllbmNlIjoibW9iaWxlIiwiY3JlYXRlZCI6MTU5MTQ0MzI2NzE3MX0.YWjx1Y2vANS_MyGn2BsSKSi7WGBji5DT5b6hao9fdC3MPOwF_syTRNyqcoJO9J9Joj9X5DX7-0cuXRNOnC6cpQ";
 
-    @Autowired
-    private DishService dishService;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -92,7 +94,7 @@ public class AuthenticationRestControllerTest {
 
 
     @Test
-    public void testLogin() throws Exception {
+    public void testCreateUserLogin() throws Exception {
         ClientDeviceInfo deviceInfo = new ClientDeviceInfo();
         deviceInfo.setClientType(ClientType.Mobile);
         JwtAuthorizationRequest jwtAuthenticationRequest = new JwtAuthorizationRequest(TestConstants.USER_3_NAME,
@@ -114,7 +116,16 @@ public class AuthenticationRestControllerTest {
     @Test
     @WithMockUser
     public void testLogout() throws Exception {
-        // login to get token
+
+        mockMvc.perform(get("/auth/logout")
+                .header("Authorization", validToken))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void testLogin() throws Exception {
         ClientDeviceInfo deviceInfo = new ClientDeviceInfo();
         deviceInfo.setClientType(ClientType.Mobile);
         JwtAuthorizationRequest jwtAuthenticationRequest = new JwtAuthorizationRequest(TestConstants.USER_3_NAME,
@@ -123,22 +134,15 @@ public class AuthenticationRestControllerTest {
 
         String authReqJson = json(jwtAuthenticationRequest);
 
-        MvcResult result = mockMvc.perform(post("/auth")
-                .contentType(contentType)
-                .content(authReqJson))
+        mockMvc.perform(post("/auth/login")
+                .header("Authorization", validToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user.email").value(TestConstants.USER_3_NAME))
                 .andExpect(jsonPath("$.user.token").exists())
-                .andReturn();
-
-        String token = pullToken(result.getResponse().getContentAsString());
-
-        mockMvc.perform(get("/auth/logout")
-                .header("Authorization", token))
-                .andExpect(status().isOk())
                 .andDo(print());
 
     }
+
 
     private String pullToken(String contentAsString) {
         System.out.println(contentAsString);

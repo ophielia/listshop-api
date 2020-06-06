@@ -102,6 +102,9 @@ public class JwtTokenUtil implements Serializable {
 
     private Boolean isTokenExpired(String token) {
         final Date localExpiration = getExpirationDateFromToken(token);
+        if (localExpiration == null) {
+            return false;
+        }
         return localExpiration.before(new Date());
     }
 

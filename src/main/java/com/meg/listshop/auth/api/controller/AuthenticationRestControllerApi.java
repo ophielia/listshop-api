@@ -20,7 +20,7 @@ public interface AuthenticationRestControllerApi {
     @PostMapping(produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> authorizeUser(@RequestBody JwtAuthorizationRequest authorizationRequest) throws BadParameterException;
 
-    @PostMapping(value = "/login", produces = "application/json", consumes = "application/json")
+    @PostMapping(value = "/login", produces = "application/json")
     ResponseEntity<Object> authenticateUser(HttpServletRequest request) throws BadParameterException;
 
     @GetMapping(value = "/logout")
