@@ -39,6 +39,7 @@ public class UserEntity {
 
     private Date creationDate;
 
+    @Temporal(value = TemporalType.TIMESTAMP)
     private Date lastLogin;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)

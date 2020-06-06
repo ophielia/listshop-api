@@ -21,4 +21,6 @@ public interface UserService {
     void saveTokenForUserAndDevice(UserEntity userEntity, ClientDeviceInfo deviceInfo, String token);
 
     void createDeviceForUserAndDevice(Long userId, ClientDeviceInfo deviceInfo, String token);
+
+    void removeLoginForUser(String name, String token);
 }

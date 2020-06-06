@@ -73,7 +73,7 @@ public class UserRestController implements UserRestControllerApi {
 
         // Reload password post-security so we can generate token
         final UserEntity userDetails = userService.getUserByUserEmail(newUser.getEmail());
-        final String token = jwtTokenUtil.generateToken(newUser, deviceInfo);
+        final String token = jwtTokenUtil.generateExpiringToken(newUser, deviceInfo);
 
         // create user device
         this.userService.createDeviceForUserAndDevice(newUser.getId(), deviceInfo, token);

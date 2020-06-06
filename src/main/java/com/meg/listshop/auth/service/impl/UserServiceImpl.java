@@ -99,8 +99,6 @@ public class UserServiceImpl implements UserService {
 
         // create device for user
         createDeviceForUserAndDevice(userId, deviceInfo, token);
-
-        return;
     }
 
     @Override
@@ -126,8 +124,18 @@ public class UserServiceImpl implements UserService {
 
         // save device info
         userDeviceRepository.save(userDeviceEntity);
+    }
 
-        return;
+    @Override
+    public void removeLoginForUser(String name, String token) {
+        // get user_device
+        UserDeviceEntity userDeviceEntity = userDeviceRepository.findByToken(token);
+
+        if (userDeviceEntity == null) {
+            throw new AuthenticationException("no user device found to logout.");
+        }
+        //  update last_login
+        userDeviceRepository.delete(userDeviceEntity);
     }
 
     private AuthorityEntity createUserAuthorityForUser(UserEntity createdUser) {

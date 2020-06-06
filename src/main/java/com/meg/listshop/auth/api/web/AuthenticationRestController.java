@@ -22,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
 @Controller
 public class AuthenticationRestController implements AuthenticationRestControllerApi {
@@ -67,7 +68,7 @@ public class AuthenticationRestController implements AuthenticationRestControlle
 
         // Reload password post-security so we can generate token
         UserEntity userEntity = userService.getUserByUserEmail(authorizationRequest.getUsername());
-        final String token = jwtTokenUtil.generateToken(userEntity, deviceInfo);
+        final String token = jwtTokenUtil.generateExpiringToken(userEntity, deviceInfo);
 
         // save token for user
         userService.saveTokenForUserAndDevice(userEntity, deviceInfo, token);
@@ -101,6 +102,25 @@ public class AuthenticationRestController implements AuthenticationRestControlle
         // return user
         final UserResource user = new UserResource(userEntity, "");
         return ResponseEntity.ok(user);
+    }
+
+    public ResponseEntity<Object> logoutUser(Principal principal, HttpServletRequest request) throws BadParameterException {
+        String token = request.getHeader(tokenHeader);
+
+
+        if (token == null) {
+            throw new BadParameterException("no token passed.");
+        }
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
+
+        // update last login time
+        this.userService.removeLoginForUser(principal.getName(), token);
+
+        // return user
+        return ResponseEntity.ok().build();
     }
 
 }

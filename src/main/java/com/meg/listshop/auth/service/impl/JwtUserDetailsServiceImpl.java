@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,6 +30,7 @@ public class JwtUserDetailsServiceImpl implements ListShopUserDetailsService {
 
     @Override
     public UserDetails loadUserByToken(String token) {
+
         // load by token
         logger.info(String.format("loading user for token [%s]", token));
         UserEntity user = userRepository.findByToken(token);
@@ -39,10 +39,9 @@ public class JwtUserDetailsServiceImpl implements ListShopUserDetailsService {
     }
 
     private UserDetails createUserDetailsFromUser(UserEntity user) {
-        if (user == null) {
-            throw new UsernameNotFoundException("No user found");
-        } else {
+        if (user != null) {
             return JwtUserFactory.create(user);
         }
+        return null;
     }
 }

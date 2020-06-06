@@ -92,8 +92,12 @@ public class JwtTokenUtil implements Serializable {
         return claims;
     }
 
-    private Date generateExpirationDate() {
-        return new Date(System.currentTimeMillis() + expiration * 1000);
+    private Date generateExpirationDate(ClientType clientType) {
+        if (clientType == ClientType.Web) {
+            return new Date(System.currentTimeMillis() + expiration * 1000);
+        }
+        return null;
+
     }
 
     private Boolean isTokenExpired(String token) {
@@ -122,18 +126,31 @@ public class JwtTokenUtil implements Serializable {
         return (AUDIENCE_TABLET.equals(audience) || AUDIENCE_MOBILE.equals(audience));
     }
 
-    public String generateToken(UserEntity userEntity, ClientDeviceInfo clientDeviceInfo) {
+    public String generateExpiringToken(UserEntity userEntity, ClientDeviceInfo clientDeviceInfo) {
         Map<String, Object> claims = new HashMap<>();
+        Date expirationDate = generateExpirationDate(clientDeviceInfo.getClientType());
         claims.put(CLAIM_KEY_USERNAME, userEntity.getUsername());
         claims.put(CLAIM_KEY_AUDIENCE, generateAudience(clientDeviceInfo));
         claims.put(CLAIM_KEY_CREATED, new Date());
-        return generateToken(claims);
+        if (expirationDate != null) {
+
+            return generateExpiringToken(claims, expirationDate);
+        } else {
+            return generateToken(claims);
+        }
     }
 
     String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setExpiration(generateExpirationDate())
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
+    }
+
+    String generateExpiringToken(Map<String, Object> claims, Date expirationDate) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
@@ -144,17 +161,6 @@ public class JwtTokenUtil implements Serializable {
                 && (!isTokenExpired(token) || ignoreTokenExpiration(token));
     }
 
-    public String refreshToken(String token) {
-        String refreshedToken;
-        try {
-            final Claims claims = getClaimsFromToken(token);
-            claims.put(CLAIM_KEY_CREATED, new Date());
-            refreshedToken = generateToken(claims);
-        } catch (Exception e) {
-            refreshedToken = null;
-        }
-        return refreshedToken;
-    }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         JwtUser user = (JwtUser) userDetails;

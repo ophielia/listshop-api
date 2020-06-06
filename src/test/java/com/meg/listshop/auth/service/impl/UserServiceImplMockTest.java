@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.times;
 
 
 @RunWith(SpringRunner.class)
@@ -239,7 +240,28 @@ public class UserServiceImplMockTest {
 
     }
 
-    // updateLoginForUser
-    // saveTokenForUserAndDevice
-    // createDeviceForUser
+
+    @Test
+    public void testRemoveLoginForUser() {
+        String token = "abcdefg1234567";
+
+        UserDeviceEntity deviceInfo = new UserDeviceEntity();
+        deviceInfo.setBuildNumber(buildNumber);
+        deviceInfo.setClientVersion(clientVersion);
+        deviceInfo.setClientType(clientType);
+        deviceInfo.setClientDeviceId(deviceId);
+        deviceInfo.setModel(model);
+        deviceInfo.setName(name);
+        deviceInfo.setOs(ossystem);
+        deviceInfo.setOsVersion(osversion);
+
+
+        Mockito.when(userDeviceRepository.findByToken(token)).thenReturn(deviceInfo);
+
+        userService.removeLoginForUser(TestConstants.USER_3_NAME, token);
+
+        Mockito.verify(userDeviceRepository, times(1)).delete(deviceInfo);
+
+    }
+
 }
