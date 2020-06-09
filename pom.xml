@@ -5,7 +5,7 @@
 
     <groupId>com.meg.atable</groupId>
     <artifactId>listshop-server</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <packaging>jar</packaging>
 
     <name>listshop-server</name>
@@ -52,13 +52,13 @@
             </exclusions>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/me.snowdrop/spring-boot-bom -->
+        <!-- https://mvnrepository.com/artifact/me.snowdrop/spring-boot-bom
         <dependency>
             <groupId>me.snowdrop</groupId>
             <artifactId>spring-boot-bom</artifactId>
             <version>2.1.6.Final-redhat-00004</version>
             <type>pom</type>
-        </dependency>
+        </dependency>-->
 
 
         <!--<dependency>
@@ -192,7 +192,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
+        <!--<repository>
             <id>redhat</id>
             <name>Central Repository</name>
             <url>https://maven.repository.redhat.com</url>
@@ -200,7 +200,7 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-        </repository>
+        </repository>-->
 
         <repository>
             <id>spring-snapshots</id>
@@ -219,19 +219,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-
-
-            <!--   <plugin>
-                   <groupId>org.flywaydb</groupId>
-                   <artifactId>flyway-maven-plugin</artifactId>
-                   <version>5.0.7</version>
-                   <configuration>
-                       <url>jdbc:postgresql://localhost:5432/dishdev</url>
-                       <user>postgres</user>
-                       <password>postgres</password>
-                       <table>flyway_schema_history</table>
-                   </configuration>
-               </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -256,7 +243,7 @@
                 </executions>
             </plugin>
 
-            <!--<plugin>
+            <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>dockerfile-maven-plugin</artifactId>
                 <version>1.4.9</version>
@@ -268,12 +255,12 @@
                             <goal>build</goal>
                         </goals>
                         <configuration>
-                            <repository>meg-apps/${project.container.name}</repository>
+                            <repository>ophieliamoon/listshop-server</repository>
                             <tag>${project.version}</tag>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -296,29 +283,6 @@
             <dependencies>
 
             </dependencies>
-        </profile>
-        <profile>
-            <id>openshift</id>
-            <dependencies>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.fabric8</groupId>
-                        <artifactId>fabric8-maven-plugin</artifactId>
-                        <version>${fabric8-maven-plugin-version}</version>
-                        <executions>
-                            <execution>
-                                <id>fmp</id>
-                                <goals>
-                                    <goal>resource</goal>
-                                    <goal>build</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
     </profiles>
 
