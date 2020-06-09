@@ -1,5 +1,6 @@
 package com.meg.listshop.auth.service.impl;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
 
 import java.io.Serializable;
@@ -40,6 +41,7 @@ public class JwtAuthorizationRequest implements Serializable {
         this.password = password;
     }
 
+    @JsonProperty("device_info")
     public ClientDeviceInfo getDeviceInfo() {
         return deviceInfo;
     }

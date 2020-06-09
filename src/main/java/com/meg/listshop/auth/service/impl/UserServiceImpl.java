@@ -1,6 +1,7 @@
 package com.meg.listshop.auth.service.impl;
 
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
+import com.meg.listshop.auth.api.model.ClientType;
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.AuthorityName;
 import com.meg.listshop.auth.data.entity.UserDeviceEntity;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -108,6 +110,9 @@ public class UserServiceImpl implements UserService {
         if (!userEntityOptional.isPresent()) {
             throw new RuntimeException("Can't retrieve user for userId [" + userId + "]");
         }
+        // delete existing entry
+        deleteExistingEntry(userId, deviceInfo.getClientType(), deviceInfo.getName());
+
         // create device info
         UserDeviceEntity userDeviceEntity = new UserDeviceEntity();
         userDeviceEntity.setUserId(userId);
@@ -124,6 +129,20 @@ public class UserServiceImpl implements UserService {
 
         // save device info
         userDeviceRepository.save(userDeviceEntity);
+
+        // update last login time
+        UserEntity user = userEntityOptional.get();
+        updateLoginForUser(user.getUsername(), token);
+
+    }
+
+    private void deleteExistingEntry(Long userId, ClientType clientType, String name) {
+        List<UserDeviceEntity> existing = userDeviceRepository.findByUserIdAndClientTypeAndName(userId, clientType, name);
+        if (!existing.isEmpty()) {
+            for (UserDeviceEntity entry : existing) {
+                userDeviceRepository.delete(entry);
+            }
+        }
     }
 
     @Override

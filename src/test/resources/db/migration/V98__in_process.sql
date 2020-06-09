@@ -14,7 +14,7 @@ CREATE TABLE user_devices
     token            text,
     last_login       timestamp with time zone
 );
-
+grant all on user_devices to bankuser;
 -- add new sequence user_device_sequence
 CREATE SEQUENCE user_device_sequence
     START WITH 1
@@ -26,6 +26,7 @@ CREATE SEQUENCE user_device_sequence
 alter table users
     add column last_login timestamp with time zone;
 
+grant all on user_device_sequence to bankuser;
 ---- rollback
 
 -- add new table user_devices

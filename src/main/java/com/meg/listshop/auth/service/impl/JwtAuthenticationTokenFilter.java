@@ -37,7 +37,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             // get user for token
             UserDetails userDetails = this.userDetailsService.loadUserByToken(authToken);
 
-            if (userDetails != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // if userDetails is not available, this is an old client => use Fallback
+            if (userDetails == null) {
+                fallbackFilter(authToken, request);
+            } else if (userDetails != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 String username = userDetails.getUsername();
 
                 logger.debug("checking authentication for user " + username);
@@ -51,5 +54,29 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private void fallbackFilter(String authToken, HttpServletRequest request) {
+        String username = jwtTokenUtil.getUsernameFromToken(authToken);
+
+        if (username != null) {
+            logger.debug("checking authentication für user " + username);
+        }
+
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            // It is not compelling necessary to load the use details from the database. You could also store the information
+            // in the token and read it from it. It's up to you ;)
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+            // For simple validation it is completely sufficient to just check the token integrity. You don't have to call
+            // the database compellingly. Again it's up to you ;)
+            if (jwtTokenUtil.validateToken(authToken, userDetails)) {
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                logger.info("authenticated user " + username + ", setting security context");
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        }
     }
 }

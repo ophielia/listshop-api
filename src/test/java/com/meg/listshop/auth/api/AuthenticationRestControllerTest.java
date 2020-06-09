@@ -134,7 +134,7 @@ public class AuthenticationRestControllerTest {
 
         String authReqJson = json(jwtAuthenticationRequest);
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/auth/authenticate")
                 .header("Authorization", validToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user.email").value(TestConstants.USER_3_NAME))
