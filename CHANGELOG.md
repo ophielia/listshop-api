@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [1.2.0] June 9, 2020
+
 ### Changed
 *   ShoppingList api object changed
     -  ShoppingList returns sources in Legend_Sources. 
