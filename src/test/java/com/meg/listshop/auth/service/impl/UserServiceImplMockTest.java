@@ -11,6 +11,7 @@ import com.meg.listshop.auth.data.repository.UserDeviceRepository;
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.common.DateUtils;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +75,7 @@ public class UserServiceImplMockTest {
 
 
     @Test
-    public void testCreateUser() {
+    public void testCreateUser() throws BadParameterException {
         final String username = "george";
         final String email = "george@will.run";
         final String password = "Passw0rd";

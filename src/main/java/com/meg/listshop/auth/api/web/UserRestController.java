@@ -89,5 +89,12 @@ public class UserRestController implements UserRestControllerApi {
         return new ResponseEntity(userResource, HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<Object> userNameIsTaken(String name) {
+        UserEntity user = this.userService.getUserByUserEmail(name);
+
+        return ResponseEntity.ok(user != null);
+    }
+
 
 }

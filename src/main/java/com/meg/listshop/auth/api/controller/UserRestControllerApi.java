@@ -23,4 +23,7 @@ public interface UserRestControllerApi {
 
     @GetMapping(produces = "application/json")
     ResponseEntity<UserResource> getUser(Principal principal);
+
+    @GetMapping(value = "name", produces = "application/json")
+    ResponseEntity<Object> userNameIsTaken(@RequestParam(value = "name") String email);
 }

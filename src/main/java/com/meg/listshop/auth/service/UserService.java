@@ -2,6 +2,7 @@ package com.meg.listshop.auth.service;
 
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -14,7 +15,7 @@ public interface UserService {
 
     UserEntity save(UserEntity user);
 
-    UserEntity createUser(String username, String decodedEmail, String decodedPassword);
+    UserEntity createUser(String username, String decodedEmail, String decodedPassword) throws BadParameterException;
 
     UserEntity updateLoginForUser(String username, String token);
 

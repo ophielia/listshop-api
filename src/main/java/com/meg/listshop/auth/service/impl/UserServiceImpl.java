@@ -11,6 +11,7 @@ import com.meg.listshop.auth.data.repository.UserDeviceRepository;
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity createUser(String username, String email, String decodedPassword) {
+    public UserEntity createUser(String username, String email, String decodedPassword) throws BadParameterException {
+        // check if username exists
+        UserEntity existingUser = userRepository.findByEmail(email);
+        if (existingUser != null) {
+            throw new BadParameterException("User already present for email [" + email + "].");
+        }
+
         // encode password
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(decodedPassword);
