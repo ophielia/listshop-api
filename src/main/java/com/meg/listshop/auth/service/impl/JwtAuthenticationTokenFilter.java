@@ -1,5 +1,6 @@
 package com.meg.listshop.auth.service.impl;
 
+import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,6 +48,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     logger.info("authenticated user " + username + ", setting security context");
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    logger.debug("Token exists for user, but it is invalid.");
+                    throw new AuthenticationException("Token exists for user, but it is invalid");
                 }
             }
         }
