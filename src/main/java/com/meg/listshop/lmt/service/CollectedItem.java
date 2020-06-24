@@ -243,14 +243,14 @@ public class CollectedItem {
         }
         setUsedCount(count + newCount);
         if (!isNew) {
-            setUpdated(true);
+        setUpdated(true);
         }
 
     }
 
     public void add(ItemEntity item, CollectorContext context, boolean isNew) {
 
-        int newCount = item.getUsedCount() != null ? getUsedCount() : 1;
+        int newCount = item.getUsedCount() != null && item.getUsedCount() > 0 ? item.getUsedCount() : 1;
         add(newCount, context, isNew);
 
     }
