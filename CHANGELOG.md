@@ -4,7 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.1] June 9, 2020
+## Unreleased
+
+### Changed
+
+### Deprecated
+
+### Added
+* Configuration to serve static resources
+  - from server directory /opt/listshop/static
+  - served from http://<root>/static
+  
+### Changed
+
+### Fixed
+* bug in which RatingTagProcessor broke if no rating tags available
+
 
 
 ## [1.2.0] June 9, 2020
