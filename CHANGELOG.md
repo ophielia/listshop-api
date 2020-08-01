@@ -16,10 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - served from http://<root>/static
   
 ### Changed
+* Exception AuthenticationException now returned if user 
+token has expired
 
 ### Fixed
 * bug in which RatingTagProcessor broke if no rating tags available
-
+* bug in add from list.  UsedCount now correctly updated.
 
 
 ## [1.2.0] June 9, 2020
