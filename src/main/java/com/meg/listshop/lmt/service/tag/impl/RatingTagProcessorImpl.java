@@ -42,6 +42,7 @@ public class RatingTagProcessorImpl extends AbstractAutoTagProcessor {
             // sort children
             List<TagEntity> sortedChildren = parentTag.getChildren()
                     .stream()
+                    .filter(t -> t.getPower() != null)
                     .sorted(Comparator.comparing(FatTag::getPower))
                     .map(FatTag::getTag)
                     .collect(Collectors.toList());
