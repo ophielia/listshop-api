@@ -52,19 +52,6 @@
             </exclusions>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/me.snowdrop/spring-boot-bom
-        <dependency>
-            <groupId>me.snowdrop</groupId>
-            <artifactId>spring-boot-bom</artifactId>
-            <version>2.1.6.Final-redhat-00004</version>
-            <type>pom</type>
-        </dependency>-->
-
-
-        <!--<dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-config</artifactId>
-        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
@@ -192,15 +179,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <!--<repository>
-            <id>redhat</id>
-            <name>Central Repository</name>
-            <url>https://maven.repository.redhat.com</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>-->
+
 
         <repository>
             <id>spring-snapshots</id>
@@ -219,6 +198,19 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+
+            <!--   <plugin>
+                   <groupId>org.flywaydb</groupId>
+                   <artifactId>flyway-maven-plugin</artifactId>
+                   <version>5.0.7</version>
+                   <configuration>
+                       <url>jdbc:postgresql://localhost:5432/dishdev</url>
+                       <user>postgres</user>
+                       <password>postgres</password>
+                       <table>flyway_schema_history</table>
+                   </configuration>
+               </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
