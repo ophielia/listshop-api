@@ -108,6 +108,10 @@ public class UserServiceImpl implements UserService {
 
         // create device for user
         createDeviceForUserAndDevice(userId, deviceInfo, token);
+
+        // update last login time
+        updateLoginForUser(userEntity.getUsername(), token);
+
     }
 
     @Override
@@ -137,9 +141,6 @@ public class UserServiceImpl implements UserService {
         // save device info
         userDeviceRepository.save(userDeviceEntity);
 
-        // update last login time
-        UserEntity user = userEntityOptional.get();
-        updateLoginForUser(user.getUsername(), token);
 
     }
 

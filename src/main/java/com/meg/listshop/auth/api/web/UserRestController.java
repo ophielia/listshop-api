@@ -78,6 +78,9 @@ public class UserRestController implements UserRestControllerApi {
         // create user device
         this.userService.createDeviceForUserAndDevice(newUser.getId(), deviceInfo, token);
 
+        // update last login time
+        this.userService.updateLoginForUser(newUser.getUsername(), token);
+
         // Return the token
         return ResponseEntity.ok(new UserResource(userDetails, token));
     }

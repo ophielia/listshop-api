@@ -290,4 +290,19 @@ where tag_id in (
   and user_id = 20;
 
 
+---- users with dishes
+
+select dish_name, reference::Int
+from dish
+where reference is not null
+order by reference::Int desc;
+
+--- duplicate tags
+select lower(name), tag_type, count(distinct tag_id)
+from tag t
+         join tag_relation tr on tr.child_tag_id = t.tag_id
+group by lower(name), tag_type
+having count(distinct tag_id) > 1;
+
+
 

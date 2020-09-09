@@ -46,4 +46,11 @@ public class DateUtils {
         }
         return dateAfter.getTime() > dateBefore.getTime();
     }
+
+    public static boolean isAfterOrEqual(Date dateBefore, Date dateAfter) {
+        if (dateBefore == null || dateAfter == null) {
+            return false;
+        }
+        return dateAfter.getTime() >= dateBefore.getTime();
+    }
 }
