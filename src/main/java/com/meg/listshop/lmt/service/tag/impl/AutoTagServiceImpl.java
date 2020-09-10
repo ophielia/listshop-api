@@ -52,8 +52,12 @@ public class AutoTagServiceImpl implements AutoTagService {
         // get user
         UserEntity user = userService.getUserById(dishEntity.getUserId());
 
-        // pull tagswithflags
+        // pull items
         Set<Long> tagIdsForDish = tagRepository.getTagIdsForDish(dishEntity.getId());
+
+        if (tagIdsForDish == null || tagIdsForDish.isEmpty()) {
+            return;
+        }
 
         // pull autotagHistory
         List<ShadowTags> shadowTags = shadowTagRepository.findShadowTagsByDishId(dishEntity.getId());
