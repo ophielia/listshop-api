@@ -91,7 +91,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public List<ShoppingListEntity> getListsByUsername(String userName) {
         UserEntity user = userService.getUserByUserEmail(userName);
 
-        return shoppingListRepository.findByUserId(user.getId());
+        return shoppingListRepository.findByUserIdOrderByLastUpdateDesc(user.getId());
     }
 
     @Override
