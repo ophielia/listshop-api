@@ -122,7 +122,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         if (starterListChanged) {
             ShoppingListEntity oldStarter = getStarterList(name);
-            if (oldStarter != null) {
+            if (oldStarter != null && oldStarter.getId() != copyTo.getId()) {
                 oldStarter.setIsStarterList(false);
                 shoppingListRepository.save(oldStarter);
             }
