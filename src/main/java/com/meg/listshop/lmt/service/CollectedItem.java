@@ -188,6 +188,8 @@ public class CollectedItem {
             // delete item outright
             setRemoved(true);
             setUsedCount(0);
+            setRawDishSources(null);
+            setRawListSources(null);
             return;
         }
         // (possibly) remove list sources
@@ -200,7 +202,7 @@ public class CollectedItem {
                 setRawListSources(newSources);
             }
         }
-        // (possibly) remove list sources
+        // (possibly) remove dish sources
         boolean updateDishSources = context.hasDishId() && context.eligibleForDishSourceChange();
         if (updateDishSources) {
             Set<String> inflatedDishSources = FlatStringUtils.inflateStringToSet(getRawDishSources(), ";");
