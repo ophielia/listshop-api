@@ -761,6 +761,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         collector.removeTagsForDish(dishId, tagsToRemove);
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withDishId(dishId)
+                .withRemoveEntireItem(false)
                 .withStatisticCountType(StatisticCountType.Dish)
                 .build();
         saveListChanges(shoppingList, collector, context);
@@ -779,6 +780,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ListItemCollector collector = createListItemCollector(listId, shoppingList.getItems());
         CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
                 .withListId(fromListId)
+                .withRemoveEntireItem(false)
                 .withStatisticCountType(StatisticCountType.List)
                 .build();
 
