@@ -1,5 +1,5 @@
 FROM openjdk:11.0.7-jre-slim
-RUN addgroup -S listshop && adduser -S listshop -G listshop
+RUN addgroup --system listshop && adduser --system listshop --ingroup listshop
 USER listshop:listshop
 ARG DEPENDENCY=target/dependency
 COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
