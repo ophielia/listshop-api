@@ -609,9 +609,9 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void deleteItemOperation_Move() throws Exception {
-        Long sourceListId = 7777L;  // 500, 501, 502
-        Long destinationListId = 6666L;  // 501, 502, 503
-        List<Long> tagIdsForUpdate = Arrays.asList(500L, 503L, 504L);
+        Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
+        Long destinationListId = 6666L;  // 501, 502, 503, 505
+        List<Long> tagIdsForUpdate = Arrays.asList(500L, 502L);
 
         ItemOperationPut operationUpdate = new ItemOperationPut();
         operationUpdate.setDestinationListId(destinationListId);
@@ -637,7 +637,7 @@ public class ShoppingListRestControllerTest {
                 .filter(item -> item.getRemovedOn() == null)
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(allSourceResultMap);
-        Assert.assertEquals(3, allSourceResultMap.keySet().size());
+        Assert.assertEquals(4, allSourceResultMap.keySet().size());
         Assert.assertEquals(2, withoutRemovedResultMap.keySet().size());
         // 500 shouldn't be there
         Assert.assertFalse(withoutRemovedResultMap.keySet().contains(500L));
@@ -647,14 +647,12 @@ public class ShoppingListRestControllerTest {
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(destinationResultMap);
         Assert.assertEquals(5, destinationResultMap.keySet().size());
-        // 500 and 504 should be there with count 1
+        // 500 should be there with count 1
         Assert.assertTrue(destinationResultMap.containsKey(500L));
         ItemEntity testElement = destinationResultMap.get(500L);
         Assert.assertEquals(new Long(1), Long.valueOf(testElement.getUsedCount()));
-        testElement = destinationResultMap.get(504L);
-        Assert.assertEquals(new Long(1), Long.valueOf(testElement.getUsedCount()));
-        // 503 should be there with a count of 2
-        testElement = destinationResultMap.get(503L);
+        // 502 should be there with a count of 2
+        testElement = destinationResultMap.get(502L);
         Assert.assertEquals(new Long(2), Long.valueOf(testElement.getUsedCount()));
 
     }
@@ -662,9 +660,9 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void deleteItemOperation_Copy() throws Exception {
-        Long sourceListId = 7777L;  // 500, 501, 502
-        Long destinationListId = 6666L;  // 501, 502, 503
-        List<Long> tagIdsForUpdate = Arrays.asList(500L, 503L, 504L);
+        Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
+        Long destinationListId = 6666L;  // 501, 502, 503, 505
+        List<Long> tagIdsForUpdate = Arrays.asList(500L, 501L, 504L);
 
         ItemOperationPut operationUpdate = new ItemOperationPut();
         operationUpdate.setDestinationListId(destinationListId);
@@ -687,30 +685,131 @@ public class ShoppingListRestControllerTest {
         Map<Long, ItemEntity> sourceResultMap = sourceResultList.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(sourceResultMap);
-        Assert.assertEquals(3, sourceResultMap.keySet().size());
+        Assert.assertEquals(4, sourceResultMap.keySet().size());
         // check destination list
         ShoppingListEntity destinationResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, destinationListId);
         Map<Long, ItemEntity> destinationResultMap = destinationResultList.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(destinationResultMap);
         Assert.assertEquals(5, destinationResultMap.keySet().size());
-        // 500 and 504 should be there with count 1
+        // 500 should be there with count 1
         Assert.assertTrue(destinationResultMap.containsKey(500L));
         ItemEntity testElement = destinationResultMap.get(500L);
         Assert.assertEquals(new Long(1), Long.valueOf(testElement.getUsedCount()));
-        testElement = destinationResultMap.get(504L);
-        Assert.assertEquals(new Long(1), Long.valueOf(testElement.getUsedCount()));
-        // 503 should be there with a count of 2
-        testElement = destinationResultMap.get(503L);
+        // 501 should be there with a count of 2
+        testElement = destinationResultMap.get(501L);
         Assert.assertEquals(new Long(2), Long.valueOf(testElement.getUsedCount()));
 
     }
 
     @Test
     @WithMockUser
+    public void deleteItemOperation_MoveCrossedOff_New() throws Exception {
+        Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
+        Long destinationListId = 6666L;  // 501, 502, 503, 505, 505
+        List<Long> tagIdsForUpdate = Arrays.asList(500L, 502L);
+
+        ItemOperationPut operationUpdate = new ItemOperationPut();
+        operationUpdate.setDestinationListId(destinationListId);
+        operationUpdate.setOperation(ItemOperationType.Move.name());
+        operationUpdate.setTagIds(tagIdsForUpdate);
+
+        String jsonProperties = json(operationUpdate);
+
+        String url = "/shoppinglist/" + sourceListId + "/item";
+
+        MvcResult result = this.mockMvc.perform(put(url)
+                .with(user(meUserDetails))
+                .contentType(contentType)
+                .content(jsonProperties))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // now, retrieve the list
+        ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
+        Map<Long, ItemEntity> allSourceResultMap = sourceResultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Map<Long, ItemEntity> withoutRemovedResultMap = sourceResultList.getItems().stream()
+                .filter(item -> item.getRemovedOn() == null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(allSourceResultMap);
+        Assert.assertEquals(4, allSourceResultMap.keySet().size());
+        Assert.assertEquals(2, withoutRemovedResultMap.keySet().size());
+        // 500 shouldn't be there
+        Assert.assertFalse(withoutRemovedResultMap.keySet().contains(500L));
+        // check destination list
+        ShoppingListEntity destinationResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, destinationListId);
+        Map<Long, ItemEntity> destinationResultMap = destinationResultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(destinationResultMap);
+        Assert.assertEquals(5, destinationResultMap.keySet().size());
+        // 500 should be there with count 1, crossedOff
+        Assert.assertTrue(destinationResultMap.containsKey(500L));
+        ItemEntity testElement = destinationResultMap.get(500L);
+        Assert.assertEquals(new Long(1), Long.valueOf(testElement.getUsedCount()));
+        Assert.assertNotNull(testElement.getCrossedOff());
+        // 502 should be there with a count of 2
+        testElement = destinationResultMap.get(502L);
+        Assert.assertEquals(new Long(2), Long.valueOf(testElement.getUsedCount()));
+    }
+
+    @Test
+    @WithMockUser
+    public void deleteItemOperation_MoveCrossedOff_Existing() throws Exception {
+        Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
+        Long destinationListId = 6666L;  // 501, 502, 503, 505, 505
+        List<Long> tagIdsForUpdate = Arrays.asList(505L, 502L);
+
+        ItemOperationPut operationUpdate = new ItemOperationPut();
+        operationUpdate.setDestinationListId(destinationListId);
+        operationUpdate.setOperation(ItemOperationType.Move.name());
+        operationUpdate.setTagIds(tagIdsForUpdate);
+
+        String jsonProperties = json(operationUpdate);
+
+        String url = "/shoppinglist/" + sourceListId + "/item";
+
+        MvcResult result = this.mockMvc.perform(put(url)
+                .with(user(meUserDetails))
+                .contentType(contentType)
+                .content(jsonProperties))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // now, retrieve the list
+        ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
+        Map<Long, ItemEntity> allSourceResultMap = sourceResultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Map<Long, ItemEntity> withoutRemovedResultMap = sourceResultList.getItems().stream()
+                .filter(item -> item.getRemovedOn() == null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(allSourceResultMap);
+        Assert.assertEquals(4, allSourceResultMap.keySet().size());
+        Assert.assertEquals(2, withoutRemovedResultMap.keySet().size());
+        // 505 shouldn't be there
+        Assert.assertFalse(withoutRemovedResultMap.keySet().contains(505L));
+        // check destination list
+        ShoppingListEntity destinationResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, destinationListId);
+        Map<Long, ItemEntity> destinationResultMap = destinationResultList.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(destinationResultMap);
+        Assert.assertEquals(4, destinationResultMap.keySet().size());
+        // 505 should be there with count 2, not crossedOff
+        Assert.assertTrue(destinationResultMap.containsKey(505L));
+        ItemEntity testElement = destinationResultMap.get(505L);
+        Assert.assertEquals(new Long(2), Long.valueOf(testElement.getUsedCount()));
+        Assert.assertNull(testElement.getCrossedOff());
+        // 502 should be there with a count of 2
+        testElement = destinationResultMap.get(502L);
+        Assert.assertEquals(new Long(2), Long.valueOf(testElement.getUsedCount()));
+    }
+
+
+    @Test
+    @WithMockUser
     public void deleteItemOperation_Remove() throws Exception {
-        Long sourceListId = 7777L;  // 500, 501, 502
-        List<Long> tagIdsForUpdate = Arrays.asList(500L, 503L, 504L);
+        Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
+        List<Long> tagIdsForUpdate = Arrays.asList(500L, 501L, 504L);
 
         ItemOperationPut operationUpdate = new ItemOperationPut();
         operationUpdate.setDestinationListId(null);
@@ -737,7 +836,7 @@ public class ShoppingListRestControllerTest {
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
         Assert.assertNotNull(allSourceResultMap);
-        Assert.assertEquals(3, allSourceResultMap.keySet().size());
+        Assert.assertEquals(4, allSourceResultMap.keySet().size());
         Assert.assertEquals(2, withoutRemovedResultMap.keySet().size());
         // 500 shouldn't be there
         Assert.assertFalse(withoutRemovedResultMap.keySet().contains(500L));

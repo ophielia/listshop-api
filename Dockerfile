@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM openjdk:11.0.7-jre-slim
 RUN addgroup -S listshop && adduser -S listshop -G listshop
 USER listshop:listshop
 ARG DEPENDENCY=target/dependency

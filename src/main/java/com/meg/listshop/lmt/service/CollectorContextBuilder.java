@@ -38,4 +38,14 @@ public class CollectorContextBuilder {
         this.context.setListId(listId);
         return this;
     }
+
+    public CollectorContextBuilder withKeepExistingCrossedOffStatus(boolean keepExistingCrossedOff) {
+        this.context.setKeepExistingCrossedOffStatus(keepExistingCrossedOff);
+        return this;
+    }
+
+    public CollectorContextBuilder doCopyCrossedOff(boolean doCopyCrossedOff) {
+        this.context.setDoCopyCrossedOff(doCopyCrossedOff);
+        return this;
+    }
 }

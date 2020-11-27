@@ -161,10 +161,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
                     .withListId(sourceListId)
                     .withRemoveEntireItem(true)
+                    .withKeepExistingCrossedOffStatus(true)
+                    .doCopyCrossedOff(true)
                     .withStatisticCountType(StatisticCountType.Single)
                     .build();
             ListItemCollector collector = createListItemCollector(destinationListId, items);
-            collector.addTags(tagList, context);
+            collector.copyExistingItemsIntoList(itemsForTags(tagList, sourceList.getId()), context);
             saveListChanges(targetList, collector, context);
         }
 
@@ -184,6 +186,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             saveListChanges(sourceList, collector, context);
         }
 
+    }
+
+    private List<ItemEntity> itemsForTags(List<TagEntity> tagList, Long sourceListId) {
+        Map tagMap = tagList.stream().collect(Collectors.toMap((t) -> t.getId(), (t) -> t.getId()));
+        List<ItemEntity> listItems = itemRepository.findByListId(sourceListId);
+        return listItems.stream()
+                .filter(t -> t.getTag() != null)
+                .filter(t -> tagMap.containsKey(t.getTag().getId())).collect(Collectors.toList());
     }
 
     private List<Long> getTagIdsForOperationType(ItemOperationType operationType, ShoppingListEntity sourceList) {
