@@ -9,12 +9,10 @@ public class CategoryResource extends ResourceSupport {
     private final ItemCategory category;
 
     public CategoryResource(ListLayoutCategoryEntity layoutCategory) {
-        ItemCategory itemCategory = new ItemCategory(layoutCategory.getName(),
+        this.category = new ItemCategory(layoutCategory.getName(),
                 layoutCategory.getId(),
                 layoutCategory.getDisplayOrder(),
                 CategoryType.Standard);
-        this.category = itemCategory;
-        ;
     }
 
 

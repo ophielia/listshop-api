@@ -137,6 +137,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // get source list
         ShoppingListEntity sourceList = getListById(userName, sourceListId);
 
+        if (sourceList == null) {
+            return;
+        }
+
         if (operationType.equals(ItemOperationType.RemoveCrossedOff) ||
                 operationType.equals(ItemOperationType.RemoveAll)) {
             tagIds = getTagIdsForOperationType(operationType, sourceList);
@@ -332,13 +336,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private ListLayoutEntity getListLayout(ListLayoutType listLayoutType) {
         // nothing yet for user - eventually, we could consider user preferences / properties here
 
-        ListLayoutType resultlayout = listLayoutType;
-        if (resultlayout != null) {
-            return listLayoutService.getListLayoutByType(resultlayout);
+
+        if (listLayoutType != null) {
+            return listLayoutService.getListLayoutByType(listLayoutType);
         }
-        resultlayout = shoppingListProperties.getDefaultLayout();
-        if (resultlayout != null) {
-            return listLayoutService.getListLayoutByType(resultlayout);
+        listLayoutType = shoppingListProperties.getDefaultLayout();
+        if (listLayoutType != null) {
+            return listLayoutService.getListLayoutByType(listLayoutType);
         }
 
         // get layout for listtype

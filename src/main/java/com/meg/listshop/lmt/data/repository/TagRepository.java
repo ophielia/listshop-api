@@ -64,7 +64,7 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, TagReposi
             "       AND t.power > (SELECT power  " +
             "                      FROM   tag  " +
             "                      WHERE  tag_id = ?2)  " +
-            "ORDER  BY power ASC  " +
+            "ORDER  BY power   " +
             "LIMIT  1 ", nativeQuery = true)
     TagEntity getNextRatingUp(Long parentRatingId, Long currentId);
 

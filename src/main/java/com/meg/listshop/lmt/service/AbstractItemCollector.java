@@ -145,8 +145,7 @@ public abstract class AbstractItemCollector implements ItemCollector {
         CollectedItem update = getTagCollectedMap().get(tag.getId());
 
         if (update != null) {
-            Pair<Boolean, CollectedItem> collectedItemPair = new ImmutablePair<>(false, update);
-            return collectedItemPair;
+            return new ImmutablePair<>(false, update);
         }
 
         // doesn't exist - we need to create it

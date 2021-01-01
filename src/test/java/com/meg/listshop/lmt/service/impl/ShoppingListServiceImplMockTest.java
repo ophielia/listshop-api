@@ -676,7 +676,7 @@ public class ShoppingListServiceImplMockTest {
         userEntity.setEmail(username);
 
         // 3 items, tagIds 3,4,8
-        ShoppingListEntity sourceList = dummyShoppingList(sourceListId, userId);
+        ShoppingListEntity sourceList = dummyShoppingList(sourceListId, userId, operationTagIds);
         List<TagType> tagTypeList = new ArrayList<>();
         tagTypeList.add(TagType.Ingredient);
         tagTypeList.add(TagType.NonEdible);
@@ -696,7 +696,7 @@ public class ShoppingListServiceImplMockTest {
                 .thenReturn(Optional.of(sourceList));
         Mockito.when(shoppingListRepository.findById(destinationListId))
                 .thenReturn(Optional.of(destinationList));
-        Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(sourceListId))
+        Mockito.when(itemRepository.findByListId(sourceListId))
                 .thenReturn(sourceList.getItems());
         Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(destinationListId))
                 .thenReturn(destinationList.getItems());
@@ -777,8 +777,8 @@ public class ShoppingListServiceImplMockTest {
         userEntity.setId(userId);
         userEntity.setEmail(username);
 
-        // 3 items, tagIds 3,4,8
-        ShoppingListEntity sourceList = dummyShoppingList(sourceListId, userId);
+        // 3 items, tagIds 4,5,8
+        ShoppingListEntity sourceList = dummyShoppingList(sourceListId, userId, operationTagIds);
         // 3 items, tagIds 4,8,7
         ShoppingListEntity destinationList = dummyShoppingList(destinationListId, userId, Arrays.asList(4L, 8L, 7L));
 
@@ -795,16 +795,21 @@ public class ShoppingListServiceImplMockTest {
         // expectations
         Mockito.when(userService.getUserByUserEmail(username))
                 .thenReturn(userEntity);
+        Mockito.when(shoppingListRepository.findById(sourceListId))
+                .thenReturn(Optional.of(sourceList));
         Mockito.when(shoppingListRepository.findById(destinationListId))
                 .thenReturn(Optional.of(destinationList));
         Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(destinationListId))
                 .thenReturn(destinationList.getItems());
+        Mockito.when(itemRepository.findByListId(sourceListId))
+                .thenReturn(sourceList.getItems());
+
         Mockito.when(tagService.getDictionaryForIds(new HashSet(operationTagIds)))
                 .thenReturn(tagDictionary);
 
         itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
         Mockito.when(shoppingListRepository.save(argument.capture()))
-                .thenReturn(sourceList);
+                .thenReturn(destinationList);
 
         // call under test
         shoppingListService.performItemOperation(username, sourceListId, ItemOperationType.Copy, operationTagIds, destinationListId);

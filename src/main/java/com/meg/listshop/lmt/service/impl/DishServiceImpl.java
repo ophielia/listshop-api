@@ -86,7 +86,7 @@ public class DishServiceImpl implements DishService {
         UserEntity user = userRepository.findByUsername(username);
 
         Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
-        if (!dishOpt.isPresent()) {
+        if (dishOpt.isEmpty()) {
             final String msg = "No dish found by id for user [" + username + "] and dishId [" + dishId + "]";
             throw new ObjectNotFoundException(msg, dishId, "Dish");
         }
@@ -209,12 +209,13 @@ public class DishServiceImpl implements DishService {
     @Override
     public void updateLastAddedForDish(Long dishId) {
         Optional<DishEntity> dish = getDishById(dishId);
-        if (!dish.isPresent()) {
-            return;
-        }
-        DishEntity dishEntity = dish.get();
-        dishEntity.setLastAdded(new Date());
-        dishRepository.save(dishEntity);
+
+        dish.map(d -> {
+            d.setLastAdded(new Date());
+            dishRepository.save(d);
+            return d;
+        });
+        return;
     }
 
     @Override

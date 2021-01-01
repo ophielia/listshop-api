@@ -223,10 +223,9 @@ public class ListLayoutServiceImpl implements ListLayoutService {
                 .collect(Collectors.toList());
         // if any tags already in list, filter from add list
         if (!alreadyInList.isEmpty()) {
-            List<Long> withoutDoubles = tagIdList.stream()
+            tagIdsToAdd = tagIdList.stream()
                     .filter(i -> !alreadyInList.contains(i))
                     .collect(Collectors.toList());
-            tagIdsToAdd = withoutDoubles;
         } else {
             tagIdsToAdd = tagIdList;
         }

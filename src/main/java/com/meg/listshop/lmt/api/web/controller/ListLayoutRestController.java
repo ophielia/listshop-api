@@ -197,7 +197,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
     //@RequestMapping(method = RequestMethod.POST, value = "/category/{categoryId}", produces = "application/json")
     public ResponseEntity<Object> moveCategory(Principal principal, @PathVariable Long categoryId, @RequestParam(value = "move", required = true) String direction) {
-        boolean moveUp = direction != null && "up".equalsIgnoreCase(direction);
+        boolean moveUp = "up".equalsIgnoreCase(direction);
         try {
             this.listLayoutService.moveCategory(categoryId, moveUp);
         } catch (ListLayoutException e) {
