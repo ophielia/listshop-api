@@ -11,7 +11,7 @@ public interface DishRepository extends JpaRepository<DishEntity, Long> {
 
     List<DishEntity> findByUserId(Long userid);
 
-    @Query("select d FROM DishEntity d where d.userId = ?1 and d.id in (?2)")
+    @Query("select d FROM DishEntity d where d.userId = ?1 and d.dish_id in (?2)")
     List<DishEntity> findByDishIdsForUser(Long userId, List<Long> dishIds);
 
     @Query("select d FROM DishEntity d where (d.autoTagStatus < ?1 OR d.autoTagStatus is null)")

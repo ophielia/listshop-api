@@ -97,7 +97,7 @@ public class DishRestController implements DishRestControllerApi {
         if (tagInputs != null && !tagInputs.isEmpty()) {
             Set<Long> tagIds = tagInputs.stream()
                     .filter(t -> t.getId() != null)
-                    .map(t -> new Long(t.getId()))
+                    .map(t -> Long.valueOf(t.getId()))
                     .collect(Collectors.toSet());
             tagService.addTagsToDish(principal.getName(), result.getId(), tagIds);
             result = dishService.getDishForUserById(principal.getName(), result.getId());

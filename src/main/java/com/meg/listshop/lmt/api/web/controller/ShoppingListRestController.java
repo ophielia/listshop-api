@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -230,7 +231,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     //@RequestMapping(method = RequestMethod.POST, value = "/{listId}/item/{itemId}", produces = "application/json")
     public ResponseEntity<Object> setCrossedOffForItem(Principal principal, @PathVariable Long listId, @PathVariable Long itemId,
-                                                @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff
+                                                       @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff
     ) {
         this.shoppingListService.updateItemCrossedOff(principal.getName(), listId, itemId, crossedOff);
 
@@ -270,6 +271,22 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         this.shoppingListService.addToListFromMealPlan(principal.getName(), listId, mealPlanId);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping(value = "/{listId}/dish", produces = "application/json")
+    public ResponseEntity<Object> addDishesToList(Principal principal, @PathVariable Long listId, @RequestBody ListAddProperties listAddProperties) {
+        String message = String.format("Adding dishes to list for user [%S]", principal.getName());
+        logger.info(message);
+
+        try {
+            shoppingListService.addDishesToList(principal.getName(), listId, listAddProperties);
+        } catch (ShoppingListException e) {
+            logger.error("Exception while creating List.", e);
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
 
     @Override
     public ResponseEntity<Object> addDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId) {

@@ -156,7 +156,7 @@ public class TagRestControllerTest {
         String id = locationParts[locationParts.length - 1];
         Assert.assertNotNull(id);
 
-        Optional<TagEntity> tagResult = tagRepository.findById(new Long(id));
+        Optional<TagEntity> tagResult = tagRepository.findById(Long.valueOf(id));
         // verify that tag with found id belongs to default group
         Assert.assertTrue(tagResult.isPresent());
         Optional<TagRelationEntity> tagRelationEntity = tagRelationRepository.findByChild(tagResult.get());

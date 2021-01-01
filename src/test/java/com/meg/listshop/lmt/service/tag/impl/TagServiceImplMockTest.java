@@ -426,7 +426,7 @@ public class TagServiceImplMockTest {
         List<TagEntity> returnList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             TagEntity tag = new TagEntity();
-            tag.setId(new Long(i));
+            tag.setId(Long.valueOf(i));
             returnList.add(tag);
         }
         return returnList;

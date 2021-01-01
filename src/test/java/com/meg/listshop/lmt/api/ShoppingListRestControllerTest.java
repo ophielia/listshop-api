@@ -650,10 +650,10 @@ public class ShoppingListRestControllerTest {
         // 500 should be there with count 1
         Assert.assertTrue(destinationResultMap.containsKey(500L));
         ItemEntity testElement = destinationResultMap.get(500L);
-        Assert.assertEquals(new Long(1), Long.valueOf(testElement.getUsedCount()));
+        Assert.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
         // 502 should be there with a count of 2
         testElement = destinationResultMap.get(502L);
-        Assert.assertEquals(new Long(2), Long.valueOf(testElement.getUsedCount()));
+        Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
 
     }
 
@@ -695,10 +695,10 @@ public class ShoppingListRestControllerTest {
         // 500 should be there with count 1
         Assert.assertTrue(destinationResultMap.containsKey(500L));
         ItemEntity testElement = destinationResultMap.get(500L);
-        Assert.assertEquals(new Long(1), Long.valueOf(testElement.getUsedCount()));
+        Assert.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
         // 501 should be there with a count of 2
         testElement = destinationResultMap.get(501L);
-        Assert.assertEquals(new Long(2), Long.valueOf(testElement.getUsedCount()));
+        Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
 
     }
 
@@ -746,11 +746,11 @@ public class ShoppingListRestControllerTest {
         // 500 should be there with count 1, crossedOff
         Assert.assertTrue(destinationResultMap.containsKey(500L));
         ItemEntity testElement = destinationResultMap.get(500L);
-        Assert.assertEquals(new Long(1), Long.valueOf(testElement.getUsedCount()));
+        Assert.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
         Assert.assertNotNull(testElement.getCrossedOff());
         // 502 should be there with a count of 2
         testElement = destinationResultMap.get(502L);
-        Assert.assertEquals(new Long(2), Long.valueOf(testElement.getUsedCount()));
+        Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
     }
 
     @Test
@@ -797,11 +797,11 @@ public class ShoppingListRestControllerTest {
         // 505 should be there with count 2, not crossedOff
         Assert.assertTrue(destinationResultMap.containsKey(505L));
         ItemEntity testElement = destinationResultMap.get(505L);
-        Assert.assertEquals(new Long(2), Long.valueOf(testElement.getUsedCount()));
+        Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
         Assert.assertNull(testElement.getCrossedOff());
         // 502 should be there with a count of 2
         testElement = destinationResultMap.get(502L);
-        Assert.assertEquals(new Long(2), Long.valueOf(testElement.getUsedCount()));
+        Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
     }
 
 

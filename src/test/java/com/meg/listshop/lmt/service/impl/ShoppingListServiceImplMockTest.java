@@ -313,6 +313,100 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
+    public void testAddDishesToList() throws ShoppingListException {
+        Long listId = 99L;
+        Long userId = 9L;
+
+        // fixtures
+        String username = "Eustace";
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setEmail(username);
+
+        ShoppingListEntity shoppingList = dummyShoppingList(listId, userId);
+
+        // make 6 tags
+        TagEntity tag1 = ServiceTestUtils.buildTag(1L, "first tag", TagType.Ingredient);
+        TagEntity tag2 = ServiceTestUtils.buildTag(2L, "second tag", TagType.Ingredient);
+        TagEntity tag3 = ServiceTestUtils.buildTag(3L, "third tag", TagType.Ingredient);
+        TagEntity tag4 = ServiceTestUtils.buildTag(4L, "fourth tag", TagType.Ingredient);
+        TagEntity tag5 = ServiceTestUtils.buildTag(5L, "fifth tag", TagType.Ingredient);
+        TagEntity tag6 = ServiceTestUtils.buildTag(6L, "outlier tag", TagType.NonEdible);
+
+        Long dishId1 = 1212L;
+        Long dishId2 = 2323L;
+        DishEntity dish1 = ServiceTestUtils.buildDish(userId, "dish one", Arrays.asList(tag1, tag2));
+        DishEntity dish2 = ServiceTestUtils.buildDish(userId, "dish two", Arrays.asList(tag1, tag3, tag4, tag5, tag6));
+        dish1.setId(dishId1);
+        dish2.setId(dishId2);
+
+        ArgumentCaptor<ShoppingListEntity> argument = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        ListAddProperties addProperties = new ListAddProperties();
+        addProperties.setDishSources(Arrays.asList(dishId1.toString(), dishId2.toString()));
+
+        // expectations
+        Mockito.when(userService.getUserByUserEmail(username))
+                .thenReturn(userEntity);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId))
+                .thenReturn(Optional.of(shoppingList));
+        Mockito.when(tagService.getReplacedTagsFromIds(any(Set.class)))
+                .thenReturn(new ArrayList<Long>());
+        Mockito.when(tagService.getTagsForDish(username, dish1.getId()))
+                .thenReturn(Arrays.asList(tag1, tag2, tag3, tag4));
+        Mockito.when(tagService.getTagsForDish(username, dish2.getId()))
+                .thenReturn(Arrays.asList(tag6, tag5, tag4, tag3));
+        Mockito.doNothing().when(dishService).updateLastAddedForDish(dishId1);
+        Mockito.doNothing().when(dishService).updateLastAddedForDish(dishId2);
+
+        itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
+        Mockito.when(shoppingListRepository.save(argument.capture()))
+                .thenReturn(shoppingList);
+
+
+        // verifications before
+        // list contain doesn't item from meal plan
+        Optional<ItemEntity> mealPlanItem = shoppingList.getItems().stream()
+                .filter(item -> item.getTag().getId().longValue() == 1L)
+                .findFirst();
+        Assert.assertFalse(mealPlanItem.isPresent());
+
+        // call
+        shoppingListService.addDishesToList(username, listId, addProperties);
+
+        // verification afterwards
+        // note - checking captured list
+        // list is not null
+        ShoppingListEntity listResult = argument.getValue();
+        Assert.assertNotNull(listResult);
+        // list should contain 6 items
+
+        Assert.assertEquals(6, listResult.getItems().size());
+        // verify items
+        // put items into map
+        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(resultMap);
+        // tag 1, 2, 5, 6 should be there - once
+        Assert.assertNotNull(resultMap.get(1L));
+        Assert.assertEquals(1, resultMap.get(1L).getUsedCount().longValue());
+        Assert.assertNotNull(resultMap.get(2L));
+        Assert.assertEquals(1, resultMap.get(2L).getUsedCount().longValue());
+        Assert.assertNotNull(resultMap.get(5L));
+        Assert.assertEquals(1, resultMap.get(5L).getUsedCount().longValue());
+        Assert.assertNotNull(resultMap.get(6L));
+        Assert.assertEquals(1, resultMap.get(6L).getUsedCount().longValue());
+        // tags 3 and 4 should be there twice
+        Assert.assertNotNull(resultMap.get(3L));
+        Assert.assertEquals(2, resultMap.get(3L).getUsedCount().longValue());
+        Assert.assertNotNull(resultMap.get(4L));
+        Assert.assertEquals(2, resultMap.get(4L).getUsedCount().longValue());
+
+
+    }
+
+    @Test
     public void testPerformItemOperation_Remove() {
         String username = "Eustace";
         Long sourceListId = 99L;

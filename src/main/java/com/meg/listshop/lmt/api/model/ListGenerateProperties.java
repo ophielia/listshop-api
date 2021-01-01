@@ -47,7 +47,7 @@ public class ListGenerateProperties {
     }
 
     public Long getMealPlanSourceId() {
-        return mealPlanSourceId==null?null:new Long(mealPlanSourceId);
+        return mealPlanSourceId == null ? null : Long.valueOf(mealPlanSourceId);
     }
 
     public void setMealPlanSourceId(String mealPlanSourceId) {

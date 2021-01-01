@@ -17,8 +17,8 @@
         <java.version>11</java.version>
         <project.container.name>listshop</project.container.name>
 
-        <spring-boot-version>2.1.6.RELEASE</spring-boot-version>
-        <spring-boot-bom-version>2.1.6.Final-redhat-00004</spring-boot-bom-version>
+        <spring-boot-version>2.2.2.RELEASE</spring-boot-version>
+        <!--<spring-boot-bom-version>2.1.6.Final-redhat-00004</spring-boot-bom-version>-->
 
         <fabric8-maven-plugin-version>4.3.1</fabric8-maven-plugin-version>
         <fabric8.openshift.trimImageInContainerSpec>true</fabric8.openshift.trimImageInContainerSpec>

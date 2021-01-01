@@ -252,8 +252,8 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     private List<TagEntity> getTagsForList(String targetTagIds, Map<Long, TagEntity> dictionary) {
         return FlatStringUtils.inflateStringToList(targetTagIds, ";")
                 .stream()
-                .filter(t -> dictionary.containsKey(new Long(t)))
-                .map(t -> dictionary.get(new Long(t)))
+                .filter(t -> dictionary.containsKey(Long.valueOf(t)))
+                .map(t -> dictionary.get(Long.valueOf(t)))
                 .collect(Collectors.toList());
 
     }

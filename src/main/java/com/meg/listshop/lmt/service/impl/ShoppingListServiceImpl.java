@@ -215,6 +215,34 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
+    public void addDishesToList(String userName, Long listId, ListAddProperties listAddProperties) throws ShoppingListException {
+        // retrieve list
+        ShoppingListEntity newList = getListById(userName, listId);
+        if (newList == null) {
+            throw new ObjectNotFoundException("No list found for user [" + userName + "] with list id [" + listId + "])");
+        }
+        ListItemCollector collector = createListItemCollector(newList.getId(), null);
+
+        // get dishes to add
+        List<Long> dishIds = listAddProperties.getDishSourceIds();
+        if (dishIds.isEmpty()) {
+            return;
+        }
+
+        // now, add all dish ids
+        for (Long id : dishIds) {
+            addDishToList(userName, collector, id);
+        }
+
+        // save changes
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+                .withStatisticCountType(StatisticCountType.Dish)
+                .build();
+        saveListChanges(newList, collector, context);
+    }
+
+
+    @Override
     public ShoppingListEntity generateListForUser(String userName, ListGenerateProperties listGenerateProperties) throws ShoppingListException {
         UserEntity user = userService.getUserByUserEmail(userName);
 
@@ -237,9 +265,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             MealPlanEntity mealPlan = mealPlanService.getMealPlanById(userName, listGenerateProperties.getMealPlanSourceId());
             dishIds = new ArrayList<>();
             if (mealPlan.getSlots() != null) {
-            for (SlotEntity slot : mealPlan.getSlots()) {
-                dishIds.add(slot.getDish().getId());
-            }
+                for (SlotEntity slot : mealPlan.getSlots()) {
+                    dishIds.add(slot.getDish().getId());
+                }
             }
         }
 
