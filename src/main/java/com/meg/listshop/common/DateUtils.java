@@ -21,6 +21,9 @@ public class DateUtils {
     }
 
     public static LocalDateTime asLocalDateTime(Date date) {
+        if (date == null) {
+            return null;
+        }
         return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 

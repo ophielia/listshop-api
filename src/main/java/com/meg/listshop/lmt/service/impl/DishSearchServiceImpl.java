@@ -158,8 +158,8 @@ public class DishSearchServiceImpl implements DishSearchService {
         StringBuilder outerJoins = new StringBuilder();
         StringBuilder orderByClause = new StringBuilder(" order by d.last_added NULLS FIRST ");
         // construct basic joins and from clause
-        StringBuilder fromClause = new StringBuilder(" from dish_tags dt join dish d on d.dish_id = dt.dish_id and d.user_id = :userId and dt.tag_id = :slotTagId");
-        StringBuilder groupByClause = new StringBuilder(" group by dt.dish_id, d.last_added ");
+        String fromClause = " from dish_tags dt join dish d on d.dish_id = dt.dish_id and d.user_id = :userId and dt.tag_id = :slotTagId";
+        String groupByClause = " group by dt.dish_id, d.last_added ";
         // construct outerJoins and add to selectClause
         int i = 0;
         for (String id : tagListForSlot) {

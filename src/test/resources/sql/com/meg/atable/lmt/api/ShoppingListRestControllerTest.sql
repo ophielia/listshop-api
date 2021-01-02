@@ -108,13 +108,16 @@ VALUES (500777, 504, 500774, '2019-07-12', null, null, 1, null, null);
 -- operation list items, source - three items- id 500,501,502
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
-VALUES (7777, 500, 70773, '2019-07-12', null, null, 1, null, null);
+VALUES (7777, 500, 70773, '2019-07-12', '2019-07-12', null, 1, null, null);
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
 VALUES (7777, 501, 70770, '2019-07-12', null, null, 1, null, null);
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
 VALUES (7777, 502, 70771, '2019-07-12', null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (7777, 505, 707711, '2019-07-12', '2019-07-12', null, 1, null, null);
 
 -- operation list items, source - three items- id 500,501,502
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
@@ -139,6 +142,9 @@ VALUES (6666, 502, 60661, '2019-07-12', null, null, 1, null, null);
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
 VALUES (6666, 503, 60662, '2019-07-12', null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (6666, 505, 60663, '2019-07-12', null, null, 1, null, null);
 -- test with 501, 503, 504
 
 -- test add to list from meal plan

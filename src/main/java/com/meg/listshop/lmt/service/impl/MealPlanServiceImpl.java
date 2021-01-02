@@ -183,7 +183,7 @@ public class MealPlanServiceImpl implements MealPlanService {
     }
 
 
-    public boolean deleteMealPlan(String name, Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException {
+    public void deleteMealPlan(String name, Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException {
         MealPlanEntity toDelete = getMealPlanById(name, mealPlanId);
 
         if (!toDelete.getSlots().isEmpty()) {
@@ -191,7 +191,7 @@ public class MealPlanServiceImpl implements MealPlanService {
             toDelete.setSlots(null);
         }
         mealPlanRepository.delete(toDelete);
-        return true;
+        return;
 
     }
 

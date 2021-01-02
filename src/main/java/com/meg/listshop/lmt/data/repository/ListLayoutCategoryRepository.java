@@ -37,7 +37,7 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
             "where lc.layout_id = ?1 " +
             "  and cr.parent_category_id is null " +
             "  and lc.display_order > ?2 " +
-            "order by display_order asc", nativeQuery = true)
+            "order by display_order ", nativeQuery = true)
     List<ListLayoutCategoryEntity> getCategoriesAbove(Long layoutId, int displayOrder);
 
 
@@ -56,7 +56,7 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
             "where lc.layout_id = ?1 " +
             "  and cr.parent_category_id = ?2 " +
             "  and lc.display_order > ?3 " +
-            "order by display_order asc", nativeQuery = true)
+            "order by display_order ", nativeQuery = true)
     List<ListLayoutCategoryEntity> getSubcategoriesAbove(Long layoutId, Long parentId,int displayOrder);
 
 

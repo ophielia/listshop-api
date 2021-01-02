@@ -17,7 +17,7 @@ import java.util.Set;
  */
 public interface TagService {
     @Value("${service.tagservice.main.dish.tagid}")
-    public final Long MAIN_DISH_TAG_ID = 320L;
+    Long MAIN_DISH_TAG_ID = 320L;
 
     TagEntity save(TagEntity tag);
 

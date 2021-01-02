@@ -45,7 +45,7 @@ public interface ListLayoutRestControllerApi {
     ResponseEntity<Object> deleteCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) throws ListLayoutException;
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{listLayoutId}/category/{layoutCategoryId}", produces = "application/json")
-    ResponseEntity<Object> updateCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategory layoutCategory);
+    ResponseEntity<Object> updateCategoryFromListLayout(Principal principal, @PathVariable Long layoutCategoryId, @RequestBody ListLayoutCategory layoutCategory);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}/tag", produces = "application/json")
     ResponseEntity<Object> getUncategorizedTags(Principal principal, @PathVariable Long listLayoutId);

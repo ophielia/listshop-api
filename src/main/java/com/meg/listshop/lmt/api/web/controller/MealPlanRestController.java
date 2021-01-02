@@ -102,11 +102,8 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     @Override
     public ResponseEntity<MealPlan> deleteMealPlan(Principal principal, @PathVariable Long mealPlanId)  {
 
-        boolean success = mealPlanService.deleteMealPlan(principal.getName(), mealPlanId);
-        if (success) {
+        mealPlanService.deleteMealPlan(principal.getName(), mealPlanId);
             return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.badRequest().build();
     }
 
     //@RequestMapping(method = RequestMethod.POST, value = "/{mealPlanId}/name", produces = "application/json")

@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface MealPlanService {
 
-    boolean deleteMealPlan(String name, Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException;
+    void deleteMealPlan(String name, Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException;
 
     List<MealPlanEntity> getMealPlansForUserName(String username);
 

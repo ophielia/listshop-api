@@ -200,8 +200,8 @@ public class TargetEntity extends AbstractInflateAndFlatten {
             return;
         }
         targetTags = inflateStringToList(getTargetTagIds()).stream()
-                .filter(t -> dictionary.containsKey(new Long(t)))
-                .map(t -> dictionary.get(new Long(t)))
+                .filter(t -> dictionary.containsKey(Long.valueOf(t)))
+                .map(t -> dictionary.get(Long.valueOf(t)))
                 .collect(Collectors.toList());
 
         if (slots != null && !slots.isEmpty()) {

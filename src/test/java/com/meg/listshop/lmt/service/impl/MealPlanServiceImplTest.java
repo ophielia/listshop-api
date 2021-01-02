@@ -171,10 +171,9 @@ public class MealPlanServiceImplTest {
     public void testDeleteMealPlan() {
         MealPlanEntity mealPlan = mealPlanService.getMealPlanById(deleteUserAccount.getEmail(), TestConstants.MENU_PLAN_4_ID);
 
-        boolean success = mealPlanService.deleteMealPlan(deleteUserAccount.getEmail(), mealPlan.getId());
+        mealPlanService.deleteMealPlan(deleteUserAccount.getEmail(), mealPlan.getId());
         MealPlanEntity testPlan = mealPlanService.getMealPlanById(deleteUserAccount.getEmail(), TestConstants.MENU_PLAN_4_ID);
         Assert.assertNull(testPlan);
-        Assert.assertTrue(success);
     }
 
     @Test

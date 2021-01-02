@@ -14,6 +14,8 @@ public class CollectorContext {
     private StatisticCountType statisticCountType = StatisticCountType.None;
 
     private boolean removeEntireItem;
+    private boolean keepExistingCrossedOffStatus;
+    private boolean copyCrossedOff;
 
     public CollectorContext() {
 
@@ -73,5 +75,21 @@ public class CollectorContext {
 
     public void setStatisticCountType(StatisticCountType statisticCountType) {
         this.statisticCountType = statisticCountType;
+    }
+
+    public void setKeepExistingCrossedOffStatus(boolean keepExistingCrossedOff) {
+        this.keepExistingCrossedOffStatus = keepExistingCrossedOff;
+    }
+
+    public boolean isKeepExistingCrossedOffStatus() {
+        return keepExistingCrossedOffStatus;
+    }
+
+    public boolean isCopyCrossedOff() {
+        return copyCrossedOff;
+    }
+
+    public void setDoCopyCrossedOff(boolean copyCrossedOff) {
+        this.copyCrossedOff = copyCrossedOff;
     }
 }

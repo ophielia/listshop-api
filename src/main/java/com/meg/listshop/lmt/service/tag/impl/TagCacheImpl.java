@@ -56,9 +56,7 @@ public class TagCacheImpl implements TagCache {
 
     @Override
     public void clearEntry(Long id) {
-        if (cacheMap.containsKey(id)) {
-            cacheMap.remove(id);
-        }
+        cacheMap.remove(id);
     }
 
     @Override

@@ -223,11 +223,11 @@ public class CollectedItem {
     }
 
     public void add(CollectorContext context, Boolean isNew) {
-        add(1, context, isNew);
+        add(1, context, null, isNew);
 
     }
 
-    private void add(int newCount, CollectorContext context, boolean isNew) {
+    private void add(int newCount, CollectorContext context, LocalDateTime crossedOffDate, boolean isNew) {
         int count = getUsedCount() != null ? getUsedCount() : 0;
         boolean updateListSources = context.hasListId() && context.eligibleForListSourceChange();
         if (updateListSources) {
@@ -244,16 +244,20 @@ public class CollectedItem {
             setRawDishSources(newSources);
         }
         setUsedCount(count + newCount);
+        if ((isNew || isRemoved) || !context.isKeepExistingCrossedOffStatus()) {
+            // copy crossed off
+            setCrossedOff(crossedOffDate);
+        }
         if (!isNew) {
-        setUpdated(true);
+            setUpdated(true);
         }
 
     }
 
-    public void add(ItemEntity item, CollectorContext context, boolean isNew) {
+    public void add(ItemEntity item, LocalDateTime crossedOffDate, CollectorContext context, boolean isNew) {
 
         int newCount = item.getUsedCount() != null && item.getUsedCount() > 0 ? item.getUsedCount() : 1;
-        add(newCount, context, isNew);
+        add(newCount, context, crossedOffDate, isNew);
 
     }
     // Collector Item values

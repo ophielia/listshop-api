@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service;
 
+import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.lmt.api.model.ContextType;
 import com.meg.listshop.lmt.api.model.StatisticCountType;
 import com.meg.listshop.lmt.data.entity.ItemEntity;
@@ -42,7 +43,7 @@ public class ListItemCollector extends AbstractItemCollector {
 
     private void copyOrUpdateExistingItem(ItemEntity item, CollectorContext context) {
         // do not copy crossed off items
-        if (item.getCrossedOff() != null || item.getRemovedOn() != null) {
+        if ((item.getCrossedOff() != null && !context.isCopyCrossedOff()) || item.getRemovedOn() != null) {
             return;
         }
         if (item.getTag() == null) {
@@ -56,7 +57,7 @@ public class ListItemCollector extends AbstractItemCollector {
         CollectedItem update = collectedItemPair.getRight();
         boolean isNew = collectedItemPair.getLeft();
 
-        update.add(item, context, isNew);
+        update.add(item, DateUtils.asLocalDateTime(item.getCrossedOff()), context, isNew);
         getTagCollectedMap().put(item.getTag().getId(), update);
 
     }

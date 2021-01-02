@@ -137,6 +137,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // get source list
         ShoppingListEntity sourceList = getListById(userName, sourceListId);
 
+        if (sourceList == null) {
+            return;
+        }
+
         if (operationType.equals(ItemOperationType.RemoveCrossedOff) ||
                 operationType.equals(ItemOperationType.RemoveAll)) {
             tagIds = getTagIdsForOperationType(operationType, sourceList);
@@ -161,10 +165,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
                     .withListId(sourceListId)
                     .withRemoveEntireItem(true)
+                    .withKeepExistingCrossedOffStatus(true)
+                    .doCopyCrossedOff(true)
                     .withStatisticCountType(StatisticCountType.Single)
                     .build();
             ListItemCollector collector = createListItemCollector(destinationListId, items);
-            collector.addTags(tagList, context);
+            collector.copyExistingItemsIntoList(itemsForTags(tagList, sourceList.getId()), context);
             saveListChanges(targetList, collector, context);
         }
 
@@ -186,6 +192,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
+    private List<ItemEntity> itemsForTags(List<TagEntity> tagList, Long sourceListId) {
+        Map tagMap = tagList.stream().collect(Collectors.toMap((t) -> t.getId(), (t) -> t.getId()));
+        List<ItemEntity> listItems = itemRepository.findByListId(sourceListId);
+        return listItems.stream()
+                .filter(t -> t.getTag() != null)
+                .filter(t -> tagMap.containsKey(t.getTag().getId())).collect(Collectors.toList());
+    }
+
     private List<Long> getTagIdsForOperationType(ItemOperationType operationType, ShoppingListEntity sourceList) {
         if (operationType.equals(ItemOperationType.RemoveCrossedOff)) {
             return sourceList.getItems().stream()
@@ -203,6 +217,34 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
         return new ArrayList<>();
     }
+
+    @Override
+    public void addDishesToList(String userName, Long listId, ListAddProperties listAddProperties) throws ShoppingListException {
+        // retrieve list
+        ShoppingListEntity newList = getListById(userName, listId);
+        if (newList == null) {
+            throw new ObjectNotFoundException("No list found for user [" + userName + "] with list id [" + listId + "])");
+        }
+        ListItemCollector collector = createListItemCollector(newList.getId(), null);
+
+        // get dishes to add
+        List<Long> dishIds = listAddProperties.getDishSourceIds();
+        if (dishIds.isEmpty()) {
+            return;
+        }
+
+        // now, add all dish ids
+        for (Long id : dishIds) {
+            addDishToList(userName, collector, id);
+        }
+
+        // save changes
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
+                .withStatisticCountType(StatisticCountType.Dish)
+                .build();
+        saveListChanges(newList, collector, context);
+    }
+
 
     @Override
     public ShoppingListEntity generateListForUser(String userName, ListGenerateProperties listGenerateProperties) throws ShoppingListException {
@@ -227,9 +269,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             MealPlanEntity mealPlan = mealPlanService.getMealPlanById(userName, listGenerateProperties.getMealPlanSourceId());
             dishIds = new ArrayList<>();
             if (mealPlan.getSlots() != null) {
-            for (SlotEntity slot : mealPlan.getSlots()) {
-                dishIds.add(slot.getDish().getId());
-            }
+                for (SlotEntity slot : mealPlan.getSlots()) {
+                    dishIds.add(slot.getDish().getId());
+                }
             }
         }
 
@@ -294,13 +336,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private ListLayoutEntity getListLayout(ListLayoutType listLayoutType) {
         // nothing yet for user - eventually, we could consider user preferences / properties here
 
-        ListLayoutType resultlayout = listLayoutType;
-        if (resultlayout != null) {
-            return listLayoutService.getListLayoutByType(resultlayout);
+
+        if (listLayoutType != null) {
+            return listLayoutService.getListLayoutByType(listLayoutType);
         }
-        resultlayout = shoppingListProperties.getDefaultLayout();
-        if (resultlayout != null) {
-            return listLayoutService.getListLayoutByType(resultlayout);
+        listLayoutType = shoppingListProperties.getDefaultLayout();
+        if (listLayoutType != null) {
+            return listLayoutService.getListLayoutByType(listLayoutType);
         }
 
         // get layout for listtype
@@ -761,6 +803,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         collector.removeTagsForDish(dishId, tagsToRemove);
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withDishId(dishId)
+                .withRemoveEntireItem(false)
                 .withStatisticCountType(StatisticCountType.Dish)
                 .build();
         saveListChanges(shoppingList, collector, context);
@@ -779,6 +822,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ListItemCollector collector = createListItemCollector(listId, shoppingList.getItems());
         CollectorContext context = new CollectorContextBuilder().create(ContextType.List)
                 .withListId(fromListId)
+                .withRemoveEntireItem(false)
                 .withStatisticCountType(StatisticCountType.List)
                 .build();
 

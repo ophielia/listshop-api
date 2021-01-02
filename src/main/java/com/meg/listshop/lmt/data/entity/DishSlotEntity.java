@@ -91,8 +91,8 @@ public class DishSlotEntity {
             return;
         }
         matchedTags = FlatStringUtils.inflateStringToList(getMatchedTagIds(), ";").stream()
-                .filter(t -> dictionary.containsKey(new Long(t)))
-                .map(t -> dictionary.get(new Long(t)))
+                .filter(t -> dictionary.containsKey(Long.valueOf(t)))
+                .map(t -> dictionary.get(Long.valueOf(t)))
                 .collect(Collectors.toList());
 
 
