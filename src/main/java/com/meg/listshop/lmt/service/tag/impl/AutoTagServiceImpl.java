@@ -34,7 +34,7 @@ public class AutoTagServiceImpl implements AutoTagService {
 
     TagService tagService;
 
-    private List<AutoTagProcessor> processorList;
+    private final List<AutoTagProcessor> processorList;
 
     @Autowired
     public AutoTagServiceImpl(TagRepository tagRepository, ShadowTagRepository shadowTagRepository, UserService userService, DishService dishService, TagService tagService, List<AutoTagProcessor> processorList) {

@@ -12,8 +12,8 @@ public class ProposalAttempt {
 
     Integer[] slotNumberOrder;
 
-    private Map<Integer, List<DishTagSearchResult>> dishMatches = new HashMap<>();
-    private Map<Integer, Double[]> slotResults = new HashMap<>();
+    private final Map<Integer, List<DishTagSearchResult>> dishMatches = new HashMap<>();
+    private final Map<Integer, Double[]> slotResults = new HashMap<>();
     private double healthIndexMedian;
     private double healthIndexAverage;
     private int proposalContentHash;

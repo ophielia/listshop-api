@@ -34,9 +34,9 @@ public class TagExtendedEntity {
 
     private Double power;
 
-    private Boolean toDelete = false;
+    private final Boolean toDelete = false;
 
-    private Boolean isParent = false;
+    private final Boolean isParent = false;
 
     private Long replacementTagId;
 

@@ -79,7 +79,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<Object> addToListFromMealPlan(Principal principal, @PathVariable Long listId, @PathVariable Long mealPlanId);
 
     @PostMapping(value = "/{listId}/dish", produces = "application/json")
-    public ResponseEntity<Object> addDishesToList(Principal principal, @PathVariable Long listId, @RequestBody ListAddProperties listAddProperties);
+    ResponseEntity<Object> addDishesToList(Principal principal, @PathVariable Long listId, @RequestBody ListAddProperties listAddProperties);
 
     @PostMapping(value = "/{listId}/dish/{dishId}", produces = "application/json")
     ResponseEntity<Object> addDishToList(Principal principal, @PathVariable Long listId, @PathVariable Long dishId);

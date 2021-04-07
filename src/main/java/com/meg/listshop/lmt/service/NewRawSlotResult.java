@@ -12,7 +12,7 @@ public class NewRawSlotResult {
     private final int dishResultsPerSlot;
     private Integer slotNumber;
     private ArrayList<Long> filteredDishes = new ArrayList<>();
-    private List<DishTagSearchResult> dishSortedResults;
+    private final List<DishTagSearchResult> dishSortedResults;
     private List<DishTagSearchResult> preSelectedResults;
 
     public NewRawSlotResult(Integer slotNumber, List<DishTagSearchResult> searchResults, int slotMatchCount, int dishResultsForSlot) {

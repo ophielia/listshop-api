@@ -26,11 +26,11 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private UserDeviceRepository userDeviceRepository;
+    private final UserDeviceRepository userDeviceRepository;
 
-    private AuthorityRepository authorityRepository;
+    private final AuthorityRepository authorityRepository;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, UserDeviceRepository userDeviceRepository, AuthorityRepository authorityRepository) {

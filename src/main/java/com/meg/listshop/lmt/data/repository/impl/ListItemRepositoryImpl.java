@@ -19,9 +19,9 @@ import java.util.List;
 @Component
 public class ListItemRepositoryImpl implements ItemChangeRepository {
 
-    private ListTagStatisticService listTagStatisticService;
+    private final ListTagStatisticService listTagStatisticService;
 
-    private ItemRepository itemRepository;
+    private final ItemRepository itemRepository;
 
     @Autowired
     public ListItemRepositoryImpl(ListTagStatisticService listTagStatisticService,

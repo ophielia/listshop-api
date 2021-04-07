@@ -7,7 +7,7 @@ import java.util.List;
  * Created by margaretmartin on 26/11/2017.
  */
 public class DishSearchCriteria {
-    private Long userId;
+    private final Long userId;
     private List<Long> includedTagIds;
     private List<Long> excludedTagIds;
 

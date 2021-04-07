@@ -30,7 +30,7 @@ public class CollectedItem {
     private boolean isChanged;
     private boolean fromClient = false;
 
-    private int secondComparisonWindow = 2;
+    private final int secondComparisonWindow = 2;
 
 
     public CollectedItem(ItemEntity itemEntity) {

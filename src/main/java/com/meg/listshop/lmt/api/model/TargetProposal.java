@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class TargetProposal {
 
-    private Long proposalId;
+    private final Long proposalId;
 
     private Long userId;
 

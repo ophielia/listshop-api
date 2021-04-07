@@ -7,7 +7,7 @@ import org.springframework.hateoas.ResourceSupport;
 
 public class UserResource extends ResourceSupport {
 
-    private User user;
+    private final User user;
 
     public UserResource(UserEntity userEntity, String token) {
         this.user = ModelMapper.toModel(userEntity, token);

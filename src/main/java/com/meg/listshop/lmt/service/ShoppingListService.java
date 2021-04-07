@@ -64,7 +64,7 @@ public interface ShoppingListService {
 
     List<ItemEntity> getChangedItemsForMostRecentList(String name, Date changedAfter, Long layoutId);
 
-    public void addDishesToList(String userName, Long listId, ListAddProperties listAddProperties) throws ShoppingListException;
+    void addDishesToList(String userName, Long listId, ListAddProperties listAddProperties) throws ShoppingListException;
 
     ShoppingListEntity addToListFromMealPlan(String name, Long listId, Long mealPlanId);
 

@@ -31,13 +31,13 @@ public class AuthenticationRestController implements AuthenticationRestControlle
     private String tokenHeader;
 
 
-    private UserService userService;
+    private final UserService userService;
 
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    private JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
 
-    private ListShopUserDetailsService userDetailsService;
+    private final ListShopUserDetailsService userDetailsService;
 
     @Autowired
     public AuthenticationRestController(UserService userService,
