@@ -1,5 +1,6 @@
 package com.meg.listshop.configuration;
 
+import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.auth.service.impl.JwtAuthenticationEntryPoint;
 import com.meg.listshop.auth.service.impl.JwtAuthenticationTokenFilter;
 import com.meg.listshop.auth.service.impl.JwtUserDetailsServiceImpl;
@@ -37,6 +38,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public static final String USER_QUERY = "select email, password, enabled from users where email = ?";
     public static final String AUTHORITIES_QUERY = "select username, a.name from users u, authority a  where u.user_id = a.user_id and email = ?";
 
@@ -66,7 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     public UserDetailsService userDetailsService() {
-        return new JwtUserDetailsServiceImpl();
+        return new JwtUserDetailsServiceImpl(userRepository);
     }
 
     @Bean

@@ -16,8 +16,12 @@ public class JwtUserDetailsServiceImpl implements ListShopUserDetailsService {
 
     protected final Log logger = LogFactory.getLog(this.getClass());
 
-    @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    public JwtUserDetailsServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) {

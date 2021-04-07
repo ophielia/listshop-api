@@ -28,14 +28,14 @@ public class DishSearchServiceImpl implements DishSearchService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
     private TagStructureService tagStructureService;
 
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    public void init(DataSource dataSource) {
+    public void init(DataSource dataSource, TagStructureService tagStructureService) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.tagStructureService = tagStructureService;
     }
 
     @Override

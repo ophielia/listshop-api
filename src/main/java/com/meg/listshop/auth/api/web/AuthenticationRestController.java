@@ -31,17 +31,24 @@ public class AuthenticationRestController implements AuthenticationRestControlle
     private String tokenHeader;
 
 
-    @Autowired
     private UserService userService;
 
-    @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
     private ListShopUserDetailsService userDetailsService;
+
+    @Autowired
+    public AuthenticationRestController(UserService userService,
+                                        AuthenticationManager authenticationManager,
+                                        JwtTokenUtil jwtTokenUtil,
+                                        ListShopUserDetailsService userDetailsService) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
+    }
 
     public ResponseEntity<Object> authorizeUser(@RequestBody JwtAuthorizationRequest authorizationRequest) throws BadParameterException {
 

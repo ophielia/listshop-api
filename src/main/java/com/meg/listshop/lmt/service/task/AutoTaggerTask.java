@@ -25,8 +25,12 @@ public class AutoTaggerTask {
     @Value("${component.autotaggertask.dish.to.autotag.count}")
     int dishToAutotagCount = 5;
 
-    @Autowired
     AutoTagService autoTagService;
+
+    @Autowired
+    public AutoTaggerTask(AutoTagService autoTagService) {
+        this.autoTagService = autoTagService;
+    }
 
     @Scheduled(fixedDelay = 300000)
     public void autoTagDishes() {

@@ -24,25 +24,27 @@ import java.util.Set;
 @Service
 public class AutoTagServiceImpl implements AutoTagService {
 
-    @Autowired
     TagRepository tagRepository;
 
-    @Autowired
     ShadowTagRepository shadowTagRepository;
 
-    @Autowired
     UserService userService;
 
-    @Autowired
     DishService dishService;
 
-    @Autowired
     TagService tagService;
 
-    @Autowired
     private List<AutoTagProcessor> processorList;
 
-
+    @Autowired
+    public AutoTagServiceImpl(TagRepository tagRepository, ShadowTagRepository shadowTagRepository, UserService userService, DishService dishService, TagService tagService, List<AutoTagProcessor> processorList) {
+        this.tagRepository = tagRepository;
+        this.shadowTagRepository = shadowTagRepository;
+        this.userService = userService;
+        this.dishService = dishService;
+        this.tagService = tagService;
+        this.processorList = processorList;
+    }
 
     @Override
     public void doAutoTag(DishEntity dishEntity, boolean overrideStatus) {

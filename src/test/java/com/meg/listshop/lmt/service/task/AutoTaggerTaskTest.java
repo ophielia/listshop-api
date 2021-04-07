@@ -2,12 +2,11 @@ package com.meg.listshop.lmt.service.task;
 
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -19,15 +18,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest()
 @ActiveProfiles("test")
 public class AutoTaggerTaskTest {
 
     @MockBean
     AutoTagService autoTagService;
 
-    @Autowired
+
     AutoTaggerTask autoTaggerTask;
+
+    @Before
+    public void setUp() {
+
+        autoTaggerTask = new AutoTaggerTask(autoTagService);
+    }
 
     @Test
     public void autoTagDishes() {
