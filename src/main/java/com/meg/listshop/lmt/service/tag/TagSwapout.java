@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class TagSwapout {
 
-    private HashMap<String,List<String>> searchToFound = new HashMap<>();
+    private final HashMap<String, List<String>> searchToFound = new HashMap<>();
 
     public boolean contains(String tagId) {
             return searchToFound.containsKey(tagId);

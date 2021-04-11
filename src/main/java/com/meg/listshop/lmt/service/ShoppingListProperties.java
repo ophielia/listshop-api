@@ -24,9 +24,9 @@ public class ShoppingListProperties {
     private String uncategorizedCategoryName = "non-cat";
     private Integer uncategorizedIdAndSort = 999;
     private Integer highlightIdAndSort = -1;
-    private Integer highlightListIdAndSort = -3;
+    private final Integer highlightListIdAndSort = -3;
     private String defaultListLayout = null;
-    private Long defaultIdAndSort = 800L;
+    private final Long defaultIdAndSort = 800L;
     private Map<CategoryType, String> nameMapByType = null;
     private Map<CategoryType, Long> idMapByType = null;
 

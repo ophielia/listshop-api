@@ -10,8 +10,8 @@ import java.util.*;
  */
 public class AutoTagSubject {
     private final boolean overrideFlag;
-    private List<Long> tagsToAssign;
-    private DishEntity dish;
+    private final List<Long> tagsToAssign;
+    private final DishEntity dish;
     private List<ShadowTags> shadowTags;
     private Set<Long> processedBySet = new HashSet<>();
     private Set<Long> tagIdsForDish;

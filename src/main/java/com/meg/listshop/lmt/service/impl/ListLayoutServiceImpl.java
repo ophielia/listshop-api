@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 public class ListLayoutServiceImpl implements ListLayoutService {
 
 
-    private ListLayoutCategoryRepository listLayoutCategoryRepository;
-    private ListLayoutProperties listLayoutProperties;
-    private CategoryRelationRepository categoryRelationRepository;
-    private ListLayoutRepository listLayoutRepository;
-    private TagRepository tagRepository;
-    private TagService tagService;
-    private ShoppingListProperties shoppingListProperties;
+    private final ListLayoutCategoryRepository listLayoutCategoryRepository;
+    private final ListLayoutProperties listLayoutProperties;
+    private final CategoryRelationRepository categoryRelationRepository;
+    private final ListLayoutRepository listLayoutRepository;
+    private final TagRepository tagRepository;
+    private final TagService tagService;
+    private final ShoppingListProperties shoppingListProperties;
     private final ListSearchService listSearchService;
 
     @Autowired

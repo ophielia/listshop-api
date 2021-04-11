@@ -17,10 +17,10 @@ import java.util.stream.Stream;
  */
 public abstract class AbstractItemCollector implements ItemCollector {
     private final Long listId;
-    private Map<Long, CollectedItem> tagCollectedItem;
-    private List<CollectedItem> freeTextItems;
+    private final Map<Long, CollectedItem> tagCollectedItem;
+    private final List<CollectedItem> freeTextItems;
 
-    private Predicate<CollectedItem> isChanged = i -> i.isChanged();
+    private final Predicate<CollectedItem> isChanged = i -> i.isChanged();
 
     public AbstractItemCollector(Long savedNewListId, List<ItemEntity> items) {
         this.listId = savedNewListId;

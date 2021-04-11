@@ -40,10 +40,10 @@ public class ListLayoutCategoryEntity {
     private Long layoutId;
 
     @Transient
-    private List<ItemEntity> items = new ArrayList<>();
+    private final List<ItemEntity> items = new ArrayList<>();
 
     @Transient
-    private List<ListLayoutCategoryEntity> subCategories = new ArrayList<>();
+    private final List<ListLayoutCategoryEntity> subCategories = new ArrayList<>();
 
     private Integer displayOrder;
 

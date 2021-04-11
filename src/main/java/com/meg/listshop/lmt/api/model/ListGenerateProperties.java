@@ -55,7 +55,7 @@ public class ListGenerateProperties {
     }
 
     public Boolean getAddFromStarter() {
-        return addFromStarter == null ? false : addFromStarter;
+        return addFromStarter != null && addFromStarter;
     }
 
     public void setAddFromStarter(Boolean addFromBase) {
@@ -63,7 +63,7 @@ public class ListGenerateProperties {
     }
 
     public Boolean getGenerateMealplan() {
-        return generateMealplan==null?false:generateMealplan;
+        return generateMealplan != null && generateMealplan;
     }
 
     public void setGenerateMealplan(Boolean generateMealplan) {

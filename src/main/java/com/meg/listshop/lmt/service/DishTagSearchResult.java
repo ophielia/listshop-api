@@ -16,8 +16,8 @@ public class DishTagSearchResult {
     private final Long dishId;
     private final Date lastAdded;
     private Integer targetTagMatchCount=0;
-    private Integer slotTagMatchCount=0;
-    private Boolean[] tagResults;
+    private Integer slotTagMatchCount = 0;
+    private final Boolean[] tagResults;
 
     public DishTagSearchResult(Long dishid, Date lastAdded, int targetTagLimit, int queriedTagSize) {
         this.dishId = dishid;

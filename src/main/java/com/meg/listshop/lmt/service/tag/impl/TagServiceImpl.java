@@ -36,15 +36,15 @@ public class TagServiceImpl implements TagService {
 
     private final List<TagChangeListener> listeners = new CopyOnWriteArrayList<>();
 
-    private DishService dishService;
-    private ListTagStatisticService tagStatisticService;
-    private TagExtendedRepository tagExtendedRepository;
-    private TagReplaceService tagReplaceService;
-    private TagRepository tagRepository;
-    private TagStructureService tagStructureService;
-    private UserService userService;
+    private final DishService dishService;
+    private final ListTagStatisticService tagStatisticService;
+    private final TagExtendedRepository tagExtendedRepository;
+    private final TagReplaceService tagReplaceService;
+    private final TagRepository tagRepository;
+    private final TagStructureService tagStructureService;
+    private final UserService userService;
     private ListLayoutService listLayoutService;
-    private DishSearchService dishSearchService;
+    private final DishSearchService dishSearchService;
 
 
     @Autowired
@@ -568,8 +568,8 @@ public class TagServiceImpl implements TagService {
     }
 
     private class LookupInformation {
-        private Map<Long, RatingInfo> tagToRatingInfo;
-        private Set<RatingInfo> parentRatings;
+        private final Map<Long, RatingInfo> tagToRatingInfo;
+        private final Set<RatingInfo> parentRatings;
 
         public LookupInformation(Map<Long, RatingInfo> tagToRatingInfo, Set<RatingInfo> parentRatings) {
             this.tagToRatingInfo = tagToRatingInfo;

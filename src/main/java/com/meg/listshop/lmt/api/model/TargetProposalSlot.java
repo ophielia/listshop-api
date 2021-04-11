@@ -10,7 +10,7 @@ import java.util.List;
 public class TargetProposalSlot {
 
     List<TargetProposalDish> dishSlotList;
-    private Long slotId;
+    private final Long slotId;
     private Tag slotDishTag;
     private Integer slotOrder;
     private List<Tag> tags;

@@ -1,17 +1,25 @@
-Changelog
+# Changelog - The List Shop - API
+
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
+to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - April 2021
+
+## Changed
+
+- several services use constructor autowiring rather than field autowiring
 
 ## [1.3.0]  January 2, 2021
 
 ### Added
-* new endpoint POST /shoppinglist/dish with ListAddProperties which adds multiple dishes to a lsit at the same time. 
-* workflow to repository to build and push docker image upon release.  
-  
+
+* new endpoint POST /shoppinglist/dish with ListAddProperties which adds multiple dishes to a lsit at the same time.
+* workflow to repository to build and push docker image upon release.
+
 ### Changed
+
 * Upgrade to Java 11
 * Upgrade to spring boot 2.2.2.RELEASE
 

@@ -29,11 +29,11 @@ public class TagStructureServiceImpl implements TagStructureService {
 
     TagCache tagCache;
 
-    private TagSearchGroupRepository tagSearchGroupRepository;
+    private final TagSearchGroupRepository tagSearchGroupRepository;
 
-    private TagRelationRepository tagRelationRepository;
+    private final TagRelationRepository tagRelationRepository;
 
-    private TagRepository tagRepository;
+    private final TagRepository tagRepository;
 
     @Autowired
     public TagStructureServiceImpl(

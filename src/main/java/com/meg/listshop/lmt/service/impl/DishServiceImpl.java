@@ -33,17 +33,17 @@ public class DishServiceImpl implements DishService {
 
     public static final Comparator<DishEntity> DISHNAME = (DishEntity o1, DishEntity o2) -> o1.getDishName().toLowerCase().compareTo(o2.getDishName().toLowerCase());
 
-    private DishRepository dishRepository;
+    private final DishRepository dishRepository;
 
-    private DishSearchService dishSearchService;
+    private final DishSearchService dishSearchService;
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private AutoTagService autoTagService;
+    private final AutoTagService autoTagService;
 
-    private TagService tagService;
+    private final TagService tagService;
 
-    private TagStructureService tagStructureService;
+    private final TagStructureService tagStructureService;
 
     @Autowired
     public DishServiceImpl(

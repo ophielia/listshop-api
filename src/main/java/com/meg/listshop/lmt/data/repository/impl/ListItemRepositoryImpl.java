@@ -19,11 +19,16 @@ import java.util.List;
 @Component
 public class ListItemRepositoryImpl implements ItemChangeRepository {
 
-    @Autowired
-    private ListTagStatisticService listTagStatisticService;
+    private final ListTagStatisticService listTagStatisticService;
+
+    private final ItemRepository itemRepository;
 
     @Autowired
-    private ItemRepository itemRepository;
+    public ListItemRepositoryImpl(ListTagStatisticService listTagStatisticService,
+                                  ItemRepository itemRepository) {
+        this.listTagStatisticService = listTagStatisticService;
+        this.itemRepository = itemRepository;
+    }
 
     @Override
     public void saveItemChanges(ShoppingListEntity shoppingList, ItemCollector collector, Long userId, CollectorContext context) {

@@ -22,7 +22,7 @@ public class ProcessInformation {
     private ApproachType approachType;
     private int proposalCount;
     private int resultsPerSlot;
-    private Map<Integer, Long> dishTagBySlot = new HashMap<>();
+    private final Map<Integer, Long> dishTagBySlot = new HashMap<>();
     private ProposalEntity proposal;
     private int defaultDishCountPerSlot;
     private ContextApproachEntity currentApproach;
