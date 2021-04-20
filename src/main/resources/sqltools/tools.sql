@@ -248,15 +248,13 @@ order by t.name;
 delete
 from category_tags
 where category_id = 5
-and tag_id in  (select tag_id from category_tags where category_id = 10  )
-
-
+  and tag_id in (select tag_id from category_tags where category_id = 10) pg_restore --verbose --clean --no-acl --no-owner
 
 nextval('list_layout_category_sequence')
 
 
 mvn flyway:info
-mvn flyway:baseline -Dflyway.baselineVersion=5
+mvn flyway:baseline -Dflyway.baselineVersion=1 -Dflyway.baselineDescription="baseline migration"
 
 
 INSERT INTO tag_search_group (tag_search_group_id, group_id, member_id)

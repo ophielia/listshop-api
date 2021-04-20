@@ -7,7 +7,7 @@ GRANT ALL ON TABLE public.category_relation TO bankuser;
 GRANT ALL ON TABLE public.category_tags TO bankuser;
 GRANT ALL ON TABLE public.dish TO bankuser;
 GRANT ALL ON TABLE public.dish_tags TO bankuser;
-GRANT ALL ON TABLE public.flyway_schema_history TO bankuser;
+
 GRANT ALL ON TABLE public.list TO bankuser;
 GRANT ALL ON TABLE public.list_category TO bankuser;
 GRANT ALL ON TABLE public.list_item TO bankuser;

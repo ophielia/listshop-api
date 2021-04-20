@@ -277,27 +277,6 @@ CREATE TABLE public.dish_tags
 ALTER TABLE public.dish_tags
     OWNER TO postgres;
 
---
--- Name: flyway_schema_history; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.flyway_schema_history
-(
-    installed_rank integer                                   NOT NULL,
-    version        character varying(50),
-    description    character varying(200)                    NOT NULL,
-    type           character varying(20)                     NOT NULL,
-    script         character varying(1000)                   NOT NULL,
-    checksum       integer,
-    installed_by   character varying(100)                    NOT NULL,
-    installed_on   timestamp without time zone DEFAULT now() NOT NULL,
-    execution_time integer                                   NOT NULL,
-    success        boolean                                   NOT NULL
-);
-
-
-ALTER TABLE public.flyway_schema_history
-    OWNER TO postgres;
 
 --
 -- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -723,21 +702,6 @@ CREATE TABLE public.tag_relation
 ALTER TABLE public.tag_relation
     OWNER TO postgres;
 
---
--- Name: selectabletags; Type: VIEW; Schema: public; Owner: postgres
---
-
-CREATE VIEW public.selectabletags AS
-SELECT c.tag_relation_id,
-       c.child_tag_id,
-       c.parent_tag_id
-FROM (public.tag_relation c
-         LEFT JOIN public.tag_relation p ON ((c.child_tag_id = p.parent_tag_id)))
-WHERE (p.* IS NULL);
-
-
-ALTER TABLE public.selectabletags
-    OWNER TO postgres;
 
 --
 -- Name: shadow_tags; Type: TABLE; Schema: public; Owner: postgres
@@ -1113,12 +1077,6 @@ ALTER TABLE ONLY public.dish
     ADD CONSTRAINT dish_pkey PRIMARY KEY (dish_id);
 
 
---
--- Name: flyway_schema_history flyway_schema_history_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.flyway_schema_history
-    ADD CONSTRAINT flyway_schema_history_pk PRIMARY KEY (installed_rank);
 
 
 --
@@ -1241,11 +1199,6 @@ ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (user_id);
 
 
---
--- Name: flyway_schema_history_s_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX flyway_schema_history_s_idx ON public.flyway_schema_history USING btree (success);
 
 
 --
@@ -1438,12 +1391,6 @@ GRANT ALL ON TABLE public.dish TO bankuser;
 
 GRANT ALL ON TABLE public.dish_tags TO bankuser;
 
-
---
--- Name: TABLE flyway_schema_history; Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON TABLE public.flyway_schema_history TO bankuser;
 
 
 --

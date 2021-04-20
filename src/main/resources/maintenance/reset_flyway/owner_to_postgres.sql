@@ -22,8 +22,7 @@ ALTER TABLE public.dish_sequence
     OWNER TO postgres;
 ALTER TABLE public.dish_tags
     OWNER TO postgres;
-ALTER TABLE public.flyway_schema_history
-    OWNER TO postgres;
+
 ALTER TABLE public.hibernate_sequence
     OWNER TO postgres;
 ALTER TABLE public.list
