@@ -35,27 +35,37 @@ public class MealPlanServiceImpl implements MealPlanService {
 
     private static final Logger logger = LogManager.getLogger(ShoppingListServiceImpl.class);
 
-
-    @Autowired
     private UserService userService;
 
-    @Autowired
     private MealPlanRepository mealPlanRepository;
 
-    @Autowired
     private SlotRepository slotRepository;
 
-    @Autowired
     private DishService dishService;
 
-    @Autowired
     private ProposalService targetProposalService;
 
-    @Autowired
     private TagRepository tagRepository;
 
-    @Autowired
+
     private TagService tagService;
+
+    @Autowired
+    public MealPlanServiceImpl(UserService userService,
+                               MealPlanRepository mealPlanRepository,
+                               SlotRepository slotRepository,
+                               DishService dishService,
+                               ProposalService targetProposalService,
+                               TagRepository tagRepository,
+                               TagService tagService) {
+        this.userService = userService;
+        this.mealPlanRepository = mealPlanRepository;
+        this.slotRepository = slotRepository;
+        this.dishService = dishService;
+        this.targetProposalService = targetProposalService;
+        this.tagRepository = tagRepository;
+        this.tagService = tagService;
+    }
 
     public List<MealPlanEntity> getMealPlansForUserName(String username) {
         // get user

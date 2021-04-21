@@ -35,12 +35,15 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     private static final Logger logger = LogManager.getLogger(MealPlanRestController.class);
 
 
-    @Autowired
     private MealPlanService mealPlanService;
 
-    @Autowired
     private UserService userService;
 
+    @Autowired
+    public MealPlanRestController(MealPlanService mealPlanService, UserService userService) {
+        this.mealPlanService = mealPlanService;
+        this.userService = userService;
+    }
 
     @Override
     public ResponseEntity<Resources<MealPlanResource>> retrieveMealPlans(Principal principal) {

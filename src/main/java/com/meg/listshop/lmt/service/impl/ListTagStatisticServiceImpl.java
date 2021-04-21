@@ -38,11 +38,17 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
             ")" +
             " AND s is null";
 
-    @Autowired
+
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    @Autowired
+
     private ListTagStatisticRepository listTagStatisticRepo;
+
+    @Autowired
+    public ListTagStatisticServiceImpl(NamedParameterJdbcTemplate jdbcTemplate, ListTagStatisticRepository listTagStatisticRepo) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.listTagStatisticRepo = listTagStatisticRepo;
+    }
 
     @Override
     public void countTagAddedToDish(Long userId, Long tagId) {

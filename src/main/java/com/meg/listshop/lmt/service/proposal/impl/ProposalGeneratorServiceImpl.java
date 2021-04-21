@@ -32,30 +32,35 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
 
     private static final Logger logger = LogManager.getLogger(ProposalGeneratorServiceImpl.class);
 
-    @Autowired
     ProposalProcessorFactory proposalProcessorFactory;
 
-    @Autowired
     TargetService targetService;
 
-    @Autowired
     ProposalRepository proposalRepository;
 
 
-    @Autowired
     ProposalContextRepository contextRepository;
 
-    @Autowired
     UserService userService;
 
-    @Autowired
     DishService dishService;
 
-    @Autowired
     private MealPlanService mealPlanService;
 
-    @Autowired
+
     private TagService tagService;
+
+    @Autowired
+    public ProposalGeneratorServiceImpl(ProposalProcessorFactory proposalProcessorFactory, TargetService targetService, ProposalRepository proposalRepository, ProposalContextRepository contextRepository, UserService userService, DishService dishService, MealPlanService mealPlanService, TagService tagService) {
+        this.proposalProcessorFactory = proposalProcessorFactory;
+        this.targetService = targetService;
+        this.proposalRepository = proposalRepository;
+        this.contextRepository = contextRepository;
+        this.userService = userService;
+        this.dishService = dishService;
+        this.mealPlanService = mealPlanService;
+        this.tagService = tagService;
+    }
 
     @Override
     public ProposalEntity generateProposal(String userName, Long targetId) throws  ProposalProcessingException {

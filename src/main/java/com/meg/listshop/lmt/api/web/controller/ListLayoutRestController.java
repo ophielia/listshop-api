@@ -37,13 +37,18 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
     private static final Logger logger = LogManager.getLogger(ListLayoutRestController.class);
 
-    @Autowired
+
     private ListLayoutService listLayoutService;
 
-    public ResponseEntity<Resources<ListLayoutResource>> retrieveListLayouts(Principal principal) {
+    @Autowired
+    public ListLayoutRestController(ListLayoutService listLayoutService){
+        this.listLayoutService = listLayoutService;
+    }
+
+    public ResponseEntity<Resources<ListLayoutResource>>retrieveListLayouts(Principal principal){
         List<ListLayoutResource> listLayoutList = listLayoutService
                 .getListLayouts()
-                .stream().map(ll -> new ListLayoutResource(ll, null))
+                .stream().map(ll->new ListLayoutResource(ll, null))
                 .collect(Collectors.toList());
 
         Resources<ListLayoutResource> listLayoutResourceList = new Resources<>(listLayoutList);

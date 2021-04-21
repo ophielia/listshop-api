@@ -14,17 +14,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProposalProcessorFactoryImpl implements ProposalProcessorFactory {
 
-    @Autowired
-    @Qualifier(value = "newSearch")
     ProposalProcessor newSearchProcessor;
 
-    @Autowired
-    @Qualifier(value = "refreshSearch")
     ProposalProcessor refreshSearchProcessor;
 
-    @Autowired
-    @Qualifier(value = "fillInSearch")
     ProposalProcessor fillInSearchProcessor;
+
+    @Autowired
+    public ProposalProcessorFactoryImpl(@Qualifier(value = "newSearch") ProposalProcessor newSearchProcessor,
+                                        @Qualifier(value = "refreshSearch") ProposalProcessor refreshSearchProcessor,
+                                        @Qualifier(value = "fillInSearch") ProposalProcessor fillInSearchProcessor) {
+        this.newSearchProcessor = newSearchProcessor;
+        this.refreshSearchProcessor = refreshSearchProcessor;
+        this.fillInSearchProcessor = fillInSearchProcessor;
+    }
 
     @Override
     public ProposalProcessor getProposalProcessor(ProposalRequest request) {
