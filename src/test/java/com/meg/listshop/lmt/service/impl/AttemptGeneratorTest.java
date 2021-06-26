@@ -1,12 +1,10 @@
 package com.meg.listshop.lmt.service.impl;
 
-import com.meg.listshop.Application;
 import com.meg.listshop.lmt.api.model.ApproachType;
 import com.meg.listshop.lmt.service.AttemptGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -15,10 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public class AttemptGeneratorTest {
-
 
     @Test
     public void testGenerateWheel() throws Exception {

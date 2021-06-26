@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.DishService;
@@ -9,6 +10,7 @@ import com.meg.listshop.lmt.service.tag.AutoTagSubject;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ import static com.meg.listshop.test.TestConstants.USER_3_NAME;
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public class TagProcessorImplTest {
+
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
     TagProcessorImpl tagProcessor;

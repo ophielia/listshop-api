@@ -1,9 +1,11 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.TargetEntity;
 import com.meg.listshop.lmt.data.entity.TargetSlotEntity;
 import com.meg.listshop.lmt.service.TargetService;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +18,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ActiveProfiles("test")
 public class TargetProposalServiceImplTest {
 
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
+
 
     @Autowired
     private TargetService targetService;
 
     private static final String testUserName = "rufus";
-
 
 
     @Test

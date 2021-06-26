@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ import java.util.Set;
  */
 @Service
 public class AutoTagServiceImpl implements AutoTagService {
+
 
     TagRepository tagRepository;
 
@@ -81,11 +83,11 @@ public class AutoTagServiceImpl implements AutoTagService {
         dishEntity.setAutoTagStatus(processedStatusFlag);
         dishService.save(dishEntity, false);
         // check for results
-        if (subject.getTagsToAssign()== null || subject.getTagsToAssign().isEmpty()) {
+        if (subject.getTagsToAssign() == null || subject.getTagsToAssign().isEmpty()) {
             return;
         }
 
-        addTagsToDish(user.getEmail(), subject);
+        tagService.addTagsToDish(user.getEmail(), subject.getDish().getId(), new HashSet(subject.getTagsToAssign()));
         createShadowTagsForDish(subject);
     }
 
@@ -115,9 +117,7 @@ public class AutoTagServiceImpl implements AutoTagService {
     private void addTagsToDish(String userName, AutoTagSubject subject) {
         Long dishId = subject.getDish().getId();
 
-        for (Long tagId : subject.getTagsToAssign()) {
-            tagService.addTagToDish(userName, dishId, tagId);
-        }
+        tagService.addTagsToDish(userName, dishId, new HashSet(subject.getTagsToAssign()));
 
 
     }

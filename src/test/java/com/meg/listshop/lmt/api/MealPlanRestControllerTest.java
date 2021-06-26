@@ -4,6 +4,7 @@ import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtUser;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.MealPlan;
 import com.meg.listshop.lmt.api.model.MealPlanType;
 import com.meg.listshop.lmt.api.model.ModelMapper;
@@ -11,6 +12,7 @@ import com.meg.listshop.lmt.data.entity.MealPlanEntity;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @ActiveProfiles("test")
 public class MealPlanRestControllerTest {
 
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private static UserEntity userAccount;
     private static UserDetails userDetails;

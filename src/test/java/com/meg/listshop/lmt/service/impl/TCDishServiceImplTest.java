@@ -1,10 +1,12 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.repository.DishRepository;
 import com.meg.listshop.lmt.service.DishService;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,11 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-public class DishServiceImplTest {
+public class TCDishServiceImplTest {
+
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
+
 
     @Autowired
     DishRepository dishRepository;

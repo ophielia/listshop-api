@@ -1,12 +1,14 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.Instruction;
 import com.meg.listshop.lmt.service.tag.AutoTagSubject;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ import java.util.List;
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public class TextProcessorImplTest {
+
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
     TextProcessorImpl textProcessor;

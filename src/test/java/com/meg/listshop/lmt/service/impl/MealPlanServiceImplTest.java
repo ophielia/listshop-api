@@ -3,6 +3,7 @@ package com.meg.listshop.lmt.service.impl;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.api.model.DishRatingInfo;
@@ -16,6 +17,7 @@ import com.meg.listshop.lmt.service.MealPlanService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,10 @@ import java.util.Set;
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public class MealPlanServiceImplTest {
+
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
+
     @Autowired
     private MealPlanService mealPlanService;
 

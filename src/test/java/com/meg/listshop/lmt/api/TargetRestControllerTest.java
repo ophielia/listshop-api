@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.api;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.impl.JwtUser;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.Target;
 import com.meg.listshop.lmt.api.model.TargetSlot;
@@ -12,6 +13,7 @@ import com.meg.listshop.lmt.service.TargetService;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,9 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class TargetRestControllerTest {
+
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
 
     private static UserDetails userDetails;

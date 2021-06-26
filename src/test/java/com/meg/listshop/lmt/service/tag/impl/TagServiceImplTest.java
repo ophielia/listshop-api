@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.ListTagStatistic;
@@ -10,10 +11,7 @@ import com.meg.listshop.lmt.data.repository.ListTagStatisticRepository;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,6 +30,10 @@ import static java.lang.Thread.sleep;
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public class TagServiceImplTest {
+
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
+
     @Autowired
     private TagService tagService;
 
@@ -591,23 +593,6 @@ public class TagServiceImplTest {
         Assert.assertNotNull(dictionary);
         Assert.assertEquals(3L, dictionary.size());
     }
-
-
-    @Test
-    public void saveTagForDelete() {
-    }
-
-
-    @Test
-    public void assignTagToParent() {
-    }
-
-
-    @Test
-    public void replaceTagInDishes() {
-    }
-
-
 
 
 }

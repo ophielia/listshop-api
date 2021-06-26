@@ -1,9 +1,11 @@
 package com.meg.listshop.lmt.service.task;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.ItemEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +24,18 @@ import java.util.List;
 @ActiveProfiles("test")
 public class StaleItemCleanupTaskTest {
 
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
-@Autowired
-private StaleItemCleanupTask staleItemCleanupTaskTest;
+    @Autowired
+    private StaleItemCleanupTask staleItemCleanupTaskTest;
 
-@Autowired
-private ItemRepository itemRepository;
-@Test
-public void testCleanupTask() {
-    LocalDate testRemoveDate = LocalDate.now().minusDays(12);
+    @Autowired
+    private ItemRepository itemRepository;
+
+    @Test
+    public void testCleanupTask() {
+        LocalDate testRemoveDate = LocalDate.now().minusDays(12);
 
     // 3 items in test data set which are stale
     // get all tags

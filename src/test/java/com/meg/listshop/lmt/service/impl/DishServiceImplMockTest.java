@@ -15,6 +15,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -115,5 +117,18 @@ public class DishServiceImplMockTest {
 
     }
 
+    @Test
+    public void testGetDishesToAutotag() {
+        Long statusFlag = 105L;
+        int dishLimit = 15;
+
+        Pageable expectedPageable = PageRequest.of(0, dishLimit);
+
+        dishService.getDishesToAutotag(statusFlag, dishLimit);
+
+        Mockito.verify(dishRepository, Mockito.times(1)).findDishesToAutotag(statusFlag, expectedPageable);
+
+
+    }
 
 }

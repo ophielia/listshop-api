@@ -379,6 +379,13 @@ public class TagServiceImpl implements TagService {
         if (dish == null) {
             return;
         }
+        addTagToDish(userName, dish, tagId);
+    }
+
+    public void addTagToDish(String userName, DishEntity dish, Long tagId) {
+        if (dish == null) {
+            return;
+        }
         // get tag
         TagEntity tag = getTagById(tagId, true);
 
@@ -459,7 +466,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void addTagsToDish(String userName, Long dishId, Set<Long> tagIds) {
-        tagIds.forEach(t -> addTagToDish(userName, dishId, t));
+        DishEntity dish = dishService.getDishForUserById(userName, dishId);
+        if (dish == null) {
+            return;
+        }
+        tagIds.forEach(t -> addTagToDish(userName, dish, t));
     }
 
     @Override

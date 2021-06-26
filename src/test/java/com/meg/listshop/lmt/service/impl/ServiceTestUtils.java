@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.impl;
 
+import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
@@ -66,5 +67,18 @@ public class ServiceTestUtils {
         itemEntity.setAddedOn(new Date());
 
         return itemEntity;
+    }
+
+    public static UserEntity buildUser(Long userId, String userName) {
+        UserEntity user = new UserEntity(userName, "password");
+        user.setId(userId);
+        return user;
+    }
+
+    public static ShadowTags buildShadowTag(Long shadowTagId, Long dishId) {
+        ShadowTags shadowTags = new ShadowTags();
+        shadowTags.setTagId(shadowTagId);
+        shadowTags.setDishId(dishId);
+        return shadowTags;
     }
 }

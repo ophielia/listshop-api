@@ -1,10 +1,12 @@
 package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.FatTag;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ import java.util.stream.Collectors;
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class TagStructureServiceImplTest {
 
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
     private TagStructureService tagStructureService;

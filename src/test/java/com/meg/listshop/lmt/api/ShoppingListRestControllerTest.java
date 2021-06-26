@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.api;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.impl.JwtUser;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.ItemOperationPut;
 import com.meg.listshop.lmt.api.model.ItemOperationType;
 import com.meg.listshop.lmt.api.model.ListGenerateProperties;
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,10 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @Sql(value = {"/sql/com/meg/atable/lmt/api/ShoppingListRestControllerTest_rollback.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class ShoppingListRestControllerTest {
+
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
+
 
     private static UserDetails userDetails;
     private static UserDetails meUserDetails;

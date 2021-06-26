@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.Category;
 import com.meg.listshop.lmt.api.model.ListLayoutCategory;
 import com.meg.listshop.lmt.api.model.ListLayoutType;
@@ -16,6 +17,7 @@ import com.meg.listshop.lmt.service.ListLayoutException;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,10 @@ import java.util.stream.Collectors;
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public class ListLayoutServiceImplTest {
+
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
+
     private static ListLayoutEntity retrieve;
 
     @Autowired

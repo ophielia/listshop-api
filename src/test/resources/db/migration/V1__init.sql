@@ -34,6 +34,15 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
+
+
+--CREATE ROLE postgres WITH
+--    LOGIN  encrypted password 'postgres'
+--    SUPERUSER
+--    INHERIT
+--    NOCREATEDB
+--    NOCREATEROLE
+--    NOREPLICATION;
 --
 -- Name: authority; Type: TABLE; Schema: public; Owner: postgres
 --
