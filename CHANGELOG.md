@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] todo
+
+### Changed
+
+* Using testcontainers rather than local database for tests
+* Moving some tests from IT tests to Mock tests
+
+### Deprecated
+
+* In ShoppingList api object
+    - Dish_sources and list_sources are depracated in ShoppingList api object
+    - Dish_sources and list_sources are depracated in Item api object
+
+### Added
+
+* sort parameters to endpoint GET /dish
+
 ## [1.3.2] - June 2021
 
 ## Changed
