@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
@@ -8,9 +9,10 @@ import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.Dish;
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.model.EmbeddedDishResourceList;
+import com.meg.listshop.lmt.model.ResultDishResource;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.test.TestConstants;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -22,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -34,8 +37,13 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -53,6 +61,7 @@ public class DishRestControllerTest {
     @ClassRule
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
+    public static final Comparator<ResultDishResource> DISHNAME = (ResultDishResource o1, ResultDishResource o2) -> o1.getDish().getDishName().toLowerCase().compareTo(o2.getDish().getDishName().toLowerCase());
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
@@ -108,7 +117,7 @@ public class DishRestControllerTest {
                 .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.dish.dish_id", Matchers.isA(Number.class)))
+                .andExpect(jsonPath("$.dish.dish_id", isA(Number.class)))
                 .andExpect(jsonPath("$.dish.dish_id").value(testId));
 
     }
@@ -223,8 +232,53 @@ public class DishRestControllerTest {
     @Test
     @WithMockUser
     public void testFindDishes() throws Exception {
+        List<Long> excludedTags = Arrays.asList(TestConstants.TAG_3_ID);
+        List<Long> includedTags = Arrays.asList(TestConstants.TAG_PASTA);
+
+        String includedList = FlatStringUtils.flattenListOfLongsToString(includedTags, ",");
+        String excludedList = FlatStringUtils.flattenListOfLongsToString(excludedTags, ",");
+        String url = "/dish?includedTags=" + includedList + "&excludedTags=" + excludedList
+                + "&sortKey=Name" + "&sortDirection=ASC";
+        MvcResult result = this.mockMvc.perform(get(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(content().contentType(contentType))
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+
+        ObjectMapper mapper = new ObjectMapper();
+        EmbeddedDishResourceList embeddedList = mapper.readValue(result.getResponse().getContentAsString(), EmbeddedDishResourceList.class);
+
+        // sort list by name, asc
+        ResultDishResource[] sortedResults = embeddedList.getEmbeddedList().getDishList();
+        Arrays.sort(sortedResults, DISHNAME);
+
+        // list as received
+        List<String> listAsReceived = Arrays.asList(embeddedList.getEmbeddedList().getDishList())
+                .stream()
+                .map(rdr -> rdr.getDish().getDishName())
+                .collect(Collectors.toList());
+        assertNotNull(listAsReceived);
+        // list as expected
+        List<String> listAsExpected = Arrays.asList(sortedResults)
+                .stream()
+                .map(rdr -> rdr.getDish().getDishName())
+                .collect(Collectors.toList());
+        ;
+        assertNotNull(listAsExpected);
+
+        // order matches
+        assertThat(listAsReceived, equalTo(listAsExpected));
+
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testFindDishesOrig() throws Exception {
         List<Long> excludedTags = Arrays.asList(TestConstants.TAG_1_ID, TestConstants.TAG_2_ID, TestConstants.TAG_3_ID);
-        List<Long>  includedTags = Arrays.asList(TestConstants.TAG_MEAT, TestConstants.TAG_PASTA);
+        List<Long> includedTags = Arrays.asList(TestConstants.TAG_MEAT, TestConstants.TAG_PASTA);
 
         String includedList = FlatStringUtils.flattenListOfLongsToString(includedTags, ",");
         String excludedList = FlatStringUtils.flattenListOfLongsToString(excludedTags, ",");
@@ -233,6 +287,7 @@ public class DishRestControllerTest {
                 .with(user(userDetails))
                 .contentType(contentType))
                 .andExpect(content().contentType(contentType));
+
 
     }
 

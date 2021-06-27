@@ -1,5 +1,7 @@
 package com.meg.listshop.lmt.service.impl;
 
+import com.meg.listshop.lmt.api.model.DishSortDirection;
+import com.meg.listshop.lmt.api.model.DishSortKey;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TargetSlotEntity;
 import com.meg.listshop.lmt.service.DishSearchCriteria;
@@ -46,6 +48,7 @@ public class DishSearchServiceImpl implements DishSearchService {
         String sqlBase = "select distinct d.* from dish d ";
         StringBuilder fromExtension = new StringBuilder();
         StringBuilder whereClause = new StringBuilder("where d.user_id = :userId ");
+        StringBuilder sortClause = new StringBuilder();
         HashSet<Long> allTagIds = getAllTagIdsForCriteria(criteria);
         Map<Long, List<Long>> groupDictionary = tagStructureService.getSearchGroupsForTagIds(allTagIds);
         if (!criteria.getIncludedTagIds().isEmpty()) {
@@ -117,10 +120,31 @@ public class DishSearchServiceImpl implements DishSearchService {
             }
 
         }
+        if (criteria.hasSorting()) {
+            // sort key or default
+            DishSortKey key = criteria.getSortKey() != null ? criteria.getSortKey() : DishSortKey.CreatedOn;
+            DishSortDirection direction = criteria.getSortDirection() != null ? criteria.getSortDirection() : DishSortDirection.ASC;
+            sortClause.append(" sort by ");
+            sortClause.append(columnForSortKey(key));
+            sortClause.append(" ");
+            sortClause.append(direction);
+        }
 
         String sql = sqlBase + fromExtension.toString() + whereClause;
 
         return this.jdbcTemplate.query(sql, parameters, new DishMapper());
+    }
+
+    private String columnForSortKey(DishSortKey key) {
+        switch (key) {
+            case Name:
+                return " lower(d.name)";
+            case LastUsed:
+                return " d.last_added";
+            case CreatedOn:
+                return " d.dish_id";
+        }
+        return " d.dish_id";
     }
 
     private HashSet<Long> getAllTagIdsForCriteria(DishSearchCriteria criteria) {

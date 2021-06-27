@@ -23,8 +23,10 @@ public interface DishRestControllerApi {
     @GetMapping( produces = "application/json")
     ResponseEntity<Resources<DishResource>> retrieveDishes(Principal principal,
                                                            @RequestParam(value = "includedTags", required = false) String includedTags,
-                                                           @RequestParam(value = "excludedTags", required = false) String excludedTags
-                                                           );
+                                                           @RequestParam(value = "excludedTags", required = false) String excludedTags,
+                                                           @RequestParam(value = "sortKey", required = false) String sortKey,
+                                                           @RequestParam(value = "sortDirection", required = false) String sortDirection
+    );
 
     @PostMapping( produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createDish(Principal principal, @RequestBody Dish input);

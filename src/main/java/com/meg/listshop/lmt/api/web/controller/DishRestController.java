@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.web.controller;
 
+import com.google.common.base.Enums;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.controller.DishRestControllerApi;
@@ -11,6 +12,8 @@ import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.tag.TagService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
@@ -30,6 +33,8 @@ import java.util.stream.Collectors;
 @Controller
 @CrossOrigin
 public class DishRestController implements DishRestControllerApi {
+
+    private static final Logger logger = LogManager.getLogger(DishRestController.class);
 
     private final DishService dishService;
     private final DishSearchService dishSearchService;
@@ -52,6 +57,8 @@ public class DishRestController implements DishRestControllerApi {
                                                                   @RequestParam(value = "includedTags", required = false) String includedTags,
                                                                   @RequestParam(value = "excludedTags", required = false) String excludedTags
     ) {
+        logger.info("Entered retrieveDishes includedTags: " + includedTags + ", excludedTags: " + excludedTags
+                + ", sortKey: " + sortKey + ", sortDirection: " + sortDirection);
         List<DishResource> dishList;
         if (includedTags == null && excludedTags == null) {
             dishList = getAllDishes(principal);
@@ -75,6 +82,16 @@ public class DishRestController implements DishRestControllerApi {
             List<Long> tagIdList = commaDelimitedToList(excludedTags);
             criteria.setExcludedTagIds(tagIdList);
         }
+        if (!StringUtils.isEmpty(sortKey)) {
+            DishSortKey dishSortKey = Enums.getIfPresent(DishSortKey.class, sortKey).orNull();
+            criteria.setSortKey(dishSortKey);
+        }
+        if (!StringUtils.isEmpty(sortDirection)) {
+            DishSortDirection dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
+            criteria.setSortDirection(dishSortDirection);
+        }
+
+        logger.debug("Searching for dishes with criteria: " + criteria);
         return dishSearchService.findDishes(criteria)
                 .stream().map(d -> new DishResource(principal, d))
                 .collect(Collectors.toList());

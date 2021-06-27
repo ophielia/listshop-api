@@ -1,5 +1,8 @@
 package com.meg.listshop.lmt.service;
 
+import com.meg.listshop.lmt.api.model.DishSortDirection;
+import com.meg.listshop.lmt.api.model.DishSortKey;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +13,8 @@ public class DishSearchCriteria {
     private final Long userId;
     private List<Long> includedTagIds;
     private List<Long> excludedTagIds;
+    private DishSortKey sortKey;
+    private DishSortDirection sortDirection;
 
     public DishSearchCriteria(Long userId) {
         this.userId = userId;
@@ -32,10 +37,41 @@ public class DishSearchCriteria {
 
 
     public List<Long> getExcludedTags() {
-                return this.excludedTagIds;
+        return this.excludedTagIds;
     }
 
     public void setExcludedTagIds(List<Long> excludedTagIds) {
         this.excludedTagIds = excludedTagIds;
+    }
+
+    public DishSortKey getSortKey() {
+        return sortKey;
+    }
+
+    public void setSortKey(DishSortKey sortKey) {
+        this.sortKey = sortKey;
+    }
+
+    public DishSortDirection getSortDirection() {
+        return sortDirection;
+    }
+
+    public void setSortDirection(DishSortDirection sortDirection) {
+        this.sortDirection = sortDirection;
+    }
+
+    @Override
+    public String toString() {
+        return "DishSearchCriteria{" +
+                "userId=" + userId +
+                ", includedTagIds=" + includedTagIds +
+                ", excludedTagIds=" + excludedTagIds +
+                ", sortKey=" + sortKey +
+                ", sortDirection=" + sortDirection +
+                '}';
+    }
+
+    public boolean hasSorting() {
+        return sortKey != null && sortDirection != null;
     }
 }
