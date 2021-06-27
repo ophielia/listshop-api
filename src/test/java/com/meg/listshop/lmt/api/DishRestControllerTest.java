@@ -62,6 +62,7 @@ public class DishRestControllerTest {
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     public static final Comparator<ResultDishResource> DISHNAME = (ResultDishResource o1, ResultDishResource o2) -> o1.getDish().getDishName().toLowerCase().compareTo(o2.getDish().getDishName().toLowerCase());
+    public static final Comparator<ResultDishResource> CREATEDON = (ResultDishResource o1, ResultDishResource o2) -> o1.getDish().getId().compareTo(o2.getDish().getId());
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
@@ -271,6 +272,37 @@ public class DishRestControllerTest {
         // order matches
         assertThat(listAsReceived, equalTo(listAsExpected));
 
+        // check sort by created, desc
+        url = "/dish?includedTags=" + includedList + "&excludedTags=" + excludedList
+                + "&sortKey=CreatedOn" + "&sortDirection=DESC";
+        result = this.mockMvc.perform(get(url)
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andExpect(content().contentType(contentType))
+                .andReturn();
+
+        embeddedList = mapper.readValue(result.getResponse().getContentAsString(), EmbeddedDishResourceList.class);
+
+        // sort list by id, desc
+        sortedResults = embeddedList.getEmbeddedList().getDishList();
+        Arrays.sort(sortedResults, CREATEDON.reversed());
+
+        // list as received
+        listAsReceived = Arrays.asList(embeddedList.getEmbeddedList().getDishList())
+                .stream()
+                .map(rdr -> String.valueOf(rdr.getDish().getId()))
+                .collect(Collectors.toList());
+        assertNotNull(listAsReceived);
+        // list as expected
+        listAsExpected = Arrays.asList(sortedResults)
+                .stream()
+                .map(rdr -> String.valueOf(rdr.getDish().getId()))
+                .collect(Collectors.toList());
+        ;
+        assertNotNull(listAsExpected);
+
+        // order matches
+        assertThat(listAsReceived, equalTo(listAsExpected));
 
     }
 

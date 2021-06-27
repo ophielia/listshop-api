@@ -127,6 +127,7 @@ public class DishSearchServiceImpl implements DishSearchService {
             sortClause.append(" sort by ");
             sortClause.append(columnForSortKey(key));
             sortClause.append(" ");
+            sortClause.append(" NULLS LAST");
             sortClause.append(direction);
         }
 
