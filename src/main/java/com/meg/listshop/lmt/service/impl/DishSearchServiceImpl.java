@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -20,6 +21,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -45,101 +47,80 @@ public class DishSearchServiceImpl implements DishSearchService {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", criteria.getUserId())
         ;
-        String sqlBase = "select distinct d.* from dish d ";
-        StringBuilder fromExtension = new StringBuilder();
+        String sqlBase = "select d.* from dish d ";
+        StringBuilder includedWith = new StringBuilder("");
+        StringBuilder includedJoin = new StringBuilder("");
         StringBuilder whereClause = new StringBuilder("where d.user_id = :userId ");
-        StringBuilder sortClause = new StringBuilder();
+        StringBuilder excludeWhereClause = new StringBuilder("");
+        StringBuilder nameWhereClause = new StringBuilder("");
+        StringBuilder sortClause = new StringBuilder(" ");
         HashSet<Long> allTagIds = getAllTagIdsForCriteria(criteria);
         Map<Long, List<Long>> groupDictionary = tagStructureService.getSearchGroupsForTagIds(allTagIds);
         if (!criteria.getIncludedTagIds().isEmpty()) {
-            // get dictionary for tag_ids
+            Set<Long> includeTagList = tagIdsWithSearchTags(criteria.getIncludedTagIds(), groupDictionary);
+            String includeTagQueryString = String.join(", ", includeTagList.stream().map(String::valueOf).collect(Collectors.toList()));
+            int setCount = includeTagList.size();
+            // right now, just as strings - no named parameters
+            includedWith.append("with included as (");
+            includedWith.append("select dish_id, count(distinct tag_id) from dish_tags ");
+            includedWith.append("where tag_id in ( ");
+            includedWith.append(includeTagQueryString);
+            includedWith.append(")");
+            includedWith.append("group by dish_id having count(distinct tag_id) = ");
+            includedWith.append(setCount);
+            includedWith.append(")");
 
-            int i = 0;
-            for (Long id : criteria.getIncludedTagIds()) {
+            includedJoin.append(" join included i using (dish_id) ");
 
-                fromExtension.append("join dish_tags iT")
-                        .append(i)
-                        .append(" on d.dish_id = iT")
-                        .append(i)
-                        .append(".dish_id and iT")
-                        .append(i)
-                        .append(".tag_id  ");
-                if (groupDictionary.containsKey(id)) {
-                    fromExtension.append(" in (");
-                    for (Long memberid : groupDictionary.get(id)) {
-                        fromExtension.append(memberid);
-                        fromExtension.append(",");
-                    }
-                    fromExtension.setLength(fromExtension.length() - 1);
-                    fromExtension.append(") ");
-                } else {
-                    fromExtension.append(" = ")
-                            .append(id)
-                            .append(" ");
-
-                }
-
-
-                i++;
-            }
         }
         if (!criteria.getExcludedTags().isEmpty()) {
-            int i = 0;
-            for (Long id : criteria.getExcludedTags()) {
-
-                fromExtension.append("left join dish_tags eT")
-                        .append(i)
-                        .append(" on d.dish_id = eT")
-                        .append(i)
-                        .append(".dish_id and eT")
-                        .append(i)
-                        .append(".tag_id ");
-
-                if (groupDictionary.containsKey(id)) {
-                    fromExtension.append(" in (");
-                    for (Long memberid : groupDictionary.get(id)) {
-                        fromExtension.append(memberid);
-                        fromExtension.append(",");
-                    }
-                    fromExtension.setLength(fromExtension.length() - 1);
-                    fromExtension.append(") ");
-                } else {
-                    fromExtension.append(" = ")
-                            .append(id)
-                            .append(" ");
-
-                }
+            Set<Long> excludeTagList = tagIdsWithSearchTags(criteria.getIncludedTagIds(), groupDictionary);
+            String excludeTagQueryString = String.join(", ", excludeTagList.stream().map(String::valueOf).collect(Collectors.toList()));
 
 
-                whereClause.append(" and eT")
-                        .append(i)
-                        .append(".tag_id is null ");
+            excludeWhereClause.append("and d.dish_id not in (  ");
+            excludeWhereClause.append("select dish_id from dish_tags ");
+            excludeWhereClause.append("        where tag_id in (");
+            excludeWhereClause.append(excludeTagQueryString);
+            excludeWhereClause.append(")");
 
-
-                i++;
-            }
-
+        }
+        if (!StringUtils.isEmpty(criteria.getNameFragment())) {
+            nameWhereClause.append(" and d.dish_name ilike '%");
+            nameWhereClause.append(criteria.getNameFragment());
+            nameWhereClause.append("%'");
         }
         if (criteria.hasSorting()) {
             // sort key or default
             DishSortKey key = criteria.getSortKey() != null ? criteria.getSortKey() : DishSortKey.CreatedOn;
             DishSortDirection direction = criteria.getSortDirection() != null ? criteria.getSortDirection() : DishSortDirection.ASC;
-            sortClause.append(" sort by ");
+            sortClause.append(" order by ");
             sortClause.append(columnForSortKey(key));
             sortClause.append(" ");
-            sortClause.append(" NULLS LAST");
             sortClause.append(direction);
+            sortClause.append(" NULLS LAST");
         }
 
-        String sql = sqlBase + fromExtension.toString() + whereClause;
+        String sql = includedWith + sqlBase + includedJoin + whereClause + excludeWhereClause + nameWhereClause + sortClause;
 
         return this.jdbcTemplate.query(sql, parameters, new DishMapper());
+    }
+
+    private Set<Long> tagIdsWithSearchTags(List<Long> tagIdList, Map<Long, List<Long>> groupDictionary) {
+        // get dictionary for tag_ids
+        Set<Long> tagIdsForInclude = new HashSet(tagIdList);
+        tagIdList.forEach(tagid -> {
+            if (groupDictionary.containsKey(tagid)) {
+                tagIdsForInclude.addAll(groupDictionary.get(tagid).stream().collect(Collectors.toList()));
+            }
+        });
+        return tagIdsForInclude;
     }
 
     private String columnForSortKey(DishSortKey key) {
         switch (key) {
             case Name:
-                return " lower(d.name)";
+                return " lower(d.dish_name)";
             case LastUsed:
                 return " d.last_added";
             case CreatedOn:
@@ -219,8 +200,8 @@ public class DishSearchServiceImpl implements DishSearchService {
         StringBuilder whereClause = new StringBuilder(" ");
         if (sqlFilteredDishes != null && !sqlFilteredDishes.isEmpty()) {
             whereClause.append(" where d.dish_id not in (");
-            sqlFilteredDishes.forEach( d -> whereClause.append(d).append(","));
-            whereClause.setLength(whereClause.length()-1);
+            sqlFilteredDishes.forEach(d -> whereClause.append(d).append(","));
+            whereClause.setLength(whereClause.length() - 1);
             whereClause.append(") ");
         }
 

@@ -54,6 +54,7 @@ public class DishRestController implements DishRestControllerApi {
 
     @Override
     public ResponseEntity<Resources<DishResource>> retrieveDishes(Principal principal,
+                                                                  @RequestParam(value = "searchFragment", required = false) String searchFragment,
                                                                   @RequestParam(value = "includedTags", required = false) String includedTags,
                                                                   @RequestParam(value = "excludedTags", required = false) String excludedTags
     ) {
@@ -89,6 +90,13 @@ public class DishRestController implements DishRestControllerApi {
         if (!StringUtils.isEmpty(sortDirection)) {
             DishSortDirection dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
             criteria.setSortDirection(dishSortDirection);
+        }
+        if (!StringUtils.isEmpty(sortDirection)) {
+            DishSortDirection dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
+            criteria.setSortDirection(dishSortDirection);
+        }
+        if (!StringUtils.isEmpty(searchFragment)) {
+            criteria.setNameFragment(searchFragment);
         }
 
         logger.debug("Searching for dishes with criteria: " + criteria);

@@ -22,6 +22,7 @@ public interface DishRestControllerApi {
 
     @GetMapping( produces = "application/json")
     ResponseEntity<Resources<DishResource>> retrieveDishes(Principal principal,
+                                                           @RequestParam(value = "searchFragment", required = false) String searchFragment,
                                                            @RequestParam(value = "includedTags", required = false) String includedTags,
                                                            @RequestParam(value = "excludedTags", required = false) String excludedTags,
                                                            @RequestParam(value = "sortKey", required = false) String sortKey,

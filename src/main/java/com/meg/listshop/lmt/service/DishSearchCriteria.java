@@ -15,6 +15,7 @@ public class DishSearchCriteria {
     private List<Long> excludedTagIds;
     private DishSortKey sortKey;
     private DishSortDirection sortDirection;
+    private String nameFragment;
 
     public DishSearchCriteria(Long userId) {
         this.userId = userId;
@@ -60,6 +61,14 @@ public class DishSearchCriteria {
         this.sortDirection = sortDirection;
     }
 
+    public String getNameFragment() {
+        return nameFragment;
+    }
+
+    public void setNameFragment(String nameFragment) {
+        this.nameFragment = nameFragment;
+    }
+
     @Override
     public String toString() {
         return "DishSearchCriteria{" +
@@ -68,10 +77,11 @@ public class DishSearchCriteria {
                 ", excludedTagIds=" + excludedTagIds +
                 ", sortKey=" + sortKey +
                 ", sortDirection=" + sortDirection +
+                ", nameFragment=" + nameFragment +
                 '}';
     }
 
     public boolean hasSorting() {
-        return sortKey != null && sortDirection != null;
+        return sortKey != null || sortDirection != null;
     }
 }
