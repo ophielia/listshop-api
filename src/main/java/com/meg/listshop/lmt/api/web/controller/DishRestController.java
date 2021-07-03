@@ -20,6 +20,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,22 +57,25 @@ public class DishRestController implements DishRestControllerApi {
     public ResponseEntity<Resources<DishResource>> retrieveDishes(Principal principal,
                                                                   @RequestParam(value = "searchFragment", required = false) String searchFragment,
                                                                   @RequestParam(value = "includedTags", required = false) String includedTags,
-                                                                  @RequestParam(value = "excludedTags", required = false) String excludedTags
+                                                                  @RequestParam(value = "excludedTags", required = false) String excludedTags,
+                                                                  @RequestParam(value = "sortKey", required = false) String sortKey,
+                                                                  @RequestParam(value = "sortDirection", required = false) String sortDirection
     ) {
         logger.info("Entered retrieveDishes includedTags: " + includedTags + ", excludedTags: " + excludedTags
                 + ", sortKey: " + sortKey + ", sortDirection: " + sortDirection);
         List<DishResource> dishList;
-        if (includedTags == null && excludedTags == null) {
+        if (StringUtils.isEmpty(includedTags) && StringUtils.isEmpty(excludedTags)
+                && StringUtils.isEmpty(sortKey) && StringUtils.isEmpty(sortDirection)) {
             dishList = getAllDishes(principal);
         } else {
-            dishList = findDishes(principal, includedTags, excludedTags);
+            dishList = findDishes(principal, includedTags, excludedTags, searchFragment, sortKey, sortDirection);
         }
 
         Resources<DishResource> dishResourceList = new Resources<>(dishList);
         return new ResponseEntity(dishResourceList, HttpStatus.OK);
     }
 
-    private List<DishResource> findDishes(Principal principal, String includedTags, String excludedTags) {
+    private List<DishResource> findDishes(Principal principal, String includedTags, String excludedTags, String searchFragment, String sortKey, String sortDirection) {
 
         UserEntity user = userService.getUserByUserEmail(principal.getName());
         DishSearchCriteria criteria = new DishSearchCriteria(user.getId());
