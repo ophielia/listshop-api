@@ -3,7 +3,7 @@
 
 name: Java CI with Maven
 
-workflow_dispatch:
+on: workflow_dispatch
    
 
 jobs:
