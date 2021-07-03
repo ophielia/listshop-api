@@ -216,14 +216,16 @@ public class ListLayoutRestControllerTest {
     @Test
     @WithMockUser
     public void testGetTagsForCategory() throws Exception {
-        ListLayoutEntity test = listLayoutSErvice.getListLayoutById(TestConstants.LIST_LAYOUT_1_ID);
+        ListLayoutEntity test = listLayoutSErvice.getListLayoutById(TestConstants.LIST_LAYOUT_2_ID);
         ListLayoutCategoryEntity testcategory = test.getCategories().get(0);
-        mockMvc.perform(get("/listlayout/"
-                + TestConstants.LIST_LAYOUT_1_ID + "/category/"
+        MvcResult result = mockMvc.perform(get("/listlayout/"
+                + TestConstants.LIST_LAYOUT_2_ID + "/category/"
                 + testcategory.getId() + "/tag")
                 .with(user(userDetails)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType));
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$._embedded.tagResourceList", Matchers.hasSize(33)))
+                .andReturn();
     }
 
 
@@ -269,12 +271,13 @@ public class ListLayoutRestControllerTest {
     @Test
     @WithMockUser
     public void testRetrieveListLayouts() throws Exception {
-        mockMvc.perform(get("/listlayout")
+        MvcResult result = mockMvc.perform(get("/listlayout")
                 .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(content().contentType(contentType));
-
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$._embedded.listLayoutResourceList", Matchers.hasSize(4)))
+                .andReturn();
     }
 
     @Test
@@ -332,6 +335,18 @@ public class ListLayoutRestControllerTest {
         mockMvc.perform(post(url)
                 .with(user(userDetails)))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser
+    public void testAddSubcategoryToCategory_ErrorDifferentLayouts() throws Exception {
+
+        String url = "/listlayout/category/" + TestConstants.LIST_LAYOUT_2_CATEGORY_ID2
+                + "/parent/" + TestConstants.LIST_LAYOUT_1_CATEGORY_ID;
+
+        mockMvc.perform(post(url)
+                .with(user(userDetails)))
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
