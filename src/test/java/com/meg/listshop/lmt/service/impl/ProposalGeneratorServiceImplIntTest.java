@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ProposalGeneratorServiceImplIntTest {
 
-
     @ClassRule
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
