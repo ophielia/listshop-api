@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.impl;
 
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.TargetType;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.service.DishSearchService;
@@ -10,6 +11,7 @@ import com.meg.listshop.lmt.service.proposal.impl.RefreshProposalProcessorImpl;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -33,6 +35,8 @@ import static org.mockito.ArgumentMatchers.eq;
 @ActiveProfiles("test")
 public class RefreshProposalProcessorImplTest {
 
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
     private RefreshProposalProcessorImpl processor;

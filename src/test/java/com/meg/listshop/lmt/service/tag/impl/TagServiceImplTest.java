@@ -29,6 +29,7 @@ import static java.lang.Thread.sleep;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
+@Ignore
 public class TagServiceImplTest {
 
     @ClassRule

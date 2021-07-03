@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.common.FlatStringUtils;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.exception.ProposalProcessingException;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.repository.ProposalContextRepository;
@@ -11,6 +12,7 @@ import com.meg.listshop.lmt.service.proposal.*;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -42,6 +44,8 @@ public class ProposalGeneratorServiceImplTest {
 
     private static Long existingProposalId;
 
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @MockBean
     @Qualifier(value = "newSearch")

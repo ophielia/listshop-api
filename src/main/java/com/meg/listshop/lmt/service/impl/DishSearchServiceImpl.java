@@ -65,10 +65,10 @@ public class DishSearchServiceImpl implements DishSearchService {
             includedWith.append("select dish_id, count(distinct tag_id) from dish_tags ");
             includedWith.append("where tag_id in ( ");
             includedWith.append(includeTagQueryString);
-            includedWith.append(")");
-            includedWith.append("group by dish_id having count(distinct tag_id) = ");
+            includedWith.append(") ");
+            includedWith.append(" group by dish_id having count(distinct tag_id) = ");
             includedWith.append(setCount);
-            includedWith.append(")");
+            includedWith.append(") ");
 
             includedJoin.append(" join included i using (dish_id) ");
 
@@ -82,7 +82,7 @@ public class DishSearchServiceImpl implements DishSearchService {
             excludeWhereClause.append("select dish_id from dish_tags ");
             excludeWhereClause.append("        where tag_id in (");
             excludeWhereClause.append(excludeTagQueryString);
-            excludeWhereClause.append(")");
+            excludeWhereClause.append(")) ");
 
         }
         if (!StringUtils.isEmpty(criteria.getNameFragment())) {

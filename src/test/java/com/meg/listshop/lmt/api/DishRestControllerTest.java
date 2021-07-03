@@ -250,13 +250,13 @@ public class DishRestControllerTest {
 
         ObjectMapper mapper = new ObjectMapper();
         EmbeddedDishResourceList embeddedList = mapper.readValue(result.getResponse().getContentAsString(), EmbeddedDishResourceList.class);
-
+        ResultDishResource[] dishList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getDishList() : new ResultDishResource[0];
         // sort list by name, asc
-        ResultDishResource[] sortedResults = embeddedList.getEmbeddedList().getDishList();
+        ResultDishResource[] sortedResults = dishList;
         Arrays.sort(sortedResults, DISHNAME);
 
         // list as received
-        List<String> listAsReceived = Arrays.asList(embeddedList.getEmbeddedList().getDishList())
+        List<String> listAsReceived = Arrays.asList(dishList)
                 .stream()
                 .map(rdr -> rdr.getDish().getDishName())
                 .collect(Collectors.toList());
@@ -282,13 +282,13 @@ public class DishRestControllerTest {
                 .andReturn();
 
         embeddedList = mapper.readValue(result.getResponse().getContentAsString(), EmbeddedDishResourceList.class);
-
+        dishList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getDishList() : new ResultDishResource[0];
         // sort list by id, desc
-        sortedResults = embeddedList.getEmbeddedList().getDishList();
+        sortedResults = dishList;
         Arrays.sort(sortedResults, CREATEDON.reversed());
 
         // list as received
-        listAsReceived = Arrays.asList(embeddedList.getEmbeddedList().getDishList())
+        listAsReceived = Arrays.asList(dishList)
                 .stream()
                 .map(rdr -> String.valueOf(rdr.getDish().getId()))
                 .collect(Collectors.toList());

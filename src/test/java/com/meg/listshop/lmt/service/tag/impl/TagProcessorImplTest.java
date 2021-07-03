@@ -11,6 +11,7 @@ import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import static com.meg.listshop.test.TestConstants.USER_3_NAME;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
+@Ignore
 public class TagProcessorImplTest {
 
     @ClassRule

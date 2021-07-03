@@ -12,15 +12,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 * Using testcontainers rather than local database for tests
 * Moving some tests from IT tests to Mock tests
 
-### Deprecated
-
-* In ShoppingList api object
-    - Dish_sources and list_sources are depracated in ShoppingList api object
-    - Dish_sources and list_sources are depracated in Item api object
-
 ### Added
 
 * sort parameters to endpoint GET /dish
+* name fragment parameter to GET /dish
 
 ## [1.3.2] - June 2021
 
