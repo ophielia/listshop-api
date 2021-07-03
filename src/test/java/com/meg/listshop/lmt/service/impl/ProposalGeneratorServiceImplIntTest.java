@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.impl;
 
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.repository.ProposalContextRepository;
 import com.meg.listshop.lmt.service.TargetService;
@@ -9,6 +10,7 @@ import com.meg.listshop.lmt.service.proposal.ProposalSearchType;
 import com.meg.listshop.lmt.service.proposal.ProposalService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProposalGeneratorServiceImplIntTest {
 
 
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
     private
