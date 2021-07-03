@@ -1,5 +1,6 @@
 package com.meg.listshop.configuration;
 
+import org.junit.ClassRule;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 public class ListShopPostgresqlContainer extends PostgreSQLContainer<ListShopPostgresqlContainer> {
@@ -9,6 +10,10 @@ public class ListShopPostgresqlContainer extends PostgreSQLContainer<ListShopPos
     private ListShopPostgresqlContainer() {
         super(IMAGE_VERSION);
     }
+
+
+    @ClassRule
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     public static ListShopPostgresqlContainer getInstance() {
         if (container == null) {
