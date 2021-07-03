@@ -3,9 +3,14 @@
 
 name: Java CI with Maven
 
-on:
-  push:
-    branches: [ develop ]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'  
 
 
 jobs:
