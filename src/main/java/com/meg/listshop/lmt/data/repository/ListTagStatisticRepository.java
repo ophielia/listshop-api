@@ -10,10 +10,8 @@ import java.util.List;
 /**
  * Created by margaretmartin on 21/10/2017.
  */
-public interface ListTagStatisticRepository extends JpaRepository<ListTagStatistic, Long> {
+public interface ListTagStatisticRepository extends JpaRepository<ListTagStatistic, Long>, CustomStatisticRepository {
     ListTagStatistic findByUserIdAndTagId(Long userId, Long tagId);
-
-    List<ListTagStatistic> findByUserIdAndTagIdIn(Long userId, List<Long> tagIds);
 
     @Query(value = "select * from list_tag_stats where user_id = :userId order by (added_count + added_to_dish) DESC", nativeQuery = true)
     List<ListTagStatistic> findByUserId(@Param("userId") Long userId);

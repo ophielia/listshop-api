@@ -7,10 +7,8 @@ import com.meg.listshop.lmt.api.model.ContextType;
 import com.meg.listshop.lmt.api.model.Statistic;
 import com.meg.listshop.lmt.api.model.StatisticCountType;
 import com.meg.listshop.lmt.data.entity.ItemEntity;
-import com.meg.listshop.lmt.data.entity.ListTagStatistic;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.*;
-import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -45,14 +43,7 @@ public class ListTagStatisticServiceImplTest {
     @Autowired
     ListTagStatisticService listTagStatisticService;
 
-    @Test
-    public void testGetStatisticsForUser() {
 
-
-        List<ListTagStatistic> list = listTagStatisticService.getStatisticsForUser(TestConstants.USER_3_ID, 100);
-        Assert.assertNotNull(list);
-        Assert.assertEquals(3, list.size());
-    }
 
     @Test
     @Sql(value = {"/sql/com/meg/atable/lmt/service/impl/ListTagStatisticServiceTest-rollback.sql"})
@@ -271,6 +262,7 @@ public class ListTagStatisticServiceImplTest {
         Assert.assertEquals(0, getFieldResultForTag("removed_dish", 16L, 99L).intValue());
         Assert.assertEquals(0, getFieldResultForTag("removed_dish", 18L, 99L).intValue());
     }
+
 
     private Integer getFieldResultForTag(String fieldName, Long tagId, Long userId) {
         Map<Long, Integer> resultMap = new HashMap<>();

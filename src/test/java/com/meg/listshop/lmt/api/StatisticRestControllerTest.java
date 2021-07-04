@@ -4,6 +4,7 @@ import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.test.TestConstants;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -32,8 +33,10 @@ import java.util.Arrays;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -80,7 +83,7 @@ public class StatisticRestControllerTest {
                 .build();
 
 
-        userDetails = new JwtUser(TestConstants.USER_1_ID,
+        userDetails = new JwtUser(TestConstants.USER_3_ID,
                 TestConstants.USER_1_NAME,
                 null,
                 null,
@@ -107,8 +110,21 @@ public class StatisticRestControllerTest {
                 .with(user(emptyUserDetails))
                 .contentType(contentType)
                 .content(testUploadStatistics))
-                .andDo(print())
                 .andExpect(status().isCreated());
+
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetUserStatistics() throws Exception {
+
+        this.mockMvc.perform(get("/statistics")
+                .with(user(userDetails))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.statistic", Matchers.hasSize(2)));
 
 
     }
