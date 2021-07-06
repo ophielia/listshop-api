@@ -24,6 +24,7 @@ import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -45,6 +46,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
+@Sql(value = "/sql/com/meg/atable/lmt/api/MealPlanRestControllerTest.sql")
 public class MealPlanRestControllerTest {
 
     @ClassRule
@@ -119,12 +121,37 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
+    public void readMealPlanRatings() throws Exception {
+        Long testId = 50485L;
+        mockMvc.perform(get("/mealplan/"
+                + testId + "/ratings")
+                .with(user(userDetails)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.ratingUpdateInfo.headers", Matchers.hasSize(8)))
+                .andExpect(jsonPath("$.ratingUpdateInfo.dish_ratings", Matchers.hasSize(5)))
+                .andDo(print());
+    }
+
+
+    @Test
+    @WithMockUser
     public void readMealPlans() throws Exception {
         mockMvc.perform(get("/mealplan")
                 .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(content().contentType(contentType));
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$._embedded.mealPlanResourceList", Matchers.hasSize(3)));
+    }
+
+    @Test
+    @WithMockUser
+    public void readMealPlanBadUser() throws Exception {
+        Long testId = TestConstants.MENU_PLAN_3_ID;
+        mockMvc.perform(get("/mealplan" + "/" + testId)
+                .with(user(userDetailsDelete)))
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -155,6 +182,25 @@ public class MealPlanRestControllerTest {
                 .content(mealPlanJson))
                 .andExpect(status().isCreated());
     }
+
+    @Test
+    @WithMockUser
+    public void testCreateMealPlan_EmptyName() throws Exception {
+        MealPlanEntity mealPlanEntity = new MealPlanEntity();
+        mealPlanEntity.setMealPlanType(MealPlanType.Manual);
+        mealPlanEntity.setUserId(userAccount.getId());
+        MealPlan mealPlan = ModelMapper.toModel(mealPlanEntity);
+        String mealPlanJson = json(mealPlan);
+
+        this.mockMvc.perform(post("/mealplan")
+                .with(user(userDetails))
+                .contentType(contentType)
+                .content(mealPlanJson))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.meal_plan.name", Matchers.isA(String.class)));
+    }
+
 
     @Test
     @WithMockUser

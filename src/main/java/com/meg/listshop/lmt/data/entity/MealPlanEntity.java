@@ -53,6 +53,10 @@ public class MealPlanEntity {
         return mealPlanId;
     }
 
+    public void setId(Long mealPlanId) {
+        this.mealPlanId = mealPlanId;
+    }
+
     public String getName() {
         return name;
     }

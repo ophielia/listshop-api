@@ -9,7 +9,6 @@ import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.repository.MealPlanRepository;
 import com.meg.listshop.lmt.data.repository.SlotRepository;
-import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.MealPlanService;
 import com.meg.listshop.lmt.service.proposal.ProposalService;
@@ -45,8 +44,6 @@ public class MealPlanServiceImpl implements MealPlanService {
 
     private ProposalService targetProposalService;
 
-    private TagRepository tagRepository;
-
 
     private TagService tagService;
 
@@ -56,14 +53,12 @@ public class MealPlanServiceImpl implements MealPlanService {
                                SlotRepository slotRepository,
                                DishService dishService,
                                ProposalService targetProposalService,
-                               TagRepository tagRepository,
                                TagService tagService) {
         this.userService = userService;
         this.mealPlanRepository = mealPlanRepository;
         this.slotRepository = slotRepository;
         this.dishService = dishService;
         this.targetProposalService = targetProposalService;
-        this.tagRepository = tagRepository;
         this.tagService = tagService;
     }
 
@@ -170,6 +165,7 @@ public class MealPlanServiceImpl implements MealPlanService {
         // get meal plan
         MealPlanEntity mealPlan = getMealPlanById(username, mealPlanId);
 
+
         // get slots
         List<SlotEntity> slotList = slotRepository.findByMealPlan(mealPlan);
 
@@ -196,6 +192,9 @@ public class MealPlanServiceImpl implements MealPlanService {
     public void deleteMealPlan(String name, Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException {
         MealPlanEntity toDelete = getMealPlanById(name, mealPlanId);
 
+        if (toDelete == null) {
+            return;
+        }
         if (!toDelete.getSlots().isEmpty()) {
             slotRepository.deleteAll(toDelete.getSlots());
             toDelete.setSlots(null);
@@ -216,7 +215,7 @@ public class MealPlanServiceImpl implements MealPlanService {
                 .map(s -> s.getDish().getId())
                 .collect(Collectors.toList());
 
-        return tagRepository.getIngredientTagsForDishes(dishIds);
+        return tagService.getIngredientTagsForDishes(dishIds);
     }
 
     public void updateLastAddedDateForDishes(MealPlanEntity mealPlan) {
@@ -250,8 +249,4 @@ public class MealPlanServiceImpl implements MealPlanService {
         return tagService.getRatingUpdateInfoForDishIds(username, dishIds);
     }
 
-    public List<TagEntity> getTagsForSlot(SlotEntity slot) {
-        // TODO implement this
-        return null;
-    }
 }

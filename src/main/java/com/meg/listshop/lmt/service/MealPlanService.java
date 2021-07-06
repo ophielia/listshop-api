@@ -4,7 +4,6 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.data.entity.MealPlanEntity;
-import com.meg.listshop.lmt.data.entity.SlotEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 
 import java.util.List;
@@ -32,8 +31,6 @@ public interface MealPlanService {
     List<TagEntity> fillInDishTags(MealPlanEntity mealPlan);
 
     void updateLastAddedDateForDishes(MealPlanEntity mealPlan);
-
-    List<TagEntity> getTagsForSlot(SlotEntity slot);
 
     void renameMealPlan(String userName, Long mealPlanId, String newName) throws ObjectNotFoundException, ObjectNotYoursException;
 

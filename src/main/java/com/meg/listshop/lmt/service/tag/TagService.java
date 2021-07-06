@@ -48,6 +48,7 @@ public interface TagService {
 
     List<TagEntity> getTagList(TagFilterType baseTags, List<TagType> tagType);
 
+    List<TagEntity> getIngredientTagsForDishes(List<Long> dishIdList);
 
     void deleteTagFromDish(String userName, Long dishId, Long tagId);
 

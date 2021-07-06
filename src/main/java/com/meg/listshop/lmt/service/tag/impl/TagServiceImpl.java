@@ -215,7 +215,6 @@ public class TagServiceImpl implements TagService {
     }
 
 
-
     @Override
     public List<TagEntity> getTagList(TagFilterType tagFilterType, List<TagType> tagTypes) {
         // assign_select
@@ -223,6 +222,11 @@ public class TagServiceImpl implements TagService {
         Boolean searchSelect = tagFilterType == TagFilterType.ForSelectSearch ? true : null;
         return tagRepository.findTagsByCriteria(tagTypes, assignSelect, searchSelect);
 
+    }
+
+    @Override
+    public List<TagEntity> getIngredientTagsForDishes(List<Long> dishIdList) {
+        return tagRepository.getIngredientTagsForDishes(dishIdList);
     }
 
     @Override

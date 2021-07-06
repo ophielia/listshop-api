@@ -173,10 +173,8 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
-                // .andExpect(jsonPath("$.shopping_list.list_id").value(testId))
                 .andReturn();
 
-        String beep = "bop";
     }
 
     @Test
