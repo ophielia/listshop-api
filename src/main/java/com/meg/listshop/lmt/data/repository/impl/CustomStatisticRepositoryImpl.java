@@ -3,6 +3,8 @@ package com.meg.listshop.lmt.data.repository.impl;
 import com.meg.listshop.lmt.api.model.StatisticCountType;
 import com.meg.listshop.lmt.data.repository.CustomStatisticRepository;
 import com.meg.listshop.lmt.service.impl.StatisticOperationType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -12,6 +14,8 @@ import java.util.List;
  * Created by margaretmartin on 21/10/2017.
  */
 public class CustomStatisticRepositoryImpl implements CustomStatisticRepository {
+
+    private static final Logger logger = LogManager.getLogger(CustomStatisticRepositoryImpl.class);
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -66,12 +70,15 @@ public class CustomStatisticRepositoryImpl implements CustomStatisticRepository 
     }
 
     public void insertSingleUserStatistic(Long userId, Long tagId, Integer addedSingle, Integer removedSingle) {
+        logger.debug("In CustomStatisticRepositoryImpl - user_id:" + userId + " , tagId: " + tagId + ", addedSingle: " + addedSingle + ", removedSingle: " + removedSingle + ".");
+        Integer removed = removedSingle == null ? 0 : removedSingle;
+        Integer added = addedSingle == null ? 0 : addedSingle;
         entityManager.createNativeQuery(INSERT_SINGLE_STATISTIC)
                 .setParameter(1, userId)
-                .setParameter(2, addedSingle)
-                .setParameter(3, addedSingle)
-                .setParameter(4, removedSingle)
-                .setParameter(5, removedSingle)
+                .setParameter(2, added)
+                .setParameter(3, added)
+                .setParameter(4, removed)
+                .setParameter(5, removed)
                 .setParameter(6, tagId)
                 .executeUpdate();
     }
