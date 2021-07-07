@@ -46,7 +46,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-@Sql(value = "/sql/com/meg/atable/lmt/api/MealPlanRestControllerTest.sql")
 public class MealPlanRestControllerTest {
 
     @ClassRule
@@ -121,6 +120,9 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
+    @Sql(value = "/sql/com/meg/atable/lmt/api/MealPlanRestControllerTest.sql")
+    @Sql(value = "/sql/com/meg/atable/lmt/api/MealPlanRestControllerTest_rollback.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void readMealPlanRatings() throws Exception {
         Long testId = 50485L;
         mockMvc.perform(get("/mealplan/"
@@ -142,7 +144,7 @@ public class MealPlanRestControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$._embedded.mealPlanResourceList", Matchers.hasSize(3)));
+                .andExpect(jsonPath("$._embedded.mealPlanResourceList", Matchers.hasSize(5)));
     }
 
     @Test
