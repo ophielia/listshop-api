@@ -5,7 +5,7 @@
 
     <groupId>com.meg.atable</groupId>
     <artifactId>listshop-server</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.1</version>
     <packaging>jar</packaging>
 
     <name>listshop-server</name>
