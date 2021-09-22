@@ -53,6 +53,23 @@ public class TagExtendedEntity {
         // jpa empty constructor
     }
 
+    public TagExtendedEntity(TagEntity tag) {
+        assignSelect = tag.getAssignSelect();
+        categoryUpdatedOn = tag.getCategoryUpdatedOn();
+        createdOn = tag.getCreatedOn();
+        description = tag.getDescription();
+        isVerified = tag.getVerified();
+        name = tag.getName();
+        power = tag.getPower();
+        removedOn = tag.getRemovedOn();
+        replacementTagId = tag.getReplacementTagId();
+        searchSelect = tag.getSearchSelect();
+        tag_id = tag.getId();
+        tagType = tag.getTagType();
+        tagTypeDefault = tag.getTagTypeDefault();
+        updatedOn = tag.getUpdatedOn();
+    }
+
     public Long getId() {
         return tag_id;
     }

@@ -3,9 +3,11 @@ package com.meg.listshop.lmt.service.tag.impl;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
+import com.meg.listshop.lmt.api.model.TagFilterType;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
 import com.meg.listshop.lmt.data.repository.TagExtendedRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.DishSearchCriteria;
@@ -26,6 +28,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -99,6 +102,60 @@ public class TagServiceImplMockTest {
 
     }
 
+    @Test
+    public void testGetTagById_OK() {
+        Long tagId = 99L;
+        Long replaceTagId = 88L;
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+
+
+        Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.of(tag));
+
+        TagEntity result = tagService.getTagById(tagId);
+
+        Mockito.verify(tagRepository, times(1)).findById(tagId);
+
+        Assert.assertNotNull(result);
+    }
+
+    @Test
+    public void testGetTagById_Replacement() {
+        Long tagId = 99L;
+        Long replaceTagId = 88L;
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+        tag.setToDelete(true);
+        tag.setReplacementTagId(replaceTagId);
+        TagEntity replacement = new TagEntity();
+        replacement.setId(replaceTagId);
+
+
+        Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.of(tag));
+        Mockito.when(tagRepository.findById(replaceTagId)).thenReturn(Optional.of(replacement));
+
+        TagEntity result = tagService.getTagById(tagId);
+
+        Mockito.verify(tagRepository, times(1)).findById(tagId);
+        Mockito.verify(tagRepository, times(1)).findById(replaceTagId);
+
+        Assert.assertNotNull(result);
+        Assert.assertEquals(replaceTagId, result.getId());
+
+        Mockito.reset(tagRepository);
+        // set replacement to null - expect null
+        tag.setReplacementTagId(null);
+        Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.of(tag));
+
+        result = tagService.getTagById(tagId);
+
+        Mockito.verify(tagRepository, times(1)).findById(tagId);
+
+        Assert.assertNull(result);
+
+
+    }
+
     @Test(expected = ActionInvalidException.class)
     public void saveTagForDelete_NullTag() {
         Long tagId = 99L;
@@ -116,6 +173,209 @@ public class TagServiceImplMockTest {
         tagService.saveTagForDelete(tagId, replaceTagId);
 
     }
+
+    @Test
+    public void testUpdateTag() {
+        Long tagId = 999L;
+        TagEntity tag = buildTagEntity(tagId, "tagName", TagType.DishType);
+        TagEntity copyfrom = buildTagEntity(tagId, "copied", TagType.Ingredient);
+        copyfrom.setDescription("description");
+        copyfrom.setAssignSelect(true);
+        copyfrom.setSearchSelect(true);
+        copyfrom.setPower(5.0);
+        copyfrom.setToDelete(false);
+        copyfrom.setRemovedOn(new Date());
+        copyfrom.setCreatedOn(new Date());
+        copyfrom.setCategoryUpdatedOn(new Date());
+        copyfrom.setReplacementTagId(1000L);
+        copyfrom.setUpdatedOn(new Date());
+
+        ArgumentCaptor<TagEntity> argument = ArgumentCaptor.forClass(TagEntity.class);
+
+        Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.of(tag));
+
+        // call
+        tagService.updateTag(tagId, copyfrom);
+
+        Mockito.verify(tagRepository).save(argument.capture());
+        Mockito.verify(tagRepository, times(1)).findById(tagId);
+
+        TagEntity verifyCapture = argument.getValue();
+        Assert.assertNotNull(verifyCapture);
+
+        Assert.assertEquals(copyfrom.getDescription(), verifyCapture.getDescription());
+        Assert.assertEquals(copyfrom.getAssignSelect(), verifyCapture.getAssignSelect());
+        Assert.assertEquals(copyfrom.getSearchSelect(), verifyCapture.getSearchSelect());
+        Assert.assertEquals(copyfrom.getPower(), verifyCapture.getPower());
+        Assert.assertEquals(copyfrom.isToDelete(), verifyCapture.isToDelete());
+        Assert.assertEquals(copyfrom.getRemovedOn(), verifyCapture.getRemovedOn());
+        Assert.assertEquals(copyfrom.getCreatedOn(), verifyCapture.getCreatedOn());
+        Assert.assertEquals(copyfrom.getCategoryUpdatedOn(), verifyCapture.getCategoryUpdatedOn());
+        Assert.assertEquals(copyfrom.getReplacementTagId(), verifyCapture.getReplacementTagId());
+
+        Assert.assertNotEquals(copyfrom.getUpdatedOn(), verifyCapture.getUpdatedOn());
+        Assert.assertNotNull(verifyCapture.getUpdatedOn());
+
+    }
+
+    @Test
+    public void testGetTagList() {
+        TagFilterType filter = TagFilterType.ForSelectAssign;
+        List<TagType> tagTypes = new ArrayList<>();
+        tagTypes.add(TagType.NonEdible);
+        tagTypes.add(TagType.Rating);
+        List<TagEntity> allTags = new ArrayList<>();
+        allTags.add(buildTagEntity(99L, "tag99", TagType.NonEdible));
+        allTags.add(buildTagEntity(199L, "tag199", TagType.Ingredient));
+        allTags.add(buildTagEntity(299L, "tag299", TagType.DishType));
+
+        Mockito.when(tagRepository.findTagsByCriteria(tagTypes, true, null)).thenReturn(allTags);
+
+        tagService.getTagList(TagFilterType.ForSelectAssign, tagTypes);
+
+        Mockito.verify(tagRepository, times(1)).findTagsByCriteria(tagTypes, true, null);
+
+        Mockito.reset(tagRepository);
+
+        // test for select search
+        Mockito.when(tagRepository.findTagsByCriteria(tagTypes, null, true)).thenReturn(allTags);
+
+        tagService.getTagList(TagFilterType.ForSelectSearch, tagTypes);
+
+        Mockito.verify(tagRepository, times(1)).findTagsByCriteria(tagTypes, null, true);
+
+        Mockito.reset(tagRepository);
+
+
+        // test for empty criteria
+        Mockito.when(tagRepository.findTagsByCriteria(tagTypes, null, null)).thenReturn(allTags);
+
+        tagService.getTagList(TagFilterType.ParentTags
+                , tagTypes);
+
+        Mockito.verify(tagRepository, times(1)).findTagsByCriteria(tagTypes, null, null);
+
+        Mockito.reset(tagRepository);
+
+        // test for empty TagFilterType
+        Mockito.when(tagRepository.findTagsByCriteria(tagTypes, null, null)).thenReturn(allTags);
+
+        tagService.getTagList(null
+                , tagTypes);
+
+        Mockito.verify(tagRepository, times(1)).findTagsByCriteria(tagTypes, null, null);
+
+
+    }
+
+    @Test
+    public void testCreateTag() {
+        LocalDateTime beforeCreate = LocalDateTime.now();
+        TagEntity parent = buildTagEntity(9L, "ParanetTag", TagType.Ingredient);
+        TagEntity createdTag = buildTagEntity(999L, "ParanetTag", TagType.Ingredient);
+        String name = "new tag name";
+
+        ArgumentCaptor<TagEntity> argument = ArgumentCaptor.forClass(TagEntity.class);
+
+        Mockito.when(tagRepository.save(argument.capture())).thenReturn(createdTag);
+
+        // call
+        tagService.createTag(parent, name);
+
+        Assert.assertNotNull(argument.getValue());
+        TagEntity savedTag = argument.getValue();
+        Assert.assertTrue(savedTag.getAssignSelect());
+        Assert.assertFalse(savedTag.getSearchSelect());
+        Assert.assertFalse(savedTag.isToDelete());
+        Assert.assertNotNull(savedTag.getCreatedOn());
+
+
+        // MM will need to test with null parent id
+    }
+
+    @Test
+    public void testGetTagExtendedList() {
+        TagFilterType filter = TagFilterType.ForSelectAssign;
+        List<TagType> tagTypes = new ArrayList<>();
+        tagTypes.add(TagType.NonEdible);
+        tagTypes.add(TagType.Rating);
+        List<TagExtendedEntity> allTags = new ArrayList<>();
+        allTags.add(buildTagExtendedEntity(99L, "tag99", TagType.NonEdible));
+        allTags.add(buildTagExtendedEntity(199L, "tag199", TagType.Ingredient));
+        allTags.add(buildTagExtendedEntity(299L, "tag299", TagType.DishType));
+
+        Mockito.when(tagExtendedRepository.findTagsByCriteria(tagTypes, null)).thenReturn(allTags);
+
+        tagService.getTagExtendedList(TagFilterType.ForSelectAssign, tagTypes);
+
+        Mockito.verify(tagExtendedRepository, times(1)).findTagsByCriteria(tagTypes, null);
+
+        Mockito.reset(tagExtendedRepository);
+
+        Mockito.when(tagExtendedRepository.findTagsByCriteria(tagTypes, true)).thenReturn(allTags);
+
+        tagService.getTagExtendedList(TagFilterType.ParentTags, tagTypes);
+
+        Mockito.verify(tagExtendedRepository, times(1)).findTagsByCriteria(tagTypes, true);
+
+    }
+
+    @Test
+    public void testGetTagsForDish() {
+        Long dishId = 999L;
+        List<TagType> tagTypes = new ArrayList<>();
+        tagTypes.add(TagType.Ingredient);
+        tagTypes.add(TagType.NonEdible);
+        String username = "george";
+        DishEntity dish = new DishEntity();
+        dish.setId(dishId);
+        List<TagEntity> allTags = new ArrayList<>();
+        allTags.add(buildTagEntity(99L, "tag99", TagType.NonEdible));
+        allTags.add(buildTagEntity(199L, "tag199", TagType.Ingredient));
+        allTags.add(buildTagEntity(299L, "tag299", TagType.DishType));
+
+        Mockito.when(dishService.getDishForUserById(username, dishId)).thenReturn(dish);
+        Mockito.when(tagRepository.findTagsByDishes(dish)).thenReturn(allTags);
+
+        List<TagEntity> resultList = tagService.getTagsForDish(username, dishId, tagTypes);
+
+        Mockito.verify(tagRepository, times(1)).findTagsByDishes(dish);
+
+        Assert.assertNotNull(resultList);
+        Assert.assertEquals("Size should be 2.", 2, resultList.size());
+    }
+
+    private TagEntity buildTagEntity(Long tagId, String tagName,
+                                     TagType tagType) {
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+        tag.setName(tagName);
+        tag.setTagType(tagType);
+        return tag;
+    }
+
+    private TagExtendedEntity buildTagExtendedEntity(Long tagId, String tagName,
+                                                     TagType tagType) {
+        TagExtendedEntity tag = new TagExtendedEntity(buildTagEntity(tagId, tagName, tagType));
+        return tag;
+    }
+
+    @Test
+    public void testGetTagById_NoneFound() {
+        Long tagId = 99L;
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+
+
+        Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.ofNullable(null));
+
+        TagEntity result = tagService.getTagById(tagId);
+
+        Mockito.verify(tagRepository, times(1)).findById(tagId);
+
+        Assert.assertNull(result);
+    }
+
 
     @Test(expected = ActionInvalidException.class)
     public void saveTagForDelete_HasChildren() {

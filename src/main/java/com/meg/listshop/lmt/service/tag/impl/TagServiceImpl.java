@@ -113,7 +113,7 @@ public class TagServiceImpl implements TagService {
         TagEntity tag = tagOpt.get();
         if (tag.isToDelete()) {
             Long newTagId = tag.getReplacementTagId();
-            return getTagById(newTagId);
+            return newTagId != null ? getTagById(newTagId) : null;
         }
         return tag;
     }

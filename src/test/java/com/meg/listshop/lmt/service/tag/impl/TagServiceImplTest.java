@@ -2,11 +2,13 @@ package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.api.model.DishRatingInfo;
+import com.meg.listshop.lmt.api.model.RatingInfo;
+import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
+import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.ListTagStatistic;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
 import com.meg.listshop.lmt.data.repository.ListTagStatisticRepository;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -18,13 +20,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 import static com.meg.listshop.test.TestConstants.*;
-import static java.lang.Thread.sleep;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -80,6 +78,7 @@ public class TagServiceImplTest {
         dishService.save(dish, false);
     }
 
+
     @Test
     public void save()  {
         TagEntity testSave = new TagEntity();
@@ -93,246 +92,6 @@ public class TagServiceImplTest {
         Assert.assertNotNull(check);
         Assert.assertEquals(testSave.getName(), check.getName());
         Assert.assertEquals(testSave.getDescription(), check.getDescription());
-    }
-
-
-    @Test
-    public void getTagList_AssignTagsFilter() {
-        TagFilterType filter = TagFilterType.ForSelectAssign;
-        List<TagType> tagTypes = new ArrayList<>();
-        tagTypes.add(TagType.NonEdible);
-        tagTypes.add(TagType.Rating);
-
-        // test call
-        List<TagEntity> result = tagService.getTagList(filter, tagTypes);
-
-        // confirm results
-        // should not include Produce and Personal Hygiene (388 and 389)
-        Assert.assertFalse(resultsInclude(388L, result));
-        Assert.assertFalse(resultsInclude(389L, result));
-        // should not include Quick To Table and Occasions (290 and 35)
-        Assert.assertFalse(resultsInclude(290L, result));
-        Assert.assertFalse(resultsInclude(35L, result));
-        // should not include finger food and pantry dish (7 and 471)
-        Assert.assertFalse(resultsInclude(7L, result));
-        Assert.assertFalse(resultsInclude(471L, result));
-        // should  include ease of prep 4 and soft cat food (399 and 470)
-        Assert.assertTrue(resultsInclude(399L, result));
-        Assert.assertTrue(resultsInclude(470L, result));
-
-        // test call without call types
-        List<TagEntity> resultsNoFilter = tagService.getTagList(filter, null);
-
-        // confirm results
-        // should not include Produce and Personal Hygiene (388 and 389)
-        Assert.assertFalse(resultsInclude(388L, resultsNoFilter));
-        Assert.assertFalse(resultsInclude(389L, resultsNoFilter));
-        // should not include Quick To Table and Occasions (290 and 35)
-        Assert.assertFalse(resultsInclude(290L, resultsNoFilter));
-        Assert.assertFalse(resultsInclude(35L, resultsNoFilter));
-        // should  include finger food and pantry dish (7 and 471)
-        Assert.assertTrue(resultsInclude(7L, resultsNoFilter));
-        Assert.assertTrue(resultsInclude(471L, resultsNoFilter));
-        // should  include heavy cream and red lentils (78 and 126)
-        Assert.assertTrue(resultsInclude(78L, resultsNoFilter));
-        Assert.assertTrue(resultsInclude(126L, resultsNoFilter));
-
-    }
-
-    @Test
-    public void getTagList_SearchTagsFilter() {
-        TagFilterType filter = TagFilterType.ForSelectSearch;
-        List<TagType> tagTypes = new ArrayList<>();
-        tagTypes.add(TagType.Ingredient);
-        tagTypes.add(TagType.TagType);
-
-        // test call
-        List<TagEntity> result = tagService.getTagList(filter, tagTypes);
-
-        // confirm results
-        // should  include light cream and lardons (163 and 74)
-        Assert.assertTrue(resultsInclude(163L, result));
-        Assert.assertTrue(resultsInclude(74L, result));
-        // should not include coffee filters and ease of prep 2 (401 and 148)
-        Assert.assertFalse(resultsInclude(401L, result));
-        Assert.assertFalse(resultsInclude(148L, result));
-        // should not include cultural roots and frozen (403 and 35)
-        Assert.assertFalse(resultsInclude(403L, result));
-        Assert.assertFalse(resultsInclude(35L, result));
-        // should not  include ease of prep 4 and soft cat food (3 and 63)
-        Assert.assertFalse(resultsInclude(3L, result));
-        Assert.assertFalse(resultsInclude(63L, result));
-
-        // test call without call types
-        List<TagEntity> resultsNoFilter = tagService.getTagList(filter, null);
-
-        // confirm results
-        // should  include light cream and lardons (163 and 74)
-        Assert.assertTrue(resultsInclude(163L, resultsNoFilter));
-        Assert.assertTrue(resultsInclude(74L, resultsNoFilter));
-        // should  include coffee filters and ease of prep 2 (401 and 148)
-        Assert.assertTrue(resultsInclude(401L, resultsNoFilter));
-        Assert.assertTrue(resultsInclude(148L, resultsNoFilter));
-        // should not include cultural roots and frozen (403 and 35)
-        Assert.assertFalse(resultsInclude(403L, resultsNoFilter));
-        Assert.assertFalse(resultsInclude(35L, resultsNoFilter));
-        // should not  include ease of prep 4 and soft cat food (3 and 63)
-        Assert.assertFalse(resultsInclude(3L, resultsNoFilter));
-        Assert.assertFalse(resultsInclude(63L, resultsNoFilter));
-
-    }
-
-    @Test
-    public void getTagExtendedList_ParentTagsFilter() {
-        TagFilterType filter = TagFilterType.ParentTags;
-        List<TagType> tagTypes = new ArrayList<>();
-        tagTypes.add(TagType.Ingredient);
-        tagTypes.add(TagType.NonEdible);
-
-        // test call
-        List<TagExtendedEntity> result = tagService.getTagExtendedList(filter, tagTypes);
-
-        // confirm results
-        // should include rice and prepared meat (14 and 88)
-        Assert.assertTrue(tagExtendedResultsInclude(14L, result));
-        Assert.assertTrue(tagExtendedResultsInclude(88L, result));
-        // should not include preparation type and special diet (157 and 246)
-        Assert.assertFalse(tagExtendedResultsInclude(157L, result));
-        Assert.assertFalse(tagExtendedResultsInclude(246L, result));
-        // should  include cultural roots but not frozen (403 and 35)
-        Assert.assertTrue(tagExtendedResultsInclude(403L, result));
-        Assert.assertFalse(tagExtendedResultsInclude(35L, result));
-        // should not  include ease of prep 4 and soft cat food (3 and 63)
-        Assert.assertFalse(tagExtendedResultsInclude(3L, result));
-        Assert.assertFalse(tagExtendedResultsInclude(63L, result));
-
-        // test call without call types
-        List<TagExtendedEntity> resultsNoFilter = tagService.getTagExtendedList(filter, null);
-
-        // confirm results
-        // should  include rice and prepared meat (14 and 88)
-        Assert.assertTrue(tagExtendedResultsInclude(14L, resultsNoFilter));
-        Assert.assertTrue(tagExtendedResultsInclude(88L, resultsNoFilter));
-        // should not include preparation type and special diet (157 and 246)
-        Assert.assertTrue(tagExtendedResultsInclude(157L, resultsNoFilter));
-        Assert.assertTrue(tagExtendedResultsInclude(246L, resultsNoFilter));
-        // should not include cultural roots and frozen (403 and 35)
-        Assert.assertTrue(tagExtendedResultsInclude(403L, resultsNoFilter));
-        Assert.assertTrue(tagExtendedResultsInclude(35L, resultsNoFilter));
-        // should not  include ease of prep 4 and soft cat food (3 and 63)
-        Assert.assertFalse(tagExtendedResultsInclude(3L, resultsNoFilter));
-        Assert.assertFalse(tagExtendedResultsInclude(63L, resultsNoFilter));
-
-    }
-
-    @Test
-    public void getTagList_All() {
-        TagFilterType filter = TagFilterType.All;
-        List<TagType> tagTypes = new ArrayList<>();
-        tagTypes.add(TagType.Ingredient);
-        tagTypes.add(TagType.NonEdible);
-
-        // test call
-        List<TagEntity> result = tagService.getTagList(filter, tagTypes);
-
-        // confirm results
-        // should  include rice and prepared meat (14 and 88)
-        Assert.assertTrue(resultsInclude(163L, result));
-        Assert.assertTrue(resultsInclude(74L, result));
-        // should not include preparation type and special diet (157 and 246)
-        Assert.assertFalse(resultsInclude(157L, result));
-        Assert.assertFalse(resultsInclude(246L, result));
-        // should not include cultural roots and frozen (403 and 35)
-        Assert.assertTrue(resultsInclude(403L, result));
-        Assert.assertFalse(resultsInclude(35L, result));
-        // should include sponge and salt and pepper shaker (3 and 63)
-        Assert.assertTrue(resultsInclude(3L, result));
-        Assert.assertTrue(resultsInclude(63L, result));
-
-        // should not included deleted
-        // test call without call types
-        List<TagEntity> resultsNoFilter = tagService.getTagList(filter, null);
-
-        // confirm results
-        // should  include rice and prepared meat (14 and 88)
-        Assert.assertTrue(resultsInclude(163L, resultsNoFilter));
-        Assert.assertTrue(resultsInclude(74L, resultsNoFilter));
-        // should  include preparation type and special diet (157 and 246)
-        Assert.assertTrue(resultsInclude(157L, resultsNoFilter));
-        Assert.assertTrue(resultsInclude(246L, resultsNoFilter));
-        // should  include cultural roots and frozen (403 and 35)
-        Assert.assertTrue(resultsInclude(403L, resultsNoFilter));
-        Assert.assertTrue(resultsInclude(35L, resultsNoFilter));
-        // should include sponge and salt and pepper shaker (3 and 63)
-        Assert.assertTrue(resultsInclude(3L, result));
-        Assert.assertTrue(resultsInclude(63L, result));
-
-
-    }
-
-
-    private boolean resultsInclude(Long tagId, List<TagEntity> tagList) {
-        Optional<TagEntity> foundTag = tagList.stream().filter(tag -> tag.getId().equals(tagId)).findFirst();
-        return foundTag.isPresent();
-    }
-
-    private boolean tagExtendedResultsInclude(Long tagId, List<TagExtendedEntity> tagList) {
-        Optional<TagExtendedEntity> foundTag = tagList.stream().filter(tag -> tag.getId().equals(tagId)).findFirst();
-        return foundTag.isPresent();
-    }
-
-    @Test
-    public void createTag()  {
-        LocalDateTime beforeCreate = LocalDateTime.now();
-        TagEntity parent = tagService.getTagById(TestConstants.TAG_TO_BE_PARENT);
-        TagEntity newTag = new TagEntity();
-        newTag.setTagType(TagType.Ingredient);
-        newTag.setName("baby rutabegas");
-        newTag.setDescription("are cute");
-        TagEntity result = tagService.createTag(parent, newTag);
-        Long resultId = result.getId();
-
-        TagEntity resultTest = tagService.getTagById(resultId);
-        Assert.assertNotNull(resultTest);
-        Assert.assertNotNull(resultTest.getId());
-        Assert.assertNotNull(resultTest.getCreatedOn());
-        LocalDateTime time = LocalDateTime.ofInstant(result.getCreatedOn().toInstant(), ZoneId.systemDefault());
-        int nanos = Duration.between(beforeCreate, time).getNano();
-        Assert.assertTrue(nanos > 0);
-    }
-
-    @Test
-    public void updateTag() throws InterruptedException {
-        LocalDateTime beforeCreate = LocalDateTime.now();
-        sleep(500);
-        TagEntity tagToUpdate = tagService.getTagById(TestConstants.TAG_TO_BE_PARENT);
-        String newname = "rutaruta";
-        String newdescription = "be be be be begas";
-        tagToUpdate.setName(newname);
-        tagToUpdate.setDescription(newdescription);
-
-        tagService.updateTag(TestConstants.TAG_TO_BE_PARENT, tagToUpdate);
-
-        TagEntity result = tagService.getTagById(TestConstants.TAG_TO_BE_PARENT);
-
-        Assert.assertNotNull(result);
-        Assert.assertEquals(newname, result.getName());
-        Assert.assertEquals(newdescription, result.getDescription());
-        Assert.assertNotNull(result.getUpdatedOn());
-        LocalDateTime time = LocalDateTime.ofInstant(result.getUpdatedOn().toInstant(), ZoneId.systemDefault());
-        int nanos = Duration.between(beforeCreate, time).getNano();
-        Assert.assertTrue(nanos > 0);
-
-    }
-
-    @Test
-    public void testGetTagsForDish()  {
-        List<TagEntity> tags = tagService.getTagsForDish("testuser", 500L);
-
-        Assert.assertNotNull(tags);
-        Assert.assertTrue(tags.size() > 0);
-        Assert.assertTrue(tags.size() == 2);
-
     }
 
 
@@ -364,7 +123,6 @@ public class TagServiceImplTest {
         Assert.assertNotNull(stat.getAddedToDishCount());
         Assert.assertEquals(beforeCount + 1, (long) stat.getAddedToDishCount());
     }
-
 
     @Test
     public void testDeleteTagFromDish() {
@@ -567,16 +325,6 @@ public class TagServiceImplTest {
         Assert.assertTrue(containsTagA);
         Assert.assertTrue(containsTagB);*/
     }
-
-
-    @Test
-    public void getTagById() {
-        // get tag carrots
-        TagEntity result = tagService.getTagById(TAG_CARROTS);
-        Assert.assertNotNull(result);
-        Assert.assertEquals("carrots", result.getName());
-    }
-
 
     //MM to implement
     @Test
