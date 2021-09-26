@@ -83,13 +83,13 @@ public class ServiceTestUtils {
     }
 
 
-    private static TagEntity buildTagEntity(Long tagId, String tagName,
-                                            TagType tagType) {
+    public static TagEntity buildTagEntity(Long tagId, String tagName,
+                                           TagType tagType) {
         return buildTagEntity(tagId, tagName, tagType, 0.0);
     }
 
-    private static TagEntity buildTagEntity(Long tagId, String tagName,
-                                            TagType tagType, Double power) {
+    public static TagEntity buildTagEntity(Long tagId, String tagName,
+                                           TagType tagType, Double power) {
         TagEntity tag = new TagEntity();
         tag.setId(tagId);
         tag.setName(tagName);
