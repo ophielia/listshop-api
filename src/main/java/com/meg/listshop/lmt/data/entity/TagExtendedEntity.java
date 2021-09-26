@@ -34,9 +34,9 @@ public class TagExtendedEntity {
 
     private Double power;
 
-    private final Boolean toDelete = false;
+    private Boolean toDelete = false;
 
-    private final Boolean isParent = false;
+    private Boolean isParent = false;
 
     private Long replacementTagId;
 
@@ -68,6 +68,24 @@ public class TagExtendedEntity {
         tagType = tag.getTagType();
         tagTypeDefault = tag.getTagTypeDefault();
         updatedOn = tag.getUpdatedOn();
+    }
+
+    public TagExtendedEntity(TagEntity tag, Long parentId) {
+        assignSelect = tag.getAssignSelect();
+        categoryUpdatedOn = tag.getCategoryUpdatedOn();
+        createdOn = tag.getCreatedOn();
+        description = tag.getDescription();
+        isVerified = tag.getVerified();
+        name = tag.getName();
+        power = tag.getPower();
+        removedOn = tag.getRemovedOn();
+        replacementTagId = tag.getReplacementTagId();
+        searchSelect = tag.getSearchSelect();
+        tag_id = tag.getId();
+        tagType = tag.getTagType();
+        tagTypeDefault = tag.getTagTypeDefault();
+        updatedOn = tag.getUpdatedOn();
+        this.parentId = parentId;
     }
 
     public Long getId() {

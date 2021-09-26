@@ -3,8 +3,7 @@ package com.meg.listshop.lmt.service.tag.impl;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
-import com.meg.listshop.lmt.api.model.TagFilterType;
-import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
@@ -14,6 +13,7 @@ import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.ListTagStatisticService;
+import com.meg.listshop.lmt.service.impl.ServiceTestUtils;
 import com.meg.listshop.lmt.service.tag.TagReplaceService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -28,11 +28,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.times;
 
 @RunWith(SpringRunner.class)
@@ -105,10 +105,8 @@ public class TagServiceImplMockTest {
     @Test
     public void testGetTagById_OK() {
         Long tagId = 99L;
-        Long replaceTagId = 88L;
         TagEntity tag = new TagEntity();
         tag.setId(tagId);
-
 
         Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.of(tag));
 
@@ -165,7 +163,7 @@ public class TagServiceImplMockTest {
         TagEntity replaceTag = new TagEntity();
         replaceTag.setId(replaceTagId);
 
-        Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.ofNullable(null));
+        Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.empty());
         Mockito.when(tagRepository.findById(replaceTagId)).thenReturn(Optional.of(replaceTag));
 
 
@@ -213,14 +211,128 @@ public class TagServiceImplMockTest {
         Assert.assertEquals(copyfrom.getCategoryUpdatedOn(), verifyCapture.getCategoryUpdatedOn());
         Assert.assertEquals(copyfrom.getReplacementTagId(), verifyCapture.getReplacementTagId());
 
-        Assert.assertNotEquals(copyfrom.getUpdatedOn(), verifyCapture.getUpdatedOn());
         Assert.assertNotNull(verifyCapture.getUpdatedOn());
 
     }
 
+
+    @Test
+    public void testGetRatingUpdateInfo_OneEmptyRating() {
+
+
+        List<TagExtendedEntity> ratingTagList = new ArrayList<>();
+        TagExtendedEntity parentRating = buildTagExtendedEntity(100L, "Taste Rating", TagType.Rating, 0.0, 13L);
+        TagExtendedEntity rating1 = buildTagExtendedEntity(10L, "Taste 1", TagType.Rating, 1.0, 100L);
+        TagExtendedEntity rating2 = buildTagExtendedEntity(11L, "Taste 2", TagType.Rating, 2.0, 100L);
+        TagExtendedEntity rating3 = buildTagExtendedEntity(12L, "Taste 3", TagType.Rating, 3.0, 100L);
+        ratingTagList = Arrays.asList(parentRating, rating1, rating2, rating3);
+
+        List<DishEntity> testDishes = new ArrayList<>();
+        DishEntity dish1 = ServiceTestUtils.buildDish(300L, "great dish", Collections.singletonList(buildTagEntity(12L, "Taste 3", TagType.Rating, 3.0)));
+        DishEntity dish2 = ServiceTestUtils.buildDish(300L, "great dish2", Collections.singletonList(buildTagEntity(12L, "Taste 3", TagType.Rating, 3.0)));
+        DishEntity dish3 = ServiceTestUtils.buildDish(300L, "great dish3", Collections.singletonList(buildTagEntity(10000L, "Taste 1", TagType.Ingredient, 1.0)));
+        testDishes = Arrays.asList(dish1, dish2, dish3);
+
+        Mockito.when(tagExtendedRepository.findTagsByCriteria(Collections.singletonList(TagType.Rating), null))
+                .thenReturn(ratingTagList);
+        Mockito.when(dishService.getDishes("george", Arrays.asList(1L, 2L, 3L)))
+                .thenReturn(testDishes);
+        Mockito.when(tagRepository.findTagsByDishes(dish1)).thenReturn(dish1.getTags());
+        Mockito.when(tagRepository.findTagsByDishes(dish2)).thenReturn(dish2.getTags());
+        Mockito.when(tagRepository.findTagsByDishes(dish3)).thenReturn(dish3.getTags());
+
+        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds("george", Arrays.asList(1L, 2L, 3L));
+
+
+        Assert.assertNotNull(updateInfo);
+        Assert.assertNotNull(updateInfo.getRatingHeaders());
+        Assert.assertEquals(1, updateInfo.getRatingHeaders().size());
+        Assert.assertNotNull(updateInfo.getDishRatingInfoSet());
+        Assert.assertEquals(3, updateInfo.getDishRatingInfoSet().size());
+        for (DishRatingInfo info : updateInfo.getDishRatingInfoSet()) {
+            if (info.getDishName().equals("great dish3")) {
+                Assert.assertNull(info.getRatings());
+            } else {
+                Assert.assertNotNull(info.getRatings());
+                Assert.assertEquals(1, info.getRatings().size());
+            }
+        }
+
+        Set<RatingInfo> testHeaders = updateInfo.getRatingHeaders();
+        for (RatingInfo toTest : testHeaders) {
+            Assert.assertNotNull(toTest.getMaxPower());
+        }
+    }
+
+    @Test
+    public void testGetRatingUpdateInfo_FilledRatings() {
+
+
+        List<TagExtendedEntity> ratingTagList = new ArrayList<>();
+        TagExtendedEntity parentRating = buildTagExtendedEntity(100L, "Taste Rating", TagType.Rating, 0.0, 13L);
+        TagExtendedEntity rating1 = buildTagExtendedEntity(10L, "Taste 1", TagType.Rating, 1.0, 100L);
+        TagExtendedEntity rating2 = buildTagExtendedEntity(11L, "Taste 2", TagType.Rating, 2.0, 100L);
+        TagExtendedEntity rating3 = buildTagExtendedEntity(12L, "Taste 3", TagType.Rating, 3.0, 100L);
+        ratingTagList = Arrays.asList(parentRating, rating1, rating2, rating3);
+
+        List<DishEntity> testDishes = new ArrayList<>();
+        DishEntity dish1 = ServiceTestUtils.buildDish(300L, "great dish", Collections.singletonList(buildTagEntity(12L, "Taste 3", TagType.Rating, 3.0)));
+        DishEntity dish2 = ServiceTestUtils.buildDish(300L, "great dish2", Collections.singletonList(buildTagEntity(12L, "Taste 3", TagType.Rating, 3.0)));
+        DishEntity dish3 = ServiceTestUtils.buildDish(300L, "great dish3", Collections.singletonList(buildTagEntity(10L, "Taste 1", TagType.Rating, 1.0)));
+        testDishes = Arrays.asList(dish1, dish2, dish3);
+
+        Mockito.when(tagExtendedRepository.findTagsByCriteria(Collections.singletonList(TagType.Rating), null))
+                .thenReturn(ratingTagList);
+        Mockito.when(dishService.getDishes("george", Arrays.asList(1L, 2L, 3L)))
+                .thenReturn(testDishes);
+        Mockito.when(tagRepository.findTagsByDishes(dish1)).thenReturn(dish1.getTags());
+        Mockito.when(tagRepository.findTagsByDishes(dish2)).thenReturn(dish2.getTags());
+        Mockito.when(tagRepository.findTagsByDishes(dish3)).thenReturn(dish3.getTags());
+
+        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds("george", Arrays.asList(1L, 2L, 3L));
+
+
+        Assert.assertNotNull(updateInfo);
+        Assert.assertNotNull(updateInfo.getRatingHeaders());
+        Assert.assertEquals(1, updateInfo.getRatingHeaders().size());
+        Assert.assertNotNull(updateInfo.getDishRatingInfoSet());
+        Assert.assertEquals(3, updateInfo.getDishRatingInfoSet().size());
+        for (DishRatingInfo info : updateInfo.getDishRatingInfoSet()) {
+            Assert.assertNotNull(info.getRatings());
+            Assert.assertEquals(1, info.getRatings().size());
+        }
+
+        Set<RatingInfo> testHeaders = updateInfo.getRatingHeaders();
+        for (RatingInfo toTest : testHeaders) {
+            Assert.assertNotNull(toTest.getMaxPower());
+        }
+    }
+
+    @Test
+    public void getDictionaryForIds() {
+        // make 5 dummy ingredients
+        List<TagEntity> tagEntityArrayList = new ArrayList<>();
+        tagEntityArrayList.add(buildTagEntity(1L, "one", TagType.TagType));
+        tagEntityArrayList.add(buildTagEntity(2L, "two", TagType.Ingredient));
+        tagEntityArrayList.add(buildTagEntity(3L, "three", TagType.Rating));
+        tagEntityArrayList.add(buildTagEntity(4L, "four", TagType.NonEdible));
+        tagEntityArrayList.add(buildTagEntity(5L, "one", TagType.DishType));
+
+        Set<Long> tagIds = tagEntityArrayList.stream().map(TagEntity::getId).collect(Collectors.toSet());
+
+        Mockito.when(tagRepository.findAllById(tagIds)).thenReturn(tagEntityArrayList);
+
+        // method under test
+        Map<Long, TagEntity> dictionary = tagService.getDictionaryForIds(tagIds);
+
+        // check for dictionary with 5 elements
+        Assert.assertNotNull(dictionary);
+        Assert.assertEquals(5L, dictionary.size());
+        dictionary.entrySet().stream().forEach(e -> Assert.assertEquals(e.getKey(), ((TagEntity) e.getValue()).getId()));
+    }
+
     @Test
     public void testGetTagList() {
-        TagFilterType filter = TagFilterType.ForSelectAssign;
         List<TagType> tagTypes = new ArrayList<>();
         tagTypes.add(TagType.NonEdible);
         tagTypes.add(TagType.Rating);
@@ -270,27 +382,129 @@ public class TagServiceImplMockTest {
 
     @Test
     public void testCreateTag() {
-        LocalDateTime beforeCreate = LocalDateTime.now();
-        TagEntity parent = buildTagEntity(9L, "ParanetTag", TagType.Ingredient);
-        TagEntity createdTag = buildTagEntity(999L, "ParanetTag", TagType.Ingredient);
-        String name = "new tag name";
+        Assert.assertEquals(1, 1);
 
-        ArgumentCaptor<TagEntity> argument = ArgumentCaptor.forClass(TagEntity.class);
+        //MM TODO - make this test
+    }
 
-        Mockito.when(tagRepository.save(argument.capture())).thenReturn(createdTag);
+    @Test
+    public void testAddTagToDish_OK() {
+        String userName = "userName@test.com";
+        Long userId = 66L;
+        Long dishId = 666L;
+        Long tagId = 6666L;
 
-        // call
-        tagService.createTag(parent, name);
+        TagEntity newTag = buildTagEntity(tagId, "new tag", TagType.Ingredient);
 
-        Assert.assertNotNull(argument.getValue());
-        TagEntity savedTag = argument.getValue();
-        Assert.assertTrue(savedTag.getAssignSelect());
-        Assert.assertFalse(savedTag.getSearchSelect());
-        Assert.assertFalse(savedTag.isToDelete());
-        Assert.assertNotNull(savedTag.getCreatedOn());
+        DishEntity dish = new DishEntity();
+        dish.setId(dishId);
+        dish.setUserId(userId);
+
+        List<TagEntity> startDishTags = new ArrayList<>();
+        startDishTags.add(buildTagEntity(1L, "tagone", TagType.Ingredient));
+        startDishTags.add(buildTagEntity(2L, "tagtwo", TagType.Ingredient));
+        startDishTags.add(buildTagEntity(3L, "tagthree", TagType.Ingredient));
+
+        ArgumentCaptor<DishEntity> argumentCaptor = ArgumentCaptor.forClass(DishEntity.class);
+
+        Mockito.when(dishService.getDishForUserById(userName, dishId)).thenReturn(dish);
+        Mockito.when(tagRepository.findTagsByDishes(dish)).thenReturn(startDishTags);
+        Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.of(newTag));
+
+        // tested call
+        tagService.addTagToDish(userName, dishId, tagId);
+
+        Mockito.verify(dishService, times(1)).save(argumentCaptor.capture(), anyBoolean());
+        Mockito.verify(tagStatisticService, times(1)).countTagAddedToDish(userId, tagId);
+
+        DishEntity resultDish = argumentCaptor.getValue();
+        Assert.assertNotNull(resultDish);
+        List<TagEntity> resultTags = resultDish.getTags();
+        Assert.assertNotNull(resultTags);
+        Assert.assertEquals(4, resultTags.size());
+        Assert.assertTrue(resultTags.stream().anyMatch(t -> t.getId().equals(tagId)));
+    }
 
 
-        // MM will need to test with null parent id
+    @Test
+    public void testIncrementRatingUp() {
+        String userName = "userName@test.com";
+        Long userId = 66L;
+        Long dishId = 666L;
+        Long tagId = 6666L;
+        Long nextTagId = 7777L;
+        Long ratingId = 9999999L;
+
+        UserEntity user = new UserEntity();
+        user.setUsername(userName);
+        user.setId(userId);
+
+        TagEntity currentTag = buildTagEntity(tagId, "parent tag", TagType.Rating);
+        TagEntity nextTag = buildTagEntity(nextTagId, "next tag", TagType.Rating);
+
+        DishEntity dish = new DishEntity();
+        dish.setId(dishId);
+        dish.setUserId(userId);
+
+        List<TagEntity> startDishTags = new ArrayList<>();
+        startDishTags.add(buildTagEntity(1L, "tagone", TagType.Ingredient));
+        startDishTags.add(buildTagEntity(2L, "tagtwo", TagType.Ingredient));
+        startDishTags.add(buildTagEntity(3L, "tagthree", TagType.Ingredient));
+
+        ArgumentCaptor<DishEntity> argumentCaptor = ArgumentCaptor.forClass(DishEntity.class);
+
+        Mockito.when(dishService.getDishForUserById(userName, dishId)).thenReturn(dish);
+        Mockito.when(tagRepository.getAssignedTagForRating(dishId, ratingId)).thenReturn(currentTag);
+        Mockito.when(tagRepository.getNextRatingUp(ratingId, currentTag.getId())).thenReturn(currentTag);
+        Mockito.when(dishService.getDishForUserById(userName, dishId)).thenReturn(dish);
+
+
+        // test call - increment
+        tagService.incrementDishRating(userName, dishId, ratingId, SortOrMoveDirection.UP);
+
+        Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
+        Mockito.verify(tagRepository, times(1)).getAssignedTagForRating(dishId, ratingId);
+        Mockito.verify(tagRepository, times(1)).getNextRatingUp(ratingId, currentTag.getId());
+        Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
+
+    }
+
+    @Test
+    public void testIncrementRatingDown() {
+        String userName = "userName@test.com";
+        Long userId = 66L;
+        Long dishId = 666L;
+        Long tagId = 6666L;
+        Long nextTagId = 7777L;
+        Long ratingId = 9999999L;
+
+        UserEntity user = new UserEntity();
+        user.setUsername(userName);
+        user.setId(userId);
+
+        TagEntity currentTag = buildTagEntity(tagId, "parent tag", TagType.Rating);
+        TagEntity nextTag = buildTagEntity(nextTagId, "next tag", TagType.Rating);
+
+        DishEntity dish = new DishEntity();
+        dish.setId(dishId);
+        dish.setUserId(userId);
+
+        List<TagEntity> startDishTags = new ArrayList<>();
+        startDishTags.add(buildTagEntity(1L, "tagone", TagType.Ingredient));
+        startDishTags.add(buildTagEntity(2L, "tagtwo", TagType.Ingredient));
+        startDishTags.add(buildTagEntity(3L, "tagthree", TagType.Ingredient));
+
+        ArgumentCaptor<DishEntity> argumentCaptor = ArgumentCaptor.forClass(DishEntity.class);
+
+        Mockito.when(dishService.getDishForUserById(userName, dishId)).thenReturn(dish);
+        Mockito.when(tagRepository.getAssignedTagForRating(dishId, ratingId)).thenReturn(currentTag);
+        Mockito.when(tagRepository.getNextRatingDown(ratingId, currentTag.getId())).thenReturn(currentTag);
+        Mockito.when(dishService.getDishForUserById(userName, dishId)).thenReturn(dish);
+
+
+        // test call - increment
+        tagService.incrementDishRating(userName, dishId, ratingId, SortOrMoveDirection.DOWN);
+
     }
 
     @Test
@@ -347,18 +561,30 @@ public class TagServiceImplMockTest {
 
     private TagEntity buildTagEntity(Long tagId, String tagName,
                                      TagType tagType) {
+        return buildTagEntity(tagId, tagName, tagType, 0.0);
+    }
+
+    private TagEntity buildTagEntity(Long tagId, String tagName,
+                                     TagType tagType, Double power) {
         TagEntity tag = new TagEntity();
         tag.setId(tagId);
         tag.setName(tagName);
         tag.setTagType(tagType);
+        tag.setPower(power);
         return tag;
     }
 
     private TagExtendedEntity buildTagExtendedEntity(Long tagId, String tagName,
                                                      TagType tagType) {
-        TagExtendedEntity tag = new TagExtendedEntity(buildTagEntity(tagId, tagName, tagType));
+        return buildTagExtendedEntity(tagId, tagName, tagType, 0.0, 0L);
+    }
+
+    private TagExtendedEntity buildTagExtendedEntity(Long tagId, String tagName,
+                                                     TagType tagType, Double power, Long parentId) {
+        TagExtendedEntity tag = new TagExtendedEntity(buildTagEntity(tagId, tagName, tagType, power), parentId);
         return tag;
     }
+
 
     @Test
     public void testGetTagById_NoneFound() {
@@ -469,7 +695,7 @@ public class TagServiceImplMockTest {
                 .thenReturn(parentTag);
 
         // call to test
-        tagService.assignTagToParent(tag, parentTag);
+        tagService.assignTagToParent(tag.getId(), parentTag.getId());
 
 
     }
@@ -566,6 +792,7 @@ public class TagServiceImplMockTest {
         tagIdSet.add(2L);
         tagIdSet.add(3L);
 
+        List<TagEntity> tagList = new ArrayList<>();
         TagEntity tag1 = new TagEntity();
         tag1.setId(1L);
         tag1.setTagType(TagType.Ingredient);
@@ -575,34 +802,27 @@ public class TagServiceImplMockTest {
         TagEntity tag3 = new TagEntity();
         tag3.setId(3L);
         tag3.setTagType(TagType.Ingredient);
+        tagList.add(tag1);
+        tagList.add(tag2);
+        tagList.add(tag3);
 
         DishEntity dish = new DishEntity();
         dish.setId(dishId);
 
         Mockito.when(dishService.getDishForUserById(userName, dishId))
                 .thenReturn(dish);
-        Mockito.when(tagRepository.findById(1L))
-                .thenReturn(Optional.of(tag1));
+        Mockito.when(tagRepository.getTagsForIdList(tagIdSet))
+                .thenReturn(tagList);
         Mockito.when(tagRepository.findTagsByDishes(dish))
                 .thenReturn(new ArrayList<>());
         Mockito.when(dishService.getDishForUserById(userName, dishId))
                 .thenReturn(dish);
-        Mockito.when(tagRepository.findById(2L))
-                .thenReturn(Optional.of(tag2));
-        Mockito.when(tagRepository.findTagsByDishes(dish))
-                .thenReturn(new ArrayList<>());
-        Mockito.when(dishService.getDishForUserById(userName, dishId))
-                .thenReturn(dish);
-        Mockito.when(tagRepository.findById(3L))
-                .thenReturn(Optional.of(tag3));
-        Mockito.when(tagRepository.findTagsByDishes(dish))
-                .thenReturn(new ArrayList<>());
 
 
         // call under test
         tagService.addTagsToDish(userName, dishId, tagIdSet);
 
-        Mockito.verify(dishService, times(3)).save(dish, false);
+        Mockito.verify(dishService, times(1)).save(dish, false);
     }
 
     @Test
@@ -677,11 +897,12 @@ public class TagServiceImplMockTest {
                 .thenReturn(Optional.of(replaceTag));
 
         // call to be tested
-        TagEntity result = tagService.getTagById(tagId, true);
+        TagEntity result = tagService.getTagById(tagId);
 
         Assert.assertNotNull(result);
         Assert.assertEquals(replacementTagId, result.getId());
     }
+
     private List<TagEntity> dummyTagEntities(int count) {
         List<TagEntity> returnList = new ArrayList<>();
         for (int i = 0; i < count; i++) {

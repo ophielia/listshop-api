@@ -81,4 +81,20 @@ public class ServiceTestUtils {
         shadowTags.setDishId(dishId);
         return shadowTags;
     }
+
+
+    private static TagEntity buildTagEntity(Long tagId, String tagName,
+                                            TagType tagType) {
+        return buildTagEntity(tagId, tagName, tagType, 0.0);
+    }
+
+    private static TagEntity buildTagEntity(Long tagId, String tagName,
+                                            TagType tagType, Double power) {
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+        tag.setName(tagName);
+        tag.setTagType(tagType);
+        tag.setPower(power);
+        return tag;
+    }
 }

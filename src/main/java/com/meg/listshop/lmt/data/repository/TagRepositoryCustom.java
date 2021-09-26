@@ -8,4 +8,6 @@ import java.util.List;
 public interface TagRepositoryCustom {
 
     List<TagEntity> findTagsByCriteria(List<TagType> tagTypes, Boolean assignSelect, Boolean searchSelect);
+
+
 }

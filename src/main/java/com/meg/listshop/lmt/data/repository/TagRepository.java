@@ -91,4 +91,7 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, TagReposi
             "            where c member of t.categories and c.layoutId = ?2 " +
             "            and t.categoryUpdatedOn > ?1 ")
     List<TagEntity> getTagsWithCategoriesChangedAfter(Date changedAfter, Long listLayoutId);
+
+    @Query(value = "select t from TagEntity t where t.tag_id in (:tagIds)")
+    List<TagEntity> getTagsForIdList(@Param("tagIds") Set<Long> tagIds);
 }

@@ -26,8 +26,6 @@ public interface TagService {
 
     List<TagExtendedEntity> getTagExtendedList(TagFilterType tagFilterType, List<TagType> tagTypes);
 
-    TagEntity createTag(TagEntity parent, String name);
-
     TagEntity createTag(TagEntity parent, TagEntity newTag);
 
     List<TagEntity> getTagsForDish(String username, Long dishId);
@@ -37,8 +35,6 @@ public interface TagService {
     boolean assignTagToParent(Long tagId, Long parentId);
 
     boolean assignChildrenToParent(Long parentId, List<Long> childrenIds);
-
-    boolean assignTagToParent(TagEntity childTag, TagEntity newParentTag);
 
     void addTagToDish(String userName, Long dishId, Long tagId);
 
@@ -61,8 +57,6 @@ public interface TagService {
     void addTagChangeListener(TagChangeListener tagChangeListener);
 
     void saveTagForDelete(Long tagId, Long replacementTagId);
-
-    TagEntity getTagById(Long tagId, Boolean swapIfReplaced);
 
     RatingUpdateInfo getRatingUpdateInfoForDishIds(String username, List<Long> dishIdList);
 
