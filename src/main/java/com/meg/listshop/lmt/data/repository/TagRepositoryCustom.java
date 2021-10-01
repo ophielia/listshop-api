@@ -9,5 +9,7 @@ public interface TagRepositoryCustom {
 
     List<TagEntity> findTagsByCriteria(List<TagType> tagTypes, Boolean assignSelect, Boolean searchSelect);
 
+    Long findRatingTagIdForStep(Long ratingId, Integer step);
+
 
 }

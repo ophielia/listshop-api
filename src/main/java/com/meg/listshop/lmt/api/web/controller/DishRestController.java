@@ -15,7 +15,6 @@ import com.meg.listshop.lmt.service.tag.TagService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,13 +71,13 @@ public class DishRestController implements DishRestControllerApi {
         }
 
         Resources<DishResource> dishResourceList = new Resources<>(dishList);
-        return new ResponseEntity(dishResourceList, HttpStatus.OK);
+        return ResponseEntity.ok(dishResourceList);
     }
 
     private List<DishResource> findDishes(Principal principal, String includedTags, String excludedTags, String searchFragment, String sortKey, String sortDirection) {
 
         UserEntity user = userService.getUserByUserEmail(principal.getName());
-        DishSearchCriteria criteria = new DishSearchCriteria(user.getId());
+        var criteria = new DishSearchCriteria(user.getId());
         if (includedTags != null) {
             List<Long> tagIdList = commaDelimitedToList(includedTags);
             criteria.setIncludedTagIds(tagIdList);
@@ -88,22 +87,21 @@ public class DishRestController implements DishRestControllerApi {
             criteria.setExcludedTagIds(tagIdList);
         }
         if (!StringUtils.isEmpty(sortKey)) {
-            DishSortKey dishSortKey = Enums.getIfPresent(DishSortKey.class, sortKey).orNull();
+            var dishSortKey = Enums.getIfPresent(DishSortKey.class, sortKey).orNull();
             criteria.setSortKey(dishSortKey);
         }
         if (!StringUtils.isEmpty(sortDirection)) {
-            DishSortDirection dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
+            var dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
             criteria.setSortDirection(dishSortDirection);
         }
         if (!StringUtils.isEmpty(sortDirection)) {
-            DishSortDirection dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
+            var dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
             criteria.setSortDirection(dishSortDirection);
         }
         if (!StringUtils.isEmpty(searchFragment)) {
             criteria.setNameFragment(searchFragment);
         }
-
-        logger.debug("Searching for dishes with criteria: " + criteria);
+        logger.debug(String.format("Searching for dishes with criteria [%s]. ", criteria));
         return dishSearchService.findDishes(criteria)
                 .stream().map(d -> new DishResource(principal, d))
                 .collect(Collectors.toList());
@@ -131,7 +129,7 @@ public class DishRestController implements DishRestControllerApi {
             tagService.addTagsToDish(principal.getName(), result.getId(), tagIds);
             result = dishService.getDishForUserById(principal.getName(), result.getId());
         }
-        Link forOneDish = new DishResource(principal, result).getLink("self");
+        var forOneDish = new DishResource(principal, result).getLink("self");
         return ResponseEntity.created(URI.create(forOneDish.getHref())).build();
     }
 
@@ -157,7 +155,7 @@ public class DishRestController implements DishRestControllerApi {
         List<TagEntity> sortedDishTags = dish.getTags();
         sortedDishTags.sort(Comparator.comparing(TagEntity::getTagType)
                 .thenComparing(TagEntity::getName));
-        DishResource dishResource = new DishResource(dish, sortedDishTags);
+        var dishResource = new DishResource(dish, sortedDishTags);
 
         return new ResponseEntity(dishResource, HttpStatus.OK);
     }
@@ -210,17 +208,24 @@ public class DishRestController implements DishRestControllerApi {
 
     public ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable Long dishId) {
 
-        RatingUpdateInfo ratingUpdateInfo = tagService.getRatingUpdateInfoForDishIds(principal.getName(), Collections.singletonList(dishId));
-        RatingUpdateInfoResource ratingResource = new RatingUpdateInfoResource(ratingUpdateInfo);
+        var ratingUpdateInfo = tagService.getRatingUpdateInfoForDishIds(principal.getName(), Collections.singletonList(dishId));
+        var ratingResource = new RatingUpdateInfoResource(ratingUpdateInfo);
         return new ResponseEntity(ratingResource, HttpStatus.OK);
 
     }
 
-    public ResponseEntity<Object> updateRatingForDish(Principal principal, @PathVariable Long dishId,
-                                               @PathVariable Long ratingId,
-                                               @RequestParam(value = "direction", required = true) String direction) {
-        SortOrMoveDirection moveDirection = SortOrMoveDirection.valueOf(direction);
-        tagService.incrementDishRating(principal.getName(),dishId, ratingId, moveDirection);
+    public ResponseEntity<Object> incrmentRatingForDish(Principal principal, @PathVariable Long dishId,
+                                                        @PathVariable Long ratingId,
+                                                        @RequestParam(value = "direction", required = true) String direction) {
+        var moveDirection = SortOrMoveDirection.valueOf(direction);
+        tagService.incrementDishRating(principal.getName(), dishId, ratingId, moveDirection);
+        return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<Object> setRatingForDish(Principal principal, @PathVariable Long dishId,
+                                                   @PathVariable Long ratingId,
+                                                   @PathVariable Integer step) {
+        tagService.setDishRating(principal.getName(), dishId, ratingId, step);
         return ResponseEntity.noContent().build();
     }
 

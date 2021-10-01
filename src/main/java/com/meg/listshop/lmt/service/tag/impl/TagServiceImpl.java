@@ -3,6 +3,7 @@ package com.meg.listshop.lmt.service.tag.impl;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
+import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -232,12 +233,6 @@ public class TagServiceImpl implements TagService {
 
     }
 
-    private TagEntity createTag(TagEntity parent, String name) {
-        var tagEntity = new TagEntity();
-        tagEntity.setName(name);
-
-        return createTag(parent, tagEntity);
-    }
 
     @Override
     public TagEntity createTag(TagEntity parent, TagEntity newtag) {
@@ -327,6 +322,26 @@ public class TagServiceImpl implements TagService {
         // assign new tag
         addTagToDish(dish, nextTag);
 
+    }
+
+    public void setDishRating(String name, Long dishId, Long ratingId, Integer step) {
+        // get dish
+        DishEntity dish = dishService.getDishForUserById(name, dishId);
+        if (dish == null) {
+            throw new ActionInvalidException("Can't find dish for id [" + dishId + "]");
+        }
+
+        // get new step tag from db
+        Long newTagId = tagRepository.findRatingTagIdForStep(ratingId, step);
+        if (newTagId == null) {
+            throw new ObjectNotFoundException("Can't find step [" + step + "] for ratingId [" + ratingId + "]");
+        }
+        Optional<TagEntity> tag = tagRepository.findById(newTagId);
+        if (!tag.isPresent()) {
+            throw new ObjectNotFoundException("Shouldn't happen: Can't retrieve tag for tag_id [" + newTagId + "]");
+        }
+        // assign new tag
+        addTagToDish(dish, tag.get());
     }
 
     @Override

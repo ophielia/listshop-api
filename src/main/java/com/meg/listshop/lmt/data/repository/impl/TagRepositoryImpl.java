@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -58,5 +60,18 @@ public class TagRepositoryImpl implements TagRepositoryCustom {
 
 
         return typedQuery.getResultList();
+    }
+
+    @Override
+    public Long findRatingTagIdForStep(Long ratingId, Integer step) {
+        Query query = em.createNamedQuery("TagEntity.findRatingByParent");
+        query.setParameter("rating_parent", ratingId);
+        query.setMaxResults(step);
+        List<BigInteger> ratingTags = query.getResultList();
+        if (!ratingTags.isEmpty() && (ratingTags.size() == step)) {
+            BigInteger tagId = ratingTags.get(ratingTags.size() - 1);
+            return tagId.longValue();
+        }
+        return null;
     }
 }

@@ -62,5 +62,9 @@ public interface TagService {
 
     void incrementDishRating(String name, Long dishId, Long ratingId, SortOrMoveDirection moveDirection);
 
+    void setDishRating(String name, Long dishId, Long ratingId, Integer step);
+
     List<TagEntity> getReplacedTagsFromIds(Set<Long> tagKeys);
+
+
 }

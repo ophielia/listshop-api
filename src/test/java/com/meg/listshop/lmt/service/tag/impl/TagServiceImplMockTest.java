@@ -505,6 +505,65 @@ public class TagServiceImplMockTest {
         // test call - increment
         tagService.incrementDishRating(userName, dishId, ratingId, SortOrMoveDirection.DOWN);
 
+        Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
+        Mockito.verify(tagRepository, times(1)).getAssignedTagForRating(dishId, ratingId);
+        Mockito.verify(tagRepository, times(1)).getNextRatingDown(ratingId, currentTag.getId());
+        Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
+    }
+
+    @Test
+    public void testSetDishRating() {
+        String userName = "userName@test.com";
+        Long userId = 66L;
+        Long dishId = 666L;
+        Long tagId = 6666L;
+        Long newTagId = 7777L;
+        Long ratingId = 10L;
+        Integer step = 5;
+
+
+        UserEntity user = new UserEntity();
+        user.setUsername(userName);
+        user.setId(userId);
+
+        TagEntity currentRatingTag = ServiceTestUtils.buildTagEntity(tagId, "current tag - power 1", TagType.Rating);
+        TagEntity newRatingTag = ServiceTestUtils.buildTagEntity(newTagId, "next tag - power 5", TagType.Rating);
+
+        DishEntity dish = new DishEntity();
+        dish.setId(dishId);
+        dish.setUserId(userId);
+
+        List<TagEntity> startDishTags = new ArrayList<>();
+        startDishTags.add(ServiceTestUtils.buildTagEntity(1L, "tagone", TagType.Ingredient));
+        startDishTags.add(currentRatingTag);
+
+        List<TagEntity> siblingTags = new ArrayList<>();
+        siblingTags.add(currentRatingTag);
+
+        ArgumentCaptor<DishEntity> argumentCaptor = ArgumentCaptor.forClass(DishEntity.class);
+
+        Mockito.when(dishService.getDishForUserById(userName, dishId)).thenReturn(dish);
+        Mockito.when(tagRepository.findRatingTagIdForStep(ratingId, step)).thenReturn(newTagId);
+        Mockito.when(tagRepository.findById(newTagId)).thenReturn(Optional.of(newRatingTag));
+        Mockito.when(tagRepository.findTagsByDishes(dish)).thenReturn(startDishTags);
+        Mockito.when(tagStructureService.getSiblingTags(newRatingTag)).thenReturn(siblingTags);
+
+        // test call - increment
+        tagService.setDishRating(userName, dishId, ratingId, 5);
+
+        Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
+        Mockito.verify(tagRepository, times(1)).findRatingTagIdForStep(ratingId, step);
+        Mockito.verify(tagRepository, times(1)).findById(newTagId);
+        Mockito.verify(tagRepository, times(1)).findTagsByDishes(dish);
+        Mockito.verify(tagStructureService, times(1)).getSiblingTags(newRatingTag);
+        Mockito.verify(dishService).save(argumentCaptor.capture(), anyBoolean());
+
+        DishEntity result = argumentCaptor.getValue();
+        Assert.assertNotNull(result);
+        List<TagEntity> resultDishTags = result.getTags();
+        Assert.assertEquals("Size should be 2", 2, resultDishTags.size());
+        Assert.assertTrue("List should include new tag", resultDishTags.stream().filter(t -> t.getId().equals(newTagId)).findFirst().isPresent());
+        Assert.assertFalse("List should not include old tag", resultDishTags.stream().filter(t -> t.getId().equals(tagId)).findFirst().isPresent());
     }
 
     @Test

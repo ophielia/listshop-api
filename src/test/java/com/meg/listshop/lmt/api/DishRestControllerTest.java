@@ -28,6 +28,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -42,8 +43,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -56,6 +56,10 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
+@Sql(value = {"/sql/com/meg/atable/lmt/api/DishRestControllerTest.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/sql/com/meg/atable/lmt/api/DishRestControllerTest_rollback.sql"},
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class DishRestControllerTest {
 
     @ClassRule
@@ -316,10 +320,82 @@ public class DishRestControllerTest {
         String excludedList = FlatStringUtils.flattenListOfLongsToString(excludedTags, ",");
         String url = "/dish?includedTags=" + includedList + "&excludedTags=" + excludedList;
         this.mockMvc.perform(get(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(content().contentType(contentType));
 
+
+    }
+
+    @Test
+    public void testSetRatingTagOnDish() throws Exception {
+        // test case (from sql)
+        Long dishId = 9999999L;
+        String originalTag = "325";
+        String expectedTag = "324";
+        String ratingIdAsString = "391";
+        String stepAsString = "5";
+
+
+        // get dish, and assert tag 325 is present
+        // (start condition)
+        mockMvc.perform(get("/dish/"
+                        + dishId)
+                        .with(user(userDetails)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.dish.dish_id", isA(Number.class)))
+                .andExpect(jsonPath("$.dish.dish_id").value(dishId))
+                .andExpect(jsonPath("$.dish.tags", hasSize(17)))
+                .andExpect(jsonPath("$.dish.tags..tag_id", hasItem(originalTag)))
+                .andExpect(jsonPath("$.dish.tags..tag_id", not(hasItem(expectedTag))));
+
+        // tested call
+        mockMvc.perform(put("/dish/"
+                        + dishId + "/rating/" + ratingIdAsString + "/" + stepAsString)
+                        .with(user(userDetails)))
+                .andExpect(status().isNoContent());
+
+        // verify after condition - should have tag 324 - and no longer have tag 325
+        mockMvc.perform(get("/dish/"
+                        + dishId)
+                        .with(user(userDetails)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.dish.dish_id", isA(Number.class)))
+                .andExpect(jsonPath("$.dish.dish_id").value(dishId))
+                .andExpect(jsonPath("$.dish.tags", hasSize(17)))
+                .andExpect(jsonPath("$.dish.tags..tag_id", not(hasItem(originalTag))))
+                .andExpect(jsonPath("$.dish.tags..tag_id", hasItem(expectedTag)));
+
+
+    }
+
+    @Test
+    public void testSetRatingTagOnDish_KO() throws Exception {
+        // test case for failure.
+        // set step to 100
+        Long dishId = 9999999L;
+        String ratingIdAsString = "391";
+        String stepAsString = "105";
+
+
+        // get dish, and assert tags are present
+        // (start condition)
+        mockMvc.perform(get("/dish/"
+                        + dishId)
+                        .with(user(userDetails)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.dish.dish_id", isA(Number.class)))
+                .andExpect(jsonPath("$.dish.dish_id").value(dishId))
+                .andExpect(jsonPath("$.dish.tags", hasSize(17)));
+
+        // tested call
+        mockMvc.perform(put("/dish/"
+                        + dishId + "/rating/" + ratingIdAsString + "/" + stepAsString)
+                        .with(user(userDetails)))
+                .andExpect(status().isBadRequest());
 
     }
 

@@ -32,7 +32,7 @@ public interface DishRestControllerApi {
     @PostMapping( produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createDish(Principal principal, @RequestBody Dish input);
 
-    @RequestMapping(value = "/{dishId}", method = RequestMethod.PUT, consumes = "application/json")
+    @PutMapping(value = "/{dishId}", consumes = "application/json")
     ResponseEntity<Object> updateDish(Principal principal, @PathVariable Long dishId, @RequestBody Dish input);
 
     @GetMapping( value = "/{dishId}", produces = "application/json")
@@ -44,20 +44,24 @@ public interface DishRestControllerApi {
     @PostMapping( value = "/{dishId}/tag/{tagId}", produces = "application/json")
      ResponseEntity<Object> addTagToDish(Principal principal,@PathVariable Long dishId, @PathVariable Long tagId);
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{dishId}/tag/{tagId}", produces = "application/json")
+    @DeleteMapping(value = "/{dishId}/tag/{tagId}", produces = "application/json")
      ResponseEntity<Object> deleteTagFromDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId);
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/{dishId}/tag", produces = "application/json")
+    @PutMapping(value = "/{dishId}/tag", produces = "application/json")
      ResponseEntity<Object> addAndRemoveTags(Principal principal, @PathVariable Long dishId,
-                                                                    @RequestParam(value = "addTags", required = false) String addTags,
-                                                                    @RequestParam(value = "removeTags", required = false) String removeTags);
+                                             @RequestParam(value = "addTags", required = false) String addTags,
+                                             @RequestParam(value = "removeTags", required = false) String removeTags);
 
-    @GetMapping( value = "/{dishId}/ratings", produces = "application/json")
+    @GetMapping(value = "/{dishId}/ratings", produces = "application/json")
     ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable Long dishId);
 
     @PostMapping(value = "/{dishId}/rating/{ratingId}", produces = "application/json")
-    ResponseEntity<Object> updateRatingForDish(Principal principal, @PathVariable Long dishId,
-                                               @PathVariable Long ratingId,
-                                               @RequestParam(value = "action", required = true) String direction);
+    ResponseEntity<Object> incrmentRatingForDish(Principal principal, @PathVariable Long dishId,
+                                                 @PathVariable Long ratingId,
+                                                 @RequestParam(value = "action", required = true) String direction);
 
+    @PutMapping(value = "/{dishId}/rating/{ratingId}/{step}", produces = "application/json")
+    ResponseEntity<Object> setRatingForDish(Principal principal, @PathVariable Long dishId,
+                                            @PathVariable Long ratingId,
+                                            @PathVariable Integer step);
 }

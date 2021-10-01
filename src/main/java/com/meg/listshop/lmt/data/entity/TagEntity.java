@@ -27,6 +27,12 @@ import java.util.Objects;
                 @NamedAttributeNode("categories")
         }
 )
+@NamedNativeQuery(
+        name = "TagEntity.findRatingByParent",
+        query = "select t.tag_id from tag t " +
+                "join tag_relation tr on tr.child_tag_id = t.tag_id " +
+                "where tr.parent_tag_id = :rating_parent order by power"
+)
 public class TagEntity {
 
     @Id
@@ -226,7 +232,7 @@ public class TagEntity {
     }
 
     public TagEntity copy() {
-        TagEntity copy = new TagEntity();
+        var copy = new TagEntity();
         copy.setName(getName());
         copy.setDescription(getDescription());
         copy.setSearchSelect(getSearchSelect());
@@ -258,7 +264,7 @@ public class TagEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TagEntity tagEntity = (TagEntity) o;
+        var tagEntity = (TagEntity) o;
         return Objects.equals(tag_id, tagEntity.tag_id) &&
                 Objects.equals(name, tagEntity.name) &&
                 tagType == tagEntity.tagType;
