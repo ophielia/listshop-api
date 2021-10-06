@@ -96,7 +96,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public List<ItemEntity> getChangedItemsForMostRecentList(String name, Date changedAfter, Long layoutId) {
-        //MM placeholder - because this could be interesting - but not yet called.
+        //MM placeholder (called from depracated) - because this could be interesting - but not yet called.
         ShoppingListEntity shoppingListEntity = getMostRecentList(name);
 
         return itemRepository.getItemsChangedAfter(changedAfter, shoppingListEntity.getId());
@@ -413,6 +413,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return false;
     }
 
+    @Override
     public void addItemToListByTag(String name, Long listId, Long tagId) {
         ShoppingListEntity shoppingListEntity = getListById(name, listId);
         if (shoppingListEntity == null) {
@@ -435,11 +436,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    private ListItemCollector createListItemCollector(Long listId, List<ItemEntity> items) {
-        ListItemCollector collector = new ListItemCollector(listId, items);
-        checkReplaceTagsInCollector(collector);
-        return collector;
-    }
 
     @Override
     public void updateItemCount(String name, Long listId, Long tagId, Integer usedCount) {
@@ -916,6 +912,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             mergeCollector.replaceOutdatedTags(outdatedTags, outdatedDictionary);
         }
 
+    }
+
+    private ListItemCollector createListItemCollector(Long listId, List<ItemEntity> items) {
+        ListItemCollector collector = new ListItemCollector(listId, items);
+        checkReplaceTagsInCollector(collector);
+        return collector;
     }
 
     private List<ItemEntity> convertClientItemsToItemEntities(MergeRequest mergeRequest) {

@@ -29,6 +29,7 @@ public interface ShoppingListRestControllerApi {
     @PutMapping(value = "/shared", produces = "application/json")
     ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest);
 
+    @Deprecated
     @GetMapping(value = "/shared/{listLayoutId}", produces = "application/json")
     ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId, @RequestParam(value = "after", required = true) Date changedAfter);
 

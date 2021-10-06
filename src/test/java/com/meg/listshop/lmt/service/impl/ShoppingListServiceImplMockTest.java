@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -76,6 +77,590 @@ public class ShoppingListServiceImplMockTest {
                 listTagStatisticService);
     }
 
+/*  test notes
+
+shoppingListService.categorizeList(result);
+shoppingListService.changeListLayout(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID, TestConstants.LIST_LAYOUT_3_ID);
+shoppingListService.deleteList(userAccount.getEmail(), TestConstants.LIST_3_ID);
+shoppingListService.fillSources(shoppingListEntity);
+
+
+
+shoppingListService.getChangedItemsForMostRecentList(TestConstants.USER_3_NAME, date, 5L);
+shoppingListService.getListsByUsername(TestConstants.USER_1_NAME);
+shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, 83L);
+
+ */
+
+    @Test
+    public void testGetListById() {
+        Long userId = 99L;
+        String userName = "userName";
+        String listName = "ShoppingList";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
+
+        // test call
+        ShoppingListEntity result = shoppingListService.getListById(userName, listId);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
+
+        // Assertions
+        Assert.assertNotNull(result);
+    }
+
+    @Test
+    public void testGetListById_NoItems() {
+        Long userId = 99L;
+        String userName = "userName";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.ofNullable(null));
+        Mockito.when(shoppingListRepository.findById(listId)).thenReturn(Optional.of(shoppingList));
+
+        // test call
+        ShoppingListEntity result = shoppingListService.getListById(userName, listId);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
+        Mockito.verify(shoppingListRepository, times(1)).findById(listId);
+
+        // Assertions
+        Assert.assertNotNull(result);
+
+        // test returning null - user
+        // test returning null - shoppinglistwithitems
+
+
+    }
+
+    @Test
+    public void testGetListById_NoUser() {
+        Long userId = 99L;
+        String userName = "userName";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+
+        // test call
+        ShoppingListEntity result = shoppingListService.getListById(userName, listId);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+
+        // Assertions
+        Assert.assertNull(result);
+
+        // test returning null - user
+        // test returning null - shoppinglistwithitems
+
+
+    }
+
+    @Test
+    public void testGetListById_BadUser() {
+        Long userId = 99L;
+        String userName = "userName";
+        String listName = "ShoppingList";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(1L); // list doesn't belong to this user
+
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
+
+        // test call
+        ShoppingListEntity result = shoppingListService.getListById(userName, listId);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
+
+        // Assertions
+        Assert.assertNull(result);
+
+
+    }
+
+    @Test
+    public void testDeleteList() {
+        Long userId = 99L;
+        String userName = "userName";
+        String listName = "ShoppingList";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+        ShoppingListEntity shoppingListForSave = new ShoppingListEntity(listId);
+        shoppingListForSave.setUserId(userId);
+        shoppingListForSave.setItems(new ArrayList<>());
+
+
+        List<ItemEntity> items = new ArrayList<>();
+        items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
+        items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
+        items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
+        shoppingList.setItems(items);
+
+        ArgumentCaptor<ShoppingListEntity> listArgument = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList), Optional.of(shoppingListForSave));
+        Mockito.when(itemRepository.findByListId(listId)).thenReturn(items);
+        Mockito.when(shoppingListRepository.save(listArgument.capture())).thenReturn(shoppingListForSave);
+
+
+        // test call
+        boolean result = shoppingListService.deleteList(userName, listId);
+
+        Mockito.verify(userService, times(2)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(2)).getWithItemsByListId(listId);
+        Mockito.verify(itemRepository, times(1)).findByListId(listId);
+        Mockito.verify(itemRepository, times(1)).deleteAll(items);
+        Mockito.verify(shoppingListRepository, times(1)).delete(listId);
+        Mockito.verify(shoppingListRepository, times(1)).flush();
+
+        // Assertions
+        Assert.assertTrue(result);
+        Assert.assertNotNull(listArgument.getValue());
+        ShoppingListEntity resultList = listArgument.getValue();
+        Assert.assertTrue(resultList.getItems().isEmpty());
+    }
+
+    @Test
+    public void testDeleteList_BadList() {
+        Long userId = 99L;
+        String userName = "userName";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.ofNullable(null));
+        Mockito.when(shoppingListRepository.findById(listId)).thenReturn(Optional.ofNullable(null));
+
+        // test call
+        boolean result = shoppingListService.deleteList(userName, listId);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
+        Mockito.verify(shoppingListRepository, times(1)).findById(listId);
+
+        // Assertions
+        Assert.assertFalse(result);
+
+    }
+
+    @Test
+    public void testAddItemToListByTag() {
+        Long userId = 99L;
+        String userName = "userName";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+
+        List<ItemEntity> items = new ArrayList<>();
+        items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
+        items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
+        items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
+        shoppingList.setItems(items);
+
+
+        Long tagId = 1199L;
+        TagEntity tagToAdd = ServiceTestUtils.buildTagEntity(tagId, "tagName", TagType.Ingredient);
+        ItemEntity newItem = new ItemEntity();
+        newItem.setTag(tagToAdd);
+
+        ArgumentCaptor<ShoppingListEntity> listCapture = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
+        Mockito.when(tagService.getTagById(tagId)).thenReturn(tagToAdd);
+
+        // test call
+        shoppingListService.addItemToListByTag(userName, listId, tagId);
+
+        Mockito.verify(itemChangeRepository, times(1)).saveItemChanges(any(ShoppingListEntity.class),
+                any(ListItemCollector.class), any(Long.class), any(CollectorContext.class));
+        Mockito.verify(shoppingListRepository, times(1)).save(listCapture.capture());
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
+        Mockito.verify(tagService, times(1)).getTagById(tagId);
+
+        // Assertions
+        ShoppingListEntity listResult = listCapture.getValue();
+        Assert.assertNotNull(listResult);
+        Assert.assertNotNull(listResult.getLastUpdate());
+    }
+
+    @Test
+    public void testUpdateItemCount() {
+        Long userId = 99L;
+        String userName = "userName";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+
+        Long itemId = 1199L;
+        Long tagId = 11199L;
+        ItemEntity item = ServiceTestUtils.buildItem(itemId, ServiceTestUtils.buildTagEntity(tagId, "tagName", TagType.Ingredient), listId);
+
+        Integer usedCount = 5;
+
+        ArgumentCaptor<ItemEntity> itemCapture = ArgumentCaptor.forClass(ItemEntity.class);
+        ArgumentCaptor<ShoppingListEntity> listCapture = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
+        Mockito.when(itemRepository.getItemByListAndTag(listId, tagId)).thenReturn(item);
+
+        // test call
+        shoppingListService.updateItemCount(userName, listId, tagId, usedCount);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
+        Mockito.verify(itemRepository, times(1)).save(itemCapture.capture());
+        Mockito.verify(shoppingListRepository, times(1)).save(listCapture.capture());
+
+        // Assertions
+        ItemEntity itemResult = itemCapture.getValue();
+        ShoppingListEntity listResult = listCapture.getValue();
+        Assert.assertNotNull(itemResult);
+        Assert.assertNotNull(listResult);
+
+        // item checks
+        Assert.assertEquals("used count should equal that in call", usedCount, itemResult.getUsedCount());
+        Assert.assertNotNull("update date should be set", itemResult.getUpdatedOn());
+        Assert.assertNull("removed on should be null", itemResult.getRemovedOn());
+        Assert.assertNull("crossed off should be null", itemResult.getCrossedOff());
+
+        // list chanes
+        Assert.assertNotNull("update date should be set", listResult.getLastUpdate());
+
+    }
+
+    @Test
+    public void testDeleteAllItemsFromList() {
+        Long userId = 99L;
+        String userName = "userName";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+
+        List<ItemEntity> items = new ArrayList<>();
+        items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
+        items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
+        items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
+
+        ArgumentCaptor<ShoppingListEntity> savedList = ArgumentCaptor.forClass(ShoppingListEntity.class);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
+        Mockito.when(itemRepository.findByListId(listId)).thenReturn(items);
+
+        // test call
+        shoppingListService.deleteAllItemsFromList(userName, listId);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
+        Mockito.verify(itemRepository, times(1)).findByListId(listId);
+        Mockito.verify(itemChangeRepository, times(1)).saveItemChanges(any(ShoppingListEntity.class),
+                any(ListItemCollector.class), any(Long.class), any(CollectorContext.class));
+        Mockito.verify(shoppingListRepository, times(1)).save(savedList.capture());
+
+        // Assertions
+        ShoppingListEntity testResult = savedList.getValue();
+        Assert.assertNotNull(testResult);
+        Optional<ItemEntity> notCrossedOff = testResult.getItems().stream()
+                .filter(i -> i.getRemovedOn() == null)
+                .findFirst();
+        Assert.assertFalse("All items should be shown as removed", notCrossedOff.isPresent());
+    }
+
+    @Test
+    public void testDeleteAllItemsFromList_ListNotFound() {
+        Long userId = 99L;
+        String userName = "userName";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+
+        List<ItemEntity> items = new ArrayList<>();
+        items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
+        items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
+        items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.ofNullable(null));
+        Mockito.when(shoppingListRepository.findById(listId)).thenReturn(Optional.ofNullable(null));
+
+        // test call
+        shoppingListService.deleteAllItemsFromList(userName, listId);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
+        Mockito.verify(shoppingListRepository, times(1)).findById(listId);
+
+    }
+
+    @Test
+    public void testGetListsByUsername() {
+        Long userId = 99L;
+        String userName = "userName";
+        String listName = "ShoppingList";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(new ArrayList<ShoppingListEntity>());
+
+        // test call
+        shoppingListService.getListsByUsername(userName);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).findByUserIdOrderByLastUpdateDesc(userId);
+
+    }
+
+    @Test
+    public void testCrossOffAllItems() {
+        Long userId = 99L;
+        String userName = "userName";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+
+        List<ItemEntity> items = new ArrayList<>();
+        items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
+        items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
+        items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
+        shoppingList.setItems(items);
+
+        ArgumentCaptor<List<ItemEntity>> crossedOffItems = ArgumentCaptor.forClass(List.class);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
+
+
+        // test call
+        shoppingListService.crossOffAllItems(userName, listId, true);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
+        Mockito.verify(itemRepository, times(1)).saveAll(crossedOffItems.capture());
+
+        List<ItemEntity> updatedItems = crossedOffItems.getValue();
+        Assert.assertNotNull(updatedItems);
+        Assert.assertEquals("should be three items", 3, updatedItems.size());
+        Assert.assertTrue("nothing uncrossed off should be found",
+                updatedItems.stream().noneMatch(i -> i.getCrossedOff() == null));
+    }
+
+    @Test
+    public void testUpdateItemCrossedOff() {
+        Long userId = 99L;
+        String userName = "userName";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+
+        Long itemId = 1199L;
+        ItemEntity item = new ItemEntity(itemId);
+        item.setListId(listId);
+
+        List<ItemEntity> items = new ArrayList<>();
+        items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
+        items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
+        items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
+        shoppingList.setItems(items);
+
+        ArgumentCaptor<ItemEntity> itemCapture = ArgumentCaptor.forClass(ItemEntity.class);
+
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
+        Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+
+        // test call
+        shoppingListService.updateItemCrossedOff(userName, listId, itemId, true);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
+        Mockito.verify(itemRepository, times(1)).save(itemCapture.capture());
+        Mockito.verify(shoppingListRepository, times(1)).save(any(ShoppingListEntity.class));
+
+        // Assertions
+        ItemEntity resultItem = itemCapture.getValue();
+        Assert.assertNotNull(resultItem);
+        Assert.assertEquals(item.getCrossedOff(), item.getUpdatedOn());
+
+    }
+
+    @Test
+    public void testCategorizeList() {
+        Long userId = 99L;
+        String userName = "userName";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        Long layoutId = 1199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+        shoppingList.setListLayoutId(layoutId);
+
+        List<ItemEntity> items = new ArrayList<>();
+        items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
+        items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
+        items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
+        shoppingList.setItems(items);
+
+        Map<Long, Long> tagIdToCategoryId = items.stream()
+                .map(i -> i.getTag())
+                .collect(Collectors.toMap(t -> t.getId(), tt -> tt.getId() + 300));
+
+        Long listLayoutId = 1001L;
+        ListLayoutEntity testLayout = ServiceTestUtils.buildListLayout(listLayoutId, "listLayoutName", ListLayoutType.RoughGrained);
+        ListLayoutCategoryEntity llCategory1 = ServiceTestUtils.buildListCategory(333L, "one oh two", testLayout);
+        ListLayoutCategoryEntity llCategory2 = ServiceTestUtils.buildListCategory(322L, "one oh two", testLayout);
+        ListLayoutCategoryEntity llCategory3 = ServiceTestUtils.buildListCategory(333L, "one oh two", testLayout);
+        List<ListLayoutCategoryEntity> categories = Arrays.asList(llCategory1, llCategory2, llCategory3);
+        testLayout.setCategories(categories);
+
+
+        Mockito.when(listSearchService.getTagToCategoryMap(layoutId, items
+                        .stream().map(i -> i.getTag())
+                        .collect(Collectors.toList())))
+                .thenReturn(tagIdToCategoryId);
+        Mockito.when(listLayoutService.getListCategoriesForLayout(layoutId)).thenReturn(categories);
+        Mockito.when(listTagStatisticService.findFrequentIdsForList(listId, userId)).thenReturn(new ArrayList<>());
+
+        // test call
+        List<Category> resultList = shoppingListService.categorizeList(shoppingList);
+
+        Mockito.verify(listLayoutService, times(1)).getListCategoriesForLayout(layoutId);
+        //Mockito.verify(listLayoutService, times(1));
+
+        // Assertions
+        Assert.assertNotNull(resultList);
+    }
+
+    @Test
+    public void testGetStarterList() {
+        Long userId = 99L;
+        String userName = "userName";
+        String listName = "ShoppingList";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.findByUserIdAndIsStarterListTrue(userId)).thenReturn(Arrays.asList(shoppingList));
+
+
+        // test call
+        ShoppingListEntity result = shoppingListService.getStarterList(userName);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).findByUserIdAndIsStarterListTrue(userId);
+
+        // Assertions
+        Assert.assertNotNull(result);
+    }
+
+    @Test
+    public void testGetMostRecentList() {
+        Long userId = 99L;
+        String userName = "userName";
+        String listName = "ShoppingList";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+        ShoppingListEntity shoppingList2 = new ShoppingListEntity(999L);
+        shoppingList.setUserId(userId);
+        List<ShoppingListEntity> listOfLists = Arrays.asList(shoppingList, shoppingList2);
+
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId))
+                .thenReturn(listOfLists);
+
+        // test call
+        ShoppingListEntity result = shoppingListService.getMostRecentList(userName);
+
+        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        Mockito.verify(shoppingListRepository, times(1)).findByUserIdOrderByLastUpdateDesc(userId);
+
+        // Assertions
+        Assert.assertNotNull(result);
+        Assert.assertEquals(listId, result.getId());
+    }
+
+    // getChangedItemsForMostRecentList
+    // addListToList
+    // fillSources
+    // changeListLayout
+    // addDishToList
+    // removeDishFromList
+    // removeListItemsFromList
 
     @Test
     public void testCreateList_duplicateName() throws ShoppingListException, InvocationTargetException, IllegalAccessException {
@@ -714,9 +1299,7 @@ public class ShoppingListServiceImplMockTest {
         // list is not null
         List<ShoppingListEntity> resultLists = argument.getAllValues();
         ShoppingListEntity firstCallResult = resultLists.get(0);
-        Assert.assertNotNull(firstCallResult);
         ShoppingListEntity secondCallResult = resultLists.get(1);
-        Assert.assertNotNull(secondCallResult);
 
         // first call result is the copy call -
         // result list should contain original 4,7,8 plus moved 4,5,8
@@ -725,11 +1308,10 @@ public class ShoppingListServiceImplMockTest {
         List<ItemEntity> items = firstCallResult.getItems();
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
-        Assert.assertTrue(items.size() == 4);
+        Assert.assertEquals(4, items.size());
         // put items into map
         Map<Long, ItemEntity> resultMap = firstCallResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(resultMap);
         // tag 5 and 7 should be there - once
         Assert.assertNotNull(resultMap.get(5L));
         Assert.assertEquals(1, resultMap.get(5L).getUsedCount().longValue());
@@ -749,7 +1331,7 @@ public class ShoppingListServiceImplMockTest {
         List<ItemEntity> sourceItems = secondCallResult.getItems();
         Assert.assertNotNull(sourceItems);
         Assert.assertFalse(sourceItems.isEmpty());
-        Assert.assertTrue(sourceItems.size() == 3);
+        Assert.assertEquals(3, sourceItems.size());
         // put sourceItems into map
         Map<Long, ItemEntity> sourceResultMap = sourceItems.stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -826,7 +1408,7 @@ public class ShoppingListServiceImplMockTest {
         List<ItemEntity> items = firstCallResult.getItems();
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
-        Assert.assertTrue(items.size() == 4);
+        Assert.assertEquals(4, items.size());
         // put items into map
         Map<Long, ItemEntity> resultMap = firstCallResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -846,56 +1428,6 @@ public class ShoppingListServiceImplMockTest {
         Assert.assertEquals(2, resultMap.get(8L).getUsedCount().longValue());
         Assert.assertNull(resultMap.get(8L).getRemovedOn());
 
-    }
-
-    @Test
-    public void testUpdateItemCount() {
-        final Integer usedCount = 6;
-        final Long shoppingListId = 89L;
-        final Long tagId = 889L;
-        final Long userId = 2L;
-        final String userEmail = "me@mine.ours";
-
-        LocalDate date = LocalDate.of(2020, 01, 01);
-        Date lastUpdate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        ShoppingListEntity shoppingList = expectGetShoppingListById(shoppingListId, userId, Arrays.asList(tagId), userEmail);
-        shoppingList.setLastUpdate(lastUpdate);
-
-        ItemEntity item = new ItemEntity();
-        item.setTagId(tagId);
-        item.setCrossedOff(new Date());
-        item.setRemovedOn(new Date());
-        item.setUsedCount(1);
-
-        // expectations
-        Mockito.when(itemRepository.getItemByListAndTag(shoppingListId, tagId))
-                .thenReturn(item);
-        ArgumentCaptor<ItemEntity> saveItemCapture = ArgumentCaptor.forClass(ItemEntity.class);
-        Mockito.when(itemRepository.save(saveItemCapture.capture()))
-                .thenReturn(item);
-
-        ArgumentCaptor<ShoppingListEntity> saveListCapture = ArgumentCaptor.forClass(ShoppingListEntity.class);
-        Mockito.when(shoppingListRepository.save(saveListCapture.capture()))
-                .thenReturn(shoppingList);
-
-        // call
-        shoppingListService.updateItemCount(userEmail, shoppingListId, tagId, usedCount);
-
-        // Assert item is correct
-        ItemEntity resultItem = saveItemCapture.getValue();
-        Assert.assertNotNull(resultItem);
-        Assert.assertNull(resultItem.getCrossedOff());
-        Assert.assertNull(resultItem.getRemovedOn());
-        Long itemTimeDiff = (new Date()).getTime() - item.getUpdatedOn().getTime();
-        Assert.assertTrue(itemTimeDiff < 1000);
-
-        Assert.assertEquals(usedCount, resultItem.getUsedCount());
-        // Assert last update is set in shopping list
-        ShoppingListEntity resultList = saveListCapture.getValue();
-        Assert.assertNotNull(resultList);
-        Date updateDate = resultList.getLastUpdate();
-        Long timeDiff = (new Date()).getTime() - updateDate.getTime();
-        Assert.assertTrue(timeDiff < 1000);
     }
 
     private ShoppingListEntity expectGetShoppingListById(Long shoppingListId, Long userId, List<Long> tagIds, String userEmail) {

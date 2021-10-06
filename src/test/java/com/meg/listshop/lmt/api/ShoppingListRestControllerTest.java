@@ -540,7 +540,6 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testRemoveDishFromList() throws Exception {
-// MM clean this test....
         Long listId = TestConstants.LIST_1_ID;
         String url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_1_ID;
         mockMvc.perform(delete(url)
