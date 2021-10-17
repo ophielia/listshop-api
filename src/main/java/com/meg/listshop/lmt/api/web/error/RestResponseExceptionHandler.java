@@ -1,9 +1,6 @@
 package com.meg.listshop.lmt.api.web.error;
 
-import com.meg.listshop.lmt.api.exception.AuthenticationException;
-import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
-import com.meg.listshop.lmt.api.exception.ProposalProcessingException;
+import com.meg.listshop.lmt.api.exception.*;
 import com.meg.listshop.lmt.api.model.ApiError;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -50,6 +47,15 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         logger.error(message, ex);
         //
         final ApiError apiError = new ApiError(HttpStatus.SERVICE_UNAVAILABLE, ex.getLocalizedMessage(), message);
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler({ActionInvalidException.class})
+    public ResponseEntity<Object> handleActionInvalidException(final Exception ex, final WebRequest request) {
+        final String message = "Error occured generating proposal.";
+        logger.info(ex.getClass().getName());
+        logger.error(message, ex);
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), message);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 

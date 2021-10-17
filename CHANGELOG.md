@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2] October 2021
+
+### Added
+
+- new method in DishRestController which sets rating to a specific step: POST /dish/{dishId}/rating/{ratingId}/{step}
+
+### Changed
+
+- tests for ShoppingListService and TagService moved to mocks
+
+### Deprecated
+
+ - TagInfoController, previously used to accessed structured tag information, is now depracated. TagRestController method GET /tags with the option extended should be used instead to access the same information.
+
+### Fixed
+ 
+ - No longer possible to delete last list for user
+
 ## [1.4.1] July 2021
 
 ### Added

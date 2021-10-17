@@ -71,6 +71,7 @@ public class ShoppingListRestControllerTest {
 
     private static UserDetails userDetails;
     private static UserDetails meUserDetails;
+    private static UserDetails lastListUserDetails;
     private static UserDetails noStarterUserDetails;
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
@@ -123,6 +124,14 @@ public class ShoppingListRestControllerTest {
         meUserDetails = new JwtUser(TestConstants.USER_3_ID,
                 TestConstants.USER_3_NAME,
                 null,
+                null,
+                null,
+                true,
+                null);
+
+        lastListUserDetails = new JwtUser(99999L,
+                "username@testitytest.com",
+                "username@testitytest.com",
                 null,
                 null,
                 true,
@@ -272,6 +281,17 @@ public class ShoppingListRestControllerTest {
         mockMvc.perform(delete("/shoppinglist/" + testId)
                 .with(user(meUserDetails)))
                 .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testDeleteList_LastList() throws Exception {
+        Long testId = 99999L;
+
+        mockMvc.perform(delete("/shoppinglist/" + testId)
+                        .with(user(lastListUserDetails)))
+                .andExpect(status().isBadRequest());
 
     }
 
