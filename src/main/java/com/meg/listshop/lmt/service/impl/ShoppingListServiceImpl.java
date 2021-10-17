@@ -399,7 +399,20 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     @Transactional
     public boolean deleteList(String userName, Long listId) {
-        ShoppingListEntity toDelete = getListById(userName, listId);
+        List<ShoppingListEntity> allLists = getListsByUsername(userName);
+        if (allLists == null || allLists.isEmpty()) {
+            throw new ActionInvalidException("No lists found for username " + userName);
+        }
+        if (allLists.size() < 2) {
+            throw new ActionInvalidException("Can't delete the last list for username" + userName);
+        }
+        Optional<ShoppingListEntity> toDeleteOpt = allLists.stream()
+                .filter(l -> l.getId().equals(listId)).findFirst();
+        if (!toDeleteOpt.isPresent()) {
+            throw new ObjectNotFoundException("Can't find list [" + listId + "] for userName [" + userName + "] to delete.");
+        }
+
+        ShoppingListEntity toDelete = toDeleteOpt.get();
         if (toDelete != null) {
             List<ItemEntity> items = itemRepository.findByListId(listId);
             itemRepository.deleteAll(items);

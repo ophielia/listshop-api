@@ -2,6 +2,8 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.lmt.api.exception.ActionInvalidException;
+import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.repository.ItemChangeRepository;
@@ -215,11 +217,14 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         user.setId(userId);
 
         Long listId = 199L;
-        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
-        shoppingList.setUserId(userId);
-        ShoppingListEntity shoppingListForSave = new ShoppingListEntity(listId);
-        shoppingListForSave.setUserId(userId);
-        shoppingListForSave.setItems(new ArrayList<>());
+        ShoppingListEntity shoppingList = ServiceTestUtils.buildShoppingList(userId, listId);
+        ShoppingListEntity shoppingListForSave = ServiceTestUtils.buildShoppingList(userId, listId);
+        List<ShoppingListEntity> listOfLists = Arrays.asList(
+                ServiceTestUtils.buildShoppingList(userId, 1L),
+                shoppingList,
+                ServiceTestUtils.buildShoppingList(userId, 1011L),
+                ServiceTestUtils.buildShoppingList(userId, 1021L)
+        );
 
 
         List<ItemEntity> items = new ArrayList<>();
@@ -227,11 +232,13 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
         items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
         shoppingList.setItems(items);
+        shoppingListForSave.setItems(new ArrayList<>());
 
         ArgumentCaptor<ShoppingListEntity> listArgument = ArgumentCaptor.forClass(ShoppingListEntity.class);
 
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
-        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList), Optional.of(shoppingListForSave));
+        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(listOfLists);
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingListForSave));
         Mockito.when(itemRepository.findByListId(listId)).thenReturn(items);
         Mockito.when(shoppingListRepository.save(listArgument.capture())).thenReturn(shoppingListForSave);
 
@@ -240,7 +247,8 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         boolean result = shoppingListService.deleteList(userName, listId);
 
         Mockito.verify(userService, times(2)).getUserByUserEmail(userName);
-        Mockito.verify(shoppingListRepository, times(2)).getWithItemsByListId(listId);
+        Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
+        Mockito.verify(shoppingListRepository, times(1)).findByUserIdOrderByLastUpdateDesc(userId);
         Mockito.verify(itemRepository, times(1)).findByListId(listId);
         Mockito.verify(itemRepository, times(1)).deleteAll(items);
         Mockito.verify(shoppingListRepository, times(1)).delete(listId);
@@ -253,8 +261,8 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Assert.assertTrue(resultList.getItems().isEmpty());
     }
 
-    @Test
-    public void testDeleteList_BadList() {
+    @Test(expected = ActionInvalidException.class)
+    public void testDeleteList_NoListsFound() {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -263,20 +271,57 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Long listId = 199L;
 
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
-        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.ofNullable(null));
-        Mockito.when(shoppingListRepository.findById(listId)).thenReturn(Optional.ofNullable(null));
+        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(listId)).thenReturn(new ArrayList<>());
 
         // test call
-        boolean result = shoppingListService.deleteList(userName, listId);
+        shoppingListService.deleteList(userName, listId);
+    }
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
-        Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
-        Mockito.verify(shoppingListRepository, times(1)).findById(listId);
+    @Test(expected = ObjectNotFoundException.class)
+    public void testDeleteList_BadList() {
+        Long userId = 99L;
+        String userName = "userName";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
 
-        // Assertions
-        Assert.assertFalse(result);
+        Long listId = 199L;
+        List<ShoppingListEntity> listOfLists = Arrays.asList(
+            ServiceTestUtils.buildShoppingList(userId, 1L),
+            ServiceTestUtils.buildShoppingList(userId, 101L),
+            ServiceTestUtils.buildShoppingList(userId, 1011L),
+            ServiceTestUtils.buildShoppingList(userId, 1021L)
+        );
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(listOfLists);
+
+        // test call
+        shoppingListService.deleteList(userName, listId);
+
 
     }
+
+    @Test(expected = ActionInvalidException.class)
+    public void testDeleteList_LastList() {
+        Long userId = 99L;
+        String userName = "userName";
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+
+        Long listId = 199L;
+        List<ShoppingListEntity> listOfLists = Arrays.asList(
+                ServiceTestUtils.buildShoppingList(userId, listId)
+        );
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(listOfLists);
+
+        // test call
+        shoppingListService.deleteList(userName, listId);
+
+
+    }
+    // test list - last list
 
     @Test
     public void testAddItemToListByTag() {

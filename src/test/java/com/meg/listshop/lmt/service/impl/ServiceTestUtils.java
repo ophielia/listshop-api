@@ -5,6 +5,7 @@ import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -67,6 +68,13 @@ public class ServiceTestUtils {
         itemEntity.setAddedOn(new Date());
 
         return itemEntity;
+    }
+
+    public static ShoppingListEntity buildShoppingList(Long userId, Long listId) {
+        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
+        shoppingList.setUserId(userId);
+        shoppingList.setItems(new ArrayList<>());
+        return shoppingList;
     }
 
     public static UserEntity buildUser(Long userId, String userName) {

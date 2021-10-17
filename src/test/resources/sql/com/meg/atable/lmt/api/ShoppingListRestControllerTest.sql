@@ -1,3 +1,25 @@
+--- new user, and single list
+delete
+from users
+where user_id in (99999);
+INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username)
+VALUES (99999, 'username@testitytest.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
+        'email@email.com');
+insert into list (created_on, list_layout_id, name, user_id, list_id)
+values (now(), 1, 'BaseList', 99999, 99999);
+INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, assign_select, search_select, is_verified,
+                 power)
+VALUES (999, NULL, 'tag_to_be_deleted', 'Ingredient', NULL, true, false, NULL, NULL);
+INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id)
+VALUES (99999, 999, 381);
+INSERT INTO category_tags (category_id, tag_id)
+VALUES (11, 999);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (99999, 999, 99999, now(), null, null, 1, null, null);
+
+
+
 -- lists - ids 500-503
 -- base list - id 500
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
