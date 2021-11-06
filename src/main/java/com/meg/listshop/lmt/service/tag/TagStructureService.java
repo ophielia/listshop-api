@@ -1,12 +1,9 @@
 package com.meg.listshop.lmt.service.tag;
 
-import com.meg.listshop.lmt.api.model.FatTag;
-import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagRelationEntity;
 import com.meg.listshop.lmt.data.entity.TagSearchGroupEntity;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,8 +36,6 @@ public interface TagStructureService {
 
     Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags);
 
-    Map<Long, TagSwapout> getTagSwapouts(List<Long> dishIds, List<String> tagListForSlot);
-
     List<Long> getSearchGroupIdsByMember(Long id);
 
     List<Long> getSearchMemberIdsByGroup(Long id);
@@ -53,9 +48,7 @@ public interface TagStructureService {
 
     void removeMembersForGroup(Long id, List<Long> toDelete);
 
-    List<FatTag> getTagsWithChildren(List<TagType> tagTypes);
 
-    List<FatTag> getChangedTagsWithChildren(Date changedAfter);
 
 
 }

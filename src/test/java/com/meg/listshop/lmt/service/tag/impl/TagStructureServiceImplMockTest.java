@@ -122,15 +122,8 @@ public class TagStructureServiceImplMockTest {
         relationEntity.setChild(child);
         return relationEntity;
     }
-/*
 
 
-fillInRelationshipInfo
-assignTagToTopLevel
-buildGroupAssignments
-getSearchGroupIdsByMember
-getTagSwapouts
- */
 
 
 }
