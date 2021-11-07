@@ -123,22 +123,17 @@ public class TagRestController implements TagRestControllerApi {
 
     @Override
     public ResponseEntity assignChildToParent(@PathVariable Long parentId, @PathVariable Long childId) {
-        if (this.tagService.assignTagToParent(childId, parentId)) {
+        tagService.assignTagToParent(childId, parentId);
             return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
     }
 
     @Override
     public ResponseEntity assignChildToBaseTag(@PathVariable("tagId") Long tagId) {
         TagEntity tag = this.tagService.getTagById(tagId);
 
-        if (this.tagStructureService.assignTagToTopLevel(tag)) {
+        this.tagStructureService.assignTagToTopLevel(tag);
             return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+
     }
 
     public ResponseEntity<Tag> readTag(@PathVariable Long tagId) {

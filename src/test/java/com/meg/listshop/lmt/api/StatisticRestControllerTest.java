@@ -120,11 +120,11 @@ public class StatisticRestControllerTest {
     public void testGetUserStatistics() throws Exception {
 
         this.mockMvc.perform(get("/statistics")
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andDo(print())
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$.statistic", Matchers.hasSize(2)));
+                .andExpect(jsonPath("$.statistic", Matchers.hasItems()));
 
 
     }

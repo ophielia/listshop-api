@@ -24,4 +24,6 @@ public class ListLayoutResource extends ResourceSupport {
         this.add(linkTo(methodOn(ListLayoutRestController.class)
                 .readListLayout(null, listLayout.getLayoutId())).withSelfRel());
     }
+
+
 }

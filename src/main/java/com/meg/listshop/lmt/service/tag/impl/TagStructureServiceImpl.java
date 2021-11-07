@@ -11,7 +11,6 @@ import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.data.repository.TagSearchGroupRepository;
 import com.meg.listshop.lmt.service.tag.TagCache;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
-import com.meg.listshop.lmt.service.tag.TagSwapout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -261,19 +260,7 @@ public class TagStructureServiceImpl implements TagStructureService {
         deleteTagGroupsByGroupAndMember(Collections.singletonList(groupId), membersToDelete);
     }
 
-    @Override
-    public List<FatTag> getTagsWithChildren(List<TagType> tagTypes) {
 
-        // get relationship lookups
-        Map<Long, List<Long>> parentToChildren = getTagRelationshipLookup(tagTypes);
-
-        // get base tags
-        List<Long> baseTagIds = parentToChildren.containsKey(0L) ? parentToChildren.get(0L) : new ArrayList<>();
-
-        // fill in starting with base tags
-        return fillInFromLookup(baseTagIds, parentToChildren, true);
-
-    }
 
     private List<FatTag> fillInFromLookup(List<Long> baseTagIds, Map<Long, List<Long>> parentToChildren, boolean useCache) {
         List<FatTag> filledIn = new ArrayList<>();
@@ -284,28 +271,6 @@ public class TagStructureServiceImpl implements TagStructureService {
         return filledIn;
     }
 
-    @Override
-    public List<FatTag> getChangedTagsWithChildren(Date changedAfter) {
-        List<TagEntity> changedTags = tagRepository.getTagsChangedAfter(changedAfter);
-
-        if (changedTags.isEmpty()) {
-            return new ArrayList<>();
-        }
-        // get all tags and ascendant tags
-        Set<Long> relationshipIds = changedTags.stream().map(TagEntity::getId).collect(Collectors.toSet());
-        for (TagEntity tag : changedTags) {
-            relationshipIds.addAll(getAscendantTags(tag, false).stream().map(TagEntity::getId).collect(Collectors.toSet()));
-        }
-
-        // get relationship lookups for ids
-        Map<Long, List<Long>> parentToChildren = getTagRelationshipLookupForIds(relationshipIds);
-
-        // get base tags
-        List<Long> baseTagIds = parentToChildren.containsKey(0L) ? parentToChildren.get(0L) : new ArrayList<>();
-
-        return fillInFromLookup(baseTagIds, parentToChildren, false);
-
-    }
 
     private Map<Long, List<Long>> getTagRelationshipLookup(List<TagType> tagTypes) {
         List<Object[]> rawRelations;
@@ -420,25 +385,5 @@ public class TagStructureServiceImpl implements TagStructureService {
         return members.stream().map(TagSearchGroupEntity::getMemberId).collect(Collectors.toList());
     }
 
-    @Override
-    public Map<Long, TagSwapout> getTagSwapouts(List<Long> dishIds, List<String> tagListForSlot) {
-
-        List<Long> tagIdsAsLongs = tagListForSlot.stream().map(Long::valueOf).collect(Collectors.toList());
-        List<Object[]> rawResults = tagSearchGroupRepository.getTagSwapoutsByDishesAndGroups(dishIds, tagIdsAsLongs);
-        HashMap<Long, TagSwapout> resultMap = new HashMap<>();
-        for (Object[] result : rawResults) {
-            Long dishId = ((BigInteger) result[0]).longValue();
-            String searchTag = result[1].toString();
-            String foundTag = result[2].toString();
-            if (!resultMap.containsKey(dishId)) {
-                resultMap.put(dishId, new TagSwapout());
-            }
-            TagSwapout swapoutsForDish = resultMap.get(dishId);
-            swapoutsForDish.addSearchFound(searchTag, foundTag);
-            resultMap.put(dishId, swapoutsForDish);
-        }
-
-        return resultMap;
-    }
 
 }

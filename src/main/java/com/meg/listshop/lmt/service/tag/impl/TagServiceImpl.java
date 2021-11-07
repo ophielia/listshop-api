@@ -436,7 +436,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public boolean assignTagToParent(Long tagId, Long parentId) {
+    public void assignTagToParent(Long tagId, Long parentId) {
         // get tag and parent
         TagEntity tag = getTagById(tagId);
 
@@ -444,11 +444,11 @@ public class TagServiceImpl implements TagService {
         TagEntity parentTag = getTagById(parentId);
 
 
-        return assignTagToParent(tag, parentTag);
+        assignTagToParent(tag, parentTag);
     }
 
 
-    private boolean assignTagToParent(TagEntity childTag, TagEntity newParentTag) {
+    private void assignTagToParent(TagEntity childTag, TagEntity newParentTag) {
         // get original parent (parent before reassign)
         TagEntity originalParent = tagStructureService.getParentTag(childTag);
         // assign Child tag to parent tag
@@ -458,16 +458,16 @@ public class TagServiceImpl implements TagService {
         // fire tag changed event
         fireTagParentChangedEvent(originalParent, parentTag, childTag);
 
-        return true;
+
     }
 
     @Override
-    public boolean assignChildrenToParent(Long parentId, List<Long> childrenIds) {
+    public void assignChildrenToParent(Long parentId, List<Long> childrenIds) {
         // get parent id
         TagEntity parentTag = getTagById(parentId);
 
         if (parentTag == null) {
-            return false;
+            return;
         }
 
         // update tag relation
@@ -475,7 +475,7 @@ public class TagServiceImpl implements TagService {
             TagEntity tag = getTagById(tagId);
             assignTagToParent(tag, parentTag);
         }
-        return true;
+        return;
     }
 
     @Override

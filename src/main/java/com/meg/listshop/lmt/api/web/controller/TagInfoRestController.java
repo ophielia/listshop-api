@@ -30,7 +30,7 @@ public class TagInfoRestController implements TagInfoRestControllerApi {
 
     public ResponseEntity<List<TagDrilldownResource>> retrieveTagList(@RequestParam(value = "tag_type", required = false) String tag_type) {
         List<TagType> tagTypes = processTagTypeInput(tag_type);
-        List<FatTag> filledTags = tagStructureService.getTagsWithChildren(tagTypes);
+        List<FatTag> filledTags = new ArrayList<>(); //ntagStructureService.getTagsWithChildren(tagTypes);
 
         // create taginforesource
         List<TagDrilldownResource> resource = filledTags.stream()
@@ -44,7 +44,8 @@ public class TagInfoRestController implements TagInfoRestControllerApi {
     public ResponseEntity<List<TagDrilldownResource>> retrieveTagListRefresh(
             @RequestParam(value = "after", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date after
     ) {
-        List<FatTag> filledTags = tagStructureService.getChangedTagsWithChildren(after);
+        // List<FatTag> filledTags = tagStructureService.getChangedTagsWithChildren(after);
+        List<FatTag> filledTags = new ArrayList<>();
 
         // create taginforesource
         List<TagDrilldownResource> resource = filledTags.stream()

@@ -1,8 +1,5 @@
 package com.meg.listshop.lmt.service.tag.impl;
 
-import com.meg.listshop.lmt.api.model.FatTag;
-import com.meg.listshop.lmt.api.model.TagType;
-import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagInstructionEntity;
 import com.meg.listshop.lmt.service.Instruction;
 import com.meg.listshop.lmt.service.tag.AutoTagSubject;
@@ -10,7 +7,8 @@ import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +32,7 @@ public class RatingTagProcessorImpl extends AbstractAutoTagProcessor {
     @Override
     public List<Instruction> fillInstructions() {
         instructions = new ArrayList<>();
-
+/*
         // the instructions are calculated - not retrived form the database
         List<FatTag> ratingTagsWithChildren = tagStructureService.getTagsWithChildren(Collections.singletonList(TagType.Rating));
 
@@ -62,7 +60,7 @@ public class RatingTagProcessorImpl extends AbstractAutoTagProcessor {
             instructionEntity.setAssignTagId(assignTag.getId());
             instructions.add(instructionEntity);
         }
-
+*/
         return instructions;
     }
 

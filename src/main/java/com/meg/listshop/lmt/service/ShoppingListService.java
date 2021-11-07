@@ -24,7 +24,7 @@ public interface ShoppingListService {
 
     ShoppingListEntity getListById(String userName, Long listId);
 
-    boolean deleteList(String userName, Long listId);
+    void deleteList(String userName, Long listId);
 
     ShoppingListEntity updateList(String name, Long listId, ShoppingListEntity updateFrom);
 

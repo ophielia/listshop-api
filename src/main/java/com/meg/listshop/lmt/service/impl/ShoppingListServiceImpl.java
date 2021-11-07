@@ -398,7 +398,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     @Transactional
-    public boolean deleteList(String userName, Long listId) {
+    public void deleteList(String userName, Long listId) {
         List<ShoppingListEntity> allLists = getListsByUsername(userName);
         if (allLists == null || allLists.isEmpty()) {
             throw new ActionInvalidException("No lists found for username " + userName);
@@ -421,9 +421,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             toDelete = getListById(userName, listId);
             shoppingListRepository.delete(toDelete.getId());
             shoppingListRepository.flush();
-            return true;
         }
-        return false;
     }
 
     @Override
