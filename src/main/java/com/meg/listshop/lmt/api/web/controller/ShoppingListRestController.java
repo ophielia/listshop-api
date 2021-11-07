@@ -192,11 +192,9 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<ShoppingList> deleteList(Principal principal, @PathVariable("listId") Long listId) {
-        boolean success = shoppingListService.deleteList(principal.getName(), listId);
-        if (success) {
+        shoppingListService.deleteList(principal.getName(), listId);
             return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.badRequest().build();
+
     }
 
     @Override

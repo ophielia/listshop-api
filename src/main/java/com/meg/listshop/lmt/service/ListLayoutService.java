@@ -29,7 +29,7 @@ public interface ListLayoutService {
 
     void deleteListLayout(Long listLayoutId);
 
-    void addCategoryToListLayout(Long listLayoutId, ListLayoutCategoryEntity entity);
+    Long addCategoryToListLayout(Long listLayoutId, ListLayoutCategoryEntity entity);
 
     void deleteCategoryFromListLayout(Long listLayoutId, Long layoutCategoryId) throws ListLayoutException;
 

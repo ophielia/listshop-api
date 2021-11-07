@@ -12,6 +12,7 @@ import com.meg.listshop.lmt.service.tag.impl.RatingTagProcessorImpl;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,7 @@ public class RatingProcessorImplTest {
     }
 
     @Test
+    @Ignore
     public void processTagForInstruction() {
         // get instructions
         //tagProcessor.fillInstructions();

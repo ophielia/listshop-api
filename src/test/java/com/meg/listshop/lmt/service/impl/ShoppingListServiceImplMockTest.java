@@ -244,7 +244,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
 
         // test call
-        boolean result = shoppingListService.deleteList(userName, listId);
+        shoppingListService.deleteList(userName, listId);
 
         Mockito.verify(userService, times(2)).getUserByUserEmail(userName);
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
@@ -255,7 +255,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.verify(shoppingListRepository, times(1)).flush();
 
         // Assertions
-        Assert.assertTrue(result);
         Assert.assertNotNull(listArgument.getValue());
         ShoppingListEntity resultList = listArgument.getValue();
         Assert.assertTrue(resultList.getItems().isEmpty());

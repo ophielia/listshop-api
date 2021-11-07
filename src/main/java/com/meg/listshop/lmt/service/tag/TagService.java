@@ -32,9 +32,9 @@ public interface TagService {
 
     List<TagEntity> getTagsForDish(String username, Long dishId, List<TagType> tagtypes);
 
-    boolean assignTagToParent(Long tagId, Long parentId);
+    void assignTagToParent(Long tagId, Long parentId);
 
-    boolean assignChildrenToParent(Long parentId, List<Long> childrenIds);
+    void assignChildrenToParent(Long parentId, List<Long> childrenIds);
 
     void addTagToDish(String userName, Long dishId, Long tagId);
 

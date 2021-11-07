@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.impl;
 
+import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.Category;
 import com.meg.listshop.lmt.api.model.ListLayoutCategory;
 import com.meg.listshop.lmt.api.model.ListLayoutType;
@@ -99,11 +100,11 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     }
 
     @Override
-    public void addCategoryToListLayout(Long listLayoutId, ListLayoutCategoryEntity entity) {
+    public Long addCategoryToListLayout(Long listLayoutId, ListLayoutCategoryEntity entity) {
         // get list
-        Optional<ListLayoutEntity> listLayoutEntityOpt =  listLayoutRepository.findById(listLayoutId);
+        Optional<ListLayoutEntity> listLayoutEntityOpt = listLayoutRepository.findById(listLayoutId);
         if (!listLayoutEntityOpt.isPresent()) {
-            return;
+            throw new ObjectNotFoundException("list layout not found for id :" + listLayoutId);
         }
         ListLayoutEntity layoutEntity = listLayoutEntityOpt.get();
 
@@ -127,6 +128,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         } catch (ListLayoutException e) {
             // TODO - log exception here
         }
+        return result.getId();
     }
 
     @Override
@@ -149,6 +151,12 @@ public class ListLayoutServiceImpl implements ListLayoutService {
             }
         }
         listLayoutCategoryRepository.flush();
+
+        // delete category relation
+        List<CategoryRelationEntity> childDeletes = categoryRelationRepository.findCategoryRelationsByChildId(layoutCategoryId);
+        categoryRelationRepository.deleteAll(childDeletes);
+        List<CategoryRelationEntity> parentDeletes = categoryRelationRepository.findCategoryRelationsByParentId(layoutCategoryId);
+        categoryRelationRepository.deleteAll(parentDeletes);
 
         // delete category
         listLayoutCategoryRepository.deleteById(layoutCategoryId);

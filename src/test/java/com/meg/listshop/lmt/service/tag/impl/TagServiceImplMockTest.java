@@ -699,8 +699,6 @@ public class TagServiceImplMockTest {
                 .thenReturn(Optional.of(parentTag));
         Mockito.when(tagStructureService.getParentTag(tag))
                 .thenReturn(originalParentTag);
-        Mockito.when(tagStructureService.assignTagToParent(tag, parentTag))
-                .thenReturn(parentTag);
 
         // call to test
         tagService.assignTagToParent(1000L, 1001L);
@@ -726,13 +724,9 @@ public class TagServiceImplMockTest {
         Mockito.when(tagRepository.findById(parentTag.getId())).thenReturn(Optional.of(parentTag));
         Mockito.when(tagStructureService.getParentTag(tag))
                 .thenReturn(originalParentTag);
-        Mockito.when(tagStructureService.assignTagToParent(tag, parentTag))
-                .thenReturn(parentTag);
 
         // call to test
         tagService.assignTagToParent(tag.getId(), parentTag.getId());
-
-
     }
 
     @Test
@@ -811,8 +805,6 @@ public class TagServiceImplMockTest {
                 .thenReturn(tag);
         Mockito.when(tagStructureService.getParentTag(child3))
                 .thenReturn(originalParentTag);
-        Mockito.when(tagStructureService.assignTagToParent(child3, tag))
-                .thenReturn(tag);
 
         tagService.assignChildrenToParent(parentId, childrenIds);
 
