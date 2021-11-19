@@ -3,6 +3,7 @@ package com.meg.listshop.lmt.service.impl;
 import com.meg.listshop.lmt.data.entity.TextInstructionEntity;
 import com.meg.listshop.lmt.data.repository.TextInstructionRepository;
 import com.meg.listshop.lmt.service.Instruction;
+import com.meg.listshop.lmt.service.tag.AutoTagProcessor;
 import com.meg.listshop.lmt.service.tag.AutoTagSubject;
 import com.meg.listshop.lmt.service.tag.impl.AbstractAutoTagProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class TextProcessorImpl extends AbstractAutoTagProcessor {
 
     @Override
     public Long getProcessIdentifier() {
-        return Type.TEXT;
+        return AutoTagProcessor.Type.TEXT;
     }
 
     @Override

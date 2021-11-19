@@ -2,8 +2,8 @@ package com.meg.listshop.lmt.api.model;
 
 import com.meg.listshop.lmt.api.controller.TagRestControllerApi;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
@@ -16,7 +16,7 @@ public class TagDrilldownResource extends ResourceSupport {
     public TagDrilldownResource(FatTag fatTag) {
         this.tagDrilldown = ModelMapper.toModel(fatTag);
 
-        this.add(linkTo(methodOn(TagRestControllerApi.class)
+        this.add(ControllerLinkBuilder.linkTo(methodOn(TagRestControllerApi.class)
                 .readTag(fatTag.getId())).withSelfRel());
     }
     public TagDrilldown getTagDrilldown() {

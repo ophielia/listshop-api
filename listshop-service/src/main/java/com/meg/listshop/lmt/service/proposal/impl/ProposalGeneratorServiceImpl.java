@@ -63,7 +63,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
     }
 
     @Override
-    public ProposalEntity generateProposal(String userName, Long targetId) throws  ProposalProcessingException {
+    public ProposalEntity generateProposal(String userName, Long targetId) throws ProposalProcessingException {
         UserEntity userAccount = userService.getUserByUserEmail(userName);
         // get target for user
         TargetEntity target = targetService.getTargetById(userName, targetId);

@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.lmt.data.entity.TagInstructionEntity;
 import com.meg.listshop.lmt.service.Instruction;
+import com.meg.listshop.lmt.service.tag.AutoTagProcessor;
 import com.meg.listshop.lmt.service.tag.AutoTagSubject;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class RatingTagProcessorImpl extends AbstractAutoTagProcessor {
 
     @Override
     public Long getProcessIdentifier() {
-        return Type.RATING;
+        return AutoTagProcessor.Type.RATING;
     }
 
     @Override

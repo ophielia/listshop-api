@@ -85,7 +85,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 * Configuration to serve static resources
-  - from server directory /opt/listshop/static
+  - from server directory /opt/com.meg.listshop.listshop/static
   - served from http://<root>/static
   
 ### Changed
