@@ -28,12 +28,14 @@ public class JwtTokenUtil implements Serializable {
     private static final String AUDIENCE_WEB = "web";
     private static final String AUDIENCE_MOBILE = "mobile";
     private static final String AUDIENCE_TABLET = "tablet";
+    private static final Long DAY_TO_MILLISECONDS = 60L * 60L * 24L * 1000L;
 
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}")
-    private Long expiration;
+    @Value("${web.login.period.in.days:7}")
+    private Long expirationInDays;
+
 
     public String getUsernameFromToken(String token) {
         String username;
@@ -94,7 +96,7 @@ public class JwtTokenUtil implements Serializable {
 
     private Date generateExpirationDate(ClientType clientType) {
         if (clientType == ClientType.Web) {
-            return new Date(System.currentTimeMillis() + expiration * 1000);
+            return new Date(System.currentTimeMillis() + expirationInDays * DAY_TO_MILLISECONDS);
         }
         return null;
 

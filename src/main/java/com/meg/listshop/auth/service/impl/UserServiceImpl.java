@@ -121,8 +121,6 @@ public class UserServiceImpl implements UserService {
         if (!userEntityOptional.isPresent()) {
             throw new RuntimeException("Can't retrieve user for userId [" + userId + "]");
         }
-        // delete existing entry
-        deleteExistingEntry(userId, deviceInfo.getClientType(), deviceInfo.getName());
 
         // create device info
         UserDeviceEntity userDeviceEntity = new UserDeviceEntity();
