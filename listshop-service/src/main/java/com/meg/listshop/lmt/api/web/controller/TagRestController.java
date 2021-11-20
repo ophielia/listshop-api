@@ -45,9 +45,9 @@ public class TagRestController implements TagRestControllerApi {
     }
 
 
-    public ResponseEntity<TagResource> retrieveTagList(@RequestParam(value = "filter", required = false) String filter,
-                                                       @RequestParam(value = "tag_type", required = false) String tagType,
-                                                       @RequestParam(value = "extended", required = false) Boolean extended) {
+    public ResponseEntity<TagListResource> retrieveTagList(@RequestParam(value = "filter", required = false) String filter,
+                                                           @RequestParam(value = "tag_type", required = false) String tagType,
+                                                           @RequestParam(value = "extended", required = false) Boolean extended) {
         List<TagType> tagTypeFilter = processTagTypeInput(tagType);
         TagFilterType tagFilterTypeFilter = filter != null ? TagFilterType.valueOf(filter) : TagFilterType.All;
         if (extended == null) {
@@ -59,23 +59,21 @@ public class TagRestController implements TagRestControllerApi {
 
         List<TagEntity> tagList = tagService.getTagList(tagFilterTypeFilter, tagTypeFilter);
 
-        List<TagResource> tagResourceRaw = tagList
-                .stream().map(TagResource::new)
+        List<NewTagResource> resourceList = tagList.stream().map(t -> ModelMapper.toModel(t))
+                .map(m -> new NewTagResource(m))
                 .collect(Collectors.toList());
-
-        Resources<TagResource> tagResourceList = new Resources<>(tagResourceRaw);
-        return new ResponseEntity(tagResourceList, HttpStatus.OK);
+        TagListResource returnValue = new TagListResource(resourceList);
+        return new ResponseEntity(returnValue, HttpStatus.OK);
     }
 
-    private ResponseEntity<TagResource> retrieveTagExtendedList(TagFilterType tagFilterTypeFilter, List<TagType> tagTypeFilter) {
+    private ResponseEntity<TagListResource> retrieveTagExtendedList(TagFilterType tagFilterTypeFilter, List<TagType> tagTypeFilter) {
         List<TagExtendedEntity> tagList = tagService.getTagExtendedList(tagFilterTypeFilter, tagTypeFilter);
 
-        List<TagResource> tagResourceRaw = tagList
-                .stream().map(TagResource::new)
+        List<NewTagResource> resourceList = tagList.stream().map(t -> ModelMapper.toModel(t))
+                .map(m -> new NewTagResource(m))
                 .collect(Collectors.toList());
-
-        Resources<TagResource> tagResourceList = new Resources<>(tagResourceRaw);
-        return new ResponseEntity(tagResourceList, HttpStatus.OK);
+        TagListResource returnValue = new TagListResource(resourceList);
+        return new ResponseEntity(returnValue, HttpStatus.OK);
     }
 
 

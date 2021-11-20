@@ -112,7 +112,7 @@ public class Tag {
     }
 
     public Tag parentId(String parent_id) {
-        if (!parent_id.equalsIgnoreCase("null")) {
+        if (parent_id != null && !parent_id.equalsIgnoreCase("null")) {
             this.parentId = parent_id;
         }
         return this;
