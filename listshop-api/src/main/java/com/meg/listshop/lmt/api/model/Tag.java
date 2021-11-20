@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public class Tag extends AbstractListShopResource implements ListShopModel {
+public class Tag {
 
     private String tag_id;
 
@@ -156,13 +156,5 @@ public class Tag extends AbstractListShopResource implements ListShopModel {
         return this;
     }
 
-    @Override
-    public String getRootPath() {
-        return "tag";
-    }
 
-    @Override
-    public String getResourceId() {
-        return getId();
-    }
 }

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.security.Principal;
 import java.util.*;
@@ -60,8 +61,7 @@ public class DishRestController implements DishRestControllerApi {
                                                                   @RequestParam(value = "sortKey", required = false) String sortKey,
                                                                   @RequestParam(value = "sortDirection", required = false) String sortDirection
     ) {
-        logger.info("Entered retrieveDishes includedTags: " + includedTags + ", excludedTags: " + excludedTags
-                + ", sortKey: " + sortKey + ", sortDirection: " + sortDirection);
+        logger.info("Entered retrieveDishes includedTags: [%s], excludedTags: [%s], sortKey: [%s], sortDirection: [%s]", includedTags, excludedTags, sortKey, sortDirection);
         List<DishResource> dishList;
         if (StringUtils.isEmpty(includedTags) && StringUtils.isEmpty(excludedTags)
                 && StringUtils.isEmpty(sortKey) && StringUtils.isEmpty(sortDirection)) {
@@ -160,12 +160,14 @@ public class DishRestController implements DishRestControllerApi {
         return new ResponseEntity(dishResource, HttpStatus.OK);
     }
 
-    public ResponseEntity<Resources<TagResource>> getTagsByDishId(Principal principal, @PathVariable Long dishId) {
+    public ResponseEntity<Resources<TagResource>> getTagsByDishId(HttpServletRequest request, Principal principal, @PathVariable Long dishId) {
 
         List<TagResource> tagList = tagService
                 .getTagsForDish(principal.getName(), dishId)
-                .stream().map(TagResource::new)
+                .stream().map(te -> ModelMapper.toModel(te))
+                .map(tm -> new TagResource(tm))
                 .collect(Collectors.toList());
+        tagList.forEach(tr -> tr.fillLinks(request, tr));
         return new ResponseEntity(tagList, HttpStatus.OK);
     }
 

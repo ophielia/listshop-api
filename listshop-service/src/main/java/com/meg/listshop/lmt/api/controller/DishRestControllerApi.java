@@ -8,6 +8,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 /**
@@ -29,27 +30,27 @@ public interface DishRestControllerApi {
                                                            @RequestParam(value = "sortDirection", required = false) String sortDirection
     );
 
-    @PostMapping( produces = "application/json", consumes = "application/json")
+    @PostMapping(produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createDish(Principal principal, @RequestBody Dish input);
 
     @PutMapping(value = "/{dishId}", consumes = "application/json")
     ResponseEntity<Object> updateDish(Principal principal, @PathVariable Long dishId, @RequestBody Dish input);
 
-    @GetMapping( value = "/{dishId}", produces = "application/json")
-     ResponseEntity<Dish> readDish(Principal principal, @PathVariable("dishId") Long dishId);
+    @GetMapping(value = "/{dishId}", produces = "application/json")
+    ResponseEntity<Dish> readDish(Principal principal, @PathVariable("dishId") Long dishId);
 
-    @GetMapping( value = "/{dishId}/tag", produces = "application/json")
-     ResponseEntity<Resources<TagResource>> getTagsByDishId(Principal principal,@PathVariable("dishId") Long dishId);
+    @GetMapping(value = "/{dishId}/tag", produces = "application/json")
+    ResponseEntity<Resources<TagResource>> getTagsByDishId(HttpServletRequest request, Principal principal, @PathVariable("dishId") Long dishId);
 
-    @PostMapping( value = "/{dishId}/tag/{tagId}", produces = "application/json")
-     ResponseEntity<Object> addTagToDish(Principal principal,@PathVariable Long dishId, @PathVariable Long tagId);
+    @PostMapping(value = "/{dishId}/tag/{tagId}", produces = "application/json")
+    ResponseEntity<Object> addTagToDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId);
 
     @DeleteMapping(value = "/{dishId}/tag/{tagId}", produces = "application/json")
-     ResponseEntity<Object> deleteTagFromDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId);
+    ResponseEntity<Object> deleteTagFromDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId);
 
     @PutMapping(value = "/{dishId}/tag", produces = "application/json")
-     ResponseEntity<Object> addAndRemoveTags(Principal principal, @PathVariable Long dishId,
-                                             @RequestParam(value = "addTags", required = false) String addTags,
+    ResponseEntity<Object> addAndRemoveTags(Principal principal, @PathVariable Long dishId,
+                                            @RequestParam(value = "addTags", required = false) String addTags,
                                              @RequestParam(value = "removeTags", required = false) String removeTags);
 
     @GetMapping(value = "/{dishId}/ratings", produces = "application/json")

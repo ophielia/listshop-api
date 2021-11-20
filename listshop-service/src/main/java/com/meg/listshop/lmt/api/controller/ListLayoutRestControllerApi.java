@@ -9,6 +9,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -48,10 +49,10 @@ public interface ListLayoutRestControllerApi {
     ResponseEntity<Object> updateCategoryFromListLayout(Principal principal, @PathVariable Long layoutCategoryId, @RequestBody ListLayoutCategory layoutCategory);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}/tag", produces = "application/json")
-    ResponseEntity<Object> getUncategorizedTags(Principal principal, @PathVariable Long listLayoutId);
+    ResponseEntity<Object> getUncategorizedTags(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}/category/{layoutCategoryId}/tag", produces = "application/json")
-    ResponseEntity<Object> getTagsForCategory(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId);
+    ResponseEntity<Object> getTagsForCategory(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId);
 
     @RequestMapping(method = RequestMethod.POST, value = "/{listLayoutId}/category/{layoutCategoryId}/tag", produces = "application/json")
     ResponseEntity<Object> addTagsToCategory(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId, @RequestParam(value = "tags", required = true) String commaSeparatedIds);

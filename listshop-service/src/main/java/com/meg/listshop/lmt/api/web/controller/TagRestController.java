@@ -54,37 +54,36 @@ public class TagRestController implements TagRestControllerApi {
             extended = false;
         }
         if (extended || tagFilterTypeFilter == TagFilterType.ParentTags) {
-            return retrieveTagExtendedList(request, tagFilterTypeFilter, tagTypeFilter);
+            return retrieveTagExtendedList(tagFilterTypeFilter, tagTypeFilter);
         }
 
         List<TagEntity> tagList = tagService.getTagList(tagFilterTypeFilter, tagTypeFilter);
 
         List<Tag> resourceList = tagList.stream().map(t -> ModelMapper.toModel(t))
                 .collect(Collectors.toList());
-        resourceList.forEach(r -> ((ListShopResource) r).fillLinks(request, r));
-        TagListResource returnValue = new TagListResource(resourceList);
+        var returnValue = new TagListResource(resourceList);
         return new ResponseEntity(returnValue, HttpStatus.OK);
     }
 
-    private ResponseEntity<TagListResource> retrieveTagExtendedList(HttpServletRequest request, TagFilterType tagFilterTypeFilter, List<TagType> tagTypeFilter) {
+    private ResponseEntity<TagListResource> retrieveTagExtendedList(TagFilterType tagFilterTypeFilter, List<TagType> tagTypeFilter) {
         List<TagExtendedEntity> tagList = tagService.getTagExtendedList(tagFilterTypeFilter, tagTypeFilter);
 
         List<Tag> resourceList = tagList.stream().map(t -> ModelMapper.toModel(t))
                 .collect(Collectors.toList());
-        resourceList.forEach(r -> ((ListShopResource) r).fillLinks(request, r));
-        TagListResource returnValue = new TagListResource(resourceList);
+        var returnValue = new TagListResource(resourceList);
         return new ResponseEntity(returnValue, HttpStatus.OK);
     }
 
 
     public ResponseEntity<Tag> add(HttpServletRequest request, @RequestBody Tag input) {
-        TagEntity tagEntity = ModelMapper.toEntity(input);
+        var tagEntity = ModelMapper.toEntity(input);
         TagEntity result = this.tagService.createTag(null, tagEntity);
 
         if (result != null) {
 
-            Tag tagModel = ModelMapper.toModel(tagEntity);
-            return ResponseEntity.created(tagModel.selfLink(request, tagModel)).build();
+            var tagModel = ModelMapper.toModel(tagEntity);
+            var resource = new TagResource(tagModel);
+            return ResponseEntity.created(resource.selfLink(request, resource)).build();
 
         }
         return ResponseEntity.noContent().build();
@@ -94,11 +93,12 @@ public class TagRestController implements TagRestControllerApi {
         TagEntity parent = this.tagService.getTagById(tagId);
 
         if (parent != null) {
-            TagEntity tagEntity = ModelMapper.toEntity(input);
+            var tagEntity = ModelMapper.toEntity(input);
             TagEntity result = this.tagService.createTag(parent, tagEntity);
             if (result != null) {
-                Tag tagModel = ModelMapper.toModel(tagEntity);
-                return ResponseEntity.created(tagModel.selfLink(request, tagModel)).build();
+                var tagModel = ModelMapper.toModel(tagEntity);
+                var resource = new TagResource(tagModel);
+                return ResponseEntity.created(resource.selfLink(request, resource)).build();
             } else {
                 return ResponseEntity.noContent().build();
             }
@@ -136,16 +136,15 @@ public class TagRestController implements TagRestControllerApi {
 
     public ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable Long tagId) {
         // invalid dishId - returns invalid id supplied - 400
-        TagEntity tagEntity = this.tagService
+        var tagEntity = this.tagService
                 .getTagById(tagId);
 
         if (tagEntity == null) {
             return ResponseEntity.notFound().build();
         }
-        Tag tagModel = ModelMapper.toModel(tagEntity);
-        tagModel.fillLinks(request, tagModel);
+        var tagModel = ModelMapper.toModel(tagEntity);
 
-        return new ResponseEntity(new EmbeddedTag(tagModel), HttpStatus.OK);
+        return new ResponseEntity(new TagResource(tagModel), HttpStatus.OK);
 
     }
 
@@ -170,7 +169,7 @@ public class TagRestController implements TagRestControllerApi {
         Optional<Tag> tagModel = this.dishService.getDishesForTagChildren(tagId, principal.getName())
                 .stream()
                 .findFirst()
-                .map(t -> ModelMapper.toModel(t));
+                .map(ModelMapper::toModel);
 
         if (tagModel.isEmpty()) {
             return ResponseEntity.notFound().build();

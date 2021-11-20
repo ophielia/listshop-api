@@ -229,6 +229,7 @@ public class ListLayoutRestControllerTest {
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$._embedded.tagResourceList", Matchers.hasSize(33)))
                 .andReturn();
+        Assert.assertTrue(1 == 1);
     }
 
 

@@ -31,16 +31,17 @@ public class AbstractListShopResource implements ListShopResource {
         try {
 //MM clean up here
             URL url = new URL(request.getRequestURL().toString());
-            url.getHost();
-            url.getProtocol();
-            url.getPath();
-            return UriComponentsBuilder.newInstance()
+
+            UriComponentsBuilder builder = UriComponentsBuilder.newInstance()
                     .scheme(url.getProtocol())
                     .host(url.getHost())
                     .port(url.getPort())
-                    .path(model.getRootPath())
-                    .path("/")
-                    .path(model.getResourceId()).build().toUri();
+                    .path(model.getRootPath());
+            if (model.getResourceId() != null) {
+                builder.path("/")
+                        .path(model.getResourceId());
+            }
+            return builder.build().toUri();
 
         } catch (MalformedURLException e) {
             e.printStackTrace();

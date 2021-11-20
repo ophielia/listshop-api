@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -130,26 +131,28 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return ResponseEntity.badRequest().build();
     }
 
-    public ResponseEntity<Object> getUncategorizedTags(Principal principal, @PathVariable Long listLayoutId) {
+    public ResponseEntity<Object> getUncategorizedTags(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId) {
         List<TagResource> tagResourceList = this.listLayoutService.getUncategorizedTagsForList(listLayoutId)
                 .stream()
-                .map(TagResource::new)
+                .map(te -> ModelMapper.toModel(te))
+                .map(tm -> new TagResource(tm))
                 .collect(Collectors.toList());
-        Resources<TagResource> resourceList = new Resources<>(tagResourceList);
 
-        return new ResponseEntity(resourceList, HttpStatus.OK);
+        tagResourceList.forEach(tr -> tr.fillLinks(request, tr));
+
+        return new ResponseEntity(tagResourceList, HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> getTagsForCategory(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) {
+    public ResponseEntity<Object> getTagsForCategory(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) {
 
-        List<TagResource> tagResourceList = this.listLayoutService
+        List<Tag> taglist = this.listLayoutService
                 .getTagsForLayoutCategory(layoutCategoryId)
                 .stream()
-                .map(TagResource::new)
+                .map(ModelMapper::toModel)
                 .collect(Collectors.toList());
-        Resources<TagResource> result = new Resources<>(tagResourceList);
-        return new ResponseEntity(result, HttpStatus.OK);
-
+        TagListResource tagListResource = new TagListResource(taglist);
+        tagListResource.fillLinks(request, tagListResource);
+        return new ResponseEntity(tagListResource, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> addTagsToCategory(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId, @RequestParam(value = "tags", required = true) String commaSeparatedIds) {
