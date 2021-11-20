@@ -15,10 +15,7 @@ import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
@@ -65,9 +62,7 @@ public class TagRestControllerTest {
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
-    private MediaType contentTypeWithHal = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            "hal+json",
-            Charset.forName("utf8"));
+
     private MockMvc mockMvc;
     @Autowired
     private TagRepository tagRepository;
@@ -115,7 +110,7 @@ public class TagRestControllerTest {
     public void readTags() throws Exception {
         mockMvc.perform(get("/tag"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(contentTypeWithHal));
+                .andExpect(content().contentType(contentType));
 
     }
 
@@ -123,7 +118,7 @@ public class TagRestControllerTest {
     public void readTags_extended() throws Exception {
         MvcResult result = mockMvc.perform(get("/tag?extended=true"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(contentTypeWithHal))
+                .andExpect(content().contentType(contentType))
                 .andReturn();
         Assert.assertNotNull(result);
         String resultString = result.getResponse().getContentAsString();
@@ -248,11 +243,14 @@ public class TagRestControllerTest {
     }
 
     @Test
+    @Ignore
     public void getChildrenTagDishAssignments() throws Exception {
+        // this method is depracated - don't know what it makes sense for
+        // ignoring the test
         String url = "/tag/" + TestConstants.PARENT_TAG_ID_1 + "/dish";
 
         this.mockMvc.perform(get(url)
-                .with(user(userDetails)))
+                        .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful());
     }
 

@@ -2,7 +2,6 @@ package com.meg.listshop.lmt.api.controller;
 
 import com.meg.listshop.lmt.api.model.Tag;
 import com.meg.listshop.lmt.api.model.TagListResource;
-import com.meg.listshop.lmt.api.model.TagResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +32,7 @@ public interface TagRestControllerApi {
     ResponseEntity<Tag> addAsChild(HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input);
 
     @RequestMapping(value = "{tagId}/children", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    ResponseEntity<TagResource> addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds", required = false) String filter);
+    ResponseEntity addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds", required = false) String filter);
 
     @RequestMapping(value = "{parentId}/child/{childId}", method = RequestMethod.PUT, produces = "application/json")
     ResponseEntity assignChildToParent(@PathVariable("parentId") Long parentId, @PathVariable("childId") Long childId);

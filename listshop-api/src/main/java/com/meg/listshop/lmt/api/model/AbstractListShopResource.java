@@ -29,6 +29,7 @@ public class AbstractListShopResource implements ListShopResource {
     public URI selfLink(HttpServletRequest request, ListShopModel model) {
         String returnPath = "blank";
         try {
+//MM clean up here
             URL url = new URL(request.getRequestURL().toString());
             url.getHost();
             url.getProtocol();

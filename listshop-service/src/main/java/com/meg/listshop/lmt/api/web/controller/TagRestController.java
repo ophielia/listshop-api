@@ -145,7 +145,7 @@ public class TagRestController implements TagRestControllerApi {
         Tag tagModel = ModelMapper.toModel(tagEntity);
         tagModel.fillLinks(request, tagModel);
 
-        return new ResponseEntity(tagModel, HttpStatus.OK);
+        return new ResponseEntity(new EmbeddedTag(tagModel), HttpStatus.OK);
 
     }
 
