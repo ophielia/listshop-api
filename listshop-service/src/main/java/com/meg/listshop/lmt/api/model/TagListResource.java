@@ -9,7 +9,7 @@ public class TagListResource {
     @JsonProperty("_embedded")
     private EmbeddedTagListResource embeddedList;
 
-    public TagListResource(List<NewTagResource> tagList) {
+    public TagListResource(List<Tag> tagList) {
         this.embeddedList = new EmbeddedTagListResource(tagList);
     }
 

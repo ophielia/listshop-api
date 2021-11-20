@@ -6,6 +6,7 @@ import com.meg.listshop.lmt.api.model.TagResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 /**
@@ -17,7 +18,8 @@ import java.security.Principal;
 public interface TagRestControllerApi {
 
     @RequestMapping(method = RequestMethod.GET)
-    ResponseEntity<TagListResource> retrieveTagList(@RequestParam(value = "filter", required = false) String filter,
+    ResponseEntity<TagListResource> retrieveTagList(HttpServletRequest request,
+                                                    @RequestParam(value = "filter", required = false) String filter,
                                                     @RequestParam(value = "tag_type", required = false) String tagType,
                                                     @RequestParam(value = "extended", required = false) Boolean extended);
 
@@ -25,7 +27,7 @@ public interface TagRestControllerApi {
     ResponseEntity<Object> saveTagForDelete(@PathVariable("tagId") Long tagId, @RequestParam(value = "replacementTagId", required = true) Long replacementTagId);
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    ResponseEntity<TagResource> add(@RequestBody Tag input);
+    ResponseEntity<Tag> add(HttpServletRequest request, @RequestBody Tag input);
 
     @RequestMapping(value = "{tagId}/child", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<TagResource> addAsChild(@PathVariable Long tagId, @RequestBody Tag input);

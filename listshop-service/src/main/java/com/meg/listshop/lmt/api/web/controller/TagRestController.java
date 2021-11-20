@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -45,7 +46,8 @@ public class TagRestController implements TagRestControllerApi {
     }
 
 
-    public ResponseEntity<TagListResource> retrieveTagList(@RequestParam(value = "filter", required = false) String filter,
+    public ResponseEntity<TagListResource> retrieveTagList(HttpServletRequest request,
+                                                           @RequestParam(value = "filter", required = false) String filter,
                                                            @RequestParam(value = "tag_type", required = false) String tagType,
                                                            @RequestParam(value = "extended", required = false) Boolean extended) {
         List<TagType> tagTypeFilter = processTagTypeInput(tagType);
@@ -54,36 +56,37 @@ public class TagRestController implements TagRestControllerApi {
             extended = false;
         }
         if (extended || tagFilterTypeFilter == TagFilterType.ParentTags) {
-            return retrieveTagExtendedList(tagFilterTypeFilter, tagTypeFilter);
+            return retrieveTagExtendedList(request, tagFilterTypeFilter, tagTypeFilter);
         }
 
         List<TagEntity> tagList = tagService.getTagList(tagFilterTypeFilter, tagTypeFilter);
 
-        List<NewTagResource> resourceList = tagList.stream().map(t -> ModelMapper.toModel(t))
-                .map(m -> new NewTagResource(m))
+        List<Tag> resourceList = tagList.stream().map(t -> ModelMapper.toModel(t))
                 .collect(Collectors.toList());
+        resourceList.forEach(r -> ((ListShopResource) r).fillLinks(request, r));
         TagListResource returnValue = new TagListResource(resourceList);
         return new ResponseEntity(returnValue, HttpStatus.OK);
     }
 
-    private ResponseEntity<TagListResource> retrieveTagExtendedList(TagFilterType tagFilterTypeFilter, List<TagType> tagTypeFilter) {
+    private ResponseEntity<TagListResource> retrieveTagExtendedList(HttpServletRequest request, TagFilterType tagFilterTypeFilter, List<TagType> tagTypeFilter) {
         List<TagExtendedEntity> tagList = tagService.getTagExtendedList(tagFilterTypeFilter, tagTypeFilter);
 
-        List<NewTagResource> resourceList = tagList.stream().map(t -> ModelMapper.toModel(t))
-                .map(m -> new NewTagResource(m))
+        List<Tag> resourceList = tagList.stream().map(t -> ModelMapper.toModel(t))
                 .collect(Collectors.toList());
+        resourceList.forEach(r -> ((ListShopResource) r).fillLinks(request, r));
         TagListResource returnValue = new TagListResource(resourceList);
         return new ResponseEntity(returnValue, HttpStatus.OK);
     }
 
 
-    public ResponseEntity<TagResource> add(@RequestBody Tag input) {
+    public ResponseEntity<Tag> add(HttpServletRequest request, @RequestBody Tag input) {
         TagEntity tagEntity = ModelMapper.toEntity(input);
         TagEntity result = this.tagService.createTag(null, tagEntity);
 
         if (result != null) {
-            Link forOneTag = new TagResource(result).getLink("self");
-            return ResponseEntity.created(URI.create(forOneTag.getHref())).build();
+
+            Tag tagModel = ModelMapper.toModel(tagEntity);
+            return ResponseEntity.created(tagModel.selfLink(request, tagModel)).build();
 
         }
         return ResponseEntity.noContent().build();

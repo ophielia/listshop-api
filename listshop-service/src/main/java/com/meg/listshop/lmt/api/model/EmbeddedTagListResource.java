@@ -5,18 +5,18 @@ import java.util.List;
 
 public class EmbeddedTagListResource {
 
-    private List<NewTagResource> tagResourceList;
+    private List<Tag> tagResourceList;
 
-    public EmbeddedTagListResource(List<NewTagResource> tagResourceList) {
+    public EmbeddedTagListResource(List<Tag> tagResourceList) {
         this.tagResourceList = tagResourceList;
     }
 
 
-    public List<NewTagResource> getTagResourceList() {
+    public List<Tag> getTagResourceList() {
         return tagResourceList;
     }
 
-    public void setTagResourceList(List<NewTagResource> tagResourceList) {
+    public void setTagResourceList(List<Tag> tagResourceList) {
         this.tagResourceList = tagResourceList;
     }
 
