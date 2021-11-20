@@ -7,9 +7,9 @@ import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,12 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +33,8 @@ public class TagRestController implements TagRestControllerApi {
     private final DishService dishService;
 
     private final TagStructureService tagStructureService;
+
+    private static final Logger logger = LogManager.getLogger(TagRestController.class);
 
     @Autowired
     TagRestController(TagService tagService, TagStructureService tagStructureService, DishService dishService) {
@@ -92,16 +90,15 @@ public class TagRestController implements TagRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<TagResource> addAsChild(@PathVariable Long tagId, @RequestBody Tag input) {
+    public ResponseEntity<Tag> addAsChild(HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input) {
         TagEntity parent = this.tagService.getTagById(tagId);
 
         if (parent != null) {
             TagEntity tagEntity = ModelMapper.toEntity(input);
             TagEntity result = this.tagService.createTag(parent, tagEntity);
             if (result != null) {
-                Link forOneTag = new TagResource(result).getLink("self");
-                return ResponseEntity.created(URI.create(forOneTag.getHref())).build();
-
+                Tag tagModel = ModelMapper.toModel(tagEntity);
+                return ResponseEntity.created(tagModel.selfLink(request, tagModel)).build();
             } else {
                 return ResponseEntity.noContent().build();
             }
@@ -110,7 +107,7 @@ public class TagRestController implements TagRestControllerApi {
 
     }
 
-    public ResponseEntity<TagResource> addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds") String filter) {
+    public ResponseEntity addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds") String filter) {
         if (filter == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -125,7 +122,7 @@ public class TagRestController implements TagRestControllerApi {
     @Override
     public ResponseEntity assignChildToParent(@PathVariable Long parentId, @PathVariable Long childId) {
         tagService.assignTagToParent(childId, parentId);
-            return ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
     }
 
     @Override
@@ -133,11 +130,11 @@ public class TagRestController implements TagRestControllerApi {
         TagEntity tag = this.tagService.getTagById(tagId);
 
         this.tagStructureService.assignTagToTopLevel(tag);
-            return ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
 
     }
 
-    public ResponseEntity<Tag> readTag(@PathVariable Long tagId) {
+    public ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable Long tagId) {
         // invalid dishId - returns invalid id supplied - 400
         TagEntity tagEntity = this.tagService
                 .getTagById(tagId);
@@ -145,9 +142,10 @@ public class TagRestController implements TagRestControllerApi {
         if (tagEntity == null) {
             return ResponseEntity.notFound().build();
         }
-        TagResource tagResource = new TagResource(tagEntity);
+        Tag tagModel = ModelMapper.toModel(tagEntity);
+        tagModel.fillLinks(request, tagModel);
 
-        return new ResponseEntity(tagResource, HttpStatus.OK);
+        return new ResponseEntity(tagModel, HttpStatus.OK);
 
     }
 
@@ -165,26 +163,29 @@ public class TagRestController implements TagRestControllerApi {
 
     }
 
-    //@RequestMapping(method = RequestMethod.GET, value = "/{tagId}/children/dish", produces = "application/json")
-    public ResponseEntity<TagResource> getChildrenTagDishAssignments(Principal principal, @PathVariable("tagId") Long tagId) {
 
+    public ResponseEntity<Tag> getChildrenTagDishAssignments(HttpServletRequest request, Principal principal, @PathVariable("tagId") Long tagId) {
+        logger.warn("DEPRACATED! - Depracated method getChildrenTagDishAssignments called.");
 
-        List<TagResource> tagList = this.dishService.getDishesForTagChildren(tagId, principal.getName())
-                .stream().map(TagResource::new)
-                .collect(Collectors.toList());
+        Optional<Tag> tagModel = this.dishService.getDishesForTagChildren(tagId, principal.getName())
+                .stream()
+                .findFirst()
+                .map(t -> ModelMapper.toModel(t));
 
-        Resources<TagResource> tagResourceList = new Resources<>(tagList);
-        return new ResponseEntity(tagResourceList, HttpStatus.OK);
+        if (tagModel.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return new ResponseEntity(tagModel, HttpStatus.OK);
     }
 
-    public ResponseEntity<TagResource> replaceTagsInDishes(Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId) {
+    public ResponseEntity<Object> replaceTagsInDishes(HttpServletRequest request, Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId) {
         this.tagService.replaceTagInDishes(principal.getName(), tagId, toTagId);
         return ResponseEntity.noContent().build();
     }
 
     public ResponseEntity<Object> saveTagForDelete(@PathVariable Long tagId, @RequestParam Long replacementTagId) {
 
-        this.tagService.saveTagForDelete(tagId,replacementTagId);
+        this.tagService.saveTagForDelete(tagId, replacementTagId);
 
 
         return ResponseEntity.noContent().build();

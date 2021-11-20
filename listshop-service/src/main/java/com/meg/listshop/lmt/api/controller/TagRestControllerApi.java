@@ -30,7 +30,7 @@ public interface TagRestControllerApi {
     ResponseEntity<Tag> add(HttpServletRequest request, @RequestBody Tag input);
 
     @RequestMapping(value = "{tagId}/child", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    ResponseEntity<TagResource> addAsChild(@PathVariable Long tagId, @RequestBody Tag input);
+    ResponseEntity<Tag> addAsChild(HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input);
 
     @RequestMapping(value = "{tagId}/children", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<TagResource> addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds", required = false) String filter);
@@ -42,16 +42,17 @@ public interface TagRestControllerApi {
     ResponseEntity assignChildToBaseTag(@PathVariable("tagId") Long tagId);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{tagId}", produces = "application/json")
-    ResponseEntity<Tag> readTag(@PathVariable("tagId") Long tagId);
+    ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId);
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{tagId}", consumes = "application/json")
     ResponseEntity<Object> updateTag(@PathVariable Long tagId, @RequestBody Tag input);
 
+    @Deprecated
     @RequestMapping(method = RequestMethod.GET, value = "/{tagId}/dish", produces = "application/json")
-    ResponseEntity<TagResource> getChildrenTagDishAssignments(Principal principal, @PathVariable("tagId") Long tagId);
+    ResponseEntity<Tag> getChildrenTagDishAssignments(HttpServletRequest request, Principal principal, @PathVariable("tagId") Long tagId);
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{fromTagId}/dish/{toTagId}", produces = "application/json")
-    ResponseEntity<TagResource> replaceTagsInDishes(Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId);
+    ResponseEntity replaceTagsInDishes(HttpServletRequest request, Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId);
 
 
 }
