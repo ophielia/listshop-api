@@ -1,7 +1,9 @@
-package com.meg.listshop.lmt.api.model;
+package com.meg.listshop.lmt.service.categories;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meg.listshop.lmt.api.model.CategoryType;
+import com.meg.listshop.lmt.api.model.Item;
 import com.meg.listshop.lmt.data.entity.ItemEntity;
 
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import java.util.List;
 /**
  * Part of display of ShoppingList
  */
-public class ItemCategory extends AbstractCategory {
+public class ItemCategoryPojo extends AbstractCategory {
 
     private java.util.List<Item> items = new ArrayList<>();
 
@@ -25,20 +27,20 @@ public class ItemCategory extends AbstractCategory {
     @JsonIgnore
     List<ItemEntity> itemEntities = new ArrayList<>();
 
-    public ItemCategory() {
+    public ItemCategoryPojo() {
     }
 
-    public ItemCategory(String name) {
+    public ItemCategoryPojo(String name) {
         super(name);
     }
 
-    public ItemCategory(String name, Long id, CategoryType categoryType) {
+    public ItemCategoryPojo(String name, Long id, CategoryType categoryType) {
         super(name, id);
         this.categoryType = categoryType.name();
     }
 
 
-    public ItemCategory(String name,Long id,  Integer displayOrder, CategoryType categoryType) {
+    public ItemCategoryPojo(String name, Long id, Integer displayOrder, CategoryType categoryType) {
         super(id, name, displayOrder);
         this.categoryType = categoryType.name();
     }
@@ -47,7 +49,7 @@ public class ItemCategory extends AbstractCategory {
         return items;
     }
 
-    public Category items(List<Item> items) {
+    public ListShopCategory items(List<Item> items) {
         this.items = items;
         return this;
     }
@@ -60,7 +62,7 @@ public class ItemCategory extends AbstractCategory {
         return itemEntities;
     }
 
-    public Category itemEntities(List<ItemEntity> itemEntities) {
+    public ListShopCategory itemEntities(List<ItemEntity> itemEntities) {
         this.itemEntities = itemEntities;
         return this;
     }

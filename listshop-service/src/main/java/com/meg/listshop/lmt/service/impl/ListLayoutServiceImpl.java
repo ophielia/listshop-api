@@ -1,8 +1,6 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.model.Category;
-import com.meg.listshop.lmt.api.model.ListLayoutCategory;
 import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.repository.CategoryRelationRepository;
@@ -10,6 +8,8 @@ import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.*;
+import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
+import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -307,40 +307,40 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     }
 
     @Override
-    public List<Category> getStructuredCategories(ListLayoutEntity listLayout) {
+    public List<ListShopCategory> getStructuredCategories(ListLayoutEntity listLayout) {
         if (listLayout.getCategories() == null || listLayout.getCategories().isEmpty()) {
             return new ArrayList<>();
         }
 
         // gather categories
-        Map<Long, Category> allCategories = new HashMap<>();
+        Map<Long, ListShopCategory> allCategories = new HashMap<>();
         listLayout.getCategories().forEach(c -> {
             // copy into listlayoutcategory
-            ListLayoutCategory lc = (ListLayoutCategory) new ListLayoutCategory(c.getId())
+            ListLayoutCategoryPojo lc = (ListLayoutCategoryPojo) new ListLayoutCategoryPojo(c.getId())
                     .name(c.getName());
-            lc = (ListLayoutCategory) lc.layoutId(c.getLayoutId());
-            lc = (ListLayoutCategory) lc.tagEntities(c.getTags());
-            lc = (ListLayoutCategory) lc.displayOrder(c.getDisplayOrder());
+            lc = (ListLayoutCategoryPojo) lc.layoutId(c.getLayoutId());
+            lc = (ListLayoutCategoryPojo) lc.tagEntities(c.getTags());
+            lc = (ListLayoutCategoryPojo) lc.displayOrder(c.getDisplayOrder());
             allCategories.put(c.getId(), lc);
         });
 
         // structure subcategories
         structureCategories(allCategories, listLayout.getId(), false);
-        List<Category> mainCategorySort = allCategories.values().stream().sorted(Comparator.comparing(Category::getDisplayOrder)).collect(Collectors.toList());
+        List<ListShopCategory> mainCategorySort = allCategories.values().stream().sorted(Comparator.comparing(ListShopCategory::getDisplayOrder)).collect(Collectors.toList());
         return mainCategorySort;
     }
 
     @Override
-    public void structureCategories(Map<Long, Category> filledCategories, Long listLayoutId, boolean pruneSubcategories) {
+    public void structureCategories(Map<Long, ListShopCategory> filledCategories, Long listLayoutId, boolean pruneSubcategories) {
 
         Map<Long, Long> subCategoryMappings = getSubCategoryMappings(listLayoutId);
         for (Map.Entry<Long, Long> entry : subCategoryMappings.entrySet()) {
-            Category child = filledCategories.get(entry.getKey());
-            Category parent = filledCategories.get(entry.getValue());
+            ListShopCategory child = filledCategories.get(entry.getKey());
+            ListShopCategory parent = filledCategories.get(entry.getValue());
             if (child == null || (pruneSubcategories && child.isEmpty())) {
                 continue;
             }
-            if (parent != null ) {
+            if (parent != null) {
                 parent.addSubCategory(child);
             }
         }
@@ -349,12 +349,12 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         }
 
         // sort subcategories in categories
-        for (Category sortCategory : filledCategories.values()) {
+        for (ListShopCategory sortCategory : filledCategories.values()) {
             if (sortCategory.getSubCategories().isEmpty()) {
                 continue;
             }
             sortCategory.getSubCategories()
-                    .sort(Comparator.comparing(Category::getDisplayOrder));
+                    .sort(Comparator.comparing(ListShopCategory::getDisplayOrder));
         }
 
     }
@@ -497,7 +497,7 @@ Long relationshipId = getCategoryRelationForCategory(category);
     public void assignTagToDefaultCategories(TagEntity newtag) {
         // repull tag from db
         TagEntity tagToUpdate = tagService.getTagById(newtag.getId());
-        // get default categories for all list layouts
+        // get default categories for all list categories
         List<ListLayoutCategoryEntity> defaultCategories = getAllDefaultCategories();
 
         // for each category, assign the category to the tag, and the tag to the category

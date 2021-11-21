@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.api.model;
+package com.meg.listshop.lmt.service.categories;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Part of display of ShoppingList
  */
-public abstract class AbstractCategory implements Category {
+public abstract class AbstractCategory implements ListShopCategory {
 
     @JsonProperty("category_id")
     private Long id;
@@ -20,7 +20,7 @@ public abstract class AbstractCategory implements Category {
     private String name;
 
     @JsonProperty("subcategories")
-    private List<Category> subCategories = new ArrayList<>();
+    private List<ListShopCategory> subCategories = new ArrayList<>();
 
 
     private Integer displayOrder;
@@ -53,7 +53,7 @@ public abstract class AbstractCategory implements Category {
     }
 
     @Override
-    public Category name(String name) {
+    public ListShopCategory name(String name) {
         this.name = name;
         return this;
     }
@@ -65,18 +65,18 @@ public abstract class AbstractCategory implements Category {
 
 
     @Override
-    public List<Category> getSubCategories() {
+    public List<ListShopCategory> getSubCategories() {
         return subCategories;
     }
 
     @Override
-    public Category subCategories(List<Category> subCategories) {
+    public ListShopCategory subCategories(List<ListShopCategory> subCategories) {
         this.subCategories = subCategories;
         return this;
     }
 
     @Override
-    public void addSubCategory(Category subcategory) {
+    public void addSubCategory(ListShopCategory subcategory) {
         this.subCategories.add(subcategory);
     }
 
@@ -87,7 +87,7 @@ public abstract class AbstractCategory implements Category {
     }
 
     @Override
-    public Category displayOrder(Integer displayOrder) {
+    public ListShopCategory displayOrder(Integer displayOrder) {
         this.displayOrder = displayOrder;
         return this;
     }

@@ -1,12 +1,14 @@
 package com.meg.listshop.lmt.api.model;
 
+import com.meg.listshop.lmt.service.categories.ListShopCategory;
+
 public class ListItemRefresh {
 
     private Item item;
 
-    private Category category;
+    private ListShopCategory category;
 
-    public ListItemRefresh(Item item, Category category) {
+    public ListItemRefresh(Item item, ListShopCategory category) {
         this.item = item;
         this.category = category;
     }
@@ -19,11 +21,11 @@ public class ListItemRefresh {
         this.item = item;
     }
 
-    public Category getCategory() {
+    public ListShopCategory getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(ListShopCategory category) {
         this.category = category;
     }
 }

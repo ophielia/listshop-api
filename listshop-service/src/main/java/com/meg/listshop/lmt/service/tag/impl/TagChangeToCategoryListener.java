@@ -96,7 +96,7 @@ public class TagChangeToCategoryListener implements TagChangeListener {
         List<Long> toAdd = new ArrayList<>();
         toAdd.add(childTag.getId());
 
-        // get list layouts
+        // get list categories
         List<ListLayoutCategoryEntity> tagCategories = listLayoutService.getCategoriesForTag(sibling);
         for (ListLayoutCategoryEntity tagCategory : tagCategories) {
             // assign childTag to this layout

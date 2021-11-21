@@ -5,6 +5,9 @@ import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.service.categories.ItemCategoryPojo;
+import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
+import com.meg.listshop.lmt.service.categories.ListShopCategory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -72,8 +75,8 @@ public class ModelMapper {
                 .userId(dishEntity.getUserId());
     }
 
-    public static ListLayout toModel(ListLayoutEntity listLayoutEntity, List<Category> tagCategories) {
-        List<Category> categories = layoutCategoriesToModel(tagCategories);
+    public static ListLayout toModel(ListLayoutEntity listLayoutEntity, List<ListShopCategory> tagCategories) {
+        List<ListLayoutCategory> categories = layoutCategoriesToModel(tagCategories);
 
         return new ListLayout(listLayoutEntity.getId())
                 .name(listLayoutEntity.getName())
@@ -171,52 +174,56 @@ public class ModelMapper {
         return dishSlots;
     }
 
-    private static List<Category> layoutCategoriesToModel(List<Category> categories) {
+    private static List<ListLayoutCategory> layoutCategoriesToModel(List<ListShopCategory> categories) {
         if (categories == null) {
-            return categories;
+            return new ArrayList<>();
         }
 
-        List<Category> categoryList = new ArrayList<>();
-        for (Category cat : categories) {
-            ListLayoutCategory llc = (ListLayoutCategory) cat;
-            List<Tag> tags = toModel(llc.getTagEntities());
-
-            categoryList.add(toModel((ListLayoutCategory) llc.tags(tags)));
+        List<ListLayoutCategory> categoryList = new ArrayList<>();
+        for (ListShopCategory cat : categories) {
+            ListLayoutCategory llc = new ListLayoutCategory(cat.getId());
+            llc.name = cat.getName();
+            llc.displayOrder = String.valueOf(cat.getDisplayOrder());
+            //MM leaving subcategories out for now
+            // List<Tag> tags = toModel(llc.getTagEntities());
+            categoryList.add(llc);
         }
         return categoryList;
 
     }
 
-    public static ListLayoutCategory toModel(ListLayoutCategory cat) {
+    public static ListLayoutCategory toModel(ListLayoutCategoryPojo cat) {
         if (cat == null) {
             return null;
         }
 
+        ListLayoutCategory layout = toModel(cat);
         // this is received pre-filled.  Just need to check for subcategories
         if (cat.getSubCategories() == null || cat.getSubCategories().isEmpty()) {
-            return cat;
+            return toModel(cat);
         }
 
-        List<Category> subcategories = layoutCategoriesToModel(cat.getSubCategories());
-        return (ListLayoutCategory) cat.subCategories(subcategories);
+        List<ListLayoutCategory> subcategories = layoutCategoriesToModel(cat.getSubCategories());
+        layout.setSubCategories(subcategories);
+        return layout;
     }
 
-    public static ListLayoutCategory toModel(ListLayoutCategoryEntity cat) {
+    public static ListLayoutCategoryPojo toModel(ListLayoutCategoryEntity cat) {
         return toModel(cat, true);
 
     }
 
-    public static ListLayoutCategory toModel(ListLayoutCategoryEntity cat, boolean includeTags) {
+    public static ListLayoutCategoryPojo toModel(ListLayoutCategoryEntity cat, boolean includeTags) {
         if (cat == null) {
             return null;
         }
-        ListLayoutCategory returnval = (ListLayoutCategory) new ListLayoutCategory(cat.getId())
+        ListLayoutCategoryPojo returnval = (ListLayoutCategoryPojo) new ListLayoutCategoryPojo(cat.getId())
                 .name(cat.getName());
-        returnval = (ListLayoutCategory) returnval.layoutId(cat.getLayoutId());
+        returnval = (ListLayoutCategoryPojo) returnval.layoutId(cat.getLayoutId());
         if (includeTags) {
-            returnval = (ListLayoutCategory) returnval.tags(toModel(cat.getTags()));
+            returnval = (ListLayoutCategoryPojo) returnval.tags(toModel(cat.getTags()));
         } else {
-            returnval = (ListLayoutCategory) returnval.tags(new ArrayList<>());
+            returnval = (ListLayoutCategoryPojo) returnval.tags(new ArrayList<>());
         }
         return returnval;
 
@@ -339,7 +346,7 @@ public class ModelMapper {
         return slotList;
     }
 
-    public static ShoppingList toModel(ShoppingListEntity shoppingListEntity, List<Category> itemCategories) {
+    public static ShoppingList toModel(ShoppingListEntity shoppingListEntity, List<ListShopCategory> itemCategories) {
         List<LegendSource> legendSources = new ArrayList<>();
         if (shoppingListEntity.getDishSources() != null &&
                 !shoppingListEntity.getDishSources().isEmpty()) {
@@ -363,7 +370,7 @@ public class ModelMapper {
         }
         //MM?? open for now - how to know if item frequent exists?
 
-        List<Category> categories = itemCategoriesToModel(itemCategories);
+        List<ListShopCategory> categories = itemCategoriesToModel(itemCategories);
 
         long itemCount = 0;
         if (shoppingListEntity.getItems() != null) {
@@ -384,7 +391,7 @@ public class ModelMapper {
 
     }
 
-    private static List<Category> itemCategoriesToModel(List<Category> filledCategories
+    private static List<ListShopCategory> itemCategoriesToModel(List<ListShopCategory> filledCategories
     ) {
         if (filledCategories == null) {
             return filledCategories;
@@ -393,8 +400,8 @@ public class ModelMapper {
         // go through list, converting items in category and subcategories
         // (category is already in model - the server needed to organize, but
         // the item mapping is still handled here)
-        for (Category categoryModel : filledCategories) {
-            ItemCategory cm = (ItemCategory) categoryModel;
+        for (ListShopCategory categoryModel : filledCategories) {
+            ItemCategoryPojo cm = (ItemCategoryPojo) categoryModel;
             List<Item> items = new ArrayList<>();
             if (cm.getItemEntities() != null && !cm.getItemEntities().isEmpty()) {
                 items = simpleItemsToModel(cm.getItemEntities());
@@ -404,7 +411,7 @@ public class ModelMapper {
 
             // now - subcategories
             if (!categoryModel.getSubCategories().isEmpty()) {
-                List<Category> filledSubCats = itemCategoriesToModel(categoryModel.getSubCategories());
+                List<ListShopCategory> filledSubCats = itemCategoriesToModel(categoryModel.getSubCategories());
                 categoryModel.subCategories(filledSubCats);
             }
         }
@@ -530,7 +537,7 @@ public class ModelMapper {
         return shoppingListEntity;
     }
 
-    public static ListLayoutCategoryEntity toEntity(ListLayoutCategory layoutCategory) {
+    public static ListLayoutCategoryEntity toEntity(ListLayoutCategoryPojo layoutCategory) {
         ListLayoutCategoryEntity categoryEntity = new ListLayoutCategoryEntity(layoutCategory.getId());
         categoryEntity.setName(layoutCategory.getName());
         categoryEntity.setLayoutId(layoutCategory.getLayoutId());

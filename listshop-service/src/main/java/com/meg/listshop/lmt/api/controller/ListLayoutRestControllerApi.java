@@ -2,9 +2,9 @@ package com.meg.listshop.lmt.api.controller;
 
 import com.meg.listshop.lmt.api.model.CategoryItemRefresh;
 import com.meg.listshop.lmt.api.model.ListLayout;
-import com.meg.listshop.lmt.api.model.ListLayoutCategory;
-import com.meg.listshop.lmt.api.model.ListLayoutResource;
+import com.meg.listshop.lmt.api.model.ListLayoutListResource;
 import com.meg.listshop.lmt.service.ListLayoutException;
+import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,28 +25,28 @@ public interface ListLayoutRestControllerApi {
 
 
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<Resources<ListLayoutResource>> retrieveListLayouts(Principal principal);
+    ResponseEntity<Resources<ListLayoutListResource>> retrieveListLayouts(HttpServletRequest request, Principal principal);
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> createListLayout(Principal principal, @RequestBody ListLayout input);
+    ResponseEntity<Object> createListLayout(HttpServletRequest request, Principal principal, @RequestBody ListLayout input);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}", produces = "application/json")
-    ResponseEntity<ListLayout> readListLayout(Principal principal, @PathVariable("listLayoutId") Long listLayoutId);
+    ResponseEntity<ListLayout> readListLayout(HttpServletRequest request, Principal principal, @PathVariable("listLayoutId") Long listLayoutId);
 
     @RequestMapping(method = RequestMethod.GET, value = "/default", produces = "application/json")
-    ResponseEntity<ListLayout> readDefaultListLayout();
+    ResponseEntity<ListLayout> readDefaultListLayout(HttpServletRequest request);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listLayoutId}", produces = "application/json")
     ResponseEntity<ListLayout> deleteListLayout(Principal principal, @PathVariable("listLayoutId") Long listLayoutId);
 
     @RequestMapping(method = RequestMethod.POST, value = "/{listLayoutId}/category", produces = "application/json")
-    ResponseEntity<Object> addCategoryToListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategory input);
+    ResponseEntity<Object> addCategoryToListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategoryPojo input);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{listLayoutId}/category/{layoutCategoryId}", produces = "application/json")
     ResponseEntity<Object> deleteCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) throws ListLayoutException;
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{listLayoutId}/category/{layoutCategoryId}", produces = "application/json")
-    ResponseEntity<Object> updateCategoryFromListLayout(Principal principal, @PathVariable Long layoutCategoryId, @RequestBody ListLayoutCategory layoutCategory);
+    ResponseEntity<Object> updateCategoryFromListLayout(Principal principal, @PathVariable Long layoutCategoryId, @RequestBody ListLayoutCategoryPojo layoutCategory);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}/tag", produces = "application/json")
     ResponseEntity<Object> getUncategorizedTags(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId);

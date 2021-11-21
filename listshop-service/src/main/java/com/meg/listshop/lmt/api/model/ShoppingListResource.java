@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meg.listshop.lmt.api.web.controller.ShoppingListRestController;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
+import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -19,7 +20,7 @@ public class ShoppingListResource extends ResourceSupport {
     @JsonProperty("shopping_list")
     private ShoppingList shoppingList;
 
-    public ShoppingListResource(ShoppingListEntity shoppingListEntity, List<Category> categories) {
+    public ShoppingListResource(ShoppingListEntity shoppingListEntity, List<ListShopCategory> categories) {
         this.shoppingList = ModelMapper.toModel(shoppingListEntity, categories);
 
         Long userId = shoppingListEntity.getUserId();

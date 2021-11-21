@@ -15,7 +15,7 @@ public class ListLayout {
     @JsonProperty("list_layout_type")
     private String layoutType;
 
-    private List<Category> categories;
+    private List<ListLayoutCategory> categories;
 
     public ListLayout(Long layoutId) {
         this.layoutId = layoutId;
@@ -49,11 +49,11 @@ public class ListLayout {
         return this;
     }
 
-    public List<Category> getCategories() {
+    public List<ListLayoutCategory> getCategories() {
         return categories;
     }
 
-    public ListLayout categories(List<Category> categories) {
+    public ListLayout categories(List<ListLayoutCategory> categories) {
         this.categories = categories;
         return this;
     }

@@ -10,6 +10,7 @@ import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.lmt.service.ShoppingListException;
 import com.meg.listshop.lmt.service.ShoppingListService;
+import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,7 +96,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             if (layoutId != null && !layoutId.equals(shoppingList.getListLayoutId())) {
                 shoppingList.setListLayoutId(layoutId);
             }
-            List<Category> categories = shoppingListService.categorizeList(shoppingList);
+            List<ListShopCategory> categories = shoppingListService.categorizeList(shoppingList);
             shoppingListService.fillSources(shoppingList);
             MergeResultResource resource = new MergeResultResource(mergeResult, shoppingList, categories);
 
@@ -165,7 +166,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         if (result == null) {
             throw new ObjectNotFoundException("No lists found for user [" + principal.getName() + "] in retrieveMostRecentList()");
         }
-        List<Category> categories = shoppingListService.categorizeList(result);
+        List<ListShopCategory> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
@@ -175,7 +176,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         if (result == null) {
             throw new ObjectNotFoundException("No lists found for user [" + principal.getName() + "] in retrieveStarterList()");
         }
-        List<Category> categories = shoppingListService.categorizeList(result);
+        List<ListShopCategory> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
@@ -184,7 +185,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId) {
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
 
-        List<Category> categories = shoppingListService.categorizeList(result);
+        List<ListShopCategory> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
         return singleResult(result, categories);
     }
@@ -330,7 +331,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
 
-    private ResponseEntity<ShoppingListResource> singleResult(ShoppingListEntity result, List<Category> categories) {
+    private ResponseEntity<ShoppingListResource> singleResult(ShoppingListEntity result, List<ListShopCategory> categories) {
         if (result != null) {
 
             ShoppingListResource shoppingListResource = new ShoppingListResource(result, categories);

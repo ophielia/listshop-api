@@ -13,6 +13,8 @@ import com.meg.listshop.lmt.data.repository.ItemChangeRepository;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.service.*;
+import com.meg.listshop.lmt.service.categories.ItemCategoryPojo;
+import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -591,7 +593,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    public List<Category> categorizeList(ShoppingListEntity shoppingListEntity) {
+    public List<ListShopCategory> categorizeList(ShoppingListEntity shoppingListEntity) {
 
         if (shoppingListEntity == null) {
             return new ArrayList<>();
@@ -609,9 +611,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
         // get categories for items
         List<ListLayoutCategoryEntity> categoriesEntities = listLayoutService.getListCategoriesForLayout(shoppingListEntity.getListLayoutId());
-        Map<Long, Category> filledCategories = new HashMap<>();
+        Map<Long, ListShopCategory> filledCategories = new HashMap<>();
         categoriesEntities.forEach(ce -> {
-            ItemCategory cat = (ItemCategory) new ItemCategory(ce.getName(), ce.getId(), CategoryType.Standard)
+            ItemCategoryPojo cat = (ItemCategoryPojo) new ItemCategoryPojo(ce.getName(), ce.getId(), CategoryType.Standard)
                     .displayOrder(ce.getDisplayOrder());
             filledCategories.put(cat.getId(), cat);
         });
@@ -628,7 +630,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 item.addHandle(ShoppingListService.FREQUENT);
             }
 
-            ItemCategory category = (ItemCategory) filledCategories.get(dictionary.get(item.getTag().getId()));
+            ItemCategoryPojo category = (ItemCategoryPojo) filledCategories.get(dictionary.get(item.getTag().getId()));
             if (category != null) {
                 category.addItemEntity(item);
             }
@@ -636,7 +638,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // sort items in filled categories - content sort
         for (Map.Entry entry : filledCategories.entrySet()) {
-            ((ItemCategory) entry.getValue()).sortItems();
+            ((ItemCategoryPojo) entry.getValue()).sortItems();
         }
 
         // structure categories
@@ -986,17 +988,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         itemMap.put(tagId, item);
     }
 
-    private List<Category> cleanUpResults(Map<Long, Category> filledCategories) {
-        List<Category> result = new ArrayList<>();
-        for (Category cat : filledCategories.values()) {
-            ItemCategory c = (ItemCategory) cat;
+    private List<ListShopCategory> cleanUpResults(Map<Long, ListShopCategory> filledCategories) {
+        List<ListShopCategory> result = new ArrayList<>();
+        for (ListShopCategory cat : filledCategories.values()) {
+            ItemCategoryPojo c = (ItemCategoryPojo) cat;
             if (!c.isEmpty()) {
                 result.add(c);
             }
         }
 
         // return list of categories
-        result.sort(Comparator.comparing(Category::getDisplayOrder));
+        result.sort(Comparator.comparing(ListShopCategory::getDisplayOrder));
         return result;
     }
 

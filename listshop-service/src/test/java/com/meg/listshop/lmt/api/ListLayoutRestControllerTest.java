@@ -8,7 +8,6 @@ import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.ListLayout;
-import com.meg.listshop.lmt.api.model.ListLayoutCategory;
 import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
@@ -16,6 +15,7 @@ import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.ListLayoutService;
+import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -140,7 +140,7 @@ public class ListLayoutRestControllerTest {
                 .collect(Collectors.toList());
         List<TagEntity> tags = tagRepository.findAllById(ids);
         testcategory.setTags(tags);
-        ListLayoutCategory categoryModel = ModelMapper.toModel(testcategory);
+        ListLayoutCategoryPojo categoryModel = ModelMapper.toModel(testcategory);
         String url = "/listlayout/"
                 + TestConstants.LIST_LAYOUT_1_ID + "/category";
         String listLayoutJson = json(categoryModel);
@@ -258,7 +258,7 @@ public class ListLayoutRestControllerTest {
         List<TagEntity> tags = listLayoutSErvice.getTagsForLayoutCategory(testcategory.getId());
         testcategory.setTags(tags);
         testcategory.setName("wokkawokka");
-        ListLayoutCategory categoryModel = ModelMapper.toModel(testcategory);
+        ListLayoutCategoryPojo categoryModel = ModelMapper.toModel(testcategory);
         String url = "/listlayout/"
                 + TestConstants.LIST_LAYOUT_1_ID + "/category/"
                 + test.getId();
@@ -314,7 +314,7 @@ public class ListLayoutRestControllerTest {
                 TestConstants.TAG_3_ID, TestConstants.TAG_4_ID);
         List<TagEntity> tags = tagRepository.findAllById(ids);
         testcategory.setTags(tags);
-        ListLayoutCategory categoryModel = ModelMapper.toModel(testcategory);
+        ListLayoutCategoryPojo categoryModel = ModelMapper.toModel(testcategory);
         String url = "/listlayout/"
                 + TestConstants.LIST_LAYOUT_2_ID + "/category";
         String listLayoutJson = json(categoryModel);

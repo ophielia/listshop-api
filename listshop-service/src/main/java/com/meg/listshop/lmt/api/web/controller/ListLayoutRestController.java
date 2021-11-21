@@ -7,12 +7,13 @@ import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.ListLayoutException;
 import com.meg.listshop.lmt.service.ListLayoutService;
+import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
+import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,54 +42,62 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
     private ListLayoutService listLayoutService;
 
     @Autowired
-    public ListLayoutRestController(ListLayoutService listLayoutService){
+    public ListLayoutRestController(ListLayoutService listLayoutService) {
         this.listLayoutService = listLayoutService;
     }
 
-    public ResponseEntity<Resources<ListLayoutResource>>retrieveListLayouts(Principal principal){
+    public ResponseEntity<Resources<ListLayoutListResource>> retrieveListLayouts(HttpServletRequest request, Principal principal) {
         List<ListLayoutResource> listLayoutList = listLayoutService
                 .getListLayouts()
-                .stream().map(ll->new ListLayoutResource(ll, null))
+                .stream()
+                .map(ll -> ModelMapper.toModel(ll, null))
+                .map(ListLayoutResource::new)
                 .collect(Collectors.toList());
-
-        Resources<ListLayoutResource> listLayoutResourceList = new Resources<>(listLayoutList);
-        return new ResponseEntity(listLayoutResourceList, HttpStatus.OK);
+        ListLayoutListResource resource = new ListLayoutListResource(listLayoutList);
+        resource.fillLinks(request, resource);
+        return new ResponseEntity(resource, HttpStatus.OK);
 
     }
 
-    public ResponseEntity<Object> createListLayout(Principal principal, @RequestBody ListLayout input) {
+    public ResponseEntity<Object> createListLayout(HttpServletRequest request, Principal principal, @RequestBody ListLayout input) {
         ListLayoutEntity listLayoutEntity = ModelMapper.toEntity(input);
 
         ListLayoutEntity result = listLayoutService.createListLayout(listLayoutEntity);
 
         if (result != null) {
-            Link forOneListLayout = new ListLayoutResource(result, null).getLink("self");
-            return ResponseEntity.created(URI.create(forOneListLayout.getHref())).build();
+            ListLayout model = ModelMapper.toModel(listLayoutEntity, null);
+            ListLayoutResource resource = new ListLayoutResource(model);
+
+            return ResponseEntity.created(resource.selfLink(request, resource)).build();
         }
         return ResponseEntity.badRequest().build();
     }
 
-    public ResponseEntity<ListLayout> readListLayout(Principal principal, @PathVariable("listLayoutId") Long listLayoutId) {
+    public ResponseEntity<ListLayout> readListLayout(HttpServletRequest request, Principal principal, @PathVariable("listLayoutId") Long listLayoutId) {
         ListLayoutEntity listLayout = this.listLayoutService
                 .getListLayoutById(listLayoutId);
 
         if (listLayout != null) {
-            List<Category> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
-            ListLayoutResource listLayoutResource = new ListLayoutResource(listLayout, structuredCategories);
+            List<ListShopCategory> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
+            ListLayout layoutModel = ModelMapper.toModel(listLayout, structuredCategories);
+            ListLayoutResource rescource = new ListLayoutResource(layoutModel);
+            rescource.fillLinks(request, rescource);
 
-            return new ResponseEntity(listLayoutResource, HttpStatus.OK);
+            return new ResponseEntity(rescource, HttpStatus.OK);
         }
         return ResponseEntity.notFound().build();
     }
 
 
-    public ResponseEntity<ListLayout> readDefaultListLayout() {
+    public ResponseEntity<ListLayout> readDefaultListLayout(HttpServletRequest request) {
         ListLayoutEntity listLayout = this.listLayoutService
                 .getDefaultListLayout();
 
         if (listLayout != null) {
-            List<Category> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
-            ListLayoutResource listLayoutResource = new ListLayoutResource(listLayout, structuredCategories);
+            List<ListShopCategory> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
+            ListLayout layoutModel = ModelMapper.toModel(listLayout, structuredCategories);
+            ListLayoutResource listLayoutResource = new ListLayoutResource(layoutModel);
+            listLayoutResource.fillLinks(request, listLayoutResource);
 
             return new ResponseEntity(listLayoutResource, HttpStatus.OK);
         }
@@ -103,7 +111,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
     }
 
-    public ResponseEntity<Object> addCategoryToListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategory input) {
+    public ResponseEntity<Object> addCategoryToListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategoryPojo input) {
         ListLayoutCategoryEntity entity = ModelMapper.toEntity(input);
         this.listLayoutService.addCategoryToListLayout(listLayoutId, entity);
 
@@ -121,7 +129,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> updateCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategory layoutCategory) {
+    public ResponseEntity<Object> updateCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategoryPojo layoutCategory) {
         ListLayoutCategoryEntity listLayoutCategory = ModelMapper.toEntity(layoutCategory);
         ListLayoutCategoryEntity result = this.listLayoutService.updateListLayoutCategory(listLayoutId, listLayoutCategory);
 

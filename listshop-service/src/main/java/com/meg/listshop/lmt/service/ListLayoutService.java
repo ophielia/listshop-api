@@ -1,11 +1,11 @@
 package com.meg.listshop.lmt.service;
 
-import com.meg.listshop.lmt.api.model.Category;
 import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.data.entity.ItemEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Date;
@@ -49,9 +49,9 @@ public interface ListLayoutService {
 
     List<ListLayoutCategoryEntity> getListCategoriesForLayout(Long layoutId);
 
-    List<Category> getStructuredCategories(ListLayoutEntity listLayout);
+    List<ListShopCategory> getStructuredCategories(ListLayoutEntity listLayout);
 
-    void structureCategories(Map<Long, Category> filledCategories, Long listLayoutId, boolean pruneSubcategories);
+    void structureCategories(Map<Long, ListShopCategory> filledCategories, Long listLayoutId, boolean pruneSubcategories);
 
     void addCategoryToParent(Long categoryId, Long parentId) throws ListLayoutException;
 

@@ -3,6 +3,7 @@ package com.meg.listshop.lmt.api.model;
 
 import com.meg.listshop.lmt.data.entity.ItemEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
+import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import org.springframework.hateoas.ResourceSupport;
 
 public class ListItemRefreshResource extends ResourceSupport {
@@ -11,7 +12,7 @@ public class ListItemRefreshResource extends ResourceSupport {
 
     public ListItemRefreshResource(ItemEntity itemEntity, ListLayoutCategoryEntity categoryEntity) {
         Item item = ModelMapper.toModel(itemEntity);
-        Category category = ModelMapper.toModel(categoryEntity);
+        ListShopCategory category = ModelMapper.toModel(categoryEntity);
 
         this.listItemRefresh = new ListItemRefresh(item, category);
     }

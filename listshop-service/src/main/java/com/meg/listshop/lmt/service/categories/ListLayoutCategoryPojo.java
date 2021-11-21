@@ -1,7 +1,8 @@
-package com.meg.listshop.lmt.api.model;
+package com.meg.listshop.lmt.service.categories;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meg.listshop.lmt.api.model.Tag;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * Created by margaretmartin on 29/10/2017.
  */
-public class ListLayoutCategory extends AbstractCategory {
+public class ListLayoutCategoryPojo extends AbstractCategory {
 
     @JsonProperty("layout_id")
     private Long layoutId;
@@ -19,11 +20,11 @@ public class ListLayoutCategory extends AbstractCategory {
     @JsonProperty("tags")
     private List<Tag> tags = new ArrayList<>();
 
-    public ListLayoutCategory() {
+    public ListLayoutCategoryPojo() {
         // empty constructor for jpa
     }
 
-    public ListLayoutCategory(Long id) {
+    public ListLayoutCategoryPojo(Long id) {
         super(id);
     }
 
@@ -40,7 +41,7 @@ public class ListLayoutCategory extends AbstractCategory {
         return tags;
     }
 
-    public Category tags(List<Tag> tags) {
+    public ListShopCategory tags(List<Tag> tags) {
         this.tags = tags;
         return this;
     }
@@ -49,7 +50,7 @@ public class ListLayoutCategory extends AbstractCategory {
         return layoutId;
     }
 
-    public Category layoutId(Long layoutId) {
+    public ListShopCategory layoutId(Long layoutId) {
         this.layoutId = layoutId;
         return this;
     }
@@ -60,7 +61,7 @@ public class ListLayoutCategory extends AbstractCategory {
     }
 
     @JsonIgnore
-    public Category tagEntities(List<TagEntity> tagEntities) {
+    public ListShopCategory tagEntities(List<TagEntity> tagEntities) {
         this.tagEntities = tagEntities;
         return this;
     }

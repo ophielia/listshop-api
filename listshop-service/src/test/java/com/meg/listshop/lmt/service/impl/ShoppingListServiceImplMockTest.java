@@ -10,6 +10,7 @@ import com.meg.listshop.lmt.data.repository.ItemChangeRepository;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.service.*;
+import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Assert;
@@ -631,7 +632,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(listTagStatisticService.findFrequentIdsForList(listId, userId)).thenReturn(new ArrayList<>());
 
         // test call
-        List<Category> resultList = shoppingListService.categorizeList(shoppingList);
+        List<ListShopCategory> resultList = shoppingListService.categorizeList(shoppingList);
 
         Mockito.verify(listLayoutService, times(1)).getListCategoriesForLayout(layoutId);
         //Mockito.verify(listLayoutService, times(1));
