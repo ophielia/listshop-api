@@ -275,8 +275,8 @@ public class ListLayoutRestControllerTest {
     @Test
     @WithMockUser
     public void testRetrieveListLayouts() throws Exception {
-        MvcResult result = mockMvc.perform(get("/listlayout")
-                .with(user(userDetails)))
+        mockMvc.perform(get("/listlayout")
+                        .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentType(contentType))

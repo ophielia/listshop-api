@@ -5,11 +5,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AbstractListShopResource implements ListShopResource {
+
+    private boolean reflectRequest;
 
     List<String> links = new ArrayList<>();
 
@@ -29,9 +32,12 @@ public class AbstractListShopResource implements ListShopResource {
     public URI selfLink(HttpServletRequest request, ListShopModel model) {
         String returnPath = "blank";
         try {
-//MM clean up here
             URL url = new URL(request.getRequestURL().toString());
 
+            if (model.reflectRequest()) {
+
+                return url.toURI();
+            }
             UriComponentsBuilder builder = UriComponentsBuilder.newInstance()
                     .scheme(url.getProtocol())
                     .host(url.getHost())
@@ -45,10 +51,18 @@ public class AbstractListShopResource implements ListShopResource {
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
 
         return URI.create("");
     }
 
+    public boolean reflectRequest() {
+        return reflectRequest;
+    }
 
+    public void setReflectRequest(boolean reflectRequest) {
+        this.reflectRequest = reflectRequest;
+    }
 }

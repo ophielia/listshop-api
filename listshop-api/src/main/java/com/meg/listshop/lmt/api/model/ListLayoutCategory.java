@@ -17,6 +17,9 @@ public class ListLayoutCategory {
     @JsonProperty("subcategories")
     private List<ListLayoutCategory> subCategories = new ArrayList<>();
 
+    @JsonProperty("tags")
+    private List<Tag> tags;
+
     public ListLayoutCategory() {
     }
 
@@ -54,5 +57,9 @@ public class ListLayoutCategory {
 
     public void setSubCategories(List<ListLayoutCategory> subCategories) {
         this.subCategories = subCategories;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }

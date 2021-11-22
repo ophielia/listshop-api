@@ -5,6 +5,7 @@ import com.meg.listshop.lmt.data.entity.ItemEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -49,7 +50,7 @@ public interface ListLayoutService {
 
     List<ListLayoutCategoryEntity> getListCategoriesForLayout(Long layoutId);
 
-    List<ListShopCategory> getStructuredCategories(ListLayoutEntity listLayout);
+    List<ListLayoutCategoryPojo> getStructuredCategories(ListLayoutEntity listLayout);
 
     void structureCategories(Map<Long, ListShopCategory> filledCategories, Long listLayoutId, boolean pruneSubcategories);
 

@@ -4,17 +4,12 @@ import com.meg.listshop.lmt.api.controller.ListLayoutRestControllerApi;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.ListLayoutException;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
-import com.meg.listshop.lmt.service.categories.ListShopCategory;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -26,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +40,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         this.listLayoutService = listLayoutService;
     }
 
-    public ResponseEntity<Resources<ListLayoutListResource>> retrieveListLayouts(HttpServletRequest request, Principal principal) {
+    public ResponseEntity<ListLayoutListResource> retrieveListLayouts(HttpServletRequest request, Principal principal) {
         List<ListLayoutResource> listLayoutList = listLayoutService
                 .getListLayouts()
                 .stream()
@@ -78,7 +72,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
                 .getListLayoutById(listLayoutId);
 
         if (listLayout != null) {
-            List<ListShopCategory> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
+            List<ListLayoutCategoryPojo> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
             ListLayout layoutModel = ModelMapper.toModel(listLayout, structuredCategories);
             ListLayoutResource rescource = new ListLayoutResource(layoutModel);
             rescource.fillLinks(request, rescource);
@@ -94,7 +88,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
                 .getDefaultListLayout();
 
         if (listLayout != null) {
-            List<ListShopCategory> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
+            List<ListLayoutCategoryPojo> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
             ListLayout layoutModel = ModelMapper.toModel(listLayout, structuredCategories);
             ListLayoutResource listLayoutResource = new ListLayoutResource(layoutModel);
             listLayoutResource.fillLinks(request, listLayoutResource);
@@ -111,7 +105,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
     }
 
-    public ResponseEntity<Object> addCategoryToListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategoryPojo input) {
+    public ResponseEntity<Object> addCategoryToListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategory input) {
         ListLayoutCategoryEntity entity = ModelMapper.toEntity(input);
         this.listLayoutService.addCategoryToListLayout(listLayoutId, entity);
 
@@ -129,7 +123,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> updateCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategoryPojo layoutCategory) {
+    public ResponseEntity<Object> updateCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategory layoutCategory) {
         ListLayoutCategoryEntity listLayoutCategory = ModelMapper.toEntity(layoutCategory);
         ListLayoutCategoryEntity result = this.listLayoutService.updateListLayoutCategory(listLayoutId, listLayoutCategory);
 
@@ -140,15 +134,16 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
     }
 
     public ResponseEntity<Object> getUncategorizedTags(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId) {
-        List<TagResource> tagResourceList = this.listLayoutService.getUncategorizedTagsForList(listLayoutId)
+        List<Tag> tagList = this.listLayoutService.getUncategorizedTagsForList(listLayoutId)
                 .stream()
-                .map(te -> ModelMapper.toModel(te))
-                .map(tm -> new TagResource(tm))
+                .map(ModelMapper::toModel)
                 .collect(Collectors.toList());
 
-        tagResourceList.forEach(tr -> tr.fillLinks(request, tr));
+        TagListResource resource = new TagListResource(tagList);
+        resource.setReflectRequest(true);
+        resource.fillLinks(request, resource);
 
-        return new ResponseEntity(tagResourceList, HttpStatus.OK);
+        return new ResponseEntity(resource, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> getTagsForCategory(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) {
@@ -223,21 +218,6 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
-    @Override
-    public ResponseEntity<List<CategoryItemRefresh>> retrieveRefreshedTagToCategoryList(Principal principal, @PathVariable Long listLayoutId,
-                                                                                        @RequestParam(value = "after") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date after) {
-        List<Pair<TagEntity, ListLayoutCategoryEntity>> categoryChanged = this.listLayoutService.getTagCategoryChanges(listLayoutId, after);
-
-
-        List<CategoryItemRefresh> refreshed = new ArrayList<>();
-
-        for (Pair<TagEntity, ListLayoutCategoryEntity> change : categoryChanged) {
-            CategoryItemRefresh refresh = new CategoryItemRefresh(change.getKey(), change.getValue());
-                refreshed.add(refresh);
-        }
-
-        return new ResponseEntity(refreshed, HttpStatus.OK);
-    }
 
 
     private List<Long> commaDelimitedToList(String commaSeparatedIds) {

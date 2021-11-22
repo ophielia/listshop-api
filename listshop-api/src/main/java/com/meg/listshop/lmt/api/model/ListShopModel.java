@@ -6,4 +6,5 @@ public interface ListShopModel {
 
     String getResourceId();
 
+    boolean reflectRequest();
 }

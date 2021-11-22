@@ -307,7 +307,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     }
 
     @Override
-    public List<ListShopCategory> getStructuredCategories(ListLayoutEntity listLayout) {
+    public List<ListLayoutCategoryPojo> getStructuredCategories(ListLayoutEntity listLayout) {
         if (listLayout.getCategories() == null || listLayout.getCategories().isEmpty()) {
             return new ArrayList<>();
         }
@@ -326,7 +326,11 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
         // structure subcategories
         structureCategories(allCategories, listLayout.getId(), false);
-        List<ListShopCategory> mainCategorySort = allCategories.values().stream().sorted(Comparator.comparing(ListShopCategory::getDisplayOrder)).collect(Collectors.toList());
+        List<ListLayoutCategoryPojo> mainCategorySort = allCategories.values()
+                .stream()
+                .map(r -> (ListLayoutCategoryPojo) r)
+                .sorted(Comparator.comparing(ListShopCategory::getDisplayOrder))
+                .collect(Collectors.toList());
         return mainCategorySort;
     }
 

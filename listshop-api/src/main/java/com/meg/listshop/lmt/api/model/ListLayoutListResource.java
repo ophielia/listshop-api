@@ -25,7 +25,7 @@ public class ListLayoutListResource extends AbstractListShopResource implements 
     @Override
     @JsonIgnore()
     public String getRootPath() {
-        return "tag";
+        return "listlayout";
     }
 
     @Override
