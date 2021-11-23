@@ -3,12 +3,12 @@ package com.meg.listshop.lmt.api.controller;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.api.model.MealPlan;
-import com.meg.listshop.lmt.api.model.MealPlanResource;
+import com.meg.listshop.lmt.api.model.MealPlanListResource;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfoResource;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 /**
@@ -22,7 +22,7 @@ public interface MealPlanRestControllerApi {
 
 
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<CollectionModel<MealPlanResource>> retrieveMealPlans(Principal principal) throws ObjectNotFoundException, ObjectNotYoursException;
+    ResponseEntity<MealPlanListResource> retrieveMealPlans(HttpServletRequest request, Principal principal) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createMealPlan(Principal principal, @RequestBody MealPlan input);

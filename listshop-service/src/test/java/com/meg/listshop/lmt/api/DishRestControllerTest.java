@@ -13,10 +13,7 @@ import com.meg.listshop.lmt.model.EmbeddedDishResourceList;
 import com.meg.listshop.lmt.model.ResultDishResource;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,7 +33,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -69,8 +65,7 @@ public class DishRestControllerTest {
     public static final Comparator<ResultDishResource> CREATEDON = (ResultDishResource o1, ResultDishResource o2) -> o1.getDish().getId().compareTo(o2.getDish().getId());
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
+            MediaType.APPLICATION_JSON.getSubtype());
     private MockMvc mockMvc;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private UserDetails userDetails;
@@ -236,6 +231,7 @@ public class DishRestControllerTest {
 
     @Test
     @WithMockUser
+    @Ignore //MM to reinstate when migrating to api
     public void testFindDishes() throws Exception {
         List<Long> excludedTags = Arrays.asList(TestConstants.TAG_3_ID);
         List<Long> includedTags = Arrays.asList(TestConstants.TAG_PASTA);

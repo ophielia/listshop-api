@@ -31,7 +31,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -60,8 +59,7 @@ public class TagRestControllerTest {
     private
     ObjectMapper objectMapper;
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
+            MediaType.APPLICATION_JSON.getSubtype());
 
     private MockMvc mockMvc;
     @Autowired

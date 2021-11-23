@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.api.web.controller;
 
 import com.google.common.base.Enums;
+import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.ShoppingListRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
@@ -74,10 +75,12 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         }
         if (result != null) {
             Optional<Link> oneList = new ShoppingListResource(result, null).getLink("self");
-            return ResponseEntity.created(URI.create(oneList.get().getHref())).build();
+            String link = StringTools.safeLink(oneList);
+            return ResponseEntity.created(URI.create(link)).build();
         }
         return ResponseEntity.badRequest().build();
     }
+
 
     @Override
     public ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest) {
@@ -135,7 +138,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         ShoppingListEntity result = shoppingListService.updateList(principal.getName(), listId, updateFrom);
         if (result != null) {
             Optional<Link> oneList = new ShoppingListResource(result, null).getLink("self");
-            return ResponseEntity.ok(URI.create(oneList.get().getHref()));
+            String linkString = StringTools.safeLink(oneList);
+            return ResponseEntity.ok(URI.create(linkString));
         }
         return ResponseEntity.badRequest().build();
     }
@@ -260,7 +264,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         ShoppingListEntity shoppingListEntity = this.shoppingListService.generateListFromMealPlan(principal.getName(), mealPlanId);
         if (shoppingListEntity != null) {
             Optional<Link> listLink = new ShoppingListResource(shoppingListEntity, null).getLink("self");
-            return ResponseEntity.created(URI.create(listLink.get().getHref())).build();
+            String link = StringTools.safeLink(listLink);
+            return ResponseEntity.created(URI.create(link)).build();
 
         }
         return ResponseEntity.noContent().build();

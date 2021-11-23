@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.web.controller;
 
+import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.ProposalRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ProposalProcessingException;
 import com.meg.listshop.lmt.api.model.ProposalResource;
@@ -39,7 +40,8 @@ public class ProposalRestController implements ProposalRestControllerApi {
         ProposalEntity proposalEntity = this.targetProposalGenerator.generateProposal(principal.getName(), targetId);
         if (proposalEntity != null) {
             Optional<Link> forOneProposal = new ProposalResource(proposalEntity).getLink("self");
-            return ResponseEntity.created(URI.create(forOneProposal.get().getHref())).build();
+            String link = StringTools.safeLink(forOneProposal);
+            return ResponseEntity.created(URI.create(link)).build();
         }
 
         return null;

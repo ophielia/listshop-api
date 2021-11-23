@@ -3,6 +3,7 @@ package com.meg.listshop.lmt.api.web.controller;
 import com.google.common.base.Enums;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.DishRestControllerApi;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
@@ -131,7 +132,8 @@ public class DishRestController implements DishRestControllerApi {
             result = dishService.getDishForUserById(principal.getName(), result.getId());
         }
         Optional<Link> forOneDish = new DishResource(principal, result).getLink("self");
-        return ResponseEntity.created(URI.create(forOneDish.get().getHref())).build();
+        String link = StringTools.safeLink(forOneDish);
+        return ResponseEntity.created(URI.create(link)).build();
     }
 
 

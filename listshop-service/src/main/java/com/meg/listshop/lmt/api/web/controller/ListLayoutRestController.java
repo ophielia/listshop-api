@@ -32,7 +32,6 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
     private static final Logger logger = LogManager.getLogger(ListLayoutRestController.class);
 
-
     private ListLayoutService listLayoutService;
 
     @Autowired

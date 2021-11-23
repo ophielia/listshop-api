@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.web.controller;
 
+import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.TargetRestControllerApi;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.Target;
@@ -55,7 +56,8 @@ public class TargetRestController implements TargetRestControllerApi {
 
         if (result != null) {
             Optional<Link> forOneTarget = new TargetResource(result).getLink("self");
-            return ResponseEntity.created(URI.create(forOneTarget.get().getHref())).build();
+            String link = StringTools.safeLink(forOneTarget);
+            return ResponseEntity.created(URI.create(link)).build();
         }
         return ResponseEntity.badRequest().build();
 
@@ -76,7 +78,8 @@ public class TargetRestController implements TargetRestControllerApi {
 
         if (result != null) {
             Optional<Link> forOneTarget = new TargetResource(result).getLink("self");
-            return ResponseEntity.created(URI.create(forOneTarget.get().getHref())).build();
+            String link = StringTools.safeLink(forOneTarget);
+            return ResponseEntity.created(URI.create(link)).build();
         }
         return ResponseEntity.badRequest().build();
     }
@@ -117,7 +120,8 @@ public class TargetRestController implements TargetRestControllerApi {
 
         if (result != null) {
             Optional<Link> forOneTarget = new TargetResource(result).getLink("self");
-            return ResponseEntity.created(URI.create(forOneTarget.get().getHref())).build();
+            String link = StringTools.safeLink(forOneTarget);
+            return ResponseEntity.created(URI.create(link)).build();
         }
         return ResponseEntity.badRequest().build();
 
