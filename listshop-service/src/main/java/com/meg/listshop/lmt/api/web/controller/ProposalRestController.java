@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.security.Principal;
+import java.util.Optional;
 
 /**
  * Created by margaretmartin on 20/10/2017.
@@ -37,8 +38,8 @@ public class ProposalRestController implements ProposalRestControllerApi {
     public ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId) throws ProposalProcessingException {
         ProposalEntity proposalEntity = this.targetProposalGenerator.generateProposal(principal.getName(), targetId);
         if (proposalEntity != null) {
-            Link forOneProposal = new ProposalResource(proposalEntity).getLink("self");
-            return ResponseEntity.created(URI.create(forOneProposal.getHref())).build();
+            Optional<Link> forOneProposal = new ProposalResource(proposalEntity).getLink("self");
+            return ResponseEntity.created(URI.create(forOneProposal.get().getHref())).build();
         }
 
         return null;

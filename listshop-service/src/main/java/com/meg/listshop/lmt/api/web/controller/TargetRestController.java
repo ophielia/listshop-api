@@ -9,8 +9,8 @@ import com.meg.listshop.lmt.data.entity.TargetEntity;
 import com.meg.listshop.lmt.data.entity.TargetSlotEntity;
 import com.meg.listshop.lmt.service.TargetService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,6 +23,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -34,13 +35,13 @@ public class TargetRestController implements TargetRestControllerApi {
     TargetService targetService;
 
     @Override
-    public ResponseEntity<Resources<TargetResource>> retrieveTargets(Principal principal) {
+    public ResponseEntity<CollectionModel<TargetResource>> retrieveTargets(Principal principal) {
         List<TargetResource> targetList = targetService
                 .getTargetsForUserName(principal.getName(), false)
                 .stream().map(TargetResource::new)
                 .collect(Collectors.toList());
 
-        Resources<TargetResource> targetResourceList = new Resources<>(targetList);
+        CollectionModel<TargetResource> targetResourceList = new CollectionModel<>(targetList);
         return new ResponseEntity(targetResourceList, HttpStatus.OK);
 
     }
@@ -53,8 +54,8 @@ public class TargetRestController implements TargetRestControllerApi {
         TargetEntity result = targetService.createTarget(principal.getName(), targetEntity);
 
         if (result != null) {
-            Link forOneTarget = new TargetResource(result).getLink("self");
-            return ResponseEntity.created(URI.create(forOneTarget.getHref())).build();
+            Optional<Link> forOneTarget = new TargetResource(result).getLink("self");
+            return ResponseEntity.created(URI.create(forOneTarget.get().getHref())).build();
         }
         return ResponseEntity.badRequest().build();
 
@@ -74,8 +75,8 @@ public class TargetRestController implements TargetRestControllerApi {
         }
 
         if (result != null) {
-            Link forOneTarget = new TargetResource(result).getLink("self");
-            return ResponseEntity.created(URI.create(forOneTarget.getHref())).build();
+            Optional<Link> forOneTarget = new TargetResource(result).getLink("self");
+            return ResponseEntity.created(URI.create(forOneTarget.get().getHref())).build();
         }
         return ResponseEntity.badRequest().build();
     }
@@ -115,8 +116,8 @@ public class TargetRestController implements TargetRestControllerApi {
         TargetEntity result = targetService.updateTarget(principal.getName(), targetEntity);
 
         if (result != null) {
-            Link forOneTarget = new TargetResource(result).getLink("self");
-            return ResponseEntity.created(URI.create(forOneTarget.getHref())).build();
+            Optional<Link> forOneTarget = new TargetResource(result).getLink("self");
+            return ResponseEntity.created(URI.create(forOneTarget.get().getHref())).build();
         }
         return ResponseEntity.badRequest().build();
 

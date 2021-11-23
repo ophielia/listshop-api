@@ -2,12 +2,12 @@ package com.meg.listshop.lmt.api.model;
 
 
 import com.meg.listshop.lmt.data.entity.ListTagStatistic;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatisticListResource extends ResourceSupport {
+public class StatisticListResource extends RepresentationModel {
 
     private final List<Statistic> statistics;
 

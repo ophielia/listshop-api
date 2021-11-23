@@ -1,7 +1,7 @@
 package com.meg.listshop.lmt.api.controller;
 
 import com.meg.listshop.lmt.api.model.*;
-import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +21,7 @@ public interface ShoppingListRestControllerApi {
 
 
     @GetMapping(produces = "application/json")
-    ResponseEntity<Resources<ShoppingListResource>> retrieveLists(Principal principal);
+    ResponseEntity<CollectionModel<ShoppingListResource>> retrieveLists(Principal principal);
 
     @PostMapping(produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties);

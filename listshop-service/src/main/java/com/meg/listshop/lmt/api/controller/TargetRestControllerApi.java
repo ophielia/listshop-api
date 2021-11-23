@@ -3,7 +3,7 @@ package com.meg.listshop.lmt.api.controller;
 import com.meg.listshop.lmt.api.model.Target;
 import com.meg.listshop.lmt.api.model.TargetResource;
 import com.meg.listshop.lmt.api.model.TargetSlot;
-import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +20,7 @@ public interface TargetRestControllerApi {
 
 
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<Resources<TargetResource>> retrieveTargets(Principal principal);
+    ResponseEntity<CollectionModel<TargetResource>> retrieveTargets(Principal principal);
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createTarget(Principal principal, @RequestBody Target input);

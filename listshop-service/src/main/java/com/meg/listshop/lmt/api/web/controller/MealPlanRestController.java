@@ -11,8 +11,8 @@ import com.meg.listshop.lmt.service.MealPlanService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -46,13 +47,13 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Resources<MealPlanResource>> retrieveMealPlans(Principal principal) {
+    public ResponseEntity<CollectionModel<MealPlanResource>> retrieveMealPlans(Principal principal) {
         List<MealPlanResource> mealPlanList = mealPlanService
                 .getMealPlansForUserName(principal.getName())
                 .stream().map(MealPlanResource::new)
                 .collect(Collectors.toList());
 
-        Resources<MealPlanResource> mealPlanResourceList = new Resources<>(mealPlanList);
+        CollectionModel<MealPlanResource> mealPlanResourceList = new CollectionModel<>(mealPlanList);
         return new ResponseEntity(mealPlanResourceList, HttpStatus.OK);
 
     }
@@ -65,10 +66,10 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
 
         if (result != null) {
             MealPlanResource mealPlanResource = new MealPlanResource(result);
-            Link forOneMealPlan = mealPlanResource.getLink("self");
+            Optional<Link> forOneMealPlan = mealPlanResource.getLink("self");
             HttpHeaders headers = new HttpHeaders();
             try {
-                headers.setLocation(new URI(forOneMealPlan.getHref()));
+                headers.setLocation(new URI(forOneMealPlan.get().getHref()));
             } catch (URISyntaxException e) {
                 logger.error("Can't parse meal plan link");
                 return ResponseEntity.badRequest().build();
@@ -86,8 +87,8 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity result = mealPlanService.createMealPlanFromProposal(principal.getName(), proposalId);
 
         if (result != null) {
-            Link forOneMealPlan = new MealPlanResource(result).getLink("self");
-            return ResponseEntity.created(URI.create(forOneMealPlan.getHref())).build();
+            Optional<Link> forOneMealPlan = new MealPlanResource(result).getLink("self");
+            return ResponseEntity.created(URI.create(forOneMealPlan.get().getHref())).build();
         }
         return ResponseEntity.badRequest().build();
     }

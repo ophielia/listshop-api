@@ -2,9 +2,9 @@ package com.meg.listshop.lmt.model;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
-public class DishResourceList extends ResourceSupport {
+public class DishResourceList extends RepresentationModel {
 
     @JsonProperty("dishResourceList")
     private ResultDishResource[] dishList = {};

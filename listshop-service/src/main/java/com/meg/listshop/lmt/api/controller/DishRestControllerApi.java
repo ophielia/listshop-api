@@ -4,7 +4,7 @@ import com.meg.listshop.lmt.api.model.Dish;
 import com.meg.listshop.lmt.api.model.DishResource;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfoResource;
 import com.meg.listshop.lmt.api.model.TagResource;
-import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +21,13 @@ import java.security.Principal;
 public interface DishRestControllerApi {
 
 
-    @GetMapping( produces = "application/json")
-    ResponseEntity<Resources<DishResource>> retrieveDishes(Principal principal,
-                                                           @RequestParam(value = "searchFragment", required = false) String searchFragment,
-                                                           @RequestParam(value = "includedTags", required = false) String includedTags,
-                                                           @RequestParam(value = "excludedTags", required = false) String excludedTags,
-                                                           @RequestParam(value = "sortKey", required = false) String sortKey,
-                                                           @RequestParam(value = "sortDirection", required = false) String sortDirection
+    @GetMapping(produces = "application/json")
+    ResponseEntity<CollectionModel<DishResource>> retrieveDishes(Principal principal,
+                                                                 @RequestParam(value = "searchFragment", required = false) String searchFragment,
+                                                                 @RequestParam(value = "includedTags", required = false) String includedTags,
+                                                                 @RequestParam(value = "excludedTags", required = false) String excludedTags,
+                                                                 @RequestParam(value = "sortKey", required = false) String sortKey,
+                                                                 @RequestParam(value = "sortDirection", required = false) String sortDirection
     );
 
     @PostMapping(produces = "application/json", consumes = "application/json")
@@ -40,7 +40,7 @@ public interface DishRestControllerApi {
     ResponseEntity<Dish> readDish(Principal principal, @PathVariable("dishId") Long dishId);
 
     @GetMapping(value = "/{dishId}/tag", produces = "application/json")
-    ResponseEntity<Resources<TagResource>> getTagsByDishId(HttpServletRequest request, Principal principal, @PathVariable("dishId") Long dishId);
+    ResponseEntity<CollectionModel<TagResource>> getTagsByDishId(HttpServletRequest request, Principal principal, @PathVariable("dishId") Long dishId);
 
     @PostMapping(value = "/{dishId}/tag/{tagId}", produces = "application/json")
     ResponseEntity<Object> addTagToDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId);

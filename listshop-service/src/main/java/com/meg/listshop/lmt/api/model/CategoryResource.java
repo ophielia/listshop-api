@@ -3,9 +3,9 @@ package com.meg.listshop.lmt.api.model;
 
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.service.categories.ItemCategoryPojo;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
-public class CategoryResource extends ResourceSupport {
+public class CategoryResource extends RepresentationModel {
 
     private final ItemCategoryPojo category;
 

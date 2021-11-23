@@ -15,7 +15,8 @@ import com.meg.listshop.lmt.service.tag.TagService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -54,12 +55,12 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Resources<DishResource>> retrieveDishes(Principal principal,
-                                                                  @RequestParam(value = "searchFragment", required = false) String searchFragment,
-                                                                  @RequestParam(value = "includedTags", required = false) String includedTags,
-                                                                  @RequestParam(value = "excludedTags", required = false) String excludedTags,
-                                                                  @RequestParam(value = "sortKey", required = false) String sortKey,
-                                                                  @RequestParam(value = "sortDirection", required = false) String sortDirection
+    public ResponseEntity<CollectionModel<DishResource>> retrieveDishes(Principal principal,
+                                                                        @RequestParam(value = "searchFragment", required = false) String searchFragment,
+                                                                        @RequestParam(value = "includedTags", required = false) String includedTags,
+                                                                        @RequestParam(value = "excludedTags", required = false) String excludedTags,
+                                                                        @RequestParam(value = "sortKey", required = false) String sortKey,
+                                                                        @RequestParam(value = "sortDirection", required = false) String sortDirection
     ) {
         logger.info("Entered retrieveDishes includedTags: [%s], excludedTags: [%s], sortKey: [%s], sortDirection: [%s]", includedTags, excludedTags, sortKey, sortDirection);
         List<DishResource> dishList;
@@ -70,7 +71,7 @@ public class DishRestController implements DishRestControllerApi {
             dishList = findDishes(principal, includedTags, excludedTags, searchFragment, sortKey, sortDirection);
         }
 
-        Resources<DishResource> dishResourceList = new Resources<>(dishList);
+        CollectionModel<DishResource> dishResourceList = new CollectionModel<>(dishList);
         return ResponseEntity.ok(dishResourceList);
     }
 
@@ -129,8 +130,8 @@ public class DishRestController implements DishRestControllerApi {
             tagService.addTagsToDish(principal.getName(), result.getId(), tagIds);
             result = dishService.getDishForUserById(principal.getName(), result.getId());
         }
-        var forOneDish = new DishResource(principal, result).getLink("self");
-        return ResponseEntity.created(URI.create(forOneDish.getHref())).build();
+        Optional<Link> forOneDish = new DishResource(principal, result).getLink("self");
+        return ResponseEntity.created(URI.create(forOneDish.get().getHref())).build();
     }
 
 
@@ -160,7 +161,7 @@ public class DishRestController implements DishRestControllerApi {
         return new ResponseEntity(dishResource, HttpStatus.OK);
     }
 
-    public ResponseEntity<Resources<TagResource>> getTagsByDishId(HttpServletRequest request, Principal principal, @PathVariable Long dishId) {
+    public ResponseEntity<CollectionModel<TagResource>> getTagsByDishId(HttpServletRequest request, Principal principal, @PathVariable Long dishId) {
 
         List<TagResource> tagList = tagService
                 .getTagsForDish(principal.getName(), dishId)

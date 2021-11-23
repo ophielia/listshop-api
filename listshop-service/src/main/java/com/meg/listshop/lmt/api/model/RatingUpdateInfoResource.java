@@ -1,9 +1,9 @@
 package com.meg.listshop.lmt.api.model;
 
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
-public class RatingUpdateInfoResource extends ResourceSupport {
+public class RatingUpdateInfoResource extends RepresentationModel {
 
     private final RatingUpdateInfo ratingUpdateInfo;
 

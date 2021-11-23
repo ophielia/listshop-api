@@ -1,19 +1,16 @@
 package com.meg.listshop.lmt.api.model;
 
 
-import com.meg.listshop.lmt.api.controller.DishRestControllerApi;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
-public class DishResource extends ResourceSupport {
+public class DishResource extends RepresentationModel {
 
     private final Dish dish;
 
@@ -21,9 +18,9 @@ public class DishResource extends ResourceSupport {
         this.dish = ModelMapper.toModel(dishEntity);
 
         Long userId = dishEntity.getUserId();
-        this.add(linkTo(DishRestControllerApi.class, userId).withRel("dish"));
-        this.add(linkTo(methodOn(DishRestControllerApi.class, userId)
-                .readDish(principal, dish.getId())).withSelfRel());
+        //   this.add(linkTo(DishRestControllerApi.class, userId).withRel("dish"));
+        //  this.add(linkTo(methodOn(DishRestControllerApi.class, userId)
+        //.readDish(principal, dish.getId())).withSelfRel());
         // this.add(linkTo(methodOn(DishRestControllerApi.class, userId)
         //       .getTagsByDishId(principal, dish.getId())).withRel("tags"));
     }
@@ -32,9 +29,9 @@ public class DishResource extends ResourceSupport {
         this.dish = ModelMapper.toModel(dishEntity, tags);
 
         Long userId = dishEntity.getUserId();
-        this.add(linkTo(DishRestControllerApi.class, userId).withRel("dish"));
-        this.add(linkTo(methodOn(DishRestControllerApi.class, userId)
-                .readDish(null, dish.getId())).withSelfRel());
+        //    this.add(linkTo(DishRestControllerApi.class, userId).withRel("dish"));
+        //   this.add(linkTo(methodOn(DishRestControllerApi.class, userId)
+        //.readDish(null, dish.getId())).withSelfRel());
         //    this.add(linkTo(methodOn(DishRestControllerApi.class, userId)
         //          .getTagsByDishId(null,dish.getId())).withRel("tags"));
     }

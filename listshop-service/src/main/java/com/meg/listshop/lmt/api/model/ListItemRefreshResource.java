@@ -4,9 +4,9 @@ package com.meg.listshop.lmt.api.model;
 import com.meg.listshop.lmt.data.entity.ItemEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.service.categories.ListShopCategory;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
-public class ListItemRefreshResource extends ResourceSupport {
+public class ListItemRefreshResource extends RepresentationModel {
 
     private final ListItemRefresh listItemRefresh;
 
