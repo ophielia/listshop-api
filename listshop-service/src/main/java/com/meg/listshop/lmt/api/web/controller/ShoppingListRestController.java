@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.api.web.controller;
 
 import com.google.common.base.Enums;
-import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.ShoppingListRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
@@ -17,8 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,12 +24,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -50,20 +47,22 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     @Autowired
     private ListLayoutService listLayoutService;
 
-    public ResponseEntity<CollectionModel<ShoppingListResource>> retrieveLists(Principal principal) {
+    public ResponseEntity<ShoppingListListResource> retrieveLists(HttpServletRequest request, Principal principal) {
         String message = String.format("Retrieving all lists for user [%S]", principal.getName());
         logger.info(message);
-        List<ShoppingListResource> shoppingListRepresentationModel = shoppingListService
+        List<ShoppingList> shoppingListList = shoppingListService
                 .getListsByUsername(principal.getName())
                 .stream()
-                .map(t -> new ShoppingListResource(t, null))
+                .map(t -> ModelMapper.toModel(t, null))
                 .collect(Collectors.toList());
-        CollectionModel<ShoppingListResource> listResourceList = new CollectionModel<>(shoppingListRepresentationModel);
-        return new ResponseEntity(listResourceList, HttpStatus.OK);
+
+        ShoppingListListResource resource = new ShoppingListListResource(shoppingListList);
+        resource.fillLinks(request, resource);
+        return new ResponseEntity(resource, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Object> createList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) {
+    public ResponseEntity<Object> createList(HttpServletRequest request, Principal principal, @RequestBody ListGenerateProperties listGenerateProperties) {
         String message = String.format("Creating list for user [%S]", principal.getName());
         logger.info(message);
 
@@ -74,8 +73,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             logger.error("Exception while creating List.", e);
         }
         if (result != null) {
-            Optional<Link> oneList = new ShoppingListResource(result, null).getLink("self");
-            String link = StringTools.safeLink(oneList);
+            ShoppingListResource resource = new ShoppingListResource(ModelMapper.toModel(result, null));
+            String link = resource.selfLink(request, resource).toString();
             return ResponseEntity.created(URI.create(link)).build();
         }
         return ResponseEntity.badRequest().build();
@@ -132,14 +131,14 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
     @Override
-    public ResponseEntity<Object> updateList(Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList) {
+    public ResponseEntity<Object> updateList(HttpServletRequest request, Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList) {
         ShoppingListEntity updateFrom = ModelMapper.toEntity(shoppingList);
 
         ShoppingListEntity result = shoppingListService.updateList(principal.getName(), listId, updateFrom);
         if (result != null) {
-            Optional<Link> oneList = new ShoppingListResource(result, null).getLink("self");
-            String linkString = StringTools.safeLink(oneList);
-            return ResponseEntity.ok(URI.create(linkString));
+            ShoppingListResource resource = new ShoppingListResource(ModelMapper.toModel(result, null));
+            String link = resource.selfLink(request, resource).toString();
+            return ResponseEntity.ok(URI.create(link));
         }
         return ResponseEntity.badRequest().build();
     }
@@ -166,40 +165,40 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<ShoppingListResource> retrieveMostRecentList(Principal principal) {
+    public ResponseEntity<ShoppingListResource> retrieveMostRecentList(HttpServletRequest request, Principal principal) {
         ShoppingListEntity result = shoppingListService.getMostRecentList(principal.getName());
         if (result == null) {
             throw new ObjectNotFoundException("No lists found for user [" + principal.getName() + "] in retrieveMostRecentList()");
         }
         List<ListShopCategory> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
-        return singleResult(result, categories);
+        return singleResult(request, result, categories);
     }
 
-    public ResponseEntity<ShoppingListResource> retrieveStarterList(Principal principal) {
+    public ResponseEntity<ShoppingListResource> retrieveStarterList(HttpServletRequest request, Principal principal) {
         ShoppingListEntity result = shoppingListService.getStarterList(principal.getName());
         if (result == null) {
             throw new ObjectNotFoundException("No lists found for user [" + principal.getName() + "] in retrieveStarterList()");
         }
         List<ListShopCategory> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
-        return singleResult(result, categories);
+        return singleResult(request, result, categories);
     }
 
     @Override
-    public ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId) {
+    public ResponseEntity<ShoppingListResource> retrieveListById(HttpServletRequest request, Principal principal, @PathVariable("listId") Long listId) {
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
 
         List<ListShopCategory> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
-        return singleResult(result, categories);
+        return singleResult(request, result, categories);
     }
 
 
     @Override
     public ResponseEntity<ShoppingList> deleteList(Principal principal, @PathVariable("listId") Long listId) {
         shoppingListService.deleteList(principal.getName(), listId);
-            return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
 
     }
 
@@ -260,13 +259,12 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
     @Override
-    public ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId) {
+    public ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Principal principal, @PathVariable Long mealPlanId) {
         ShoppingListEntity shoppingListEntity = this.shoppingListService.generateListFromMealPlan(principal.getName(), mealPlanId);
         if (shoppingListEntity != null) {
-            Optional<Link> listLink = new ShoppingListResource(shoppingListEntity, null).getLink("self");
-            String link = StringTools.safeLink(listLink);
+            ShoppingListResource resource = new ShoppingListResource(ModelMapper.toModel(shoppingListEntity, null));
+            String link = resource.selfLink(request, resource).toString();
             return ResponseEntity.created(URI.create(link)).build();
-
         }
         return ResponseEntity.noContent().build();
     }
@@ -337,12 +335,13 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
 
-    private ResponseEntity<ShoppingListResource> singleResult(ShoppingListEntity result, List<ListShopCategory> categories) {
+    private ResponseEntity<ShoppingListResource> singleResult(HttpServletRequest request, ShoppingListEntity result, List<ListShopCategory> categories) {
         if (result != null) {
 
-            ShoppingListResource shoppingListResource = new ShoppingListResource(result, categories);
-
-            return new ResponseEntity(shoppingListResource, HttpStatus.OK);
+            ShoppingList shoppingList = ModelMapper.toModel(result, categories);
+            ShoppingListResource resource = new ShoppingListResource(shoppingList);
+            resource.fillLinks(request, resource);
+            return new ResponseEntity(resource, HttpStatus.OK);
         }
         return ResponseEntity.noContent().build();
     }

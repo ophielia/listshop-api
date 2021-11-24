@@ -1,10 +1,10 @@
 package com.meg.listshop.lmt.api.controller;
 
 import com.meg.listshop.lmt.api.model.*;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.Date;
@@ -21,10 +21,10 @@ public interface ShoppingListRestControllerApi {
 
 
     @GetMapping(produces = "application/json")
-    ResponseEntity<CollectionModel<ShoppingListResource>> retrieveLists(Principal principal);
+    ResponseEntity<ShoppingListListResource> retrieveLists(HttpServletRequest request, Principal principal);
 
     @PostMapping(produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> createList(Principal principal, @RequestBody ListGenerateProperties listGenerateProperties);
+    ResponseEntity<Object> createList(HttpServletRequest request, Principal principal, @RequestBody ListGenerateProperties listGenerateProperties);
 
     @PutMapping(value = "/shared", produces = "application/json")
     ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest);
@@ -34,19 +34,19 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId, @RequestParam(value = "after", required = true) Date changedAfter);
 
     @PutMapping(value = "/{listId}", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> updateList(Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList);
+    ResponseEntity<Object> updateList(HttpServletRequest request, Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList);
 
     @PutMapping(value = "/{listId}/item", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> updateItems(Principal principal, @PathVariable("listId") Long listId, @RequestBody ItemOperationPut itemOperation);
 
     @GetMapping(value = "/mostrecent", produces = "application/json")
-    ResponseEntity<ShoppingListResource> retrieveMostRecentList(Principal principal);
+    ResponseEntity<ShoppingListResource> retrieveMostRecentList(HttpServletRequest request, Principal principal);
 
     @GetMapping(value = "/starter", produces = "application/json")
-    ResponseEntity<ShoppingListResource> retrieveStarterList(Principal principal);
+    ResponseEntity<ShoppingListResource> retrieveStarterList(HttpServletRequest request, Principal principal);
 
     @GetMapping(value = "/{listId}", produces = "application/json")
-    ResponseEntity<ShoppingListResource> retrieveListById(Principal principal, @PathVariable("listId") Long listId);
+    ResponseEntity<ShoppingListResource> retrieveListById(HttpServletRequest request, Principal principal, @PathVariable("listId") Long listId);
 
 
     @DeleteMapping(value = "/{listId}", produces = "application/json")
@@ -74,7 +74,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<Object> deleteAllItemsFromList(Principal principal, @PathVariable Long listId);
 
     @PostMapping(value = "/mealplan/{mealPlanId}", produces = "application/json")
-    ResponseEntity<Object> generateListFromMealPlan(Principal principal, @PathVariable Long mealPlanId);
+    ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Principal principal, @PathVariable Long mealPlanId);
 
     @PutMapping(value = "/{listId}/mealplan/{mealPlanId}", produces = "application/json")
     ResponseEntity<Object> addToListFromMealPlan(Principal principal, @PathVariable Long listId, @PathVariable Long mealPlanId);

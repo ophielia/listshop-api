@@ -391,7 +391,7 @@ public class ModelMapper {
         }
         //MM?? open for now - how to know if item frequent exists?
 
-        List<ListShopCategory> categories = itemCategoriesToModel(itemCategories);
+        List<ShoppingListCategory> categories = itemCategoriesToModel(itemCategories);
 
         long itemCount = 0;
         if (shoppingListEntity.getItems() != null) {
@@ -412,31 +412,34 @@ public class ModelMapper {
 
     }
 
-    private static List<ListShopCategory> itemCategoriesToModel(List<ListShopCategory> filledCategories
+    private static List<ShoppingListCategory> itemCategoriesToModel(List<ListShopCategory> filledCategories
     ) {
         if (filledCategories == null) {
-            return filledCategories;
+            return new ArrayList<>();
         }
+
+        List<ShoppingListCategory> modelCategories = new ArrayList<>();
 
         // go through list, converting items in category and subcategories
         // (category is already in model - the server needed to organize, but
         // the item mapping is still handled here)
         for (ListShopCategory categoryModel : filledCategories) {
             ItemCategoryPojo cm = (ItemCategoryPojo) categoryModel;
+            ShoppingListCategory model = new ShoppingListCategory(cm.getId());
             List<Item> items = new ArrayList<>();
             if (cm.getItemEntities() != null && !cm.getItemEntities().isEmpty()) {
                 items = simpleItemsToModel(cm.getItemEntities());
             }
-            cm.items(items);
-            cm.itemEntities(null);
+            model.setItems(items);
 
             // now - subcategories
             if (!categoryModel.getSubCategories().isEmpty()) {
-                List<ListShopCategory> filledSubCats = itemCategoriesToModel(categoryModel.getSubCategories());
-                categoryModel.subCategories(filledSubCats);
+                List<ShoppingListCategory> filledSubCats = itemCategoriesToModel(categoryModel.getSubCategories());
+                model.setSubCategories(filledSubCats);
             }
+            modelCategories.add(model);
         }
-        return filledCategories;
+        return modelCategories;
     }
 
     public static Item toModel(ItemEntity itemEntity) {

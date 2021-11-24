@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.listshop.lmt.service.categories.ListShopCategory;
 
 import java.util.Date;
 import java.util.List;
@@ -28,7 +27,7 @@ public class ShoppingList {
     @JsonProperty("legend")
     private List<LegendSource> legendSources;
 
-    private java.util.List<ListShopCategory>
+    private java.util.List<ShoppingListCategory>
             categories;
 
     @JsonProperty("user_id")
@@ -63,11 +62,11 @@ public class ShoppingList {
     }
 
 
-    public java.util.List<ListShopCategory> getCategories() {
+    public java.util.List<ShoppingListCategory> getCategories() {
         return categories;
     }
 
-    public ShoppingList categories(java.util.List<ListShopCategory> categories) {
+    public ShoppingList categories(java.util.List<ShoppingListCategory> categories) {
         this.categories = categories;
         return this;
     }
