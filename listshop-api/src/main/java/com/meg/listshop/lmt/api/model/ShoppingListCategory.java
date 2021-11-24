@@ -12,7 +12,8 @@ public class ShoppingListCategory {
     @JsonProperty("category_id")
     private Long id;
 
-    String displayOrder;
+    @JsonProperty("displayOrder")
+    int displayOrder;
 
     @JsonProperty("subcategories")
     private List<ShoppingListCategory> subCategories = new ArrayList<>();
@@ -43,13 +44,6 @@ public class ShoppingListCategory {
         this.id = id;
     }
 
-    public String getDisplayOrder() {
-        return displayOrder;
-    }
-
-    public void setDisplayOrder(String displayOrder) {
-        this.displayOrder = displayOrder;
-    }
 
     public List<ShoppingListCategory> getSubCategories() {
         return subCategories;

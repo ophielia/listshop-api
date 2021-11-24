@@ -133,9 +133,10 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
     }
 
     public ResponseEntity<Object> getUncategorizedTags(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId) {
-        List<Tag> tagList = this.listLayoutService.getUncategorizedTagsForList(listLayoutId)
+        List<TagResource> tagList = this.listLayoutService.getUncategorizedTagsForList(listLayoutId)
                 .stream()
                 .map(ModelMapper::toModel)
+                .map(TagResource::new)
                 .collect(Collectors.toList());
 
         TagListResource resource = new TagListResource(tagList);
@@ -147,10 +148,11 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
     public ResponseEntity<Object> getTagsForCategory(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) {
 
-        List<Tag> taglist = this.listLayoutService
+        List<TagResource> taglist = this.listLayoutService
                 .getTagsForLayoutCategory(layoutCategoryId)
                 .stream()
                 .map(ModelMapper::toModel)
+                .map(TagResource::new)
                 .collect(Collectors.toList());
         TagListResource tagListResource = new TagListResource(taglist);
         tagListResource.fillLinks(request, tagListResource);

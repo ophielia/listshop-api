@@ -50,10 +50,11 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<ShoppingListListResource> retrieveLists(HttpServletRequest request, Principal principal) {
         String message = String.format("Retrieving all lists for user [%S]", principal.getName());
         logger.info(message);
-        List<ShoppingList> shoppingListList = shoppingListService
+        List<ShoppingListResource> shoppingListList = shoppingListService
                 .getListsByUsername(principal.getName())
                 .stream()
                 .map(t -> ModelMapper.toModel(t, null))
+                .map(ShoppingListResource::new)
                 .collect(Collectors.toList());
 
         ShoppingListListResource resource = new ShoppingListListResource(shoppingListList);

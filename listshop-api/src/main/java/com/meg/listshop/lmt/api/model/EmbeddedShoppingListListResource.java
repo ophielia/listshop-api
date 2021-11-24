@@ -8,9 +8,9 @@ import java.util.List;
 public class EmbeddedShoppingListListResource {
 
     @JsonProperty("shoppingListResourceList")
-    private List<ShoppingList> shoppingListList;
+    private List<ShoppingListResource> shoppingListList;
 
-    public EmbeddedShoppingListListResource(List<ShoppingList> shoppingListList) {
+    public EmbeddedShoppingListListResource(List<ShoppingListResource> shoppingListList) {
         this.shoppingListList = shoppingListList;
     }
 

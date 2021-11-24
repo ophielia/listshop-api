@@ -12,7 +12,7 @@ public class ListLayoutCategory {
     @JsonProperty("category_id")
     private Long id;
 
-    String displayOrder;
+    int displayOrder;
 
     @JsonProperty("subcategories")
     private List<ListLayoutCategory> subCategories = new ArrayList<>();
@@ -43,11 +43,11 @@ public class ListLayoutCategory {
         this.id = id;
     }
 
-    public String getDisplayOrder() {
+    public int getDisplayOrder() {
         return displayOrder;
     }
 
-    public void setDisplayOrder(String displayOrder) {
+    public void setDisplayOrder(int displayOrder) {
         this.displayOrder = displayOrder;
     }
 

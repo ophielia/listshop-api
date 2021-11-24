@@ -184,7 +184,7 @@ public class ModelMapper {
         for (ListLayoutCategoryPojo cat : categories) {
             ListLayoutCategory llc = new ListLayoutCategory(cat.getId());
             llc.name = cat.getName();
-            llc.displayOrder = String.valueOf(cat.getDisplayOrder());
+            llc.displayOrder = cat.getDisplayOrder();
             llc.setSubCategories(layoutSubCategoriesToModel(cat.getSubCategories()));
             llc.setTags(toModel(cat.getTagEntities()));
             categoryList.add(llc);
@@ -202,7 +202,7 @@ public class ModelMapper {
         for (ListShopCategory cat : categories) {
             ListLayoutCategory llc = new ListLayoutCategory(cat.getId());
             llc.name = cat.getName();
-            llc.displayOrder = String.valueOf(cat.getDisplayOrder());
+            llc.displayOrder = cat.getDisplayOrder();
             llc.setSubCategories(layoutSubCategoriesToModel(cat.getSubCategories()));
             llc.setTags(toModel(((ListLayoutCategoryPojo) cat).getTagEntities()));
             categoryList.add(llc);
@@ -430,6 +430,8 @@ public class ModelMapper {
             if (cm.getItemEntities() != null && !cm.getItemEntities().isEmpty()) {
                 items = simpleItemsToModel(cm.getItemEntities());
             }
+            model.setName(cm.getName());
+            model.displayOrder = cm.getDisplayOrder();
             model.setItems(items);
 
             // now - subcategories

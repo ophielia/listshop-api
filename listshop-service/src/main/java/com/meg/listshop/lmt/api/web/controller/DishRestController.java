@@ -3,7 +3,6 @@ package com.meg.listshop.lmt.api.web.controller;
 import com.google.common.base.Enums;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.DishRestControllerApi;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
@@ -17,7 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -56,12 +54,13 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<CollectionModel<DishResource>> retrieveDishes(Principal principal,
-                                                                        @RequestParam(value = "searchFragment", required = false) String searchFragment,
-                                                                        @RequestParam(value = "includedTags", required = false) String includedTags,
-                                                                        @RequestParam(value = "excludedTags", required = false) String excludedTags,
-                                                                        @RequestParam(value = "sortKey", required = false) String sortKey,
-                                                                        @RequestParam(value = "sortDirection", required = false) String sortDirection
+    public ResponseEntity<DishListResource> retrieveDishes(HttpServletRequest request,
+                                                           Principal principal,
+                                                           @RequestParam(value = "searchFragment", required = false) String searchFragment,
+                                                           @RequestParam(value = "includedTags", required = false) String includedTags,
+                                                           @RequestParam(value = "excludedTags", required = false) String excludedTags,
+                                                           @RequestParam(value = "sortKey", required = false) String sortKey,
+                                                           @RequestParam(value = "sortDirection", required = false) String sortDirection
     ) {
         logger.info("Entered retrieveDishes includedTags: [%s], excludedTags: [%s], sortKey: [%s], sortDirection: [%s]", includedTags, excludedTags, sortKey, sortDirection);
         List<DishResource> dishList;
@@ -72,8 +71,10 @@ public class DishRestController implements DishRestControllerApi {
             dishList = findDishes(principal, includedTags, excludedTags, searchFragment, sortKey, sortDirection);
         }
 
-        CollectionModel<DishResource> dishResourceList = new CollectionModel<>(dishList);
-        return ResponseEntity.ok(dishResourceList);
+        DishListResource resource = new DishListResource(dishList);
+        resource.fillLinks(request, resource);
+        return new ResponseEntity(resource, HttpStatus.OK);
+
     }
 
     private List<DishResource> findDishes(Principal principal, String includedTags, String excludedTags, String searchFragment, String sortKey, String sortDirection) {
@@ -104,19 +105,21 @@ public class DishRestController implements DishRestControllerApi {
             criteria.setNameFragment(searchFragment);
         }
         logger.debug(String.format("Searching for dishes with criteria [%s]. ", criteria));
-        return dishSearchService.findDishes(criteria)
-                .stream().map(d -> new DishResource(principal, d))
+        return dishSearchService.findDishes(criteria).stream()
+                .map(d -> ModelMapper.toModel(d))
+                .map(DishResource::new)
                 .collect(Collectors.toList());
     }
 
     private List<DishResource> getAllDishes(Principal principal) {
-        return dishService.getDishesForUserName(principal.getName())
-                .stream().map(d -> new DishResource(principal, d))
+        return dishService.getDishesForUserName(principal.getName()).stream()
+                .map(d -> ModelMapper.toModel(d))
+                .map(DishResource::new)
                 .collect(Collectors.toList());
 
     }
 
-    public ResponseEntity<Object> createDish(Principal principal, @RequestBody Dish input) {
+    public ResponseEntity<Object> createDish(HttpServletRequest request, Principal principal, @RequestBody Dish input) {
         //MM Validation to be done here
         UserEntity user = userService.getUserByUserEmail(principal.getName());
         DishEntity inputDish = ModelMapper.toEntity(input);
@@ -131,8 +134,8 @@ public class DishRestController implements DishRestControllerApi {
             tagService.addTagsToDish(principal.getName(), result.getId(), tagIds);
             result = dishService.getDishForUserById(principal.getName(), result.getId());
         }
-        Optional<Link> forOneDish = new DishResource(principal, result).getLink("self");
-        String link = StringTools.safeLink(forOneDish);
+        DishResource resource = new DishResource(ModelMapper.toModel(result));
+        String link = resource.selfLink(request, resource).toString();
         return ResponseEntity.created(URI.create(link)).build();
     }
 
@@ -152,15 +155,16 @@ public class DishRestController implements DishRestControllerApi {
     }
 
 
-    public ResponseEntity<Dish> readDish(Principal principal, @PathVariable Long dishId) {
-        DishEntity dish =  this.dishService
-                .getDishForUserById(principal.getName(),dishId);
+    public ResponseEntity<DishResource> readDish(HttpServletRequest request, Principal principal, @PathVariable Long dishId) {
+        DishEntity dish = this.dishService
+                .getDishForUserById(principal.getName(), dishId);
         List<TagEntity> sortedDishTags = dish.getTags();
         sortedDishTags.sort(Comparator.comparing(TagEntity::getTagType)
                 .thenComparing(TagEntity::getName));
-        var dishResource = new DishResource(dish, sortedDishTags);
+        dish.setTags(sortedDishTags);
+        DishResource resource = new DishResource(ModelMapper.toModel(dish));
 
-        return new ResponseEntity(dishResource, HttpStatus.OK);
+        return new ResponseEntity(resource, HttpStatus.OK);
     }
 
     public ResponseEntity<CollectionModel<TagResource>> getTagsByDishId(HttpServletRequest request, Principal principal, @PathVariable Long dishId) {

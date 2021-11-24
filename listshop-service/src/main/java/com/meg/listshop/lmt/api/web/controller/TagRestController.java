@@ -59,7 +59,9 @@ public class TagRestController implements TagRestControllerApi {
 
         List<TagEntity> tagList = tagService.getTagList(tagFilterTypeFilter, tagTypeFilter);
 
-        List<Tag> resourceList = tagList.stream().map(t -> ModelMapper.toModel(t))
+        List<TagResource> resourceList = tagList.stream()
+                .map(ModelMapper::toModel)
+                .map(TagResource::new)
                 .collect(Collectors.toList());
         var returnValue = new TagListResource(resourceList);
         return new ResponseEntity(returnValue, HttpStatus.OK);
@@ -68,7 +70,9 @@ public class TagRestController implements TagRestControllerApi {
     private ResponseEntity<TagListResource> retrieveTagExtendedList(TagFilterType tagFilterTypeFilter, List<TagType> tagTypeFilter) {
         List<TagExtendedEntity> tagList = tagService.getTagExtendedList(tagFilterTypeFilter, tagTypeFilter);
 
-        List<Tag> resourceList = tagList.stream().map(t -> ModelMapper.toModel(t))
+        List<TagResource> resourceList = tagList.stream()
+                .map(ModelMapper::toModel)
+                .map(TagResource::new)
                 .collect(Collectors.toList());
         var returnValue = new TagListResource(resourceList);
         return new ResponseEntity(returnValue, HttpStatus.OK);

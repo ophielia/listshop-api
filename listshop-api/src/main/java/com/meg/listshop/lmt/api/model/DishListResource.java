@@ -5,27 +5,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public class TagListResource extends AbstractListShopResource implements ListShopModel {
+public class DishListResource extends AbstractListShopResource implements ListShopModel {
 
     @JsonProperty("_embedded")
-    private EmbeddedTagListResource embeddedList;
+    private EmbeddedDishListResource embeddedList;
 
-    public TagListResource(List<TagResource> tagList) {
-        this.embeddedList = new EmbeddedTagListResource(tagList);
+    public DishListResource(List<DishResource> dishRS) {
+        this.embeddedList = new EmbeddedDishListResource(dishRS);
     }
 
-    public EmbeddedTagListResource getEmbeddedList() {
+    public EmbeddedDishListResource getEmbeddedList() {
         return embeddedList;
     }
 
-    public void setEmbeddedList(EmbeddedTagListResource embeddedList) {
+    public void setEmbeddedList(EmbeddedDishListResource embeddedList) {
         this.embeddedList = embeddedList;
     }
 
     @Override
     @JsonIgnore()
     public String getRootPath() {
-        return "tag";
+        return "listlayout";
     }
 
     @Override

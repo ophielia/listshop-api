@@ -10,7 +10,7 @@ public class ShoppingListListResource extends AbstractListShopResource implement
     @JsonProperty("_embedded")
     private EmbeddedShoppingListListResource embeddedList;
 
-    public ShoppingListListResource(List<ShoppingList> listLayoutResourceList) {
+    public ShoppingListListResource(List<ShoppingListResource> listLayoutResourceList) {
         this.embeddedList = new EmbeddedShoppingListListResource(listLayoutResourceList);
     }
 
