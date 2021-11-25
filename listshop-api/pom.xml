@@ -4,30 +4,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.meg.listshop</groupId>
-    <artifactId>listshop-parent</artifactId>
+    <artifactId>listshop-api</artifactId>
     <version>1.4.3-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
-    <name>listshop-parent</name>
+    <name>listshop-api</name>
     <description>api for the list shop</description>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>11</java.version>
-        <project.container.name>com.meg.listshop.listshop</project.container.name>
-        <spring-boot-version>2.3.8.RELEASE</spring-boot-version>
-        <openjdk18-openshift.version>1.3</openjdk18-openshift.version>
-
-    </properties>
-
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.8.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>com.meg.listshop</groupId>
+        <artifactId>listshop-parent</artifactId>
+        <version>1.4.3-SNAPSHOT</version>
     </parent>
-
 
 
     <dependencies>
@@ -104,13 +92,13 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>2.9.2</version>
+            <version>3.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.9.2</version>
+            <version>3.0.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
@@ -155,7 +143,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
+            <version>26.0-jre</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
@@ -190,9 +178,31 @@
 
     </repositories>
 
-    <modules>
-        <module>listshop-api</module>
-        <module>listshop-service</module>
-    </modules>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <reuseForks>false</reuseForks>
+                    <forkCount>1</forkCount>
+                </configuration>
+            </plugin>
+
+
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>

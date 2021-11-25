@@ -4,19 +4,29 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.meg.listshop</groupId>
-    <artifactId>listshop-parent</artifactId>
+    <artifactId>listshop-service</artifactId>
     <version>1.4.3-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
-    <name>listshop-parent</name>
+    <name>listshop-service</name>
     <description>api for the list shop</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <project.container.name>com.meg.listshop.listshop</project.container.name>
-        <spring-boot-version>2.3.8.RELEASE</spring-boot-version>
+        <project.container.name>listshop</project.container.name>
+
+        <spring-boot-version>2.2.2.RELEASE</spring-boot-version>
+        <!--<spring-boot-bom-version>2.1.6.Final-redhat-00004</spring-boot-bom-version>-->
+
+        <fabric8-maven-plugin-version>4.3.1</fabric8-maven-plugin-version>
+        <fabric8.openshift.trimImageInContainerSpec>true</fabric8.openshift.trimImageInContainerSpec>
+        <fabric8.skip.build.pom>true</fabric8.skip.build.pom>
+        <fabric8.generator.from>
+            registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:${openjdk18-openshift.version}
+        </fabric8.generator.from>
+
         <openjdk18-openshift.version>1.3</openjdk18-openshift.version>
 
     </properties>
@@ -29,8 +39,12 @@
     </parent>
 
 
-
     <dependencies>
+        <dependency>
+            <groupId>com.meg.listshop</groupId>
+            <artifactId>listshop-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -85,6 +99,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -155,7 +176,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
+            <version>26.0-jre</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
@@ -190,9 +211,90 @@
 
     </repositories>
 
-    <modules>
-        <module>listshop-api</module>
-        <module>listshop-service</module>
-    </modules>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <!--<version>5.0.7</version>-->
+                <configuration>
+                    <url>jdbc:postgresql://localhost:5432/mt2</url>
+                    <user>postgres</user>
+                    <password>postgres</password>
+                    <table>flyway_schema_history</table>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>${project.artifactId}</artifactId>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.9</version>
+                <executions>
+                    <execution>
+                        <id>build</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <repository>ophieliamoon/listshop-server</repository>
+                            <tag>${project.version}</tag>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <reuseForks>false</reuseForks>
+                    <forkCount>1</forkCount>
+                </configuration>
+            </plugin>
+
+
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>
