@@ -120,7 +120,6 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     public ResponseEntity<Object> createDish(HttpServletRequest request, Principal principal, @RequestBody Dish input) {
-        //MM Validation to be done here
         UserEntity user = userService.getUserByUserEmail(principal.getName());
         DishEntity inputDish = ModelMapper.toEntity(input);
         inputDish.setUserId(user.getId());
@@ -219,6 +218,7 @@ public class DishRestController implements DishRestControllerApi {
 
         var ratingUpdateInfo = tagService.getRatingUpdateInfoForDishIds(principal.getName(), Collections.singletonList(dishId));
         var ratingResource = new RatingUpdateInfoResource(ratingUpdateInfo);
+
         return new ResponseEntity(ratingResource, HttpStatus.OK);
 
     }

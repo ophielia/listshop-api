@@ -125,7 +125,7 @@ public class TagStructureServiceImpl implements TagStructureService {
         if (tag == null) {
             return false;
         }
-        // TODO replace this with call to method which throws exceptions
+        // TODO replace this with call to method which throws exception
         // get tag relation for tag
         Optional<TagRelationEntity> tagRelationOpt = tagRelationRepository.findByChild(tag);
         if (!tagRelationOpt.isPresent()) {
