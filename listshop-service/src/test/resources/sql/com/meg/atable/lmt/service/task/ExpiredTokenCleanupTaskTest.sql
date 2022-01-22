@@ -1,6 +1,6 @@
 insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number,
                           client_device_id, client_version, token, last_login)
-values (99, 20, 'iPhone 6', 'iPhone', 'iOS', '12.4', 'Mobile', '26', '2C73FB19-3E57-4078-B517-7E5F248F4E19', '1.4.1',
+values (99, 20, 'browser', 'iPhone', 'iOS', '12.4', 'Web', '26', '2C73FB19-3E57-4078-B517-7E5F248F4E19', '1.4.1',
         'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZSIsImF1ZGllbmNlIjoibW9iaWxlIiwiY3JlYXRlZCI6MTYwNDA4NzAzNDc1N30._ISdZadv8TDlW3zP9v0ppK9G69XHSCuVDTCbZd809SICZ_mBBY6E1Bdrf_g1ia1MXTaTSKyi0DVeE-6s4q-Cxg',
         now() - interval '1 day');
 insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number,
@@ -22,6 +22,6 @@ values (102, 20, 'iPhone 12', 'iPhone', 'iOS', '14.5', 'Mobile', '49', 'FBE2564C
         '2021-07-11 13:34:28.771000 +00:00');
 insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number,
                           client_device_id, client_version, token, last_login)
-values (103, 20, 'iPhone 11', 'iPhone', 'iOS', '14.5', 'Mobile', '50', '16B4EF20-19E9-4D5C-8303-9A583F6826A2', '1.5.0',
+values (103, 20, 'browser', 'iPhone', 'iOS', '14.5', 'Web', '50', '16B4EF20-19E9-4D5C-8303-9A583F6826A2', '1.5.0',
         'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZSIsImF1ZGllbmNlIjoibW9iaWxlIiwiY3JlYXRlZCI6MTYyNzEyMjQxNDA2M30.ZoxKtk9XTEZJoyvDWpks_qIJPXnooqdC6_T02830aHwiLy3bFeZ3886jakM5cPRNcAdh90ToQ4KDQHdakdjN1A',
         '2021-07-24 10:26:54.087000 +00:00');

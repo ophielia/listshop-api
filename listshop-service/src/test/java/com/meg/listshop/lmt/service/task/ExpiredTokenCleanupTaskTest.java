@@ -56,7 +56,7 @@ public class ExpiredTokenCleanupTaskTest {
         long newCount = alltokens.stream().count();
 
         // count should be 3 less
-        Assert.assertEquals(count - 3, newCount);
+        Assert.assertEquals(count - 1, newCount);
     }
 
 }

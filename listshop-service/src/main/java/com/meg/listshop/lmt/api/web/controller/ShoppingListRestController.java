@@ -4,18 +4,14 @@ import com.google.common.base.Enums;
 import com.meg.listshop.lmt.api.controller.ShoppingListRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
-import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.lmt.service.ShoppingListException;
 import com.meg.listshop.lmt.service.ShoppingListService;
 import com.meg.listshop.lmt.service.categories.ListShopCategory;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -102,34 +96,14 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             }
             List<ListShopCategory> categories = shoppingListService.categorizeList(shoppingList);
             shoppingListService.fillSources(shoppingList);
-            MergeResultResource resource = new MergeResultResource(mergeResult, shoppingList, categories);
+            mergeResult.setShoppingList(ModelMapper.toModel(shoppingList, categories));
+            MergeResultResource resource = new MergeResultResource(mergeResult);
 
             return new ResponseEntity(resource, HttpStatus.OK);
         }
 
         return ResponseEntity.badRequest().build();
     }
-
-    @Override
-    public ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId,
-                                                                          @RequestParam(value = "after")
-                                                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date changedAfter) {
-        String message = String.format("Refreshing list ites for user [%S]", principal.getName());
-        logger.info(message);
-
-        List<ItemEntity> changedItems = shoppingListService.getChangedItemsForMostRecentList(principal.getName(), changedAfter, listLayoutId);
-
-        List<Pair<ItemEntity, ListLayoutCategoryEntity>> itemsToCategories = listLayoutService.getItemChangesWithCategories(listLayoutId, changedItems);
-
-        List<ListItemRefreshResource> resourceList = new ArrayList<>();
-        for (Pair<ItemEntity, ListLayoutCategoryEntity> change : itemsToCategories) {
-            ListItemRefreshResource refresh = new ListItemRefreshResource(change.getKey(), change.getValue());
-            resourceList.add(refresh);
-        }
-
-        return new ResponseEntity(resourceList, HttpStatus.OK);
-    }
-
 
     @Override
     public ResponseEntity<Object> updateList(HttpServletRequest request, Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList) {

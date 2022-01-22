@@ -222,7 +222,7 @@ public class UserServiceImplMockTest {
 
 
         Date now = new Date();
-        Date threeSecondsAgo = new Date(now.getTime() - 13000);
+        Date thirtySecondsAgo = new Date(now.getTime() - 30000);
 
         userService.updateLoginForUser(TestConstants.USER_3_NAME, token);
 
@@ -232,7 +232,7 @@ public class UserServiceImplMockTest {
         System.out.println(now.getTime());
         System.out.println(capturedUserDevice.getLastLogin());
         System.out.println(capturedUserDevice.getLastLogin().getTime());
-        assertTrue(DateUtils.isAfterOrEqual(capturedUserDevice.getLastLogin(), now));
+        assertTrue(DateUtils.isAfterOrEqual(thirtySecondsAgo, capturedUserDevice.getLastLogin()));
 
         UserEntity caturedUser = userCapture.getValue();
         assertNotNull(caturedUser);

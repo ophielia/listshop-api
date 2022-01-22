@@ -13,7 +13,10 @@ import com.meg.listshop.lmt.model.EmbeddedDishResourceList;
 import com.meg.listshop.lmt.model.ResultDishResource;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.test.TestConstants;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -231,7 +234,6 @@ public class DishRestControllerTest {
 
     @Test
     @WithMockUser
-    @Ignore //MM to reinstate when migrating to api
     public void testFindDishes() throws Exception {
         List<Long> excludedTags = Arrays.asList(TestConstants.TAG_3_ID);
         List<Long> includedTags = Arrays.asList(TestConstants.TAG_PASTA);
@@ -335,16 +337,15 @@ public class DishRestControllerTest {
 
         // get dish, and assert tag 325 is present
         // (start condition)
-        mockMvc.perform(get("/dish/"
-                        + dishId)
+        MvcResult result = mockMvc.perform(get("/dish/"
+                        + dishId + "/tag")
                         .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.dish.dish_id", isA(Number.class)))
-                .andExpect(jsonPath("$.dish.dish_id").value(dishId))
-                .andExpect(jsonPath("$.dish.tags", hasSize(17)))
-                .andExpect(jsonPath("$.dish.tags..tag_id", hasItem(originalTag)))
-                .andExpect(jsonPath("$.dish.tags..tag_id", not(hasItem(expectedTag))));
+                .andExpect(jsonPath("$..tag", hasSize(17)))
+                .andExpect(jsonPath("$..tag.tag_id", hasItem(originalTag)))
+                .andExpect(jsonPath("$..tag.tag_id", not(hasItem(expectedTag))))
+                .andReturn();
 
         // tested call
         mockMvc.perform(put("/dish/"
@@ -354,15 +355,13 @@ public class DishRestControllerTest {
 
         // verify after condition - should have tag 324 - and no longer have tag 325
         mockMvc.perform(get("/dish/"
-                        + dishId)
+                        + dishId + "/tag")
                         .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.dish.dish_id", isA(Number.class)))
-                .andExpect(jsonPath("$.dish.dish_id").value(dishId))
-                .andExpect(jsonPath("$.dish.tags", hasSize(17)))
-                .andExpect(jsonPath("$.dish.tags..tag_id", not(hasItem(originalTag))))
-                .andExpect(jsonPath("$.dish.tags..tag_id", hasItem(expectedTag)));
+                .andExpect(jsonPath("$..tag", hasSize(17)))
+                .andExpect(jsonPath("$..tag.tag_id", hasItem(expectedTag)))
+                .andExpect(jsonPath("$..tag.tag_id", not(hasItem(originalTag))));
 
 
     }
@@ -379,13 +378,11 @@ public class DishRestControllerTest {
         // get dish, and assert tags are present
         // (start condition)
         mockMvc.perform(get("/dish/"
-                        + dishId)
+                        + dishId + "/tag")
                         .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.dish.dish_id", isA(Number.class)))
-                .andExpect(jsonPath("$.dish.dish_id").value(dishId))
-                .andExpect(jsonPath("$.dish.tags", hasSize(17)));
+                .andExpect(jsonPath("$..tag", hasSize(17)));
 
         // tested call
         mockMvc.perform(put("/dish/"

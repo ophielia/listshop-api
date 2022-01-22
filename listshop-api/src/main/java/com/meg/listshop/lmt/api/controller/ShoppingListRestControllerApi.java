@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import java.security.Principal;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -28,10 +26,6 @@ public interface ShoppingListRestControllerApi {
 
     @PutMapping(value = "/shared", produces = "application/json")
     ResponseEntity<MergeResultResource> mergeList(Principal principal, @RequestBody MergeRequest mergeRequest);
-
-    @Deprecated
-    @GetMapping(value = "/shared/{listLayoutId}", produces = "application/json")
-    ResponseEntity<List<ListItemRefreshResource>> refreshListItems(Principal principal, @PathVariable("listLayoutId") Long listLayoutId, @RequestParam(value = "after", required = true) Date changedAfter);
 
     @PutMapping(value = "/{listId}", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> updateList(HttpServletRequest request, Principal principal, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList);

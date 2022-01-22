@@ -15,5 +15,5 @@ public interface UserDeviceRepository extends JpaRepository<UserDeviceEntity, Lo
 
     List<UserDeviceEntity> findByUserIdAndClientTypeAndName(Long userId, ClientType clientType, String name);
 
-    long deleteByLastLoginBefore(Date valueOf);
+    long deleteByLastLoginBeforeAndClientTypeEquals(Date valueOf, ClientType clientType);
 }

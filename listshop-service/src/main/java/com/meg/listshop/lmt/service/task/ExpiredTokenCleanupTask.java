@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.task;
 
+import com.meg.listshop.auth.api.model.ClientType;
 import com.meg.listshop.auth.data.repository.UserDeviceRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +34,7 @@ public class ExpiredTokenCleanupTask {
         logger.info("About to delete expired logins from user_device table.");
         LocalDate removLoginBeforeDate = LocalDate.now().minusDays(deleteLoginsOlderThan);
 
-        long deleted = userDeviceRepository.deleteByLastLoginBefore(Date.valueOf(removLoginBeforeDate));
+        long deleted = userDeviceRepository.deleteByLastLoginBeforeAndClientTypeEquals(Date.valueOf(removLoginBeforeDate), ClientType.Web);
         logger.info("... found [" + deleted + "] items to delete.");
 
         logger.info("StaleItemCleanupTask complete.");
