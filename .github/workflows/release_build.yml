@@ -36,7 +36,7 @@ jobs:
         run: docker login --username=${{ secrets.DOCKER_HUB_USERNAME }} --password=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       
       - name: now push
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/listshop-server:1.18.4
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/listshop-server:${GITHUB_REF##*/}
         
 
 
