@@ -1,21 +1,25 @@
 package com.meg.listshop.lmt.api.model;
 
 
-import com.meg.listshop.lmt.data.entity.ProposalEntity;
-import org.springframework.hateoas.RepresentationModel;
-
-
-public class ProposalResource extends RepresentationModel {
+public class ProposalResource extends AbstractListShopResource implements ListShopModel {
 
     private final TargetProposal proposal;
 
-    public ProposalResource(ProposalEntity proposalEntity) {
-        this.proposal = ModelMapper.toModel(proposalEntity);
-//        this.add(ControllerLinkBuilder.linkTo(methodOn(ProposalRestControllerApi.class)
-        //              .getProposal(null, proposalEntity.getId())).withSelfRel());
+    public ProposalResource(TargetProposal proposal) {
+        this.proposal = proposal;
     }
 
     public TargetProposal getProposal() {
         return proposal;
+    }
+
+    @Override
+    public String getRootPath() {
+        return "proposal";
+    }
+
+    @Override
+    public String getResourceId() {
+        return null;
     }
 }

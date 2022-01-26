@@ -1,12 +1,12 @@
 package com.meg.listshop.lmt.api.controller;
 
 import com.meg.listshop.lmt.api.model.Target;
-import com.meg.listshop.lmt.api.model.TargetResource;
+import com.meg.listshop.lmt.api.model.TargetListResource;
 import com.meg.listshop.lmt.api.model.TargetSlot;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 /**
@@ -20,13 +20,13 @@ public interface TargetRestControllerApi {
 
 
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<CollectionModel<TargetResource>> retrieveTargets(Principal principal);
+    ResponseEntity<TargetListResource> retrieveTargets(Principal principal);
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> createTarget(Principal principal, @RequestBody Target input);
+    ResponseEntity<Object> createTarget(HttpServletRequest request, Principal principal, @RequestBody Target input);
 
-    @RequestMapping(method = RequestMethod.POST,value = "/pickup", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> createPickupTarget(Principal principal, @RequestBody Target input,
+    @RequestMapping(method = RequestMethod.POST, value = "/pickup", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> createPickupTarget(HttpServletRequest request, Principal principal, @RequestBody Target input,
                                               @RequestParam(value = "pickupTags", required = false) String pickupTags);
 
     @RequestMapping(method = RequestMethod.GET, value = "/{targetId}", produces = "application/json")
@@ -36,7 +36,7 @@ public interface TargetRestControllerApi {
     ResponseEntity<Target> deleteTarget(Principal principal, @PathVariable("targetId") Long targetId);
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{targetId}", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> updateTarget(Principal principal, @PathVariable Long targetId, @RequestBody Target input);
+    ResponseEntity<Object> updateTarget(HttpServletRequest request, Principal principal, @PathVariable Long targetId, @RequestBody Target input);
 
     @RequestMapping(method = RequestMethod.POST, value = "/{targetId}/slot", produces = "application/json")
     ResponseEntity<Object> addSlotToTarget(Principal principal, @PathVariable Long targetId, @RequestBody TargetSlot input);

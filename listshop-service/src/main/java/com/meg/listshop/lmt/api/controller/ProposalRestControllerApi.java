@@ -5,6 +5,7 @@ import com.meg.listshop.lmt.api.model.ProposalResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 /**
@@ -16,7 +17,7 @@ import java.security.Principal;
 public interface ProposalRestControllerApi {
 
     @RequestMapping(method = RequestMethod.POST, value = "/target/{targetId}", produces = "application/json")
-    ResponseEntity<Object> generateProposal(Principal principal, @PathVariable Long targetId) throws ProposalProcessingException;
+    ResponseEntity<Object> generateProposal(HttpServletRequest request, Principal principal, @PathVariable Long targetId) throws ProposalProcessingException;
 
     @RequestMapping(method = RequestMethod.GET, value = "/{proposalId}", produces = "application/json")
     ResponseEntity<ProposalResource> getProposal(Principal principal, @PathVariable("proposalId") Long proposalId);
