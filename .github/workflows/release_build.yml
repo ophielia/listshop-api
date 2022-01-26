@@ -31,7 +31,12 @@ jobs:
 
       - name: ensure fresh docker login by logging out
         run: docker logout
+      
+      - name: log back in now
+        run: docker login --username=${{ secrets.DOCKER_HUB_USERNAME }} --password=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      
+      - name: now push
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/listshop-server:1.18.4
+        
 
-      - name: push docker image using maven
-        run: mvn dockerfile:push -Ddockerfile.username=${{ secrets.DOCKER_HUB_USERNAME }} -Ddockerfile.password=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
