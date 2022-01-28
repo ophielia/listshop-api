@@ -152,20 +152,10 @@
 
     <build>
         <plugins>
-            <!--  <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <layers>
-                        <enabled>true</enabled>
-                    </layers>
-                </configuration>
-            </plugin>-->
-
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <!--<version>5.0.7</version>-->
+
                 <configuration>
                     <url>jdbc:postgresql://localhost:5432/mt2</url>
                     <user>postgres</user>
