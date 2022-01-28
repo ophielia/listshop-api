@@ -1,4 +1,4 @@
-package com.meg.listshop.auth.service.impl;
+package com.meg.listshop.auth.api.model;
 
 import java.io.Serializable;
 

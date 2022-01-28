@@ -1,6 +1,6 @@
 package com.meg.listshop.auth.api.controller;
 
-import com.meg.listshop.auth.service.impl.JwtAuthorizationRequest;
+import com.meg.listshop.auth.api.model.JwtAuthorizationRequest;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

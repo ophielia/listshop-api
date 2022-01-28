@@ -1,4 +1,4 @@
-package com.meg.listshop.auth.api.web;
+package com.meg.listshop.auth.web;
 
 import com.meg.listshop.auth.api.controller.UserRestControllerApi;
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
@@ -9,6 +9,7 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtTokenUtil;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.model.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,12 +83,12 @@ public class UserRestController implements UserRestControllerApi {
         this.userService.updateLoginForUser(newUser.getUsername(), token);
 
         // Return the token
-        return ResponseEntity.ok(new UserResource(userDetails, token));
+        return ResponseEntity.ok(new UserResource(ModelMapper.toModel(userDetails, token)));
     }
 
     public ResponseEntity<UserResource> getUser(Principal principal) {
         UserEntity user = this.userService.getUserByUserEmail(principal.getName());
-        UserResource userResource = new UserResource(user, "");
+        UserResource userResource = new UserResource(ModelMapper.toModel(user, ""));
 
         return new ResponseEntity(userResource, HttpStatus.OK);
     }

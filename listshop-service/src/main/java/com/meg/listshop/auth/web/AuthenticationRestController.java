@@ -1,15 +1,16 @@
-package com.meg.listshop.auth.api.web;
+package com.meg.listshop.auth.web;
 
 import com.meg.listshop.auth.api.controller.AuthenticationRestControllerApi;
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
+import com.meg.listshop.auth.api.model.JwtAuthorizationRequest;
 import com.meg.listshop.auth.api.model.UserResource;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtAuthorizationRequest;
 import com.meg.listshop.auth.service.impl.JwtTokenUtil;
 import com.meg.listshop.auth.service.impl.ListShopUserDetailsService;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.model.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -81,7 +82,7 @@ public class AuthenticationRestController implements AuthenticationRestControlle
         userService.saveTokenForUserAndDevice(userEntity, deviceInfo, token);
 
         // Return the token
-        final UserResource user = new UserResource(userEntity, token);
+        final UserResource user = new UserResource(ModelMapper.toModel(userEntity, token));
         return ResponseEntity.ok(user);
     }
 
@@ -107,7 +108,7 @@ public class AuthenticationRestController implements AuthenticationRestControlle
         UserEntity userEntity = this.userService.updateLoginForUser(userDetails.getUsername(), token);
 
         // return user
-        final UserResource user = new UserResource(userEntity, "");
+        final UserResource user = new UserResource(ModelMapper.toModel(userEntity, ""));
         return ResponseEntity.ok(user);
     }
 

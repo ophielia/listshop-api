@@ -1,7 +1,6 @@
-package com.meg.listshop.auth.service.impl;
+package com.meg.listshop.auth.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.listshop.auth.api.model.ClientDeviceInfo;
 
 import java.io.Serializable;
 

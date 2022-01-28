@@ -14,8 +14,12 @@ public class User {
     @JsonProperty("user_name")
     private String username;
 
+    @JsonProperty("user_id")
+    private Long userId;
+
+
     private String password;
-    private String[] roles ;
+    private String[] roles;
     private String token;
 
     public User(String username, String email) {
@@ -71,10 +75,18 @@ public class User {
         this.email = email;
         return this;
     }
+
     public User username(String username) {
         this.username = username;
         return this;
     }
 
+    public User userId(Long userId) {
+        this.userId = userId;
+        return this;
+    }
 
+    public Long getUserId() {
+        return userId;
+    }
 }

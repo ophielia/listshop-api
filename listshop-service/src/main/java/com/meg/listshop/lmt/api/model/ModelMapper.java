@@ -47,6 +47,7 @@ public class ModelMapper {
             return new User(userEntity.getUsername(), userEntity.getEmail())
                     .creationDate(userEntity.getCreationDate())
                     .token(token)
+                    .userId(userEntity.getId())
                     .roles(roles);
         }
         return new User(null, null);
