@@ -3,22 +3,23 @@ package com.meg.listshop.auth.web;
 import com.meg.listshop.auth.api.controller.UserRestControllerApi;
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
 import com.meg.listshop.auth.api.model.PutCreateUser;
-import com.meg.listshop.auth.api.model.User;
 import com.meg.listshop.auth.api.model.UserResource;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtTokenUtil;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.ModelMapper;
+import com.meg.listshop.lmt.api.model.TokenType;
+import com.meg.listshop.lmt.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.util.Base64;
@@ -26,19 +27,26 @@ import java.util.Base64;
 @Controller
 public class UserRestController implements UserRestControllerApi {
 
-    @Autowired
-    private UserService userService;
+    private final TokenService tokenService;
+
+    private final UserService userService;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    public UserRestController(UserService userService, AuthenticationManager authenticationManager,
+                              JwtTokenUtil jwtTokenUtil, TokenService tokenService) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.tokenService = tokenService;
+    }
 
     @Override
     public ResponseEntity<Object> createUser(@RequestBody PutCreateUser inputPut) throws BadParameterException {
-        User user = inputPut.getUser();
+        var user = inputPut.getUser();
         ClientDeviceInfo deviceInfo = inputPut.getDeviceInfo();
 
         if (user == null) {
@@ -54,17 +62,17 @@ public class UserRestController implements UserRestControllerApi {
 
         // decode email and password
         byte[] emailBytes = Base64.getDecoder().decode(email);
-        String decodedEmail = new String(emailBytes);
+        var decodedEmail = new String(emailBytes);
         byte[] passwordBytes = Base64.getDecoder().decode(password);
-        String decodedPassword = new String(passwordBytes);
+        var decodedPassword = new String(passwordBytes);
         byte[] usernameBytes = Base64.getDecoder().decode(username);
-        String decodedUsername = new String(usernameBytes);
+        var decodedUsername = new String(usernameBytes);
 
         // call service to create user
         UserEntity newUser = userService.createUser(decodedUsername, decodedEmail, decodedPassword);
 
         // authenticate new user
-        final Authentication authentication = authenticationManager.authenticate(
+        var authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         newUser.getEmail(),
                         decodedPassword
@@ -88,7 +96,7 @@ public class UserRestController implements UserRestControllerApi {
 
     public ResponseEntity<UserResource> getUser(Principal principal) {
         UserEntity user = this.userService.getUserByUserEmail(principal.getName());
-        UserResource userResource = new UserResource(ModelMapper.toModel(user, ""));
+        var userResource = new UserResource(ModelMapper.toModel(user, ""));
 
         return new ResponseEntity(userResource, HttpStatus.OK);
     }
@@ -98,6 +106,18 @@ public class UserRestController implements UserRestControllerApi {
         UserEntity user = this.userService.getUserByUserEmail(name);
 
         return ResponseEntity.ok(user != null);
+    }
+
+    @Override
+    public ResponseEntity<Object> getToken(@RequestParam(value = "param") String encryptedEmail,
+                                           @RequestParam(value = "token_type") String tokenType) throws BadParameterException {
+        // convert token type string to token type
+        TokenType type = Enum.valueOf(TokenType.class, tokenType);
+
+        // call service method
+        tokenService.generateTokenForUser(type, encryptedEmail);
+
+        return ResponseEntity.ok().build();
     }
 
 

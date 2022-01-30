@@ -14,7 +14,7 @@ CREATE TABLE public.tokens
     );
 
 ALTER TABLE public.tokens
-    OWNER to postgres;
+    OWNER to bank;
 
 CREATE SEQUENCE public.token_sequence
     INCREMENT 1
@@ -24,4 +24,10 @@ CREATE SEQUENCE public.token_sequence
     CACHE 1;
 
 ALTER SEQUENCE public.token_sequence
-    OWNER TO postgres;
+    OWNER TO bank;
+
+
+-- rollback
+
+-- drop table tokens;
+-- drop sequence token_sequence;
