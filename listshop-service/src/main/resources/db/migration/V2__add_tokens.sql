@@ -13,8 +13,6 @@ CREATE TABLE public.tokens
         OIDS = FALSE
     );
 
-ALTER TABLE public.tokens
-    OWNER to bank;
 
 CREATE SEQUENCE public.token_sequence
     INCREMENT 1
@@ -23,11 +21,13 @@ CREATE SEQUENCE public.token_sequence
     MAXVALUE 9223372036854775807
     CACHE 1;
 
-ALTER SEQUENCE public.token_sequence
-    OWNER TO bank;
 
+
+GRANT ALL ON TABLE public.token_sequence TO postgres;
+GRANT ALL ON TABLE public.tokens TO postgres;
 
 -- rollback
 
 -- drop table tokens;
 -- drop sequence token_sequence;
+

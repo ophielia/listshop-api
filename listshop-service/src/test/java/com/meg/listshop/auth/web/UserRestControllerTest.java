@@ -6,8 +6,9 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.data.repository.TokenRepository;
 import com.meg.listshop.test.TestConstants;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -35,8 +36,10 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 @RunWith(SpringRunner.class)
@@ -56,7 +59,7 @@ public class UserRestControllerTest {
     private UserDetails userDetails;
 
     @Autowired
-    private DishService dishService;
+    private TokenRepository tokenRepository;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -105,13 +108,31 @@ public class UserRestControllerTest {
         final String deviceJson = json(device);
 
         mockMvc.perform(post("/user")
-                .contentType(contentType)
-                .content(userjson)
-                .characterEncoding("utf-8"))
+                        .contentType(contentType)
+                        .content(userjson)
+                        .characterEncoding("utf-8"))
                 //.content(deviceJson))
                 .andDo(print());
-                /*.andExpect(content().contentType(contentType));*/
+        /*.andExpect(content().contentType(contentType));*/
         //.andExpect(content().contentType(contentType));
+    }
+
+    @Test
+    public void testGetToken() throws Exception {
+        // get tokens -> count
+        var tokenCountBefore = tokenRepository.count();
+
+        // make call - ensure 200 as return code
+        String encryptedEmail = "dGVzdHVzZXI="; // encrypted for testuser, user_id 500
+        String url = "/user/token?token_type=PasswordReset&param=" + encryptedEmail;
+        mockMvc.perform(get(url))
+                .andExpect(status().isOk());
+
+        // get tokens -> count
+        var tokenCountAfter = tokenRepository.count();
+
+        // ensure tokens have increased by 1
+        Assert.assertEquals("token count should have increased by 1", tokenCountBefore + 1, tokenCountAfter);
     }
 
     private String json(Object o) throws IOException {
