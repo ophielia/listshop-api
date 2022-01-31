@@ -113,8 +113,6 @@ public class UserRestControllerTest {
                         .characterEncoding("utf-8"))
                 //.content(deviceJson))
                 .andDo(print());
-        /*.andExpect(content().contentType(contentType));*/
-        //.andExpect(content().contentType(contentType));
     }
 
     @Test
