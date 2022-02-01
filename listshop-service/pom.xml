@@ -148,6 +148,17 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.meg.postoffice</groupId>
+            <artifactId>postoffice-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.meg.postoffice</groupId>
+            <artifactId>postoffice-service</artifactId>
+            <version>1.5.3-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
