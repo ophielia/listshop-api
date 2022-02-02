@@ -1,4 +1,11 @@
-package com.meg.postoffice.service.config;
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
+package com.meg.postoffice.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

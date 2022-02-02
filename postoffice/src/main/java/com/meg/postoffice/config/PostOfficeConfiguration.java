@@ -1,4 +1,11 @@
-package com.meg.postoffice.service.config;
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
+package com.meg.postoffice.config;
 
 import com.meg.postoffice.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +16,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
-
-import java.util.Properties;
 
 @Configuration
 @EnableConfigurationProperties({ContentConfiguration.class, MailConfiguration.class})
@@ -55,7 +60,7 @@ public class PostOfficeConfiguration {
 
     @Bean
     public JavaMailSender javaMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        var mailSender = new JavaMailSenderImpl();
         mailSender.setHost(mailConfiguration.getHost());
         mailSender.setPort(mailConfiguration.getPort());
 
@@ -63,7 +68,7 @@ public class PostOfficeConfiguration {
         mailSender.setUsername(mailConfiguration.getUsername());
         mailSender.setPassword(mailConfiguration.getPassword());
 
-        Properties props = mailSender.getJavaMailProperties();
+        var props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", mailConfiguration.getProtocol());
         props.put("mail.smtp.auth", mailConfiguration.getSmtpAuth());
         props.put("mail.smtp.starttls.enable", mailConfiguration.getEnableStartTls());
