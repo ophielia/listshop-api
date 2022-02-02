@@ -1,30 +1,40 @@
 package com.meg.postoffice.service.config;
 
-import com.meg.postoffice.service.MailServiceImpl;
+import com.meg.postoffice.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
+import java.util.Properties;
+
 @Configuration
-@EnableConfigurationProperties(ContentConfiguration.class)
+@EnableConfigurationProperties({ContentConfiguration.class, MailConfiguration.class})
 public class PostOfficeConfiguration {
 
     @Autowired
     private ContentConfiguration contentConfiguration;
 
+    @Autowired
+    MailConfiguration mailConfiguration;
 
     @Bean
-    public MailServiceImpl mailService() {
-        return new MailServiceImpl(contentConfiguration);
+    public MailService mailService() {
+        return new MailService(contentConfiguration,
+                freemarkerConfig().getConfiguration(),
+                javaMailSender()
+        );
     }
 
     @Bean
     public ContentConfiguration contentConfiguration() {
         return new ContentConfiguration();
     }
+
 
     @Bean
     public FreeMarkerViewResolver freemarkerViewResolver() {
@@ -39,9 +49,26 @@ public class PostOfficeConfiguration {
     public FreeMarkerConfigurer freemarkerConfig() {
 
         var freeMarkerConfigurer = new FreeMarkerConfigurer();
-        freeMarkerConfigurer.setTemplateLoaderPath("classpath:/emailtemplates/");
+        freeMarkerConfigurer.setTemplateLoaderPath("classpath:/emailtemplates");
         return freeMarkerConfigurer;
     }
 
+    @Bean
+    public JavaMailSender javaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost(mailConfiguration.getHost());
+        mailSender.setPort(mailConfiguration.getPort());
 
+
+        mailSender.setUsername(mailConfiguration.getUsername());
+        mailSender.setPassword(mailConfiguration.getPassword());
+
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", mailConfiguration.getProtocol());
+        props.put("mail.smtp.auth", mailConfiguration.getSmtpAuth());
+        props.put("mail.smtp.starttls.enable", mailConfiguration.getEnableStartTls());
+        props.put("mail.debug", mailConfiguration.getDebug());
+
+        return mailSender;
+    }
 }

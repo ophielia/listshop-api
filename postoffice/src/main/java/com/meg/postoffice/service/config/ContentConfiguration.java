@@ -2,7 +2,7 @@ package com.meg.postoffice.service.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "postoffice")
+@ConfigurationProperties(prefix = "postoffice.content")
 public class ContentConfiguration {
 
     private String test;

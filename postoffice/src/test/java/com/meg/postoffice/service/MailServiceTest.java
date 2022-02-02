@@ -1,8 +1,9 @@
 package com.meg.postoffice.service;
 
+import com.meg.postoffice.api.model.EmailParameters;
+import com.meg.postoffice.api.model.EmailType;
 import com.meg.postoffice.service.config.PostOfficeConfiguration;
 import freemarker.template.TemplateException;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = {PostOfficeConfiguration.class})
 @TestPropertySource(locations = "/my.properties")
 //@SpringBootTest("postoffice.test=Hello")
-public class MailServiceImplTest {
+public class MailServiceTest {
 
     @Autowired
-    private MailServiceImpl mailService;
+    private MailService mailService;
 
     @Test
     public void contextLoads() throws TemplateException, IOException {
@@ -36,10 +37,10 @@ public class MailServiceImplTest {
 
     @Test
     public void testDevelop() throws TemplateException, IOException {
+        EmailParameters parameters = new EmailParameters();
+        parameters.setEmailType(EmailType.ResetPassword);
 
-        String resultTest = mailService.buildEmailContent();
-        Assert.assertNotNull(resultTest);
-        Assert.assertEquals(2, 1 + 1);
+        mailService.processEmail(parameters);
     }
 
 }
