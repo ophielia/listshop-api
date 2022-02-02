@@ -1,8 +1,15 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.postoffice.service.MailServiceImpl;
+import com.meg.postoffice.service.MailService;
 import freemarker.template.TemplateException;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -21,7 +28,7 @@ import java.io.IOException;
 public class PostofficeLibraryTest {
 
     @Autowired
-    MailServiceImpl mailService;
+    MailService mailService;
 
 
     @ClassRule

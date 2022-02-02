@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.postoffice.service;
 
 import com.meg.postoffice.api.model.EmailParameters;
@@ -9,10 +16,12 @@ import freemarker.template.TemplateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -37,16 +46,16 @@ public class MailService {
         this.javaMailSender = javaMailSender;
     }
 
-    public void processEmail(EmailParameters emailParameters) throws TemplateException, IOException {
+    public void processEmail(EmailParameters emailParameters) throws TemplateException, IOException, MessagingException {
         ContentBuilder contentBuilder = new ContentBuilderFactory(emailParameters, configuration).build();
         String content = contentBuilder.buildContent();
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("mophielia@gmail.com");
-        message.setTo("ophielia@yahoo.com");
-        message.setSubject("among the first");
-        message.setText("of the emaio tests");
-        javaMailSender.send(message);
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+        helper.setSubject("Welcome To SpringHow.com");
+        helper.setTo("ophielia@yahoo.com");
+        helper.setText(content, true);
+        javaMailSender.send(mimeMessage);
 
     }
 

@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.postoffice.service;
 
 import com.meg.postoffice.api.model.EmailParameters;
@@ -12,6 +19,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +44,7 @@ public class MailServiceTest {
 
 
     @Test
-    public void testDevelop() throws TemplateException, IOException {
+    public void testDevelop() throws TemplateException, IOException, MessagingException {
         EmailParameters parameters = new EmailParameters();
         parameters.setEmailType(EmailType.ResetPassword);
 
