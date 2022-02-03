@@ -1,12 +1,19 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.api;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.auth.api.model.TargetType;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.Target;
 import com.meg.listshop.lmt.api.model.TargetSlot;
-import com.meg.listshop.lmt.api.model.TargetType;
 import com.meg.listshop.lmt.data.entity.TargetEntity;
 import com.meg.listshop.lmt.data.entity.TargetSlotEntity;
 import com.meg.listshop.lmt.service.TargetService;

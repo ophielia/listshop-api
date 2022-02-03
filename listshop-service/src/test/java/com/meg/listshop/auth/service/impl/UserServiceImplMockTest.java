@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.auth.service.impl;
 
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
@@ -236,7 +243,7 @@ public class UserServiceImplMockTest {
 
         UserEntity caturedUser = userCapture.getValue();
         assertNotNull(caturedUser);
-        assertTrue(DateUtils.isAfterOrEqual(caturedUser.getLastLogin(), now));
+        assertTrue(DateUtils.isAfterOrEqual(thirtySecondsAgo, caturedUser.getLastLogin()));
 
 
     }

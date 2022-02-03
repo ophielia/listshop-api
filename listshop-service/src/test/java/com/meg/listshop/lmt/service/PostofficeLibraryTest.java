@@ -9,6 +9,8 @@ package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
+import com.meg.postoffice.api.model.EmailParameters;
+import com.meg.postoffice.api.model.EmailType;
 import com.meg.postoffice.service.MailService;
 import freemarker.template.TemplateException;
 import org.junit.ClassRule;
@@ -19,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 
 
@@ -35,7 +38,10 @@ public class PostofficeLibraryTest {
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Test
-    public void testMailService() throws TemplateException, IOException {
-        mailService.buildEmailContent();
+    public void testMailService() throws TemplateException, IOException, MessagingException {
+        EmailParameters parameters = new EmailParameters();
+        parameters.setEmailType(EmailType.ResetPassword);
+
+        mailService.processEmail(parameters);
     }
 }

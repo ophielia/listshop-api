@@ -32,15 +32,18 @@ public class MailService {
 
     private final ContentConfiguration contentConfiguration;
     private final Configuration configuration;
+    private final String testDiversionEmail;
 
     private JavaMailSender javaMailSender;
 
     public MailService(ContentConfiguration contentConfiguration,
                        Configuration freeMarkerViewResolver,
-                       JavaMailSender javaMailSender) {
+                       JavaMailSender javaMailSender,
+                       String testDiversionEmail) {
         this.contentConfiguration = contentConfiguration;
         this.configuration = freeMarkerViewResolver;
         this.javaMailSender = javaMailSender;
+        this.testDiversionEmail = testDiversionEmail;
     }
 
     public void processEmail(EmailParameters emailParameters) throws TemplateException, IOException, MessagingException {
@@ -48,13 +51,29 @@ public class MailService {
         String content = contentBuilder.buildContent();
         LOG.debug("Content created: {}", content);
 
+        var subject = getEmailSubject(emailParameters);
+        var recipient = getEmailRecipient(emailParameters);
         var mimeMessage = javaMailSender.createMimeMessage();
         var helper = new MimeMessageHelper(mimeMessage);
-        helper.setSubject("Welcome To SpringHow.com");
-        helper.setTo("ophielia@yahoo.com");
+        helper.setSubject(subject);
+        helper.setTo(recipient);
         helper.setText(content, true);
         // javaMailSender.send(mimeMessage);
 
+    }
+
+    private String getEmailRecipient(EmailParameters emailParameters) {
+        if (testDiversionEmail != null) {
+            return testDiversionEmail;
+        }
+        return emailParameters.getReceiver();
+    }
+
+    private String getEmailSubject(EmailParameters emailParameters) {
+        if (testDiversionEmail != null) {
+            return String.format("(%s) %s", emailParameters.getReceiver(), emailParameters.getSubject());
+        }
+        return emailParameters.getSubject();
     }
 
     public String buildEmailContent() throws IOException, TemplateException {

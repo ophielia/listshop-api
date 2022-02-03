@@ -1,6 +1,14 @@
-package com.meg.listshop.lmt.api.model;
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
+package com.meg.listshop.auth.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meg.listshop.lmt.api.model.Tag;
 
 import java.util.Date;
 import java.util.List;

@@ -48,6 +48,11 @@ public class MailServiceTest {
     public void testBlowUp() throws TemplateException, IOException, MessagingException {
         EmailParameters parameters = new EmailParameters();
         parameters.setEmailType(EmailType.ResetPassword);
+        parameters.setReceiver("margaret.martin@orange.fr");
+        parameters.setSender("sender");
+        parameters.setSubject("subject");
+        parameters.addParameter("firstParameter", "the first parameter");
+        parameters.addParameter("secondParameter", "the second parameter");
 
         mailService.processEmail(parameters);
     }

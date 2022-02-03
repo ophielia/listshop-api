@@ -1,7 +1,14 @@
-package com.meg.listshop.lmt.api.controller;
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
 
+package com.meg.listshop.auth.api.controller;
+
+import com.meg.listshop.auth.api.model.ProposalResource;
 import com.meg.listshop.lmt.api.exception.ProposalProcessingException;
-import com.meg.listshop.lmt.api.model.ProposalResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

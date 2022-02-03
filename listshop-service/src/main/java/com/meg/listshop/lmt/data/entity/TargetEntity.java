@@ -1,6 +1,13 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.data.entity;
 
-import com.meg.listshop.lmt.api.model.TargetType;
+import com.meg.listshop.auth.api.model.TargetType;
 import com.meg.listshop.lmt.service.TargetServiceConstants;
 import org.hibernate.annotations.GenericGenerator;
 

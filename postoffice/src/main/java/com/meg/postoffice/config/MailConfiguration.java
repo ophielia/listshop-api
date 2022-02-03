@@ -22,6 +22,7 @@ public class MailConfiguration {
     private Boolean smtpAuth;
     private Boolean enableStartTls;
     private Boolean debug;
+    private String testDiversionEmail;
 
     public String getTest() {
         return test;
@@ -101,5 +102,13 @@ public class MailConfiguration {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getTestDiversionEmail() {
+        return testDiversionEmail;
+    }
+
+    public void setTestDiversionEmail(String testDiversionEmail) {
+        this.testDiversionEmail = testDiversionEmail;
     }
 }

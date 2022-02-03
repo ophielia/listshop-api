@@ -1,5 +1,15 @@
-package com.meg.listshop.lmt.api.model;
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
 
+package com.meg.listshop.auth.api.model;
+
+
+import com.meg.listshop.lmt.api.model.AbstractListShopResource;
+import com.meg.listshop.lmt.api.model.ListShopModel;
 
 public class ProposalResource extends AbstractListShopResource implements ListShopModel {
 

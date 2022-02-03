@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ The List Shop
+  ~
+  ~ Copyright (c) 2022.
+  ~
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -23,6 +30,11 @@
         <dependency>
             <groupId>com.meg.listshop</groupId>
             <artifactId>listshop-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.meg.postoffice</groupId>
+            <artifactId>postoffice-service</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -148,16 +160,6 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.meg.postoffice</groupId>
-            <artifactId>postoffice-service</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.meg.postoffice</groupId>
-            <artifactId>postoffice-service</artifactId>
-            <version>1.5.3-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
 

@@ -1,4 +1,11 @@
-package com.meg.listshop.lmt.api.model;
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
+package com.meg.listshop.auth.api.model;
 
 /**
  * Created by margaretmartin on 09/10/2017.

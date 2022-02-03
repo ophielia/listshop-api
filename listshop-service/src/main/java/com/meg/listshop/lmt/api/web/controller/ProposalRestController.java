@@ -1,9 +1,16 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.api.web.controller;
 
-import com.meg.listshop.lmt.api.controller.ProposalRestControllerApi;
+import com.meg.listshop.auth.api.controller.ProposalRestControllerApi;
+import com.meg.listshop.auth.api.model.ProposalResource;
 import com.meg.listshop.lmt.api.exception.ProposalProcessingException;
 import com.meg.listshop.lmt.api.model.ModelMapper;
-import com.meg.listshop.lmt.api.model.ProposalResource;
 import com.meg.listshop.lmt.data.entity.ProposalEntity;
 import com.meg.listshop.lmt.service.proposal.ProposalGeneratorService;
 import com.meg.listshop.lmt.service.proposal.ProposalService;
