@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -9,10 +16,10 @@ import com.meg.listshop.lmt.data.entity.TokenEntity;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
 import com.meg.listshop.lmt.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +29,10 @@ import java.util.UUID;
  */
 @Service
 public class TokenServiceImpl implements TokenService {
+
+
+    @Value("${token.validity.period:86400}")
+    int TOKEN_VALIDITY_IN_SECONDS;
 
     private UserService userService;
 
@@ -34,19 +45,37 @@ public class TokenServiceImpl implements TokenService {
         this.tokenRepository = tokenRepository;
     }
 
-    public void generateTokenForUser(TokenType tokenType, String encryptedEmail) throws BadParameterException {
-        String decodedUsername = null;
-        try {
-            byte[] usernameBytes = Base64.getDecoder().decode(encryptedEmail);
-            decodedUsername = new String(usernameBytes);
-        } catch (IllegalArgumentException iae) {
-            throw new BadParameterException("Cannot decrypt parameter", iae);
+    public void processTokenFromUser(TokenType type, String tokenValue, String tokenParameter) throws BadParameterException {
+        // NOTE: as there is currently only one token type, that is implemented here.  When / if we
+        // have more token types, we can select handlers or the such to handle different logic.
+        // lookup token
+        List<TokenEntity> tokenEntityList = tokenRepository.findByTokenValue(tokenValue);
+        if (tokenEntityList == null || tokenEntityList.size() != 1) {
+            throw new BadParameterException("Unique matching token not found.");
         }
+        var token = tokenEntityList.get(0);
+        long age = new Date().getTime() - token.getCreatedOn().getTime();
+        if (age > (TOKEN_VALIDITY_IN_SECONDS * 1000)) {
+            throw new BadParameterException("Token is no longer valid.");
+        }
+        if (token.getUserId() == null) {
+            throw new BadParameterException("Token is corrupted.");
+        }
+        if (tokenParameter == null) {
+            throw new BadParameterException("Token is incomplete.");
+        }
+        // change password for user to that contained in token parameter
+        userService.changePassword(token.getUserId(), tokenParameter);
 
+        // delete the token
+        tokenRepository.delete(token);
+    }
+
+    public void generateTokenForUser(TokenType tokenType, String userEmail) throws BadParameterException {
         // find user
-        UserEntity user = userService.getUserByUserEmail(decodedUsername);
+        UserEntity user = userService.getUserByUserEmail(userEmail);
         if (user == null) {
-            throw new ObjectNotFoundException(String.format("User not found for username: %s", decodedUsername));
+            throw new ObjectNotFoundException(String.format("User not found for username: %s", userEmail));
         }
 
         // generate the actual token

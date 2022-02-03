@@ -1,5 +1,14 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.auth.api.controller;
 
+import com.meg.listshop.auth.api.model.PostToken;
+import com.meg.listshop.auth.api.model.PostTokenRequest;
 import com.meg.listshop.auth.api.model.PutCreateUser;
 import com.meg.listshop.auth.api.model.UserResource;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
@@ -27,7 +36,10 @@ public interface UserRestControllerApi {
     @GetMapping(value = "name", produces = "application/json")
     ResponseEntity<Object> userNameIsTaken(@RequestParam(value = "name") String email);
 
-    @GetMapping(value = "token", produces = "application/json")
-    ResponseEntity<Object> getToken(@RequestParam(value = "param") String encryptedEmail,
-                                    @RequestParam(value = "token_type") String tokenType) throws BadParameterException;
+    @PostMapping(value = "token/tokenrequest", produces = "application/json")
+    ResponseEntity<Object> getToken(@RequestBody PostTokenRequest postTokenRequest) throws BadParameterException;
+
+    @PostMapping(value = "token", produces = "application/json")
+    ResponseEntity<Object> processToken(@RequestBody PostToken postToken) throws BadParameterException;
+
 }

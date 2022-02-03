@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -8,6 +15,7 @@ import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.data.entity.TokenEntity;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
 import com.meg.listshop.test.TestConstants;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,12 +26,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.UUID;
 
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
 public class TokenServiceImplTest {
+
 
     private TokenServiceImpl tokenService;
 
@@ -36,10 +48,11 @@ public class TokenServiceImplTest {
     private UserEntity userAccount;
 
     @Before
-    public void setUp() {
+    public void setUp() throws InvocationTargetException, IllegalAccessException {
 
-        tokenService = new TokenServiceImpl(userService,
+        this.tokenService = new TokenServiceImpl(userService,
                 tokenRepository);
+        this.tokenService.TOKEN_VALIDITY_IN_SECONDS = 86400;
 
         userAccount = createTestUser(TestConstants.USER_1_ID,
                 TestConstants.USER_1_NAME);
@@ -48,8 +61,7 @@ public class TokenServiceImplTest {
 
     @Test
     public void testGenerateTokenForUser() throws BadParameterException {
-        // encrypted param (matches testuser@test.com)
-        String encrpytedEmail = "dGVzdHVzZXJAdGVzdC5jb20=";
+        String userEmail = "testuser@test.com";
         Date testStart = new Date();
 
         // mock setup
@@ -59,7 +71,7 @@ public class TokenServiceImplTest {
         Mockito.when(tokenRepository.save(tokenCapture.capture())).thenAnswer(i -> i.getArguments()[0]);
 
         // test call
-        tokenService.generateTokenForUser(TokenType.PasswordReset, encrpytedEmail);
+        tokenService.generateTokenForUser(TokenType.PasswordReset, userEmail);
 
         // check saved token
         TokenEntity resultToken = tokenCapture.getValue();
@@ -76,29 +88,10 @@ public class TokenServiceImplTest {
 
     }
 
-    @Test(expected = BadParameterException.class)
-    public void testGenerateTokenForUser_EncryptionKO() throws BadParameterException {
-        // encrypted param (matches testuser@test.com)
-        String encrpytedEmail = "badEncryptedEmail";
-        Date testStart = new Date();
-
-        // mock setup
-        Mockito.when(userService.getUserByUserEmail(userAccount.getEmail()))
-                .thenReturn(userAccount);
-        ArgumentCaptor<TokenEntity> tokenCapture = ArgumentCaptor.forClass(TokenEntity.class);
-        Mockito.when(tokenRepository.save(tokenCapture.capture())).thenAnswer(i -> i.getArguments()[0]);
-
-        // test call
-        tokenService.generateTokenForUser(TokenType.PasswordReset, encrpytedEmail);
-
-
-    }
-
     @Test(expected = ObjectNotFoundException.class)
     public void testGenerateTokenForUser_UserNotFoundKO() throws BadParameterException {
         // encrypted param (matches testuser@test.com)
-        String encrpytedEmail = "dGVzdHVzZXJAdGVzdC5jb20=";
-        Date testStart = new Date();
+        String encrpytedEmail = "testuser@test.com";
 
         // mock setup
         Mockito.when(userService.getUserByUserEmail(userAccount.getEmail()))
@@ -109,7 +102,67 @@ public class TokenServiceImplTest {
         // test call
         tokenService.generateTokenForUser(TokenType.PasswordReset, encrpytedEmail);
 
+    }
 
+    @Test
+    public void testProcessToken() throws BadParameterException {
+        TokenType tokenType = TokenType.PasswordReset;
+        String tokenValue = UUID.randomUUID().toString();
+        String tokenParameter = TestConstants.USER_1_NAME;
+        TokenEntity testTokenEntity = new TokenEntity();
+        testTokenEntity.setTokenType(tokenType);
+        testTokenEntity.setTokenValue(tokenValue);
+        testTokenEntity.setCreatedOn(DateUtils.addHours(new Date(), -1));
+        testTokenEntity.setUserId(TestConstants.USER_1_ID);
+
+        Mockito.when(tokenRepository.findByTokenValue(tokenValue))
+                .thenReturn(Collections.singletonList(testTokenEntity));
+        userService.changePassword(TestConstants.USER_1_ID, tokenParameter);
+        ArgumentCaptor<TokenEntity> deleteCapture = ArgumentCaptor.forClass(TokenEntity.class);
+        Mockito.doNothing().when(tokenRepository).delete(deleteCapture.capture());
+
+        // service call
+        tokenService.processTokenFromUser(tokenType, tokenValue, tokenParameter);
+
+        // assertions
+        Assert.assertNotNull(deleteCapture.getValue());
+
+    }
+
+    @Test(expected = BadParameterException.class)
+    public void testProcessToken_NoTokenFoundKO() throws BadParameterException {
+        TokenType tokenType = TokenType.PasswordReset;
+        String tokenValue = UUID.randomUUID().toString();
+        String tokenParameter = TestConstants.USER_1_NAME;
+        TokenEntity testTokenEntity = new TokenEntity();
+        testTokenEntity.setTokenType(tokenType);
+        testTokenEntity.setTokenValue(tokenValue);
+        testTokenEntity.setCreatedOn(DateUtils.addHours(new Date(), -1));
+        testTokenEntity.setUserId(TestConstants.USER_1_ID);
+
+        Mockito.when(tokenRepository.findByTokenValue(tokenValue))
+                .thenReturn(null);
+
+        // service call
+        tokenService.processTokenFromUser(tokenType, tokenValue, tokenParameter);
+    }
+
+    @Test(expected = BadParameterException.class)
+    public void testProcessToken_NoUserIdFoundKO() throws BadParameterException {
+        TokenType tokenType = TokenType.PasswordReset;
+        String tokenValue = UUID.randomUUID().toString();
+        String tokenParameter = TestConstants.USER_1_NAME;
+        TokenEntity testTokenEntity = new TokenEntity();
+        testTokenEntity.setTokenType(tokenType);
+        testTokenEntity.setTokenValue(tokenValue);
+        testTokenEntity.setCreatedOn(DateUtils.addHours(new Date(), -1));
+        testTokenEntity.setUserId(null);
+
+        Mockito.when(tokenRepository.findByTokenValue(tokenValue))
+                .thenReturn(null);
+
+        // service call
+        tokenService.processTokenFromUser(tokenType, tokenValue, tokenParameter);
     }
 
     private UserEntity createTestUser(Long userId, String userName) {

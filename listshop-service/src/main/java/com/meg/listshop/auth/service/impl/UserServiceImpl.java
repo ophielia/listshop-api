@@ -1,7 +1,13 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.auth.service.impl;
 
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
-import com.meg.listshop.auth.api.model.ClientType;
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.AuthorityName;
 import com.meg.listshop.auth.data.entity.UserDeviceEntity;
@@ -12,12 +18,12 @@ import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -65,16 +71,16 @@ public class UserServiceImpl implements UserService {
         }
 
         // encode password
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        var encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(decodedPassword);
         // create new userentity and fill in
-        UserEntity newUser = new UserEntity(username, email, encodedPassword);
+        var newUser = new UserEntity(username, email, encodedPassword);
         // add creation date
         newUser.setCreationDate(new Date());
         // save user
-        UserEntity createdUser = userRepository.save(newUser);
+        var createdUser = userRepository.save(newUser);
         // create authorities
-        AuthorityEntity authority = createUserAuthorityForUser(createdUser);
+        var authority = createUserAuthorityForUser(createdUser);
         createdUser.getAuthorities().add(authority);
         // save authorities and return
         return userRepository.save(createdUser);
@@ -83,12 +89,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity updateLoginForUser(String username, String token) {
         // create last login date
-        Date lastLogin = new Date();
+        var lastLogin = new Date();
 
         // get user entity
-        UserEntity userEntity = userRepository.findByUsername(username);
+        var userEntity = userRepository.findByUsername(username);
         // get user_device
-        UserDeviceEntity userDeviceEntity = userDeviceRepository.findByToken(token);
+        var userDeviceEntity = userDeviceRepository.findByToken(token);
 
         if (userEntity == null || userDeviceEntity == null) {
             throw new AuthenticationException("user or user device is null.");
@@ -123,7 +129,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // create device info
-        UserDeviceEntity userDeviceEntity = new UserDeviceEntity();
+        var userDeviceEntity = new UserDeviceEntity();
         userDeviceEntity.setUserId(userId);
         userDeviceEntity.setToken(token);
         userDeviceEntity.setBuildNumber(deviceInfo.getBuildNumber());
@@ -142,19 +148,10 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    private void deleteExistingEntry(Long userId, ClientType clientType, String name) {
-        List<UserDeviceEntity> existing = userDeviceRepository.findByUserIdAndClientTypeAndName(userId, clientType, name);
-        if (!existing.isEmpty()) {
-            for (UserDeviceEntity entry : existing) {
-                userDeviceRepository.delete(entry);
-            }
-        }
-    }
-
     @Override
     public void removeLoginForUser(String name, String token) {
         // get user_device
-        UserDeviceEntity userDeviceEntity = userDeviceRepository.findByToken(token);
+        var userDeviceEntity = userDeviceRepository.findByToken(token);
 
         if (userDeviceEntity == null) {
             throw new AuthenticationException("no user device found to logout.");
@@ -163,8 +160,23 @@ public class UserServiceImpl implements UserService {
         userDeviceRepository.delete(userDeviceEntity);
     }
 
+    @Override
+    public void changePassword(Long userId, String newPassword) {
+        // get user_device
+        Optional<UserEntity> userEntity = userRepository.findById(userId);
+        if (!userEntity.isPresent()) {
+            throw new ObjectNotFoundException(String.format("User [%s] not found for password change.", userId));
+        }
+        var user = userEntity.get();
+
+        // encode password
+        var encoder = new BCryptPasswordEncoder();
+        String encodedPassword = encoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+    }
+
     private AuthorityEntity createUserAuthorityForUser(UserEntity createdUser) {
-        AuthorityEntity authority = new AuthorityEntity();
+        var authority = new AuthorityEntity();
         authority.setName(AuthorityName.ROLE_USER);
         authority.setUser(createdUser);
 

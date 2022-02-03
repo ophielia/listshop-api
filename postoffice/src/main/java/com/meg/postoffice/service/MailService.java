@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
@@ -26,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-@Service
+//@Service
 @EnableConfigurationProperties(ContentConfiguration.class)
 public class MailService {
     private static final Logger LOG = LoggerFactory.getLogger(MailService.class);

@@ -61,6 +61,9 @@ public class PostOfficeConfiguration {
     @Bean
     public JavaMailSender javaMailSender() {
         var mailSender = new JavaMailSenderImpl();
+        if (mailConfiguration.getUsername() == null) {
+            return mailSender;
+        }
         mailSender.setHost(mailConfiguration.getHost());
         mailSender.setPort(mailConfiguration.getPort());
 

@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.auth.service;
 
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
@@ -24,4 +31,6 @@ public interface UserService {
     void createDeviceForUserAndDevice(Long userId, ClientDeviceInfo deviceInfo, String token);
 
     void removeLoginForUser(String name, String token);
+
+    void changePassword(Long userId, String newPassword);
 }

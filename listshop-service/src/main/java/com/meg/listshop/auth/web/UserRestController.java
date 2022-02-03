@@ -1,9 +1,14 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.auth.web;
 
 import com.meg.listshop.auth.api.controller.UserRestControllerApi;
-import com.meg.listshop.auth.api.model.ClientDeviceInfo;
-import com.meg.listshop.auth.api.model.PutCreateUser;
-import com.meg.listshop.auth.api.model.UserResource;
+import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtTokenUtil;
@@ -19,7 +24,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.util.Base64;
@@ -98,7 +102,7 @@ public class UserRestController implements UserRestControllerApi {
         UserEntity user = this.userService.getUserByUserEmail(principal.getName());
         var userResource = new UserResource(ModelMapper.toModel(user, ""));
 
-        return new ResponseEntity(userResource, HttpStatus.OK);
+        return new ResponseEntity<>(userResource, HttpStatus.OK);
     }
 
     @Override
@@ -109,15 +113,57 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> getToken(@RequestParam(value = "param") String encryptedEmail,
-                                           @RequestParam(value = "token_type") String tokenType) throws BadParameterException {
+    public ResponseEntity<Object> getToken(@RequestBody PostTokenRequest postTokenRequest) throws BadParameterException {
+        validateTokenRequest(postTokenRequest);
+
         // convert token type string to token type
-        TokenType type = Enum.valueOf(TokenType.class, tokenType);
+        TokenType type = Enum.valueOf(TokenType.class, postTokenRequest.getTokenType());
 
         // call service method
-        tokenService.generateTokenForUser(type, encryptedEmail);
+        tokenService.generateTokenForUser(type, postTokenRequest.getTokenParameter());
 
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> processToken(@RequestBody PostToken postToken) throws BadParameterException {
+        validateToken(postToken);
+
+        // convert token type string to TokenType
+        TokenType type = Enum.valueOf(TokenType.class, postToken.getTokenType());
+
+        // call service method
+        tokenService.processTokenFromUser(type, postToken.getToken(), postToken.getTokenParameter());
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    private void validateTokenRequest(PostTokenRequest postTokenRequest) throws BadParameterException {
+        if (postTokenRequest == null) {
+            throw new BadParameterException("No TokenRequest in request");
+        }
+        if (postTokenRequest.getTokenParameter() == null) {
+            throw new BadParameterException("No parameter in TokenRequest");
+        }
+        if (postTokenRequest.getTokenType() == null) {
+            throw new BadParameterException("No token type in TokenRequest");
+        }
+    }
+
+    private void validateToken(PostToken postToken) throws BadParameterException {
+        if (postToken == null) {
+            throw new BadParameterException("No Token in request");
+        }
+        if (postToken.getTokenParameter() == null) {
+            throw new BadParameterException("No parameter in Token");
+        }
+        if (postToken.getTokenType() == null) {
+            throw new BadParameterException("No token type in Token");
+        }
+        if (postToken.getToken() == null) {
+            throw new BadParameterException("No token value in Token");
+        }
     }
 
 

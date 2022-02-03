@@ -1,11 +1,21 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.auth.web;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.auth.api.model.PostToken;
+import com.meg.listshop.auth.api.model.PostTokenRequest;
 import com.meg.listshop.auth.api.model.User;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
+import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
@@ -25,6 +35,7 @@ import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,7 +47,6 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,6 +56,9 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
+@Sql(value = {"/sql/com/meg/atable/auth/api/UserRestControllerTest-rollback.sql",
+        "/sql/com/meg/atable/auth/api/UserRestControllerTest.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class UserRestControllerTest {
 
     @ClassRule
@@ -120,10 +133,18 @@ public class UserRestControllerTest {
         // get tokens -> count
         var tokenCountBefore = tokenRepository.count();
 
+        // make payload
+        PostTokenRequest tokenRequest = new PostTokenRequest();
+        tokenRequest.setTokenType(TokenType.PasswordReset.toString());
+        tokenRequest.setTokenParameter("testuser");
+        String payload = json(tokenRequest);
+
         // make call - ensure 200 as return code
-        String encryptedEmail = "dGVzdHVzZXI="; // encrypted for testuser, user_id 500
-        String url = "/user/token?token_type=PasswordReset&param=" + encryptedEmail;
-        mockMvc.perform(get(url))
+        String url = "/user/token/tokenrequest";
+        mockMvc.perform(post(url)
+                        .contentType(contentType)
+                        .content(payload)
+                        .characterEncoding("utf-8"))
                 .andExpect(status().isOk());
 
         // get tokens -> count
@@ -132,6 +153,78 @@ public class UserRestControllerTest {
         // ensure tokens have increased by 1
         Assert.assertEquals("token count should have increased by 1", tokenCountBefore + 1, tokenCountAfter);
     }
+
+    @Test
+    public void testPostToken() throws Exception {
+        // get tokens -> count
+        var tokenCountBefore = tokenRepository.count();
+
+        // make payload
+        PostToken postToken = new PostToken();
+        postToken.setTokenType(TokenType.PasswordReset.toString());
+        postToken.setTokenParameter("new password");
+        postToken.setToken("token_password_reset");
+        String payload = json(postToken);
+
+        // make call - ensure 200 as return code
+        String url = "/user/token";
+        mockMvc.perform(post(url)
+                        .contentType(contentType)
+                        .content(payload)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk());
+
+        // get tokens -> count
+        var tokenCountAfter = tokenRepository.count();
+
+        // ensure tokens have increased by 1
+        Assert.assertEquals("token count should have decreased by 1", tokenCountBefore - 1, tokenCountAfter);
+    }
+
+    @Test
+    public void testPostToken_NoPasswordKO() throws Exception {
+        // get tokens -> count
+        var tokenCountBefore = tokenRepository.count();
+
+        // make payload
+        PostToken postToken = new PostToken();
+        postToken.setTokenType(TokenType.PasswordReset.toString());
+        // no password in post token
+        postToken.setToken("token_password_reset");
+        String payload = json(postToken);
+
+        // make call - ensure 400 as return code
+        String url = "/user/token";
+        mockMvc.perform(post(url)
+                        .contentType(contentType)
+                        .content(payload)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    public void testPostToken_NoTokenTypeKO() throws Exception {
+        // get tokens -> count
+        var tokenCountBefore = tokenRepository.count();
+
+        // make payload
+        PostToken postToken = new PostToken();
+        // no token type
+        postToken.setTokenParameter("new password");
+        postToken.setToken("token_password_reset");
+        String payload = json(postToken);
+
+        // make call - ensure 400 as return code
+        String url = "/user/token";
+        mockMvc.perform(post(url)
+                        .contentType(contentType)
+                        .content(payload)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isBadRequest());
+
+    }
+
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
