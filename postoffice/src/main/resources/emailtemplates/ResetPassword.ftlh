@@ -15,7 +15,7 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="http://localhost:4200/assets/static/css/thelistshop.css">
+    <link rel="stylesheet" href="${staticRoot}thelistshop.css">
     <!--<link rel="stylesheet" href="../css/thelistshop.css">-->
 </head>
 
@@ -47,13 +47,14 @@
             <div>
 
                 <div class="col ls-button-padding">
-                    <a href="#" class="ls-user-button ">Reset Your Password</a>
+                    <a href="${tokenLink}" class="ls-user-button ">Reset Your Password</a>
                 </div>
                 <div class="col ls-button-padding">
                     <div>
                     </div>
                     <div class="row">
                         <div class="col-sm">
+                            <p>You'll be directed to a page where you can enter a new password.</p>
                             <p>Or, you can copy and paste the following link into your browser: .</p>
                             <p>If you have any questions, you can contact us at test@email.com.</p>
                             <p>See you soon,</p>
