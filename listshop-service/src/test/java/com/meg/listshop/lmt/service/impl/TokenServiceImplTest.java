@@ -11,6 +11,7 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+import com.meg.listshop.lmt.api.exception.TokenException;
 import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.data.entity.TokenEntity;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
@@ -105,7 +106,7 @@ public class TokenServiceImplTest {
     }
 
     @Test
-    public void testProcessToken() throws BadParameterException {
+    public void testProcessToken() throws BadParameterException, TokenException {
         TokenType tokenType = TokenType.PasswordReset;
         String tokenValue = UUID.randomUUID().toString();
         String tokenParameter = TestConstants.USER_1_NAME;
@@ -129,8 +130,8 @@ public class TokenServiceImplTest {
 
     }
 
-    @Test(expected = BadParameterException.class)
-    public void testProcessToken_NoTokenFoundKO() throws BadParameterException {
+    @Test(expected = TokenException.class)
+    public void testProcessToken_NoTokenFoundKO() throws BadParameterException, TokenException {
         TokenType tokenType = TokenType.PasswordReset;
         String tokenValue = UUID.randomUUID().toString();
         String tokenParameter = TestConstants.USER_1_NAME;
@@ -147,8 +148,8 @@ public class TokenServiceImplTest {
         tokenService.processTokenFromUser(tokenType, tokenValue, tokenParameter);
     }
 
-    @Test(expected = BadParameterException.class)
-    public void testProcessToken_NoUserIdFoundKO() throws BadParameterException {
+    @Test(expected = TokenException.class)
+    public void testProcessToken_NoUserIdFoundKO() throws BadParameterException, TokenException {
         TokenType tokenType = TokenType.PasswordReset;
         String tokenValue = UUID.randomUUID().toString();
         String tokenParameter = TestConstants.USER_1_NAME;

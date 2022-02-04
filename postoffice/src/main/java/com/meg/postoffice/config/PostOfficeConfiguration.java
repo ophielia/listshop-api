@@ -31,7 +31,9 @@ public class PostOfficeConfiguration {
     public MailService mailService() {
         return new MailService(contentConfiguration,
                 freemarkerConfig().getConfiguration(),
-                javaMailSender(), mailConfiguration.getTestDiversionEmail()
+                javaMailSender(),
+                mailConfiguration.getTestDiversionEmail(),
+                mailConfiguration.getSendingEnabled()
         );
     }
 

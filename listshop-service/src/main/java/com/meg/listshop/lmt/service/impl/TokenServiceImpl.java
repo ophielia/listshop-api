@@ -11,6 +11,7 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+import com.meg.listshop.lmt.api.exception.TokenException;
 import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.data.entity.TokenEntity;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
@@ -45,18 +46,18 @@ public class TokenServiceImpl implements TokenService {
         this.tokenRepository = tokenRepository;
     }
 
-    public void processTokenFromUser(TokenType type, String tokenValue, String tokenParameter) throws BadParameterException {
+    public void processTokenFromUser(TokenType type, String tokenValue, String tokenParameter) throws BadParameterException, TokenException {
         // NOTE: as there is currently only one token type, that is implemented here.  When / if we
         // have more token types, we can select handlers or the such to handle different logic.
         // lookup token
         List<TokenEntity> tokenEntityList = tokenRepository.findByTokenValue(tokenValue);
         if (tokenEntityList == null || tokenEntityList.size() != 1) {
-            throw new BadParameterException("Unique matching token not found.");
+            throw new TokenException("Unique matching token not found.");
         }
         var token = tokenEntityList.get(0);
         long age = new Date().getTime() - token.getCreatedOn().getTime();
         if (age > (TOKEN_VALIDITY_IN_SECONDS * 1000)) {
-            throw new BadParameterException("Token is no longer valid.");
+            throw new TokenException("Token is no longer valid.");
         }
         if (token.getUserId() == null) {
             throw new BadParameterException("Token is corrupted.");

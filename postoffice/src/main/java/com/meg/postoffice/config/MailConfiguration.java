@@ -23,6 +23,7 @@ public class MailConfiguration {
     private Boolean enableStartTls;
     private Boolean debug;
     private String testDiversionEmail;
+    private Boolean sendingEnabled;
 
     public String getTest() {
         return test;
@@ -110,5 +111,13 @@ public class MailConfiguration {
 
     public void setTestDiversionEmail(String testDiversionEmail) {
         this.testDiversionEmail = testDiversionEmail;
+    }
+
+    public Boolean getSendingEnabled() {
+        return sendingEnabled;
+    }
+
+    public void setSendingEnabled(Boolean sendingEnabled) {
+        this.sendingEnabled = sendingEnabled;
     }
 }

@@ -13,6 +13,7 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtTokenUtil;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.exception.TokenException;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.service.TokenService;
@@ -126,7 +127,7 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> processToken(@RequestBody PostToken postToken) throws BadParameterException {
+    public ResponseEntity<Object> processToken(@RequestBody PostToken postToken) throws BadParameterException, TokenException {
         validateToken(postToken);
 
         // convert token type string to TokenType

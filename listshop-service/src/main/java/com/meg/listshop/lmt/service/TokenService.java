@@ -8,6 +8,7 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.exception.TokenException;
 import com.meg.listshop.lmt.api.model.TokenType;
 
 /**
@@ -18,5 +19,5 @@ public interface TokenService {
 
     void generateTokenForUser(TokenType tokenType, String userEmail) throws BadParameterException;
 
-    void processTokenFromUser(TokenType type, String tokenValue, String tokenParameter) throws BadParameterException;
+    void processTokenFromUser(TokenType type, String tokenValue, String tokenParameter) throws BadParameterException, TokenException;
 }

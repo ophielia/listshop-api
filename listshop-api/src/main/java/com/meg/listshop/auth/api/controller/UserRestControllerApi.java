@@ -12,6 +12,7 @@ import com.meg.listshop.auth.api.model.PostTokenRequest;
 import com.meg.listshop.auth.api.model.PutCreateUser;
 import com.meg.listshop.auth.api.model.UserResource;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.exception.TokenException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,6 @@ public interface UserRestControllerApi {
     ResponseEntity<Object> getToken(@RequestBody PostTokenRequest postTokenRequest) throws BadParameterException;
 
     @PostMapping(value = "token", produces = "application/json")
-    ResponseEntity<Object> processToken(@RequestBody PostToken postToken) throws BadParameterException;
+    ResponseEntity<Object> processToken(@RequestBody PostToken postToken) throws BadParameterException, TokenException;
 
 }

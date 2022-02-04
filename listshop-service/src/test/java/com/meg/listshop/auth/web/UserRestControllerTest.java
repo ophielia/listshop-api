@@ -225,6 +225,50 @@ public class UserRestControllerTest {
 
     }
 
+    @Test
+    public void testPostToken_TokenNotFoundKO() throws Exception {
+        // get tokens -> count
+        var tokenCountBefore = tokenRepository.count();
+
+        // make payload
+        PostToken postToken = new PostToken();
+        postToken.setTokenType("PasswordReset");
+        postToken.setTokenParameter("new password");
+        postToken.setToken("token_password_resetnotfound");
+        String payload = json(postToken);
+
+        // make call - ensure 400 as return code
+        String url = "/user/token";
+        mockMvc.perform(post(url)
+                        .contentType(contentType)
+                        .content(payload)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    public void testPostToken_TokenExpiredKO() throws Exception {
+        // get tokens -> count
+        var tokenCountBefore = tokenRepository.count();
+
+        // make payload
+        PostToken postToken = new PostToken();
+        postToken.setTokenType("PasswordReset");
+        postToken.setTokenParameter("new password");
+        postToken.setToken("token_password_reset_expired");
+        String payload = json(postToken);
+
+        // make call - ensure 400 as return code
+        String url = "/user/token";
+        mockMvc.perform(post(url)
+                        .contentType(contentType)
+                        .content(payload)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isNotFound());
+
+    }
+
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

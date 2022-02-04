@@ -1,16 +1,68 @@
 <!doctype html>
-<html lang="en">
+<html class="no-js" lang="">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Spring Boot Email using FreeMarker</title>
+    <meta charset="utf-8">
+    <title>Password Reset Email</title>
+    <meta name="description" content="Password reset Email">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="http://localhost:4200/assets/static/css/thelistshop.css">
+    <!--<link rel="stylesheet" href="../css/thelistshop.css">-->
 </head>
+
 <body>
-<div style="margin-top: 10px">Greetings, ${test}</div>
-<div>Your username is <b>${test}</b></div>
-<br/>
-<div> Have a nice day..!</div>
+
+<!-- header -->
+<div class="container ls-email-header"><a href="https://www.the-list-shop.com">
+        <div class="ls-logo-img"></div>
+        <div class="ls-logo-title">the list shop</div>
+    </a>
+</div>
+
+<!-- spacer -->
+<div class="container ">
+    <div class=" ls-spacer"></div>
+</div>
+<!-- content -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <p>Hello!</p>
+
+            <p>This email is here to help you reset your password, and get back to making lists.</p>
+            <p>You can reset your password by clicking on this link:</p>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col ls-button-padding">
+            <div>
+
+                <div class="col ls-button-padding">
+                    <a href="#" class="ls-user-button ">Reset Your Password</a>
+                </div>
+                <div class="col ls-button-padding">
+                    <div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <p>Or, you can copy and paste the following link into your browser: .</p>
+                            <p>If you have any questions, you can contact us at test@email.com.</p>
+                            <p>See you soon,</p>
+                            <p>The List Shop</p>
+
+                        </div>
+                    </div>
+
+
 </body>
+
 </html>

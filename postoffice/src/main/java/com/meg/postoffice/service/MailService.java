@@ -33,17 +33,20 @@ public class MailService {
     private final ContentConfiguration contentConfiguration;
     private final Configuration configuration;
     private final String testDiversionEmail;
+    private final boolean sendingEnabled;
 
     private JavaMailSender javaMailSender;
 
     public MailService(ContentConfiguration contentConfiguration,
                        Configuration freeMarkerViewResolver,
                        JavaMailSender javaMailSender,
-                       String testDiversionEmail) {
+                       String testDiversionEmail,
+                       Boolean sendingEnabled) {
         this.contentConfiguration = contentConfiguration;
         this.configuration = freeMarkerViewResolver;
         this.javaMailSender = javaMailSender;
         this.testDiversionEmail = testDiversionEmail;
+        this.sendingEnabled = sendingEnabled != null ? sendingEnabled : false;
     }
 
     public void processEmail(EmailParameters emailParameters) throws TemplateException, IOException, MessagingException {
@@ -58,7 +61,10 @@ public class MailService {
         helper.setSubject(subject);
         helper.setTo(recipient);
         helper.setText(content, true);
-        // javaMailSender.send(mimeMessage);
+
+        if (sendingEnabled) {
+            javaMailSender.send(mimeMessage);
+        }
 
     }
 

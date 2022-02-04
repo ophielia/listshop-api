@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.api.web.error;
 
 import com.meg.listshop.lmt.api.exception.*;
@@ -36,6 +43,16 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         logger.error(message, ex);
         //
         var apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), message);
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler({TokenException.class})
+    public ResponseEntity<Object> handleTokenException(final Exception ex, final WebRequest request) {
+        var message = "Token Exception - token missing or invalid.";
+        logger.info(ex.getClass().getName());
+        logger.error(message, ex);
+        //
+        var apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), message);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
