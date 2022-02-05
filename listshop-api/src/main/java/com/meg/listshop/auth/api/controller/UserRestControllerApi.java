@@ -43,4 +43,8 @@ public interface UserRestControllerApi {
     @PostMapping(value = "token", produces = "application/json")
     ResponseEntity<Object> processToken(@RequestBody PostToken postToken) throws BadParameterException, TokenException;
 
+
+    @PostMapping(value = "password", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> changeUserPassword(Principal principal, @RequestBody PutCreateUser input) throws BadParameterException;
+
 }

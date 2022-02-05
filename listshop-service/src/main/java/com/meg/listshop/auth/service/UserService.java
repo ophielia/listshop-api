@@ -33,4 +33,6 @@ public interface UserService {
     void removeLoginForUser(String name, String token);
 
     void changePassword(Long userId, String newPassword);
+
+    void changePassword(String userName, String newPassword);
 }

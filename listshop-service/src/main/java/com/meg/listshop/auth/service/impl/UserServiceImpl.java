@@ -162,16 +162,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changePassword(Long userId, String newPassword) {
-        // get user_device
+        // get user
         Optional<UserEntity> userEntity = userRepository.findById(userId);
         if (!userEntity.isPresent()) {
             throw new ObjectNotFoundException(String.format("User [%s] not found for password change.", userId));
         }
         var user = userEntity.get();
 
+        changePassword(user, newPassword);
+    }
+
+    @Override
+    public void changePassword(String userName, String newPassword) {
+        // get user
+        UserEntity user = userRepository.findByUsername(userName);
+        if (user == null) {
+            throw new ObjectNotFoundException(String.format("User [%s] not found for password change.", userName));
+        }
+
+        changePassword(user, newPassword);
+
+
+    }
+
+    private void changePassword(UserEntity user, String password) {
         // encode password
         var encoder = new BCryptPasswordEncoder();
-        String encodedPassword = encoder.encode(newPassword);
+        String encodedPassword = encoder.encode(password);
         user.setPassword(encodedPassword);
     }
 

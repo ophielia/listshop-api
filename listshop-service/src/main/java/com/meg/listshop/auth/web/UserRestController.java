@@ -139,6 +139,34 @@ public class UserRestController implements UserRestControllerApi {
         return ResponseEntity.ok().build();
     }
 
+    @Override
+    public ResponseEntity<Object> changeUserPassword(Principal principal, @RequestBody PutCreateUser input) throws BadParameterException {
+
+        // get username from principal
+        String principalUsername = principal.getName();
+        validatateUserForPasswordChange(input, principalUsername);
+
+        // get new password from input
+        byte[] passwordBytes = Base64.getDecoder().decode(input.getUser().getPassword());
+        var newPassword = new String(passwordBytes);
+        userService.changePassword(principalUsername, newPassword);
+
+        return ResponseEntity.ok().build();
+
+    }
+
+    private void validatateUserForPasswordChange(PutCreateUser putCreateUser, String principalUsername) throws BadParameterException {
+        if (putCreateUser.getUser() == null || putCreateUser.getUser().getUsername() == null) {
+            throw new BadParameterException("User or username in input is blank or missing");
+        }
+        if (!putCreateUser.getUser().getUsername().trim().equals(principalUsername)) {
+            throw new BadParameterException("Username does not match that of logged in user.");
+        }
+        if (putCreateUser.getUser().getPassword() == null || putCreateUser.getUser().getPassword().isEmpty()) {
+            throw new BadParameterException("Input for change password does not include the new password");
+        }
+    }
+
 
     private void validateTokenRequest(PostTokenRequest postTokenRequest) throws BadParameterException {
         if (postTokenRequest == null) {
