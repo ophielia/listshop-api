@@ -16,11 +16,17 @@ import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.data.entity.TokenEntity;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
 import com.meg.listshop.lmt.service.TokenService;
+import com.meg.postoffice.api.model.EmailParameters;
+import com.meg.postoffice.api.model.EmailType;
+import com.meg.postoffice.service.MailService;
+import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +37,17 @@ import java.util.UUID;
 @Service
 public class TokenServiceImpl implements TokenService {
 
+    @Value("${listservice.email.sender:support@the-list-shop.com}")
+    String EMAIL_SENDER;
+
+    @Value("${listservice.email.passwordreset.subject:Password Reset}")
+    String PASSWORD_RESET_SUBJECT;
+
+    @Value("${listservice.email.static.root:https://nastyvarmits.fr/api/static}")
+    String STATIC_RESOURCE_ROOT;
+
+    @Value("${listservice.email.passwordreset.server.root:http://localhost:4200/home}")
+    String TOKEN_ROOT;
 
     @Value("${token.validity.period:86400}")
     int TOKEN_VALIDITY_IN_SECONDS;
@@ -39,11 +56,15 @@ public class TokenServiceImpl implements TokenService {
 
     private TokenRepository tokenRepository;
 
+    private MailService mailService;
+
     @Autowired
     public TokenServiceImpl(UserService userService,
-                            TokenRepository tokenRepository) {
+                            TokenRepository tokenRepository,
+                            MailService mailService) {
         this.userService = userService;
         this.tokenRepository = tokenRepository;
+        this.mailService = mailService;
     }
 
     public void processTokenFromUser(TokenType type, String tokenValue, String tokenParameter) throws BadParameterException, TokenException {
@@ -72,7 +93,7 @@ public class TokenServiceImpl implements TokenService {
         tokenRepository.delete(token);
     }
 
-    public void generateTokenForUser(TokenType tokenType, String userEmail) throws BadParameterException {
+    public void generateTokenForUser(TokenType tokenType, String userEmail) throws BadParameterException, TemplateException, MessagingException, IOException {
         // find user
         UserEntity user = userService.getUserByUserEmail(userEmail);
         if (user == null) {
@@ -82,7 +103,6 @@ public class TokenServiceImpl implements TokenService {
         // generate the actual token
         String token = generateUniqueToken();
 
-
         // create token
         var tokenEntity = new TokenEntity();
         tokenEntity.setUserId(user.getId());
@@ -90,9 +110,18 @@ public class TokenServiceImpl implements TokenService {
         tokenEntity.setTokenValue(token);
         tokenEntity.setCreatedOn(new Date());
         tokenRepository.save(tokenEntity);
-        // send email
-        // MM fill this in when it exists!
 
+        // send email
+        var parameters = new EmailParameters();
+        parameters.setEmailType(EmailType.ResetPassword);
+        parameters.setReceiver(user.getUsername());
+        parameters.setSender(EMAIL_SENDER);
+        parameters.setSubject(PASSWORD_RESET_SUBJECT);
+        parameters.addParameter("staticRoot", STATIC_RESOURCE_ROOT);
+        parameters.addParameter("tokenLink", TOKEN_ROOT);
+        parameters.addParameter("supportEmail", EMAIL_SENDER);
+
+        mailService.processEmail(parameters);
     }
 
     private String generateUniqueToken() {

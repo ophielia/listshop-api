@@ -51,8 +51,9 @@ public class MailServiceTest {
         parameters.setReceiver("margaret.martin@orange.fr");
         parameters.setSender("sender");
         parameters.setSubject("subject");
-        parameters.addParameter("firstParameter", "the first parameter");
-        parameters.addParameter("secondParameter", "the second parameter");
+        parameters.addParameter("staticRoot", "https://nastyvarmits.fr/api/static");
+        parameters.addParameter("tokenLink", "http://localhost:4200/home");
+        parameters.addParameter("supportEmail", "support@the-list-shop.com");
 
         mailService.processEmail(parameters);
     }

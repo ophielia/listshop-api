@@ -13,10 +13,14 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtTokenUtil;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.exception.ProcessingException;
 import com.meg.listshop.lmt.api.exception.TokenException;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.service.TokenService;
+import freemarker.template.TemplateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +30,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Base64;
 
 @Controller
 public class UserRestController implements UserRestControllerApi {
+    private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
 
     private final TokenService tokenService;
 
@@ -69,11 +76,9 @@ public class UserRestController implements UserRestControllerApi {
         var decodedEmail = new String(emailBytes);
         byte[] passwordBytes = Base64.getDecoder().decode(password);
         var decodedPassword = new String(passwordBytes);
-        byte[] usernameBytes = Base64.getDecoder().decode(username);
-        var decodedUsername = new String(usernameBytes);
 
         // call service to create user
-        UserEntity newUser = userService.createUser(decodedUsername, decodedEmail, decodedPassword);
+        UserEntity newUser = userService.createUser(decodedEmail, decodedEmail, decodedPassword);
 
         // authenticate new user
         var authentication = authenticationManager.authenticate(
@@ -120,7 +125,12 @@ public class UserRestController implements UserRestControllerApi {
         TokenType type = Enum.valueOf(TokenType.class, postTokenRequest.getTokenType());
 
         // call service method
-        tokenService.generateTokenForUser(type, postTokenRequest.getTokenParameter());
+        try {
+            tokenService.generateTokenForUser(type, postTokenRequest.getTokenParameter());
+        } catch (TemplateException | MessagingException | IOException e) {
+            LOG.error("Exception {} thrown while processing token request.", e.getClass());
+            throw new ProcessingException("Unable to process token request.");
+        }
 
         return ResponseEntity.ok().build();
     }

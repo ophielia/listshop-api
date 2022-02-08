@@ -16,6 +16,8 @@ import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.data.entity.TokenEntity;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
 import com.meg.listshop.test.TestConstants;
+import com.meg.postoffice.service.MailService;
+import freemarker.template.TemplateException;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,6 +29,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Date;
@@ -46,13 +50,17 @@ public class TokenServiceImplTest {
     @MockBean
     private UserService userService;
 
+    @MockBean
+    private MailService mailService;
+
     private UserEntity userAccount;
 
     @Before
     public void setUp() throws InvocationTargetException, IllegalAccessException {
 
         this.tokenService = new TokenServiceImpl(userService,
-                tokenRepository);
+                tokenRepository,
+                mailService);
         this.tokenService.TOKEN_VALIDITY_IN_SECONDS = 86400;
 
         userAccount = createTestUser(TestConstants.USER_1_ID,
@@ -61,7 +69,7 @@ public class TokenServiceImplTest {
     }
 
     @Test
-    public void testGenerateTokenForUser() throws BadParameterException {
+    public void testGenerateTokenForUser() throws BadParameterException, TemplateException, MessagingException, IOException {
         String userEmail = "testuser@test.com";
         Date testStart = new Date();
 
@@ -90,7 +98,7 @@ public class TokenServiceImplTest {
     }
 
     @Test(expected = ObjectNotFoundException.class)
-    public void testGenerateTokenForUser_UserNotFoundKO() throws BadParameterException {
+    public void testGenerateTokenForUser_UserNotFoundKO() throws BadParameterException, TemplateException, MessagingException, IOException {
         // encrypted param (matches testuser@test.com)
         String encrpytedEmail = "testuser@test.com";
 

@@ -96,6 +96,16 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
+    @ExceptionHandler({ProcessingException.class})
+    public ResponseEntity<Object> handleProcessingException(final Exception ex, final WebRequest request) {
+        var message = "Error occured while processing request.";
+        logger.info(ex.getClass().getName());
+        logger.error(message, ex);
+        //
+        var apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), message);
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {
         logger.info(ex.getClass().getName());
