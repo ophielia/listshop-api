@@ -248,6 +248,55 @@ public class UserServiceImplMockTest {
 
     }
 
+    @Test
+    public void testChangePasswordForUser() {
+
+        // This one, by user id
+
+        String token = "abcdefg1234567";
+
+        UserDeviceEntity deviceInfo = new UserDeviceEntity();
+        deviceInfo.setBuildNumber(buildNumber);
+        deviceInfo.setClientVersion(clientVersion);
+        deviceInfo.setClientType(clientType);
+        deviceInfo.setClientDeviceId(deviceId);
+        deviceInfo.setModel(model);
+        deviceInfo.setName(name);
+        deviceInfo.setOs(ossystem);
+        deviceInfo.setOsVersion(osversion);
+
+
+        UserEntity testUser = new UserEntity();
+        testUser.setId(TestConstants.USER_3_ID);
+        Mockito.when(userRepository.findByUsername(TestConstants.USER_3_NAME)).thenReturn(testUser);
+        Mockito.when(userDeviceRepository.findByToken(token)).thenReturn(deviceInfo);
+
+        ArgumentCaptor<UserEntity> userCapture = ArgumentCaptor.forClass(UserEntity.class);
+        Mockito.when(userRepository.save(userCapture.capture())).thenReturn(null);
+
+        ArgumentCaptor<UserDeviceEntity> userDeviceCapture = ArgumentCaptor.forClass(UserDeviceEntity.class);
+        Mockito.when(userDeviceRepository.save(userDeviceCapture.capture())).thenReturn(null);
+
+
+        Date now = new Date();
+        Date thirtySecondsAgo = new Date(now.getTime() - 30000);
+
+        userService.updateLoginForUser(TestConstants.USER_3_NAME, token);
+
+        UserDeviceEntity capturedUserDevice = userDeviceCapture.getValue();
+        assertNotNull(capturedUserDevice);
+        System.out.println(now);
+        System.out.println(now.getTime());
+        System.out.println(capturedUserDevice.getLastLogin());
+        System.out.println(capturedUserDevice.getLastLogin().getTime());
+        assertTrue(DateUtils.isAfterOrEqual(thirtySecondsAgo, capturedUserDevice.getLastLogin()));
+
+        UserEntity caturedUser = userCapture.getValue();
+        assertNotNull(caturedUser);
+        assertTrue(DateUtils.isAfterOrEqual(thirtySecondsAgo, caturedUser.getLastLogin()));
+
+
+    }
 
     @Test
     public void testRemoveLoginForUser() {

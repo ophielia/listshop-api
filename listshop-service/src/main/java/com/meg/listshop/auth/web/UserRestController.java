@@ -63,7 +63,6 @@ public class UserRestController implements UserRestControllerApi {
         // get email and password
         String email = user.getEmail();
         String password = user.getPassword();
-        String username = user.getUsername();
 
         // decode email and password
         byte[] emailBytes = Base64.getDecoder().decode(email);

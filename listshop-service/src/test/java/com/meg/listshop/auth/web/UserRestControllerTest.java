@@ -269,6 +269,37 @@ public class UserRestControllerTest {
 
     }
 
+    @Test
+    public void testChangePassword() throws Exception {
+
+        // start here
+
+
+        // get tokens -> count
+        var tokenCountBefore = tokenRepository.count();
+
+        // make payload
+        PostToken postToken = new PostToken();
+        postToken.setTokenType(TokenType.PasswordReset.toString());
+        postToken.setTokenParameter("new password");
+        postToken.setToken("token_password_reset");
+        String payload = json(postToken);
+
+        // make call - ensure 200 as return code
+        String url = "/user/token";
+        mockMvc.perform(post(url)
+                        .contentType(contentType)
+                        .content(payload)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk());
+
+        // get tokens -> count
+        var tokenCountAfter = tokenRepository.count();
+
+        // ensure tokens have increased by 1
+        Assert.assertEquals("token count should have decreased by 1", tokenCountBefore - 1, tokenCountAfter);
+    }
+
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
