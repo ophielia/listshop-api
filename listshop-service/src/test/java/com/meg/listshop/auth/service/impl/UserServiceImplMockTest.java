@@ -20,6 +20,7 @@ import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.test.TestConstants;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -250,52 +251,30 @@ public class UserServiceImplMockTest {
 
     @Test
     public void testChangePasswordForUser() {
+        var userName = TestConstants.USER_1_EMAIL;
+        var newPassword = "NEWPASSWORD";
+        var encoder = new BCryptPasswordEncoder();
+        String encodedPassword = encoder.encode(newPassword);
+        long startTime = new Date().getTime();
 
-        // This one, by user id
+        // create fixtures
+        UserEntity mockUserEntity = new UserEntity();
 
-        String token = "abcdefg1234567";
-
-        UserDeviceEntity deviceInfo = new UserDeviceEntity();
-        deviceInfo.setBuildNumber(buildNumber);
-        deviceInfo.setClientVersion(clientVersion);
-        deviceInfo.setClientType(clientType);
-        deviceInfo.setClientDeviceId(deviceId);
-        deviceInfo.setModel(model);
-        deviceInfo.setName(name);
-        deviceInfo.setOs(ossystem);
-        deviceInfo.setOsVersion(osversion);
-
-
-        UserEntity testUser = new UserEntity();
-        testUser.setId(TestConstants.USER_3_ID);
-        Mockito.when(userRepository.findByUsername(TestConstants.USER_3_NAME)).thenReturn(testUser);
-        Mockito.when(userDeviceRepository.findByToken(token)).thenReturn(deviceInfo);
-
+        Mockito.when(userRepository.findByEmail(userName)).thenReturn(mockUserEntity);
         ArgumentCaptor<UserEntity> userCapture = ArgumentCaptor.forClass(UserEntity.class);
         Mockito.when(userRepository.save(userCapture.capture())).thenReturn(null);
 
-        ArgumentCaptor<UserDeviceEntity> userDeviceCapture = ArgumentCaptor.forClass(UserDeviceEntity.class);
-        Mockito.when(userDeviceRepository.save(userDeviceCapture.capture())).thenReturn(null);
+        // test call
+        userService.changePassword(userName, newPassword);
 
+        // verify calls
+        Mockito.verify(userRepository, times(1))
+                .findByEmail(userName);
 
-        Date now = new Date();
-        Date thirtySecondsAgo = new Date(now.getTime() - 30000);
-
-        userService.updateLoginForUser(TestConstants.USER_3_NAME, token);
-
-        UserDeviceEntity capturedUserDevice = userDeviceCapture.getValue();
-        assertNotNull(capturedUserDevice);
-        System.out.println(now);
-        System.out.println(now.getTime());
-        System.out.println(capturedUserDevice.getLastLogin());
-        System.out.println(capturedUserDevice.getLastLogin().getTime());
-        assertTrue(DateUtils.isAfterOrEqual(thirtySecondsAgo, capturedUserDevice.getLastLogin()));
-
-        UserEntity caturedUser = userCapture.getValue();
-        assertNotNull(caturedUser);
-        assertTrue(DateUtils.isAfterOrEqual(thirtySecondsAgo, caturedUser.getLastLogin()));
-
-
+        // verify capture
+        Assert.assertNotNull("value captured on save", userCapture.getValue());
+        Assert.assertEquals("changed password doesn't match", userCapture.getValue().getPassword().substring(0, 4), encodedPassword.substring(0, 4));
+        Assert.assertTrue("date of password change should be set", userCapture.getValue().getLastPasswordResetDate().getTime() >= startTime);
     }
 
     @Test
