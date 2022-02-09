@@ -139,7 +139,7 @@ public class UserRestControllerTest {
         // make payload
         PostTokenRequest tokenRequest = new PostTokenRequest();
         tokenRequest.setTokenType(TokenType.PasswordReset.toString());
-        tokenRequest.setTokenParameter("testuser");
+        tokenRequest.setTokenParameter(TestConstants.USER_1_EMAIL);
         String payload = json(tokenRequest);
 
         // make call - ensure 200 as return code

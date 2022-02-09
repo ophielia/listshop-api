@@ -65,12 +65,13 @@ public class TokenServiceImplTest {
 
         userAccount = createTestUser(TestConstants.USER_1_ID,
                 TestConstants.USER_1_EMAIL);
+        userAccount.setEmail(TestConstants.USER_1_EMAIL);
 
     }
 
     @Test
     public void testGenerateTokenForUser() throws BadParameterException, TemplateException, MessagingException, IOException {
-        String userEmail = "testuser@test.com";
+        String userEmail = TestConstants.USER_1_EMAIL;
         Date testStart = new Date();
 
         // mock setup
