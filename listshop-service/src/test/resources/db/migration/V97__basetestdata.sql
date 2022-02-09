@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 insert into public.users (user_id, email, enabled, last_password_reset_date, password, username, creation_date,
                           last_login)
 values (1, 'rufus', true, null, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'rufus', null, null),
@@ -7,7 +14,7 @@ values (1, 'rufus', true, null, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xf
        (29, 'michelle', true, null, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'michelle', null,
         null),
        (2, 'testname', null, null, 'password', 'testname', null, null),
-       (500, 'testuser', true, null, 'password', 'testuser', null, null),
+       (500, 'testuser@testuser.com', true, null, 'password', 'testuser', null, null),
        (501, 'adduser', true, null, 'password', 'adduser', null, null),
        (502, 'deleteuser', true, null, 'password', 'deleteuser', null, null);
 

@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.Application;
@@ -43,7 +50,7 @@ public class DishSearchServiceImplTest {
 
     @Before
     public void setUp() {
-        userAccount = userService.getUserByUserEmail(TestConstants.USER_1_NAME);
+        userAccount = userService.getUserByUserEmail(TestConstants.USER_1_EMAIL);
     }
 
     @Test

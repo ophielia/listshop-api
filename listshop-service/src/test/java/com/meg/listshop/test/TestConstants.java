@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.test;
 
 /**
@@ -5,7 +12,7 @@ package com.meg.listshop.test;
  */
 public final class TestConstants {
 
-    public final static String USER_1_NAME = "testuser";
+    public final static String USER_1_EMAIL = "testuser@testuser.com";
     public static final Long USER_1_ID = 500L;
     public final static String USER_2_NAME = "adduser";
     public static final Long USER_2_ID = 501L;

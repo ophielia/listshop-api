@@ -10,6 +10,7 @@ package com.meg.listshop.auth.web;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.api.model.PostToken;
 import com.meg.listshop.auth.api.model.PostTokenRequest;
+import com.meg.listshop.auth.api.model.PutCreateUser;
 import com.meg.listshop.auth.api.model.User;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
@@ -44,8 +45,10 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Date;
 
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -69,7 +72,7 @@ public class UserRestControllerTest {
             Charset.forName("utf8"));
     private MockMvc mockMvc;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
-    private UserDetails userDetails;
+    private UserDetails userDetailsChangePassword;
 
     @Autowired
     private TokenRepository tokenRepository;
@@ -97,9 +100,9 @@ public class UserRestControllerTest {
                 .apply(springSecurity())
                 .build();
 
-        UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
-        userDetails = new JwtUser(userAccount.getId(),
-                TestConstants.USER_3_NAME,
+        UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_1_EMAIL);
+        userDetailsChangePassword = new JwtUser(userAccount.getId(),
+                TestConstants.USER_1_EMAIL,
                 null,
                 "Passw0rd",
                 null,
@@ -269,37 +272,41 @@ public class UserRestControllerTest {
 
     }
 
+
     @Test
+    @WithMockUser
     public void testChangePassword() throws Exception {
 
-        // start here
-
-
-        // get tokens -> count
-        var tokenCountBefore = tokenRepository.count();
+        // get user before password change in order to compare password
+        UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_1_EMAIL);
+        var passwordBeforeChange = userAccount.getPassword();
+        long startTime = new Date().getTime();
 
         // make payload
-        PostToken postToken = new PostToken();
-        postToken.setTokenType(TokenType.PasswordReset.toString());
-        postToken.setTokenParameter("new password");
-        postToken.setToken("token_password_reset");
-        String payload = json(postToken);
+        var putCreateUser = new PutCreateUser();
+        var user = new User(userAccount.getEmail(), userAccount.getEmail());
+        user.setPassword("NEWPASSWORD");
+        putCreateUser.setUser(user);
+        String payload = json(putCreateUser);
 
         // make call - ensure 200 as return code
-        String url = "/user/token";
+        String url = "/user/password";
         mockMvc.perform(post(url)
+                        .with(user(userDetailsChangePassword))
                         .contentType(contentType)
                         .content(payload)
                         .characterEncoding("utf-8"))
                 .andExpect(status().isOk());
 
-        // get tokens -> count
-        var tokenCountAfter = tokenRepository.count();
+        // get user info after password change
+        UserEntity userAccountAfter = userService.getUserByUserEmail(TestConstants.USER_1_EMAIL);
+        var passwordAfterChange = userAccountAfter.getPassword();
+        var passwordResetDate = userAccountAfter.getLastPasswordResetDate();
 
-        // ensure tokens have increased by 1
-        Assert.assertEquals("token count should have decreased by 1", tokenCountBefore - 1, tokenCountAfter);
+        // ensure password has changed, and password reset is updated
+        Assert.assertNotEquals("password should have changed", passwordBeforeChange, passwordAfterChange);
+        Assert.assertTrue("reset date should be equal or after start of test", passwordResetDate.getTime() >= startTime);
     }
-
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

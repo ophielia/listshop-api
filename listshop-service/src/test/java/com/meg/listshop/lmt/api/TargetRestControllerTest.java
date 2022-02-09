@@ -95,7 +95,7 @@ public class TargetRestControllerTest {
 
 
         userDetails = new JwtUser(TestConstants.USER_1_ID,
-                TestConstants.USER_1_NAME,
+                TestConstants.USER_1_EMAIL,
                 null,
                 null,
                 null,

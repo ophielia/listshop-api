@@ -64,7 +64,7 @@ public class TokenServiceImplTest {
         this.tokenService.TOKEN_VALIDITY_IN_SECONDS = 86400;
 
         userAccount = createTestUser(TestConstants.USER_1_ID,
-                TestConstants.USER_1_NAME);
+                TestConstants.USER_1_EMAIL);
 
     }
 
@@ -117,7 +117,7 @@ public class TokenServiceImplTest {
     public void testProcessToken() throws BadParameterException, TokenException {
         TokenType tokenType = TokenType.PasswordReset;
         String tokenValue = UUID.randomUUID().toString();
-        String tokenParameter = TestConstants.USER_1_NAME;
+        String tokenParameter = TestConstants.USER_1_EMAIL;
         TokenEntity testTokenEntity = new TokenEntity();
         testTokenEntity.setTokenType(tokenType);
         testTokenEntity.setTokenValue(tokenValue);
@@ -142,7 +142,7 @@ public class TokenServiceImplTest {
     public void testProcessToken_NoTokenFoundKO() throws BadParameterException, TokenException {
         TokenType tokenType = TokenType.PasswordReset;
         String tokenValue = UUID.randomUUID().toString();
-        String tokenParameter = TestConstants.USER_1_NAME;
+        String tokenParameter = TestConstants.USER_1_EMAIL;
         TokenEntity testTokenEntity = new TokenEntity();
         testTokenEntity.setTokenType(tokenType);
         testTokenEntity.setTokenValue(tokenValue);
@@ -160,7 +160,7 @@ public class TokenServiceImplTest {
     public void testProcessToken_NoUserIdFoundKO() throws BadParameterException, TokenException {
         TokenType tokenType = TokenType.PasswordReset;
         String tokenValue = UUID.randomUUID().toString();
-        String tokenParameter = TestConstants.USER_1_NAME;
+        String tokenParameter = TestConstants.USER_1_EMAIL;
         TokenEntity testTokenEntity = new TokenEntity();
         testTokenEntity.setTokenType(tokenType);
         testTokenEntity.setTokenValue(tokenValue);

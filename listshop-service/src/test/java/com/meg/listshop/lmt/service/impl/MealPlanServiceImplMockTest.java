@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -64,7 +71,7 @@ public class MealPlanServiceImplMockTest {
 
 
         userAccount = createTestUser(TestConstants.USER_1_ID,
-                TestConstants.USER_1_NAME);
+                TestConstants.USER_1_EMAIL);
         deleteUserAccount = createTestUser(TestConstants.USER_3_ID,
                 TestConstants.USER_3_NAME);
         modifyUserAccount = createTestUser(TestConstants.USER_2_ID,

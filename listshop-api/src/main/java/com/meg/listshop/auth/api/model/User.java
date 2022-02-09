@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.auth.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,6 +28,9 @@ public class User {
     private String password;
     private String[] roles;
     private String token;
+
+    public User() {
+    }
 
     public User(String username, String email) {
         this.email = email;

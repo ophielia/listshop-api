@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
         // get user
         Optional<UserEntity> userEntityOptional = userRepository.findById(userId);
         if (!userEntityOptional.isPresent()) {
-            throw new RuntimeException("Can't retrieve user for userId [" + userId + "]");
+            throw new ObjectNotFoundException("Can't retrieve user for userId [" + userId + "]");
         }
 
         // create device info
@@ -175,7 +175,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changePassword(String userName, String newPassword) {
         // get user
-        UserEntity user = userRepository.findByUsername(userName);
+        UserEntity user = userRepository.findByEmail(userName);
         if (user == null) {
             throw new ObjectNotFoundException(String.format("User [%s] not found for password change.", userName));
         }
@@ -190,6 +190,8 @@ public class UserServiceImpl implements UserService {
         var encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(password);
         user.setPassword(encodedPassword);
+        user.setLastPasswordResetDate(new Date());
+        userRepository.save(user);
     }
 
     private AuthorityEntity createUserAuthorityForUser(UserEntity createdUser) {
