@@ -139,7 +139,7 @@ public class UserServiceImplMockTest {
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setUsername(TestConstants.USER_3_NAME);
         Mockito.when(userRepository.findById(TestConstants.USER_3_ID)).thenReturn(Optional.of(testUser));
-        Mockito.when(userRepository.findByUsername(TestConstants.USER_3_NAME)).thenReturn(testUser);
+        Mockito.when(userRepository.findByEmail(TestConstants.USER_3_NAME)).thenReturn(testUser);
 
         UserDeviceEntity testUserDevice = new UserDeviceEntity();
         testUserDevice.setUserId(TestConstants.USER_3_ID);
@@ -188,7 +188,7 @@ public class UserServiceImplMockTest {
         testUserDevice.setUserId(TestConstants.USER_3_ID);
 
         Mockito.when(userRepository.findById(TestConstants.USER_3_ID)).thenReturn(Optional.of(testUser));
-        Mockito.when(userRepository.findByUsername(TestConstants.USER_3_NAME)).thenReturn(testUser);
+        Mockito.when(userRepository.findByEmail(TestConstants.USER_3_NAME)).thenReturn(testUser);
 
         ArgumentCaptor<UserDeviceEntity> userDeviceCapture = ArgumentCaptor.forClass(UserDeviceEntity.class);
         Mockito.when(userDeviceRepository.save(userDeviceCapture.capture())).thenReturn(null);
@@ -219,7 +219,7 @@ public class UserServiceImplMockTest {
 
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
-        Mockito.when(userRepository.findByUsername(TestConstants.USER_3_NAME)).thenReturn(testUser);
+        Mockito.when(userRepository.findByEmail(TestConstants.USER_3_NAME)).thenReturn(testUser);
         Mockito.when(userDeviceRepository.findByToken(token)).thenReturn(deviceInfo);
 
         ArgumentCaptor<UserEntity> userCapture = ArgumentCaptor.forClass(UserEntity.class);

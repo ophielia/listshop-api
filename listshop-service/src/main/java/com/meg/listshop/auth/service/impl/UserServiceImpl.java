@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
         var lastLogin = new Date();
 
         // get user entity
-        var userEntity = userRepository.findByUsername(username);
+        var userEntity = userRepository.findByEmail(username);
         // get user_device
         var userDeviceEntity = userDeviceRepository.findByToken(token);
 
