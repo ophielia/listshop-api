@@ -12,6 +12,13 @@
  *
  */
 
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2017 - 2022.
+ *
+ */
+
 insert into public.users (user_id, email, enabled, last_password_reset_date, password, username, creation_date,
                           last_login)
 values (1, 'rufus', true, null, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'rufus', null, null),
