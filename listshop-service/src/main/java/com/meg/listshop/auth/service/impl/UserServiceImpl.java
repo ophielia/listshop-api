@@ -19,6 +19,8 @@ import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,8 @@ public class UserServiceImpl implements UserService {
     private final UserDeviceRepository userDeviceRepository;
 
     private final AuthorityRepository authorityRepository;
+
+    protected final Log logger = LogFactory.getLog(UserServiceImpl.class);
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, UserDeviceRepository userDeviceRepository, AuthorityRepository authorityRepository) {
@@ -173,11 +177,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(String userName, String newPassword) {
+    public void changePassword(String eMail, String newPassword) {
         // get user
-        UserEntity user = userRepository.findByEmail(userName);
+        UserEntity user = userRepository.findByEmail(eMail);
         if (user == null) {
-            throw new ObjectNotFoundException(String.format("User [%s] not found for password change.", userName));
+            logger.warn(String.format("no user found for email [%s] in changePassword", eMail));
+            throw new ObjectNotFoundException(String.format("User [%s] not found for password change.", eMail));
         }
 
         changePassword(user, newPassword);
@@ -189,9 +194,12 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String email) {
         UserEntity user = userRepository.findByEmail(email);
 
-        // delete data for user
-
-        // delete login for user
+        if (user == null) {
+            logger.warn(String.format("no user found for email [%s] in deleteUser", email));
+            throw new ObjectNotFoundException(String.format("No user found for email: %s", email));
+        }
+        userRepository.deleteUser(user.getId());
+        userRepository.flush();
     }
 
     private void changePassword(UserEntity user, String password) {

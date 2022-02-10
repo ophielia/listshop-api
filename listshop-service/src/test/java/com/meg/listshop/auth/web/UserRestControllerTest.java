@@ -40,6 +40,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -60,6 +61,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @WebAppConfiguration
 @ActiveProfiles("test")
 @Sql(value = {"/sql/com/meg/atable/auth/api/UserRestControllerTest-rollback.sql",
+        "/sql/com/meg/atable/auth/api/CopyUser.sql",
         "/sql/com/meg/atable/auth/api/UserRestControllerTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class UserRestControllerTest {
@@ -73,6 +75,8 @@ public class UserRestControllerTest {
     private MockMvc mockMvc;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private UserDetails userDetailsChangePassword;
+    private UserDetails userToDelete;
+    private UserDetails userNotFound;
 
     @Autowired
     private TokenRepository tokenRepository;
@@ -109,6 +113,21 @@ public class UserRestControllerTest {
                 true,
                 null);
 
+        userToDelete = new JwtUser(userAccount.getId(),
+                "bravenewworld@test.com",
+                "bravenewworld@test.com",
+                "Passw0rd",
+                null,
+                true,
+                null);
+
+        userNotFound = new JwtUser(userAccount.getId(),
+                "notappearinginthisfilm",
+                "notappearinginthisfilm",
+                "Passw0rd",
+                null,
+                true,
+                null);
     }
 
 
@@ -272,7 +291,6 @@ public class UserRestControllerTest {
 
     }
 
-
     @Test
     @WithMockUser
     public void testChangePassword() throws Exception {
@@ -306,6 +324,36 @@ public class UserRestControllerTest {
         // ensure password has changed, and password reset is updated
         Assert.assertNotEquals("password should have changed", passwordBeforeChange, passwordAfterChange);
         Assert.assertTrue("reset date should be equal or after start of test", passwordResetDate.getTime() >= startTime);
+    }
+
+    @Test
+    @WithMockUser
+    public void testDeleteUser_NotFoundKO() throws Exception {
+
+        // make call - ensure 200 as return code
+        String url = "/user";
+        mockMvc.perform(MockMvcRequestBuilders.delete(url)
+                        .with(user(userNotFound))
+                        .contentType(contentType)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testDeleteUser() throws Exception {
+
+        // make call - ensure 200 as return code
+        String url = "/user";
+        mockMvc.perform(MockMvcRequestBuilders.delete(url)
+                        .with(user(userToDelete))
+                        .contentType(contentType)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk());
+
+        UserEntity user = userService.getUserByUserEmail("bravenewworld@test.com");
+        Assert.assertNull(user);
     }
 
     private String json(Object o) throws IOException {

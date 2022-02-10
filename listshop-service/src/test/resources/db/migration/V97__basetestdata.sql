@@ -5854,18 +5854,36 @@ insert into public.proposal (proposal_id, user_id, is_refreshable, created)
 values (500, 20, false, '2021-04-11 11:46:31.681524'),
        (501, 20, false, '2021-04-11 11:46:31.681524'),
        (502, 20, false, '2021-04-11 11:46:31.681524');
-insert into public.proposal_approach (proposal_approach_id, proposal_context_id, approach_number, instructions)
-values (500, 500, 0, '4;1;2;3'),
-       (510, 501, 0, '4;1;3'),
-       (511, 501, 1, '1;3;4'),
-       (510, 501, 0, '4;1;3'),
-       (511, 501, 1, '1;3;4');
+
 insert into public.proposal_context (proposal_context_id, proposal_id, current_attempt_index, current_approach_type,
                                      current_approach_index, meal_plan_id, target_id, target_hash_code,
                                      proposal_hash_code)
 values (500, 500, null, 'WHEEL_MIXED', 0, null, 500, '-623001283', '0'),
        (502, 502, null, 'WHEEL_MIXED', 0, null, 501, null, null),
        (501, 501, null, 'WHEEL_MIXED', 0, null, 501, '-623001283', '0');
+
+insert into public.proposal_approach (proposal_approach_id, proposal_context_id, approach_number, instructions)
+values (500, 500, 0, '4;1;2;3'),
+       (510, 501, 0, '4;1;3'),
+       (511, 501, 1, '1;3;4'),
+       (510, 501, 0, '4;1;3'),
+       (511, 501, 1, '1;3;4');
+
+insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
+                                  slot_dish_tag_id)
+values (500, 1, null, 500, null, 320),
+       (501, 2, null, 500, 66, 320),
+       (502, 3, null, 500, null, 320),
+       (503, 4, null, 500, null, 320),
+       (510, 1, null, 500, null, 320),
+       (511, 2, null, 501, 66, 320),
+       (512, 3, null, 501, null, 320),
+       (513, 4, null, 501, null, 320),
+       (620, 1, null, 502, 96, 320),
+       (521, 2, null, 502, 66, 320),
+       (522, 3, null, 502, 105, 320),
+       (523, 4, null, 502, 115, 320);
+
 insert into public.proposal_dish (dish_slot_id, slot_id, dish_id, matched_tag_ids)
 values (500, 500, 96, '89'),
        (501, 500, 37, '89'),
@@ -5921,20 +5939,7 @@ values (500, 500, 96, '89'),
        (647, 523, 63, '81'),
        (648, 523, 10, '81'),
        (649, 523, 77, '81');
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (500, 1, null, 500, null, 320),
-       (501, 2, null, 500, 66, 320),
-       (502, 3, null, 500, null, 320),
-       (503, 4, null, 500, null, 320),
-       (510, 1, null, 500, null, 320),
-       (511, 2, null, 501, 66, 320),
-       (512, 3, null, 501, null, 320),
-       (513, 4, null, 501, null, 320),
-       (620, 1, null, 502, 96, 320),
-       (521, 2, null, 502, 66, 320),
-       (522, 3, null, 502, 105, 320),
-       (523, 4, null, 502, 115, 320);
+
 insert into public.tag_search_group (tag_search_group_id, group_id, member_id)
 values (1, 160, 160),
        (2, 325, 325),
