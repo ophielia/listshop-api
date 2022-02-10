@@ -77,7 +77,7 @@ BEGIN
                    added_on,
                    crossed_off,
                    source,
-                   pList.list_id,
+                   nList,
                    tag_id,
                    used_count,
                    dish_sources,
@@ -167,7 +167,7 @@ END;
 $_$;
 
 
-select copy_user(20, 'usertodelete4@test.com')
+select copy_user(20, 'usertodelete6@test.com')
 into q;
 
 drop table q;

@@ -103,6 +103,12 @@ public class UserRestController implements UserRestControllerApi {
         return ResponseEntity.ok(new UserResource(ModelMapper.toModel(userDetails, token)));
     }
 
+    @Override
+    public ResponseEntity<Object> deleteUser(Principal principal) throws BadParameterException {
+        this.userService.deleteUser(principal.getName());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     public ResponseEntity<UserResource> getUser(Principal principal) {
         UserEntity user = this.userService.getUserByUserEmail(principal.getName());
         var userResource = new UserResource(ModelMapper.toModel(user, ""));

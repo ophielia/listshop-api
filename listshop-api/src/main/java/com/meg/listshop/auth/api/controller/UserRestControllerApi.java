@@ -30,6 +30,8 @@ public interface UserRestControllerApi {
     @PostMapping(produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createUser(@RequestBody PutCreateUser input) throws BadParameterException;
 
+    @DeleteMapping(produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> deleteUser(Principal principal) throws BadParameterException;
 
     @GetMapping(produces = "application/json")
     ResponseEntity<UserResource> getUser(Principal principal);

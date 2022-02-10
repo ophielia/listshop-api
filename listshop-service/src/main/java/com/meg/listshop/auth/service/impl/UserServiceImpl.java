@@ -185,6 +185,15 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public void deleteUser(String email) {
+        UserEntity user = userRepository.findByEmail(email);
+
+        // delete data for user
+
+        // delete login for user
+    }
+
     private void changePassword(UserEntity user, String password) {
         // encode password
         var encoder = new BCryptPasswordEncoder();
