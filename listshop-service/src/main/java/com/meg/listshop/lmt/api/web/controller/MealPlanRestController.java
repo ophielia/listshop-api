@@ -49,10 +49,11 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
 
     @Override
     public ResponseEntity<MealPlanListResource> retrieveMealPlans(HttpServletRequest request, Principal principal) {
-        List<MealPlan> mealPlanList = mealPlanService
+        List<MealPlanResource> mealPlanList = mealPlanService
                 .getMealPlansForUserName(principal.getName())
                 .stream()
                 .map(ModelMapper::toModel)
+                .map(MealPlanResource::new)
                 .collect(Collectors.toList());
 
         MealPlanListResource resource = new MealPlanListResource(mealPlanList);
@@ -69,7 +70,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity result = mealPlanService.createMealPlan(principal.getName(), mealPlanEntity);
 
         if (result != null) {
-            MealPlanResource mealPlanResource = new MealPlanResource(result);
+            MealPlanResource mealPlanResource = new MealPlanResource(ModelMapper.toModel(result));
             Optional<Link> forOneMealPlan = mealPlanResource.getLink("self");
             HttpHeaders headers = new HttpHeaders();
             try {
@@ -92,7 +93,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity result = mealPlanService.createMealPlanFromProposal(principal.getName(), proposalId);
 
         if (result != null) {
-            Optional<Link> forOneMealPlan = new MealPlanResource(result).getLink("self");
+            Optional<Link> forOneMealPlan = new MealPlanResource(ModelMapper.toModel(result)).getLink("self");
             String link = StringTools.safeLink(forOneMealPlan);
             return ResponseEntity.created(URI.create(link)).build();
         }
@@ -104,7 +105,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity mealPlan = this.mealPlanService
                 .getMealPlanById(principal.getName(), mealPlanId);
 
-        MealPlanResource mealPlanResource = new MealPlanResource(mealPlan);
+        MealPlanResource mealPlanResource = new MealPlanResource(ModelMapper.toModel(mealPlan));
 
         return new ResponseEntity(mealPlanResource, HttpStatus.OK);
     }

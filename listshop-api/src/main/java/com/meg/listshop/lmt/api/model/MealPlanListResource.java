@@ -10,7 +10,7 @@ public class MealPlanListResource extends AbstractListShopResource implements Li
     @JsonProperty("_embedded")
     private EmbeddedMealPlanListResource embeddedList;
 
-    public MealPlanListResource(List<MealPlan> mealPlanList) {
+    public MealPlanListResource(List<MealPlanResource> mealPlanList) {
         this.embeddedList = new EmbeddedMealPlanListResource(mealPlanList);
     }
 
