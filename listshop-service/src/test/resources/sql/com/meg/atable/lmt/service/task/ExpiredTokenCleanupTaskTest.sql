@@ -5,7 +5,7 @@ values (99, 20, 'browser', 'iPhone', 'iOS', '12.4', 'Web', '26', '2C73FB19-3E57-
         now() - interval '1 day');
 insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number,
                           client_device_id, client_version, token, last_login)
-values (100, 33, 'iPad', 'iPad', 'iOS', '15.1', 'Mobile', '62', '011328EF-2038-4A1E-815E-7F38AFB0A561', '1.5.1',
+values (100, 1, 'iPad', 'iPad', 'iOS', '15.1', 'Mobile', '62', '011328EF-2038-4A1E-815E-7F38AFB0A561', '1.5.1',
         'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhcHB0ZXN0QHRoZS1saXN0LXNob3AuY29tIiwiYXVkaWVuY2UiOiJtb2JpbGUiLCJjcmVhdGVkIjoxNjM2OTI4MDExNDI5fQ.wRggsJvoKvzW8EOvkBQOkiITBM_w531CJiqLW5canR9vrspO80GLTy9qLX3W3voAQmzasbT5Cf0_X9EJErevCg',
         now() - interval '1 day');
 insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number,

@@ -86,3 +86,7 @@ ALTER TABLE authority
         REFERENCES users (user_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION;
+
+
+drop table tokens;
+drop sequence token_sequence;
