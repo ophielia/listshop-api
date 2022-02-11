@@ -90,3 +90,4 @@ ALTER TABLE authority
 
 drop table tokens;
 drop sequence token_sequence;
+commit;
