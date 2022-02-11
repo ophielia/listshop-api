@@ -5,18 +5,18 @@ import java.util.List;
 
 public class EmbeddedMealPlanListResource {
 
-    private List<MealPlan> mealPlanResourceList;
+    private List<MealPlanResource> mealPlanResourceList;
 
-    public EmbeddedMealPlanListResource(List<MealPlan> tagResourceList) {
+    public EmbeddedMealPlanListResource(List<MealPlanResource> tagResourceList) {
         this.mealPlanResourceList = tagResourceList;
     }
 
 
-    public List<MealPlan> getMealPlanResourceList() {
+    public List<MealPlanResource> getMealPlanResourceList() {
         return mealPlanResourceList;
     }
 
-    public void setMealPlanResourceList(List<MealPlan> tagResourceList) {
+    public void setMealPlanResourceList(List<MealPlanResource> tagResourceList) {
         this.mealPlanResourceList = tagResourceList;
     }
 
