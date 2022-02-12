@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ The List Shop
-  ~
-  ~ Copyright (c) 2022.
-  ~
-  -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>listshop-service</artifactId>
-    <version>1.5.3-SNAPSHOT</version>
+    <version>1.5.4-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>listshop-service</name>
@@ -22,7 +15,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-parent</artifactId>
-        <version>1.5.3-SNAPSHOT</version>
+        <version>1.5.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
