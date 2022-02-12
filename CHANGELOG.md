@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.3] February 2022
+
+### Fixed
+
+* corrected json returned for meal plan list
+
 ## [1.5.2] January 2022
 
 ### Changed
