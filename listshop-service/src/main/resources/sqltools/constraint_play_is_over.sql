@@ -45,7 +45,7 @@ ALTER TABLE proposal_dish
     DROP CONSTRAINT IF EXISTS fk_proposal_dish__proposal_slot;
 
 ALTER TABLE proposal
-    DROP CONSTRAINT proposal_pkey CASCADE;
+    DROP CONSTRAINT IF EXISTS proposal_pkey CASCADE;
 
 ALTER TABLE proposal_slot
     DROP CONSTRAINT IF EXISTS proposal_slot_pkey CASCADE;

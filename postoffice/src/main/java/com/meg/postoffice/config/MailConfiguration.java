@@ -21,6 +21,7 @@ public class MailConfiguration {
     private String protocol;
     private Boolean smtpAuth;
     private Boolean enableStartTls;
+    private Boolean enableSSL;
     private Boolean debug;
     private String testDiversionEmail;
     private Boolean sendingEnabled;
@@ -119,5 +120,13 @@ public class MailConfiguration {
 
     public void setSendingEnabled(Boolean sendingEnabled) {
         this.sendingEnabled = sendingEnabled;
+    }
+
+    public Boolean getEnableSSL() {
+        return enableSSL;
+    }
+
+    public void setEnableSSL(Boolean enableSSL) {
+        this.enableSSL = enableSSL;
     }
 }

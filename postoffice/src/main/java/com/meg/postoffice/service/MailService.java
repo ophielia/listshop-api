@@ -19,6 +19,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -58,6 +59,10 @@ public class MailService {
         var recipient = getEmailRecipient(emailParameters);
         var mimeMessage = javaMailSender.createMimeMessage();
         var helper = new MimeMessageHelper(mimeMessage);
+        //helper.setFrom(emailParameters.getSender());
+        //helper.setFrom("support@the-list-shop.com");
+        helper.setFrom(new InternetAddress("support@the-list-shop.com", "List Shop Support"));
+
         helper.setSubject(subject);
         helper.setTo(recipient);
         helper.setText(content, true);

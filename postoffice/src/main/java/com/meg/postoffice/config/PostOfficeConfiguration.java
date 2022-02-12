@@ -76,8 +76,14 @@ public class PostOfficeConfiguration {
         var props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", mailConfiguration.getProtocol());
         props.put("mail.smtp.auth", mailConfiguration.getSmtpAuth());
-        props.put("mail.smtp.starttls.enable", mailConfiguration.getEnableStartTls());
         props.put("mail.debug", mailConfiguration.getDebug());
+        if (mailConfiguration.getEnableSSL()) {
+            props.put("mail.smtp.ssl.enable", mailConfiguration.getEnableSSL());
+            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            props.put("mail.smtp.timeout", 25000);
+        } else {
+            props.put("mail.smtp.starttls.enable", mailConfiguration.getEnableStartTls());
+        }
 
         return mailSender;
     }
