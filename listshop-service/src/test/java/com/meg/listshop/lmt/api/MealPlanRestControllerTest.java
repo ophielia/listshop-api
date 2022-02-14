@@ -57,6 +57,7 @@ public class MealPlanRestControllerTest {
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private static UserEntity userAccount;
+    private static UserDetails differentAccount;
     private static UserDetails userDetails;
     private static UserDetails userDetailsDelete;
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
@@ -89,10 +90,18 @@ public class MealPlanRestControllerTest {
                 .build();
 
         userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
+        var differentUser = userService.getUserByUserEmail(TestConstants.USER_2_NAME);
         String userName = TestConstants.USER_3_NAME;
         userDetails = new JwtUser(userAccount.getId(),
                 userName,
                 null,
+                null,
+                null,
+                true,
+                null);
+        differentAccount = new JwtUser(differentUser.getId(),
+                differentUser.getUsername(),
+                differentUser.getEmail(),
                 null,
                 null,
                 true,
@@ -217,10 +226,25 @@ public class MealPlanRestControllerTest {
         String url = "/mealplan/" + TestConstants.MENU_PLAN_3_ID
                 + "/dish/" + TestConstants.DISH_1_ID;
         this.mockMvc.perform(post(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    @WithMockUser
+    public void testAddDishToMealPlan_DishExistsKO() throws Exception {
+        // dishid 500 exists for mealplan 503 in test data
+        var dishId = "500";
+        var mealPlanId = "503";
+        String url = "/mealplan/" + mealPlanId
+                + "/dish/" + dishId;
+        this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType))
+                .andExpect(status().isBadRequest());
+    }
+
 
     @Test
     @WithMockUser
@@ -228,8 +252,8 @@ public class MealPlanRestControllerTest {
         String url = "/mealplan/" + TestConstants.MENU_PLAN_3_ID
                 + "/dish/" + 501L;
         this.mockMvc.perform(delete(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
 
@@ -314,6 +338,36 @@ public class MealPlanRestControllerTest {
             Assert.assertEquals("meal plan id should be correct", newId, String.valueOf(slot.getMealPlanId()));
             Assert.assertTrue("dish id should match one in source", dishIdsInSource.containsKey(slot.getDish().getId()));
         }
+    }
+
+    @Test
+    @WithMockUser
+    public void testCopyMealPlan_BadUserKO() throws Exception {
+        Long copyMealPlan = 504L;
+        String url = "/mealplan/" + copyMealPlan;
+        Long startTime = new Date().getTime();
+
+        MvcResult result = this.mockMvc.perform(post(url)
+                        .with(user(differentAccount))
+                        .contentType(contentType))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testCopyMealPlan_BadMealPlanKO() throws Exception {
+        Long copyMealPlan = 555504L;
+        String url = "/mealplan/" + copyMealPlan;
+        Long startTime = new Date().getTime();
+
+        MvcResult result = this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
     }
 
     private String json(Object o) throws IOException {

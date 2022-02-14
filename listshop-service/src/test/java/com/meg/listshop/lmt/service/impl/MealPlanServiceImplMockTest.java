@@ -9,6 +9,7 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.data.entity.DishEntity;
@@ -33,6 +34,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
@@ -132,13 +134,6 @@ public class MealPlanServiceImplMockTest {
 
     }
 
-    private UserEntity createTestUser(Long userId, String userName) {
-        UserEntity testUser = new UserEntity(userName, userName);
-        testUser.setEmail(userName + "@test.com");
-        testUser.setId(userId);
-        return testUser;
-    }
-
     @Test
     public void testDeleteMealPlan() {
         String email = deleteUserAccount.getEmail();
@@ -162,6 +157,92 @@ public class MealPlanServiceImplMockTest {
         Assert.assertNotNull(mealPlanEntityCaptor.getValue());
         Assert.assertTrue(CollectionUtils.isEmpty(mealPlanEntityCaptor.getValue().getSlots()));
 
+    }
+
+    @Test
+    public void testAddDishToMealPlan() {
+        String username = "mrtest";
+        Long mealPlanId = 9L;
+        Long userid = 3L;
+        Long dishId = 5L;
+
+        UserEntity user = new UserEntity();
+        user.setId(userid);
+        user.setEmail(username);
+        user.setUsername(username);
+
+        MealPlanEntity mealPlan = new MealPlanEntity();
+        mealPlan.setName("The AUSTRIAN");
+        mealPlan.setUserId(userid);
+
+        DishEntity dish = new DishEntity();
+        dish.setId(dishId);
+
+        SlotEntity slot1 = createSlotWithDish(mealPlan, 11111L);
+        SlotEntity slot2 = createSlotWithDish(mealPlan, 111112L);
+        List<SlotEntity> slotList = new ArrayList<>();
+        slotList.add(slot1);
+        slotList.add(slot2);
+
+        Mockito.when(userService.getUserByUserEmail(username)).thenReturn(user);
+        Mockito.when(mealPlanRepository.findById(mealPlanId)).thenReturn(Optional.of(mealPlan));
+        Mockito.when(dishService.getDishForUserById(username, dishId)).thenReturn(dish);
+        Mockito.when(slotRepository.findByMealPlanAndDish(mealPlan, dish)).thenReturn(Collections.emptyList());
+        Mockito.when(slotRepository.findByMealPlan(mealPlan)).thenReturn(slotList);
+        ArgumentCaptor<MealPlanEntity> mealPlanCapture = ArgumentCaptor.forClass(MealPlanEntity.class);
+        Mockito.when(mealPlanRepository.save(mealPlanCapture.capture())).thenReturn(null);
+
+        mealPlanService.addDishToMealPlan(username, mealPlanId, dishId);
+
+        // Assertions
+        MealPlanEntity result = mealPlanCapture.getValue();
+        Assert.assertNotNull("Meal plan should have been saved", result);
+        Assert.assertNotNull("Meal plan should have slots", result.getSlots());
+        Assert.assertEquals("Meal plan should have 3 slots", 3, result.getSlots().size());
+        // create map of dishes in slots
+        Map<Long, DishEntity> mealPlanDishIds = result.getSlots().stream()
+                .map(SlotEntity::getDish)
+                .collect(Collectors.toMap(DishEntity::getId, Function.identity()));
+        Assert.assertTrue("Meal plan should contain newly added dish", mealPlanDishIds.containsKey(dishId));
+    }
+
+
+    @Test(expected = ActionInvalidException.class)
+    public void testAddDishToMealPlan_DishExistsKO() {
+        String username = "mrtest";
+        Long mealPlanId = 9L;
+        Long userid = 3L;
+        Long dishId = 5L;
+
+        UserEntity user = new UserEntity();
+        user.setId(userid);
+        user.setEmail(username);
+        user.setUsername(username);
+
+        MealPlanEntity mealPlan = new MealPlanEntity();
+        mealPlan.setName("The AUSTRIAN");
+        mealPlan.setUserId(userid);
+
+        DishEntity dish = new DishEntity();
+        dish.setId(dishId);
+
+        SlotEntity slot1 = createSlotWithDish(mealPlan, 11111L);
+        SlotEntity slot2 = createSlotWithDish(mealPlan, 111112L);
+        List<SlotEntity> slotList = new ArrayList<>();
+        slotList.add(slot1);
+        slotList.add(slot2);
+
+        Mockito.when(userService.getUserByUserEmail(username)).thenReturn(user);
+        Mockito.when(mealPlanRepository.findById(mealPlanId)).thenReturn(Optional.of(mealPlan));
+        Mockito.when(dishService.getDishForUserById(username, dishId)).thenReturn(dish);
+        Mockito.when(slotRepository.findByMealPlanAndDish(mealPlan, dish)).thenReturn(Collections.singletonList(slot1));
+        Mockito.when(slotRepository.findByMealPlan(mealPlan)).thenReturn(slotList);
+        ArgumentCaptor<MealPlanEntity> mealPlanCapture = ArgumentCaptor.forClass(MealPlanEntity.class);
+        Mockito.when(mealPlanRepository.save(mealPlanCapture.capture())).thenReturn(null);
+
+        mealPlanService.addDishToMealPlan(username, mealPlanId, dishId);
+
+        // No Assertions - should have thrown exception
     }
 
     @Test
@@ -314,6 +395,12 @@ public class MealPlanServiceImplMockTest {
         return slot;
     }
 
+    private UserEntity createTestUser(Long userId, String userName) {
+        UserEntity testUser = new UserEntity(userName, userName);
+        testUser.setEmail(userName + "@test.com");
+        testUser.setId(userId);
+        return testUser;
+    }
 
     public void testCreateMealPlanFromProposal() {
     }

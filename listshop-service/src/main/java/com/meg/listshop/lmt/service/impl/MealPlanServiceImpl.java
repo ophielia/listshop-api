@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.api.model.MealPlanType;
@@ -146,8 +147,12 @@ public class MealPlanServiceImpl implements MealPlanService {
         MealPlanEntity mealPlan = getMealPlanById(username, mealPlanId);
 
         // get dish
-        DishEntity dish =  dishService.getDishForUserById(username, dishId);
+        DishEntity dish = dishService.getDishForUserById(username, dishId);
 
+        // check if dish already exists in meal plan
+        if (dishExistsInMealPlan(mealPlan, dish)) {
+            throw new ActionInvalidException(String.format("Dish (%S) can't be added to mealplan(%s), because it already exists", dish.getId(), mealPlan.getId()));
+        }
         // add slot to dish
         List<SlotEntity> slotList = slotRepository.findByMealPlan(mealPlan);
 
@@ -160,6 +165,11 @@ public class MealPlanServiceImpl implements MealPlanService {
         slotList.add(slot);
         mealPlan.setSlots(slotList);
         mealPlanRepository.save(mealPlan);
+    }
+
+    private boolean dishExistsInMealPlan(MealPlanEntity mealPlan, DishEntity dish) {
+        List<SlotEntity> existingSlots = slotRepository.findByMealPlanAndDish(mealPlan, dish);
+        return !Collections.isEmpty(existingSlots);
     }
 
     public void deleteDishFromMealPlan(String username, Long mealPlanId, Long dishId) throws ObjectNotYoursException, ObjectNotFoundException {
