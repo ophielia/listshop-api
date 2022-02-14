@@ -9,6 +9,8 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.MealPlanEntity;
 import com.meg.listshop.lmt.data.entity.SlotEntity;
@@ -187,6 +189,122 @@ public class MealPlanServiceImplMockTest {
 
     }
 
+    @Test
+    public void testCopyMealPlan() {
+        String username = TestConstants.USER_2_NAME;
+        Long mealPlanId = 901L;
+        Long copiedMealPlanId = 9901L;
+        Long userid = 9L;
+        Long dishId1 = 11L;
+        Long dishId2 = 22L;
+
+        UserEntity user = new UserEntity();
+        user.setId(userid);
+        user.setEmail(username);
+        user.setUsername(username);
+
+        MealPlanEntity sourceMealPlan = new MealPlanEntity();
+        sourceMealPlan.setName("The AUSTRIAN");
+        sourceMealPlan.setUserId(userid);
+        SlotEntity slot1 = createSlotWithDish(sourceMealPlan, dishId1);
+        SlotEntity slot2 = createSlotWithDish(sourceMealPlan, dishId2);
+        sourceMealPlan.setSlots(Arrays.asList(slot1, slot2));
+
+        MealPlanEntity createdMealPlan = new MealPlanEntity();
+        createdMealPlan.setId(copiedMealPlanId);
+        createdMealPlan.setUserId(userid);
+
+        Mockito.when(userService.getUserByUserEmail(username)).thenReturn(user);
+        Mockito.when(mealPlanRepository.findById(mealPlanId)).thenReturn(Optional.of(sourceMealPlan));
+        ArgumentCaptor<MealPlanEntity> savedMealPlan = ArgumentCaptor.forClass(MealPlanEntity.class);
+        Mockito.when(mealPlanRepository.save(savedMealPlan.capture())).thenReturn(createdMealPlan);
+
+        mealPlanService.copyMealPlan(username, mealPlanId);
+
+        // check argument sent to save - should have recent date, and same dishes as source
+        List<MealPlanEntity> results = savedMealPlan.getAllValues();
+        Assert.assertNotNull(results);
+        MealPlanEntity nameResult = results.get(0);
+        MealPlanEntity result = results.get(1);
+        Assert.assertNotNull(result);
+        Assert.assertNotEquals("names should NOT match", sourceMealPlan.getName(), nameResult.getName());
+        Assert.assertNotNull("name should be filled in", nameResult.getName());
+        Assert.assertNotNull("should have slots", result.getSlots());
+        Assert.assertEquals("should have two slots", 2, result.getSlots().size());
+        List<SlotEntity> copiedSlots = result.getSlots();
+        for (SlotEntity slot : copiedSlots) {
+            Assert.assertNotNull(slot);
+        }
+    }
+
+    @Test(expected = ObjectNotFoundException.class)
+    public void testCopyMealPlan_NoMealPlanKO() {
+        String username = TestConstants.USER_2_NAME;
+        Long mealPlanId = 901L;
+        Long copiedMealPlanId = 9901L;
+        Long userid = 9L;
+        Long dishId1 = 11L;
+        Long dishId2 = 22L;
+
+        UserEntity user = new UserEntity();
+        user.setId(userid);
+        user.setEmail(username);
+        user.setUsername(username);
+
+        MealPlanEntity sourceMealPlan = new MealPlanEntity();
+        sourceMealPlan.setName("The AUSTRIAN");
+        sourceMealPlan.setUserId(userid);
+        SlotEntity slot1 = createSlotWithDish(sourceMealPlan, dishId1);
+        SlotEntity slot2 = createSlotWithDish(sourceMealPlan, dishId2);
+        sourceMealPlan.setSlots(Arrays.asList(slot1, slot2));
+
+        MealPlanEntity createdMealPlan = new MealPlanEntity();
+        createdMealPlan.setId(copiedMealPlanId);
+        createdMealPlan.setUserId(userid);
+
+        Mockito.when(userService.getUserByUserEmail(username)).thenReturn(user);
+        Mockito.when(mealPlanRepository.findById(mealPlanId)).thenReturn(Optional.empty());
+        ArgumentCaptor<MealPlanEntity> savedMealPlan = ArgumentCaptor.forClass(MealPlanEntity.class);
+        Mockito.when(mealPlanRepository.save(savedMealPlan.capture())).thenReturn(createdMealPlan);
+
+        mealPlanService.copyMealPlan(username, mealPlanId);
+
+    }
+
+    @Test(expected = ObjectNotYoursException.class)
+    public void testCopyMealPlan_NotOwnerKO() {
+        String username = TestConstants.USER_2_NAME;
+        Long mealPlanId = 901L;
+        Long copiedMealPlanId = 9901L;
+        Long userid = 9L;
+        Long dishId1 = 11L;
+        Long dishId2 = 22L;
+
+        UserEntity user = new UserEntity();
+        user.setId(userid);
+        user.setEmail(username);
+        user.setUsername(username);
+
+        MealPlanEntity sourceMealPlan = new MealPlanEntity();
+        sourceMealPlan.setName("The AUSTRIAN");
+        sourceMealPlan.setUserId(201L);
+        SlotEntity slot1 = createSlotWithDish(sourceMealPlan, dishId1);
+        SlotEntity slot2 = createSlotWithDish(sourceMealPlan, dishId2);
+        sourceMealPlan.setSlots(Arrays.asList(slot1, slot2));
+
+        MealPlanEntity createdMealPlan = new MealPlanEntity();
+        createdMealPlan.setId(copiedMealPlanId);
+        createdMealPlan.setUserId(userid);
+
+        Mockito.when(userService.getUserByUserEmail(username)).thenReturn(user);
+        Mockito.when(mealPlanRepository.findById(mealPlanId)).thenReturn(Optional.of(sourceMealPlan));
+        ArgumentCaptor<MealPlanEntity> savedMealPlan = ArgumentCaptor.forClass(MealPlanEntity.class);
+        Mockito.when(mealPlanRepository.save(savedMealPlan.capture())).thenReturn(createdMealPlan);
+
+        mealPlanService.copyMealPlan(username, mealPlanId);
+
+    }
+
     private SlotEntity createSlotWithDish(MealPlanEntity mealPlan, Long dishId) {
         DishEntity dish = new DishEntity();
         dish.setId(dishId);
@@ -202,4 +320,6 @@ public class MealPlanServiceImplMockTest {
 
     public void testRenameMealPlan() {
     }
+
+
 }

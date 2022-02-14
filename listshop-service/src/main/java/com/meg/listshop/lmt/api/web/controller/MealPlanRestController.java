@@ -2,7 +2,6 @@ package com.meg.listshop.lmt.api.web.controller;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.MealPlanRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
@@ -12,7 +11,6 @@ import com.meg.listshop.lmt.service.MealPlanService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +23,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -37,9 +34,9 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     private static final Logger logger = LogManager.getLogger(MealPlanRestController.class);
 
 
-    private MealPlanService mealPlanService;
+    private final MealPlanService mealPlanService;
 
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public MealPlanRestController(MealPlanService mealPlanService, UserService userService) {
@@ -58,23 +55,23 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
 
         MealPlanListResource resource = new MealPlanListResource(mealPlanList);
         resource.fillLinks(request, resource);
-        return new ResponseEntity(resource, HttpStatus.OK);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
 
 
     }
 
     @Override
-    public ResponseEntity<Object> createMealPlan(Principal principal, @RequestBody MealPlan input) {
+    public ResponseEntity<Object> createMealPlan(HttpServletRequest request, Principal principal, @RequestBody MealPlan input) {
         MealPlanEntity mealPlanEntity = ModelMapper.toEntity(input);
 
         MealPlanEntity result = mealPlanService.createMealPlan(principal.getName(), mealPlanEntity);
 
         if (result != null) {
-            MealPlanResource mealPlanResource = new MealPlanResource(ModelMapper.toModel(result));
-            Optional<Link> forOneMealPlan = mealPlanResource.getLink("self");
+            MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(result));
+
             HttpHeaders headers = new HttpHeaders();
             try {
-                String link = StringTools.safeLink(forOneMealPlan);
+                String link = resource.selfLink(request, resource).toString();
                 headers.setLocation(new URI(link));
             } catch (URISyntaxException e) {
                 logger.error("Can't parse meal plan link");
@@ -82,39 +79,53 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
             }
 
 
-            return new ResponseEntity(mealPlanResource, headers, HttpStatus.CREATED);
+            return new ResponseEntity<>(resource, headers, HttpStatus.CREATED);
         }
         return ResponseEntity.badRequest().build();
 
     }
 
     @Override
-    public ResponseEntity<Object> createMealPlanFromTargetProposal(Principal principal, @PathVariable Long proposalId)  {
+    public ResponseEntity<Object> createMealPlanFromTargetProposal(HttpServletRequest request, Principal principal, @PathVariable Long proposalId) {
         MealPlanEntity result = mealPlanService.createMealPlanFromProposal(principal.getName(), proposalId);
 
         if (result != null) {
-            Optional<Link> forOneMealPlan = new MealPlanResource(ModelMapper.toModel(result)).getLink("self");
-            String link = StringTools.safeLink(forOneMealPlan);
+            MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(result));
+            String link = resource.selfLink(request, resource).toString();
+
             return ResponseEntity.created(URI.create(link)).build();
         }
         return ResponseEntity.badRequest().build();
     }
 
     @Override
-    public ResponseEntity<MealPlan> readMealPlan(Principal principal, @PathVariable Long mealPlanId)  {
-        MealPlanEntity mealPlan = this.mealPlanService
+    public ResponseEntity<MealPlanResource> readMealPlan(Principal principal, @PathVariable Long mealPlanId) {
+        MealPlanEntity result = this.mealPlanService
                 .getMealPlanById(principal.getName(), mealPlanId);
 
-        MealPlanResource mealPlanResource = new MealPlanResource(ModelMapper.toModel(mealPlan));
-
-        return new ResponseEntity(mealPlanResource, HttpStatus.OK);
+        MealPlanResource mealPlanResource = new MealPlanResource(ModelMapper.toModel(result));
+        return new ResponseEntity<>(mealPlanResource, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<MealPlan> deleteMealPlan(Principal principal, @PathVariable Long mealPlanId)  {
+    public ResponseEntity<Object> copyMealPlan(HttpServletRequest request, Principal principal, @PathVariable("mealPlanId") Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException {
+        MealPlanEntity mealPlan = this.mealPlanService.copyMealPlan(principal.getName(), mealPlanId);
+
+        if (mealPlan != null) {
+            MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(mealPlan));
+            String link = resource.selfLink(request, resource).toString();
+
+            return ResponseEntity.created(URI.create(link)).build();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+    @Override
+    public ResponseEntity<MealPlan> deleteMealPlan(Principal principal, @PathVariable Long mealPlanId) {
 
         mealPlanService.deleteMealPlan(principal.getName(), mealPlanId);
-            return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 
     //@RequestMapping(method = RequestMethod.POST, value = "/{mealPlanId}/name", produces = "application/json")
@@ -125,7 +136,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
 
 
     @Override
-    public ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId)  {
+    public ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) {
         UserEntity user = userService.getUserByUserEmail(principal.getName());
 
         this.mealPlanService.addDishToMealPlan(user.getEmail(), mealPlanId, dishId);
@@ -134,7 +145,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId)  {
+    public ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) {
         UserEntity user = userService.getUserByUserEmail(principal.getName());
 
         this.mealPlanService.deleteDishFromMealPlan(user.getEmail(), mealPlanId, dishId);
@@ -150,7 +161,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         RatingUpdateInfo ratingInfo = this.mealPlanService.getRatingsForMealPlan(user.getEmail(), mealPlanId);
         RatingUpdateInfoResource ratingResource = new RatingUpdateInfoResource(ratingInfo);
 
-        return new ResponseEntity(ratingResource, HttpStatus.OK);
+        return new ResponseEntity<>(ratingResource, HttpStatus.OK);
     }
 
 }

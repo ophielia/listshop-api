@@ -4,6 +4,7 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.api.model.MealPlan;
 import com.meg.listshop.lmt.api.model.MealPlanListResource;
+import com.meg.listshop.lmt.api.model.MealPlanResource;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfoResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,31 +22,34 @@ import java.security.Principal;
 public interface MealPlanRestControllerApi {
 
 
-    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(produces = "application/json")
     ResponseEntity<MealPlanListResource> retrieveMealPlans(HttpServletRequest request, Principal principal) throws ObjectNotFoundException, ObjectNotYoursException;
 
-    @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> createMealPlan(Principal principal, @RequestBody MealPlan input);
+    @PostMapping(produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> createMealPlan(HttpServletRequest request, Principal principal, @RequestBody MealPlan input);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/proposal/{proposalId}", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> createMealPlanFromTargetProposal(Principal principal, @PathVariable Long proposalId) throws ObjectNotFoundException, ObjectNotYoursException;
+    @PostMapping(value = "/proposal/{proposalId}", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> createMealPlanFromTargetProposal(HttpServletRequest request, Principal principal, @PathVariable Long proposalId) throws ObjectNotFoundException, ObjectNotYoursException;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{mealPlanId}", produces = "application/json")
-    ResponseEntity<MealPlan> readMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException;
+    @GetMapping(value = "/{mealPlanId}", produces = "application/json")
+    ResponseEntity<MealPlanResource> readMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException;
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{mealPlanId}", produces = "application/json")
+    @PostMapping(value = "/{mealPlanId}", produces = "application/json")
+    ResponseEntity<Object> copyMealPlan(HttpServletRequest request, Principal principal, @PathVariable("mealPlanId") Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException;
+
+    @DeleteMapping(value = "/{mealPlanId}", produces = "application/json")
     ResponseEntity<MealPlan> deleteMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) throws ObjectNotFoundException, ObjectNotYoursException;
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{mealPlanId}/dish/{dishId}", produces = "application/json")
+    @PostMapping(value = "/{mealPlanId}/dish/{dishId}", produces = "application/json")
     ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) throws ObjectNotFoundException, ObjectNotYoursException;
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{mealPlanId}/name/{newName}", produces = "application/json")
+    @PostMapping(value = "/{mealPlanId}/name/{newName}", produces = "application/json")
     ResponseEntity<Object> renameMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable String newName) throws ObjectNotYoursException, ObjectNotFoundException;
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{mealPlanId}/dish/{dishId}", produces = "application/json")
+    @DeleteMapping(value = "/{mealPlanId}/dish/{dishId}", produces = "application/json")
     ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) throws ObjectNotFoundException, ObjectNotYoursException;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{mealPlanId}/ratings", produces = "application/json")
+    @GetMapping(value = "/{mealPlanId}/ratings", produces = "application/json")
     ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable Long mealPlanId);
 
 

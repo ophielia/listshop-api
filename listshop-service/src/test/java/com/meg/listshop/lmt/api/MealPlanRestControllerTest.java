@@ -1,16 +1,16 @@
 package com.meg.listshop.lmt.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.lmt.api.model.MealPlan;
-import com.meg.listshop.lmt.api.model.MealPlanType;
-import com.meg.listshop.lmt.api.model.ModelMapper;
+import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.MealPlanEntity;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -33,6 +33,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -248,16 +253,79 @@ public class MealPlanRestControllerTest {
 
 
         this.mockMvc.perform(post(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
 
+    }
+
+    @Test
+    @WithMockUser
+    public void testCopyMealPlan() throws Exception {
+        Long copyMealPlan = 504L;
+        String url = "/mealplan/" + copyMealPlan;
+        Long startTime = new Date().getTime();
+
+        MvcResult result = this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType))
+                .andExpect(header().exists("Location"))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        // get header from result, to strip new id
+        String locationHeader = (String) result.getResponse().getHeaderValue("Location");
+        String newId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1);
+
+        // pull newly created mealplan
+        MvcResult sourceResult = this.mockMvc.perform(get(url)
+                        .with(user(userDetails))
+                        .contentType(contentType))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        MvcResult copiedResult = this.mockMvc.perform(get("/mealplan/" + newId)
+                        .with(user(userDetails))
+                        .contentType(contentType))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        MealPlanResource sourceResource = toMealPlanResource(sourceResult.getResponse().getContentAsString());
+        MealPlanResource copiedResource = toMealPlanResource(copiedResult.getResponse().getContentAsString());
+
+        MealPlan source = sourceResource.getMealPlan();
+        MealPlan copied = copiedResource.getMealPlan();
+        // check meal plan
+        Assert.assertNotNull("copied name should not be null", copied.getName());
+        Assert.assertNotEquals("copied name should not equal source", copied.getName(), source.getName());
+        Assert.assertNotNull("copied should have created", copied.getCreated());
+        Assert.assertTrue("copied created should be after start", copied.getCreated().getTime() >= startTime);
+        // check slots
+        List<Slot> sourceSlots = source.getSlots();
+        List<Slot> copiedSlots = copied.getSlots();
+        Assert.assertNotNull("slots should exist - copied", copiedSlots);
+        Assert.assertNotNull("slots should exist - source", sourceSlots);
+        Assert.assertEquals("size should match", sourceSlots.size(), copiedSlots.size());
+        Map<Long, Dish> dishIdsInSource = sourceSlots.stream()
+                .map(Slot::getDish)
+                //.map(Dish::getId)
+                .collect(Collectors.toMap(Dish::getId, Function.identity()));
+        for (Slot slot : copiedSlots) {
+            Assert.assertEquals("meal plan id should be correct", newId, String.valueOf(slot.getMealPlanId()));
+            Assert.assertTrue("dish id should match one in source", dishIdsInSource.containsKey(slot.getDish().getId()));
+        }
     }
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();
+    }
+
+    private MealPlanResource toMealPlanResource(String input) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        MealPlanResource mealPlan = mapper.readValue(input, MealPlanResource.class);
+        return mealPlan;
     }
 
 }

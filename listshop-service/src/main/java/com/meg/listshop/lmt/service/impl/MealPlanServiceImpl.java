@@ -13,6 +13,7 @@ import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.MealPlanService;
 import com.meg.listshop.lmt.service.proposal.ProposalService;
 import com.meg.listshop.lmt.service.tag.TagService;
+import io.jsonwebtoken.lang.Collections;
 import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 @Service
 public class MealPlanServiceImpl implements MealPlanService {
 
-    private static final Logger logger = LogManager.getLogger(ShoppingListServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(MealPlanServiceImpl.class);
 
     private UserService userService;
 
@@ -200,8 +201,6 @@ public class MealPlanServiceImpl implements MealPlanService {
             toDelete.setSlots(null);
         }
         mealPlanRepository.delete(toDelete);
-        return;
-
     }
 
     public void renameMealPlan(String userName, Long mealPlanId, String newName)  {
@@ -247,6 +246,37 @@ public class MealPlanServiceImpl implements MealPlanService {
 
         // call and return tag service method
         return tagService.getRatingUpdateInfoForDishIds(username, dishIds);
+    }
+
+    public MealPlanEntity copyMealPlan(String name, Long mealPlanId) {
+        logger.debug("Copying mealPlan: {} for user {}", mealPlanId, name);
+        // retrieve meal plan, ensuring meal plan belongs to user
+        MealPlanEntity copyFrom = getMealPlanById(name, mealPlanId);
+
+        // create meal plan
+        MealPlanEntity copyTo = createMealPlan(name, new MealPlanEntity());
+
+        // add all dishes from newly created dish to meal plan
+        // get slotsToCopy
+        List<SlotEntity> slotsToCopy = copyFrom.getSlots();
+
+        if (!Collections.isEmpty(slotsToCopy)) {
+            List<SlotEntity> slotsToCreate = new ArrayList<>();
+            for (SlotEntity slot : slotsToCopy) {
+                DishEntity dish = slot.getDish();
+                // add new slot
+                SlotEntity newSlot = new SlotEntity();
+                newSlot.setMealPlan(copyTo);
+                newSlot.setDish(dish);
+                slotRepository.save(newSlot);
+
+                slotsToCreate.add(newSlot);
+            }
+            copyTo.setSlots(slotsToCreate);
+        }
+
+        // return newly created meal plan
+        return mealPlanRepository.save(copyTo);
     }
 
 }

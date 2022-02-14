@@ -35,4 +35,6 @@ public interface MealPlanService {
     void renameMealPlan(String userName, Long mealPlanId, String newName) throws ObjectNotFoundException, ObjectNotYoursException;
 
     RatingUpdateInfo getRatingsForMealPlan(String username, Long mealPlanId);
+
+    MealPlanEntity copyMealPlan(String name, Long mealPlanId);
 }
