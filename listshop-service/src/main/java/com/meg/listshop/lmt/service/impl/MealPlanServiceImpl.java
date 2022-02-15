@@ -2,7 +2,7 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.lmt.api.exception.ActionInvalidException;
+import com.meg.listshop.lmt.api.exception.ActionIgnoredException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.api.model.MealPlanType;
@@ -151,7 +151,7 @@ public class MealPlanServiceImpl implements MealPlanService {
 
         // check if dish already exists in meal plan
         if (dishExistsInMealPlan(mealPlan, dish)) {
-            throw new ActionInvalidException(String.format("Dish (%S) can't be added to mealplan(%s), because it already exists", dish.getId(), mealPlan.getId()));
+            throw new ActionIgnoredException(String.format("Dish (%S) can't be added to mealplan(%s), because it already exists", dish.getId(), mealPlan.getId()));
         }
         // add slot to dish
         List<SlotEntity> slotList = slotRepository.findByMealPlan(mealPlan);

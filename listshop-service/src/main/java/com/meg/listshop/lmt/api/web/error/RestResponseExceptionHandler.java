@@ -86,6 +86,16 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
+    @ExceptionHandler({ActionIgnoredException.class})
+    public ResponseEntity<Object> handleActionIgnoredException(final Exception ex, final WebRequest request) {
+        var message = "The server has chosent to not perform this action.";
+        logger.info(ex.getClass().getName());
+        logger.error(message, ex);
+        var apiError = new ApiError(HttpStatus.NOT_ACCEPTABLE, ex.getLocalizedMessage(), message);
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+
     @ExceptionHandler({AuthenticationException.class, BadCredentialsException.class})
     public ResponseEntity<Object> handleAuthenticationException(final Exception ex, final WebRequest request) {
         var message = "Error occured authenticating.";
