@@ -314,6 +314,7 @@ public class SearchProposalProcessorImplTest {
     }
 
     @Test
+    @Ignore
     public void processProposal_NoTargetTagIds() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4,2,3);
         target.setTargetTagIds("");

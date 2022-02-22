@@ -9,7 +9,7 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.lmt.api.exception.ActionInvalidException;
+import com.meg.listshop.lmt.api.exception.ActionIgnoredException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.data.entity.DishEntity;
@@ -207,7 +207,7 @@ public class MealPlanServiceImplMockTest {
     }
 
 
-    @Test(expected = ActionInvalidException.class)
+    @Test(expected = ActionIgnoredException.class)
     public void testAddDishToMealPlan_DishExistsKO() {
         String username = "mrtest";
         Long mealPlanId = 9L;
