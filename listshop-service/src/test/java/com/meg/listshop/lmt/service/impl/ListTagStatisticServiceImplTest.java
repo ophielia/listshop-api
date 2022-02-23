@@ -49,7 +49,7 @@ public class ListTagStatisticServiceImplTest {
     @Sql(value = {"/sql/com/meg/atable/lmt/service/impl/ListTagStatisticServiceTest-rollback.sql"})
     public void createStatisticsForUser_AllAdd() {
         List<Long> tagIds = Arrays.asList(16L, 18L, 20L);
-        Long userId = 99L;
+        Long userId = 1L;
         List<Statistic> stats = dummyStatistics(tagIds);
         UserEntity user = new UserEntity();
         user.setId(userId);
@@ -72,7 +72,7 @@ public class ListTagStatisticServiceImplTest {
         Mockito.when(mockCollector.getCollectedTagItems())
                 .thenReturn(new ArrayList<>());
 
-        listTagStatisticService.processCollectorStatistics(99L, mockCollector, context);
+        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
 
         Assert.assertEquals(0, getFieldResultForTag("removed_dish", 18L, 99L).intValue());
     }
@@ -100,10 +100,10 @@ public class ListTagStatisticServiceImplTest {
                 .thenReturn(tagIds);
 
 
-        listTagStatisticService.processCollectorStatistics(99L, mockCollector, context);
+        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(1, getFieldResultForTag("added_single", 16L, 99L).intValue());
-        Assert.assertEquals(0, getFieldResultForTag("added_single", 18L, 99L).intValue());
+        Assert.assertEquals(1, getFieldResultForTag("added_single", 16L, 1L).intValue());
+        Assert.assertEquals(0, getFieldResultForTag("added_single", 18L, 1L).intValue());
     }
 
     @Test
@@ -129,10 +129,10 @@ public class ListTagStatisticServiceImplTest {
                 .thenReturn(tagIds);
 
 
-        listTagStatisticService.processCollectorStatistics(99L, mockCollector, context);
+        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(2, getFieldResultForTag("added_list", 16L, 99L).intValue());
-        Assert.assertEquals(1, getFieldResultForTag("added_list", 18L, 99L).intValue());
+        Assert.assertEquals(2, getFieldResultForTag("added_list", 16L, 1L).intValue());
+        Assert.assertEquals(1, getFieldResultForTag("added_list", 18L, 1L).intValue());
     }
 
     @Test
@@ -161,10 +161,10 @@ public class ListTagStatisticServiceImplTest {
                 .thenReturn(tagIds);
 
 
-        listTagStatisticService.processCollectorStatistics(99L, mockCollector, context);
+        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(2, getFieldResultForTag("removed_starterlist", 16L, 99L).intValue());
-        Assert.assertEquals(1, getFieldResultForTag("removed_starterlist", 18L, 99L).intValue());
+        Assert.assertEquals(2, getFieldResultForTag("removed_starterlist", 16L, 1L).intValue());
+        Assert.assertEquals(1, getFieldResultForTag("removed_starterlist", 18L, 1L).intValue());
     }
 
 
@@ -195,10 +195,10 @@ public class ListTagStatisticServiceImplTest {
                 .thenReturn(tagIds);
 
 
-        listTagStatisticService.processCollectorStatistics(99L, mockCollector, context);
+        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(1, getFieldResultForTag("removed_dish", 16L, 99L).intValue());
-        Assert.assertEquals(1, getFieldResultForTag("removed_dish", 18L, 99L).intValue());
+        Assert.assertEquals(1, getFieldResultForTag("removed_dish", 16L, 1L).intValue());
+        Assert.assertEquals(1, getFieldResultForTag("removed_dish", 18L, 1L).intValue());
     }
 
     @Test
@@ -227,10 +227,10 @@ public class ListTagStatisticServiceImplTest {
                 .thenReturn(tagIds);
 
 
-        listTagStatisticService.processCollectorStatistics(99L, mockCollector, context);
+        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(2, getFieldResultForTag("removed_dish", 16L, 99L).intValue());
-        Assert.assertEquals(1, getFieldResultForTag("added_dish", 18L, 99L).intValue());
+        Assert.assertEquals(2, getFieldResultForTag("removed_dish", 16L, 1L).intValue());
+        Assert.assertEquals(1, getFieldResultForTag("added_dish", 18L, 1L).intValue());
     }
 
     @Test
@@ -257,10 +257,10 @@ public class ListTagStatisticServiceImplTest {
                 .thenReturn(tagIds);
 
 
-        listTagStatisticService.processCollectorStatistics(99L, mockCollector, context);
+        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(0, getFieldResultForTag("removed_dish", 16L, 99L).intValue());
-        Assert.assertEquals(0, getFieldResultForTag("removed_dish", 18L, 99L).intValue());
+        Assert.assertEquals(0, getFieldResultForTag("removed_dish", 16L, 1L).intValue());
+        Assert.assertEquals(0, getFieldResultForTag("removed_dish", 18L, 1L).intValue());
     }
 
 

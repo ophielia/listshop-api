@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -64,7 +71,7 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<DishEntity> getDishesForUserName(String userName) {
-        UserEntity user = userRepository.findByUsername(userName);
+        UserEntity user = userRepository.findByEmail(userName);
         if (user == null) {
             throw new UserNotFoundException(userName);
         }
@@ -83,7 +90,7 @@ public class DishServiceImpl implements DishService {
             throw new ObjectNotFoundException(msg, null, "Dish");
         }
 
-        UserEntity user = userRepository.findByUsername(username);
+        UserEntity user = userRepository.findByEmail(username);
 
         Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
         if (dishOpt.isEmpty()) {
@@ -148,7 +155,7 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<DishEntity> getDishes(String username, List<Long> dishIds) {
-        UserEntity user = userRepository.findByUsername(username);
+        UserEntity user = userRepository.findByEmail(username);
 
         return dishRepository.findByDishIdsForUser(user.getId(), dishIds);
     }
@@ -171,7 +178,7 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<TagEntity> getDishesForTagChildren(Long tagId, String name) {
-        UserEntity user = userRepository.findByUsername(name);
+        UserEntity user = userRepository.findByEmail(name);
         TagEntity tag = tagService.getTagById(tagId);
 
         if (!TagType.Rating.equals(tag.getTagType())) {

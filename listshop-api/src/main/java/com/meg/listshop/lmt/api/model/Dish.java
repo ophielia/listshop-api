@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -8,8 +9,10 @@ import java.util.List;
 
 public class Dish {
 
+    @JsonProperty("dish_id")
     private Long dish_id;
 
+    @JsonProperty("name")
     private String dishName;
 
     private String description;
@@ -42,17 +45,16 @@ public class Dish {
         this.dish_id = id;
     }
 
-    @JsonProperty("dish_id")
+    @JsonIgnore
     public Long getId() {
         return dish_id;
     }
 
-    @JsonProperty("name")
+
     public String getDishName() {
         return dishName;
     }
 
-    @JsonProperty("name")
     public void setDishName(String dishName) {
         this.dishName = dishName;
     }

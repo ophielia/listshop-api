@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -115,7 +122,7 @@ public class ShoppingListRestControllerTest {
 
 
         userDetails = new JwtUser(TestConstants.USER_1_ID,
-                TestConstants.USER_1_NAME,
+                TestConstants.USER_1_EMAIL,
                 null,
                 null,
                 null,
@@ -335,7 +342,7 @@ public class ShoppingListRestControllerTest {
         Long newListId = Long.valueOf(urlTokens[(urlTokens).length - 1]);
 
         // now, retrieve the list
-        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_NAME, newListId);
+        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_EMAIL, newListId);
         Map<Long, ItemEntity> resultMap = resultList.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
@@ -505,7 +512,7 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
 
         // now, retrieve the list
-        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_NAME, listId);
+        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_EMAIL, listId);
         Map<Long, ItemEntity> resultMap = resultList.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
@@ -631,7 +638,7 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
 
         // now, retrieve the list
-        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_NAME, listId);
+        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_EMAIL, listId);
         Map<Long, ItemEntity> resultMap = resultList.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);

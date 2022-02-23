@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.lmt.api.exception.ActionIgnoredException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.api.model.MealPlanType;
@@ -13,6 +14,7 @@ import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.MealPlanService;
 import com.meg.listshop.lmt.service.proposal.ProposalService;
 import com.meg.listshop.lmt.service.tag.TagService;
+import io.jsonwebtoken.lang.Collections;
 import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
 @Service
 public class MealPlanServiceImpl implements MealPlanService {
 
-    private static final Logger logger = LogManager.getLogger(ShoppingListServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(MealPlanServiceImpl.class);
 
     private UserService userService;
 
@@ -145,8 +147,12 @@ public class MealPlanServiceImpl implements MealPlanService {
         MealPlanEntity mealPlan = getMealPlanById(username, mealPlanId);
 
         // get dish
-        DishEntity dish =  dishService.getDishForUserById(username, dishId);
+        DishEntity dish = dishService.getDishForUserById(username, dishId);
 
+        // check if dish already exists in meal plan
+        if (dishExistsInMealPlan(mealPlan, dish)) {
+            throw new ActionIgnoredException(String.format("Dish (%S) can't be added to mealplan(%s), because it already exists", dish.getId(), mealPlan.getId()));
+        }
         // add slot to dish
         List<SlotEntity> slotList = slotRepository.findByMealPlan(mealPlan);
 
@@ -159,6 +165,11 @@ public class MealPlanServiceImpl implements MealPlanService {
         slotList.add(slot);
         mealPlan.setSlots(slotList);
         mealPlanRepository.save(mealPlan);
+    }
+
+    private boolean dishExistsInMealPlan(MealPlanEntity mealPlan, DishEntity dish) {
+        List<SlotEntity> existingSlots = slotRepository.findByMealPlanAndDish(mealPlan, dish);
+        return !Collections.isEmpty(existingSlots);
     }
 
     public void deleteDishFromMealPlan(String username, Long mealPlanId, Long dishId) throws ObjectNotYoursException, ObjectNotFoundException {
@@ -200,8 +211,6 @@ public class MealPlanServiceImpl implements MealPlanService {
             toDelete.setSlots(null);
         }
         mealPlanRepository.delete(toDelete);
-        return;
-
     }
 
     public void renameMealPlan(String userName, Long mealPlanId, String newName)  {
@@ -247,6 +256,37 @@ public class MealPlanServiceImpl implements MealPlanService {
 
         // call and return tag service method
         return tagService.getRatingUpdateInfoForDishIds(username, dishIds);
+    }
+
+    public MealPlanEntity copyMealPlan(String name, Long mealPlanId) {
+        logger.debug("Copying mealPlan: {} for user {}", mealPlanId, name);
+        // retrieve meal plan, ensuring meal plan belongs to user
+        MealPlanEntity copyFrom = getMealPlanById(name, mealPlanId);
+
+        // create meal plan
+        MealPlanEntity copyTo = createMealPlan(name, new MealPlanEntity());
+
+        // add all dishes from newly created dish to meal plan
+        // get slotsToCopy
+        List<SlotEntity> slotsToCopy = copyFrom.getSlots();
+
+        if (!Collections.isEmpty(slotsToCopy)) {
+            List<SlotEntity> slotsToCreate = new ArrayList<>();
+            for (SlotEntity slot : slotsToCopy) {
+                DishEntity dish = slot.getDish();
+                // add new slot
+                SlotEntity newSlot = new SlotEntity();
+                newSlot.setMealPlan(copyTo);
+                newSlot.setDish(dish);
+                slotRepository.save(newSlot);
+
+                slotsToCreate.add(newSlot);
+            }
+            copyTo.setSlots(slotsToCreate);
+        }
+
+        // return newly created meal plan
+        return mealPlanRepository.save(copyTo);
     }
 
 }

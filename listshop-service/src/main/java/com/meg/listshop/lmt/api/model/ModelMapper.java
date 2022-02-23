@@ -1,6 +1,13 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.api.model;
 
-import com.meg.listshop.auth.api.model.User;
+import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.common.FlatStringUtils;
@@ -47,6 +54,7 @@ public class ModelMapper {
             return new User(userEntity.getUsername(), userEntity.getEmail())
                     .creationDate(userEntity.getCreationDate())
                     .token(token)
+                    .userId(userEntity.getId())
                     .roles(roles);
         }
         return new User(null, null);

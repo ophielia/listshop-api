@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,7 +89,7 @@ public class TagRestControllerTest {
 
 
         userDetails = new JwtUser(TestConstants.USER_1_ID,
-                TestConstants.USER_1_NAME,
+                TestConstants.USER_1_EMAIL,
                 null,
                 null,
                 null,

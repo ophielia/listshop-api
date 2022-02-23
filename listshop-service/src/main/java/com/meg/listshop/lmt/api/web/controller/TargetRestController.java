@@ -1,17 +1,11 @@
 package com.meg.listshop.lmt.api.web.controller;
 
-import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.TargetRestControllerApi;
-import com.meg.listshop.lmt.api.model.ModelMapper;
-import com.meg.listshop.lmt.api.model.Target;
-import com.meg.listshop.lmt.api.model.TargetResource;
-import com.meg.listshop.lmt.api.model.TargetSlot;
+import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TargetEntity;
 import com.meg.listshop.lmt.data.entity.TargetSlotEntity;
 import com.meg.listshop.lmt.service.TargetService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,12 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -36,52 +30,54 @@ public class TargetRestController implements TargetRestControllerApi {
     TargetService targetService;
 
     @Override
-    public ResponseEntity<CollectionModel<TargetResource>> retrieveTargets(Principal principal) {
+    public ResponseEntity<TargetListResource> retrieveTargets(Principal principal) {
         List<TargetResource> targetList = targetService
                 .getTargetsForUserName(principal.getName(), false)
-                .stream().map(TargetResource::new)
+                .stream()
+                .map(ModelMapper::toModel)
+                .map(TargetResource::new)
                 .collect(Collectors.toList());
 
-        CollectionModel<TargetResource> targetResourceList = new CollectionModel<>(targetList);
+        TargetListResource targetResourceList = new TargetListResource(targetList);
         return new ResponseEntity(targetResourceList, HttpStatus.OK);
 
     }
 
     @Override
-    public ResponseEntity<Object> createTarget(Principal principal, @RequestBody Target input) {
+    public ResponseEntity<Object> createTarget(HttpServletRequest request, Principal principal, @RequestBody Target input) {
         //this.getUserForPrincipal(principal);
         TargetEntity targetEntity = ModelMapper.toEntity(input);
 
         TargetEntity result = targetService.createTarget(principal.getName(), targetEntity);
 
         if (result != null) {
-            Optional<Link> forOneTarget = new TargetResource(result).getLink("self");
-            String link = StringTools.safeLink(forOneTarget);
+            TargetResource resource = new TargetResource(ModelMapper.toModel(result));
+            String link = resource.selfLink(request, resource).toString();
             return ResponseEntity.created(URI.create(link)).build();
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
     }
 
-    public ResponseEntity<Object> createPickupTarget(Principal principal, @RequestBody Target input,
+    public ResponseEntity<Object> createPickupTarget(HttpServletRequest request, Principal principal, @RequestBody Target input,
                                                      @RequestParam(value = "pickupTags", required = false) String pickupTags) {
         List<Long> tagIdList = commaDelimitedToList(pickupTags);
         TargetEntity targetEntity = ModelMapper.toEntity(input);
 
         TargetEntity result = targetService.createTarget(principal.getName(), targetEntity);
 
-        TargetSlotEntity resultSlot = targetService.addDefaultTargetSlot(principal.getName(), result );
+        TargetSlotEntity resultSlot = targetService.addDefaultTargetSlot(principal.getName(), result);
 
         if (!tagIdList.isEmpty()) {
             tagIdList.stream().forEach(t -> targetService.addTagToTargetSlot(principal.getName(), result.getTargetId(), resultSlot.getId(), t));
         }
 
         if (result != null) {
-            Optional<Link> forOneTarget = new TargetResource(result).getLink("self");
-            String link = StringTools.safeLink(forOneTarget);
+            TargetResource resource = new TargetResource(ModelMapper.toModel(result));
+            String link = resource.selfLink(request, resource).toString();
             return ResponseEntity.created(URI.create(link)).build();
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.notFound().build();
     }
 
     @Override
@@ -93,7 +89,7 @@ public class TargetRestController implements TargetRestControllerApi {
         target = this.targetService.fillTagsForTarget(target);
 
         if (target != null) {
-            TargetResource targetResource = new TargetResource(target);
+            TargetResource targetResource = new TargetResource(ModelMapper.toModel(target));
 
             return new ResponseEntity(targetResource, HttpStatus.OK);
         }
@@ -112,15 +108,15 @@ public class TargetRestController implements TargetRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> updateTarget(Principal principal, @PathVariable Long targetId, @RequestBody Target input) {
+    public ResponseEntity<Object> updateTarget(HttpServletRequest request, Principal principal, @PathVariable Long targetId, @RequestBody Target input) {
         //this.getUserForPrincipal(principal);
         TargetEntity targetEntity = ModelMapper.toEntity(input);
 
         TargetEntity result = targetService.updateTarget(principal.getName(), targetEntity);
 
         if (result != null) {
-            Optional<Link> forOneTarget = new TargetResource(result).getLink("self");
-            String link = StringTools.safeLink(forOneTarget);
+            TargetResource resource = new TargetResource(ModelMapper.toModel(result));
+            String link = resource.selfLink(request, resource).toString();
             return ResponseEntity.created(URI.create(link)).build();
         }
         return ResponseEntity.badRequest().build();

@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.lmt.api;
 
 import com.meg.listshop.Application;
@@ -84,7 +91,7 @@ public class StatisticRestControllerTest {
 
 
         userDetails = new JwtUser(TestConstants.USER_3_ID,
-                TestConstants.USER_1_NAME,
+                TestConstants.USER_1_EMAIL,
                 null,
                 null,
                 null,

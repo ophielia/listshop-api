@@ -1,3 +1,10 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2022.
+ *
+ */
+
 package com.meg.listshop.auth.service.impl;
 
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
@@ -13,6 +20,7 @@ import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.test.TestConstants;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -131,7 +139,7 @@ public class UserServiceImplMockTest {
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setUsername(TestConstants.USER_3_NAME);
         Mockito.when(userRepository.findById(TestConstants.USER_3_ID)).thenReturn(Optional.of(testUser));
-        Mockito.when(userRepository.findByUsername(TestConstants.USER_3_NAME)).thenReturn(testUser);
+        Mockito.when(userRepository.findByEmail(TestConstants.USER_3_NAME)).thenReturn(testUser);
 
         UserDeviceEntity testUserDevice = new UserDeviceEntity();
         testUserDevice.setUserId(TestConstants.USER_3_ID);
@@ -180,7 +188,7 @@ public class UserServiceImplMockTest {
         testUserDevice.setUserId(TestConstants.USER_3_ID);
 
         Mockito.when(userRepository.findById(TestConstants.USER_3_ID)).thenReturn(Optional.of(testUser));
-        Mockito.when(userRepository.findByUsername(TestConstants.USER_3_NAME)).thenReturn(testUser);
+        Mockito.when(userRepository.findByEmail(TestConstants.USER_3_NAME)).thenReturn(testUser);
 
         ArgumentCaptor<UserDeviceEntity> userDeviceCapture = ArgumentCaptor.forClass(UserDeviceEntity.class);
         Mockito.when(userDeviceRepository.save(userDeviceCapture.capture())).thenReturn(null);
@@ -211,7 +219,7 @@ public class UserServiceImplMockTest {
 
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
-        Mockito.when(userRepository.findByUsername(TestConstants.USER_3_NAME)).thenReturn(testUser);
+        Mockito.when(userRepository.findByEmail(TestConstants.USER_3_NAME)).thenReturn(testUser);
         Mockito.when(userDeviceRepository.findByToken(token)).thenReturn(deviceInfo);
 
         ArgumentCaptor<UserEntity> userCapture = ArgumentCaptor.forClass(UserEntity.class);
@@ -236,11 +244,38 @@ public class UserServiceImplMockTest {
 
         UserEntity caturedUser = userCapture.getValue();
         assertNotNull(caturedUser);
-        assertTrue(DateUtils.isAfterOrEqual(caturedUser.getLastLogin(), now));
+        assertTrue(DateUtils.isAfterOrEqual(thirtySecondsAgo, caturedUser.getLastLogin()));
 
 
     }
 
+    @Test
+    public void testChangePasswordForUser() {
+        var userName = TestConstants.USER_1_EMAIL;
+        var newPassword = "NEWPASSWORD";
+        var encoder = new BCryptPasswordEncoder();
+        String encodedPassword = encoder.encode(newPassword);
+        long startTime = new Date().getTime();
+
+        // create fixtures
+        UserEntity mockUserEntity = new UserEntity();
+
+        Mockito.when(userRepository.findByEmail(userName)).thenReturn(mockUserEntity);
+        ArgumentCaptor<UserEntity> userCapture = ArgumentCaptor.forClass(UserEntity.class);
+        Mockito.when(userRepository.save(userCapture.capture())).thenReturn(null);
+
+        // test call
+        userService.changePassword(userName, newPassword);
+
+        // verify calls
+        Mockito.verify(userRepository, times(1))
+                .findByEmail(userName);
+
+        // verify capture
+        Assert.assertNotNull("value captured on save", userCapture.getValue());
+        Assert.assertEquals("changed password doesn't match", userCapture.getValue().getPassword().substring(0, 4), encodedPassword.substring(0, 4));
+        Assert.assertTrue("date of password change should be set", userCapture.getValue().getLastPasswordResetDate().getTime() >= startTime);
+    }
 
     @Test
     public void testRemoveLoginForUser() {
