@@ -20,6 +20,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <spring.boot.mainClass>com.meg.listshop.Application</spring.boot.mainClass>
+        <spring.boot.actuator.ui>2.3.1</spring.boot.actuator.ui>
     </properties>
 
     <dependencyManagement>
@@ -106,6 +107,13 @@
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>42.3.3</version>
+            </dependency>
+
+            <!-- actuator front end -->
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-client</artifactId>
+                <version>${spring.boot.actuator.ui}</version>
             </dependency>
 
             <!-- testcontainers -->
