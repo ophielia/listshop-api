@@ -46,7 +46,7 @@ public class TokenServiceImpl implements TokenService {
     @Value("${listservice.email.static.root:https://nastyvarmits.fr/api/static}")
     String STATIC_RESOURCE_ROOT;
 
-    @Value("${listservice.email.passwordreset.server.root:http://localhost:4200/home}")
+    @Value("${listservice.email.passwordreset.server.root:http://localhost:4200/user/gateway/PasswordReset}")
     String TOKEN_ROOT;
 
     @Value("${token.validity.period:86400}")
@@ -102,6 +102,7 @@ public class TokenServiceImpl implements TokenService {
 
         // generate the actual token
         String token = generateUniqueToken();
+        String tokenUrl = TOKEN_ROOT + "/" + token;
 
         // create token
         var tokenEntity = new TokenEntity();
@@ -118,9 +119,9 @@ public class TokenServiceImpl implements TokenService {
         parameters.setSender(EMAIL_SENDER);
         parameters.setSubject(PASSWORD_RESET_SUBJECT);
         parameters.addParameter("staticRoot", STATIC_RESOURCE_ROOT);
-        parameters.addParameter("tokenLink", TOKEN_ROOT);
+        parameters.addParameter("tokenLink", tokenUrl);
         parameters.addParameter("supportEmail", EMAIL_SENDER);
-
+//MM  http://localhost:4200/user/gateway/PasswordReset/token
         mailService.processEmail(parameters);
     }
 
