@@ -142,6 +142,36 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (sourceList == null) {
             return;
         }
+        switch (operationType) {
+            case RemoveCrossedOff:
+            case RemoveAll:
+            case Copy:
+            case Move:
+            case Remove:
+                doMoveRemoveItemOperations(sourceList, userName, sourceListId, operationType, tagIds, destinationListId);
+                break;
+            case CrossOff:
+            case UnCrossOff:
+                doCrossOffActions(sourceList, sourceListId, operationType, tagIds);
+                break;
+        }
+    }
+
+    private void doCrossOffActions(ShoppingListEntity sourceList, Long sourceListId, ItemOperationType operationType, List<Long> tagIds) {
+        // get item
+        List<ItemEntity> items = sourceList.getItems();
+
+        Date crossOffDate = operationType.equals(ItemOperationType.CrossOff) ? new Date() : null;
+
+        items.stream().filter(i -> i.getRemovedOn() == null)
+                .forEach(i -> i.setCrossedOff(crossOffDate));
+
+        sourceList.setLastUpdate(new Date());
+        itemRepository.saveAll(items);
+
+    }
+
+    public void doMoveRemoveItemOperations(ShoppingListEntity sourceList, String userName, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId) {
 
         if (operationType.equals(ItemOperationType.RemoveCrossedOff) ||
                 operationType.equals(ItemOperationType.RemoveAll)) {
@@ -279,7 +309,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // now, add all dish ids
         for (Long id : dishIds) {
-            addDishToList(userName,collector, id);
+            addDishToList(userName, collector, id);
         }
 
         // add starter list - if desired
@@ -669,7 +699,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // create MergeCollector from list
-        MergeItemCollector mergeCollector = new MergeItemCollector(list.getId(),list.getItems());
+        MergeItemCollector mergeCollector = new MergeItemCollector(list.getId(), list.getItems());
         checkReplaceTagsInCollector(mergeCollector);
 
         // prepare items from client
@@ -728,7 +758,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // create collector
         ListItemCollector collector = createListItemCollector(listId, list.getItems());
 
-        addDishToList(name,collector, dishId);
+        addDishToList(name, collector, dishId);
 
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withDishId(dishId)

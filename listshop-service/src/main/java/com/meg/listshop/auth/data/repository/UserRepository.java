@@ -12,6 +12,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, CustomU
 
     UserEntity findByEmail(String email);
 
+    UserEntity findByEmailIgnoreCase(String email);
+
     @Query(value = "select u.* from users u join user_devices ud using (user_id) where token = CAST(:userDeviceId as text)", nativeQuery = true)
     UserEntity findByToken(@Param("userDeviceId") String userDeviceId);
 }

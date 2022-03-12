@@ -8,6 +8,8 @@ public enum ItemOperationType {
     Remove("Remove"),
     Copy("Copy"),
     RemoveAll("RemoveAll"),
+    CrossOff("CrossOff"),
+    UnCrossOff("UnCrossOff"),
     RemoveCrossedOff("RemoveCrossedOff");
 
     private final String display;
