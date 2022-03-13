@@ -22,6 +22,7 @@ import freemarker.template.TemplateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,6 +47,12 @@ public class UserRestController implements UserRestControllerApi {
     private final AuthenticationManager authenticationManager;
 
     private final JwtTokenUtil jwtTokenUtil;
+
+    @Value("${listshop.min.android.version:1.0}")
+    private String minIosClient;
+
+    @Value("${listshop.min.android.version:1.0}")
+    private String minAndroidClient;
 
     @Autowired
     public UserRestController(UserService userService, AuthenticationManager authenticationManager,
@@ -104,7 +111,7 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteUser(Principal principal) throws BadParameterException {
+    public ResponseEntity<Object> deleteUser(Principal principal) {
         this.userService.deleteUser(principal.getName());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -168,6 +175,14 @@ public class UserRestController implements UserRestControllerApi {
 
         return ResponseEntity.ok().build();
 
+    }
+
+    @Override
+    public ResponseEntity<Object> getMinimumClientVersion() {
+        ClientVersions clientVersions = new ClientVersions();
+        clientVersions.setIosMinVersion(minIosClient);
+        clientVersions.setAndroidMinVersion(minAndroidClient);
+        return new ResponseEntity<>(clientVersions, HttpStatus.OK);
     }
 
     private void validatateUserForPasswordChange(PutCreateUser putCreateUser, String principalUsername) throws BadParameterException {

@@ -31,7 +31,7 @@ public interface UserRestControllerApi {
     ResponseEntity<Object> createUser(@RequestBody PutCreateUser input) throws BadParameterException;
 
     @DeleteMapping(produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> deleteUser(Principal principal) throws BadParameterException;
+    ResponseEntity<Object> deleteUser(Principal principal) ;
 
     @GetMapping(produces = "application/json")
     ResponseEntity<UserResource> getUser(Principal principal);
@@ -48,5 +48,8 @@ public interface UserRestControllerApi {
 
     @PostMapping(value = "password", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> changeUserPassword(Principal principal, @RequestBody PutCreateUser input) throws BadParameterException;
+
+    @GetMapping(value = "client/version", produces = "application/json")
+    ResponseEntity<Object> getMinimumClientVersion();
 
 }
