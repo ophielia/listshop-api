@@ -34,7 +34,7 @@ public interface UserService {
 
     void changePassword(Long userId, String newPassword);
 
-    void changePassword(String userName, String newPassword);
+    void changePassword(String userName, String newPassword, String originalPassword);
 
     void deleteUser(String name);
 }

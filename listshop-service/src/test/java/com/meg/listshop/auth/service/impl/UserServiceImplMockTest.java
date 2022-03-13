@@ -25,8 +25,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -36,6 +40,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
 
@@ -51,6 +56,8 @@ public class UserServiceImplMockTest {
     private UserDeviceRepository userDeviceRepository;
     @MockBean
     private AuthorityRepository authorityRepository;
+    @MockBean
+    private AuthenticationManager authenticationManager;
 
     private final String buildNumber = "buildNumber";
     private final String clientVersion = "clientVersion";
@@ -63,7 +70,7 @@ public class UserServiceImplMockTest {
 
     @Before
     public void setUp() {
-        userService = new UserServiceImpl(userRepository, userDeviceRepository, authorityRepository);
+        userService = new UserServiceImpl(userRepository, userDeviceRepository, authorityRepository, authenticationManager);
     }
 
     @Test
@@ -253,6 +260,7 @@ public class UserServiceImplMockTest {
     public void testChangePasswordForUser() {
         var userName = TestConstants.USER_1_EMAIL;
         var newPassword = "NEWPASSWORD";
+        var originalPassword = "ORIGINALPASSWORD";
         var encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(newPassword);
         long startTime = new Date().getTime();
@@ -265,7 +273,38 @@ public class UserServiceImplMockTest {
         Mockito.when(userRepository.save(userCapture.capture())).thenReturn(null);
 
         // test call
-        userService.changePassword(userName, newPassword);
+        userService.changePassword(userName, newPassword, originalPassword );
+
+        // verify calls
+        Mockito.verify(userRepository, times(1))
+                .findByEmail(userName);
+
+        // verify capture
+        Assert.assertNotNull("value captured on save", userCapture.getValue());
+        Assert.assertEquals("changed password doesn't match", userCapture.getValue().getPassword().substring(0, 4), encodedPassword.substring(0, 4));
+        Assert.assertTrue("date of password change should be set", userCapture.getValue().getLastPasswordResetDate().getTime() >= startTime);
+    }
+
+    @Test(expected = BadCredentialsException.class)
+    public void testChangePasswordForUser_KO() {
+        var userName = TestConstants.USER_1_EMAIL;
+        var newPassword = "NEWPASSWORD";
+        var originalPassword = "ORIGINALPASSWORD";
+        var encoder = new BCryptPasswordEncoder();
+        String encodedPassword = encoder.encode(newPassword);
+        long startTime = new Date().getTime();
+
+        // create fixtures
+        UserEntity mockUserEntity = new UserEntity();
+
+        Mockito.when(userRepository.findByEmail(userName)).thenReturn(mockUserEntity);
+        ArgumentCaptor<UserEntity> userCapture = ArgumentCaptor.forClass(UserEntity.class);
+        Mockito.when(userRepository.save(userCapture.capture())).thenReturn(null);
+        Mockito.when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(BadCredentialsException.class);
+
+        // test call
+        userService.changePassword(userName, newPassword, originalPassword );
 
         // verify calls
         Mockito.verify(userRepository, times(1))

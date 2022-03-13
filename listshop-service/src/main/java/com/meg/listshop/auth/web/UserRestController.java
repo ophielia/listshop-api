@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Base64;
 
@@ -162,16 +163,19 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> changeUserPassword(Principal principal, @RequestBody PutCreateUser input) throws BadParameterException {
+    public ResponseEntity<Object> changeUserPassword(Principal principal, @RequestBody PostChangePassword input) throws BadParameterException {
 
         // get username from principal
         String principalUsername = principal.getName();
         validatateUserForPasswordChange(input, principalUsername);
 
         // get new password from input
-        byte[] passwordBytes = Base64.getDecoder().decode(input.getUser().getPassword());
+        byte[] passwordBytes = Base64.getDecoder().decode(input.getNewPassword());
         var newPassword = new String(passwordBytes);
-        userService.changePassword(principalUsername, newPassword);
+        // get original password from input
+        byte[] origPasswordBytes = Base64.getDecoder().decode(input.getOriginalPassword());
+        var originalPassword = new String(origPasswordBytes);
+        userService.changePassword(principalUsername, newPassword, originalPassword );
 
         return ResponseEntity.ok().build();
 
@@ -185,15 +189,15 @@ public class UserRestController implements UserRestControllerApi {
         return new ResponseEntity<>(clientVersions, HttpStatus.OK);
     }
 
-    private void validatateUserForPasswordChange(PutCreateUser putCreateUser, String principalUsername) throws BadParameterException {
-        if (putCreateUser.getUser() == null || putCreateUser.getUser().getUsername() == null) {
+    private void validatateUserForPasswordChange(PostChangePassword postChangePassword, String principalUsername) throws BadParameterException {
+        if (principalUsername == null ) {
             throw new BadParameterException("User or username in input is blank or missing");
         }
-        if (!putCreateUser.getUser().getUsername().trim().equals(principalUsername)) {
-            throw new BadParameterException("Username does not match that of logged in user.");
-        }
-        if (putCreateUser.getUser().getPassword() == null || putCreateUser.getUser().getPassword().isEmpty()) {
+        if (postChangePassword.getNewPassword() == null || postChangePassword.getNewPassword().isEmpty()) {
             throw new BadParameterException("Input for change password does not include the new password");
+        }
+        if (postChangePassword.getOriginalPassword() == null || postChangePassword.getOriginalPassword().isEmpty()) {
+            throw new BadParameterException("Input for change password does not include the original password");
         }
     }
 

@@ -8,10 +8,7 @@
 package com.meg.listshop.auth.web;
 
 import com.meg.listshop.Application;
-import com.meg.listshop.auth.api.model.PostToken;
-import com.meg.listshop.auth.api.model.PostTokenRequest;
-import com.meg.listshop.auth.api.model.PutCreateUser;
-import com.meg.listshop.auth.api.model.User;
+import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtUser;
@@ -33,6 +30,7 @@ import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceType;
 import org.springframework.mobile.device.LiteDevice;
 import org.springframework.mock.http.MockHttpOutputMessage;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -45,7 +43,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 
 import static org.junit.Assert.assertNotNull;
@@ -108,7 +108,7 @@ public class UserRestControllerTest {
         userDetailsChangePassword = new JwtUser(userAccount.getId(),
                 TestConstants.USER_1_EMAIL,
                 null,
-                "Passw0rd",
+                "Passw0rd", // $2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK
                 null,
                 true,
                 null);
@@ -129,7 +129,6 @@ public class UserRestControllerTest {
                 true,
                 null);
     }
-
 
     @Test
     public void testCreateUser() throws Exception {
@@ -294,6 +293,11 @@ public class UserRestControllerTest {
     @Test
     @WithMockUser
     public void testChangePassword() throws Exception {
+        byte[] originalPasswordBytes = "Passw0rd".getBytes(StandardCharsets.UTF_8);
+        String originalPasswordEncoded = Base64.getEncoder().encodeToString(originalPasswordBytes);
+        byte[] newPasswordBytes = "newpassword".getBytes(StandardCharsets.UTF_8);
+        String newPasswordEncoded = Base64.getEncoder().encodeToString(newPasswordBytes);
+
 
         // get user before password change in order to compare password
         UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_1_EMAIL);
@@ -301,11 +305,10 @@ public class UserRestControllerTest {
         long startTime = new Date().getTime();
 
         // make payload
-        var putCreateUser = new PutCreateUser();
-        var user = new User(userAccount.getEmail(), userAccount.getEmail());
-        user.setPassword("NEWPASSWORD");
-        putCreateUser.setUser(user);
-        String payload = json(putCreateUser);
+        var postChangePassword = new PostChangePassword();
+        postChangePassword.setNewPassword(newPasswordEncoded);
+        postChangePassword.setOriginalPassword(originalPasswordEncoded);
+        String payload = json(postChangePassword);
 
         // make call - ensure 200 as return code
         String url = "/user/password";
@@ -324,6 +327,42 @@ public class UserRestControllerTest {
         // ensure password has changed, and password reset is updated
         Assert.assertNotEquals("password should have changed", passwordBeforeChange, passwordAfterChange);
         Assert.assertTrue("reset date should be equal or after start of test", passwordResetDate.getTime() >= startTime);
+    }
+
+    @Test
+    @WithMockUser
+    public void testChangePassword_badOriginalPassKO() throws Exception {
+        byte[] originalPasswordBytes = "badPasswordBadPassword".getBytes(StandardCharsets.UTF_8);
+        String originalPasswordEncoded = Base64.getEncoder().encodeToString(originalPasswordBytes);
+        byte[] newPasswordBytes = "newpassword".getBytes(StandardCharsets.UTF_8);
+        String newPasswordEncoded = Base64.getEncoder().encodeToString(newPasswordBytes);
+
+
+        // get user before password change in order to compare password
+        UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_1_EMAIL);
+        var passwordBeforeChange = userAccount.getPassword();
+
+        // make payload
+        var postChangePassword = new PostChangePassword();
+        postChangePassword.setNewPassword(newPasswordEncoded);
+        postChangePassword.setOriginalPassword(originalPasswordEncoded);
+        String payload = json(postChangePassword);
+
+        // make call - ensure 200 as return code
+        String url = "/user/password";
+        mockMvc.perform(post(url)
+                        .with(user(userDetailsChangePassword))
+                        .contentType(contentType)
+                        .content(payload)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().is4xxClientError());
+
+        // get user info after password change
+        UserEntity userAccountAfter = userService.getUserByUserEmail(TestConstants.USER_1_EMAIL);
+        var passwordAfterChange = userAccountAfter.getPassword();
+
+        // ensure password has not changed
+        Assert.assertEquals("password should not have changed", passwordBeforeChange, passwordAfterChange);
     }
 
     @Test

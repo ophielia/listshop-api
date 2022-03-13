@@ -14,7 +14,7 @@ values (1, 'rufus', true, null, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xf
        (29, 'michelle', true, null, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'michelle', null,
         null),
        (2, 'testname', null, null, 'password', 'testname', null, null),
-       (500, 'testuser@testuser.com', true, null, 'password', 'testuser', null, null),
+       (500, 'testuser@testuser.com', true, null, '$2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK', 'testuser', null, null),
        (501, 'adduser', true, null, 'password', 'adduser', null, null),
        (502, 'deleteuser', true, null, 'password', 'deleteuser', null, null);
 
@@ -23,7 +23,8 @@ values (1, 'ROLE_USER', 1),
        (2, 'ROLE_USER', 20),
        (3, 'ROLE_USER', 23),
        (4, 'ROLE_USER', 26),
-       (5, 'ROLE_USER', 29);
+       (5, 'ROLE_USER', 500),
+       (6, 'ROLE_USER', 29);
 
 insert into public.tag (tag_id, description, name, tag_type, tag_type_default, assign_select, search_select,
                         is_verified, power, to_delete, replacement_tag_id, created_on, updated_on, category_updated_on,

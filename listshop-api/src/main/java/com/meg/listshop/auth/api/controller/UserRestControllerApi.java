@@ -7,10 +7,7 @@
 
 package com.meg.listshop.auth.api.controller;
 
-import com.meg.listshop.auth.api.model.PostToken;
-import com.meg.listshop.auth.api.model.PostTokenRequest;
-import com.meg.listshop.auth.api.model.PutCreateUser;
-import com.meg.listshop.auth.api.model.UserResource;
+import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.TokenException;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +44,7 @@ public interface UserRestControllerApi {
 
 
     @PostMapping(value = "password", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> changeUserPassword(Principal principal, @RequestBody PutCreateUser input) throws BadParameterException;
+    ResponseEntity<Object> changeUserPassword(Principal principal, @RequestBody PostChangePassword input) throws BadParameterException;
 
     @GetMapping(value = "client/version", produces = "application/json")
     ResponseEntity<Object> getMinimumClientVersion();

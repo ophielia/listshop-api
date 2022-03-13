@@ -19,9 +19,16 @@ import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,13 +47,17 @@ public class UserServiceImpl implements UserService {
 
     private final AuthorityRepository authorityRepository;
 
+    private final AuthenticationManager authenticationManager;
+
     protected final Log logger = LogFactory.getLog(UserServiceImpl.class);
 
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserDeviceRepository userDeviceRepository, AuthorityRepository authorityRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserDeviceRepository userDeviceRepository, AuthorityRepository authorityRepository, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.userDeviceRepository = userDeviceRepository;
         this.authorityRepository = authorityRepository;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
@@ -177,7 +188,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(String eMail, String newPassword) {
+    public void changePassword(String eMail, String newPassword, String originalPassword) {
         // get user
         UserEntity user = userRepository.findByEmail(eMail);
         if (user == null) {
@@ -185,9 +196,24 @@ public class UserServiceImpl implements UserService {
             throw new ObjectNotFoundException(String.format("User [%s] not found for password change.", eMail));
         }
 
+        logger.info(String.format("Changing password for user[%s]", user.getId()));
+
+        // test original password
+        try {
+            final Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            eMail,
+                            originalPassword
+                    )
+            );
+        } catch (BadCredentialsException badCredentialsException) {
+            // catch and rethrow, logging along the way
+            logger.warn(String.format("ChangingPassword - exception logging in with original password, user[%s]", user.getId()));
+            throw badCredentialsException;
+        }
+
         changePassword(user, newPassword);
-
-
+        logger.info(String.format("Successfully changed password for user[%s]", user.getId()));
     }
 
     @Override
