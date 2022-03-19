@@ -59,8 +59,6 @@ public class MailService {
         var recipient = getEmailRecipient(emailParameters);
         var mimeMessage = javaMailSender.createMimeMessage();
         var helper = new MimeMessageHelper(mimeMessage);
-        //helper.setFrom(emailParameters.getSender());
-        //helper.setFrom("support@the-list-shop.com");
         helper.setFrom(new InternetAddress("support@the-list-shop.com", "List Shop Support"));
 
         helper.setSubject(subject);

@@ -125,7 +125,13 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> userNameIsTaken(String name) {
+    public ResponseEntity<Object> userNameIsTaken(@RequestBody ListShopPayload payload) throws BadParameterException {
+        var parameters = payload.getParameters();
+        if (parameters == null || parameters.isEmpty()) {
+            throw new BadParameterException("User email is required as first parameter");
+        }
+        var rawName = parameters.get(0);
+        var name = rawName.substring(0, Math.min(60, rawName.length()));
         UserEntity user = this.userService.getUserByUserEmail(name);
 
         return ResponseEntity.ok(user != null);

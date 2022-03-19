@@ -33,8 +33,8 @@ public interface UserRestControllerApi {
     @GetMapping(produces = "application/json")
     ResponseEntity<UserResource> getUser(Principal principal);
 
-    @GetMapping(value = "name", produces = "application/json")
-    ResponseEntity<Object> userNameIsTaken(@RequestParam(value = "name") String email);
+    @PostMapping(value = "name", produces = "application/json")
+    ResponseEntity<Object> userNameIsTaken(@RequestBody ListShopPayload payload) throws BadParameterException;
 
     @PostMapping(value = "token/tokenrequest", produces = "application/json")
     ResponseEntity<Object> getToken(@RequestBody PostTokenRequest postTokenRequest) throws BadParameterException;
