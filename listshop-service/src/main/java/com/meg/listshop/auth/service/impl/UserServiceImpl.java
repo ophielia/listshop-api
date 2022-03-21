@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -75,7 +74,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity createUser(String username, String email, String decodedPassword) throws BadParameterException {
+    public UserEntity createUser(String email, String decodedPassword) throws BadParameterException {
         // check if username exists
         UserEntity existingUser = userRepository.findByEmail(email);
         if (existingUser != null) {
@@ -86,9 +85,10 @@ public class UserServiceImpl implements UserService {
         var encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(decodedPassword);
         // create new userentity and fill in
-        var newUser = new UserEntity(username, email, encodedPassword);
-        // add creation date
+        var newUser = new UserEntity( email, encodedPassword);
+        // add creation date and enabled
         newUser.setCreationDate(new Date());
+        newUser.setEnabled(true);
         // save user
         var createdUser = userRepository.save(newUser);
         // create authorities

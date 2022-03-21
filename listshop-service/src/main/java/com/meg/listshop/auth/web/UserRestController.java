@@ -65,33 +65,24 @@ public class UserRestController implements UserRestControllerApi {
 
     @Override
     public ResponseEntity<Object> createUser(@RequestBody PutCreateUser inputPut) throws BadParameterException {
+        decodeAndValidateCreateUserInput(inputPut);
+
         var user = inputPut.getUser();
         ClientDeviceInfo deviceInfo = inputPut.getDeviceInfo();
-
-        if (user == null) {
-            throw new BadParameterException("Parameter user missing in PutCreateUser.");
-        } else if (deviceInfo == null) {
-            throw new BadParameterException("Parameter deviceInfo missing in PutCreateUser.");
-        }
 
         // get email and password
         String email = user.getEmail();
         String password = user.getPassword();
 
-        // decode email and password
-        byte[] emailBytes = Base64.getDecoder().decode(email);
-        var decodedEmail = new String(emailBytes);
-        byte[] passwordBytes = Base64.getDecoder().decode(password);
-        var decodedPassword = new String(passwordBytes);
 
         // call service to create user
-        UserEntity newUser = userService.createUser(decodedEmail, decodedEmail, decodedPassword);
+        UserEntity newUser = userService.createUser(email  , password);
 
         // authenticate new user
         var authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        newUser.getEmail(),
-                        decodedPassword
+                        email,
+                        password
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -108,6 +99,31 @@ public class UserRestController implements UserRestControllerApi {
 
         // Return the token
         return ResponseEntity.ok(new UserResource(ModelMapper.toModel(userDetails, token)));
+    }
+
+    private void decodeAndValidateCreateUserInput(PutCreateUser inputPut) throws BadParameterException {
+        var user = inputPut.getUser();
+        ClientDeviceInfo deviceInfo = inputPut.getDeviceInfo();
+
+        if (user == null || user.getEmail() == null || user.getPassword() == null) {
+            throw new BadParameterException("Parameter user missing in PutCreateUser.");
+        }
+        if (deviceInfo == null) {
+            throw new BadParameterException("Parameter deviceInfo missing in PutCreateUser.");
+        }
+
+        // decode email and password
+        byte[] emailBytes = Base64.getDecoder().decode(user.getEmail());
+        var decodedEmail = new String(emailBytes);
+        byte[] passwordBytes = Base64.getDecoder().decode(user.getPassword());
+        var decodedPassword = new String(passwordBytes);
+
+        // clean email
+        var cleanEmail = decodedEmail.trim().toLowerCase();
+
+        // put cleaned and decoded values back in object
+        inputPut.getUser().setPassword(decodedPassword);
+        inputPut.getUser().setEmail(cleanEmail);
     }
 
     @Override

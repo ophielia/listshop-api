@@ -49,6 +49,7 @@ public class UserEntity {
     private Date lastPasswordResetDate;
 
     public UserEntity(String userName, String password) {
+        this.email = userName;
         this.username = userName;
         this.password = password;
     }

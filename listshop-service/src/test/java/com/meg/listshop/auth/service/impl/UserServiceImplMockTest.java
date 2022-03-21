@@ -107,7 +107,7 @@ public class UserServiceImplMockTest {
         Mockito.when(userRepository.save(dateCapture.capture())).thenAnswer(i -> i.getArguments()[0]);
         Mockito.when(authorityRepository.save(Mockito.any(AuthorityEntity.class))).thenReturn(testAuthority);
 
-        UserEntity result = userService.createUser(username, email, password);
+        UserEntity result = userService.createUser(email, password);
         assertNotNull(result);
         assertNotNull(result.getAuthorities());
         UserEntity datePasswordCheck = dateCapture.getValue();

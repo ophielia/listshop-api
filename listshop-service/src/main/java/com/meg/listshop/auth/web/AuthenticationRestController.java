@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Locale;
 
 @Controller
 public class AuthenticationRestController implements AuthenticationRestControllerApi {
@@ -52,30 +53,31 @@ public class AuthenticationRestController implements AuthenticationRestControlle
     }
 
     public ResponseEntity<Object> authorizeUser(@RequestBody JwtAuthorizationRequest authorizationRequest) throws BadParameterException {
-
-        String userName = authorizationRequest.getUsername();
+        String email = authorizationRequest.getUsername();
         String password = authorizationRequest.getPassword();
         ClientDeviceInfo deviceInfo = authorizationRequest.getDeviceInfo();
 
-        if (userName == null ||
+        if (email == null ||
                 password == null ||
                 deviceInfo == null) {
             throw new BadParameterException("missing parameter in authorizeUser: " +
-                    "userName [" + userName + "], " +
+                    "email [" + email + "], " +
                     "password is null [" + (password == null) + "], " +
                     "deviceInfo [" + deviceInfo + "]");
         }
+        // clean email
+        email = email.trim().toLowerCase();
         // Perform the security
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        authorizationRequest.getUsername(),
+                        email,
                         authorizationRequest.getPassword()
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Reload password post-security so we can generate token
-        UserEntity userEntity = userService.getUserByUserEmail(authorizationRequest.getUsername());
+        UserEntity userEntity = userService.getUserByUserEmail(email);
         final String token = jwtTokenUtil.generateExpiringToken(userEntity, deviceInfo);
 
         // save token for user

@@ -22,7 +22,7 @@ public interface UserService {
 
     UserEntity save(UserEntity user);
 
-    UserEntity createUser(String username, String decodedEmail, String decodedPassword) throws BadParameterException;
+    UserEntity createUser(String decodedEmail, String decodedPassword) throws BadParameterException;
 
     UserEntity updateLoginForUser(String username, String token, ClientDeviceInfo deviceInfo);
 
