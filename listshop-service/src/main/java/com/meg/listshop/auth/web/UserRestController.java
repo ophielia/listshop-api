@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Base64;
 
@@ -105,7 +104,7 @@ public class UserRestController implements UserRestControllerApi {
         this.userService.createDeviceForUserAndDevice(newUser.getId(), deviceInfo, token);
 
         // update last login time
-        this.userService.updateLoginForUser(newUser.getUsername(), token);
+        this.userService.updateLoginForUser(newUser.getUsername(), token,deviceInfo );
 
         // Return the token
         return ResponseEntity.ok(new UserResource(ModelMapper.toModel(userDetails, token)));

@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -239,7 +238,7 @@ public class UserServiceImplMockTest {
         Date now = new Date();
         Date thirtySecondsAgo = new Date(now.getTime() - 30000);
 
-        userService.updateLoginForUser(TestConstants.USER_3_NAME, token);
+        userService.updateLoginForUser(TestConstants.USER_3_NAME, token, null );
 
         UserDeviceEntity capturedUserDevice = userDeviceCapture.getValue();
         assertNotNull(capturedUserDevice);

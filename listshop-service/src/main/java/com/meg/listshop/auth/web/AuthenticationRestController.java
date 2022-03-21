@@ -86,7 +86,7 @@ public class AuthenticationRestController implements AuthenticationRestControlle
         return ResponseEntity.ok(user);
     }
 
-    public ResponseEntity<Object> authenticateUser(HttpServletRequest request) throws BadParameterException {
+    public ResponseEntity<Object> authenticateUser(HttpServletRequest request, @RequestBody ClientDeviceInfo deviceInfo) throws BadParameterException {
         String token = request.getHeader(tokenHeader);
 
         if (token == null) {
@@ -105,7 +105,7 @@ public class AuthenticationRestController implements AuthenticationRestControlle
             throw new AuthenticationException("Token invalid for user.");
         }
         // update last login time
-        UserEntity userEntity = this.userService.updateLoginForUser(userDetails.getUsername(), token);
+        UserEntity userEntity = this.userService.updateLoginForUser(userDetails.getUsername(), token, deviceInfo );
 
         // return user
         final UserResource user = new UserResource(ModelMapper.toModel(userEntity, ""));

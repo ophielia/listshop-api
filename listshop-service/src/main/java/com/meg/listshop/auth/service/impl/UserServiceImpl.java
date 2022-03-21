@@ -19,11 +19,8 @@ import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -102,7 +99,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity updateLoginForUser(String username, String token) {
+    public UserEntity updateLoginForUser(String username, String token, ClientDeviceInfo deviceInfo) {
         // create last login date
         var lastLogin = new Date();
 
@@ -116,6 +113,10 @@ public class UserServiceImpl implements UserService {
         }
         //  update last_login
         userDeviceEntity.setLastLogin(lastLogin);
+        if (deviceInfo != null) {
+            userDeviceEntity.setClientVersion(deviceInfo.getClientVersion());
+            userDeviceEntity.setBuildNumber(deviceInfo.getBuildNumber());
+        }
         userDeviceRepository.save(userDeviceEntity);
         userEntity.setLastLogin(lastLogin);
         return userRepository.save(userEntity);
@@ -131,7 +132,7 @@ public class UserServiceImpl implements UserService {
         createDeviceForUserAndDevice(userId, deviceInfo, token);
 
         // update last login time
-        updateLoginForUser(userEntity.getUsername(), token);
+        updateLoginForUser(userEntity.getUsername(), token, deviceInfo );
 
     }
 
@@ -200,7 +201,7 @@ public class UserServiceImpl implements UserService {
 
         // test original password
         try {
-            final Authentication authentication = authenticationManager.authenticate(
+            authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             eMail,
                             originalPassword

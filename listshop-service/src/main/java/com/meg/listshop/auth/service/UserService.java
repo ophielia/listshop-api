@@ -24,7 +24,7 @@ public interface UserService {
 
     UserEntity createUser(String username, String decodedEmail, String decodedPassword) throws BadParameterException;
 
-    UserEntity updateLoginForUser(String username, String token);
+    UserEntity updateLoginForUser(String username, String token, ClientDeviceInfo deviceInfo);
 
     void saveTokenForUserAndDevice(UserEntity userEntity, ClientDeviceInfo deviceInfo, String token);
 
