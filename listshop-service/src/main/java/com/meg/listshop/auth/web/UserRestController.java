@@ -48,7 +48,7 @@ public class UserRestController implements UserRestControllerApi {
 
     private final JwtTokenUtil jwtTokenUtil;
 
-    @Value("${listshop.min.android.version:1.0}")
+    @Value("${listshop.min.ios.version:1.0}")
     private String minIosClient;
 
     @Value("${listshop.min.android.version:1.0}")
