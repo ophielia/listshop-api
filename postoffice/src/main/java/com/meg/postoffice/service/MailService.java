@@ -51,6 +51,7 @@ public class MailService {
     }
 
     public void processEmail(EmailParameters emailParameters) throws TemplateException, IOException, MessagingException {
+        LOG.info(String.format("Begin processEmail: emailType[%s], recipient[%s]", emailParameters.getEmailType(), emailParameters.getReceiver().substring(0,5)));
         var contentBuilder = new ContentBuilderFactory(emailParameters, configuration).build();
         String content = contentBuilder.buildContent();
         LOG.debug("Content created: {}", content);
@@ -67,6 +68,9 @@ public class MailService {
 
         if (sendingEnabled) {
             javaMailSender.send(mimeMessage);
+            LOG.debug("Email successfully sent");
+        } else {
+            LOG.info("Email processed, but not sent, due to configuration");
         }
 
     }

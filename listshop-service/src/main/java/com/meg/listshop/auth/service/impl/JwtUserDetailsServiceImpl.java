@@ -36,7 +36,7 @@ public class JwtUserDetailsServiceImpl implements ListShopUserDetailsService {
     public UserDetails loadUserByToken(String token) {
 
         // load by token
-        logger.info(String.format("loading user for token [%s]", token));
+        logger.debug(String.format("loading user for token [%s]", token));
         UserEntity user = userRepository.findByToken(token);
 
         return createUserDetailsFromUser(user);

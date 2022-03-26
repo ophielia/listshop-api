@@ -11,6 +11,8 @@ import com.meg.listshop.auth.service.impl.ListShopUserDetailsService;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ import java.util.Locale;
 
 @Controller
 public class AuthenticationRestController implements AuthenticationRestControllerApi {
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationRestController.class);
 
     @Value("${jwt.header}")
     private String tokenHeader;
@@ -89,9 +92,17 @@ public class AuthenticationRestController implements AuthenticationRestControlle
     }
 
     public ResponseEntity<Object> authenticateUser(HttpServletRequest request, @RequestBody ClientDeviceInfo deviceInfo) throws BadParameterException {
+
         String token = request.getHeader(tokenHeader);
 
+        String ipAddress = request.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = request.getRemoteAddr();
+        }
+        LOG.debug(String.format("Begin authenticateUser: deviceInfo[%s] from ipAddress [%s] ",deviceInfo, ipAddress));
+
         if (token == null) {
+            LOG.warn(String.format("Cannot login from ipAddress [%s] as no token is available.", ipAddress));
             throw new BadParameterException("no token passed.");
         }
         if (token.startsWith("Bearer ")) {
@@ -100,16 +111,19 @@ public class AuthenticationRestController implements AuthenticationRestControlle
         // get user for token
         UserDetails userDetails = this.userDetailsService.loadUserByToken(token);
         if (userDetails == null) {
+            LOG.warn(String.format("User not found for token [%s].", token));
             throw new AuthenticationException("user not found for token.");
         }
         // validate token
         if (!jwtTokenUtil.validateToken(token, userDetails)) {
+            LOG.warn(String.format("Token [%s] invalid for user.", token));
             throw new AuthenticationException("Token invalid for user.");
         }
         // update last login time
         UserEntity userEntity = this.userService.updateLoginForUser(userDetails.getUsername(), token, deviceInfo );
 
         // return user
+        LOG.info(String.format("Login successful [%s]", userEntity.getId()));
         final UserResource user = new UserResource(ModelMapper.toModel(userEntity, ""));
         return ResponseEntity.ok(user);
     }

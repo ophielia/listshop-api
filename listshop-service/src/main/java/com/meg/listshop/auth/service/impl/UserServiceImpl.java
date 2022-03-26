@@ -75,6 +75,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity createUser(String email, String decodedPassword) throws BadParameterException {
+        logger.info(String.format("Creating user: [%s]",email));
         // check if username exists
         UserEntity existingUser = userRepository.findByEmail(email);
         if (existingUser != null) {
@@ -95,11 +96,13 @@ public class UserServiceImpl implements UserService {
         var authority = createUserAuthorityForUser(createdUser);
         createdUser.getAuthorities().add(authority);
         // save authorities and return
+        logger.debug(String.format("Finished creating new user[%s]",createdUser));
         return userRepository.save(createdUser);
     }
 
     @Override
     public UserEntity updateLoginForUser(String username, String token, ClientDeviceInfo deviceInfo) {
+        logger.debug(String.format("Begin updateLoginForUser: username[%s], token[%s], device[%s]",username, token,deviceInfo));
         // create last login date
         var lastLogin = new Date();
 
@@ -119,6 +122,7 @@ public class UserServiceImpl implements UserService {
         }
         userDeviceRepository.save(userDeviceEntity);
         userEntity.setLastLogin(lastLogin);
+        logger.debug(String.format("Success - updateLoginForUser complete for username[%s]",username));
         return userRepository.save(userEntity);
 
     }
@@ -219,12 +223,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(String email) {
+        logger.debug(String.format("Request received to delete user [%s]", email));
         UserEntity user = userRepository.findByEmail(email);
 
         if (user == null) {
             logger.warn(String.format("no user found for email [%s] in deleteUser", email));
             throw new ObjectNotFoundException(String.format("No user found for email: %s", email));
         }
+        logger.info(String.format("Will delete user [%s]", user));
         userRepository.deleteUser(user.getId());
         userRepository.flush();
     }

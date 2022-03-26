@@ -65,9 +65,11 @@ public class UserRestController implements UserRestControllerApi {
 
     @Override
     public ResponseEntity<Object> createUser(@RequestBody PutCreateUser inputPut) throws BadParameterException {
+        LOG.debug("Begin creating new user");
         decodeAndValidateCreateUserInput(inputPut);
 
         var user = inputPut.getUser();
+        LOG.info(String.format("Create new user[%s], input validated.", user.getEmail()));
         ClientDeviceInfo deviceInfo = inputPut.getDeviceInfo();
 
         // get email and password
@@ -128,6 +130,7 @@ public class UserRestController implements UserRestControllerApi {
 
     @Override
     public ResponseEntity<Object> deleteUser(Principal principal) {
+        LOG.info(String.format("Begin delete user [%s]",principal.getName()));
         this.userService.deleteUser(principal.getName());
         return new ResponseEntity<>(HttpStatus.OK);
     }

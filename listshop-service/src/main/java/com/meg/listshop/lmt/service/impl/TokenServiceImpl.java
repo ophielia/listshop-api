@@ -13,6 +13,7 @@ import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.TokenException;
 import com.meg.listshop.lmt.api.model.TokenType;
+import com.meg.listshop.lmt.api.web.controller.TagRestController;
 import com.meg.listshop.lmt.data.entity.TokenEntity;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
 import com.meg.listshop.lmt.service.TokenService;
@@ -20,6 +21,8 @@ import com.meg.postoffice.api.model.EmailParameters;
 import com.meg.postoffice.api.model.EmailType;
 import com.meg.postoffice.service.MailService;
 import freemarker.template.TemplateException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,6 +39,8 @@ import java.util.UUID;
  */
 @Service
 public class TokenServiceImpl implements TokenService {
+
+    private static final Logger logger = LogManager.getLogger(TokenServiceImpl.class);
 
     @Value("${listservice.email.sender:support@the-list-shop.com}")
     String EMAIL_SENDER;
@@ -94,11 +99,13 @@ public class TokenServiceImpl implements TokenService {
     }
 
     public void generateTokenForUser(TokenType tokenType, String userEmail) throws BadParameterException, TemplateException, MessagingException, IOException {
+
         // find user
         UserEntity user = userService.getUserByUserEmail(userEmail);
         if (user == null) {
             throw new ObjectNotFoundException(String.format("User not found for username: %s", userEmail));
         }
+        logger.info(String.format("Begin generateTokenForUser: user[%s], tokenType[%s]", user.getId(), tokenType));
 
         // generate the actual token
         String token = generateUniqueToken();
@@ -121,8 +128,9 @@ public class TokenServiceImpl implements TokenService {
         parameters.addParameter("staticRoot", STATIC_RESOURCE_ROOT);
         parameters.addParameter("tokenLink", tokenUrl);
         parameters.addParameter("supportEmail", EMAIL_SENDER);
-//MM  http://localhost:4200/user/gateway/PasswordReset/token
+
         mailService.processEmail(parameters);
+        logger.debug(String.format("Finished generateTokenForUser: user[%s], tokenType[%s]", user.getId(), tokenType));
     }
 
     private String generateUniqueToken() {
