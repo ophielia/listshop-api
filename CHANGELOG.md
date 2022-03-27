@@ -5,17 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.1] February 2022
+## [1.7.0] February 2022
 
 ### Added
 
 - configured app to register with actuator admin app
+- end point user/client/version
+- configuration for password reset email completed
 
 ### Changed
 
-### Deprecated
-
+- check user name endpoint email moved to payload
+- all emails converted to lower case in back end
+- logging configuration. Fewer automatic logs. Adding application logs.
+- 
 ### Fixed
+
+- bug updating item count in list
+- bug in which tags weren't returned for dishes
 
 ## [1.6.0] February 2022
 
