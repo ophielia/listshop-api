@@ -175,6 +175,7 @@ public class UserRestController implements UserRestControllerApi {
 
     @Override
     public ResponseEntity<Object> processToken(@RequestBody PostToken postToken) throws BadParameterException, TokenException {
+        LOG.debug(String.format("Entering processToken with tokenType[%s]", postToken.getTokenType()));
         validateToken(postToken);
 
         // convert token type string to TokenType
@@ -183,12 +184,13 @@ public class UserRestController implements UserRestControllerApi {
         // call service method
         tokenService.processTokenFromUser(type, postToken.getToken(), postToken.getTokenParameter());
 
+        LOG.debug(String.format("Completing processToken for tokenType[%s]", postToken.getTokenType()));
         return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<Object> changeUserPassword(Principal principal, @RequestBody PostChangePassword input) throws BadParameterException {
-
+        LOG.debug(String.format("Begin changeUserPassword, user[%s]", principal.getName()));
         // get username from principal
         String principalUsername = principal.getName();
         validatateUserForPasswordChange(input, principalUsername);
@@ -200,7 +202,7 @@ public class UserRestController implements UserRestControllerApi {
         byte[] origPasswordBytes = Base64.getDecoder().decode(input.getOriginalPassword());
         var originalPassword = new String(origPasswordBytes);
         userService.changePassword(principalUsername, newPassword, originalPassword );
-
+        LOG.debug(String.format("Finished changeUserPassword, user[%s]", principal.getName()));
         return ResponseEntity.ok().build();
 
     }

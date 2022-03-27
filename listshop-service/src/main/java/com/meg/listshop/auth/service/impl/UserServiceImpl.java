@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
         // encode password
         var encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(decodedPassword);
-        // create new userentity and fill in
+        // create new userEntity and fill in
         var newUser = new UserEntity( email, encodedPassword);
         // add creation date and enabled
         newUser.setCreationDate(new Date());
@@ -144,7 +144,7 @@ public class UserServiceImpl implements UserService {
     public void createDeviceForUserAndDevice(Long userId, ClientDeviceInfo deviceInfo, String token) {
         // get user
         Optional<UserEntity> userEntityOptional = userRepository.findById(userId);
-        if (!userEntityOptional.isPresent()) {
+        if (userEntityOptional.isEmpty()) {
             throw new ObjectNotFoundException("Can't retrieve user for userId [" + userId + "]");
         }
 
@@ -170,21 +170,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeLoginForUser(String name, String token) {
+        logger.debug(String.format("Begin removeLoginForUser: user[%s]", name));
         // get user_device
         var userDeviceEntity = userDeviceRepository.findByToken(token);
+        Long userId = userDeviceEntity.getUserId();
 
         if (userDeviceEntity == null) {
-            throw new AuthenticationException("no user device found to logout.");
+            logger.warn(String.format("Nothing to logout. No device found for token: token[%s]", token));
+            return;
         }
         //  update last_login
         userDeviceRepository.delete(userDeviceEntity);
+        logger.info(String.format("User[%s] successfully logged out.", userId));
     }
 
     @Override
     public void changePassword(Long userId, String newPassword) {
         // get user
         Optional<UserEntity> userEntity = userRepository.findById(userId);
-        if (!userEntity.isPresent()) {
+        if (userEntity.isEmpty()) {
+            logger.warn(String.format("User not found in change password userId[%s]", userId));
             throw new ObjectNotFoundException(String.format("User [%s] not found for password change.", userId));
         }
         var user = userEntity.get();
@@ -193,21 +198,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(String eMail, String newPassword, String originalPassword) {
+    public void changePassword(String email, String newPassword, String originalPassword) {
+        logger.debug(String.format("Begin changePassword, user[%s]", email));
         // get user
-        UserEntity user = userRepository.findByEmail(eMail);
+        UserEntity user = userRepository.findByEmail(email);
         if (user == null) {
-            logger.warn(String.format("no user found for email [%s] in changePassword", eMail));
-            throw new ObjectNotFoundException(String.format("User [%s] not found for password change.", eMail));
+            logger.warn(String.format("no user found for email [%s] in changePassword", email));
+            throw new ObjectNotFoundException(String.format("User [%s] not found for password change.", email));
         }
-
-        logger.info(String.format("Changing password for user[%s]", user.getId()));
 
         // test original password
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            eMail,
+                            email,
                             originalPassword
                     )
             );
@@ -242,6 +246,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encodedPassword);
         user.setLastPasswordResetDate(new Date());
         userRepository.save(user);
+        logger.info(String.format("Password successfully changed for userId[%s]", user.getId()));
     }
 
     private AuthorityEntity createUserAuthorityForUser(UserEntity createdUser) {

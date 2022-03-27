@@ -78,19 +78,24 @@ public class TokenServiceImpl implements TokenService {
         // lookup token
         List<TokenEntity> tokenEntityList = tokenRepository.findByTokenValue(tokenValue);
         if (tokenEntityList == null || tokenEntityList.size() != 1) {
+            logger.warn(String.format("Token[%s] not found.", tokenValue));
             throw new TokenException("Unique matching token not found.");
         }
         var token = tokenEntityList.get(0);
         long age = new Date().getTime() - token.getCreatedOn().getTime();
         if (age > (TOKEN_VALIDITY_IN_SECONDS * 1000)) {
+            logger.warn(String.format("Token[%s] invalid.", tokenValue));
             throw new TokenException("Token is no longer valid.");
         }
         if (token.getUserId() == null) {
+            logger.warn(String.format("Token[%s] corrupted.", tokenValue));
             throw new BadParameterException("Token is corrupted.");
         }
         if (tokenParameter == null) {
+            logger.warn(String.format("Token[%s] incomplete.", tokenValue));
             throw new BadParameterException("Token is incomplete.");
         }
+        logger.debug(String.format("Will change password for user[%s]", token.getUserId()));
         // change password for user to that contained in token parameter
         userService.changePassword(token.getUserId(), tokenParameter);
 

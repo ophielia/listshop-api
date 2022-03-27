@@ -129,6 +129,7 @@ public class AuthenticationRestController implements AuthenticationRestControlle
     }
 
     public ResponseEntity<Object> logoutUser(Principal principal, HttpServletRequest request) throws BadParameterException {
+        LOG.debug("Received logout user request");
         String token = request.getHeader(tokenHeader);
 
 
@@ -138,9 +139,9 @@ public class AuthenticationRestController implements AuthenticationRestControlle
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
+        LOG.debug("Logout user request is valid.");
 
-
-        // update last login time
+        // remove login token
         this.userService.removeLoginForUser(principal.getName(), token);
 
         // return user
