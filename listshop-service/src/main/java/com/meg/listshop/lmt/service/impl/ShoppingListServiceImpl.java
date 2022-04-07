@@ -164,6 +164,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         Date crossOffDate = operationType.equals(ItemOperationType.CrossOff) ? new Date() : null;
 
         items.stream().filter(i -> i.getRemovedOn() == null)
+                .filter(i -> tagIds.contains(i.getTag().getId()))
                 .forEach(i -> i.setCrossedOff(crossOffDate));
 
         sourceList.setLastUpdate(new Date());
