@@ -7,7 +7,7 @@ public class ListShopPostgresqlContainer extends PostgreSQLContainer<ListShopPos
     private static final String IMAGE_VERSION = "postgres:10.14";
     private static ListShopPostgresqlContainer container;
 
-    private ListShopPostgresqlContainer() {
+    ListShopPostgresqlContainer() {
         super(IMAGE_VERSION);
     }
 
