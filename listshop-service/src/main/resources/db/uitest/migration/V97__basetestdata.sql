@@ -17771,9 +17771,6 @@ values  (1, 320, 1, 50000, '323', null),
         (1014, 320, 2, 50002, null, null),
         (1018, 320, 1, 50003, '363', null);
 
-insert into public.tokens (token_id, created_on, token_type, token_value, user_id)
-values  (57000, '2022-03-27 14:35:01.090000', 'PasswordReset', '2bd73703-198e-4f48-9ec3-a8a87ddd1302', 20),
-        (57002, '2022-03-27 18:06:18.819000', 'PasswordReset', '120b6768-cf09-46b6-ba85-832223e12590', 20);
 
 insert into public.user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login)
 values  (412, 20, 'iPhone - the Red', 'iPhone', 'iOS', '15.1', 'Mobile', '65', 'AEAFA4E8-DC25-4055-ABBB-E8F08838F834', '1.6.0', 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZSIsImF1ZGllbmNlIjoibW9iaWxlIiwiY3JlYXRlZCI6MTY0MzQ0ODg4ODk3Mn0.5awYG_NAu0zxGFLfheLoJ-mkyHGYUdfCgEneifKrKli3xynFHiTFE_TrBcd7NDQ1jcCAlIgctsg_xTgTWffzKA', '2022-01-29 09:34:49.012000 +00:00'),
@@ -17819,5 +17816,5 @@ values  (412, 20, 'iPhone - the Red', 'iPhone', 'iOS', '15.1', 'Mobile', '65', '
 
 insert into public.users (user_id, email, enabled, last_password_reset_date, password, username, creation_date, last_login)
 values  (20, 'meg@the-list-shop.com', true, '2022-03-27 14:48:05.961000', '$2a$10$zOk.L8zFWGl6ijBcUsCO3.c83cwdAgAoz.Cf3kejVkTTLkOC1S4fG', 'meg@the-list-shop.com', null, '2022-04-06 18:28:47.348000 +00:00'),
-        (34, 'jimkathb@yahoo.com', true, null, '$2a$10$8kfwx8pRSnl6u9Tf6g5paex/ka8pjWmTTdItRYN13cEOscd3pFmRm', 'jimkathb@yahoo.com', '2020-05-23 13:44:20.858000', '2022-04-07 18:48:26.802000 +00:00'),
+        (34, 'uitest@the-list-shop.com', true, null, '$2a$10$krN3dfIXEPqV2ZraS63j9OVluVO5wQesZ.DPLxy9VZhNwCJiikddG', 'uitest@the-list-shop.com', '2020-05-23 13:44:20.858000', '2022-04-07 18:48:26.802000 +00:00'),
         (40, 'testuser@test.com', true, null, '$2a$10$8kfwx8pRSnl6u9Tf6g5paex/ka8pjWmTTdItRYN13cEOscd3pFmRm', 'testuser@test.com', '2020-05-23 13:44:20.858000', '2022-04-07 18:48:26.802000 +00:00');
