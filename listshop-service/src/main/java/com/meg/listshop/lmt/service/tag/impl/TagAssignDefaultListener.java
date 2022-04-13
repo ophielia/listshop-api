@@ -24,7 +24,7 @@ public class TagAssignDefaultListener implements TagChangeListener {
     public void init() {
         tagService.addTagChangeListener(this);
     }
-
+    //MM autowired work
     @Autowired
     public void setTagService(TagService tagService) {
         this.tagService = tagService;

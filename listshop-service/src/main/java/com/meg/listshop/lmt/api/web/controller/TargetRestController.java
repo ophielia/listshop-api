@@ -26,8 +26,13 @@ import java.util.stream.Collectors;
  */
 @Controller
 public class TargetRestController implements TargetRestControllerApi {
-    @Autowired
+
     TargetService targetService;
+
+    @Autowired
+    public TargetRestController(TargetService targetService) {
+        this.targetService = targetService;
+    }
 
     @Override
     public ResponseEntity<TargetListResource> retrieveTargets(Principal principal) {

@@ -34,12 +34,11 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     private static final Logger logger = LogManager.getLogger(ShoppingListRestController.class);
 
-
-    @Autowired
     private ShoppingListService shoppingListService;
-
     @Autowired
-    private ListLayoutService listLayoutService;
+    public ShoppingListRestController(ShoppingListService shoppingListService) {
+        this.shoppingListService = shoppingListService;
+    }
 
     public ResponseEntity<ShoppingListListResource> retrieveLists(HttpServletRequest request, Principal principal) {
         String message = String.format("Retrieving all lists for user [%S]", principal.getName());

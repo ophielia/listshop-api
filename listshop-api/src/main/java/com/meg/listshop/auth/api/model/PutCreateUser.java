@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class PutCreateUser {
 
     private User user;
+    @JsonProperty("device_info")
     private ClientDeviceInfo deviceInfo;
 
     public PutCreateUser() {
@@ -26,9 +27,12 @@ public class PutCreateUser {
         this.user = user;
     }
 
-    @JsonProperty("device_info")
+
     public ClientDeviceInfo getDeviceInfo() {
         return deviceInfo;
     }
 
+    public void setDeviceInfo(ClientDeviceInfo deviceInfo) {
+        this.deviceInfo = deviceInfo;
+    }
 }

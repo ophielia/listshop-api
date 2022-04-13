@@ -14,10 +14,12 @@ import com.meg.listshop.lmt.data.entity.ContextApproachEntity;
 import com.meg.listshop.lmt.data.entity.ProposalSlotEntity;
 import com.meg.listshop.lmt.data.entity.SlotEntity;
 import com.meg.listshop.lmt.data.entity.TargetSlotEntity;
+import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.NewRawSlotResult;
 import com.meg.listshop.lmt.service.proposal.ProcessInformation;
 import com.meg.listshop.lmt.service.proposal.ProcessResult;
 import com.meg.listshop.lmt.service.proposal.ProposalRequest;
+import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +36,9 @@ import java.util.Map;
 public class SearchProposalProcessorImpl extends AbstractProposalProcessor {
 
 
+    public SearchProposalProcessorImpl(TagStructureService tagStructureService, DishSearchService dishSearchService) {
+        super(tagStructureService, dishSearchService);
+    }
 
     @Override
     public ProcessResult processProposal(ProposalRequest request) throws ProposalProcessingException {

@@ -18,10 +18,14 @@ import java.util.List;
 @Service
 public class TextProcessorImpl extends AbstractAutoTagProcessor {
 
-    @Autowired
     TextInstructionRepository textInstructionRepository;
 
     List<Instruction> instructions = null;
+
+    @Autowired
+    public TextProcessorImpl(TextInstructionRepository textInstructionRepository) {
+        this.textInstructionRepository = textInstructionRepository;
+    }
 
     @Override
     public Long getProcessIdentifier() {

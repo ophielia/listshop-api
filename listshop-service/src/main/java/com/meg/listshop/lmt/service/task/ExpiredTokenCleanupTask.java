@@ -27,7 +27,7 @@ public class ExpiredTokenCleanupTask {
 
     @Autowired
     UserDeviceRepository userDeviceRepository;
-
+//MM autowired work
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void removeExpiredLogins() {

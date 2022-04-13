@@ -10,10 +10,12 @@ package com.meg.listshop.lmt.service.proposal.impl;
 import com.meg.listshop.auth.api.model.TargetType;
 import com.meg.listshop.lmt.api.exception.ProposalProcessingException;
 import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.NewRawSlotResult;
 import com.meg.listshop.lmt.service.proposal.ProcessInformation;
 import com.meg.listshop.lmt.service.proposal.ProcessResult;
 import com.meg.listshop.lmt.service.proposal.ProposalRequest;
+import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +31,10 @@ import java.util.Map;
 @Qualifier("refreshSearch")
 public class RefreshProposalProcessorImpl extends AbstractProposalProcessor {
 
+
+    public RefreshProposalProcessorImpl(TagStructureService tagStructureService, DishSearchService dishSearchService) {
+        super(tagStructureService, dishSearchService);
+    }
 
     @Override
     public ProcessResult processProposal(ProposalRequest request) throws ProposalProcessingException {

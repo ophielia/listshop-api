@@ -28,6 +28,8 @@ public class StaleItemCleanupTask {
     @Autowired
     ItemRepository itemRepository;
 
+    //MM autowired work
+
     @Scheduled(cron = "0 0 8,13 * * ?")
     public void removeItemsByRemovedBeforeDate() {
         logger.info("About to delete stale tags from item table.");

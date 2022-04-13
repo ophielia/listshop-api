@@ -32,7 +32,7 @@ public class TagReplaceServiceImpl implements TagReplaceService {
 
     @PersistenceContext
     private EntityManager entityManager;
-
+    //MM autowired work
     @Autowired
     private TargetRepository targetRepository;
 

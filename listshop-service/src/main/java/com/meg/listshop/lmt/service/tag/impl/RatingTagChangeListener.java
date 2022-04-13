@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 @Service
 public class RatingTagChangeListener implements TagChangeListener {
 
-
-    @Autowired
     private TagService tagService;
-
-    @Autowired
     private TagStructureService tagStructureService;
-
+    @Autowired
+    public RatingTagChangeListener(TagService tagService, TagStructureService tagStructureService) {
+        this.tagService = tagService;
+        this.tagStructureService = tagStructureService;
+    }
 
     @PostConstruct
     public void init() {

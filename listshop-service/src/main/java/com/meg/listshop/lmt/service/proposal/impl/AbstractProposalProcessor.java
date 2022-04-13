@@ -23,12 +23,16 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractProposalProcessor implements ProposalProcessor {
 
-    @Autowired
     TagStructureService tagStructureService;
 
-    @Autowired
+
     DishSearchService dishSearchService;
 
+    @Autowired
+    public AbstractProposalProcessor(TagStructureService tagStructureService, DishSearchService dishSearchService) {
+        this.tagStructureService = tagStructureService;
+        this.dishSearchService = dishSearchService;
+    }
 
     @Value("${proposal.processor.dish.result.count.standard}")
     protected static final int SEARCH_DISH_RESULT_COUNT =5;

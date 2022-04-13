@@ -16,8 +16,13 @@ import java.util.List;
 @Repository
 public class TagExtendedRepositoryImpl implements TagExtendedRepositoryCustom {
 
-    @Autowired
+
     EntityManager em;
+
+    @Autowired
+    public TagExtendedRepositoryImpl(EntityManager em) {
+        this.em = em;
+    }
 
     @Override
     public List<TagExtendedEntity> findTagsByCriteria(List<TagType> tagTypes, Boolean parentsOnly) {
