@@ -138,15 +138,12 @@ public class AuthenticationRestControllerTest {
                 "admin");
         jwtAuthenticationRequest.setDeviceInfo(deviceInfo);
 
-        String authReqJson = json(jwtAuthenticationRequest);
-
         mockMvc.perform(post("/auth/authenticate")
-                .header("Authorization", validToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.user.email").value(TestConstants.USER_3_NAME))
-                .andExpect(jsonPath("$.user.token").exists())
-                .andDo(print());
-
+                        .contentType(contentType)
+                        .content(json(deviceInfo))
+                        .header("Authorization", validToken))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
 

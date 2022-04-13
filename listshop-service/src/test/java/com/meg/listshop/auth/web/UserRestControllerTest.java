@@ -31,7 +31,6 @@ import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceType;
 import org.springframework.mobile.device.LiteDevice;
 import org.springframework.mock.http.MockHttpOutputMessage;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -140,6 +139,7 @@ public class UserRestControllerTest {
                 true,
                 null);
     }
+
     @Test
     public void testCreateUser_KO() throws Exception {
         Device device = new LiteDevice(DeviceType.NORMAL);
@@ -446,6 +446,7 @@ public class UserRestControllerTest {
         UserEntity user = userService.getUserByUserEmail("bravenewworld@test.com");
         Assert.assertNull(user);
     }
+
     @Test
     public void testUserNameIsTaken() throws Exception {
         ListShopPayload payload = new ListShopPayload();
