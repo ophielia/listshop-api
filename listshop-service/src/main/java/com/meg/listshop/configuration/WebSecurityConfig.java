@@ -31,7 +31,6 @@ import java.util.Arrays;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    //MM autowired work
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 

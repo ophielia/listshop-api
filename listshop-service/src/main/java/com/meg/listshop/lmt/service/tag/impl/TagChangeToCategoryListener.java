@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class TagChangeToCategoryListener implements TagChangeListener {
-//MM autowired work
 
     @Autowired
     private TagService tagService;

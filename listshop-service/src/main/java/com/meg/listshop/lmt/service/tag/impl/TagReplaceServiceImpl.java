@@ -32,25 +32,27 @@ public class TagReplaceServiceImpl implements TagReplaceService {
 
     @PersistenceContext
     private EntityManager entityManager;
-    //MM autowired work
-    @Autowired
     private TargetRepository targetRepository;
 
-    @Autowired
     private TagInstructionRepository tagInstructionRepository;
 
-    @Autowired
     private ProposalSlotRepository proposalSlotRepository;
 
-    @Autowired
     private DishSlotRepository dishSlotRepository;
 
-    @Autowired
     private TargetService targetService;
 
-    @Autowired
     private UserService userService;
 
+    @Autowired
+    public TagReplaceServiceImpl(TargetRepository targetRepository, TagInstructionRepository tagInstructionRepository, ProposalSlotRepository proposalSlotRepository, DishSlotRepository dishSlotRepository, TargetService targetService, UserService userService) {
+        this.targetRepository = targetRepository;
+        this.tagInstructionRepository = tagInstructionRepository;
+        this.proposalSlotRepository = proposalSlotRepository;
+        this.dishSlotRepository = dishSlotRepository;
+        this.targetService = targetService;
+        this.userService = userService;
+    }
 
     @Override
     public void replaceAllTags() {

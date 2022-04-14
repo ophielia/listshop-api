@@ -95,8 +95,10 @@ public class MealPlanServiceImpl implements MealPlanService {
         ProposalEntity proposalEntity = targetProposalService.getTargetProposalById(username, proposalId);
 
         if (proposalEntity == null) {
+            logger.debug(String.format("No proposal found with id [%s] for user [%s]", proposalId, user.getId()));
             return null;
         }
+        logger.debug(String.format("Found proposal [%s] for user [%s]", proposalEntity.getId(), user.getId()));
 
         // create the Meal Plan Entity
         MealPlanEntity mealPlan = new MealPlanEntity();
@@ -113,6 +115,10 @@ public class MealPlanServiceImpl implements MealPlanService {
         }
         for (ProposalSlotEntity proposalSlot : proposalSlots) {
             Long dishId = proposalSlot.getPickedDishId();
+            if (dishId == null) {
+                logger.warn(String.format("Null dish id found in proposal slot [%s]", proposalSlot.getId()));
+                continue;
+            }
             DishEntity dish = dishService.getDishForUserById(username, dishId);
 
             // add new meal plan slot

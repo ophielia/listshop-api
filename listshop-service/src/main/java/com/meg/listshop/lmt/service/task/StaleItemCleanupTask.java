@@ -25,10 +25,13 @@ public class StaleItemCleanupTask {
     @Value("${component.staleitemcleanuptask.items.deleted.after.days}")
     int deleteAfterDays = 11;
 
-    @Autowired
+
     ItemRepository itemRepository;
 
-    //MM autowired work
+    @Autowired
+    public StaleItemCleanupTask(ItemRepository itemRepository) {
+        this.itemRepository = itemRepository;
+    }
 
     @Scheduled(cron = "0 0 8,13 * * ?")
     public void removeItemsByRemovedBeforeDate() {
