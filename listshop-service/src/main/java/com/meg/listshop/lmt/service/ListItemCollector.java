@@ -1,8 +1,6 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.common.DateUtils;
-import com.meg.listshop.lmt.api.model.ContextType;
-import com.meg.listshop.lmt.api.model.StatisticCountType;
 import com.meg.listshop.lmt.data.entity.ItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import org.apache.commons.lang3.tuple.Pair;
@@ -117,12 +115,7 @@ public class ListItemCollector extends AbstractItemCollector {
 
     }
 
-    public void removeTagsForDish(Long dishId, List<TagEntity> tagsToRemove) {
-        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
-                .withDishId(dishId)
-                .withRemoveEntireItem(false)
-                .withStatisticCountType(StatisticCountType.Dish)
-                .build();
+    public void removeTagsForDish(Long dishId, List<TagEntity> tagsToRemove, CollectorContext context) {
 
         for (TagEntity tag : tagsToRemove) {
             removeItemByTagId(tag.getId(), context);

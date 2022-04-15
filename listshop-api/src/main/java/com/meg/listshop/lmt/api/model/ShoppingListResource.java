@@ -7,7 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ShoppingListResource extends AbstractListShopResource implements ListShopModel {
 
     @JsonProperty("shopping_list")
-    private final ShoppingList shoppingList;
+    private ShoppingList shoppingList;
+
+    public ShoppingListResource() {
+        // empty constructor for jackson
+    }
 
     public ShoppingListResource(ShoppingList shoppingList) {
         this.shoppingList = shoppingList;

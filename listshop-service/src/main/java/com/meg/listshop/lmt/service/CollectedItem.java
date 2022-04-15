@@ -212,7 +212,7 @@ public class CollectedItem {
                 setRawDishSources(newSources);
             }
         }
-        setUpdated(true);
+        setUpdated(true, context.isKeepExistingCrossedOffStatus());
         setUsedCount(getUsedCount() - 1);
 
     }
@@ -249,7 +249,7 @@ public class CollectedItem {
             setCrossedOff(crossedOffDate);
         }
         if (!isNew) {
-            setUpdated(true);
+            setUpdated(true, context.isKeepExistingCrossedOffStatus());
         }
 
     }
@@ -324,12 +324,14 @@ public class CollectedItem {
         return isUpdated;
     }
 
-    public void setUpdated(boolean updated) {
+    public void setUpdated(boolean updated, boolean keepCrossedOffStatus) {
         isUpdated = updated;
         if (isUpdated) {
             this.item.setUpdatedOn(new Date());
             // reset dates besides added on
-            this.item.setCrossedOff(null);
+            if (!keepCrossedOffStatus) {
+                this.item.setCrossedOff(null);
+            }
             this.item.setRemovedOn(null);
             this.isChanged = true;
 
@@ -430,7 +432,7 @@ public class CollectedItem {
         // it's now being added.
         if (isRemoved()) {
             setRemoved(false);
-            setUpdated(true);
+            setUpdated(true, false);
             item.setRawDishSources(null);
             item.setRawListSources(null);
             setUsedCount(0);
@@ -463,10 +465,10 @@ public class CollectedItem {
                 break;
             case UPDATED:
                 setUpdatedOn(statusDate);
-                setUpdated(true);
+                setUpdated(true, false);
                 break;
             case CROSSED_OFF:
-                setUpdated(true);
+                setUpdated(true, false);
                 setCrossedOff(statusDate);
                 break;
         }
