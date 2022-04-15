@@ -18,7 +18,13 @@ INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text
                       list_sources)
 VALUES (99999, 999, 99999, now(), null, null, 1, null, null);
 
-
+delete
+from users
+where user_id = 504;
+INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username)
+VALUES (504, 'nostarterlist@testitytest.com', true, NULL,
+        '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
+        'email@email.com');
 
 -- lists - ids 500-503
 -- base list - id 500
