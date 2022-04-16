@@ -8,7 +8,6 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.Application;
-import com.meg.listshop.auth.api.model.TargetType;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
@@ -169,50 +168,7 @@ public class TargetServiceImplTest {
 
     }
 
-    @Test
-    public void createTarget() throws Exception {
-        TargetEntity newTarget = new TargetEntity();
-        newTarget.setTargetName("george");
 
-        TargetEntity result = targetService.createTarget(TestConstants.USER_1_EMAIL, newTarget);
-
-        Assert.assertNotNull(result);
-        Assert.assertEquals("george", result.getTargetName());
-        Assert.assertNotNull(result.getTargetId());
-        Assert.assertNotNull(result.getUserId());
-        Assert.assertNull(result.getLastUsed());
-        Assert.assertNotNull(result.getCreated());
-        Assert.assertNull(result.getExpires());
-
-    }
-
-    @Test
-    public void createTarget_Temporary() {
-        TargetEntity newTarget = new TargetEntity();
-        newTarget.setTargetName("george");
-        newTarget.setTargetType(TargetType.PickUp);
-
-        TargetEntity result = targetService.createTarget(TestConstants.USER_1_EMAIL, newTarget);
-
-        Assert.assertNotNull(result);
-        Assert.assertEquals("george", result.getTargetName());
-        Assert.assertNotNull(result.getTargetId());
-        Assert.assertNotNull(result.getUserId());
-        Assert.assertNull(result.getLastUsed());
-        Assert.assertNotNull(result.getCreated());
-        Assert.assertNotNull(result.getExpires());
-
-    }
-
-    @Test
-    public void getTargetById() throws Exception {
-        TargetEntity result = targetService.getTargetById(TestConstants.USER_3_NAME, TestConstants.TARGET_1_ID);
-
-        Assert.assertNotNull(result);
-        Assert.assertEquals(TestConstants.TARGET_1_ID, result.getTargetId());
-        Assert.assertEquals(TestConstants.USER_3_ID, result.getUserId());
-        Assert.assertNotNull(result.getCreated());
-    }
 
 
 

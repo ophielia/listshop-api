@@ -7,6 +7,7 @@
 
 package com.meg.listshop.lmt.service.impl;
 
+import com.meg.listshop.auth.api.model.TargetType;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.data.entity.TargetEntity;
@@ -153,52 +154,95 @@ public class TargetServiceImplMockTest {
            Assert.assertEquals(2, result.size());
 
        }
-
-       @Test
-       public void createTarget() throws Exception {
-           TargetEntity newTarget = new TargetEntity();
-           newTarget.setTargetName("george");
-
-           TargetEntity result = targetService.createTarget(TestConstants.USER_1_EMAIL, newTarget);
-
-           Assert.assertNotNull(result);
-           Assert.assertEquals("george", result.getTargetName());
-           Assert.assertNotNull(result.getTargetId());
-           Assert.assertNotNull(result.getUserId());
-           Assert.assertNull(result.getLastUsed());
-           Assert.assertNotNull(result.getCreated());
-           Assert.assertNull(result.getExpires());
-
-       }
-
-       @Test
-       public void createTarget_Temporary() {
-           TargetEntity newTarget = new TargetEntity();
-           newTarget.setTargetName("george");
-           newTarget.setTargetType(TargetType.PickUp);
-
-           TargetEntity result = targetService.createTarget(TestConstants.USER_1_EMAIL, newTarget);
-
-           Assert.assertNotNull(result);
-           Assert.assertEquals("george", result.getTargetName());
-           Assert.assertNotNull(result.getTargetId());
-           Assert.assertNotNull(result.getUserId());
-           Assert.assertNull(result.getLastUsed());
-           Assert.assertNotNull(result.getCreated());
-           Assert.assertNotNull(result.getExpires());
-
-       }
-
-       @Test
-       public void getTargetById() throws Exception {
-           TargetEntity result = targetService.getTargetById(TestConstants.USER_3_NAME, TestConstants.TARGET_1_ID);
-
-           Assert.assertNotNull(result);
-           Assert.assertEquals(TestConstants.TARGET_1_ID, result.getTargetId());
-           Assert.assertEquals(TestConstants.USER_3_ID, result.getUserId());
-           Assert.assertNotNull(result.getCreated());
-       }
    */
+
+    @Test
+    public void createTarget() {
+        String userName = "user@user.com";
+        TargetEntity newTarget = new TargetEntity();
+        newTarget.setTargetName("george");
+        Long userId = 20L;
+        UserEntity user = new UserEntity();
+        user.setUsername(userName);
+        user.setId(userId);
+
+        ArgumentCaptor<TargetEntity> targetCapture = ArgumentCaptor.forClass(TargetEntity.class);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(targetRepository.save(targetCapture.capture())).thenReturn(newTarget);
+
+        // call under test
+        targetService.createTarget(userName, newTarget);
+
+        TargetEntity capturedTarget = targetCapture.getValue();
+
+        Assert.assertNotNull(capturedTarget);
+        Assert.assertEquals("george", capturedTarget.getTargetName());
+        Assert.assertNotNull(capturedTarget.getUserId());
+        Assert.assertNull(capturedTarget.getLastUsed());
+        Assert.assertNotNull(capturedTarget.getCreated());
+        Assert.assertNull(capturedTarget.getExpires());
+
+    }
+
+    public void createTarget_Temporary() {
+        String userName = "user@user.com";
+        TargetEntity newTarget = new TargetEntity();
+        newTarget.setTargetName("george");
+        newTarget.setTargetType(TargetType.PickUp);
+        Long userId = 20L;
+        UserEntity user = new UserEntity();
+        user.setUsername(userName);
+        user.setId(userId);
+
+        ArgumentCaptor<TargetEntity> targetCapture = ArgumentCaptor.forClass(TargetEntity.class);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(targetRepository.save(targetCapture.capture())).thenReturn(newTarget);
+
+        // call under test
+        targetService.createTarget(userName, newTarget);
+
+        TargetEntity capturedTarget = targetCapture.getValue();
+
+        Assert.assertNotNull(capturedTarget);
+        Assert.assertEquals("george", capturedTarget.getTargetName());
+        Assert.assertNotNull(capturedTarget.getUserId());
+        Assert.assertNull(capturedTarget.getLastUsed());
+        Assert.assertNotNull(capturedTarget.getCreated());
+        Assert.assertNotNull(capturedTarget.getExpires());
+
+    }
+
+    @Test
+    public void getTargetById() throws Exception {
+        String userName = "user@name.com";
+        Long userId = 20L;
+        Long targetId = 99L;
+        Long originalSlotId = 9999L;
+        UserEntity user = new UserEntity();
+        user.setUsername(userName);
+        user.setId(userId);
+        TargetEntity target = new TargetEntity();
+        target.setTargetId(targetId);
+        target.setProposalId(9999L);
+        TargetSlotEntity originalSlot = new TargetSlotEntity();
+        originalSlot.setId(originalSlotId);
+        originalSlot.setTargetId(targetId);
+        originalSlot.setSlotOrder(1);
+        originalSlot.setTargetTagIds("1;2;3");
+        target.addSlot(originalSlot);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(targetRepository.findTargetByUserIdAndTargetId(userId, targetId)).thenReturn(target);
+
+        // service call
+        TargetEntity result = targetService.getTargetById(userName, targetId);
+
+        Assert.assertNotNull(result);
+        Assert.assertEquals("target id matches", targetId, result.getTargetId());
+        Assert.assertEquals("slot count matches", 1, target.getSlots().size());
+    }
 
     @Test
     public void deleteTarget() throws Exception {
