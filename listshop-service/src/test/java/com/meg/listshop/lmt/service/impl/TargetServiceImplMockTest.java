@@ -26,6 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,106 +56,65 @@ public class TargetServiceImplMockTest {
         targetService = new TargetServiceImpl(userService, targetRepository, targetSlotRepository, tagService);
     }
 
-    /*
-       @Before
-       public void setUp() throws Exception {
-           TargetEntity newTarget = new TargetEntity();
-           newTarget.setTargetName("george");
+    @Test
+    public void getTargetsForUserName_Temporary() throws Exception {
+        String userName = "user@name.com";
+        Long userId = 20L;
+        Long targetId = 99L;
+        Long originalSlotId = 9999L;
+        UserEntity user = new UserEntity();
+        user.setUsername(userName);
+        user.setId(userId);
+        TargetEntity targetOne = new TargetEntity();
+        targetOne.setTargetId(targetId);
+        targetOne.setProposalId(8888L);
+        TargetEntity targetTwo = new TargetEntity();
+        targetTwo.setTargetId(targetId);
+        targetTwo.setProposalId(9999L);
+        List<TargetEntity> targetEntities = new ArrayList<>();
+        targetEntities.add(targetTwo);
+        targetEntities.add(targetOne);
 
-           TargetEntity result = targetService.createTarget(TestConstants.USER_1_EMAIL, newTarget);
-   targetIdToDelete = result.getTargetId();
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(targetRepository.findTargetsByUserId(user.getId())).thenReturn(targetEntities);
 
-           result = targetService.createTarget(TestConstants.USER_1_EMAIL, newTarget);
-           targetIdToEdit = result.getTargetId();
-           if (setUpComplete) {
-               return;
-           }
-           // make tags
-           dishTypeTag = new TagEntity("dishTypeTag", "main1");
-           tag1 = new TagEntity("tag1", "main1");
-           tag21 = new TagEntity("tag1", "main1");
-           tag31 = new TagEntity("tag1", "main1");
+        // call under test
+        List<TargetEntity> result = targetService.getTargetsForUserName(userName, true);
 
-           tag1 = tagService.save(tag1);
-           dishTypeTag = tagService.save(dishTypeTag);
-           tag21 = tagService.save(tag21);
-           tag31 = tagService.save(tag31);
-           String tagString = tag1.getId() + ";" + tag21.getId();
-           // make users
-           String userName = "targetServiceTest";
-           userAccount = userService.save(new UserEntity(userName, "password"));
-           newUserAccount = userService.save(new UserEntity("newUser", "password"));
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2, result.size());
 
-           TargetEntity targetEntity = new TargetEntity();
-           targetEntity.setUserId(userAccount.getId());
-           targetEntity.setTargetName("testTarget");
-           targetEntity.setTargetTagIds(tagString);
-           targetEntity.setSlots(null);
-           targetEntity.setCreated(new Date());
-           target1 = targetRepository.save(targetEntity);
-           TargetSlotEntity slot = new TargetSlotEntity();
-           slot.setTargetId(target1.getTargetId());
-           slot.setSlotOrder(1);
-           slot.setSlotDishTagId(dishTypeTag.getId());
-           targetSlotRepository.save(slot);
-           target1.addSlot(slot);
-           targetRepository.save(target1);
+    }
 
+    @Test
+    public void getTargetsForUserName() throws Exception {
+        String userName = "user@name.com";
+        Long userId = 20L;
+        Long targetId = 99L;
+        Long originalSlotId = 9999L;
+        UserEntity user = new UserEntity();
+        user.setUsername(userName);
+        user.setId(userId);
+        TargetEntity targetOne = new TargetEntity();
+        targetOne.setTargetId(targetId);
+        targetOne.setProposalId(8888L);
+        TargetEntity targetTwo = new TargetEntity();
+        targetTwo.setTargetId(targetId);
+        targetTwo.setProposalId(9999L);
+        List<TargetEntity> targetEntities = new ArrayList<>();
+        targetEntities.add(targetTwo);
+        targetEntities.add(targetOne);
 
-           targetEntity = new TargetEntity();
-           targetEntity.setUserId(userAccount.getId());
-           targetEntity.setTargetName("testTarget");
-           targetEntity.setTargetTagIds(tagString);
-           targetEntity.setSlots(null);
-           targetEntity.setCreated(new Date());
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(targetRepository.findTargetsByUserIdAndExpiresIsNull(user.getId())).thenReturn(targetEntities);
 
-           target2 = targetRepository.save(targetEntity);
-           targetSlotEntity = new TargetSlotEntity();
-           targetSlotEntity.setTargetId(target2.getTargetId());
-           targetSlotEntity.setSlotDishTagId(dishTypeTag.getId());
-           targetSlotEntity = targetSlotRepository.save(targetSlotEntity);
-           target2.addSlot(targetSlotEntity);
-           target2 = targetRepository.save(targetEntity);
+        // call under test
+        List<TargetEntity> result = targetService.getTargetsForUserName(userName, false);
 
-           targetEntity = new TargetEntity();
-           targetEntity.setUserId(newUserAccount.getId());
-           targetEntity.setTargetName("testTarget3");
-           targetEntity.setTargetTagIds(tagString);
-           targetEntity.setSlots(null);
-           targetEntity.setCreated(new Date());
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2, result.size());
 
-           target3 = targetRepository.save(targetEntity);
-           targetSlotEntity = new TargetSlotEntity();
-           targetSlotEntity.setTargetId(target3.getTargetId());
-           targetSlotEntity.setSlotDishTagId(dishTypeTag.getId());
-           targetSlotEntity.setTargetTagIds(tag1.getId().toString());
-           targetSlotEntity = targetSlotRepository.save(targetSlotEntity);
-           target3.addSlot(targetSlotEntity);
-           target3 = targetRepository.save(target3);
-           setUpComplete = true;
-       }
-
-
-       @Test
-       public void getTargetsForUserName() throws Exception {
-           List<TargetEntity> result = targetService.getTargetsForUserName(TestConstants.USER_3_NAME, false);
-
-
-           Assert.assertNotNull(result);
-           Assert.assertEquals(2, result.size());
-
-       }
-
-       @Test
-       public void getTargetsForUserName_WithTemporary() throws Exception {
-           List<TargetEntity> result = targetService.getTargetsForUserName(TestConstants.USER_3_NAME, true);
-
-
-           Assert.assertNotNull(result);
-           Assert.assertEquals(2, result.size());
-
-       }
-   */
+    }
 
     @Test
     public void createTarget() {

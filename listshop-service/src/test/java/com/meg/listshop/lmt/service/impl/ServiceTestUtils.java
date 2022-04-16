@@ -30,13 +30,6 @@ public class ServiceTestUtils {
         return slot;
     }
 
-    public static MealPlanEntity buildMealPlan(String mealPlanName, Long userId) {
-        MealPlanEntity testMealPlan = new MealPlanEntity();
-        testMealPlan.setCreated(new Date());
-        testMealPlan.setName(mealPlanName);
-        testMealPlan.setUserId(userId);
-        return testMealPlan;
-    }
 
     public static DishEntity buildDish(Long userId,String dishName,List<TagEntity> tags) {
         DishEntity dish = new DishEntity();
