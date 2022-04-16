@@ -20,6 +20,10 @@ public class MergeRequest {
     @JsonProperty("merge_items")
     private List<Item> mergeItems = new ArrayList<>();
 
+    public MergeRequest() {
+        // empty constructor for jackson
+    }
+
     public Long getListId() {
         return listId;
     }

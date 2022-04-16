@@ -14,9 +14,7 @@ import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ItemEntity;
-import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
-import com.meg.listshop.lmt.service.ShoppingListService;
 import com.meg.listshop.test.TestConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matchers;
@@ -83,9 +81,6 @@ public class ShoppingListRestControllerTest {
             MediaType.APPLICATION_JSON.getSubtype());
     @Autowired
     private WebApplicationContext webApplicationContext;
-
-    @Autowired
-    ShoppingListService shoppingListService;
 
     @Autowired
     ItemRepository itemRepository;
@@ -339,21 +334,22 @@ public class ShoppingListRestControllerTest {
         Long newListId = Long.valueOf(urlTokens[(urlTokens).length - 1]);
 
         // now, retrieve the list
-        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_EMAIL, newListId);
-        Map<Long, ItemEntity> resultMap = resultList.getItems().stream()
+        ShoppingList source = retrieveList(userDetails, listId);
+        Map<String, Item> resultMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
+
         // check tag occurences in result
 
         // 502 - 3
-        Assert.assertNotNull(resultMap.get(1L));
-        Assert.assertTrue(resultMap.get(1L).getUsedCount() == 2);  // showing 1 in result map
+        Assert.assertNotNull(resultMap.get("1"));
         // 503 - 2
-        Assert.assertNotNull(resultMap.get(12L));
-        Assert.assertTrue(resultMap.get(12L).getUsedCount() == 1); // showing 1 in result map
+        Assert.assertNotNull(resultMap.get("12"));
+        Assert.assertTrue(resultMap.get("12").getUsedCount() == 1); // showing 1 in result map
         // 436 - 1
-        Assert.assertNotNull(resultMap.get(436L));
-        Assert.assertTrue(resultMap.get(436L).getUsedCount() == 1);
+        Assert.assertNotNull(resultMap.get("81"));
+        Assert.assertTrue(resultMap.get("81").getUsedCount() == 1);
 
     }
 
@@ -509,35 +505,36 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
 
         // now, retrieve the list
-        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_EMAIL, listId);
-        Map<Long, ItemEntity> resultMap = resultList.getItems().stream()
+        ShoppingList source = retrieveList(userDetails, listId);
+        Map<String, Item> sourceResultMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(resultMap);
+
+        Assert.assertNotNull(sourceResultMap);
         // check tag occurences in result
         // 501 - 1
-        Assert.assertNotNull(resultMap.get(81L));
-        Assert.assertTrue(resultMap.get(81L).getUsedCount() == 1);
+        Assert.assertNotNull(sourceResultMap.get("81"));
+        Assert.assertTrue(sourceResultMap.get("81").getUsedCount() == 1);
 
         // 502 - 3
-        Assert.assertNotNull(resultMap.get(1L));
-        Assert.assertTrue(resultMap.get(1L).getUsedCount() == 3);  // showing 1 in result map
+        Assert.assertNotNull(sourceResultMap.get("1"));
+        Assert.assertTrue(sourceResultMap.get("1").getUsedCount() == 3);  // showing 1 in result map
         // 503 - 2
-        Assert.assertNotNull(resultMap.get(12L));
-        Assert.assertTrue(resultMap.get(12L).getUsedCount() == 2); // showing 1 in result map
+        Assert.assertNotNull(sourceResultMap.get("12"));
+        Assert.assertTrue(sourceResultMap.get("12").getUsedCount() == 2); // showing 1 in result map
         // 436 - 1
-        Assert.assertNotNull(resultMap.get(436L));
-        Assert.assertTrue(resultMap.get(436L).getUsedCount() == 1);
+        Assert.assertNotNull(sourceResultMap.get("436"));
+        Assert.assertTrue(sourceResultMap.get("436").getUsedCount() == 1);
 
     }
 
     @Test
     @WithMockUser
     public void testMergeList() throws Exception {
-
         //// load statistics into file
         String testMergeList = StreamUtils.copyToString(resourceFile.getInputStream(), Charset.forName("utf8"));
 
-        Long listId = 500777L;
+        Long listId = 110000L;
 
         String url = "/shoppinglist/shared";
         mockMvc.perform(put(url)
@@ -547,24 +544,25 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isOk());
 
         // now, retrieve the list
-        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_3_NAME, listId);
-        Map<Long, ItemEntity> resultMap = resultList.getItems().stream()
+        ShoppingList source = retrieveList(meUserDetails, listId);
+        Map<String, Item> sourceResultMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(resultMap);
-        // check tag occurences in result
-        // 501 - 1
-        Assert.assertNotNull(resultMap.get(363L));
-        Assert.assertTrue(resultMap.get(363L).getUsedCount() == 1);
+        Assert.assertNotNull(sourceResultMap);
 
-        // 502 - 3
-        Assert.assertNotNull(resultMap.get(502L));
-        Assert.assertTrue(resultMap.get(502L).getUsedCount() == 1);  // showing 1 in result map
-        // 503 - 2
-        Assert.assertNotNull(resultMap.get(503L));
-        Assert.assertTrue(resultMap.get(503L).getUsedCount() == 1); // showing 1 in result map
-        // 436 - 1
-        Assert.assertNotNull(resultMap.get(501L));
-        Assert.assertTrue(resultMap.get(501L).getUsedCount() == 2);
+        // check result
+        // should have 9 items
+        Assert.assertEquals("should have 9 items", 9, sourceResultMap.keySet().size());
+        // should not contain tag 33 (which was removed)
+        Assert.assertFalse("shouldn't contain tag 32", sourceResultMap.containsKey("32"));
+        // not crossed off - 33, 16
+        Map<String, Item> activeMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .filter(i -> i.getCrossedOff() == null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertEquals("two active items", 2, activeMap.keySet().size());
+        Assert.assertTrue("33 should be actice", activeMap.containsKey("33"));
+        Assert.assertTrue("16 should be actice", activeMap.containsKey("16"));
 
     }
 
@@ -634,8 +632,9 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
 
         // now, retrieve the list
-        ShoppingListEntity resultList = shoppingListService.getListById(TestConstants.USER_1_EMAIL, listId);
-        Map<Long, ItemEntity> resultMap = resultList.getItems().stream()
+        ShoppingList source = retrieveList(userDetails, listId);
+        Map<String, Item> resultMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
         Assert.assertTrue(resultMap.isEmpty());
@@ -665,29 +664,28 @@ public class ShoppingListRestControllerTest {
                 .andReturn();
 
         // now, retrieve the list
-        ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
-        Map<Long, ItemEntity> allSourceResultMap = sourceResultList.getItems().stream()
+        ShoppingList source = retrieveList(meUserDetails, sourceListId);
+        Map<String, Item> sourceResultMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Map<Long, ItemEntity> withoutRemovedResultMap = sourceResultList.getItems().stream()
-                .filter(item -> item.getRemovedOn() == null)
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(allSourceResultMap);
-        Assert.assertEquals(4, allSourceResultMap.keySet().size());
-        Assert.assertEquals(2, withoutRemovedResultMap.keySet().size());
+
+        Assert.assertNotNull(sourceResultMap);
+        Assert.assertEquals(2, sourceResultMap.keySet().size());
         // 500 shouldn't be there
-        Assert.assertFalse(withoutRemovedResultMap.keySet().contains(500L));
+        Assert.assertFalse(sourceResultMap.keySet().contains("500"));
         // check destination list
-        ShoppingListEntity destinationResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, destinationListId);
-        Map<Long, ItemEntity> destinationResultMap = destinationResultList.getItems().stream()
+        ShoppingList destination = retrieveList(meUserDetails, destinationListId);
+        Map<String, Item> destinationResultMap = destination.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(destinationResultMap);
         Assert.assertEquals(5, destinationResultMap.keySet().size());
         // 500 should be there with count 1
-        Assert.assertTrue(destinationResultMap.containsKey(500L));
-        ItemEntity testElement = destinationResultMap.get(500L);
+        Assert.assertTrue(destinationResultMap.containsKey("500"));
+        Item testElement = destinationResultMap.get("500");
         Assert.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
         // 502 should be there with a count of 2
-        testElement = destinationResultMap.get(502L);
+        testElement = destinationResultMap.get("502");
         Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
 
     }
@@ -716,23 +714,26 @@ public class ShoppingListRestControllerTest {
                 .andReturn();
 
         // now, retrieve the list
-        ShoppingListEntity sourceResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, sourceListId);
-        Map<Long, ItemEntity> sourceResultMap = sourceResultList.getItems().stream()
+        ShoppingList source = retrieveList(meUserDetails, sourceListId);
+        Map<String, Item> sourceResultMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(sourceResultMap);
+
         Assert.assertEquals(4, sourceResultMap.keySet().size());
         // check destination list
-        ShoppingListEntity destinationResultList = shoppingListService.getListById(TestConstants.USER_3_NAME, destinationListId);
-        Map<Long, ItemEntity> destinationResultMap = destinationResultList.getItems().stream()
+        ShoppingList destination = retrieveList(meUserDetails, destinationListId);
+        Map<String, Item> destinationResultMap = destination.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+
         Assert.assertNotNull(destinationResultMap);
         Assert.assertEquals(5, destinationResultMap.keySet().size());
         // 500 should be there with count 1
-        Assert.assertTrue(destinationResultMap.containsKey(500L));
-        ItemEntity testElement = destinationResultMap.get(500L);
+        Assert.assertTrue(destinationResultMap.containsKey("500"));
+        Item testElement = destinationResultMap.get("500");
         Assert.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
         // 501 should be there with a count of 2
-        testElement = destinationResultMap.get(501L);
+        testElement = destinationResultMap.get("501");
         Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
 
     }

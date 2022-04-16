@@ -708,7 +708,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<ItemEntity> mergeItems = convertClientItemsToItemEntities(mergeRequest);
 
         // merge from client
-        // fill in tags for passed items
+        logger.debug(String.format("Preparing to merge list [%s].", list.getId()));
         mergeCollector.addMergeItems(mergeItems);
 
         // update after merge
@@ -722,7 +722,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<ItemEntity> itemsToRemove = itemRepository.findByRemovedOnBefore(java.sql.Date.valueOf(removedBeforeDate));
         itemRepository.deleteAll(itemsToRemove);
 
-
+        logger.info(String.format("Merge complete for list [%s].", list.getId()));
         return new MergeResult();
     }
 
