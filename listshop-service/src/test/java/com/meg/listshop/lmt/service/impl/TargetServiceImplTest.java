@@ -214,24 +214,6 @@ public class TargetServiceImplTest {
         Assert.assertNotNull(result.getCreated());
     }
 
-    @Test
-    public void deleteTarget() throws Exception {
-        targetService.deleteTarget(TestConstants.USER_1_EMAIL, targetIdToDelete);
 
-        TargetEntity result = targetService.getTargetById(TestConstants.USER_1_EMAIL, targetIdToDelete);
-        Assert.assertNull(result);
-    }
-
-    @Test
-    public void updateTarget() throws Exception {
-        String newname = "New Name";
-        TargetEntity toEdit = targetService.getTargetById(TestConstants.USER_1_EMAIL, targetIdToEdit);
-        toEdit.setTargetName(newname);
-
-        targetService.updateTarget(TestConstants.USER_1_EMAIL, toEdit);
-
-        TargetEntity result = targetService.getTargetById(TestConstants.USER_1_EMAIL, targetIdToEdit);
-        Assert.assertEquals(newname, result.getTargetName());
-    }
 
 }

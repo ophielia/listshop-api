@@ -25,7 +25,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -195,33 +198,80 @@ public class TargetServiceImplMockTest {
            Assert.assertEquals(TestConstants.USER_3_ID, result.getUserId());
            Assert.assertNotNull(result.getCreated());
        }
-
-       @Test
-       public void deleteTarget() throws Exception {
-           targetService.deleteTarget(TestConstants.USER_1_EMAIL, targetIdToDelete);
-
-           TargetEntity result = targetService.getTargetById(TestConstants.USER_1_EMAIL, targetIdToDelete);
-           Assert.assertNull(result);
-       }
-
-       @Test
-       public void updateTarget() throws Exception {
-           String newname = "New Name";
-           TargetEntity toEdit = targetService.getTargetById(TestConstants.USER_1_EMAIL, targetIdToEdit);
-           toEdit.setTargetName(newname);
-
-           targetService.updateTarget(TestConstants.USER_1_EMAIL, toEdit);
-
-           TargetEntity result = targetService.getTargetById(TestConstants.USER_1_EMAIL, targetIdToEdit);
-           Assert.assertEquals(newname, result.getTargetName());
-       }
    */
+
+    @Test
+    public void deleteTarget() throws Exception {
+        String userName = "user@name.com";
+        Long userId = 20L;
+        Long targetId = 99L;
+        Long originalSlotId = 9999L;
+        UserEntity user = new UserEntity();
+        user.setUsername(userName);
+        user.setId(userId);
+        TargetEntity target = new TargetEntity();
+        target.setTargetId(targetId);
+        target.setProposalId(9999L);
+        TargetSlotEntity originalSlot = new TargetSlotEntity();
+        originalSlot.setId(originalSlotId);
+        originalSlot.setTargetId(targetId);
+        originalSlot.setSlotOrder(1);
+        originalSlot.setTargetTagIds("1;2;3");
+        target.addSlot(originalSlot);
+
+        ArgumentCaptor<TargetEntity> targetCapture = ArgumentCaptor.forClass(TargetEntity.class);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(targetRepository.findTargetByUserIdAndTargetId(userId, targetId)).thenReturn(target);
+
+
+        // call under test
+        targetService.deleteTarget(userName, targetId);
+
+        Mockito.verify(targetRepository).delete(targetCapture.capture());
+        Mockito.verify(targetSlotRepository).deleteAll(any(List.class));
+
+        TargetEntity capturedTarget = targetCapture.getValue();
+        Assert.assertNotNull("Captured target should exist", capturedTarget);
+        Assert.assertNull("Captured target should not contain slots", capturedTarget.getSlots());
+
+    }
+
+    @Test
+    public void updateTarget() throws Exception {
+        String newname = "New Name";
+        String userName = "user@name.com";
+        Long userId = 20L;
+        Long targetId = 99L;
+        UserEntity user = new UserEntity();
+        user.setUsername(userName);
+        user.setId(userId);
+        TargetEntity target = new TargetEntity();
+        target.setTargetId(targetId);
+        target.setProposalId(9999L);
+        target.setTargetName("old name");
+        TargetEntity editTarget = new TargetEntity();
+        editTarget.setTargetName(newname);
+        editTarget.setTargetId(targetId);
+
+        ArgumentCaptor<TargetEntity> targetCapture = ArgumentCaptor.forClass(TargetEntity.class);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(targetRepository.findTargetByUserIdAndTargetId(userId, targetId)).thenReturn(target);
+        Mockito.when(targetRepository.save(targetCapture.capture())).thenReturn(null);
+
+        // call under test
+        targetService.updateTarget(userName, editTarget);
+
+        TargetEntity capturedTarget = targetCapture.getValue();
+        Assert.assertNotNull("Captured target should exist", capturedTarget);
+        Assert.assertEquals("name has been changed", newname, capturedTarget.getTargetName());
+    }
 
     @Test
     public void addSlotToTarget() throws Exception {
         String userName = "user@name.com";
         Long userId = 20L;
-        Long addedSlotId = 500L;
         Long originalSlotId = 900L;
         Long targetId = 99L;
         UserEntity user = new UserEntity();
