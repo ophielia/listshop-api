@@ -32,7 +32,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -78,7 +77,7 @@ public class TargetServiceImplTest {
         newTarget.setTargetName("george");
 
         TargetEntity result = targetService.createTarget(TestConstants.USER_1_EMAIL, newTarget);
-targetIdToDelete = result.getTargetId();
+        targetIdToDelete = result.getTargetId();
 
         result = targetService.createTarget(TestConstants.USER_1_EMAIL, newTarget);
         targetIdToEdit = result.getTargetId();
@@ -233,37 +232,6 @@ targetIdToDelete = result.getTargetId();
 
         TargetEntity result = targetService.getTargetById(TestConstants.USER_1_EMAIL, targetIdToEdit);
         Assert.assertEquals(newname, result.getTargetName());
-    }
-
-    @Test
-    public void addSlotToTarget() throws Exception {
-        TargetEntity targetEntity = new TargetEntity();
-        targetEntity.setTargetName("new Target slots");
-        targetEntity = targetService.createTarget(TestConstants.USER_1_EMAIL, targetEntity);
-        int size = targetEntity.getSlots() != null ? targetEntity.getSlots().size() : 0;
-        TargetSlotEntity slotEntity = new TargetSlotEntity();
-        slotEntity.setSlotDishTagId(TestConstants.TAG_MAIN_DISH);
-
-        targetService.addSlotToTarget(TestConstants.USER_1_EMAIL, targetEntity.getTargetId(), slotEntity);
-        targetEntity = targetService.getTargetById(TestConstants.USER_1_EMAIL, targetEntity.getTargetId());
-        List<TargetSlotEntity> result = targetEntity.getSlots();
-        Assert.assertNotNull(result);
-        Assert.assertNotNull(result.get(size));
-        Assert.assertEquals(targetEntity.getTargetId(), result.get(size).getTargetId());
-        Assert.assertEquals(size + 1, (long) result.get(size).getSlotOrder());
-        Assert.assertEquals(TestConstants.TAG_MAIN_DISH, result.get(size).getSlotDishTagId());
-    }
-
-    @Test
-    public void deleteSlotFromTarget() throws Exception {
-        targetService.deleteSlotFromTarget(TestConstants.USER_1_EMAIL, TestConstants.TARGET_2_ID, TestConstants.TARGET_SLOT_1_ID);
-
-        TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_1_EMAIL, TestConstants.TARGET_2_ID);
-        List<TargetSlotEntity> result = targetEntity.getSlots();
-        Assert.assertNotNull(result);
-        Optional<TargetSlotEntity> foundSlot = targetEntity.getSlots().stream()
-                .filter(t -> t.getId().longValue() == TestConstants.TARGET_2_ID.longValue()).findFirst();
-        Assert.assertFalse(foundSlot.isPresent());
     }
 
 }

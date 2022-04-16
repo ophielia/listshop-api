@@ -215,39 +215,94 @@ public class TargetServiceImplMockTest {
            TargetEntity result = targetService.getTargetById(TestConstants.USER_1_EMAIL, targetIdToEdit);
            Assert.assertEquals(newname, result.getTargetName());
        }
-
-       @Test
-       public void addSlotToTarget() throws Exception {
-           TargetEntity targetEntity = new TargetEntity();
-           targetEntity.setTargetName("new Target slots");
-           targetEntity = targetService.createTarget(TestConstants.USER_1_EMAIL, targetEntity);
-           int size = targetEntity.getSlots() != null ? targetEntity.getSlots().size() : 0;
-           TargetSlotEntity slotEntity = new TargetSlotEntity();
-           slotEntity.setSlotDishTagId(TestConstants.TAG_MAIN_DISH);
-
-           targetService.addSlotToTarget(TestConstants.USER_1_EMAIL, targetEntity.getTargetId(), slotEntity);
-           targetEntity = targetService.getTargetById(TestConstants.USER_1_EMAIL, targetEntity.getTargetId());
-           List<TargetSlotEntity> result = targetEntity.getSlots();
-           Assert.assertNotNull(result);
-           Assert.assertNotNull(result.get(size));
-           Assert.assertEquals(targetEntity.getTargetId(), result.get(size).getTargetId());
-           Assert.assertEquals(size + 1, (long) result.get(size).getSlotOrder());
-           Assert.assertEquals(TestConstants.TAG_MAIN_DISH, result.get(size).getSlotDishTagId());
-       }
-
-       @Test
-       public void deleteSlotFromTarget() throws Exception {
-           targetService.deleteSlotFromTarget(TestConstants.USER_1_EMAIL, TestConstants.TARGET_2_ID, TestConstants.TARGET_SLOT_1_ID);
-
-           TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_1_EMAIL, TestConstants.TARGET_2_ID);
-           List<TargetSlotEntity> result = targetEntity.getSlots();
-           Assert.assertNotNull(result);
-           Optional<TargetSlotEntity> foundSlot = targetEntity.getSlots().stream()
-                   .filter(t -> t.getId().longValue() == TestConstants.TARGET_2_ID.longValue()).findFirst();
-           Assert.assertFalse(foundSlot.isPresent());
-       }
-
    */
+
+    @Test
+    public void addSlotToTarget() throws Exception {
+        String userName = "user@name.com";
+        Long userId = 20L;
+        Long addedSlotId = 500L;
+        Long originalSlotId = 900L;
+        Long targetId = 99L;
+        UserEntity user = new UserEntity();
+        user.setUsername(userName);
+        user.setId(userId);
+        TargetEntity target = new TargetEntity();
+        target.setTargetId(targetId);
+        target.setProposalId(9999L);
+        TargetSlotEntity addedSlot = new TargetSlotEntity();
+        addedSlot.setTargetTagIds("1;2;3");
+        TargetSlotEntity originalSlot = new TargetSlotEntity();
+        originalSlot.setId(originalSlotId);
+        originalSlot.setTargetId(targetId);
+        originalSlot.setSlotOrder(1);
+        originalSlot.setTargetTagIds("1;2;3");
+        target.addSlot(originalSlot);
+
+        ArgumentCaptor<TargetSlotEntity> targetSlotCapture = ArgumentCaptor.forClass(TargetSlotEntity.class);
+        ArgumentCaptor<TargetEntity> targetCapture = ArgumentCaptor.forClass(TargetEntity.class);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(targetRepository.findTargetByUserIdAndTargetId(userId, targetId)).thenReturn(target);
+        Mockito.when(targetSlotRepository.save(targetSlotCapture.capture())).thenReturn(addedSlot);
+        Mockito.when(targetRepository.save(targetCapture.capture())).thenReturn(null);
+
+
+        // call under test
+        targetService.addSlotToTarget(userName, targetId, addedSlot);
+
+        // verify test
+        TargetEntity capturedTarget = targetCapture.getValue();
+        Assert.assertNotNull("Captured target should exist", capturedTarget);
+        Assert.assertEquals("target should contain 2 slots", 2, capturedTarget.getSlots().size());
+        TargetSlotEntity capturedSlot = targetSlotCapture.getValue();
+        Assert.assertNotNull("Captured target slot should exist", capturedSlot);
+        Assert.assertEquals("slot should have order of 2", "2", capturedSlot.getSlotOrder().toString());
+        Assert.assertEquals("slot should have correct target id", targetId, capturedSlot.getTargetId());
+    }
+
+    @Test
+    public void deleteSlotFromTarget() throws Exception {
+        String userName = "user@name.com";
+        Long userId = 20L;
+        Long slotId = 500L;
+        Long remainingSlotId = 900L;
+        Long targetId = 99L;
+        UserEntity user = new UserEntity();
+        user.setUsername(userName);
+        user.setId(userId);
+        TargetEntity target = new TargetEntity();
+        target.setTargetId(targetId);
+        target.setProposalId(9999L);
+        TargetSlotEntity targetSlot = new TargetSlotEntity();
+        targetSlot.setId(slotId);
+        targetSlot.setTargetId(targetId);
+        targetSlot.setTargetTagIds("1;2;3");
+        TargetSlotEntity remainingSlot = new TargetSlotEntity();
+        remainingSlot.setId(remainingSlotId);
+        remainingSlot.setTargetId(targetId);
+        remainingSlot.setTargetTagIds("1;2;3");
+        target.addSlot(targetSlot);
+        target.addSlot(remainingSlot);
+
+        ArgumentCaptor<TargetSlotEntity> targetSlotCapture = ArgumentCaptor.forClass(TargetSlotEntity.class);
+        ArgumentCaptor<TargetEntity> targetCapture = ArgumentCaptor.forClass(TargetEntity.class);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(targetRepository.findTargetByUserIdAndTargetId(userId, targetId)).thenReturn(target);
+        Mockito.when(targetSlotRepository.findById(slotId)).thenReturn(Optional.of(targetSlot));
+        Mockito.when(targetRepository.save(targetCapture.capture())).thenReturn(null);
+
+        // test call
+        targetService.deleteSlotFromTarget(userName, targetId, slotId);
+
+        // verify afterwards
+        Mockito.verify(targetSlotRepository).delete(targetSlotCapture.capture());
+        TargetEntity capturedTarget = targetCapture.getValue();
+        Assert.assertNotNull("Captured target should exist", capturedTarget);
+        Assert.assertEquals("target should contain 1 slot", 1, capturedTarget.getSlots().size());
+    }
+
     @Test
     public void addTagToTargetSlot() throws Exception {
         String userName = "user@name.com";
@@ -356,7 +411,6 @@ public class TargetServiceImplMockTest {
         targetSlot.setSlotDishTagId(TagService.MAIN_DISH_TAG_ID);
         targetSlot.setTargetId(targetId);
         targetSlot.setSlotOrder(1);
-
 
         ArgumentCaptor<TargetSlotEntity> slotCapture = ArgumentCaptor.forClass(TargetSlotEntity.class);
         ArgumentCaptor<TargetEntity> targetCapture = ArgumentCaptor.forClass(TargetEntity.class);
