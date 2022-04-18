@@ -16,23 +16,27 @@ import java.util.stream.Collectors;
 /**
  * Created by margaretmartin on 13/05/2017.
  */
+@Deprecated
 @Service
 public class TagChangeCacheListener implements TagChangeListener {
 
-
-    @Autowired
     private TagService tagService;
 
-    @Autowired
     private TagStructureService tagStructureService;
 
-    @Autowired
     private TagCache tagCache;
 
+    @Autowired
+    public TagChangeCacheListener(TagService tagService, TagStructureService tagStructureService, TagCache tagCache) {
+        this.tagService = tagService;
+        this.tagStructureService = tagStructureService;
+        this.tagCache = tagCache;
+    }
 
     @PostConstruct
     public void init() {
-        tagService.addTagChangeListener(this);
+
+        //tagService.addTagChangeListener(this);
     }
 
 

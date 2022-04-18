@@ -25,8 +25,13 @@ public class ExpiredTokenCleanupTask {
     @Value("${web.login.period.in.days:8}")
     int deleteLoginsOlderThan;
 
-    @Autowired
+
     UserDeviceRepository userDeviceRepository;
+
+    @Autowired
+    public ExpiredTokenCleanupTask(UserDeviceRepository userDeviceRepository) {
+        this.userDeviceRepository = userDeviceRepository;
+    }
 
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional

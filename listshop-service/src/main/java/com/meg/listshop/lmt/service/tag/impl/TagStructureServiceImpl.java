@@ -1,21 +1,15 @@
 package com.meg.listshop.lmt.service.tag.impl;
 
-import com.meg.listshop.lmt.api.exception.TagStructureException;
-import com.meg.listshop.lmt.api.model.FatTag;
-import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagRelationEntity;
 import com.meg.listshop.lmt.data.entity.TagSearchGroupEntity;
 import com.meg.listshop.lmt.data.repository.TagRelationRepository;
-import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.data.repository.TagSearchGroupRepository;
-import com.meg.listshop.lmt.service.tag.TagCache;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,25 +20,17 @@ import java.util.stream.Collectors;
 public class TagStructureServiceImpl implements TagStructureService {
 
 
-    TagCache tagCache;
-
     private final TagSearchGroupRepository tagSearchGroupRepository;
 
     private final TagRelationRepository tagRelationRepository;
 
-    private final TagRepository tagRepository;
-
     @Autowired
     public TagStructureServiceImpl(
-            TagCache tagCache,
             TagSearchGroupRepository tagSearchGroupRepository,
-            TagRelationRepository tagRelationRepository,
-            TagRepository tagRepository
+            TagRelationRepository tagRelationRepository
     ) {
-        this.tagCache = tagCache;
         this.tagSearchGroupRepository = tagSearchGroupRepository;
         this.tagRelationRepository = tagRelationRepository;
-        this.tagRepository = tagRepository;
     }
 
     @Override
@@ -258,97 +244,6 @@ public class TagStructureServiceImpl implements TagStructureService {
     @Override
     public void removeMembersForGroup(Long groupId, List<Long> membersToDelete) {
         deleteTagGroupsByGroupAndMember(Collections.singletonList(groupId), membersToDelete);
-    }
-
-
-
-    private List<FatTag> fillInFromLookup(List<Long> baseTagIds, Map<Long, List<Long>> parentToChildren, boolean useCache) {
-        List<FatTag> filledIn = new ArrayList<>();
-        for (Long tagId : baseTagIds) {
-            FatTag fatTag = fillInTag(tagId, parentToChildren, useCache);
-            filledIn.add(fatTag);
-        }
-        return filledIn;
-    }
-
-
-    private Map<Long, List<Long>> getTagRelationshipLookup(List<TagType> tagTypes) {
-        List<Object[]> rawRelations;
-        if (tagTypes == null || tagTypes.isEmpty()) {
-            rawRelations = tagRelationRepository.getAllTagRelationships();
-        } else {
-            rawRelations = tagRelationRepository.getTagRelationshipsForTagType(tagTypes.stream().map(TagType::name).collect(Collectors.toList()));
-        }
-
-        return mapTagRelationshipResults(rawRelations);
-    }
-
-    private Map<Long, List<Long>> getTagRelationshipLookupForIds(Set<Long> tagIds) {
-        List<Object[]> rawRelations = tagRelationRepository.getTagRelationshipsForIds(tagIds);
-
-
-        return mapTagRelationshipResults(rawRelations);
-
-    }
-
-    private Map<Long, List<Long>> mapTagRelationshipResults(List<Object[]> rawRelations) {
-        Map<Long, List<Long>> parentToChildren = new HashMap<>();
-        for (Object[] result : rawRelations) {
-            Long parentId = result[0] == null ? 0L : ((BigInteger) result[0]).longValue();
-            Long childId = ((BigInteger) result[1]).longValue();
-            if (!parentToChildren.containsKey(parentId)) {
-                parentToChildren.put(parentId, new ArrayList<Long>());
-            }
-            List children = parentToChildren.get(parentId);
-            children.add(childId);
-            parentToChildren.put(parentId, children);
-        }
-        return parentToChildren;
-    }
-
-    private FatTag fillInTag(Long tagId, Map<Long, List<Long>> parentToChildren, boolean useCache)
-            throws TagStructureException {
-        // check for tag in cache
-        FatTag fatTag = null;
-
-        if (useCache) {
-            fatTag = tagCache.get(tagId);
-            if (fatTag != null) {
-                return fatTag;
-            }
-        }
-
-        // create new FatTag with passed tag
-        Optional<TagEntity> tagOpt = tagRepository.findById(tagId);
-        if (!tagOpt.isPresent()) {
-            throw new TagStructureException(tagId);
-        }
-        TagEntity tag = tagOpt.get();
-        fatTag = new FatTag(tag);
-        // process children
-
-        List<FatTag> filledChildren = new ArrayList<>();
-        if (parentToChildren.containsKey(fatTag.getId())) {
-            List<Long> childrenIds = parentToChildren.get(fatTag.getId());
-            for (Long childId : childrenIds) {
-                // fill tag
-                FatTag fatChild = fillInTag(childId, parentToChildren, useCache);
-                // set parent in tag
-                fatChild.setParentId(fatTag.getId());
-                // add to list
-                filledChildren.add(fatChild);
-            }
-        }
-
-        // insert children in FatTag
-        fatTag.addChildren(filledChildren);
-
-        // save in cache
-        if (useCache) {
-            tagCache.set(fatTag);
-        }
-        // return FatTag
-        return fatTag;
     }
 
     @Transactional

@@ -19,8 +19,12 @@ import java.util.stream.Collectors;
 public class RatingTagProcessorImpl extends AbstractAutoTagProcessor {
 
 
-    @Autowired
     TagStructureService tagStructureService;
+
+    @Autowired
+    public RatingTagProcessorImpl(TagStructureService tagStructureService) {
+        this.tagStructureService = tagStructureService;
+    }
 
     private List<Instruction> instructions = new ArrayList<>();
 

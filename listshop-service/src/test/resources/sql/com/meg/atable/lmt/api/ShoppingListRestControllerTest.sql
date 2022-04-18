@@ -18,7 +18,13 @@ INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text
                       list_sources)
 VALUES (99999, 999, 99999, now(), null, null, 1, null, null);
 
-
+delete
+from users
+where user_id = 504;
+INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username)
+VALUES (504, 'nostarterlist@testitytest.com', true, NULL,
+        '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
+        'email@email.com');
 
 -- lists - ids 500-503
 -- base list - id 500
@@ -208,4 +214,48 @@ insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id)
 values (66501, 65505, 65500);
 insert into meal_plan_slot (dish_dish_id, meal_plan_id, meal_plan_slot_id)
 values (66500, 65505, 65501);
+
+
+-- new test for merge list - list 10000
+insert into list (list_id, created_on, user_id, list_types, list_layout_id, last_update, meal_plan_id, is_starter_list,
+                  name)
+values (110000, '2022-04-16 05:32:38.898000 +00:00', 20, null, 5, '2022-04-16 07:32:39.660000', null, false,
+        'Shopping List');
+
+insert into list_item (item_id, added_on, crossed_off, free_text, source, list_id, list_category, tag_id, used_count,
+                       category_id, dish_sources, list_sources, removed_on, updated_on)
+values (110000, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 256, 1, null, '109', null, null,
+        null),
+       (110014, '2022-04-16 03:32:39.605000 +00:00', null, null, null, 110000, null, 32, 1, null, '112', null, now(),
+        null),
+       (110015, '2022-04-16 03:32:39.606000 +00:00', null, null, null, 110000, null, 33, 1, null, '112', null, null,
+        null),
+       (110016, '2022-04-16 03:32:39.606000 +00:00', null, null, null, 110000, null, 34, 1, null, '112', null, null,
+        null),
+       (110001, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 41, 1, null, '109', null, null,
+        null),
+       (110002, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 460, 1, null, '109', null, null,
+        null),
+       (110003, '2022-04-16 03:32:39.319000 +00:00', null, null, null, 110000, null, 13, 1, null, '109', null, null,
+        null),
+       (110004, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 15, 1, null, '109', null, null,
+        null),
+       (110005, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 16, 1, null, '109', null, null,
+        null),
+       (110006, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 81, 2, null, '112;109', null, null,
+        '2022-04-16 03:32:39.607000 +00:00'),
+       (110007, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 19, 1, null, '109', null, null,
+        null),
+       (110008, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 212, 1, null, '109', null, null,
+        null),
+       (110009, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 21, 1, null, '109', null, null,
+        null),
+       (110010, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 437, 1, null, '109', null, null,
+        null),
+       (110011, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 217, 1, null, '109', null, null,
+        null),
+       (110012, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 443, 1, null, '109', null, null,
+        null),
+       (110013, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 318, 1, null, '109', null, null,
+        null);
 

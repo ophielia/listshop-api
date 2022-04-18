@@ -13,23 +13,14 @@ public class Application {
     private static final Logger LOG = LogManager.getLogger(Application.class);
 
     public static void main(String[] args) {
-        SpringApplication springApplication = new SpringApplication(Application.class);
+      //  SpringApplication springApplication = new SpringApplication(Application.class);
         // this is only for debugging properties
         // springApplication.addListeners(new PropertiesLogger());
-        springApplication.run(args);
-
-/*
-            LOG.info(
-                "Application '{}' version '{}' (build '{}') is running with Profile(s): {}",
-                env.getProperty("artifactId"),
-                env.getProperty("info.app.version"),
-                env.getProperty("info.app.build"),
-                env.getActiveProfiles()
-        );
-
- */
+        createSpringApplication().run(args);
     }
 
-
+    public static SpringApplication createSpringApplication() {
+        return new SpringApplication(Application.class);
+    }
 
 }

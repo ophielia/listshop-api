@@ -17,7 +17,6 @@ import java.io.IOException;
 
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
-
     @Autowired
     private ListShopUserDetailsService userDetailsService;
 

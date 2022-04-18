@@ -20,7 +20,6 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 @Configuration
 @EnableConfigurationProperties({ContentConfiguration.class, MailConfiguration.class})
 public class PostOfficeConfiguration {
-
     @Autowired
     private ContentConfiguration contentConfiguration;
 

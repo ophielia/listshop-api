@@ -19,20 +19,15 @@ public class TagAssignDefaultListener implements TagChangeListener {
     private TagService tagService;
     private ListLayoutService listLayoutService;
 
+    @Autowired
+    public TagAssignDefaultListener(TagService tagService, ListLayoutService listLayoutService) {
+        this.tagService = tagService;
+        this.listLayoutService = listLayoutService;
+    }
 
     @PostConstruct
     public void init() {
         tagService.addTagChangeListener(this);
-    }
-
-    @Autowired
-    public void setTagService(TagService tagService) {
-        this.tagService = tagService;
-    }
-
-    @Autowired
-    public void setListLayoutService(ListLayoutService listLayoutService) {
-        this.listLayoutService = listLayoutService;
     }
 
     @Override

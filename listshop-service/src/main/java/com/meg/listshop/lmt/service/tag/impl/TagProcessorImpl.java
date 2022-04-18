@@ -17,15 +17,17 @@ import java.util.stream.Collectors;
  */
 @Service
 public class TagProcessorImpl extends AbstractAutoTagProcessor {
-
-    @Autowired
     TagInstructionRepository tagInstructionRepository;
 
-    @Autowired
     TagStructureService tagStructureService;
 
     private List<Instruction> instructions;
 
+    @Autowired
+    public TagProcessorImpl(TagInstructionRepository tagInstructionRepository, TagStructureService tagStructureService) {
+        this.tagInstructionRepository = tagInstructionRepository;
+        this.tagStructureService = tagStructureService;
+    }
 
     @Override
     public Long getProcessIdentifier() {

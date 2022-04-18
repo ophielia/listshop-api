@@ -11,6 +11,7 @@ import java.util.Map;
 /**
  * Created by margaretmartin on 15/04/2018.
  */
+@Deprecated
 @Service
 public class TagCacheImpl implements TagCache {
 

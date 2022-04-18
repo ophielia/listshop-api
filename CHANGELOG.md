@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.1] April 2022
+
+### Changed
+
+- Unit tests for TargetService
+- Integration tests for Shopping List
+-
+
+### Deprecated
+
+- TagInfoRestController - will be removed in next release
+
+### Fixed
+
+- bug - selective cross off removed all
+- bug - removing dish from list "activated" items which were crossed off
+
 ## [1.7.0] February 2022
 
 ### Added

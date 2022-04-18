@@ -136,6 +136,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     public void performItemOperation(String userName, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId) {
+        logger.debug(String.format("Beginning performItemOperation with sourceListId [%s], destinationListId[%s],  tagIds [%s] and itemOperationType [%s]", sourceListId, destinationListId, tagIds, operationType));
         // get source list
         ShoppingListEntity sourceList = getListById(userName, sourceListId);
 
@@ -164,6 +165,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         Date crossOffDate = operationType.equals(ItemOperationType.CrossOff) ? new Date() : null;
 
         items.stream().filter(i -> i.getRemovedOn() == null)
+                .filter(i -> tagIds.contains(i.getTag().getId()))
                 .forEach(i -> i.setCrossedOff(crossOffDate));
 
         sourceList.setLastUpdate(new Date());
@@ -706,7 +708,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<ItemEntity> mergeItems = convertClientItemsToItemEntities(mergeRequest);
 
         // merge from client
-        // fill in tags for passed items
+        logger.debug(String.format("Preparing to merge list [%s].", list.getId()));
         mergeCollector.addMergeItems(mergeItems);
 
         // update after merge
@@ -720,7 +722,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<ItemEntity> itemsToRemove = itemRepository.findByRemovedOnBefore(java.sql.Date.valueOf(removedBeforeDate));
         itemRepository.deleteAll(itemsToRemove);
 
-
+        logger.info(String.format("Merge complete for list [%s].", list.getId()));
         return new MergeResult();
     }
 
@@ -831,7 +833,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public void removeDishFromList(String name, Long listId, Long dishId) {
+        //MM bughunt - start here
         // get list
+        //MM make method which will fetch with items
         ShoppingListEntity shoppingList = getListById(name, listId);
 
         // make collector
@@ -839,12 +843,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         List<TagEntity> tagsToRemove = tagService.getTagsForDish(name, dishId);
 
-        collector.removeTagsForDish(dishId, tagsToRemove);
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withDishId(dishId)
                 .withRemoveEntireItem(false)
+                .withKeepExistingCrossedOffStatus(true)
                 .withStatisticCountType(StatisticCountType.Dish)
                 .build();
+        collector.removeTagsForDish(dishId, tagsToRemove, context);
         saveListChanges(shoppingList, collector, context);
 
     }

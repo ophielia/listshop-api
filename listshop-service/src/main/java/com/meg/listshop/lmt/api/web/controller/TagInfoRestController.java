@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
  * Created by margaretmartin on 13/05/2017.
  */
 @Controller
+@Deprecated
 public class TagInfoRestController implements TagInfoRestControllerApi {
 
     private final TagStructureService tagStructureService;

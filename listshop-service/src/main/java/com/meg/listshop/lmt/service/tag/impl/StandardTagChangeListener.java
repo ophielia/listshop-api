@@ -22,19 +22,22 @@ import java.util.stream.Collectors;
 @Service
 public class StandardTagChangeListener implements TagChangeListener {
 
-
-    @Autowired
     private TagService tagService;
 
-    @Autowired
     private TagStructureService tagStructureService;
 
-    @Autowired
     private TagSearchGroupRepository tagSearchGroupRepository;
 
-    @Autowired
+
     private TagRepository tagRepository;
 
+    @Autowired
+    public StandardTagChangeListener(TagService tagService, TagStructureService tagStructureService, TagSearchGroupRepository tagSearchGroupRepository, TagRepository tagRepository) {
+        this.tagService = tagService;
+        this.tagStructureService = tagStructureService;
+        this.tagSearchGroupRepository = tagSearchGroupRepository;
+        this.tagRepository = tagRepository;
+    }
 
     @PostConstruct
     public void init() {

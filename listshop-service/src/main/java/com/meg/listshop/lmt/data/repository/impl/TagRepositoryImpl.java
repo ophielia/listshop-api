@@ -18,8 +18,12 @@ import java.util.List;
 @Repository
 public class TagRepositoryImpl implements TagRepositoryCustom {
 
-    @Autowired
     EntityManager em;
+
+    @Autowired
+    public TagRepositoryImpl(EntityManager em) {
+        this.em = em;
+    }
 
     @Override
     public List<TagEntity> findTagsByCriteria(List<TagType> tagTypes, Boolean assignSelect, Boolean searchSelect) {

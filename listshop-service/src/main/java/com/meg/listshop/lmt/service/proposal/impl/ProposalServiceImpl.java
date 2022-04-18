@@ -26,14 +26,18 @@ import java.util.Optional;
 public class ProposalServiceImpl implements ProposalService {
 
 
-    @Autowired
     private UserService userService;
 
-    @Autowired
     private ProposalRepository targetProposalRepository;
 
-    @Autowired
     private ProposalRepository proposalRepository;
+
+    @Autowired
+    public ProposalServiceImpl(UserService userService, ProposalRepository targetProposalRepository, ProposalRepository proposalRepository) {
+        this.userService = userService;
+        this.targetProposalRepository = targetProposalRepository;
+        this.proposalRepository = proposalRepository;
+    }
 
     @Override
     public ProposalEntity getProposalById(String name, Long proposalId) {

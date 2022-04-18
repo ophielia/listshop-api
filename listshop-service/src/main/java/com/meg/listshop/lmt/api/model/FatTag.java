@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 /**
  * Created by margaretmartin on 12/04/2018.
  */
+@Deprecated
 public class FatTag {
     private final TagEntity tag;
 

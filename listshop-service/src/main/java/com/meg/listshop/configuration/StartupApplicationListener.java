@@ -16,8 +16,12 @@ public class StartupApplicationListener implements
     private static final Logger LOG
             = LogManager.getLogger(StartupApplicationListener.class);
 
-    @Autowired
     TagReplaceService tagReplaceService;
+
+    @Autowired
+    public StartupApplicationListener(TagReplaceService tagReplaceService) {
+        this.tagReplaceService = tagReplaceService;
+    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
