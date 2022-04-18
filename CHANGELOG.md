@@ -11,7 +11,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Unit tests for TargetService
 - Integration tests for Shopping List
--
 
 ### Deprecated
 
