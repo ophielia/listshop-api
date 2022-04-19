@@ -20,8 +20,11 @@ import java.util.stream.Collectors;
  * Created by margaretmartin on 13/05/2017.
  */
 @Service
+@Deprecated
 public class StandardTagChangeListener implements TagChangeListener {
-
+    //MM tag work
+    //MM this code is in charge of maintaining tht TagSearchGroup entities
+    // it will be deprecated, and can be removed
     private TagService tagService;
 
     private TagStructureService tagStructureService;

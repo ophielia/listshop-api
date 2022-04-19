@@ -8,16 +8,18 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Set;
-
+//MM tag work
+@Deprecated
 public interface TagSearchGroupRepository extends JpaRepository<TagSearchGroupEntity, Long> {
 
+    //MM remove safely
     @Modifying
     @Query("delete from TagSearchGroupEntity e where e.groupId in :groupIdList and e.memberId in :memberIdList")
-    void deleteByGroupAndMember(@Param("groupIdList")List<Long> origParentTags, @Param("memberIdList")List<Long> childrenTags);
+    void deleteByGroupAndMember(@Param("groupIdList") List<Long> origParentTags, @Param("memberIdList") List<Long> childrenTags);
 
     @Modifying
     @Query("delete from TagSearchGroupEntity e where e.groupId in :groupIdList and e.memberId in :memberIdList")
-    void deleteByMember(@Param("groupIdList")List<Long> origParentTags, @Param("memberIdList")List<Long> childrenTags);
+    void deleteByMember(@Param("groupIdList") List<Long> origParentTags, @Param("memberIdList") List<Long> childrenTags);
 
     List<TagSearchGroupEntity> findByGroupIdIn(Set<Long> allTags);
 

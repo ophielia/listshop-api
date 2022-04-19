@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface TagRelationRepository extends JpaRepository<TagRelationEntity, Long> {
+public interface TagRelationRepository extends JpaRepository<TagRelationEntity, Long>, CustomTagRelationRepository {
 
     Optional<TagRelationEntity> findByChild(TagEntity tag);
 

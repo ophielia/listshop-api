@@ -833,9 +833,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public void removeDishFromList(String name, Long listId, Long dishId) {
-        //MM bughunt - start here
         // get list
         //MM make method which will fetch with items
+        // MM tag work
         ShoppingListEntity shoppingList = getListById(name, listId);
 
         // make collector

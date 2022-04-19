@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 @Service
 public class TagStructureServiceImpl implements TagStructureService {
 
-
+    //MM replace TagSearchGroupEntity with recursive query use
+//MM tag work
     private final TagSearchGroupRepository tagSearchGroupRepository;
 
     private final TagRelationRepository tagRelationRepository;
@@ -246,6 +247,14 @@ public class TagStructureServiceImpl implements TagStructureService {
         deleteTagGroupsByGroupAndMember(Collections.singletonList(groupId), membersToDelete);
     }
 
+    public Set<Long> getDescendantsOfTag(Long tagId) {
+        List<Long> tagAndDescendants = tagRelationRepository.getTagWithDescendants(tagId);
+        if (tagAndDescendants == null) {
+            return new HashSet<>();
+        }
+        return new HashSet<>(tagAndDescendants);
+    }
+
     @Transactional
     @Override
     public void deleteTagGroupsByGroupAndMember(List<Long> groupTagIds, List<Long> memberTagIds) {
@@ -255,6 +264,9 @@ public class TagStructureServiceImpl implements TagStructureService {
 
     @Override
     public Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags) {
+        // MM replace with recursive query here
+        // recursive query in tag repository
+        // will need integration test to test hit on db - in com.meg.listshop.lmt.api.DishRestControllerTest.testFindDishes
         List<TagSearchGroupEntity> rawSearchGroups = tagSearchGroupRepository.findByGroupIdIn(allTags);
 
         // put the results in a HashMap

@@ -57,6 +57,10 @@ public class TagEntity {
 
     private Boolean assignSelect;
 
+    //MM add field isGroup
+    // depracate searchSelect
+    // depracate assignSelect
+
     private Boolean searchSelect;
 
     private Boolean isVerified;
@@ -171,6 +175,7 @@ public class TagEntity {
         return searchSelect;
     }
 
+    //MM tag work
     public void setSearchSelect(Boolean searchSelect) {
         this.searchSelect = searchSelect;
     }

@@ -11,15 +11,18 @@ import javax.persistence.*;
         strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
         parameters = {@org.hibernate.annotations.Parameter(
                 name = "sequence_name",
-                value="tag_search_group_sequence"),
+                value = "tag_search_group_sequence"),
                 @org.hibernate.annotations.Parameter(
                         name = "increment_size",
-                        value="1")}
+                        value = "1")}
 )
+@Deprecated
 public class TagSearchGroupEntity {
+//MM tag work
+    //MM remove safely
 
     @Id
-    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="tag_search_group_sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tag_search_group_sequence")
     @Column(name = "tag_search_group_id")
     private Long id;
 

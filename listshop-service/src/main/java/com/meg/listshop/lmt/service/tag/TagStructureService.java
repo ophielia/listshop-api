@@ -49,6 +49,5 @@ public interface TagStructureService {
     void removeMembersForGroup(Long id, List<Long> toDelete);
 
 
-
-
+    Set<Long> getDescendantsOfTag(Long tagId);
 }
