@@ -14,6 +14,10 @@ public class DishListResource extends AbstractListShopResource implements ListSh
         this.embeddedList = new EmbeddedDishListResource(dishRS);
     }
 
+    public DishListResource() {
+        // empty constructor - because jackson needs it
+    }
+
     public EmbeddedDishListResource getEmbeddedList() {
         return embeddedList;
     }

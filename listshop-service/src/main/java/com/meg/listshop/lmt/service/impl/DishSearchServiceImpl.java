@@ -58,18 +58,7 @@ public class DishSearchServiceImpl implements DishSearchService {
         StringBuilder groupByFilter = new StringBuilder("");
         StringBuilder nameWhereClause = new StringBuilder("");
         StringBuilder sortClause = new StringBuilder(" ");
-        //MM tag work
-        //MM to fix search query - need to move to new base sql
-        //        select distinct d2.dish_id, d2.dish_name
-        //        from dish_tags dt
-        //        join dish d2 on dt.dish_id = d2.dish_id
-        //        where user_id = 20
-        //        group by 1,2
-        //        having    sum(case
-        //        when tag_id in (161, 134, 105, 201,  466, 436, 117, 438, 439, 376, 121, 91, 61) then 1
-        //        when tag_id in (16) then 1
-        //        when tag_id in (323) then -900
-        //        end) = 2;
+
         List<String> filterClauses = new ArrayList<>();
         int excludeClauseCount = 0;
         if (!criteria.getIncludedTagIds().isEmpty()) {

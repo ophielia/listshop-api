@@ -8,9 +8,9 @@ import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.Dish;
+import com.meg.listshop.lmt.api.model.DishListResource;
+import com.meg.listshop.lmt.api.model.DishResource;
 import com.meg.listshop.lmt.data.entity.DishEntity;
-import com.meg.listshop.lmt.model.EmbeddedDishResourceList;
-import com.meg.listshop.lmt.model.ResultDishResource;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
@@ -24,7 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -36,6 +35,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -64,8 +64,7 @@ public class DishRestControllerTest {
     @ClassRule
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
-    public static final Comparator<ResultDishResource> DISHNAME = (ResultDishResource o1, ResultDishResource o2) -> o1.getDish().getDishName().toLowerCase().compareTo(o2.getDish().getDishName().toLowerCase());
-    public static final Comparator<ResultDishResource> CREATEDON = (ResultDishResource o1, ResultDishResource o2) -> o1.getDish().getId().compareTo(o2.getDish().getId());
+    public static final Comparator<DishResource> CREATEDON = Comparator.comparing((DishResource o) -> o.getDish().getId());
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype());
@@ -116,8 +115,8 @@ public class DishRestControllerTest {
     public void readSingleDish() throws Exception {
         Long testId = TestConstants.DISH_1_ID;
         mockMvc.perform(get("/dish/"
-                + testId)
-                .with(user(userDetails)))
+                        + testId)
+                        .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.dish.dish_id", isA(Number.class)))
@@ -131,8 +130,8 @@ public class DishRestControllerTest {
         //MM work here
         Long testId = TestConstants.DISH_7_ID;
         MvcResult result = mockMvc.perform(get("/dish/"
-                + testId)
-                .with(user(userDetails)))
+                        + testId)
+                        .with(user(userDetails)))
                 .andExpect(status().isBadRequest())
                 .andReturn();
 
@@ -142,7 +141,7 @@ public class DishRestControllerTest {
     @WithMockUser
     public void readDishes() throws Exception {
         mockMvc.perform(get("/dish")
-                .with(user(userDetails)))
+                        .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentType(contentType));
@@ -156,9 +155,9 @@ public class DishRestControllerTest {
                 TestConstants.USER_3_ID, "created dish"));
 
         this.mockMvc.perform(post("/dish")
-                .with(user(userDetails))
-                .contentType(contentType)
-                .content(dishJson))
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(dishJson))
                 .andExpect(status().isCreated());
     }
 
@@ -175,9 +174,9 @@ public class DishRestControllerTest {
         String dishJson = json(updateDish);
 
         this.mockMvc.perform(put("/dish/" + toUpdate.getId())
-                .with(user(userDetails))
-                .contentType(contentType)
-                .content(dishJson))
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(dishJson))
                 .andExpect(status().is2xxSuccessful());
 
         DishEntity result = dishService.getDishForUserById(TestConstants.USER_3_NAME, TestConstants.DISH_1_ID);
@@ -190,7 +189,7 @@ public class DishRestControllerTest {
     @WithMockUser
     public void testGetTagsByDishId() throws Exception {
         mockMvc.perform(get("/dish/" + TestConstants.DISH_2_ID + "/tag")
-                .with(user(userDetails)))
+                        .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentType(contentType));
@@ -202,8 +201,8 @@ public class DishRestControllerTest {
     public void testAddTagToDish() throws Exception {
         String url = "/dish/" + TestConstants.DISH_1_ID + "/tag/" + TestConstants.TAG_CARROTS;
         this.mockMvc.perform(post(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
 
@@ -212,8 +211,8 @@ public class DishRestControllerTest {
     public void testDeleteTagFromDish() throws Exception {
         String url = "/dish/" + TestConstants.DISH_1_ID + "/tag/344";
         this.mockMvc.perform(delete(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
 
@@ -227,8 +226,8 @@ public class DishRestControllerTest {
         String deleteList = FlatStringUtils.flattenListOfLongsToString(deleteTags, ",");
         String url = "/dish/" + TestConstants.DISH_1_ID + "/tag?addTags=" + addList + "&removeTags=" + deleteList;
         this.mockMvc.perform(put(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
 
@@ -243,33 +242,29 @@ public class DishRestControllerTest {
         String url = "/dish?includedTags=" + includedList + "&excludedTags=" + excludedList
                 + "&sortKey=Name" + "&sortDirection=ASC";
         MvcResult result = this.mockMvc.perform(get(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(content().contentType(contentType))
                 .andReturn();
 
-        MockHttpServletResponse response = result.getResponse();
-
         ObjectMapper mapper = new ObjectMapper();
-        EmbeddedDishResourceList embeddedList = mapper.readValue(result.getResponse().getContentAsString(), EmbeddedDishResourceList.class);
-        ResultDishResource[] dishList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getDishList() : new ResultDishResource[0];
+        DishListResource embeddedList = mapper.readValue(result.getResponse().getContentAsString(), DishListResource.class);
+        List<DishResource> dishList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getDishResourceList() : new ArrayList<DishResource>();
         // sort list by name, asc
-        ResultDishResource[] sortedResults = dishList;
-        Arrays.sort(sortedResults, DISHNAME);
+        // list as expected
+        List<String> listAsExpected = dishList.stream()
+                .map(d -> d.getDish())
+                .sorted(Comparator.comparing(Dish::getDishName, String.CASE_INSENSITIVE_ORDER))
+                .map(d -> d.getDishName())
+                .collect(Collectors.toList());
+        assertNotNull(listAsExpected);
 
         // list as received
-        List<String> listAsReceived = Arrays.asList(dishList)
+        List<String> listAsReceived = dishList
                 .stream()
                 .map(rdr -> rdr.getDish().getDishName())
                 .collect(Collectors.toList());
         assertNotNull(listAsReceived);
-        // list as expected
-        List<String> listAsExpected = Arrays.asList(sortedResults)
-                .stream()
-                .map(rdr -> rdr.getDish().getDishName())
-                .collect(Collectors.toList());
-        ;
-        assertNotNull(listAsExpected);
 
         // order matches
         assertThat(listAsReceived, equalTo(listAsExpected));
@@ -278,33 +273,31 @@ public class DishRestControllerTest {
         url = "/dish?includedTags=" + includedList + "&excludedTags=" + excludedList
                 + "&sortKey=CreatedOn" + "&sortDirection=DESC";
         result = this.mockMvc.perform(get(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(content().contentType(contentType))
                 .andReturn();
 
-        embeddedList = mapper.readValue(result.getResponse().getContentAsString(), EmbeddedDishResourceList.class);
-        dishList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getDishList() : new ResultDishResource[0];
+        embeddedList = mapper.readValue(result.getResponse().getContentAsString(), DishListResource.class);
+        dishList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getDishResourceList() : new ArrayList<DishResource>();
         // sort list by id, desc
-        sortedResults = dishList;
-        Arrays.sort(sortedResults, CREATEDON.reversed());
-
-        // list as received
-        listAsReceived = Arrays.asList(dishList)
-                .stream()
-                .map(rdr -> String.valueOf(rdr.getDish().getId()))
+        // expected results
+        List<Long> expectedCreatedOnResults = dishList.stream()
+                .map(d -> d.getDish().getId())
+                .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
-        assertNotNull(listAsReceived);
-        // list as expected
-        listAsExpected = Arrays.asList(sortedResults)
-                .stream()
-                .map(rdr -> String.valueOf(rdr.getDish().getId()))
-                .collect(Collectors.toList());
-        ;
         assertNotNull(listAsExpected);
 
+
+        // list as received
+        List<Long> longsAsReceived = dishList
+                .stream()
+                .map(rdr -> rdr.getDish().getId())
+                .collect(Collectors.toList());
+        assertNotNull(listAsReceived);
+
         // order matches
-        assertThat(listAsReceived, equalTo(listAsExpected));
+        assertThat(longsAsReceived, equalTo(expectedCreatedOnResults));
 
     }
 
