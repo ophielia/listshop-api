@@ -587,42 +587,6 @@ public class ModelMapper {
         return listLayoutEntity;
     }
 
-    private static List<TagDrilldown> childrenTagsToModel(List<FatTag> childrenTags) {
-        List<TagDrilldown> drilldownList = new ArrayList<>();
-        if (childrenTags != null) {
-            for (FatTag cat : childrenTags) {
-                drilldownList.add(toModel(cat));
-            }
-        }
-        return drilldownList;
-    }
-
-    public static TagDrilldown toModel(FatTag fatTag) {
-        if (fatTag == null) {
-            return null;
-        }
-
-        List<TagDrilldown> children = new ArrayList<>();
-        if (fatTag.getChildren() != null) {
-            children = childrenTagsToModel(fatTag.getChildren());
-        }
-        TagDrilldown result = new TagDrilldown(fatTag.getId());
-        result.name(fatTag.getName())
-                .description(fatTag.getDescription())
-                .tagType(fatTag.getTagType().name())
-                .power(fatTag.getPower())
-                // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
-                .assignSelect(fatTag.getAssignSelect())
-                .parentId(String.valueOf(fatTag.getParentId()))
-                .searchSelect(fatTag.getSearchSelect());
-
-        result.parentId(String.valueOf(fatTag.getParentId()));
-        result.childrenList(children);
-
-        return result;
-    }
-
-
     // possibly unused
     public static ListTagStatistic toEntity(Statistic statistic) {
         if (statistic == null) {
