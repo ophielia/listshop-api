@@ -3,7 +3,7 @@ package com.meg.listshop.lmt.service.tag.impl;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagRelationEntity;
 import com.meg.listshop.lmt.data.repository.TagRelationRepository;
-import com.meg.listshop.lmt.data.repository.TagSearchGroupRepository;
+import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,15 +26,16 @@ public class TagStructureServiceImplMockTest {
     private TagStructureService tagStructureService;
 
     @MockBean
-    private TagSearchGroupRepository tagSearchGroupRepository;
-    @MockBean
     private TagRelationRepository tagRelationRepository;
+
+    @MockBean
+    private TagRepository tagRepository;
 
     @Before
     public void setUp() {
 
         tagStructureService = new TagStructureServiceImpl(
-                tagSearchGroupRepository,
+                tagRepository,
                 tagRelationRepository
         );
     }
@@ -112,8 +113,6 @@ public class TagStructureServiceImplMockTest {
         relationEntity.setChild(child);
         return relationEntity;
     }
-
-
 
 
 }

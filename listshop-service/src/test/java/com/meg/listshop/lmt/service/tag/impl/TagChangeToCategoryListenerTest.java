@@ -101,7 +101,7 @@ categories = new ArrayList<ListLayoutCategoryEntity>();
         List<Long> toAdd = new ArrayList<>();
         toAdd.add(childTag.getId());
 
-        Mockito.when(tagStructureService.getDescendantTags(newParent,false))
+        Mockito.when(tagStructureService.getDescendantTags(newParent))
                 .thenReturn(siblings);
 
         Mockito.when(listLayoutService.getCategoriesForTag(siblings.get(0)))

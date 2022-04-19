@@ -23,8 +23,23 @@ public class CustomTagRelationRepositoryImpl implements CustomTagRelationReposit
             ") " +
             "SELECT * FROM all_children;";
 
+    private final String ASCENDANT_TAG_QUERY = "WITH RECURSIVE all_children AS ( " +
+            "    select t.tag_id from tag t where tag_id = ?1 " +
+            "    UNION " +
+            "    select t.tag_id from all_children n " +
+            "                                     join tag_relation tr on n.tag_id = tr.child_tag_id " +
+            "                                     join tag t on t.tag_id = tr.parent_tag_id " +
+            ") " +
+            "SELECT * FROM all_children;";
+
     public List<Long> getTagWithDescendants(Long tagId) {
         return entityManager.createNativeQuery(DESCENDANT_TAG_QUERY)
+                .setParameter(1, tagId)
+                .getResultList();
+    }
+
+    public List<Long> getTagWithAscendants(Long tagId) {
+        return entityManager.createNativeQuery(ASCENDANT_TAG_QUERY)
                 .setParameter(1, tagId)
                 .getResultList();
     }

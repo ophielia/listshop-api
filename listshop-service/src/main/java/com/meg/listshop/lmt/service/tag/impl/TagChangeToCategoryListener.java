@@ -81,7 +81,7 @@ public class TagChangeToCategoryListener implements TagChangeListener {
 
     private void assignFromSibling(TagEntity newParentTag, TagEntity childTag) {
         // get sibling
-        List<TagEntity> siblings = tagStructureService.getDescendantTags(newParentTag, false);
+        List<TagEntity> siblings = tagStructureService.getDescendantTags(newParentTag);
         if (siblings == null) {
             return;
         }
