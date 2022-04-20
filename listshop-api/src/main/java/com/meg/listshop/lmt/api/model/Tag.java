@@ -79,7 +79,7 @@ public class Tag {
         return this;
     }
 
-    public Boolean getGroup() {
+    public Boolean getIsGroup() {
         return isGroup;
     }
 

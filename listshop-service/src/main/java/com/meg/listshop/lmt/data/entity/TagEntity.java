@@ -175,24 +175,6 @@ public class TagEntity {
         this.tagTypeDefault = tagTypeDefault;
     }
 
-    public Boolean getAssignSelect() {
-        return assignSelect;
-    }
-
-
-    public void setAssignSelect(Boolean assignSelect) {
-        this.assignSelect = assignSelect;
-    }
-
-    public Boolean getSearchSelect() {
-        return searchSelect;
-    }
-
-    //MM tag work
-    public void setSearchSelect(Boolean searchSelect) {
-        this.searchSelect = searchSelect;
-    }
-
     public Boolean getIsGroup() {
         return isGroup != null ? isGroup : Boolean.FALSE;
     }
@@ -261,8 +243,7 @@ public class TagEntity {
         var copy = new TagEntity();
         copy.setName(getName());
         copy.setDescription(getDescription());
-        copy.setSearchSelect(getSearchSelect());
-        copy.setAssignSelect(getAssignSelect());
+        copy.setIsGroup(getIsGroup());
         copy.setPower(getPower());
         copy.setReplacementTagId(getReplacementTagId());
         copy.setToDelete(isToDelete());

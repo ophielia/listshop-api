@@ -190,8 +190,7 @@ public class TagServiceImpl implements TagService {
         TagEntity beforeChange = dbTag.copy();
         dbTag.setName(toUpdate.getName());
         dbTag.setDescription(toUpdate.getDescription());
-        dbTag.setAssignSelect(toUpdate.getAssignSelect());
-        dbTag.setSearchSelect(toUpdate.getSearchSelect());
+        dbTag.setIsGroup(toUpdate.getIsGroup());
         dbTag.setPower(toUpdate.getPower());
         dbTag.setToDelete(toUpdate.isToDelete());
         dbTag.setRemovedOn(toUpdate.getRemovedOn());
@@ -237,8 +236,6 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagEntity createTag(TagEntity parent, TagEntity newtag) {
         TagEntity parentTag = getParentForNewTag(parent, newtag);
-        newtag.setAssignSelect(true);
-        newtag.setSearchSelect(false);
         newtag.setToDelete(false);
         newtag.setCreatedOn(new Date());
         TagEntity saved = tagRepository.save(newtag);

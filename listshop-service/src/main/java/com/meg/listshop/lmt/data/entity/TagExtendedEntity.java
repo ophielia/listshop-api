@@ -37,6 +37,7 @@ public class TagExtendedEntity {
     private Boolean toDelete = false;
 
     private Boolean isParent = false;
+    private Boolean isGroup = false;
 
     private Long replacementTagId;
 
@@ -54,7 +55,6 @@ public class TagExtendedEntity {
     }
 
     public TagExtendedEntity(TagEntity tag) {
-        assignSelect = tag.getAssignSelect();
         categoryUpdatedOn = tag.getCategoryUpdatedOn();
         createdOn = tag.getCreatedOn();
         description = tag.getDescription();
@@ -63,7 +63,7 @@ public class TagExtendedEntity {
         power = tag.getPower();
         removedOn = tag.getRemovedOn();
         replacementTagId = tag.getReplacementTagId();
-        searchSelect = tag.getSearchSelect();
+        isGroup = tag.getIsGroup();
         tag_id = tag.getId();
         tagType = tag.getTagType();
         tagTypeDefault = tag.getTagTypeDefault();
@@ -71,7 +71,6 @@ public class TagExtendedEntity {
     }
 
     public TagExtendedEntity(TagEntity tag, Long parentId) {
-        assignSelect = tag.getAssignSelect();
         categoryUpdatedOn = tag.getCategoryUpdatedOn();
         createdOn = tag.getCreatedOn();
         description = tag.getDescription();
@@ -80,7 +79,7 @@ public class TagExtendedEntity {
         power = tag.getPower();
         removedOn = tag.getRemovedOn();
         replacementTagId = tag.getReplacementTagId();
-        searchSelect = tag.getSearchSelect();
+        isGroup = tag.getIsGroup();
         tag_id = tag.getId();
         tagType = tag.getTagType();
         tagTypeDefault = tag.getTagTypeDefault();
@@ -128,6 +127,10 @@ public class TagExtendedEntity {
         return toDelete;
     }
 
+    public Boolean getIsGroup() {
+        return isGroup;
+    }
+
     public Long getReplacementTagId() {
         return replacementTagId;
     }
@@ -162,6 +165,7 @@ public class TagExtendedEntity {
                 tagType == tagEntity.tagType;
     }
 
+
     @Override
     public int hashCode() {
         return Objects.hash(tag_id, name, tagType);
@@ -175,8 +179,7 @@ public class TagExtendedEntity {
                 ", description='" + description + '\'' +
                 ", tagType=" + tagType +
                 ", tagTypeDefault=" + tagTypeDefault +
-                ", assignSelect=" + assignSelect +
-                ", searchSelect=" + searchSelect +
+                ", isGroup=" + isGroup +
                 ", isVerified=" + isVerified +
                 ", power=" + power +
                 ", parentId=" + parentId +

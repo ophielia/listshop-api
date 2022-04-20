@@ -496,8 +496,7 @@ public class ModelMapper {
         tagEntity.setName(tag.getName().trim());
         tagEntity.setDescription(tag.getDescription());
         tagEntity.setTagType(TagType.valueOf(tag.getTagType()));
-        tagEntity.setSearchSelect(tag.getSearchSelect());
-        tagEntity.setAssignSelect(tag.getAssignSelect());
+        tagEntity.setIsGroup(tag.getIsGroup());
         tagEntity.setPower(tag.getPower());
 
         return tagEntity;

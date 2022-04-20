@@ -178,8 +178,6 @@ public class TagServiceImplMockTest {
         TagEntity tag = ServiceTestUtils.buildTagEntity(tagId, "tagName", TagType.DishType);
         TagEntity copyfrom = ServiceTestUtils.buildTagEntity(tagId, "copied", TagType.Ingredient);
         copyfrom.setDescription("description");
-        copyfrom.setAssignSelect(true);
-        copyfrom.setSearchSelect(true);
         copyfrom.setPower(5.0);
         copyfrom.setToDelete(false);
         copyfrom.setRemovedOn(new Date());
@@ -202,8 +200,6 @@ public class TagServiceImplMockTest {
         Assert.assertNotNull(verifyCapture);
 
         Assert.assertEquals(copyfrom.getDescription(), verifyCapture.getDescription());
-        Assert.assertEquals(copyfrom.getAssignSelect(), verifyCapture.getAssignSelect());
-        Assert.assertEquals(copyfrom.getSearchSelect(), verifyCapture.getSearchSelect());
         Assert.assertEquals(copyfrom.getPower(), verifyCapture.getPower());
         Assert.assertEquals(copyfrom.isToDelete(), verifyCapture.isToDelete());
         Assert.assertEquals(copyfrom.getRemovedOn(), verifyCapture.getRemovedOn());
