@@ -62,7 +62,7 @@ public class TagEntity {
     private Boolean assignSelect;
 
     @Column(name = "is_group")
-    private Boolean isGroup;
+    private boolean isGroup;
 
     @Deprecated
     private Boolean searchSelect;
@@ -175,11 +175,11 @@ public class TagEntity {
         this.tagTypeDefault = tagTypeDefault;
     }
 
-    public Boolean getIsGroup() {
-        return isGroup != null ? isGroup : Boolean.FALSE;
+    public boolean getIsGroup() {
+        return isGroup;
     }
 
-    public void setIsGroup(Boolean group) {
+    public void setIsGroup(boolean group) {
         isGroup = group;
     }
 

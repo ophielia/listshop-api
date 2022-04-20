@@ -1,11 +1,13 @@
 package com.meg.listshop.lmt.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
 public class StatisticListResource extends AbstractListShopResource implements ListShopModel {
 
+    @JsonProperty("statistic")
     private List<Statistic> statistics;
 
     public StatisticListResource(List<Statistic> statistics) {

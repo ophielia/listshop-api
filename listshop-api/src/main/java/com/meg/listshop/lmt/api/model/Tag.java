@@ -20,7 +20,7 @@ public class Tag {
     private String ratingFamily;
 
     @JsonProperty("is_group")
-    private Boolean isGroup;
+    private boolean isGroup;
     private Boolean assignSelect;
 
     private Boolean searchSelect;
@@ -79,7 +79,7 @@ public class Tag {
         return this;
     }
 
-    public Boolean getIsGroup() {
+    public boolean getIsGroup() {
         return isGroup;
     }
 
