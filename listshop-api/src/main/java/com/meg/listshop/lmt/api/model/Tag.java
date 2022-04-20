@@ -8,6 +8,8 @@ public class Tag {
 
     private String tag_id;
 
+    @JsonProperty("user_id")
+    private String userId;
     private String name;
 
     private String description;
@@ -17,6 +19,8 @@ public class Tag {
 
     private String ratingFamily;
 
+    @JsonProperty("is_group")
+    private Boolean isGroup;
     private Boolean assignSelect;
 
     private Boolean searchSelect;
@@ -25,7 +29,7 @@ public class Tag {
 
     private Double power;
 
-    private String parentId ;
+    private String parentId;
 
     private Boolean toDelete;
 
@@ -66,6 +70,23 @@ public class Tag {
         return this;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public Tag userId(String userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public Boolean getGroup() {
+        return isGroup;
+    }
+
+    public Tag isGroup(boolean isGroup) {
+        this.isGroup = isGroup;
+        return this;
+    }
 
     public String getDescription() {
         return description;

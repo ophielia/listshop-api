@@ -309,13 +309,15 @@ public class ModelMapper {
         return new Tag(tagEntity.getId())
                 .name(tagEntity.getName())
                 .description(tagEntity.getDescription())
+                .userId(String.valueOf(tagEntity.getId()))
                 .tagType(tagEntity.getTagType().name())
                 .power(tagEntity.getPower())
+                .isGroup(tagEntity.getIsGroup())
                 // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
-                .assignSelect(tagEntity.getAssignSelect())
+                .assignSelect(!tagEntity.getIsGroup())
+                .searchSelect(tagEntity.getIsGroup())
                 .parentId(String.valueOf(tagEntity.getParentId()))
-                .toDelete(tagEntity.isToDelete())
-                .searchSelect(tagEntity.getSearchSelect());
+                .toDelete(tagEntity.isToDelete());
     }
 
     public static Tag toModel(TagExtendedEntity tagEntity) {

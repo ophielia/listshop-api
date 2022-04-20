@@ -40,6 +40,9 @@ public class TagEntity {
     @Column(name = "tag_id")
     private Long tag_id;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     private String name;
 
     private String description;
@@ -55,12 +58,13 @@ public class TagEntity {
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<ListLayoutCategoryEntity> categories = new ArrayList<>();
 
+    @Deprecated
     private Boolean assignSelect;
 
-    //MM add field isGroup
-    // depracate searchSelect
-    // depracate assignSelect
+    @Column(name = "is_group")
+    private Boolean isGroup;
 
+    @Deprecated
     private Boolean searchSelect;
 
     private Boolean isVerified;
@@ -105,6 +109,14 @@ public class TagEntity {
     public void setId(Long tagId) {
         // TODO - this is just for tests - make a DaoUtils so we can remove this method
         this.tag_id = tagId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long user_id) {
+        this.userId = user_id;
     }
 
     public String getName() {
@@ -167,6 +179,7 @@ public class TagEntity {
         return assignSelect;
     }
 
+
     public void setAssignSelect(Boolean assignSelect) {
         this.assignSelect = assignSelect;
     }
@@ -178,6 +191,14 @@ public class TagEntity {
     //MM tag work
     public void setSearchSelect(Boolean searchSelect) {
         this.searchSelect = searchSelect;
+    }
+
+    public Boolean getIsGroup() {
+        return isGroup != null ? isGroup : Boolean.FALSE;
+    }
+
+    public void setIsGroup(Boolean group) {
+        isGroup = group;
     }
 
     public Boolean getVerified() {
