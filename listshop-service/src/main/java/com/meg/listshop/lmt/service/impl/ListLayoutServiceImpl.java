@@ -517,6 +517,7 @@ Long relationshipId = getCategoryRelationForCategory(category);
 
     @Override
     public ListLayoutCategoryEntity getLayoutCategoryForTag(Long listLayoutId, Long tagId) {
+        //MM see about a lazy catagory load here - category without tags
         TagEntity tagEntity = tagService.getTagById(tagId);
         List<TagEntity> tagList = Collections.singletonList(tagEntity);
 

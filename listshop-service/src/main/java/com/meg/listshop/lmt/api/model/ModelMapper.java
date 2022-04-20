@@ -61,7 +61,6 @@ public class ModelMapper {
     }
 
 
-
     private static String[] toRoleListModel(List<AuthorityEntity> authorities) {
         List<String> roleList = new ArrayList<>();
         if (authorities == null || authorities.isEmpty()) {
@@ -237,26 +236,24 @@ public class ModelMapper {
         return layout;
     }
 
-    public static ListLayoutCategoryPojo toModel(ListLayoutCategoryEntity cat) {
-        return toModel(cat, true);
+    public static Category toModel(ListLayoutCategoryEntity cat, boolean includeTags) {
 
-    }
-
-    public static ListLayoutCategoryPojo toModel(ListLayoutCategoryEntity cat, boolean includeTags) {
         if (cat == null) {
             return null;
         }
-        ListLayoutCategoryPojo returnval = (ListLayoutCategoryPojo) new ListLayoutCategoryPojo(cat.getId())
-                .name(cat.getName());
-        returnval = (ListLayoutCategoryPojo) returnval.layoutId(cat.getLayoutId());
+        Category returnval = new Category(cat.getId())
+                .name(cat.getName())
+                .displayOrder(cat.getDisplayOrder())
+                .categoryType(CategoryType.Standard.name());
+
         if (includeTags) {
-            returnval = (ListLayoutCategoryPojo) returnval.tags(toModel(cat.getTags()));
-        } else {
-            returnval = (ListLayoutCategoryPojo) returnval.tags(new ArrayList<>());
+            returnval = returnval.tags(toModel(cat.getTags()));
         }
+
         return returnval;
 
     }
+
 
     private static List<Item> simpleItemsToModel(List<ItemEntity> items) {
         List<Item> itemList = new ArrayList<>();
@@ -500,7 +497,7 @@ public class ModelMapper {
             return null;
         }
         Long targetId = target.getTargetId();
-        TargetType targetType=null;
+        TargetType targetType = null;
         if (target.getTargetType() != null) {
             targetType = TargetType.valueOf(target.getTargetType());
         }
@@ -580,7 +577,7 @@ public class ModelMapper {
     }
 
     public static ListLayoutEntity toEntity(ListLayout listLayout) {
-        ListLayoutType layoutType = listLayout.getLayoutType()!=null?ListLayoutType.valueOf(listLayout.getLayoutType()):null;
+        ListLayoutType layoutType = listLayout.getLayoutType() != null ? ListLayoutType.valueOf(listLayout.getLayoutType()) : null;
         ListLayoutEntity listLayoutEntity = new ListLayoutEntity();
         listLayoutEntity.setName(listLayout.getName());
         listLayoutEntity.setLayoutType(layoutType);
