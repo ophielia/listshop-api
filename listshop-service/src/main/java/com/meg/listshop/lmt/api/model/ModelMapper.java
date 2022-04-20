@@ -346,6 +346,15 @@ public class ModelMapper {
 
     }
 
+    public static List<Statistic> toModelListStatistic(List<ListTagStatistic> statisticEntities) {
+        List<Statistic> statistics = new ArrayList<>();
+        for (ListTagStatistic st : statisticEntities) {
+            Statistic statistic = ModelMapper.toModel(st);
+            statistics.add(statistic);
+        }
+        return statistics;
+    }
+
     public static Statistic toModel(ListTagStatistic statistic) {
         return new Statistic(statistic.getListTagStatId())
                 .addedCount(statistic.getAddedCount())
