@@ -35,8 +35,15 @@ public class ModelMapper {
     }
 
     public static Dish toModel(DishEntity dishEntity) {
+        return toModel(dishEntity, true);
+    }
+
+    public static Dish toModel(DishEntity dishEntity, boolean includeTags) {
         if (dishEntity != null) {
-            List<Tag> tags = toModel(dishEntity.getTags());
+            List<Tag> tags = new ArrayList<>();
+            if (includeTags) {
+                tags = toModel(dishEntity.getTags());
+            }
             return new Dish(dishEntity.getId())
                     .description(dishEntity.getDescription())
                     .dishName(dishEntity.getDishName())

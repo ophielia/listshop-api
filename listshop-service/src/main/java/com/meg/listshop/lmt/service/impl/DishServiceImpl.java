@@ -11,7 +11,6 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
@@ -92,17 +91,12 @@ public class DishServiceImpl implements DishService {
 
         UserEntity user = userRepository.findByEmail(username);
 
-        Optional<DishEntity> dishOpt = dishRepository.findById(dishId);
-        if (dishOpt.isEmpty()) {
+        Optional<DishEntity> dishOpt = dishRepository.findByDishIdForUser(user.getId(), dishId);
+        if (!dishOpt.isPresent()) {
             final String msg = "No dish found by id for user [" + username + "] and dishId [" + dishId + "]";
             throw new ObjectNotFoundException(msg, dishId, "Dish");
         }
-        DishEntity dish = dishOpt.get();
-        if (!dish.getUserId().equals(user.getId())) {
-            final String msg = "Dish found for dishId [" + dishId + "], but doesn't belong to user [" + username + "].";
-            throw new ObjectNotYoursException(msg, "Dish", dishId, user.getEmail());
-        }
-        return dish;
+        return dishOpt.get();
     }
 
     @Override

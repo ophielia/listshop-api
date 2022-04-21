@@ -113,7 +113,7 @@ public class DishRestController implements DishRestControllerApi {
 
     private List<DishResource> getAllDishes(Principal principal) {
         return dishService.getDishesForUserName(principal.getName()).stream()
-                .map(d -> ModelMapper.toModel(d))
+                .map(d -> ModelMapper.toModel(d, false))
                 .map(DishResource::new)
                 .collect(Collectors.toList());
 
