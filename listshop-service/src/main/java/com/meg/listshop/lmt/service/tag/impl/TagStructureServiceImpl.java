@@ -184,13 +184,22 @@ public class TagStructureServiceImpl implements TagStructureService {
         return !exists.isEmpty();
     }
 
-    public Set<Long> getDescendantsOfTag(Long tagId) {
+    public Set<Long> getDescendantsTagIds(Set<Long> tagIdSet) {
+        Set<Long> tagIdCollection = new HashSet<>();
+        for (Long tagId : tagIdSet) {
+            tagIdCollection.addAll(getDescendantsTagIds(tagId));
+        }
+        return tagIdCollection;
+    }
+
+    public Set<Long> getDescendantsTagIds(Long tagId) {
         List<Long> tagAndDescendants = tagRelationRepository.getTagWithDescendants(tagId);
         if (tagAndDescendants == null) {
             return new HashSet<>();
         }
         return new HashSet<>(tagAndDescendants);
     }
+
     @Override
     public Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags) {
         // will need integration test to test hit on db - in com.meg.listshop.lmt.api.DishRestControllerTest.testFindDishes
@@ -198,7 +207,7 @@ public class TagStructureServiceImpl implements TagStructureService {
         // work done, but test note is valuable
         HashMap<Long, List<Long>> results = new HashMap<>();
         for (Long tagId : allTags) {
-            Set<Long> descendantIds = getDescendantsOfTag(tagId);
+            Set<Long> descendantIds = getDescendantsTagIds(tagId);
             results.put(tagId, new ArrayList<>(descendantIds));
         }
         return results;

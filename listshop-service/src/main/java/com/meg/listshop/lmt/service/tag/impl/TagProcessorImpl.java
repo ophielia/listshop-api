@@ -9,7 +9,9 @@ import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -40,11 +42,8 @@ public class TagProcessorImpl extends AbstractAutoTagProcessor {
         for (TagInstructionEntity instruction : entities) {
             Set<Long> tagIdList = instruction.getMasterSearchTags();
             // get all group tags for these search tags
-            Map<Long, List<Long>> searchGroups = tagStructureService.getSearchGroupsForTagIds(tagIdList);
-            Set<Long> searchTags = new HashSet<>();
-            searchTags.addAll(tagIdList);
-            searchGroups.entrySet().stream().forEach(t -> searchTags.addAll(t.getValue()));
-            instruction.setSearchTags(searchTags);
+            Set<Long> searchIds = tagStructureService.getDescendantsTagIds(tagIdList);
+            instruction.setSearchTags(searchIds);
         }
         instructions = new ArrayList<>();
         instructions.addAll(entities);

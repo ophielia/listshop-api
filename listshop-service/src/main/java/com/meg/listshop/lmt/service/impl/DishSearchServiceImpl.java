@@ -110,7 +110,7 @@ public class DishSearchServiceImpl implements DishSearchService {
         String whenWeight = isExclude ? "-900" : "1";
         for (Long filterTagId : filterTagIds) {
             // get tags with children
-            Set<Long> tagIds = tagStructureService.getDescendantsOfTag(filterTagId);
+            Set<Long> tagIds = tagStructureService.getDescendantsTagIds(filterTagId);
             var tagList = String.join(", ", tagIds.stream().map(String::valueOf).collect(Collectors.toList()));
             // add to filterClauses
             var clause = String.format("when tag_id in (%s) then %s", tagList, whenWeight);

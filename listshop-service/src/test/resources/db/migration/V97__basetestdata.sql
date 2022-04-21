@@ -3689,8 +3689,8 @@ insert into public.auto_tag_instructions (instruction_type, instruction_id, assi
 values ('TAG', 1000, 346, false, '9;88;368;372;374;375', null),
        ('TEXT', 1, 301, false, 'Soup', 'false'),
        ('TEXT', 2, 323, false, 'Crock-pot;Crockpot;Crock pot', 'false'),
-       ('TAG', 3, 346, false, '9;434;375;88;372', null),
-       ('TAG', 4, 199, true, '9;434;88;375;372', '433');
+       ('TAG', 3, 346, false, '371', null),
+       ('TAG', 4, 199, true, '371', '433');
 insert into public.dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status, created_on, reference)
 values (1009, null, 'tagTest', null, null, null, null, null),
        (1010, null, 'tagTest', null, null, null, null, null),

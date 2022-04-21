@@ -25,11 +25,15 @@ public interface TagStructureService {
 
     List<TagEntity> getDescendantTags(TagEntity tag);
 
+    Set<Long> getDescendantsTagIds(Set<Long> tagIdList);
+
+    Set<Long> getDescendantsTagIds(Long tagId);
+
     TagEntity getParentTag(TagEntity tag);
 
     List<TagEntity> getSiblingTags(TagEntity afterChange);
 
     Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags);
 
-    Set<Long> getDescendantsOfTag(Long tagId);
+
 }
