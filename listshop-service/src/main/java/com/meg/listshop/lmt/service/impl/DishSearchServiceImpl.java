@@ -38,8 +38,8 @@ public class DishSearchServiceImpl implements DishSearchService {
 
 
     private static final String FILTER_CASE_BEGIN = "having sum(case ";
-    private static final String FILTER_CASE_END = "end) =  ";
-    private static final String FILTER_CASE_END_EXCLUDE_ONLY = "end) < 0  ";
+    private static final String FILTER_CASE_END = " else 0 end) =  ";
+    private static final String FILTER_CASE_END_EXCLUDE_ONLY = " else 0 end) >= 0  ";
     private static final String GROUP_BY_BEGIN = " group by 1,2,3,4,5 ";
 
     @Autowired
