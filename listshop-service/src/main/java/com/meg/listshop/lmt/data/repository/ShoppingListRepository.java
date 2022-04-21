@@ -16,10 +16,10 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
 
     List<ShoppingListEntity> findByListIdAndUserId(Long listId, Long userId);
 
-    @EntityGraph(value="list-entity-graph")
+    @EntityGraph(value = "list-tag-entity-graph")
     Optional<ShoppingListEntity> getWithItemsByListId(Long listid);
 
-    @EntityGraph(value="list-entity-graph")
+    @EntityGraph(value = "list-tag-entity-graph")
     Optional<ShoppingListEntity> getWithItemsByListIdAndItemsRemovedOnIsNull(Long listid);
 
     List<ShoppingListEntity> findByUserIdAndIsStarterListTrue(Long userid);

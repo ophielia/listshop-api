@@ -202,9 +202,6 @@ public class TagStructureServiceImpl implements TagStructureService {
 
     @Override
     public Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags) {
-        // will need integration test to test hit on db - in com.meg.listshop.lmt.api.DishRestControllerTest.testFindDishes
-        //MM tag work
-        // work done, but test note is valuable
         HashMap<Long, List<Long>> results = new HashMap<>();
         for (Long tagId : allTags) {
             Set<Long> descendantIds = getDescendantsTagIds(tagId);

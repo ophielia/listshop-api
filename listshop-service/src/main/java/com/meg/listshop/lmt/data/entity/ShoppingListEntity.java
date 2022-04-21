@@ -28,6 +28,14 @@ import java.util.List;
                 @NamedAttributeNode("items")
         }
 )
+
+@NamedEntityGraph(
+        name = "list-tag-entity-graph",
+        attributeNodes = @NamedAttributeNode(value = "items", subgraph = "subgraph.tag"),
+        subgraphs = {
+                @NamedSubgraph(name = "subgraph.tag",
+                        attributeNodes = @NamedAttributeNode(value = "tag"))})
+
 public class ShoppingListEntity {
 
     @Id
