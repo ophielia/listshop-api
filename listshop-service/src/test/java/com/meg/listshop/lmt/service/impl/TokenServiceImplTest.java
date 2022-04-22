@@ -72,7 +72,7 @@ public class TokenServiceImplTest {
     @Test
     public void testGenerateTokenForUser() throws BadParameterException, TemplateException, MessagingException, IOException {
         String userEmail = TestConstants.USER_1_EMAIL;
-        Date testStart = new Date();
+        Long testStart = new Date().getTime();
 
         // mock setup
         Mockito.when(userService.getUserByUserEmail(userAccount.getEmail()))
@@ -93,7 +93,7 @@ public class TokenServiceImplTest {
 
         Assert.assertEquals(TokenType.PasswordReset, resultToken.getTokenType());
         Assert.assertEquals(userAccount.getId(), resultToken.getUserId());
-        Assert.assertTrue(resultToken.getCreatedOn().after(testStart));
+        Assert.assertTrue(resultToken.getCreatedOn().getTime() >= testStart);
 
 
     }

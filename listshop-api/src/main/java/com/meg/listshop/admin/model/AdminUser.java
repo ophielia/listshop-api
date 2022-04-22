@@ -15,11 +15,11 @@ public class AdminUser {
     @JsonProperty("creation_date")
     private Date created;
     @JsonProperty("list_count")
-    private int listCount;
+    private long listCount;
     @JsonProperty("dish_count")
-    private int dishCount;
+    private long dishCount;
     @JsonProperty("meal_plan_count")
-    private int mealPlanCount;
+    private long mealPlanCount;
 
     public AdminUser() {
         // empty constructor, because Jackson likes it that way.
@@ -65,30 +65,30 @@ public class AdminUser {
         return this;
     }
 
-    public int getListCount() {
+    public long getListCount() {
         return listCount;
     }
 
-    public AdminUser listCount(int listCount) {
+    public AdminUser listCount(long listCount) {
         this.listCount = listCount;
         return this;
     }
 
-    public int getDishCount() {
+    public long getDishCount() {
         return dishCount;
     }
 
-    public AdminUser dishCount(int dishCount) {
+    public AdminUser dishCount(long dishCount) {
         this.dishCount = dishCount;
         return this;
     }
 
-    public int getMealPlanCount() {
+    public long getMealPlanCount() {
         return mealPlanCount;
     }
 
-    public AdminUser mealPlanCount(int mealPlanCount) {
-        this.mealPlanCount = AdminUser.this.mealPlanCount;
+    public AdminUser mealPlanCount(long mealPlanCount) {
+        this.mealPlanCount = mealPlanCount;
         return this;
     }
 

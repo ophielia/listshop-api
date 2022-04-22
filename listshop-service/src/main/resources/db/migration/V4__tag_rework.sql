@@ -46,6 +46,23 @@ FROM tag t
          JOIN tag_relation r ON t.tag_id = r.child_tag_id
          LEFT JOIN parent_ids ip ON t.tag_id = ip.parent_tag_id;
 
+-- admin_user_details
+create or replace view admin_user_details as
+(
+select u.user_id,
+       email,
+       username                       as user_name,
+       creation_date,
+       last_login,
+       count(distinct list_id)        as list_count,
+       count(distinct m.meal_plan_id) as meal_plan_count,
+       count(distinct dish_id)        as dish_count
+from users u
+         left outer join list l on u.user_id = l.user_id
+         left outer join meal_plan m on u.user_id = m.user_id
+         left outer join dish d on u.user_id = d.user_id
+group by 1, 2, 3, 4, 5
+    );
 
 
 -- rollback
@@ -66,3 +83,4 @@ FROM tag t
 -- remove new columns from tag
 --alter table tag drop column is_group;
 --alter table tag drop column user_id;
+-- drop view if exists admin_user_details;

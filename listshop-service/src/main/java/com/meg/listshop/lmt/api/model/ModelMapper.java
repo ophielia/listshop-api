@@ -75,6 +75,19 @@ public class ModelMapper {
         return new AdminUser(null);
     }
 
+    public static AdminUser toAdminModel(AdminUserDetailsEntity userEntity) {
+        if (userEntity != null) {
+            return new AdminUser(userEntity.getEmail())
+                    .created(userEntity.getCreationDate())
+                    .userId(String.valueOf(userEntity.getUserId()))
+                    .lastLogin(userEntity.getLastLogin())
+                    .listCount(userEntity.getListCount())
+                    .dishCount(userEntity.getDishCount())
+                    .mealPlanCount(userEntity.getMealPlanCount());
+        }
+        return new AdminUser(null);
+    }
+
 
     private static String[] toRoleListModel(List<AuthorityEntity> authorities) {
         List<String> roleList = new ArrayList<>();

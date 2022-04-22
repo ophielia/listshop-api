@@ -1,11 +1,14 @@
 package com.meg.listshop.admin.controller;
 
+import com.meg.listshop.admin.model.AdminUser;
 import com.meg.listshop.admin.model.AdminUserListResource;
 import com.meg.listshop.admin.model.PostSearchUsers;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.ModelMapper;
+import com.meg.listshop.lmt.data.entity.AdminUserDetailsEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
@@ -78,4 +82,20 @@ public class AdminUserRestController implements AdminUserRestControllerApi {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<AdminUser> getUser(@PathVariable Long userId) throws ObjectNotFoundException, BadParameterException {
+        if (userId == null) {
+            throw new BadParameterException("Can't get a user without an id!");
+        }
+
+        AdminUserDetailsEntity user = userService.getAdminUserById(userId);
+        if (user == null) {
+            throw new ObjectNotFoundException(String.format("User not found for userId [%s]", userId));
+        }
+
+        return new ResponseEntity<>(ModelMapper.toAdminModel(user), HttpStatus.OK);
+    }
+
+
 }
