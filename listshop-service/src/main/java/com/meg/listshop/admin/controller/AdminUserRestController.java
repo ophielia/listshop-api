@@ -42,10 +42,12 @@ public class AdminUserRestController implements AdminUserRestControllerApi {
         String userIdString = input.getUserId();
         String listIdString = input.getListId();
 
+        logger.debug(String.format("Received search parameters: email [%s], userId [%s], listId [%s]", searchEmail, userIdString, listIdString));
+
         List<UserEntity> users = new ArrayList<>();
-        if (searchEmail != null) {
+        if (searchEmail != null && !searchEmail.isEmpty()) {
             users = userService.findUsersByEmail(searchEmail);
-        } else if (userIdString != null) {
+        } else if (userIdString != null && !userIdString.isEmpty()) {
             try {
                 Long userId = Long.valueOf(userIdString);
                 UserEntity user = userService.getUserById(userId);
@@ -56,7 +58,7 @@ public class AdminUserRestController implements AdminUserRestControllerApi {
                 logger.warn(String.format("Passed user id [%s] can't be passed into long.", userIdString));
             }
 
-        } else if (listIdString != null) {
+        } else if (listIdString != null && !listIdString.isEmpty()) {
             try {
                 Long listId = Long.valueOf(listIdString);
                 UserEntity user = userService.getUserByListId(listId);
