@@ -28,7 +28,6 @@ public class CollectedItem {
     private boolean isCountDecreased;
 
     private boolean isChanged;
-    private boolean fromClient = false;
 
     private final int secondComparisonWindow = 2;
 
@@ -354,12 +353,6 @@ public class CollectedItem {
             return CollectedItemStatus.CROSSED_OFF;
         }
         return CollectedItemStatus.UPDATED;
-    }
-
-
-
-    public void setFromClient(boolean fromClient) {
-        this.fromClient = fromClient;
     }
 
     @Override
