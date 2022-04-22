@@ -25,6 +25,10 @@ public class AdminUser {
         // empty constructor, because Jackson likes it that way.
     }
 
+    public AdminUser(String email) {
+        this.email = email;
+    }
+
     public String getEmail() {
         return email;
     }

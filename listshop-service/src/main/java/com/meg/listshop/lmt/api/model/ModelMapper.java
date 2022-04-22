@@ -7,6 +7,7 @@
 
 package com.meg.listshop.lmt.api.model;
 
+import com.meg.listshop.admin.model.AdminUser;
 import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -62,6 +63,16 @@ public class ModelMapper {
                     .roles(roles);
         }
         return new User(null, null);
+    }
+
+    public static AdminUser toAdminModel(UserEntity userEntity) {
+        if (userEntity != null) {
+            return new AdminUser(userEntity.getEmail())
+                    .created(userEntity.getCreationDate())
+                    .userId(String.valueOf(userEntity.getId()))
+                    .lastLogin(userEntity.getLastLogin());
+        }
+        return new AdminUser(null);
     }
 
 

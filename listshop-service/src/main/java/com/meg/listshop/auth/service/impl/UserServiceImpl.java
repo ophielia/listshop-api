@@ -29,6 +29,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -237,6 +238,16 @@ public class UserServiceImpl implements UserService {
         logger.info(String.format("Will delete user [%s]", user));
         userRepository.deleteUser(user.getId());
         userRepository.flush();
+    }
+
+    @Override
+    public List<UserEntity> findUsersByEmail(String searchEmail) {
+        return userRepository.findByEmailContainingIgnoreCase(searchEmail.toLowerCase());
+    }
+
+    @Override
+    public UserEntity getUserByListId(Long listId) {
+        return userRepository.findByListId(listId);
     }
 
     private void changePassword(UserEntity user, String password) {

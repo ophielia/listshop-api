@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 
 public interface UserRepository extends JpaRepository<UserEntity, Long>, CustomUserRepository {
 
@@ -16,4 +18,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, CustomU
 
     @Query(value = "select u.* from users u join user_devices ud using (user_id) where token = CAST(:userDeviceId as text)", nativeQuery = true)
     UserEntity findByToken(@Param("userDeviceId") String userDeviceId);
+
+    @Query(value = "select u.* from users u join list l using (user_id) where l.list_id =:listId", nativeQuery = true)
+    UserEntity findByListId(@Param("listId") Long listId);
+
+    List<UserEntity> findByEmailContainingIgnoreCase(String toLowerCase);
 }
