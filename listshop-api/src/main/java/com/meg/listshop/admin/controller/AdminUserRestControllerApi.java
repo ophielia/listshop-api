@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/admin/users")
+@RequestMapping("/admin/user")
 public interface AdminUserRestControllerApi {
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
