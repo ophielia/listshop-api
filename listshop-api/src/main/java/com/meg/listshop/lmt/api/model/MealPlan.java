@@ -19,6 +19,9 @@ public class MealPlan {
 
     private List<Slot> slots;
 
+    @JsonProperty("slot_count")
+    private int slotCount;
+
 
     public MealPlan() {
         // empty constructor
@@ -84,6 +87,15 @@ public class MealPlan {
 
     public MealPlan slots(List<Slot> slots) {
         this.slots = slots;
+        return this;
+    }
+
+    public int getSlotCount() {
+        return slotCount;
+    }
+
+    public MealPlan slotCount(int slotCount) {
+        this.slotCount = slotCount;
         return this;
     }
 }

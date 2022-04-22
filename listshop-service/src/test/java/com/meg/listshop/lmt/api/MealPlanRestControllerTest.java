@@ -191,7 +191,7 @@ public class MealPlanRestControllerTest {
         mealPlanEntity.setName("mealPlanCreate");
         mealPlanEntity.setMealPlanType(MealPlanType.Manual);
         mealPlanEntity.setUserId(userAccount.getId());
-        MealPlan mealPlan = ModelMapper.toModel(mealPlanEntity);
+        MealPlan mealPlan = ModelMapper.toModel(mealPlanEntity, true);
         String mealPlanJson = json(mealPlan);
 
         this.mockMvc.perform(post("/mealplan")
@@ -207,7 +207,7 @@ public class MealPlanRestControllerTest {
         MealPlanEntity mealPlanEntity = new MealPlanEntity();
         mealPlanEntity.setMealPlanType(MealPlanType.Manual);
         mealPlanEntity.setUserId(userAccount.getId());
-        MealPlan mealPlan = ModelMapper.toModel(mealPlanEntity);
+        MealPlan mealPlan = ModelMapper.toModel(mealPlanEntity, true);
         String mealPlanJson = json(mealPlan);
 
         this.mockMvc.perform(post("/mealplan")

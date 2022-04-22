@@ -34,9 +34,6 @@ public class ModelMapper {
         throw new IllegalAccessError("Utility class");
     }
 
-    public static Dish toModel(DishEntity dishEntity) {
-        return toModel(dishEntity, true);
-    }
 
     public static Dish toModel(DishEntity dishEntity, boolean includeTags) {
         if (dishEntity != null) {
@@ -151,7 +148,7 @@ public class ModelMapper {
     public static TargetProposalDish toModel(DishSlotEntity dishEntity) {
         List<Tag> tags = toModel(dishEntity.getMatchedTags());
         return new TargetProposalDish(dishEntity.getDishId())
-                .dish(toModel(dishEntity.getDish()))
+                .dish(toModel(dishEntity.getDish(), false))
                 .matchedTags(tags);
     }
 
@@ -338,18 +335,25 @@ public class ModelMapper {
                 .tagType(tagEntity.getTagType().name())
                 .power(tagEntity.getPower())
                 // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
-                .assignSelect(tagEntity.getAssignSelect())
+                .isGroup(tagEntity.getIsGroup())
+                .assignSelect(!tagEntity.getIsGroup())
+                .searchSelect(tagEntity.getIsGroup())
                 .parentId(String.valueOf(tagEntity.getParentId()))
-                .toDelete(tagEntity.getToDelete())
-                .searchSelect(tagEntity.getSearchSelect());
+                .toDelete(tagEntity.getToDelete());
     }
 
-    public static MealPlan toModel(MealPlanEntity mealPlanEntity) {
-        List<Slot> slots = slotsToModel(mealPlanEntity.getSlots());
+    public static MealPlan toModel(MealPlanEntity mealPlanEntity, boolean includeSlots) {
+        List<Slot> slots = new ArrayList<>();
+        int slotCount = mealPlanEntity.getSlots().size();
+        if (includeSlots) {
+            slots = slotsToModel(mealPlanEntity.getSlots());
+        }
+
         return new MealPlan(mealPlanEntity.getId())
                 .name(mealPlanEntity.getName())
                 .created(mealPlanEntity.getCreated())
                 .mealPlanType(mealPlanEntity.getMealPlanType() != null ? mealPlanEntity.getMealPlanType().name() : "")
+                .slotCount(slotCount)
                 .userId(mealPlanEntity.getUserId().toString())
                 .slots(slots);
 
@@ -376,7 +380,7 @@ public class ModelMapper {
     private static Slot toModel(SlotEntity slotEntity) {
         return new Slot(slotEntity.getMealPlanSlotId())
                 .mealPlanId(slotEntity.getMealPlan().getId())
-                .dish(toModel(slotEntity.getDish()));
+                .dish(toModel(slotEntity.getDish(), false));
     }
 
     private static List<Slot> slotsToModel(List<SlotEntity> slots) {

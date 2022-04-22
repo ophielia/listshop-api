@@ -15,11 +15,17 @@ import java.util.List;
         strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
         parameters = {@org.hibernate.annotations.Parameter(
                 name = "sequence_name",
-                value="meal_plan_sequence"),
+                value = "meal_plan_sequence"),
                 @org.hibernate.annotations.Parameter(
                         name = "increment_size",
-                        value="1")}
+                        value = "1")}
 )
+@NamedEntityGraph(
+        name = "mealplan-dish-entity-graph",
+        attributeNodes = @NamedAttributeNode(value = "slots", subgraph = "subgraph.dish"),
+        subgraphs = {
+                @NamedSubgraph(name = "subgraph.dish",
+                        attributeNodes = @NamedAttributeNode(value = "dish"))})
 public class MealPlanEntity {
 
     @Id
