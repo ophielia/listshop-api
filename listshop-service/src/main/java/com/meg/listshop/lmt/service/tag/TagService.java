@@ -6,6 +6,7 @@ import com.meg.listshop.lmt.api.model.TagFilterType;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
+import com.meg.listshop.lmt.data.entity.TagInfoDTO;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public interface TagService {
 
     List<TagExtendedEntity> getTagExtendedList(TagFilterType tagFilterType, List<TagType> tagTypes);
 
-    TagEntity createTag(TagEntity parent, TagEntity newTag);
+    TagEntity createTag(TagEntity parent, TagEntity newTag, String username);
 
     List<TagEntity> getTagsForDish(String username, Long dishId);
 
@@ -67,4 +68,5 @@ public interface TagService {
     List<TagEntity> getReplacedTagsFromIds(Set<Long> tagKeys);
 
 
+    List<TagInfoDTO> getTagInfoList(String name);
 }

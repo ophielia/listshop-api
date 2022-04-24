@@ -13,6 +13,8 @@ import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.Tag;
+import com.meg.listshop.lmt.api.model.TagListResource;
+import com.meg.listshop.lmt.api.model.TagResource;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -214,6 +216,8 @@ public class TagRestControllerTest {
     }
 
 
+    //MM need one additional test for "standard"
+
     @Test
     public void addAsChild() throws Exception {
         String url = "/tag/" + TestConstants.PARENT_TAG_ID_2 + "/child";
@@ -222,11 +226,42 @@ public class TagRestControllerTest {
         tag = tag.tagType(TagType.Rating.name());
         String tagString = json(tag);
 
-        this.mockMvc.perform(post(url)
-                .with(user(userDetails))
-                .contentType(contentType)
-                .content(tagString))
-                .andExpect(status().is2xxSuccessful());
+        MvcResult result = this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(tagString))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        // affirm that newly created tag has user_id matching user_details
+        // and parent id matching parent_tag_id_2
+        // get newly created id
+        String locationValue = result.getResponse().getHeader("Location");
+        String idString = locationValue.substring(locationValue.lastIndexOf("/") + 1);
+        Long newId = Long.valueOf(idString);
+
+        String fetchUrl = "/tag/" + newId;
+        mockMvc.perform(get(fetchUrl))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.tag.user_id").value(TestConstants.USER_1_ID));
+
+        // now, check that parent id is correct"
+        MvcResult allResultForParent = this.mockMvc.perform(get("/tag/user")
+                        .with(user(userDetails))
+                        .contentType(contentType))
+                .andReturn();
+
+        String resultJson = allResultForParent.getResponse().getContentAsString();
+        TagListResource afterList = objectMapper.readValue(resultJson, TagListResource.class);
+        Optional<TagResource> resultTag = afterList.getEmbeddedList().getTagResourceList().stream()
+                .filter(t -> t.getTag().getId().equals(idString))
+                .findFirst();
+        Assert.assertNotNull(resultTag);
+        Assert.assertEquals("parent tag id should equal that given for create call",
+                String.valueOf(TestConstants.PARENT_TAG_ID_2),
+                resultTag.get().getTag().getParentId());
+
     }
 
     @Test

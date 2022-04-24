@@ -11,6 +11,9 @@ public class EmbeddedTagListResource {
         this.tagResourceList = tagResourceList;
     }
 
+    public EmbeddedTagListResource() {
+    }
+
     public List<TagResource> getTagResourceList() {
         return tagResourceList;
     }

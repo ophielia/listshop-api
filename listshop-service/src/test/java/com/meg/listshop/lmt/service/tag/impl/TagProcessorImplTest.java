@@ -149,7 +149,7 @@ public class TagProcessorImplTest {
         TagEntity meatCake = new TagEntity();
         meatCake.setName("meat cake");
         meatCake.setTagType(TagType.Ingredient);
-        meatCake = tagService.createTag(parentTag, meatCake);
+        meatCake = tagService.createTag(parentTag, meatCake, null);
         Long newTagId = meatCake.getId();
         Set<Long> newTagSet = new HashSet<>();
         newTagSet.add(newTagId);

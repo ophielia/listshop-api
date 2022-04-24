@@ -5,10 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class TagResource extends AbstractListShopResource implements ListShopModel {
 
-    private final Tag tag;
+    private Tag tag;
 
     public TagResource(Tag tag) {
         this.tag = tag;
+    }
+
+    public TagResource() {
     }
 
     public Tag getTag() {

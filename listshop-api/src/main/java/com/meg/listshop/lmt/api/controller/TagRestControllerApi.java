@@ -16,6 +16,12 @@ import java.security.Principal;
 @RequestMapping("/tag")
 public interface TagRestControllerApi {
 
+
+    @GetMapping(value = "/user")
+    ResponseEntity<TagListResource> retrieveUserTagList(
+            Principal principal,
+            HttpServletRequest request);
+
     @RequestMapping(method = RequestMethod.GET)
     ResponseEntity<TagListResource> retrieveTagList(HttpServletRequest request,
                                                     @RequestParam(value = "filter", required = false) String filter,
@@ -29,7 +35,8 @@ public interface TagRestControllerApi {
     ResponseEntity<Tag> add(HttpServletRequest request, @RequestBody Tag input);
 
     @RequestMapping(value = "{tagId}/child", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    ResponseEntity<Tag> addAsChild(HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input);
+    ResponseEntity<Tag> addAsChild(Principal principal, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
+                                   @RequestParam(value = "asStandard", required = false, defaultValue = "false") Boolean asStandard);
 
     @RequestMapping(value = "{tagId}/children", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds", required = false) String filter);

@@ -14,6 +14,9 @@ public class TagListResource extends AbstractListShopResource implements ListSho
         this.embeddedList = new EmbeddedTagListResource(tagList);
     }
 
+    public TagListResource() {
+    }
+
     public EmbeddedTagListResource getEmbeddedList() {
         return embeddedList;
     }

@@ -329,6 +329,19 @@ public class ModelMapper {
         return tags;
     }
 
+
+    public static Tag toModel(TagInfoDTO tagInfoDTO) {
+        return new Tag(tagInfoDTO.getTag_id())
+                .name(tagInfoDTO.getName())
+                .description(tagInfoDTO.getDescription())
+                .userId(String.valueOf(tagInfoDTO.getUserId()))
+                .tagType(tagInfoDTO.getTagType())
+                .power(tagInfoDTO.getPower())
+                .isGroup(tagInfoDTO.isGroup())
+                .parentId(String.valueOf(tagInfoDTO.getParentId()))
+                .toDelete(tagInfoDTO.isToDelete());
+    }
+
     public static Tag toModel(TagEntity tagEntity) {
         if (tagEntity == null) {
             return null;
@@ -337,7 +350,7 @@ public class ModelMapper {
         return new Tag(tagEntity.getId())
                 .name(tagEntity.getName())
                 .description(tagEntity.getDescription())
-                .userId(String.valueOf(tagEntity.getId()))
+                .userId(String.valueOf(tagEntity.getUserId()))
                 .tagType(tagEntity.getTagType().name())
                 .power(tagEntity.getPower())
                 .isGroup(tagEntity.getIsGroup())
@@ -645,5 +658,6 @@ public class ModelMapper {
 
         return statEntity;
     }
+
 
 }

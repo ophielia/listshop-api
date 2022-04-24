@@ -8,7 +8,9 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
+import com.meg.listshop.lmt.data.entity.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.TagExtendedRepository;
+import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
@@ -48,6 +50,7 @@ public class TagServiceImpl implements TagService {
     private final TagStructureService tagStructureService;
     private final UserService userService;
     private final DishSearchService dishSearchService;
+    private final TagInfoCustomRepository tagInfoCustomRepository;
 
 
     @Autowired
@@ -58,6 +61,7 @@ public class TagServiceImpl implements TagService {
                           TagExtendedRepository tagExtendedRepository,
                           TagRepository tagRepository,
                           UserService userService,
+                          TagInfoCustomRepository tagInfoCustomRepository,
                           DishSearchService dishSearchService) {
         this.dishService = dishService;
         this.tagStatisticService = tagStatisticService;
@@ -67,10 +71,9 @@ public class TagServiceImpl implements TagService {
         this.tagStructureService = tagStructureService;
         this.userService = userService;
         this.dishSearchService = dishSearchService;
+        this.tagInfoCustomRepository = tagInfoCustomRepository;
 
     }
-
-
 
 
     @Override
@@ -219,6 +222,16 @@ public class TagServiceImpl implements TagService {
 
     }
 
+    public List<TagInfoDTO> getTagInfoList(String name) {
+        Long searchTagsForUserId = null;
+        if (name != null) {
+            UserEntity user = userService.getUserByUserEmail(name);
+            searchTagsForUserId = user.getId();
+        }
+
+        return tagInfoCustomRepository.retrieveTagInfoByUser(searchTagsForUserId);
+    }
+
     @Override
     public List<TagEntity> getIngredientTagsForDishes(List<Long> dishIdList) {
         return tagRepository.getIngredientTagsForDishes(dishIdList);
@@ -234,10 +247,16 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public TagEntity createTag(TagEntity parent, TagEntity newtag) {
+    public TagEntity createTag(TagEntity parent, TagEntity newtag, String name) {
+        Long tagUserId = null;
+        if (name != null) {
+            UserEntity user = userService.getUserByUserEmail(name);
+            tagUserId = user.getId();
+        }
         TagEntity parentTag = getParentForNewTag(parent, newtag);
         newtag.setToDelete(false);
         newtag.setCreatedOn(new Date());
+        newtag.setUserId(tagUserId);
         TagEntity saved = tagRepository.save(newtag);
 
         tagStructureService.createRelation(parentTag, saved);

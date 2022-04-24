@@ -4,6 +4,7 @@ import com.meg.listshop.lmt.api.controller.TagRestControllerApi;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
+import com.meg.listshop.lmt.data.entity.TagInfoDTO;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -44,6 +45,20 @@ public class TagRestController implements TagRestControllerApi {
     }
 
 
+    public ResponseEntity<TagListResource> retrieveUserTagList(
+            Principal principal,
+            HttpServletRequest request) {
+        String userName = principal != null ? principal.getName() : null;
+
+        List<TagInfoDTO> infoTags = tagService.getTagInfoList(userName);
+        List<TagResource> resourceList = infoTags.stream()
+                .map(ModelMapper::toModel)
+                .map(TagResource::new)
+                .collect(Collectors.toList());
+        var returnValue = new TagListResource(resourceList);
+        return new ResponseEntity(returnValue, HttpStatus.OK);
+    }
+
     public ResponseEntity<TagListResource> retrieveTagList(HttpServletRequest request,
                                                            @RequestParam(value = "filter", required = false) String filter,
                                                            @RequestParam(value = "tag_type", required = false) String tagType,
@@ -81,7 +96,7 @@ public class TagRestController implements TagRestControllerApi {
 
     public ResponseEntity<Tag> add(HttpServletRequest request, @RequestBody Tag input) {
         var tagEntity = ModelMapper.toEntity(input);
-        TagEntity result = this.tagService.createTag(null, tagEntity);
+        TagEntity result = this.tagService.createTag(null, tagEntity, null);
 
         if (result != null) {
 
@@ -93,12 +108,17 @@ public class TagRestController implements TagRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Tag> addAsChild(HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input) {
+    public ResponseEntity<Tag> addAsChild(Principal principal, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
+                                          @RequestParam(value = "asStandard", required = false, defaultValue = "false") Boolean asStandard) {
+        String username = null;
+        if (!asStandard) {
+            username = principal.getName();
+        }
         TagEntity parent = this.tagService.getTagById(tagId);
 
         if (parent != null) {
             var tagEntity = ModelMapper.toEntity(input);
-            TagEntity result = this.tagService.createTag(parent, tagEntity);
+            TagEntity result = this.tagService.createTag(parent, tagEntity, username);
             if (result != null) {
                 var tagModel = ModelMapper.toModel(tagEntity);
                 var resource = new TagResource(tagModel);
