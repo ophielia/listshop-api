@@ -16,13 +16,15 @@ import com.meg.listshop.lmt.api.model.Tag;
 import com.meg.listshop.lmt.api.model.TagListResource;
 import com.meg.listshop.lmt.api.model.TagResource;
 import com.meg.listshop.lmt.api.model.TagType;
-import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.repository.TagRelationRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
@@ -38,7 +40,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,7 +48,8 @@ import java.util.stream.Collectors;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -229,42 +231,7 @@ public class TagRestControllerTest {
 
     }
 
-    @Test
-    public void updateTag() throws Exception {
-        Optional<TagEntity> toUpdateOpt = tagRepository.findById(TestConstants.TAG_3_ID);
-        Assert.assertTrue(toUpdateOpt.isPresent());
-        TagEntity toUpdate = toUpdateOpt.get();
-        String updateName = "updated:" + toUpdate.getName();
-        String updateDescription = "updated:" + (toUpdate.getDescription() == null ? "" : toUpdate.getDescription());
-        toUpdate.setName(updateName);
-        toUpdate.setDescription(updateDescription);
-        toUpdate.setDishes(new ArrayList<>());
-        toUpdate.setCategories(new ArrayList<>());
-        String tagJson = json(toUpdate);
 
-        this.mockMvc.perform(put("/tag/" + toUpdate.getId())
-                        .contentType(contentType)
-                        .content(tagJson))
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
-    public void moveTag() throws Exception {
-        String url = "/tag/" + TestConstants.PARENT_TAG_ID_2
-                + "/child/" + TestConstants.CHILD_TAG_ID_1;
-
-        Optional<TagEntity> toUpdateOpt = tagRepository.findById(TestConstants.CHILD_TAG_ID_1);
-        Assert.assertTrue(toUpdateOpt.isPresent());
-        TagEntity toUpdate = toUpdateOpt.get();
-        String updateName = "updated:" + toUpdate.getName();
-        String updateDescription = "updated:" + (toUpdate.getDescription() == null ? "" : toUpdate.getDescription());
-        toUpdate.setName(updateName);
-        toUpdate.setDescription(updateDescription);
-        toUpdate.setDishes(new ArrayList<>());
-
-        this.mockMvc.perform(put(url))
-                .andExpect(status().is2xxSuccessful());
-    }
 
 
     @Test
@@ -355,43 +322,9 @@ public class TagRestControllerTest {
 
     }
 
-    @Test
-    public void addChildren() throws Exception {
-        String url = "/tag/" + TestConstants.PARENT_TAG_ID_1 + "/children?tagIds=" + TestConstants.TAG_MEAT + "," + TestConstants.TAG_CARROTS + "," + TestConstants.TAG_CROCKPOT;
 
-        this.mockMvc.perform(post(url).contentType(contentType))
-                .andExpect(status().is2xxSuccessful());
-    }
 
-    @Test
-    public void assignChildToBaseTag() throws Exception {
-        String url = "/tag/" + TestConstants.PARENT_TAG_ID_1 + "/child/" + TestConstants.TAG_MEAT;
 
-        this.mockMvc.perform(put(url)
-                        .with(user(userDetails)))
-                .andExpect(status().is2xxSuccessful());
-
-    }
-
-    @Test
-    @Ignore
-    public void getChildrenTagDishAssignments() throws Exception {
-        // this method is depracated - don't know what it makes sense for
-        // ignoring the test
-        String url = "/tag/" + TestConstants.PARENT_TAG_ID_1 + "/dish";
-
-        this.mockMvc.perform(get(url)
-                        .with(user(userDetails)))
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
-    @WithMockUser
-    public void replaceTagsInDishes() throws Exception {
-        this.mockMvc.perform(put("/tag/" + TestConstants.TAG_CARROTS + "/dish/" + TestConstants.TAG_MEAT)
-                        .with(user(userDetails)))
-                .andExpect(status().is2xxSuccessful());
-    }
 
 
     private String json(Object o) throws IOException {
