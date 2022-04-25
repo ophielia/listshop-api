@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.api.controller;
+package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.lmt.api.model.Tag;
 import com.meg.listshop.lmt.api.model.TagListResource;
@@ -14,7 +14,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/tag")
-public interface TagRestControllerApi {
+public interface AdminTagRestControllerApi {
 
 
     @GetMapping(value = "/user")

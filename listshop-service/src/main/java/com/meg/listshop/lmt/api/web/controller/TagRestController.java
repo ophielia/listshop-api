@@ -94,9 +94,15 @@ public class TagRestController implements TagRestControllerApi {
     }
 
 
-    public ResponseEntity<Tag> add(HttpServletRequest request, @RequestBody Tag input) {
+    public ResponseEntity<Tag> add(Principal principal, HttpServletRequest request,
+                                   @RequestBody Tag input,
+                                   @RequestParam(value = "asStandard", required = false, defaultValue = "false") Boolean asStandard) {
         var tagEntity = ModelMapper.toEntity(input);
-        TagEntity result = this.tagService.createTag(null, tagEntity, null);
+        String userName = null;
+        if (!asStandard) {
+            userName = principal.getName();
+        }
+        TagEntity result = this.tagService.createTag(null, tagEntity, userName);
 
         if (result != null) {
 

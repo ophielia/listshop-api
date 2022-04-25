@@ -5,7 +5,7 @@
  *
  */
 
-package com.meg.listshop.lmt.api;
+package com.meg.listshop.admin.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -59,7 +59,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @WebAppConfiguration
 @AutoConfigureJsonTesters
 @ActiveProfiles("test")
-public class TagRestControllerTest {
+public class AdminTagRestControllerTest {
 
     @ClassRule
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
