@@ -13,6 +13,7 @@ import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.categories.ItemCategoryPojo;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 import com.meg.listshop.lmt.service.categories.ListShopCategory;
@@ -258,7 +259,7 @@ public class ModelMapper {
         }
 
         List<ListLayoutCategoryPojo> subcategories = cat.getSubCategories().stream()
-                .map(r -> (ListLayoutCategoryPojo) r)
+                .map(ListLayoutCategoryPojo.class::cast)
                 .collect(Collectors.toList());
         layout.setSubCategories(layoutCategoriesToModel(subcategories));
         return layout;
@@ -331,13 +332,15 @@ public class ModelMapper {
 
 
     public static Tag toModel(TagInfoDTO tagInfoDTO) {
-        return new Tag(tagInfoDTO.getTag_id())
+        return new Tag(tagInfoDTO.getTagId())
                 .name(tagInfoDTO.getName())
                 .description(tagInfoDTO.getDescription())
                 .userId(String.valueOf(tagInfoDTO.getUserId()))
                 .tagType(tagInfoDTO.getTagType())
                 .power(tagInfoDTO.getPower())
                 .isGroup(tagInfoDTO.isGroup())
+                .assignSelect(!tagInfoDTO.isGroup())
+                .searchSelect(tagInfoDTO.isGroup())
                 .parentId(String.valueOf(tagInfoDTO.getParentId()))
                 .toDelete(tagInfoDTO.isToDelete());
     }

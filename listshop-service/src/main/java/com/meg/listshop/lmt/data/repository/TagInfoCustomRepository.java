@@ -1,6 +1,6 @@
 package com.meg.listshop.lmt.data.repository;
 
-import com.meg.listshop.lmt.data.entity.TagInfoDTO;
+import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 
 import java.util.List;
 

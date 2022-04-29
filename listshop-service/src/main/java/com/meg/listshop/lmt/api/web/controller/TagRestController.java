@@ -4,7 +4,7 @@ import com.meg.listshop.lmt.api.controller.TagRestControllerApi;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
-import com.meg.listshop.lmt.data.entity.TagInfoDTO;
+import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +52,7 @@ public class TagRestController implements TagRestControllerApi {
                 .map(TagResource::new)
                 .collect(Collectors.toList());
         var returnValue = new TagListResource(resourceList);
-        return new ResponseEntity(returnValue, HttpStatus.OK);
+        return new ResponseEntity<TagListResource>(returnValue, HttpStatus.OK);
     }
 
     public ResponseEntity<TagListResource> retrieveTagList(HttpServletRequest request,
@@ -75,7 +75,7 @@ public class TagRestController implements TagRestControllerApi {
                 .map(TagResource::new)
                 .collect(Collectors.toList());
         var returnValue = new TagListResource(resourceList);
-        return new ResponseEntity(returnValue, HttpStatus.OK);
+        return new ResponseEntity<TagListResource>(returnValue, HttpStatus.OK);
     }
 
     private ResponseEntity<TagListResource> retrieveTagExtendedList(TagFilterType tagFilterTypeFilter, List<TagType> tagTypeFilter) {
@@ -86,13 +86,13 @@ public class TagRestController implements TagRestControllerApi {
                 .map(TagResource::new)
                 .collect(Collectors.toList());
         var returnValue = new TagListResource(resourceList);
-        return new ResponseEntity(returnValue, HttpStatus.OK);
+        return new ResponseEntity<TagListResource>(returnValue, HttpStatus.OK);
     }
 
 
     public ResponseEntity<Tag> add(Principal principal, HttpServletRequest request,
                                    @RequestBody Tag input,
-                                   @RequestParam(value = "asStandard", required = false, defaultValue = "false") Boolean asStandard) {
+                                   @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) {
         var tagEntity = ModelMapper.toEntity(input);
         String userName = null;
         if (!asStandard) {
@@ -111,7 +111,7 @@ public class TagRestController implements TagRestControllerApi {
     }
 
     public ResponseEntity<Tag> addAsChild(Principal principal, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
-                                          @RequestParam(value = "asStandard", required = false, defaultValue = "false") Boolean asStandard) {
+                                          @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) {
         String username = null;
         if (!asStandard) {
             username = principal.getName();
@@ -147,15 +147,15 @@ public class TagRestController implements TagRestControllerApi {
 
     }
 
-    private List<TagType> processTagTypeInput(String tag_type) {
-        if (tag_type == null) {
+    private List<TagType> processTagTypeInput(String tagType) {
+        if (tagType == null) {
             return new ArrayList<>();
-        } else if (tag_type.contains(",")) {
-            return Arrays.asList(tag_type.split(",")).stream()
+        } else if (tagType.contains(",")) {
+            return Arrays.asList(tagType.split(",")).stream()
                     .map(t -> TagType.valueOf(t.trim()))
                     .collect(Collectors.toList());
         } else {
-            return Collections.singletonList(TagType.valueOf(tag_type));
+            return Collections.singletonList(TagType.valueOf(tagType));
         }
     }
 

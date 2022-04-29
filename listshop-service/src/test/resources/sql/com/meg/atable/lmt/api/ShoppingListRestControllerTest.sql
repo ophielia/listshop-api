@@ -259,3 +259,35 @@ values (110000, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, n
        (110013, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 318, 1, null, '109', null, null,
         null);
 
+-- test for merge conflicts
+-- insert two tags with user and standard name the same
+INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, assign_select, search_select, is_verified,
+                 power, user_id)
+VALUES (12001, NULL, 'tag conflict - delete', 'Ingredient', NULL, true, false, NULL, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, assign_select, search_select, is_verified,
+                 power, user_id)
+VALUES (13001, NULL, 'tag conflict - delete', 'Ingredient', NULL, true, false, NULL, NULL, 20);
+INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, assign_select, search_select, is_verified,
+                 power, user_id)
+VALUES (12002, NULL, 'tag conflict - add', 'Ingredient', NULL, true, false, NULL, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, assign_select, search_select, is_verified,
+                 power, user_id)
+VALUES (13002, NULL, 'tag conflict - add', 'Ingredient', NULL, true, false, NULL, NULL, 20);
+
+insert into category_tags (category_id, tag_id)
+values (5, 12001),
+       (5, 12002),
+       (5, 13001),
+       (5, 13002);
+-- list contains one item (which will be removed during merge)
+-- new test for merge list - list 10000
+insert into list (list_id, created_on, user_id, list_types, list_layout_id, last_update, meal_plan_id, is_starter_list,
+                  name)
+values (120000, '2022-03-16 05:32:38.898000 +00:00', 20, null, 5, '2022-03-16 07:32:39.660000', null, false,
+        'Shopping List - Conflicts');
+
+insert into list (list_id, created_on, user_id, list_types, list_layout_id, last_update, meal_plan_id, is_starter_list,
+                  name)
+values (130000, '2022-03-16 05:32:38.898000 +00:00', 20, null, 5, '2022-03-16 07:32:39.660000', null, false,
+        'Shopping List - Empty');
+

@@ -8,7 +8,8 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
-import com.meg.listshop.lmt.data.entity.TagInfoDTO;
+import com.meg.listshop.lmt.data.pojos.StandardUserTagConflictDTO;
+import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.TagExtendedRepository;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
@@ -230,6 +231,10 @@ public class TagServiceImpl implements TagService {
         }
 
         return tagInfoCustomRepository.retrieveTagInfoByUser(searchTagsForUserId);
+    }
+
+    public List<StandardUserTagConflictDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys) {
+        return tagRepository.getStandardUserDuplicates(userId, tagKeys);
     }
 
     @Override
@@ -491,7 +496,6 @@ public class TagServiceImpl implements TagService {
             TagEntity tag = getTagById(tagId);
             assignTagToParent(tag, parentTag);
         }
-        return;
     }
 
     @Override
@@ -608,7 +612,7 @@ public class TagServiceImpl implements TagService {
             TagExtendedEntity parentTag = idToTagMap.get(ratingParentId);
             List<TagExtendedEntity> sortedChildren = childMapping.get(ratingParentId)
                     .stream()
-                    .map(id -> idToTagMap.get(id))
+                    .map(idToTagMap::get)
                     .sorted(Comparator.comparing(TagExtendedEntity::getPower))
                     .collect(Collectors.toList());
 

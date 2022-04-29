@@ -30,11 +30,11 @@ public interface TagRestControllerApi {
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Tag> add(Principal principal, HttpServletRequest request, @RequestBody Tag input,
-                            @RequestParam(value = "asStandard", required = false, defaultValue = "false") Boolean asStandard);
+                            @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard);
 
     @RequestMapping(value = "{tagId}/child", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<Tag> addAsChild(Principal principal, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
-                                   @RequestParam(value = "asStandard", required = false, defaultValue = "false") Boolean asStandard);
+                                   @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard);
 
 
     @RequestMapping(method = RequestMethod.GET, value = "/{tagId}", produces = "application/json")
