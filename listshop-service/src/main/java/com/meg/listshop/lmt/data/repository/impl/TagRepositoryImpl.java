@@ -2,7 +2,7 @@ package com.meg.listshop.lmt.data.repository.impl;
 
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.pojos.StandardUserTagConflictDTO;
+import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.repository.TagRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -110,7 +110,7 @@ public class TagRepositoryImpl implements TagRepositoryCustom {
         return null;
     }
 
-    public List<StandardUserTagConflictDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys) {
+    public List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys) {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", userId);
         parameters.addValue("tagIdList", tagKeys);
@@ -120,13 +120,13 @@ public class TagRepositoryImpl implements TagRepositoryCustom {
     }
 
 
-    private static final class TagConflictMapper implements RowMapper<StandardUserTagConflictDTO> {
+    private static final class TagConflictMapper implements RowMapper<LongTagIdPairDTO> {
 
-        public StandardUserTagConflictDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public LongTagIdPairDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
             Long standardTagId = rs.getLong("standard_tag_id");
             Long userTagId = rs.getLong("user_tag_id");
 
-            return new StandardUserTagConflictDTO(standardTagId, userTagId);
+            return new LongTagIdPairDTO(standardTagId, userTagId);
         }
     }
 }

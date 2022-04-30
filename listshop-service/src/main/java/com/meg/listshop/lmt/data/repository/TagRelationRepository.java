@@ -46,4 +46,6 @@ public interface TagRelationRepository extends JpaRepository<TagRelationEntity, 
             "       join tag t on t.tag_id = tr.child_tag_id " +
             "       where t.tag_id in (:tagIds);", nativeQuery = true)
     List<Object[]> getTagRelationshipsForIds(@Param("tagIds") Set<Long> tagIds);
+
+
 }

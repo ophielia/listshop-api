@@ -184,15 +184,12 @@ public class TagStructureServiceImpl implements TagStructureService {
         return !exists.isEmpty();
     }
 
-    public Set<Long> getDescendantsTagIds(Set<Long> tagIdSet) {
-        Set<Long> tagIdCollection = new HashSet<>();
-        for (Long tagId : tagIdSet) {
-            tagIdCollection.addAll(getDescendantsTagIds(tagId));
-        }
-        return tagIdCollection;
+    public Set<Long> getLegacyDescendantsTagIds(Set<Long> tagIdSet) {
+        Map<Long, List<Long>> descendantMap = getDescendantTagIds(tagIdSet, null);
+        return descendantMap.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
     }
 
-    public Set<Long> getDescendantsTagIds(Long tagId) {
+    public Set<Long> getDescendantTagIds(Long tagId) {
         List<Long> tagAndDescendants = tagRelationRepository.getTagWithDescendants(tagId);
         if (tagAndDescendants == null) {
             return new HashSet<>();
@@ -200,14 +197,22 @@ public class TagStructureServiceImpl implements TagStructureService {
         return new HashSet<>(tagAndDescendants);
     }
 
+    public Map<Long, List<Long>> getDescendantTagIds(Set<Long> tagIds, Long userId) {
+        return tagRelationRepository.getDescendantMap(tagIds, userId);
+    }
+
     @Override
-    public Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags) {
+    public Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags, Long userId) {
         HashMap<Long, List<Long>> results = new HashMap<>();
         for (Long tagId : allTags) {
-            Set<Long> descendantIds = getDescendantsTagIds(tagId);
+            Set<Long> descendantIds = getDescendantTagIds(tagId);
             results.put(tagId, new ArrayList<>(descendantIds));
         }
         return results;
+    }
+
+    public Map<Long, List<Long>> getRatingsWithSiblingsByPower(List<Long> filterTagIds, boolean isExclude, Long userId) {
+        return tagRelationRepository.getRatingsWithSiblingsByPower(filterTagIds, isExclude, userId);
     }
 
 }

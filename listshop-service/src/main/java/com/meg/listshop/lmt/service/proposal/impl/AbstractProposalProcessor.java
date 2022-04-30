@@ -172,7 +172,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
 
         // get search groups
         Set<Long> allTags = target.getAllTagIds();
-        Map<Long, List<Long>> searchGroups = tagStructureService.getSearchGroupsForTagIds(allTags);
+        Map<Long, List<Long>> searchGroups = tagStructureService.getSearchGroupsForTagIds(allTags, userId);
         // retrieve results for each slot
         List<NewRawSlotResult> resultList = new ArrayList<>();
         for (TargetSlotEntity slot : slots) {

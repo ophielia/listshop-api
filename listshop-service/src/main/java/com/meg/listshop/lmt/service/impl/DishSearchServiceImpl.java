@@ -62,11 +62,11 @@ public class DishSearchServiceImpl implements DishSearchService {
         List<String> filterClauses = new ArrayList<>();
         int excludeClauseCount = 0;
         if (!criteria.getIncludedTagIds().isEmpty()) {
-            List<String> includeClauses = getFilterClauses(criteria.getIncludedTagIds(), false);
+            List<String> includeClauses = getFilterClauses(criteria.getIncludedTagIds(), false, criteria.getUserId());
             filterClauses.addAll(includeClauses);
         }
         if (!criteria.getExcludedTags().isEmpty()) {
-            List<String> excludeClauses = getFilterClauses(criteria.getExcludedTags(), true);
+            List<String> excludeClauses = getFilterClauses(criteria.getExcludedTags(), true, criteria.getUserId());
             filterClauses.addAll(excludeClauses);
             excludeClauseCount = excludeClauses.size();
         }
@@ -105,14 +105,30 @@ public class DishSearchServiceImpl implements DishSearchService {
         return this.jdbcTemplate.query(sql, parameters, new DishMapper());
     }
 
-    private List<String> getFilterClauses(List<Long> filterTagIds, boolean isExclude) {
+    private List<String> getFilterClauses(List<Long> filterTagIds, boolean isExclude, Long userId) {
         List<String> collectedClauses = new ArrayList<>();
         String whenWeight = isExclude ? "-900" : "1";
-        for (Long filterTagId : filterTagIds) {
-            // get tags with children
-            Set<Long> tagIds = tagStructureService.getDescendantsTagIds(filterTagId);
-            var tagList = String.join(", ", tagIds.stream().map(String::valueOf).collect(Collectors.toList()));
-            // add to filterClauses
+
+        // pull ratings tags
+        Map<Long, List<Long>> ratingTags = tagStructureService.getRatingsWithSiblingsByPower(filterTagIds, isExclude, userId);
+        collectedClauses.addAll(tagsToFilterClause(ratingTags, whenWeight));
+
+
+        Set<Long> tagIds = filterTagIds.stream()
+                .filter(t -> !ratingTags.containsKey(t))
+                .collect(Collectors.toSet());
+        if (!tagIds.isEmpty()) {
+            Map<Long, List<Long>> otherTags = tagStructureService.getDescendantTagIds(tagIds, userId);
+            collectedClauses.addAll(tagsToFilterClause(otherTags, whenWeight));
+        }
+
+        return collectedClauses;
+    }
+
+    private List<String> tagsToFilterClause(Map<Long, List<Long>> ratingTags, String whenWeight) {
+        List<String> collectedClauses = new ArrayList<>();
+        for (Map.Entry<Long, List<Long>> entry : ratingTags.entrySet()) {
+            var tagList = String.join(", ", entry.getValue().stream().map(String::valueOf).collect(Collectors.toList()));
             var clause = String.format("when tag_id in (%s) then %s", tagList, whenWeight);
             collectedClauses.add(clause);
         }
@@ -188,6 +204,7 @@ public class DishSearchServiceImpl implements DishSearchService {
             i++;
         }
 
+        List<String> filterClauses = new ArrayList<>();
         StringBuilder whereClause = new StringBuilder(" ");
         if (sqlFilteredDishes != null && !sqlFilteredDishes.isEmpty()) {
             whereClause.append(" where d.dish_id not in (");

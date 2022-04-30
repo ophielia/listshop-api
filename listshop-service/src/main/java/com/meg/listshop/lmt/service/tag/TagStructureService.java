@@ -25,15 +25,18 @@ public interface TagStructureService {
 
     List<TagEntity> getDescendantTags(TagEntity tag);
 
-    Set<Long> getDescendantsTagIds(Set<Long> tagIdList);
+    Set<Long> getLegacyDescendantsTagIds(Set<Long> tagIdList);
 
-    Set<Long> getDescendantsTagIds(Long tagId);
+    Set<Long> getDescendantTagIds(Long tagId);
+
+    Map<Long, List<Long>> getDescendantTagIds(Set<Long> tagIs, Long userId);
 
     TagEntity getParentTag(TagEntity tag);
 
     List<TagEntity> getSiblingTags(TagEntity afterChange);
 
-    Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags);
+    Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags, Long userId);
 
 
+    Map<Long, List<Long>> getRatingsWithSiblingsByPower(List<Long> filterTagIds, boolean isExclude, Long userId);
 }

@@ -42,7 +42,7 @@ public class TagProcessorImpl extends AbstractAutoTagProcessor {
         for (TagInstructionEntity instruction : entities) {
             Set<Long> tagIdList = instruction.getMasterSearchTags();
             // get all group tags for these search tags
-            Set<Long> searchIds = tagStructureService.getDescendantsTagIds(tagIdList);
+            Set<Long> searchIds = tagStructureService.getLegacyDescendantsTagIds(tagIdList);
             instruction.setSearchTags(searchIds);
         }
         instructions = new ArrayList<>();

@@ -8,7 +8,7 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
-import com.meg.listshop.lmt.data.pojos.StandardUserTagConflictDTO;
+import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.TagExtendedRepository;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
@@ -233,7 +233,7 @@ public class TagServiceImpl implements TagService {
         return tagInfoCustomRepository.retrieveTagInfoByUser(searchTagsForUserId);
     }
 
-    public List<StandardUserTagConflictDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys) {
+    public List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys) {
         return tagRepository.getStandardUserDuplicates(userId, tagKeys);
     }
 

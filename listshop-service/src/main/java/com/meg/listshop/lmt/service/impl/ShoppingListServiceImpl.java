@@ -9,7 +9,7 @@ import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.*;
-import com.meg.listshop.lmt.data.pojos.StandardUserTagConflictDTO;
+import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.repository.ItemChangeRepository;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
@@ -1010,15 +1010,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     private void checkTagConflict(Long userId, Set<Long> tagKeys, Map<String, ItemEntity> mergeMap) {
-        List<StandardUserTagConflictDTO> conflicts = tagService.getStandardUserDuplicates(userId, tagKeys);
-        for (StandardUserTagConflictDTO conflict : conflicts) {
-            ItemEntity replaceItem = mergeMap.get(String.valueOf(conflict.getStandardTagId()));
-            replaceItem.setTagId(conflict.getUserTagId());
+        List<LongTagIdPairDTO> conflicts = tagService.getStandardUserDuplicates(userId, tagKeys);
+        for (LongTagIdPairDTO conflict : conflicts) {
+            ItemEntity replaceItem = mergeMap.get(String.valueOf(conflict.getLeftId()));
+            replaceItem.setTagId(conflict.getRightId());
             if (replaceItem.getTag() != null) {
-                replaceItem.getTag().setId(conflict.getUserTagId());
+                replaceItem.getTag().setId(conflict.getRightId());
             }
-            mergeMap.put(String.valueOf(conflict.getUserTagId()), replaceItem);
-            mergeMap.remove(String.valueOf(conflict.getStandardTagId()));
+            mergeMap.put(String.valueOf(conflict.getRightId()), replaceItem);
+            mergeMap.remove(String.valueOf(conflict.getLeftId()));
         }
     }
 

@@ -6,7 +6,7 @@ import com.meg.listshop.lmt.api.model.TagFilterType;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
-import com.meg.listshop.lmt.data.pojos.StandardUserTagConflictDTO;
+import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -71,5 +71,5 @@ public interface TagService {
 
     List<TagInfoDTO> getTagInfoList(String name);
 
-    List<StandardUserTagConflictDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys);
+    List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys);
 }

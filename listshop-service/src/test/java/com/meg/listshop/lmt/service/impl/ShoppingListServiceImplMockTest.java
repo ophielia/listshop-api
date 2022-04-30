@@ -6,6 +6,7 @@ import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.repository.ItemChangeRepository;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
@@ -1555,6 +1556,79 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Assert.assertTrue(testItem2.isChanged());
         Assert.assertTrue(testItem2.isAdded());
 
+    }
+
+    @Test
+    public void testMerge_StandardUserTagConflicts() {
+        Long mergeListId = 9999L;
+        final Long serverListId = 9999L;
+        final Long userId = 2L;
+        final String userEmail = "me@mine.ours";
+
+        LocalDate date = LocalDate.of(2020, 01, 01);
+        ShoppingListEntity emptyServerShoppingList = expectGetShoppingListById(serverListId, userId, Collections.emptyList(), userEmail);
+
+        // standard user mapping
+        List<LongTagIdPairDTO> conflicts = new ArrayList<>();
+        conflicts.add(new LongTagIdPairDTO(500L, 1500L));
+        conflicts.add(new LongTagIdPairDTO(501L, 1501L));
+        // add several new items to the list
+        MergeRequest clientMergeRequest = new MergeRequest();
+        clientMergeRequest.setCheckTagConflict(true);
+        clientMergeRequest.setListId(mergeListId);
+        Map<Long, TagEntity> tagDictionary = new HashMap<>();
+        Set<Long> mergeTagKeys = new HashSet<>();
+        for (long i = 500; i < 504; i++) {
+            clientMergeRequest.getMergeItems().add(createMergeTestItem(String.valueOf(i),
+                    4,
+                    0, 0, 0));
+            TagEntity tag = new TagEntity(i);
+            mergeTagKeys.add(i);
+            tag.setName(String.valueOf(i));
+            tagDictionary.put(i, tag);
+            TagEntity userDefinedTag = new TagEntity(i + 1000);
+            tagDictionary.put(i + 1000, userDefinedTag);
+        }
+
+        ArgumentCaptor<ItemCollector> collectorCapture = ArgumentCaptor.forClass(ItemCollector.class);
+
+        Mockito.when(tagService.getStandardUserDuplicates(userId, mergeTagKeys))
+                .thenReturn(conflicts);
+        Mockito.when(tagService.getReplacedTagsFromIds(any(Set.class)))
+                .thenReturn(new ArrayList<Long>());
+        Mockito.when(tagService.getDictionaryForIds(any(Set.class)))
+                .thenReturn(tagDictionary);
+
+        Mockito.when(shoppingListRepository.save(any(ShoppingListEntity.class)))
+                .thenReturn(emptyServerShoppingList);
+
+        shoppingListService.mergeFromClient(userEmail, clientMergeRequest);
+
+
+        // for testing after call
+        Mockito.verify(itemChangeRepository).saveItemChanges(any(ShoppingListEntity.class),
+                collectorCapture.capture(),
+                any(Long.class),
+                any(CollectorContext.class));
+
+        Assert.assertNotNull(collectorCapture);
+        Assert.assertNotNull(collectorCapture.getValue());
+        MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
+        Assert.assertEquals(Long.valueOf(9999L), Long.valueOf(capturedToVerify.getListId()));
+        Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
+
+        Assert.assertEquals(4, itemMap.keySet().size());
+        // assert 1500, 1501 are there
+        Assert.assertNotNull(itemMap.get(1500L));
+        Assert.assertNotNull(itemMap.get(1501L));
+
+        // assert 500, 501 are not there
+        Assert.assertNull(itemMap.get(500L));
+        Assert.assertNull(itemMap.get(501L));
+
+        // assert 503, 503 are there
+        Assert.assertNotNull(itemMap.get(502L));
+        Assert.assertNotNull(itemMap.get(503L));
     }
 
     @Test

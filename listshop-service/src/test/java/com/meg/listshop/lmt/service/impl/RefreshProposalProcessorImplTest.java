@@ -55,10 +55,9 @@ public class RefreshProposalProcessorImplTest {
     private DishSearchService dishSearchService;
 
 
-
     @Test
     public void testRefreshProposal_Picked() throws Exception {
-        TargetEntity target = ProcessorTestUtils.getDummyTarget(4,2,3);
+        TargetEntity target = ProcessorTestUtils.getDummyTarget(4, 2, 3);
         target.setUserId(TestConstants.USER_3_ID);
         target.setTargetType(TargetType.Standard);
         ProposalRequest testRequest = new ProposalRequest();
@@ -84,10 +83,10 @@ public class RefreshProposalProcessorImplTest {
         testRequest.setProposal(proposalEntity);
 
         // set context
-        ProposalContextEntity context = ProcessorTestUtils.getDummyContext(0,target, proposalEntity);
+        ProposalContextEntity context = ProcessorTestUtils.getDummyContext(0, target, proposalEntity);
         testRequest.setContext(context);
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class)))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -98,7 +97,7 @@ public class RefreshProposalProcessorImplTest {
                     dishTagMatches, target.getTagIdsAsSet(), target.getTagIdsAsSet().size(),
                     20, 3, true, false, sqlFilter);
             Mockito.when(dishSearchService.retrieveDishResultsForTags(eq(TestConstants.USER_3_ID), eq(slot), any(Integer.class),
-                    any(List.class), any(Map.class), eq(sqlFilter)))
+                            any(List.class), any(Map.class), eq(sqlFilter)))
                     .thenReturn(rawSearchResults);
         }
 
@@ -111,7 +110,7 @@ public class RefreshProposalProcessorImplTest {
         for (ProposalSlotEntity slot : testResult.getResultSlots()) {
             // at least one tag match
             boolean tagMatch = false;
-            int dishSlotCount = pickedSlots.contains(slot.getSlotNumber())?4:5;
+            int dishSlotCount = pickedSlots.contains(slot.getSlotNumber()) ? 4 : 5;
             Assert.assertEquals(dishSlotCount, slot.getDishSlots().size());
             for (DishSlotEntity dishSlot : slot.getDishSlots()) {
                 tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
@@ -134,7 +133,7 @@ public class RefreshProposalProcessorImplTest {
 
     @Test
     public void testRefreshProposal_MealPlanPicked() throws Exception {
-        TargetEntity target = ProcessorTestUtils.getDummyTarget(6,2,3);
+        TargetEntity target = ProcessorTestUtils.getDummyTarget(6, 2, 3);
         target.setUserId(TestConstants.USER_3_ID);
         target.setTargetType(TargetType.Standard);
         ProposalRequest testRequest = new ProposalRequest();
@@ -168,11 +167,11 @@ public class RefreshProposalProcessorImplTest {
         mealPlan.getSlots().forEach(s -> sqlFilter.add(s.getDish().getId()));
 
         // set context
-        ProposalContextEntity context = ProcessorTestUtils.getDummyContext(0,target, proposalEntity);
+        ProposalContextEntity context = ProcessorTestUtils.getDummyContext(0, target, proposalEntity);
         context.setCurrentApproachIndex(3);
         testRequest.setContext(context);
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class)))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -183,7 +182,7 @@ public class RefreshProposalProcessorImplTest {
                     dishTagMatches, target.getTagIdsAsSet(), target.getTagIdsAsSet().size(),
                     35, 3, true, false, sqlFilter);
             Mockito.when(dishSearchService.retrieveDishResultsForTags(eq(TestConstants.USER_3_ID), eq(slot), any(Integer.class),
-                    any(List.class), any(Map.class), eq(sqlFilter)))
+                            any(List.class), any(Map.class), eq(sqlFilter)))
                     .thenReturn(rawSearchResults);
         }
 
@@ -196,7 +195,7 @@ public class RefreshProposalProcessorImplTest {
         for (ProposalSlotEntity slot : testResult.getResultSlots()) {
             // at least one tag match
             boolean tagMatch = false;
-            int dishSlotCount = pickedSlots.contains(slot.getSlotNumber())?4:5;
+            int dishSlotCount = pickedSlots.contains(slot.getSlotNumber()) ? 4 : 5;
             Assert.assertEquals(dishSlotCount, slot.getDishSlots().size());
             for (DishSlotEntity dishSlot : slot.getDishSlots()) {
                 tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
@@ -218,7 +217,7 @@ public class RefreshProposalProcessorImplTest {
 
     @Test
     public void processProposal_NoSlotsTargetIds() throws Exception {
-        TargetEntity target = ProcessorTestUtils.getDummyTarget(2,2,3);
+        TargetEntity target = ProcessorTestUtils.getDummyTarget(2, 2, 3);
         TargetSlotEntity targetSlot = target.getSlots().get(0);
         targetSlot.setTargetTagIds(null);
         target.setTargetType(TargetType.Standard);
@@ -231,11 +230,11 @@ public class RefreshProposalProcessorImplTest {
         testRequest.setProposal(proposalEntity);
 
         // set context
-        ProposalContextEntity context = ProcessorTestUtils.getDummyContext(0,target, proposalEntity);
+        ProposalContextEntity context = ProcessorTestUtils.getDummyContext(0, target, proposalEntity);
         testRequest.setContext(context);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class)))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -244,9 +243,9 @@ public class RefreshProposalProcessorImplTest {
             // get List<DishTagSearchResult> for slot
             List<DishTagSearchResult> rawSearchResults = ProcessorTestUtils.makeDummySearchResults(slot,
                     dishTagMatches, target.getTagIdsAsSet(), target.getTagIdsAsSet().size(),
-                    20, 3, true, false,new ArrayList<>());
+                    20, 3, true, false, new ArrayList<>());
             Mockito.when(dishSearchService.retrieveDishResultsForTags(eq(TestConstants.USER_3_ID), eq(slot), any(Integer.class),
-                    any(List.class), any(Map.class), any(List.class)))
+                            any(List.class), any(Map.class), any(List.class)))
                     .thenReturn(rawSearchResults);
         }
 
@@ -275,14 +274,14 @@ public class RefreshProposalProcessorImplTest {
 
     @Test
     public void processProposal_OneSlotOnly() throws Exception {
-        TargetEntity target = ProcessorTestUtils.getDummyTarget(1,2,3);
+        TargetEntity target = ProcessorTestUtils.getDummyTarget(1, 2, 3);
         target.setUserId(TestConstants.USER_3_ID);
         target.setTargetType(TargetType.Standard);
         ProposalRequest testRequest = new ProposalRequest();
         testRequest.setTarget(target);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class)))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // set proposal
@@ -290,7 +289,7 @@ public class RefreshProposalProcessorImplTest {
         testRequest.setProposal(proposalEntity);
 
         // set context
-        ProposalContextEntity context = ProcessorTestUtils.getDummyContext(0,target, proposalEntity);
+        ProposalContextEntity context = ProcessorTestUtils.getDummyContext(0, target, proposalEntity);
         testRequest.setContext(context);
 
         // get raw results
@@ -299,9 +298,9 @@ public class RefreshProposalProcessorImplTest {
             // get List<DishTagSearchResult> for slot
             List<DishTagSearchResult> rawSearchResults = ProcessorTestUtils.makeDummySearchResults(slot,
                     dishTagMatches, target.getTagIdsAsSet(), target.getTagIdsAsSet().size(),
-                    20, 3, true, false,new ArrayList<>());
+                    20, 3, true, false, new ArrayList<>());
             Mockito.when(dishSearchService.retrieveDishResultsForTags(eq(TestConstants.USER_3_ID), eq(slot), any(Integer.class),
-                    any(List.class), any(Map.class), any(List.class)))
+                            any(List.class), any(Map.class), any(List.class)))
                     .thenReturn(rawSearchResults);
         }
 
