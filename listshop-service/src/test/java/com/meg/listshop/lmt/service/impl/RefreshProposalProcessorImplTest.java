@@ -86,7 +86,7 @@ public class RefreshProposalProcessorImplTest {
         ProposalContextEntity context = ProcessorTestUtils.getDummyContext(0, target, proposalEntity);
         testRequest.setContext(context);
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -171,7 +171,7 @@ public class RefreshProposalProcessorImplTest {
         context.setCurrentApproachIndex(3);
         testRequest.setContext(context);
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -234,7 +234,7 @@ public class RefreshProposalProcessorImplTest {
         testRequest.setContext(context);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -281,7 +281,7 @@ public class RefreshProposalProcessorImplTest {
         testRequest.setTarget(target);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // set proposal

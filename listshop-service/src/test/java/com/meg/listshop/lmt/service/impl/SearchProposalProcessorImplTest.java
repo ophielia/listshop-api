@@ -8,7 +8,6 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.api.model.TargetType;
-import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishTagSearchResult;
@@ -18,7 +17,6 @@ import com.meg.listshop.lmt.service.proposal.impl.SearchProposalProcessorImpl;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,8 +41,6 @@ import static org.mockito.ArgumentMatchers.eq;
 @ActiveProfiles("test")
 public class SearchProposalProcessorImplTest {
 
-    @ClassRule
-    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
     private SearchProposalProcessorImpl processor;
@@ -67,7 +63,7 @@ public class SearchProposalProcessorImplTest {
         testRequest.setTarget(target);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -135,7 +131,7 @@ public class SearchProposalProcessorImplTest {
         testRequest.setProposal(proposalEntity);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -213,7 +209,7 @@ public class SearchProposalProcessorImplTest {
         testRequest.setMealPlan(mealPlan);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -269,7 +265,7 @@ public class SearchProposalProcessorImplTest {
         testRequest.setMealPlan(mealPlan);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -324,7 +320,7 @@ public class SearchProposalProcessorImplTest {
         testRequest.setTarget(target);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -375,7 +371,7 @@ public class SearchProposalProcessorImplTest {
         testRequest.setTarget(target);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -422,7 +418,7 @@ public class SearchProposalProcessorImplTest {
         testRequest.setTarget(target);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), TestConstants.USER_3_ID))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
