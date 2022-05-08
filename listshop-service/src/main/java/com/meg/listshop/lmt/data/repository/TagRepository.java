@@ -6,6 +6,7 @@ import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -88,4 +89,12 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
 
     @Query(value = "select t from TagEntity t where t.tag_id in (:tagIds)")
     List<TagEntity> getTagsForIdList(@Param("tagIds") Set<Long> tagIds);
+
+    @Modifying
+    @Query("update TagEntity t set t.userId = :userId where t.userId is null and t.tag_id in (:tagIds)")
+    void assignTagsToUser(@Param("userId") Long userId, @Param("tagIds") List<Long> tagIds);
+
+    @Modifying
+    @Query("update TagEntity t set t.isVerified = true where t.tag_id in (:tagIds)")
+    void setTagsAsVerified(@Param("tagIds") List<Long> tagIds);
 }

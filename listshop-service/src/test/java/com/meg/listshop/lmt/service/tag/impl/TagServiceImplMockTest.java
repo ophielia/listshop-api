@@ -10,10 +10,7 @@ import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
 import com.meg.listshop.lmt.data.repository.TagExtendedRepository;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.DishSearchCriteria;
-import com.meg.listshop.lmt.service.DishSearchService;
-import com.meg.listshop.lmt.service.DishService;
-import com.meg.listshop.lmt.service.ListTagStatisticService;
+import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.impl.ServiceTestUtils;
 import com.meg.listshop.lmt.service.tag.TagReplaceService;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -61,12 +58,15 @@ public class TagServiceImplMockTest {
     @MockBean
     TagInfoCustomRepository tagInfoCustomRepository;
 
+    @MockBean
+    ListLayoutService listLayoutService;
 
     @Before
     public void setUp() {
         this.tagService = new TagServiceImpl(
                 tagStatisticService, dishService, tagStructureService, tagReplaceService,
-                tagExtendedRepository, tagRepository, userService, tagInfoCustomRepository, dishSearchService
+                tagExtendedRepository, tagRepository, userService, tagInfoCustomRepository, dishSearchService,
+                listLayoutService
         );
     }
 

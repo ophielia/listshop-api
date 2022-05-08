@@ -13,10 +13,7 @@ import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.TagExtendedRepository;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.DishSearchCriteria;
-import com.meg.listshop.lmt.service.DishSearchService;
-import com.meg.listshop.lmt.service.DishService;
-import com.meg.listshop.lmt.service.ListTagStatisticService;
+import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +47,8 @@ public class TagServiceImpl implements TagService {
     private final DishSearchService dishSearchService;
     private final TagInfoCustomRepository tagInfoCustomRepository;
 
+    private final ListLayoutService listLayoutService;
+
 
     @Autowired
     public TagServiceImpl(ListTagStatisticService tagStatisticService,
@@ -60,7 +59,8 @@ public class TagServiceImpl implements TagService {
                           TagRepository tagRepository,
                           UserService userService,
                           TagInfoCustomRepository tagInfoCustomRepository,
-                          DishSearchService dishSearchService) {
+                          DishSearchService dishSearchService,
+                          ListLayoutService listLayoutService) {
         this.dishService = dishService;
         this.tagStatisticService = tagStatisticService;
         this.tagExtendedRepository = tagExtendedRepository;
@@ -70,6 +70,7 @@ public class TagServiceImpl implements TagService {
         this.userService = userService;
         this.dishSearchService = dishSearchService;
         this.tagInfoCustomRepository = tagInfoCustomRepository;
+        this.listLayoutService = listLayoutService;
 
     }
 
@@ -117,6 +118,7 @@ public class TagServiceImpl implements TagService {
     }
 
     public RatingUpdateInfo getRatingUpdateInfoForDishIds(String userName, List<Long> dishIdList) {
+        //MM refactor
         // get ratings structure
         List<TagExtendedEntity> ratingTags = getTagExtendedList(
                 TagFilterType.All, Collections.singletonList(TagType.Rating));
@@ -264,21 +266,6 @@ public class TagServiceImpl implements TagService {
         return newtag;
     }
 
-    private TagEntity getParentForNewTag(TagEntity parent, TagEntity newtag) {
-        if (parent != null) {
-            return parent;
-        }
-        var tagType = newtag.getTagType();
-        if (tagType == null) {
-            tagType = TagType.TagType;
-        }
-        List<TagEntity> defaults = tagRepository.findTagsByTagTypeAndTagTypeDefault(tagType, true);
-        if (defaults != null && !defaults.isEmpty()) {
-            return defaults.get(0);
-        }
-        return null;
-    }
-
 
     @Override
     public void saveTagForDelete(Long tagId, Long replacementTagId) {
@@ -415,39 +402,6 @@ public class TagServiceImpl implements TagService {
         addTagToDish(dish, tag);
     }
 
-    private void addTagToDish(DishEntity dish, TagEntity tag) {
-        if (dish == null || tag == null) {
-            return;
-        }
-        List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
-
-        // check if tag exists already
-        if (dishTags.contains(tag)) {
-            return;
-        }
-        dishTags.add(tag);
-        // if rating tag, remove related tags
-        if (tag.getTagType().equals(TagType.Rating)) {
-            dishTags = removeRelatedTags(dishTags, tag);
-        }
-        // add tags to dish
-        dish.setTags(dishTags);
-        dishService.save(dish, false);
-        // update statistic
-        tagStatisticService.countTagAddedToDish(dish.getUserId(), tag.getId());
-    }
-
-
-    private List<TagEntity> getTagsForDish(DishEntity dish, List<TagType> tagtypes) {
-        List<TagEntity> results = tagRepository.findTagsByDishes(dish);
-
-        if (tagtypes == null) {
-            return results;
-        }
-        return results.stream()
-                .filter(t -> tagtypes.contains(t.getTagType()))
-                .collect(Collectors.toList());
-    }
 
     @Override
     public void assignTagToParent(Long tagId, Long parentId) {
@@ -459,20 +413,6 @@ public class TagServiceImpl implements TagService {
 
 
         assignTagToParent(tag, parentTag);
-    }
-
-
-    private void assignTagToParent(TagEntity childTag, TagEntity newParentTag) {
-        // get original parent (parent before reassign)
-        TagEntity originalParent = tagStructureService.getParentTag(childTag);
-        // assign Child tag to parent tag
-        TagEntity parentTag = tagStructureService.assignTagToParent(childTag, newParentTag);
-
-        childTag.setUpdatedOn(new Date());
-        // fire tag changed event
-        fireTagParentChangedEvent(originalParent, parentTag, childTag);
-
-
     }
 
     @Override
@@ -569,6 +509,79 @@ public class TagServiceImpl implements TagService {
         }
     }
 
+
+    @Override
+    public void addTagChangeListener(TagChangeListener tagChangeListener) {
+        listeners.add(tagChangeListener);
+    }
+
+    public void assignTagsToUser(Long userId, List<Long> tagIds) {
+        tagRepository.assignTagsToUser(userId, tagIds);
+    }
+
+    public void setTagsAsVerified(List<Long> tagIds) {
+        tagRepository.setTagsAsVerified(tagIds);
+    }
+
+    public void createStandardTagsFromUserTags(List<Long> tagIds) {
+        Set<Long> copySet = tagIds.stream().collect(Collectors.toSet());
+        // get tags to copy
+        List<TagEntity> tagsToCopy = tagRepository.getTagsForIdList(copySet);
+        // get standard parents for tags
+        Map<Long, TagEntity> parentsForTags = new HashMap<>(); //MM fill in
+        // get default tag parent
+        TagEntity defaultTagParent = new TagEntity(); // MM fill this in...
+        // get default tag category
+        // NOTE: currently using method to do this.  Will need to be addressed
+        // during ListLayoutRework
+
+        // copy tags
+        for (TagEntity tagToCopy : tagsToCopy) {
+            Long copyId = tagToCopy.getId();
+            //      copy interesting tag info, and create tag
+            TagEntity newTag = copyTagIntoNewTag(tagToCopy);
+            //      create tag
+            newTag = tagRepository.save(newTag);
+            //      create membership to tag group
+            TagEntity parentTag = parentsForTags.containsKey(copyId) ?
+                    parentsForTags.get(copyId) :
+                    defaultTagParent;
+            tagStructureService.assignTagToParent(newTag, parentTag);
+            //      create membership in category
+            // assigning to default for now - will eventually need to be assigned
+            // to standard category if available
+            listLayoutService.assignTagToDefaultCategories(newTag);
+
+        }
+
+
+    }
+
+    private TagEntity copyTagIntoNewTag(TagEntity tagToCopy) {
+        //MM implement this
+        return null;
+    }
+
+    private void fireTagParentChangedEvent(TagEntity oldParent, TagEntity newParent, TagEntity changedTag) {
+        for (TagChangeListener listener : listeners) {
+            listener.onParentChange(oldParent, newParent, changedTag);
+        }
+    }
+
+
+    private void fireTagUpdatedEvent(TagEntity beforeChange, TagEntity changed) {
+        for (TagChangeListener listener : listeners) {
+            listener.onTagUpdate(beforeChange, changed);
+        }
+    }
+
+    private void fireTagAddedEvent(TagEntity parentTag, TagEntity changed) {
+        for (TagChangeListener listener : listeners) {
+            listener.onTagAdd(changed, parentTag);
+        }
+    }
+
+
     private List<TagEntity> removeRelatedTags(List<TagEntity> dishTags, TagEntity tag) {
         // get sibling tags for dish
         List<TagEntity> siblings = tagStructureService.getSiblingTags(tag);
@@ -628,32 +641,6 @@ public class TagServiceImpl implements TagService {
         return new LookupInformation(ratingInfoById, headers);
     }
 
-
-    @Override
-    public void addTagChangeListener(TagChangeListener tagChangeListener) {
-        listeners.add(tagChangeListener);
-    }
-
-
-    private void fireTagParentChangedEvent(TagEntity oldParent, TagEntity newParent, TagEntity changedTag) {
-        for (TagChangeListener listener : listeners) {
-            listener.onParentChange(oldParent, newParent, changedTag);
-        }
-    }
-
-
-    private void fireTagUpdatedEvent(TagEntity beforeChange, TagEntity changed) {
-        for (TagChangeListener listener : listeners) {
-            listener.onTagUpdate(beforeChange, changed);
-        }
-    }
-
-    private void fireTagAddedEvent(TagEntity parentTag, TagEntity changed) {
-        for (TagChangeListener listener : listeners) {
-            listener.onTagAdd(changed, parentTag);
-        }
-    }
-
     private static class LookupInformation {
         private final Map<Long, RatingInfo> tagToRatingInfo;
         private final Set<RatingInfo> parentRatings;
@@ -689,4 +676,65 @@ public class TagServiceImpl implements TagService {
         return middle.getId();
     }
 
+    private void addTagToDish(DishEntity dish, TagEntity tag) {
+        if (dish == null || tag == null) {
+            return;
+        }
+        List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
+
+        // check if tag exists already
+        if (dishTags.contains(tag)) {
+            return;
+        }
+        dishTags.add(tag);
+        // if rating tag, remove related tags
+        if (tag.getTagType().equals(TagType.Rating)) {
+            dishTags = removeRelatedTags(dishTags, tag);
+        }
+        // add tags to dish
+        dish.setTags(dishTags);
+        dishService.save(dish, false);
+        // update statistic
+        tagStatisticService.countTagAddedToDish(dish.getUserId(), tag.getId());
+    }
+
+
+    private List<TagEntity> getTagsForDish(DishEntity dish, List<TagType> tagtypes) {
+        List<TagEntity> results = tagRepository.findTagsByDishes(dish);
+
+        if (tagtypes == null) {
+            return results;
+        }
+        return results.stream()
+                .filter(t -> tagtypes.contains(t.getTagType()))
+                .collect(Collectors.toList());
+    }
+
+    private void assignTagToParent(TagEntity childTag, TagEntity newParentTag) {
+        // get original parent (parent before reassign)
+        TagEntity originalParent = tagStructureService.getParentTag(childTag);
+        // assign Child tag to parent tag
+        TagEntity parentTag = tagStructureService.assignTagToParent(childTag, newParentTag);
+
+        childTag.setUpdatedOn(new Date());
+        // fire tag changed event
+        fireTagParentChangedEvent(originalParent, parentTag, childTag);
+
+
+    }
+
+    private TagEntity getParentForNewTag(TagEntity parent, TagEntity newtag) {
+        if (parent != null) {
+            return parent;
+        }
+        var tagType = newtag.getTagType();
+        if (tagType == null) {
+            tagType = TagType.TagType;
+        }
+        List<TagEntity> defaults = tagRepository.findTagsByTagTypeAndTagTypeDefault(tagType, true);
+        if (defaults != null && !defaults.isEmpty()) {
+            return defaults.get(0);
+        }
+        return null;
+    }
 }

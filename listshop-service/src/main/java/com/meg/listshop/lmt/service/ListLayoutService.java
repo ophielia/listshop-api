@@ -1,15 +1,12 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.lmt.api.model.ListLayoutType;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 import com.meg.listshop.lmt.service.categories.ListShopCategory;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,10 +55,6 @@ public interface ListLayoutService {
 
     void moveCategory(Long categoryId, boolean moveUp) throws ListLayoutException;
 
-
-    List<Pair<TagEntity, ListLayoutCategoryEntity>> getTagCategoryChanges(Long listLayoutId, Date changedAfter);
-
-    List<Pair<ItemEntity, ListLayoutCategoryEntity>> getItemChangesWithCategories(Long listLayoutId, List<ItemEntity> changedItems);
 
     void assignTagToDefaultCategories(TagEntity newtag);
 

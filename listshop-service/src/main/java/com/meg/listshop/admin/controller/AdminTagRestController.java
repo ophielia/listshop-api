@@ -83,6 +83,32 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
 
+    public ResponseEntity<Object> performOperation(@RequestBody TagOperationPut input) {
+        //@RequestMapping(method = RequestMethod.PUT, consumes = "application/json")
+        if (input == null || input.getTagOperationType() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<Long> tagIds = input.getTagIds();
+        if (tagIds == null || tagIds.isEmpty()) {
+            return ResponseEntity.ok().build();
+        }
+        TagOperationType operationType = input.getTagOperationType();
+        switch (operationType) {
+            case AssignToUser:
+                String userIdString = input.getUserId();
+                if (userIdString == null) {
+                    return ResponseEntity.badRequest().build();
+                }
+                Long userId = Long.valueOf(userIdString);
+                tagService.assignTagsToUser(userId, tagIds);
+
+                break;
+            case CopyToStandard:
+                tagService.createStandardTagsFromUserTags(tagIds);
+        }
+        return ResponseEntity.ok().build();
+    }
+
     public ResponseEntity<TagListResource> getStandardTagList(@RequestParam(value = "filter", required = false) String filter) {
         TagFilterType tagFilterTypeFilter = filter != null ? TagFilterType.valueOf(filter) : TagFilterType.All;
         TagSearchCriteria criteria = new TagSearchCriteria()
@@ -111,7 +137,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
                 .map(TagResource::new)
                 .collect(Collectors.toList());
         var returnValue = new TagListResource(resourceList);
-        return new ResponseEntity<TagListResource>(returnValue, HttpStatus.OK);
+        return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> replaceTagsInDishes(HttpServletRequest request, Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId) {

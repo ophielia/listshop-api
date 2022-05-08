@@ -72,4 +72,10 @@ public interface TagService {
     List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys);
 
     List<TagEntity> getTagList(TagSearchCriteria criteria);
+
+    void assignTagsToUser(Long userId, List<Long> tagIds);
+
+    void setTagsAsVerified(List<Long> tagIds);
+
+    void createStandardTagsFromUserTags(List<Long> tagIds);
 }
