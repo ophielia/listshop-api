@@ -234,7 +234,7 @@ public class TagServiceImplMockTest {
         DishEntity dish3 = ServiceTestUtils.buildDish(300L, "great dish3", Collections.singletonList(ServiceTestUtils.buildTagEntity(10000L, "Taste 1", TagType.Ingredient, 1.0)));
         testDishes = Arrays.asList(dish1, dish2, dish3);
 
-        Mockito.when(tagExtendedRepository.findTagsByCriteria(Collections.singletonList(TagType.Rating), null))
+        Mockito.when(tagExtendedRepository.findTagsByCriteria(Collections.singletonList(TagType.Rating)))
                 .thenReturn(ratingTagList);
         Mockito.when(dishService.getDishes("george", Arrays.asList(1L, 2L, 3L)))
                 .thenReturn(testDishes);
@@ -282,7 +282,7 @@ public class TagServiceImplMockTest {
         DishEntity dish3 = ServiceTestUtils.buildDish(300L, "great dish3", Collections.singletonList(ServiceTestUtils.buildTagEntity(10L, "Taste 1", TagType.Rating, 1.0)));
         testDishes = Arrays.asList(dish1, dish2, dish3);
 
-        Mockito.when(tagExtendedRepository.findTagsByCriteria(Collections.singletonList(TagType.Rating), null))
+        Mockito.when(tagExtendedRepository.findTagsByCriteria(Collections.singletonList(TagType.Rating)))
                 .thenReturn(ratingTagList);
         Mockito.when(dishService.getDishes("george", Arrays.asList(1L, 2L, 3L)))
                 .thenReturn(testDishes);
@@ -330,55 +330,6 @@ public class TagServiceImplMockTest {
         Assert.assertNotNull(dictionary);
         Assert.assertEquals(5L, dictionary.size());
         dictionary.entrySet().stream().forEach(e -> Assert.assertEquals(e.getKey(), ((TagEntity) e.getValue()).getId()));
-    }
-
-    @Test
-    public void testGetTagList() {
-        List<TagType> tagTypes = new ArrayList<>();
-        tagTypes.add(TagType.NonEdible);
-        tagTypes.add(TagType.Rating);
-        List<TagEntity> allTags = new ArrayList<>();
-        allTags.add(ServiceTestUtils.buildTagEntity(99L, "tag99", TagType.NonEdible));
-        allTags.add(ServiceTestUtils.buildTagEntity(199L, "tag199", TagType.Ingredient));
-        allTags.add(ServiceTestUtils.buildTagEntity(299L, "tag299", TagType.DishType));
-
-        Mockito.when(tagRepository.findTagsByCriteria(tagTypes, true, null)).thenReturn(allTags);
-
-        tagService.getTagList(TagFilterType.ForSelectAssign, tagTypes);
-
-        Mockito.verify(tagRepository, times(1)).findTagsByCriteria(tagTypes, true, null);
-
-        Mockito.reset(tagRepository);
-
-        // test for select search
-        Mockito.when(tagRepository.findTagsByCriteria(tagTypes, null, true)).thenReturn(allTags);
-
-        tagService.getTagList(TagFilterType.ForSelectSearch, tagTypes);
-
-        Mockito.verify(tagRepository, times(1)).findTagsByCriteria(tagTypes, null, true);
-
-        Mockito.reset(tagRepository);
-
-
-        // test for empty criteria
-        Mockito.when(tagRepository.findTagsByCriteria(tagTypes, null, null)).thenReturn(allTags);
-
-        tagService.getTagList(TagFilterType.ParentTags
-                , tagTypes);
-
-        Mockito.verify(tagRepository, times(1)).findTagsByCriteria(tagTypes, null, null);
-
-        Mockito.reset(tagRepository);
-
-        // test for empty TagFilterType
-        Mockito.when(tagRepository.findTagsByCriteria(tagTypes, null, null)).thenReturn(allTags);
-
-        tagService.getTagList(null
-                , tagTypes);
-
-        Mockito.verify(tagRepository, times(1)).findTagsByCriteria(tagTypes, null, null);
-
-
     }
 
     @Test
@@ -569,7 +520,6 @@ public class TagServiceImplMockTest {
 
     @Test
     public void testGetTagExtendedList() {
-        TagFilterType filter = TagFilterType.ForSelectAssign;
         List<TagType> tagTypes = new ArrayList<>();
         tagTypes.add(TagType.NonEdible);
         tagTypes.add(TagType.Rating);
@@ -578,19 +528,19 @@ public class TagServiceImplMockTest {
         allTags.add(buildTagExtendedEntity(199L, "tag199", TagType.Ingredient));
         allTags.add(buildTagExtendedEntity(299L, "tag299", TagType.DishType));
 
-        Mockito.when(tagExtendedRepository.findTagsByCriteria(tagTypes, null)).thenReturn(allTags);
+        Mockito.when(tagExtendedRepository.findTagsByCriteria(tagTypes)).thenReturn(allTags);
 
-        tagService.getTagExtendedList(TagFilterType.ForSelectAssign, tagTypes);
+        tagService.getTagExtendedList(TagFilterType.NoGroups, tagTypes);
 
-        Mockito.verify(tagExtendedRepository, times(1)).findTagsByCriteria(tagTypes, null);
+        Mockito.verify(tagExtendedRepository, times(1)).findTagsByCriteria(tagTypes);
 
         Mockito.reset(tagExtendedRepository);
 
-        Mockito.when(tagExtendedRepository.findTagsByCriteria(tagTypes, true)).thenReturn(allTags);
+        Mockito.when(tagExtendedRepository.findTagsByCriteria(tagTypes)).thenReturn(allTags);
 
         tagService.getTagExtendedList(TagFilterType.ParentTags, tagTypes);
 
-        Mockito.verify(tagExtendedRepository, times(1)).findTagsByCriteria(tagTypes, true);
+        Mockito.verify(tagExtendedRepository, times(1)).findTagsByCriteria(tagTypes);
 
     }
 

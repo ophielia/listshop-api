@@ -3,7 +3,6 @@ package com.meg.listshop.lmt.api.web.controller;
 import com.meg.listshop.lmt.api.controller.TagRestControllerApi;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.apache.logging.log4j.LogManager;
@@ -55,38 +54,9 @@ public class TagRestController implements TagRestControllerApi {
         return new ResponseEntity<TagListResource>(returnValue, HttpStatus.OK);
     }
 
-    public ResponseEntity<TagListResource> retrieveTagList(HttpServletRequest request,
-                                                           @RequestParam(value = "filter", required = false) String filter,
-                                                           @RequestParam(value = "tag_type", required = false) String tagType,
+    public ResponseEntity<TagListResource> retrieveTagList(Principal principal, HttpServletRequest request,
                                                            @RequestParam(value = "extended", required = false) Boolean extended) {
-        List<TagType> tagTypeFilter = processTagTypeInput(tagType);
-        TagFilterType tagFilterTypeFilter = filter != null ? TagFilterType.valueOf(filter) : TagFilterType.All;
-        if (extended == null) {
-            extended = false;
-        }
-        if (extended || tagFilterTypeFilter == TagFilterType.ParentTags) {
-            return retrieveTagExtendedList(tagFilterTypeFilter, tagTypeFilter);
-        }
-
-        List<TagEntity> tagList = tagService.getTagList(tagFilterTypeFilter, tagTypeFilter);
-
-        List<TagResource> resourceList = tagList.stream()
-                .map(ModelMapper::toModel)
-                .map(TagResource::new)
-                .collect(Collectors.toList());
-        var returnValue = new TagListResource(resourceList);
-        return new ResponseEntity<TagListResource>(returnValue, HttpStatus.OK);
-    }
-
-    private ResponseEntity<TagListResource> retrieveTagExtendedList(TagFilterType tagFilterTypeFilter, List<TagType> tagTypeFilter) {
-        List<TagExtendedEntity> tagList = tagService.getTagExtendedList(tagFilterTypeFilter, tagTypeFilter);
-
-        List<TagResource> resourceList = tagList.stream()
-                .map(ModelMapper::toModel)
-                .map(TagResource::new)
-                .collect(Collectors.toList());
-        var returnValue = new TagListResource(resourceList);
-        return new ResponseEntity<TagListResource>(returnValue, HttpStatus.OK);
+        return retrieveUserTagList(principal, request);
     }
 
 

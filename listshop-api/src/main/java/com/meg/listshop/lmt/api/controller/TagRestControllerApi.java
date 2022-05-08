@@ -22,10 +22,10 @@ public interface TagRestControllerApi {
             Principal principal,
             HttpServletRequest request);
 
+    // remove this in August 2022
+    @Deprecated
     @RequestMapping(method = RequestMethod.GET)
-    ResponseEntity<TagListResource> retrieveTagList(HttpServletRequest request,
-                                                    @RequestParam(value = "filter", required = false) String filter,
-                                                    @RequestParam(value = "tag_type", required = false) String tagType,
+    ResponseEntity<TagListResource> retrieveTagList(Principal principal, HttpServletRequest request,
                                                     @RequestParam(value = "extended", required = false) Boolean extended);
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")

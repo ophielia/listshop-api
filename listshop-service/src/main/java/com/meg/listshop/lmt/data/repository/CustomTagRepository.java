@@ -1,18 +1,17 @@
 package com.meg.listshop.lmt.data.repository;
 
-import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
+import com.meg.listshop.lmt.service.tag.TagSearchCriteria;
 
 import java.util.List;
 import java.util.Set;
 
-public interface TagRepositoryCustom {
+public interface CustomTagRepository {
 
-    List<TagEntity> findTagsByCriteria(List<TagType> tagTypes, Boolean assignSelect, Boolean searchSelect);
+    public List<TagEntity> findTagsByCriteria(TagSearchCriteria criteria);
 
     Long findRatingTagIdForStep(Long ratingId, Integer step);
-
 
     List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys);
 }

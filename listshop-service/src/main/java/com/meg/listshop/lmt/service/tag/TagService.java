@@ -44,8 +44,6 @@ public interface TagService {
 
     void removeTagsFromDish(String userName, Long dishId, Set<Long> tagIds);
 
-    List<TagEntity> getTagList(TagFilterType baseTags, List<TagType> tagType);
-
     List<TagEntity> getIngredientTagsForDishes(List<Long> dishIdList);
 
     void deleteTagFromDish(String userName, Long dishId, Long tagId);
@@ -72,4 +70,6 @@ public interface TagService {
     List<TagInfoDTO> getTagInfoList(String name);
 
     List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys);
+
+    List<TagEntity> getTagList(TagSearchCriteria criteria);
 }

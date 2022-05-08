@@ -17,10 +17,7 @@ import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.ListTagStatisticService;
-import com.meg.listshop.lmt.service.tag.TagChangeListener;
-import com.meg.listshop.lmt.service.tag.TagReplaceService;
-import com.meg.listshop.lmt.service.tag.TagService;
-import com.meg.listshop.lmt.service.tag.TagStructureService;
+import com.meg.listshop.lmt.service.tag.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -213,13 +210,9 @@ public class TagServiceImpl implements TagService {
         return dbTag;
     }
 
-
     @Override
-    public List<TagEntity> getTagList(TagFilterType tagFilterType, List<TagType> tagTypes) {
-        // assign_select
-        Boolean assignSelect = tagFilterType == TagFilterType.ForSelectAssign ? true : null;
-        Boolean searchSelect = tagFilterType == TagFilterType.ForSelectSearch ? true : null;
-        return tagRepository.findTagsByCriteria(tagTypes, assignSelect, searchSelect);
+    public List<TagEntity> getTagList(TagSearchCriteria criteria) {
+        return tagRepository.findTagsByCriteria(criteria);
 
     }
 
@@ -246,7 +239,7 @@ public class TagServiceImpl implements TagService {
     public List<TagExtendedEntity> getTagExtendedList(TagFilterType tagFilterType, List<TagType> tagTypes) {
         // assign_select
         Boolean parentsOnly = tagFilterType == TagFilterType.ParentTags ? true : null;
-        return tagExtendedRepository.findTagsByCriteria(tagTypes, parentsOnly);
+        return tagExtendedRepository.findTagsByCriteria(tagTypes);
 
     }
 

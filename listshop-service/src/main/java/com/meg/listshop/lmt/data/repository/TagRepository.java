@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-public interface TagRepository extends JpaRepository<TagEntity, Long>, TagRepositoryCustom {
+public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTagRepository {
 
 
     List<TagEntity> findTagsByDishes(DishEntity dish);
@@ -22,7 +22,7 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, TagReposi
 
     @Query(value = "select t.* FROM tag t " +
             "where t.tag_id in (:tagIds) and t.replacement_tag_id is not null",
-    nativeQuery = true)
+            nativeQuery = true)
     List<TagEntity> findTagsToBeReplaced(@Param("tagIds") Set<Long> tagIds);
 
 
@@ -79,12 +79,6 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, TagReposi
             "ORDER  BY power DESC  " +
             "LIMIT  1 ", nativeQuery = true)
     TagEntity getNextRatingDown(Long parentRatingId, Long currentId);
-
-    @Query(value = "select * from tag where (updated_on > :changedAfter" +
-            " or created_on > :changedAfter" +
-            " or removed_on > :changedAfter " +
-            " )", nativeQuery = true)
-    List<TagEntity> getTagsChangedAfter(Date changedAfter);
 
     @EntityGraph(value = "tag-category-graph")
     @Query(value = "select distinct t FROM TagEntity t , ListLayoutCategoryEntity c " +

@@ -1,6 +1,7 @@
 package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.lmt.api.model.Tag;
+import com.meg.listshop.lmt.api.model.TagListResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,15 @@ import java.security.Principal;
 public interface AdminTagRestControllerApi {
 
 
+    // standard/list (?filter=review)
+// user/xxxxx/list
+// PUT TagUpdate contains list of ids, operation (assignToUser, copyToStandard, review), userId
+    @GetMapping(value = "/standard/list")
+    public ResponseEntity<TagListResource> getStandardTagList(@RequestParam(value = "filter", required = false) String filter);
 
+    @GetMapping(value = "/user/{userId}/list")
+    ResponseEntity<TagListResource> getUserTagList(@PathVariable("userId") Long userId,
+                                                   @RequestParam(value = "filter", required = false) String filter);
 
     @RequestMapping(value = "/delete/{tagId}", method = RequestMethod.DELETE)
     ResponseEntity<Object> saveTagForDelete(@PathVariable("tagId") Long tagId, @RequestParam(value = "replacementTagId", required = true) Long replacementTagId);

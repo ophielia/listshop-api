@@ -1,13 +1,14 @@
 package com.meg.listshop.admin.controller;
 
-import com.meg.listshop.lmt.api.model.ModelMapper;
-import com.meg.listshop.lmt.api.model.Tag;
+import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.service.tag.TagSearchCriteria;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -81,6 +82,37 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
     }
 
+
+    public ResponseEntity<TagListResource> getStandardTagList(@RequestParam(value = "filter", required = false) String filter) {
+        TagFilterType tagFilterTypeFilter = filter != null ? TagFilterType.valueOf(filter) : TagFilterType.All;
+        TagSearchCriteria criteria = new TagSearchCriteria()
+                .tagFilterType(tagFilterTypeFilter);
+
+        List<TagEntity> tagList = tagService.getTagList(criteria);
+
+        return tagListToResource(tagList);
+    }
+
+    public ResponseEntity<TagListResource> getUserTagList(@PathVariable("userId") Long userId,
+                                                          @RequestParam(value = "filter", required = false) String filter) {
+        TagFilterType tagFilterTypeFilter = filter != null ? TagFilterType.valueOf(filter) : TagFilterType.All;
+        TagSearchCriteria criteria = new TagSearchCriteria()
+                .userId(userId)
+                .tagFilterType(tagFilterTypeFilter);
+
+        List<TagEntity> tagList = tagService.getTagList(criteria);
+
+        return tagListToResource(tagList);
+    }
+
+    private ResponseEntity<TagListResource> tagListToResource(List<TagEntity> tagList) {
+        List<TagResource> resourceList = tagList.stream()
+                .map(ModelMapper::toModel)
+                .map(TagResource::new)
+                .collect(Collectors.toList());
+        var returnValue = new TagListResource(resourceList);
+        return new ResponseEntity<TagListResource>(returnValue, HttpStatus.OK);
+    }
 
     public ResponseEntity<Object> replaceTagsInDishes(HttpServletRequest request, Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId) {
         this.tagService.replaceTagInDishes(principal.getName(), tagId, toTagId);
