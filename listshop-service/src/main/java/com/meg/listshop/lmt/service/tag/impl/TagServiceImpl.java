@@ -552,6 +552,8 @@ public class TagServiceImpl implements TagService {
             // to standard category if available
             listLayoutService.assignTagToDefaultCategories(newTag);
 
+            // set original to isVerified = true
+            tagToCopy.setVerified(true);
         }
 
 
