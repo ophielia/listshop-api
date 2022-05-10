@@ -9,7 +9,7 @@ public class TagOperationPut {
     @JsonProperty(value = "tag_ids")
     private List<Long> tagIds;
     @JsonProperty(value = "tag_operation_type")
-    private TagOperationType tagOperationType;
+    private String tagOperationType;
     @JsonProperty(value = "user_id")
     private String userId;
 
@@ -24,11 +24,11 @@ public class TagOperationPut {
         this.tagIds = tagIds;
     }
 
-    public TagOperationType getTagOperationType() {
+    public String getTagOperationType() {
         return tagOperationType;
     }
 
-    public void setTagOperationType(TagOperationType tagOperationType) {
+    public void setTagOperationType(String tagOperationType) {
         this.tagOperationType = tagOperationType;
     }
 

@@ -13,7 +13,10 @@ import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.TagExtendedRepository;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.*;
+import com.meg.listshop.lmt.service.DishSearchCriteria;
+import com.meg.listshop.lmt.service.DishSearchService;
+import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.service.ListTagStatisticService;
 import com.meg.listshop.lmt.service.tag.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,8 +24,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -47,8 +52,9 @@ public class TagServiceImpl implements TagService {
     private final DishSearchService dishSearchService;
     private final TagInfoCustomRepository tagInfoCustomRepository;
 
-    private final ListLayoutService listLayoutService;
 
+    @Value("${shopping.list.properties.default_list_layout_id:5}")
+    private Long defaultLayoutId;
 
     @Autowired
     public TagServiceImpl(ListTagStatisticService tagStatisticService,
@@ -59,8 +65,7 @@ public class TagServiceImpl implements TagService {
                           TagRepository tagRepository,
                           UserService userService,
                           TagInfoCustomRepository tagInfoCustomRepository,
-                          DishSearchService dishSearchService,
-                          ListLayoutService listLayoutService) {
+                          DishSearchService dishSearchService) {
         this.dishService = dishService;
         this.tagStatisticService = tagStatisticService;
         this.tagExtendedRepository = tagExtendedRepository;
@@ -70,7 +75,6 @@ public class TagServiceImpl implements TagService {
         this.userService = userService;
         this.dishSearchService = dishSearchService;
         this.tagInfoCustomRepository = tagInfoCustomRepository;
-        this.listLayoutService = listLayoutService;
 
     }
 
@@ -245,7 +249,6 @@ public class TagServiceImpl implements TagService {
 
     }
 
-
     @Override
     public TagEntity createTag(TagEntity parent, TagEntity newtag, String name) {
         Long tagUserId = null;
@@ -265,7 +268,6 @@ public class TagServiceImpl implements TagService {
         fireTagAddedEvent(parentTag, saved);
         return newtag;
     }
-
 
     @Override
     public void saveTagForDelete(Long tagId, Long replacementTagId) {
@@ -402,7 +404,6 @@ public class TagServiceImpl implements TagService {
         addTagToDish(dish, tag);
     }
 
-
     @Override
     public void assignTagToParent(Long tagId, Long parentId) {
         // get tag and parent
@@ -528,13 +529,13 @@ public class TagServiceImpl implements TagService {
         // get tags to copy
         List<TagEntity> tagsToCopy = tagRepository.getTagsForIdList(copySet);
         // get standard parents for tags
-        Map<Long, TagEntity> parentsForTags = new HashMap<>(); //MM fill in
+        Map<Long, TagEntity> parentsForTags = getStandardParentsForTags(copySet);
+        // get standard parents for tags
+        Map<Long, Long> categoriesForTags = getStandardCategoriesForTags(copySet);
         // get default tag parent
-        TagEntity defaultTagParent = new TagEntity(); // MM fill this in...
-        // get default tag category
-        // NOTE: currently using method to do this.  Will need to be addressed
-        // during ListLayoutRework
+        Map<TagType, TagEntity> defaultTagParentsByType = getDefaultTagParentsByType();
 
+        List<TagEntity> addedTags = new ArrayList<>();
         // copy tags
         for (TagEntity tagToCopy : tagsToCopy) {
             Long copyId = tagToCopy.getId();
@@ -543,25 +544,78 @@ public class TagServiceImpl implements TagService {
             //      create tag
             newTag = tagRepository.save(newTag);
             //      create membership to tag group
-            TagEntity parentTag = parentsForTags.containsKey(copyId) ?
-                    parentsForTags.get(copyId) :
-                    defaultTagParent;
+            TagEntity parentTag;
+            if (parentsForTags.containsKey(copyId)) {
+                parentTag = parentsForTags.get(copyId);
+            } else {
+                parentTag = defaultTagParentsByType.get(tagToCopy.getTagType());
+            }
             tagStructureService.assignTagToParent(newTag, parentTag);
-            //      create membership in category
-            // assigning to default for now - will eventually need to be assigned
-            // to standard category if available
-            listLayoutService.assignTagToDefaultCategories(newTag);
 
             // set original to isVerified = true
             tagToCopy.setVerified(true);
+
+            addedTags.add(newTag);
+
+            // fire listener, which will update category
+            fireTagCopiedEvent(newTag, categoriesForTags.get(copyId));
         }
 
+        tagRepository.saveAll(addedTags);
 
     }
 
+
+    private Map<TagType, TagEntity> getDefaultTagParentsByType() {
+        List<TagEntity> defaultParents = tagRepository.findTagsByTagTypeDefaultTrue();
+        return defaultParents.stream()
+                .collect(Collectors.toMap(TagEntity::getTagType, Function.identity()));
+    }
+
+    private Map<Long, Long> getStandardCategoriesForTags(Set<Long> copySet) {
+
+        List<Object[]> categoryRelations = tagRepository.getStandardCategoriesForTags(copySet, defaultLayoutId);
+        Map<Long, Long> categoryRelationIds = categoryRelations.stream().map(o -> {
+            BigInteger tagId = (BigInteger) o[0];
+            BigInteger parentId = (BigInteger) o[1];
+            return new LongTagIdPairDTO(tagId.longValue(), parentId.longValue());
+        }).collect(Collectors.toMap(LongTagIdPairDTO::getLeftId, LongTagIdPairDTO::getRightId));
+        return categoryRelationIds;
+    }
+
+    private Map<Long, TagEntity> getStandardParentsForTags(Set<Long> copySet) {
+        List<Object[]> parentRelations = tagRepository.getStandardParentsForTags(copySet);
+        Map<Long, Long> parentRelationIds = parentRelations.stream().map(o -> {
+            BigInteger tagId = (BigInteger) o[0];
+            BigInteger parentId = (BigInteger) o[1];
+            return new LongTagIdPairDTO(tagId.longValue(), parentId.longValue());
+        }).collect(Collectors.toMap(LongTagIdPairDTO::getLeftId, LongTagIdPairDTO::getRightId));
+
+        List<TagEntity> parentTags = tagRepository.getTagsForIdList(parentRelationIds.values().stream().collect(Collectors.toSet()));
+        Map<Long, TagEntity> parentDictionary = parentTags.stream()
+                .collect(Collectors.toMap(TagEntity::getId, Function.identity()));
+
+        Map<Long, TagEntity> parentsForTagIds = new HashMap<>();
+        parentRelationIds.entrySet().stream()
+                .filter(e -> parentDictionary.containsKey(e.getKey()))
+                .forEach(e -> {
+                    parentsForTagIds.put(e.getKey(), parentDictionary.get(parentDictionary.get(e.getKey())));
+                });
+        return parentsForTagIds;
+    }
+
     private TagEntity copyTagIntoNewTag(TagEntity tagToCopy) {
-        //MM implement this
-        return null;
+        TagEntity newTag = new TagEntity();
+        newTag.setVerified(true);
+        newTag.setUserId(null);
+        newTag.setTagType(tagToCopy.getTagType());
+        newTag.setName(tagToCopy.getName());
+        newTag.setDescription(tagToCopy.getDescription());
+        newTag.setPower(tagToCopy.getPower());
+        newTag.setCreatedOn(new Date());
+        newTag.setIsGroup(tagToCopy.getIsGroup());
+
+        return newTag;
     }
 
     private void fireTagParentChangedEvent(TagEntity oldParent, TagEntity newParent, TagEntity changedTag) {
@@ -580,6 +634,12 @@ public class TagServiceImpl implements TagService {
     private void fireTagAddedEvent(TagEntity parentTag, TagEntity changed) {
         for (TagChangeListener listener : listeners) {
             listener.onTagAdd(changed, parentTag);
+        }
+    }
+
+    private void fireTagCopiedEvent(TagEntity copiedTag, Long categoryId) {
+        for (TagChangeListener listener : listeners) {
+            listener.onTagCopy(copiedTag, categoryId);
         }
     }
 

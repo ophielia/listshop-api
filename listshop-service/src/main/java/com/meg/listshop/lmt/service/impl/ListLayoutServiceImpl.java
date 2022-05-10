@@ -36,6 +36,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     private final ShoppingListProperties shoppingListProperties;
     private final ListSearchService listSearchService;
 
+
     @Autowired
     public ListLayoutServiceImpl(ListLayoutCategoryRepository listLayoutCategoryRepository,
                                  ListLayoutProperties listLayoutProperties,
@@ -79,7 +80,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     public ListLayoutEntity getDefaultListLayout() {
         ListLayoutType layoutType = shoppingListProperties.getDefaultListLayoutType();
 
-        List<ListLayoutEntity> listLayoutEntity =  listLayoutRepository.findByLayoutType(layoutType);
+        List<ListLayoutEntity> listLayoutEntity = listLayoutRepository.findByLayoutType(layoutType);
 
         if (listLayoutEntity == null || listLayoutEntity.isEmpty()) {
             return null;
@@ -88,9 +89,17 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     }
 
     @Override
+    public ListLayoutCategoryEntity getDefaultListCategory() {
+        // get default list layout first
+        ListLayoutType layoutType = shoppingListProperties.getDefaultListLayoutType();
+
+        return getDefaultCategoryForLayoutType(layoutType);
+    }
+
+    @Override
     public ListLayoutEntity getListLayoutById(Long listLayoutId) {
 
-        Optional<ListLayoutEntity> listLayoutEntityOpt =  listLayoutRepository.findById(listLayoutId);
+        Optional<ListLayoutEntity> listLayoutEntityOpt = listLayoutRepository.findById(listLayoutId);
         return listLayoutEntityOpt.orElse(null);
     }
 
@@ -250,6 +259,23 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         listLayoutCategoryRepository.save(categoryEntity);
     }
 
+    @Override
+    public void addTagToCategory(Long layoutCategoryId, TagEntity tag) {
+        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt = listLayoutCategoryRepository.findById(layoutCategoryId);
+        if (!listLayoutEntityOpt.isPresent()) {
+            return;
+        }
+        ListLayoutCategoryEntity categoryEntity = listLayoutEntityOpt.get();
+        List<TagEntity> tags = categoryEntity.getTags();
+        if (tags.stream().filter(t -> t.getId() == tag.getId()).findFirst().isPresent()) {
+            return;
+        }
+        tags.add(tag);
+        tag.getCategories().add(categoryEntity);
+        categoryEntity.setTags(tags);
+        listLayoutCategoryRepository.save(categoryEntity);
+    }
+
 
     @Override
     public void deleteTagsFromCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList) {
@@ -296,10 +322,6 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         return map;
     }
 
-    @Override
-    public List<ListLayoutCategoryEntity> getListCategoriesForIds(Set<Long> categoryIds) {
-        return listLayoutCategoryRepository.findAllById(categoryIds);
-    }
 
     @Override
     public List<ListLayoutCategoryEntity> getListCategoriesForLayout(Long layoutId) {
@@ -550,4 +572,9 @@ Long relationshipId = getCategoryRelationForCategory(category);
     private List<ListLayoutCategoryEntity> getAllDefaultCategories() {
         return listLayoutCategoryRepository.findByIsDefaultTrue();
     }
+
+    private ListLayoutCategoryEntity getDefaultCategoryForLayoutType(ListLayoutType layoutType) {
+        return listLayoutCategoryRepository.findDefaultForLayoutType(layoutType.toString());
+    }
+
 }

@@ -9,7 +9,6 @@ import com.meg.listshop.lmt.service.categories.ListShopCategory;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by margaretmartin on 06/11/2017.
@@ -20,6 +19,8 @@ public interface ListLayoutService {
     ListLayoutEntity getListLayoutByType(ListLayoutType listLayoutType);
 
     ListLayoutEntity createListLayout(ListLayoutEntity listLayoutEntity);
+
+    ListLayoutCategoryEntity getDefaultListCategory();
 
     ListLayoutEntity getListLayoutById(Long listLayoutId);
 
@@ -41,9 +42,9 @@ public interface ListLayoutService {
 
     void addTagsToCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList);
 
-    void deleteTagsFromCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList);
+    void addTagToCategory(Long layoutCategoryId, TagEntity tag);
 
-    List<ListLayoutCategoryEntity> getListCategoriesForIds(Set<Long> categoryIds);
+    void deleteTagsFromCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList);
 
     List<ListLayoutCategoryEntity> getListCategoriesForLayout(Long layoutId);
 

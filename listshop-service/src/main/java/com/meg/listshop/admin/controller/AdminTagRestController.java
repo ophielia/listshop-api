@@ -92,7 +92,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         if (tagIds == null || tagIds.isEmpty()) {
             return ResponseEntity.ok().build();
         }
-        TagOperationType operationType = input.getTagOperationType();
+        TagOperationType operationType = TagOperationType.valueOf(input.getTagOperationType());
         switch (operationType) {
             case AssignToUser:
                 String userIdString = input.getUserId();
@@ -103,8 +103,12 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
                 tagService.assignTagsToUser(userId, tagIds);
 
                 break;
+            case MarkAsReviewed:
+                tagService.setTagsAsVerified(tagIds);
+                break;
             case CopyToStandard:
                 tagService.createStandardTagsFromUserTags(tagIds);
+
         }
         return ResponseEntity.ok().build();
     }

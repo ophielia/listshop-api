@@ -21,6 +21,8 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
 
     List<TagEntity> findTagsByTagTypeAndTagTypeDefault(TagType tagType, boolean isDefault);
 
+    List<TagEntity> findTagsByTagTypeDefaultTrue();
+
     @Query(value = "select t.* FROM tag t " +
             "where t.tag_id in (:tagIds) and t.replacement_tag_id is not null",
             nativeQuery = true)
@@ -97,4 +99,21 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
     @Modifying
     @Query("update TagEntity t set t.isVerified = true where t.tag_id in (:tagIds)")
     void setTagsAsVerified(@Param("tagIds") List<Long> tagIds);
+
+    @Query(value = "select  t.tag_id, p.tag_id as parent_id from tag t " +
+            "          join tag_relation r on r.child_tag_id = t.tag_id " +
+            "          join tag p on p.tag_id = r.parent_tag_id " +
+            "          where t.tag_id in (:tagIds) " +
+            "          and p.user_id is null;", nativeQuery = true)
+    List<Object[]> getStandardParentsForTags(@Param("tagIds") Set<Long> copySet);
+
+    @Query(value = "select  t.tag_id, lc.category_id " +
+            "from tag t " +
+            "join category_tags ct on ct.tag_id = t.tag_id " +
+            "join list_category lc on ct.category_id = lc.category_id and lc.layout_id = :layoutId " +
+            "where t.tag_id in (:tagIds)", nativeQuery = true)
+    List<Object[]> getStandardCategoriesForTags(@Param("tagIds") Set<Long> copySet,
+                                                @Param("layoutId") Long layoutId);
+
+
 }

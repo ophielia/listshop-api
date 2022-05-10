@@ -30,6 +30,9 @@ public class ShoppingListProperties {
     private Map<CategoryType, String> nameMapByType = null;
     private Map<CategoryType, Long> idMapByType = null;
 
+
+    private Long defaultListLayoutId = 5L;
+
     public String getTestValue() {
         return testValue;
     }
@@ -139,9 +142,17 @@ public class ShoppingListProperties {
 
     private void createIdMapByType() {
         idMapByType = new EnumMap<CategoryType, Long>(CategoryType.class);
-        idMapByType.put(CategoryType.Frequent,getFrequentIdAndSortAsLong());
-        idMapByType.put(CategoryType.UnCategorized,getUncategorizedIdAndSortAsLong());
-        idMapByType.put(CategoryType.Highlight,getHighlightIdAndSortAsLong());
+        idMapByType.put(CategoryType.Frequent, getFrequentIdAndSortAsLong());
+        idMapByType.put(CategoryType.UnCategorized, getUncategorizedIdAndSortAsLong());
+        idMapByType.put(CategoryType.Highlight, getHighlightIdAndSortAsLong());
         idMapByType.put(CategoryType.HighlightList, getHighlightListIdAndSortAsLong());
+    }
+
+    public Long getDefaultListLayoutId() {
+        return defaultListLayoutId;
+    }
+
+    public void setDefaultListLayoutId(Long defaultListLayoutId) {
+        this.defaultListLayoutId = defaultListLayoutId;
     }
 }

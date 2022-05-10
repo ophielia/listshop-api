@@ -78,6 +78,16 @@ public class TagChangeToCategoryListener implements TagChangeListener {
 // not used in this implementation
     }
 
+    @Override
+    public void onTagCopy(TagEntity copiedTag, Long categoryId) {
+        if (categoryId == null) {
+            ListLayoutCategoryEntity defaultCategory = listLayoutService.getDefaultListCategory();
+            categoryId = defaultCategory.getId();
+        }
+        listLayoutService.addTagToCategory(categoryId, copiedTag);
+
+    }
+
 
     private void assignFromSibling(TagEntity newParentTag, TagEntity childTag) {
         // get sibling

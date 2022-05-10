@@ -65,8 +65,7 @@ public class TagServiceImplMockTest {
     public void setUp() {
         this.tagService = new TagServiceImpl(
                 tagStatisticService, dishService, tagStructureService, tagReplaceService,
-                tagExtendedRepository, tagRepository, userService, tagInfoCustomRepository, dishSearchService,
-                listLayoutService
+                tagExtendedRepository, tagRepository, userService, tagInfoCustomRepository, dishSearchService
         );
     }
 
