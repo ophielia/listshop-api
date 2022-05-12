@@ -1,7 +1,10 @@
 package com.meg.listshop.admin.controller;
 
+import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.tag.TagSearchCriteria;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -31,13 +34,16 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
     private final TagService tagService;
     private final TagStructureService tagStructureService;
+    private final UserService userService;
 
     private static final Logger logger = LogManager.getLogger(AdminTagRestController.class);
 
     @Autowired
-    AdminTagRestController(TagService tagService, TagStructureService tagStructureService) {
+    AdminTagRestController(TagService tagService, TagStructureService tagStructureService,
+                           UserService userService) {
         this.tagStructureService = tagStructureService;
         this.tagService = tagService;
+        this.userService = userService;
     }
 
     public ResponseEntity addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds") String filter) {
@@ -134,6 +140,31 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
         return tagListToResource(tagList);
     }
+
+    public ResponseEntity<TagListResource> getStandardTagListForGrid(Principal principal, HttpServletRequest request) {
+        List<TagInfoDTO> infoTags = tagService.getTagInfoList(null);
+        List<TagResource> resourceList = infoTags.stream()
+                .map(ModelMapper::toModel)
+                .map(TagResource::new)
+                .collect(Collectors.toList());
+        var returnValue = new TagListResource(resourceList);
+        return new ResponseEntity<>(returnValue, HttpStatus.OK);
+    }
+
+    public ResponseEntity<TagListResource> getUserTagListForGrid(@PathVariable("userId") Long userId) {
+        UserEntity user = userService.getUserById(userId);
+        if (user == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<TagInfoDTO> infoTags = tagService.getTagInfoList(user.getUsername());
+        List<TagResource> resourceList = infoTags.stream()
+                .map(ModelMapper::toModel)
+                .map(TagResource::new)
+                .collect(Collectors.toList());
+        var returnValue = new TagListResource(resourceList);
+        return new ResponseEntity<>(returnValue, HttpStatus.OK);
+    }
+
 
     private ResponseEntity<TagListResource> tagListToResource(List<TagEntity> tagList) {
         List<TagResource> resourceList = tagList.stream()

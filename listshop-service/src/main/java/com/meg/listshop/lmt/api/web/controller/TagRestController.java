@@ -51,7 +51,7 @@ public class TagRestController implements TagRestControllerApi {
                 .map(TagResource::new)
                 .collect(Collectors.toList());
         var returnValue = new TagListResource(resourceList);
-        return new ResponseEntity<TagListResource>(returnValue, HttpStatus.OK);
+        return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
     public ResponseEntity<TagListResource> retrieveTagList(Principal principal, HttpServletRequest request,
