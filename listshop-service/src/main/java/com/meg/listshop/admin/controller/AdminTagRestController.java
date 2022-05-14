@@ -46,48 +46,6 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         this.userService = userService;
     }
 
-    public ResponseEntity addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds") String filter) {
-        if (filter == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        List<Long> tagIdList = commaDelimitedToList(filter);
-        this.tagService.assignChildrenToParent(tagId, tagIdList);
-        return ResponseEntity.noContent().build();
-
-    }
-
-
-    @Override
-    public ResponseEntity assignChildToParent(@PathVariable Long parentId, @PathVariable Long childId) {
-        tagService.assignTagToParent(childId, parentId);
-        return ResponseEntity.ok().build();
-    }
-
-    @Override
-    public ResponseEntity assignChildToBaseTag(@PathVariable("tagId") Long tagId) {
-        TagEntity tag = this.tagService.getTagById(tagId);
-
-        this.tagStructureService.assignTagToTopLevel(tag);
-        return ResponseEntity.ok().build();
-
-    }
-
-
-    public ResponseEntity<Object> updateTag(@PathVariable Long tagId, @RequestBody Tag input) {
-        // invalid tagId - returns invalid id supplied - 400
-
-        // invalid contents of input - returns 405 validation exception
-        TagEntity toUpdate = ModelMapper.toEntity(input);
-        TagEntity updatedTag = this.tagService.updateTag(tagId, toUpdate);
-        if (updatedTag != null) {
-            return ResponseEntity.noContent().build();
-
-        }
-        return ResponseEntity.notFound().build();
-
-    }
-
 
     public ResponseEntity<Object> performOperation(@RequestBody TagOperationPut input) {
         //@RequestMapping(method = RequestMethod.PUT, consumes = "application/json")
@@ -165,6 +123,17 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
+    public ResponseEntity addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds") String filter) {
+        if (filter == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Long> tagIdList = commaDelimitedToList(filter);
+        this.tagService.assignChildrenToParent(tagId, tagIdList);
+        return ResponseEntity.noContent().build();
+
+    }
+
 
     private ResponseEntity<TagListResource> tagListToResource(List<TagEntity> tagList) {
         List<TagResource> resourceList = tagList.stream()
@@ -174,6 +143,40 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         var returnValue = new TagListResource(resourceList);
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
+
+
+    /* havent gone over things starting hers - looking for what isn't used any more */
+    @Override
+    public ResponseEntity assignChildToParent(@PathVariable Long parentId, @PathVariable Long childId) {
+        tagService.assignTagToParent(childId, parentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity assignChildToBaseTag(@PathVariable("tagId") Long tagId) {
+        TagEntity tag = this.tagService.getTagById(tagId);
+
+        this.tagStructureService.assignTagToTopLevel(tag);
+        return ResponseEntity.ok().build();
+
+    }
+
+
+    public ResponseEntity<Object> updateTag(@PathVariable Long tagId, @RequestBody Tag input) {
+        // invalid tagId - returns invalid id supplied - 400
+
+        // invalid contents of input - returns 405 validation exception
+        TagEntity toUpdate = ModelMapper.toEntity(input);
+        TagEntity updatedTag = this.tagService.updateTag(tagId, toUpdate);
+        if (updatedTag != null) {
+            return ResponseEntity.noContent().build();
+
+        }
+        return ResponseEntity.notFound().build();
+
+    }
+
+
 
     public ResponseEntity<Object> replaceTagsInDishes(HttpServletRequest request, Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId) {
         this.tagService.replaceTagInDishes(principal.getName(), tagId, toTagId);

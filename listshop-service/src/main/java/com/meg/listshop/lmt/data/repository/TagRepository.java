@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTagRepository {
@@ -116,4 +117,5 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
                                                 @Param("layoutId") Long layoutId);
 
 
+    Optional<TagEntity> findTagByNameIgnoreCaseAndTagTypeAndIsGroupAAndUserIdIsNull(String name, TagType tagType, boolean isGroup);
 }

@@ -1,4 +1,4 @@
--- reset autotags
+
 -- takes chicken stock out of meat
 update tag_relation
 set parent_tag_id = 379
@@ -40,3 +40,56 @@ delete
 from category_tags ct2 using delete_layout_duplicates d
 where d.tag_id = ct2.tag_id
   and ct2.category_id = d.cat_to_delete;
+
+-- delete orphaned list items
+delete
+from list_item t
+where not exists(select from list tr where tr.list_id = t.list_id);
+
+-- delete orphaned tags
+delete
+from category_tags
+where tag_id in (select t.tag_id
+                 from tag t
+                 where not exists(select from tag_relation tr where tr.child_tag_id = t.tag_id)
+                   and not exists(select from list_item li where li.tag_id = t.tag_id));
+delete
+from tag t
+where not exists(select from tag_relation tr where tr.child_tag_id = t.tag_id)
+  and not exists(select from list_item li where li.tag_id = t.tag_id);
+
+-- duplicates?
+with duplicates as (select lower(name), tag_type, is_group, count(*), array_agg(tag_id) as ids
+                    from tag
+                    where tag.user_id is null
+                    group by 1, 2, 3
+                    having count(*) > 1)
+select t.tag_id,
+       t.name,
+       t.is_group,
+       tr.parent_tag_id,
+       count(li.item_id)     as list_use,
+       count(ct.category_id) as cat_exists
+from tag t
+         left outer join category_tags ct on t.tag_id = ct.tag_id
+         left outer join tag_relation tr on t.tag_id = tr.child_tag_id
+         left outer join list_item li on t.tag_id = li.tag_id
+where t.tag_id in (select unnest(ids) from duplicates)
+group by 1, 2, 3, 4
+order by lower(name);
+
+-- delete tags by id
+delete
+from category_tags
+where tag_id in (50924, 50952, 50993);
+delete
+from tag_relation
+where child_tag_id in (50924, 50952, 50993);
+delete
+from tag
+where tag_id in (50924, 50952, 50993);
+
+
+-- reset autotags
+update dish
+set auto_tag_status = null;

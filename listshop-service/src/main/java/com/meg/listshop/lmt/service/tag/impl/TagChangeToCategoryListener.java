@@ -70,6 +70,9 @@ public class TagChangeToCategoryListener implements TagChangeListener {
 
     @Override
     public void onTagAdd(TagEntity newTag, TagEntity parentTag) {
+        if (newTag.getIsGroup()) {
+            return;
+        }
         assignFromSibling(parentTag, newTag);
     }
 

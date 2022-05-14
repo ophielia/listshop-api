@@ -252,6 +252,10 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagEntity createTag(TagEntity parent, TagEntity newtag, String name) {
         Long tagUserId = null;
+        // check for duplicate
+        if (standardTagExists(newtag)) {
+            return null;
+        }
         if (name != null) {
             UserEntity user = userService.getUserByUserEmail(name);
             tagUserId = user.getId();
@@ -267,6 +271,11 @@ public class TagServiceImpl implements TagService {
 
         fireTagAddedEvent(parentTag, saved);
         return newtag;
+    }
+
+    private boolean standardTagExists(TagEntity newtag) {
+        Optional<TagEntity> tag = tagRepository.findTagByNameIgnoreCaseAndTagTypeAndIsGroupAAndUserIdIsNull(newtag.getName(), newtag.getTagType(), newtag.getIsGroup());
+        return tag.isPresent();
     }
 
     @Override
