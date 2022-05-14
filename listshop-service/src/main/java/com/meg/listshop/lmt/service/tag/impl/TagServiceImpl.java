@@ -195,15 +195,31 @@ public class TagServiceImpl implements TagService {
 
         // save changes to tag
         TagEntity beforeChange = dbTag.copy();
-        dbTag.setName(toUpdate.getName());
-        dbTag.setDescription(toUpdate.getDescription());
+        if (toUpdate.getName() != null) {
+            dbTag.setName(toUpdate.getName());
+        }
+        if (toUpdate.getDescription() != null) {
+            dbTag.setDescription(toUpdate.getDescription());
+        }
         dbTag.setIsGroup(toUpdate.getIsGroup());
-        dbTag.setPower(toUpdate.getPower());
-        dbTag.setToDelete(toUpdate.isToDelete());
-        dbTag.setRemovedOn(toUpdate.getRemovedOn());
-        dbTag.setCreatedOn(toUpdate.getCreatedOn());
-        dbTag.setCategoryUpdatedOn(toUpdate.getCategoryUpdatedOn());
-        dbTag.setReplacementTagId(toUpdate.getReplacementTagId());
+        if (toUpdate.getPower() != null) {
+            dbTag.setPower(toUpdate.getPower());
+        }
+        if (toUpdate.isToDelete() != null) {
+            dbTag.setToDelete(toUpdate.isToDelete());
+        }
+        if (toUpdate.getRemovedOn() != null) {
+            dbTag.setRemovedOn(toUpdate.getRemovedOn());
+        }
+        if (toUpdate.getCreatedOn() != null) {
+            dbTag.setCreatedOn(toUpdate.getCreatedOn());
+        }
+        if (toUpdate.getCategoryUpdatedOn() != null) {
+            dbTag.setCategoryUpdatedOn(toUpdate.getCategoryUpdatedOn());
+        }
+        if (toUpdate.getReplacementTagId() != null) {
+            dbTag.setReplacementTagId(toUpdate.getReplacementTagId());
+        }
 
         dbTag.setUpdatedOn(new Date());
         dbTag = tagRepository.save(dbTag);
@@ -274,7 +290,7 @@ public class TagServiceImpl implements TagService {
     }
 
     private boolean standardTagExists(TagEntity newtag) {
-        Optional<TagEntity> tag = tagRepository.findTagByNameIgnoreCaseAndTagTypeAndIsGroupAAndUserIdIsNull(newtag.getName(), newtag.getTagType(), newtag.getIsGroup());
+        Optional<TagEntity> tag = tagRepository.findTagDuplicate(newtag.getName(), newtag.getTagType(), newtag.getIsGroup());
         return tag.isPresent();
     }
 

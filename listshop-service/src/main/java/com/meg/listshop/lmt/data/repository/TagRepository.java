@@ -116,6 +116,7 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
     List<Object[]> getStandardCategoriesForTags(@Param("tagIds") Set<Long> copySet,
                                                 @Param("layoutId") Long layoutId);
 
-
-    Optional<TagEntity> findTagByNameIgnoreCaseAndTagTypeAndIsGroupAAndUserIdIsNull(String name, TagType tagType, boolean isGroup);
+    @Query(value = "select t from TagEntity t where lower(trim(t.name)) = :name " +
+            " and t.isGroup = :isGroup and t.tagType = :tagType ")
+    Optional<TagEntity> findTagDuplicate(@Param("name") String name, @Param("tagType") TagType tagType, @Param("isGroup") boolean isGroup);
 }
