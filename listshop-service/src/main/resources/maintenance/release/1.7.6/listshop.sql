@@ -96,7 +96,8 @@ set auto_tag_status = null;
 
 -- assign tags for mom and dad
 update tag
-set user_id = 34
+set user_id     = 34
+  , is_verified = true
 where tag_id in
       (50957, 50978, 50968, 50944, 50969, 50900, 51009, 50911, 50899, 51010, 50946, 50947, 50930, 50981, 50997, 50914,
        50998, 50847, 50972, 50949, 50863, 50833, 50986, 50935, 51000, 50950, 50973, 50752, 50812, 50674, 50807, 50709,
@@ -105,5 +106,6 @@ where tag_id in
 
 -- assign tags for me
 update tag
-set user_id = 20
+set user_id     = 20,
+    is_verified = true
 where tag_id in (50865, 51018, 51012, 51014, 51017, 51016, 96, 275);
