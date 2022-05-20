@@ -45,7 +45,7 @@ public class TagRestController implements TagRestControllerApi {
             HttpServletRequest request) {
         String userName = principal != null ? principal.getName() : null;
 
-        List<TagInfoDTO> infoTags = tagService.getTagInfoList(userName);
+        List<TagInfoDTO> infoTags = tagService.getTagInfoList(userName, Collections.emptyList());
         List<TagResource> resourceList = infoTags.stream()
                 .map(ModelMapper::toModel)
                 .map(TagResource::new)
@@ -57,6 +57,10 @@ public class TagRestController implements TagRestControllerApi {
     public ResponseEntity<TagListResource> retrieveTagList(Principal principal, HttpServletRequest request,
                                                            @RequestParam(value = "extended", required = false) Boolean extended) {
         return retrieveUserTagList(principal, request);
+        // when we remove this, also remove
+        // * search_select and assign_select from db, model, mapper
+        // * remove view tag_extended, plus associated entity and repository
+
     }
 
 

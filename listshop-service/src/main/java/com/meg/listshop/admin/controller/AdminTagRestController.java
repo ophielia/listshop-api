@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,7 +101,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
     public ResponseEntity<TagListResource> getStandardTagListForGrid(Principal principal, HttpServletRequest request) {
-        List<TagInfoDTO> infoTags = tagService.getTagInfoList(null);
+        List<TagInfoDTO> infoTags = tagService.getTagInfoList(null, Collections.emptyList());
         List<TagResource> resourceList = infoTags.stream()
                 .map(ModelMapper::toModel)
                 .map(TagResource::new)
@@ -114,7 +115,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         if (user == null) {
             return ResponseEntity.badRequest().build();
         }
-        List<TagInfoDTO> infoTags = tagService.getTagInfoList(user.getUsername());
+        List<TagInfoDTO> infoTags = tagService.getTagInfoList(user.getUsername(), Collections.emptyList());
         List<TagResource> resourceList = infoTags.stream()
                 .map(ModelMapper::toModel)
                 .map(TagResource::new)

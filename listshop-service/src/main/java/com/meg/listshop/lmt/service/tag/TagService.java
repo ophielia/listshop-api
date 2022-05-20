@@ -67,7 +67,7 @@ public interface TagService {
     List<TagEntity> getReplacedTagsFromIds(Set<Long> tagKeys);
 
 
-    List<TagInfoDTO> getTagInfoList(String name);
+    List<TagInfoDTO> getTagInfoList(String name, List<TagType> tagTypes);
 
     List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys);
 

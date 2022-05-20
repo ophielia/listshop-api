@@ -122,13 +122,11 @@ public class TagServiceImpl implements TagService {
     }
 
     public RatingUpdateInfo getRatingUpdateInfoForDishIds(String userName, List<Long> dishIdList) {
-        //MM refactor
         // get ratings structure
-        List<TagExtendedEntity> ratingTags = getTagExtendedList(
-                TagFilterType.All, Collections.singletonList(TagType.Rating));
+        List<TagInfoDTO> ratings = getTagInfoList(userName, Collections.singletonList(TagType.Rating));
 
         // put into lookup - rating info for child tags and create headers set
-        LookupInformation parsedInfo = parseRatingTags(ratingTags);
+        LookupInformation parsedInfo = parseRatingTags(ratings);
         Map<Long, RatingInfo> ratingInfoById = parsedInfo.getTagToRatingInfo();
         Set<RatingInfo> headers = parsedInfo.getParentRatings();
 
@@ -238,14 +236,14 @@ public class TagServiceImpl implements TagService {
 
     }
 
-    public List<TagInfoDTO> getTagInfoList(String name) {
-        Long searchTagsForUserId = null;
+    public List<TagInfoDTO> getTagInfoList(String name, List<TagType> tagTypes) {
+        Long userId = null;
         if (name != null) {
             UserEntity user = userService.getUserByUserEmail(name);
-            searchTagsForUserId = user.getId();
+            userId = user.getId();
         }
 
-        return tagInfoCustomRepository.retrieveTagInfoByUser(searchTagsForUserId);
+        return tagInfoCustomRepository.retrieveTagInfoByUser(userId, tagTypes);
     }
 
     public List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys) {
@@ -677,17 +675,17 @@ public class TagServiceImpl implements TagService {
                 .collect(Collectors.toList());
     }
 
-    private LookupInformation parseRatingTags(List<TagExtendedEntity> ratingTagsWithChildren) {
-        Map<Long, TagExtendedEntity> idToTagMap = new HashMap<>();
+    private LookupInformation parseRatingTags(List<TagInfoDTO> ratingTagsWithChildren) {
+        Map<Long, TagInfoDTO> idToTagMap = new HashMap<>();
         Map<Long, RatingInfo> ratingInfoById = new HashMap<>();
         Map<Long, List<Long>> childMapping = new HashMap<>();
         Set<RatingInfo> headers = new HashSet<>();
 
         // populate ratingInfoById
-        ratingTagsWithChildren.forEach(rt -> idToTagMap.put(rt.getId(), rt));
+        ratingTagsWithChildren.forEach(rt -> idToTagMap.put(rt.getTagId(), rt));
 
         // determine relations
-        for (TagExtendedEntity ratingTag : ratingTagsWithChildren) {
+        for (TagInfoDTO ratingTag : ratingTagsWithChildren) {
             Long parentId = ratingTag.getParentId();
             if (parentId == null ||
                     parentId == 0 ||
@@ -696,17 +694,17 @@ public class TagServiceImpl implements TagService {
                 continue;
             }
             List<Long> children = childMapping.computeIfAbsent(parentId, l -> new ArrayList<>());
-            children.add(ratingTag.getId());
+            children.add(ratingTag.getTagId());
             childMapping.put(parentId, children);
         }
 
         // fill in rating information
         childMapping.keySet().forEach(ratingParentId -> {
-            TagExtendedEntity parentTag = idToTagMap.get(ratingParentId);
-            List<TagExtendedEntity> sortedChildren = childMapping.get(ratingParentId)
+            TagInfoDTO parentTag = idToTagMap.get(ratingParentId);
+            List<TagInfoDTO> sortedChildren = childMapping.get(ratingParentId)
                     .stream()
                     .map(idToTagMap::get)
-                    .sorted(Comparator.comparing(TagExtendedEntity::getPower))
+                    .sorted(Comparator.comparing(TagInfoDTO::getPower))
                     .collect(Collectors.toList());
 
             if (!sortedChildren.isEmpty()) {
@@ -716,11 +714,11 @@ public class TagServiceImpl implements TagService {
 
                 var order = 1;
                 int maxPower = sortedChildren.size();
-                for (TagExtendedEntity childTag : sortedChildren) {
-                    var childInfo = new RatingInfo(parentTag.getId(), parentTag.getName(), order);
+                for (TagInfoDTO childTag : sortedChildren) {
+                    var childInfo = new RatingInfo(parentTag.getTagId(), parentTag.getName(), order);
 
                     childInfo.setMaxPower(maxPower);
-                    ratingInfoById.put(childTag.getId(), childInfo);
+                    ratingInfoById.put(childTag.getTagId(), childInfo);
                     order++;
                 }
             }

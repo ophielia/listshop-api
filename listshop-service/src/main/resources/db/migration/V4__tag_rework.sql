@@ -1,12 +1,11 @@
 -- remove tag_search_group
--- drop table if exists tag_search_group;
+drop table if exists tag_search_group;
 
 -- add column is_group to tags
 alter table tag
     add column is_group boolean NOT NULL default false;
 update tag t
-set is_group = true
-from tag_relation tr
+set is_group = true from tag_relation tr
 where t.tag_id = tr.parent_tag_id;
 
 alter table tag
