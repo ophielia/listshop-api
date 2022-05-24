@@ -53,7 +53,7 @@ public class DishSearchServiceImpl implements DishSearchService {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", criteria.getUserId())
         ;
-        String sqlBase = "select d.user_id, d.dish_name, d.description, d.dish_id, d.last_added  from dish d join dish_tags dt using (dish_id) ";
+        String sqlBase = "select distinct d.user_id, lower(d.dish_name), d.description, d.dish_id, d.last_added  from dish d join dish_tags dt using (dish_id) ";
         String whereClause = "where d.user_id = :userId ";
         StringBuilder groupByFilter = new StringBuilder("");
         StringBuilder nameWhereClause = new StringBuilder("");
@@ -226,7 +226,7 @@ public class DishSearchServiceImpl implements DishSearchService {
 
         public DishEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
             Long id = rs.getLong("user_id");
-            String dishName = rs.getString("dish_name");
+            String dishName = rs.getString(2);
             DishEntity dishEntity = new DishEntity(id, dishName);
             dishEntity.setDescription(rs.getString("description"));
             dishEntity.setId(rs.getLong("dish_id"));

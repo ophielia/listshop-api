@@ -97,10 +97,6 @@ public class DishRestController implements DishRestControllerApi {
             var dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
             criteria.setSortDirection(dishSortDirection);
         }
-        if (!StringUtils.isEmpty(sortDirection)) {
-            var dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
-            criteria.setSortDirection(dishSortDirection);
-        }
         if (!StringUtils.isEmpty(searchFragment)) {
             criteria.setNameFragment(searchFragment);
         }

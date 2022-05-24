@@ -132,7 +132,7 @@ public class TagRestControllerTest {
                 .andReturn();
         Assert.assertNotNull(result);
         String resultString = result.getResponse().getContentAsString();
-        Assert.assertTrue(resultString.contains("parent_id\":null"));
+        Assert.assertTrue(resultString.contains("parent_id\":\"0\""));
         Assert.assertTrue(resultString.contains("parent_id\":\"393\""));
     }
 

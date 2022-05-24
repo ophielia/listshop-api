@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
@@ -59,7 +60,8 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
 
         if (!tagTypes.isEmpty()) {
             sql.append(TAG_TYPE_FILTER);
-            parameters.addValue("tagTypes", tagTypes);
+            var tagTypesAsStrings = tagTypes.stream().map(tT -> tT.toString()).collect(Collectors.toList());
+            parameters.addValue("tagTypes", tagTypesAsStrings);
         }
 
         return this.jdbcTemplate.query(sql.toString(), parameters, new TagInfoRepositoryImpl.TagInfoMapper());

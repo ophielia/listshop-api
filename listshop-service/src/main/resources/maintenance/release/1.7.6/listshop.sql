@@ -109,5 +109,6 @@ set name = p.name
 from tag_relation tr,
      tag p
 where t.tag_id = tr.child_tag_id
+
   and p.tag_id = tr.parent_tag_id
   and t.tag_type = 'Rating';

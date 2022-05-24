@@ -7,6 +7,7 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
+import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.TagExtendedRepository;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
@@ -218,13 +219,17 @@ public class TagServiceImplMockTest {
 
     @Test
     public void testGetRatingUpdateInfo_OneEmptyRating() {
+        String userName = "george";
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(userName);
+        userEntity.setEmail(userName);
+        userEntity.setId(2000L);
 
-
-        List<TagExtendedEntity> ratingTagList = new ArrayList<>();
-        TagExtendedEntity parentRating = buildTagExtendedEntity(100L, "Taste Rating", TagType.Rating, 0.0, 13L);
-        TagExtendedEntity rating1 = buildTagExtendedEntity(10L, "Taste 1", TagType.Rating, 1.0, 100L);
-        TagExtendedEntity rating2 = buildTagExtendedEntity(11L, "Taste 2", TagType.Rating, 2.0, 100L);
-        TagExtendedEntity rating3 = buildTagExtendedEntity(12L, "Taste 3", TagType.Rating, 3.0, 100L);
+        List<TagInfoDTO> ratingTagList = new ArrayList<>();
+        TagInfoDTO parentRating = buildTagInfoDTO(100L, "Taste Rating", TagType.Rating, 0.0, 13L);
+        TagInfoDTO rating1 = buildTagInfoDTO(10L, "Taste 1", TagType.Rating, 1.0, 100L);
+        TagInfoDTO rating2 = buildTagInfoDTO(11L, "Taste 2", TagType.Rating, 2.0, 100L);
+        TagInfoDTO rating3 = buildTagInfoDTO(12L, "Taste 3", TagType.Rating, 3.0, 100L);
         ratingTagList = Arrays.asList(parentRating, rating1, rating2, rating3);
 
         List<DishEntity> testDishes = new ArrayList<>();
@@ -233,16 +238,16 @@ public class TagServiceImplMockTest {
         DishEntity dish3 = ServiceTestUtils.buildDish(300L, "great dish3", Collections.singletonList(ServiceTestUtils.buildTagEntity(10000L, "Taste 1", TagType.Ingredient, 1.0)));
         testDishes = Arrays.asList(dish1, dish2, dish3);
 
-        Mockito.when(tagExtendedRepository.findTagsByCriteria(Collections.singletonList(TagType.Rating)))
-                .thenReturn(ratingTagList);
-        Mockito.when(dishService.getDishes("george", Arrays.asList(1L, 2L, 3L)))
+
+        Mockito.when(dishService.getDishes(userName, Arrays.asList(1L, 2L, 3L)))
                 .thenReturn(testDishes);
         Mockito.when(tagRepository.findTagsByDishes(dish1)).thenReturn(dish1.getTags());
         Mockito.when(tagRepository.findTagsByDishes(dish2)).thenReturn(dish2.getTags());
         Mockito.when(tagRepository.findTagsByDishes(dish3)).thenReturn(dish3.getTags());
+        Mockito.when(tagInfoCustomRepository.retrieveTagInfoByUser(2000L, Collections.singletonList(TagType.Rating))).thenReturn(ratingTagList);
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(userEntity);
 
-        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds("george", Arrays.asList(1L, 2L, 3L));
-
+        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds(userName, Arrays.asList(1L, 2L, 3L));
 
         Assert.assertNotNull(updateInfo);
         Assert.assertNotNull(updateInfo.getRatingHeaders());
@@ -266,13 +271,17 @@ public class TagServiceImplMockTest {
 
     @Test
     public void testGetRatingUpdateInfo_FilledRatings() {
+        String userName = "UserName";
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(userName);
+        userEntity.setEmail(userName);
+        userEntity.setId(2000L);
 
-
-        List<TagExtendedEntity> ratingTagList = new ArrayList<>();
-        TagExtendedEntity parentRating = buildTagExtendedEntity(100L, "Taste Rating", TagType.Rating, 0.0, 13L);
-        TagExtendedEntity rating1 = buildTagExtendedEntity(10L, "Taste 1", TagType.Rating, 1.0, 100L);
-        TagExtendedEntity rating2 = buildTagExtendedEntity(11L, "Taste 2", TagType.Rating, 2.0, 100L);
-        TagExtendedEntity rating3 = buildTagExtendedEntity(12L, "Taste 3", TagType.Rating, 3.0, 100L);
+        List<TagInfoDTO> ratingTagList = new ArrayList<>();
+        TagInfoDTO parentRating = buildTagInfoDTO(100L, "Taste Rating", TagType.Rating, 0.0, 13L);
+        TagInfoDTO rating1 = buildTagInfoDTO(10L, "Taste 1", TagType.Rating, 1.0, 100L);
+        TagInfoDTO rating2 = buildTagInfoDTO(11L, "Taste 2", TagType.Rating, 2.0, 100L);
+        TagInfoDTO rating3 = buildTagInfoDTO(12L, "Taste 3", TagType.Rating, 3.0, 100L);
         ratingTagList = Arrays.asList(parentRating, rating1, rating2, rating3);
 
         List<DishEntity> testDishes = new ArrayList<>();
@@ -281,15 +290,16 @@ public class TagServiceImplMockTest {
         DishEntity dish3 = ServiceTestUtils.buildDish(300L, "great dish3", Collections.singletonList(ServiceTestUtils.buildTagEntity(10L, "Taste 1", TagType.Rating, 1.0)));
         testDishes = Arrays.asList(dish1, dish2, dish3);
 
-        Mockito.when(tagExtendedRepository.findTagsByCriteria(Collections.singletonList(TagType.Rating)))
-                .thenReturn(ratingTagList);
-        Mockito.when(dishService.getDishes("george", Arrays.asList(1L, 2L, 3L)))
+
+        Mockito.when(dishService.getDishes(userName, Arrays.asList(1L, 2L, 3L)))
                 .thenReturn(testDishes);
         Mockito.when(tagRepository.findTagsByDishes(dish1)).thenReturn(dish1.getTags());
         Mockito.when(tagRepository.findTagsByDishes(dish2)).thenReturn(dish2.getTags());
         Mockito.when(tagRepository.findTagsByDishes(dish3)).thenReturn(dish3.getTags());
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(userEntity);
+        Mockito.when(tagInfoCustomRepository.retrieveTagInfoByUser(2000L, Collections.singletonList(TagType.Rating))).thenReturn(ratingTagList);
 
-        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds("george", Arrays.asList(1L, 2L, 3L));
+        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds(userName, Arrays.asList(1L, 2L, 3L));
 
 
         Assert.assertNotNull(updateInfo);
@@ -899,6 +909,12 @@ public class TagServiceImplMockTest {
     private TagExtendedEntity buildTagExtendedEntity(Long tagId, String tagName,
                                                      TagType tagType, Double power, Long parentId) {
         return new TagExtendedEntity(ServiceTestUtils.buildTagEntity(tagId, tagName, tagType, power), parentId);
+    }
+
+    private TagInfoDTO buildTagInfoDTO(Long tagId, String tagName,
+                                       TagType tagType, Double power, Long parentId) {
+        return new TagInfoDTO(tagId, tagName, "", 0.0, 0L, tagType.name(), false, parentId, false);
+
     }
 
 }

@@ -79,8 +79,7 @@ public class TagReplaceServiceImpl implements TagReplaceService {
         removeShadowTags(toReplaceId);
          // tag relation
         removeTagRelation(toReplaceId);
-        // tag search group
-        removeTagSearchGroup(toReplaceId);
+
 
         // clear session
         session.flush();
