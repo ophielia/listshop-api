@@ -2,8 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
-to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.8.0] June 2022
+
+### Added
+
+- admin tag controller, for extranet functions
+- new tag repository and dto for retrieving user specific tags
+
+### Changed
+
+- reworked tag system
+- recursive query used to get tag structure
+- tag group is saved in db rather than calculated
+- tags created for users
+- many tag endpoints moved to admin controller
+- created tags are attached to user
+- autotag runs less often
+
+### Deprecated
+
+- tag_search_groups - calculated on the fly now with the help of recursive queries
+
+### Fixed
+
+- dish search
+- autotag functions
 
 ## [1.7.2] April 2022
 
@@ -216,3 +239,6 @@ token has expired
 ### Deprecated
 
 ### Fixed
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
+to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
