@@ -189,7 +189,8 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         if (layoutCategory == null) {
             return ResponseEntity.notFound().build();
         }
-        CategoryResource result = new CategoryResource(layoutCategory);
+        CategoryResource result = new CategoryResource(ModelMapper.toModel(layoutCategory, false));
+
         return new ResponseEntity(result, HttpStatus.OK);
 
     }

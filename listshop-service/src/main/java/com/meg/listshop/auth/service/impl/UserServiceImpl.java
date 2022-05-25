@@ -19,6 +19,8 @@ import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+import com.meg.listshop.lmt.data.entity.AdminUserDetailsEntity;
+import com.meg.listshop.lmt.data.repository.AdminUserDetailsRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,6 +41,8 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+
+    private final AdminUserDetailsRepository adminUserRepository;
 
     private final UserDeviceRepository userDeviceRepository;
 
@@ -49,11 +54,14 @@ public class UserServiceImpl implements UserService {
 
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserDeviceRepository userDeviceRepository, AuthorityRepository authorityRepository, AuthenticationManager authenticationManager) {
+    public UserServiceImpl(UserRepository userRepository, UserDeviceRepository userDeviceRepository,
+                           AuthorityRepository authorityRepository, AuthenticationManager authenticationManager,
+                           AdminUserDetailsRepository adminUserDetailsRepository) {
         this.userRepository = userRepository;
         this.userDeviceRepository = userDeviceRepository;
         this.authorityRepository = authorityRepository;
         this.authenticationManager = authenticationManager;
+        this.adminUserRepository = adminUserDetailsRepository;
     }
 
     @Override
@@ -237,6 +245,22 @@ public class UserServiceImpl implements UserService {
         logger.info(String.format("Will delete user [%s]", user));
         userRepository.deleteUser(user.getId());
         userRepository.flush();
+    }
+
+    @Override
+    public List<UserEntity> findUsersByEmail(String searchEmail) {
+        return userRepository.findByEmailContainingIgnoreCase(searchEmail.toLowerCase());
+    }
+
+    @Override
+    public UserEntity getUserByListId(Long listId) {
+        return userRepository.findByListId(listId);
+    }
+
+    @Override
+    public AdminUserDetailsEntity getAdminUserById(Long userId) {
+        Optional<AdminUserDetailsEntity> userOpt = adminUserRepository.findById(userId);
+        return userOpt.orElse(null);
     }
 
     private void changePassword(UserEntity user, String password) {

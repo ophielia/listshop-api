@@ -82,7 +82,7 @@ public class FillInProposalProcessorImplTest {
         testRequest.setFillInSlotNumber(1);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class)))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -157,7 +157,7 @@ public class FillInProposalProcessorImplTest {
         testRequest.setFillInSlotNumber(0);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class)))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -223,7 +223,7 @@ public class FillInProposalProcessorImplTest {
         int originalApproach = context.getCurrentApproachIndex();
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class)))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -301,7 +301,7 @@ public class FillInProposalProcessorImplTest {
         int origDishCount = proposalSlotHash.get(0).getDishSlots().size();
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class)))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -368,7 +368,7 @@ public class FillInProposalProcessorImplTest {
 
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class)))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -416,7 +416,7 @@ public class FillInProposalProcessorImplTest {
         testRequest.setTarget(target);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class)))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // set proposal
@@ -484,7 +484,7 @@ public class FillInProposalProcessorImplTest {
         testRequest.setFillInSlotNumber(1);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class)))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // get raw results
@@ -530,7 +530,7 @@ public class FillInProposalProcessorImplTest {
         testRequest.setTarget(target);
 
         // get tag structure dummy results
-        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class)))
+        Mockito.when(tagStructureService.getSearchGroupsForTagIds(any(Set.class), eq(TestConstants.USER_3_ID)))
                 .thenReturn(new HashMap<Long, List<Long>>());
 
         // set proposal

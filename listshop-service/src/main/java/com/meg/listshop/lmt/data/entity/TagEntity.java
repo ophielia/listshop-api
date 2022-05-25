@@ -40,6 +40,9 @@ public class TagEntity {
     @Column(name = "tag_id")
     private Long tag_id;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     private String name;
 
     private String description;
@@ -55,8 +58,13 @@ public class TagEntity {
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<ListLayoutCategoryEntity> categories = new ArrayList<>();
 
+    @Deprecated
     private Boolean assignSelect;
 
+    @Column(name = "is_group")
+    private boolean isGroup;
+
+    @Deprecated
     private Boolean searchSelect;
 
     private Boolean isVerified;
@@ -101,6 +109,14 @@ public class TagEntity {
     public void setId(Long tagId) {
         // TODO - this is just for tests - make a DaoUtils so we can remove this method
         this.tag_id = tagId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long user_id) {
+        this.userId = user_id;
     }
 
     public String getName() {
@@ -159,20 +175,12 @@ public class TagEntity {
         this.tagTypeDefault = tagTypeDefault;
     }
 
-    public Boolean getAssignSelect() {
-        return assignSelect;
+    public boolean getIsGroup() {
+        return isGroup;
     }
 
-    public void setAssignSelect(Boolean assignSelect) {
-        this.assignSelect = assignSelect;
-    }
-
-    public Boolean getSearchSelect() {
-        return searchSelect;
-    }
-
-    public void setSearchSelect(Boolean searchSelect) {
-        this.searchSelect = searchSelect;
+    public void setIsGroup(boolean group) {
+        isGroup = group;
     }
 
     public Boolean getVerified() {
@@ -235,8 +243,7 @@ public class TagEntity {
         var copy = new TagEntity();
         copy.setName(getName());
         copy.setDescription(getDescription());
-        copy.setSearchSelect(getSearchSelect());
-        copy.setAssignSelect(getAssignSelect());
+        copy.setIsGroup(getIsGroup());
         copy.setPower(getPower());
         copy.setReplacementTagId(getReplacementTagId());
         copy.setToDelete(isToDelete());

@@ -10,6 +10,9 @@ package com.meg.listshop.auth.service;
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.data.entity.AdminUserDetailsEntity;
+
+import java.util.List;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -37,4 +40,10 @@ public interface UserService {
     void changePassword(String userName, String newPassword, String originalPassword);
 
     void deleteUser(String name);
+
+    List<UserEntity> findUsersByEmail(String searchEmail);
+
+    UserEntity getUserByListId(Long listId);
+
+    AdminUserDetailsEntity getAdminUserById(Long userId);
 }

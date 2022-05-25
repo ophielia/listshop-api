@@ -1,0 +1,92 @@
+{
+  "list_id": 120000,
+  "last_changed": "2022-04-16T05:26:57.353+00:00",
+  "layout_id": 5,
+  "merge_items": [
+    {
+      "tag": {
+        "tag_id": "12001",
+        "name": "tag conflict - to remove",
+        "description": null,
+        "dishes": null,
+        "power": null,
+        "tag_type": "Ingredient",
+        "rating_family": null,
+        "assign_select": true,
+        "search_select": true,
+        "parent_id": null,
+        "to_delete": false
+      },
+      "handles": [],
+      "item_id": 120011,
+      "added": "2022-04-16T05:26:30.166+00:00",
+      "removed": null,
+      "updated": null,
+      "free_text": null,
+      "crossed_off": null,
+      "list_id": "120000",
+      "tag_id": 12001,
+      "used_count": 1,
+      "source_keys": [
+        "d109"
+      ]
+    },
+    {
+      "tag": {
+        "tag_id": "12002",
+        "name": "tag conflict - to add",
+        "description": null,
+        "dishes": null,
+        "power": null,
+        "tag_type": "Ingredient",
+        "rating_family": null,
+        "assign_select": true,
+        "search_select": true,
+        "parent_id": null,
+        "to_delete": false
+      },
+      "handles": [],
+      "item_id": 120012,
+      "added": "2022-04-16T05:26:30.166+00:00",
+      "removed": null,
+      "updated": null,
+      "free_text": null,
+      "crossed_off": null,
+      "list_id": "120000",
+      "tag_id": 12002,
+      "used_count": 1,
+      "source_keys": [
+        "d109"
+      ]
+    },
+    {
+      "tag": {
+        "tag_id": "21",
+        "name": "broccoli",
+        "description": null,
+        "dishes": null,
+        "power": null,
+        "tag_type": "Ingredient",
+        "rating_family": null,
+        "assign_select": true,
+        "search_select": true,
+        "parent_id": null,
+        "to_delete": false
+      },
+      "handles": [],
+      "item_id": 10009,
+      "added": "2022-04-16T05:26:30.166+00:00",
+      "removed": null,
+      "updated": null,
+      "free_text": null,
+      "crossed_off": "2022-04-16T05:26:49.549+00:00",
+      "list_id": "110000",
+      "tag_id": 21,
+      "used_count": 1,
+      "source_keys": [
+        "d109"
+      ]
+    }
+  ],
+  "check_tag_conflict": true
+}

@@ -97,23 +97,19 @@ public class DishRestController implements DishRestControllerApi {
             var dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
             criteria.setSortDirection(dishSortDirection);
         }
-        if (!StringUtils.isEmpty(sortDirection)) {
-            var dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
-            criteria.setSortDirection(dishSortDirection);
-        }
         if (!StringUtils.isEmpty(searchFragment)) {
             criteria.setNameFragment(searchFragment);
         }
         logger.debug(String.format("Searching for dishes with criteria [%s]. ", criteria));
         return dishSearchService.findDishes(criteria).stream()
-                .map(d -> ModelMapper.toModel(d))
+                .map(d -> ModelMapper.toModel(d, false))
                 .map(DishResource::new)
                 .collect(Collectors.toList());
     }
 
     private List<DishResource> getAllDishes(Principal principal) {
         return dishService.getDishesForUserName(principal.getName()).stream()
-                .map(d -> ModelMapper.toModel(d))
+                .map(d -> ModelMapper.toModel(d, false))
                 .map(DishResource::new)
                 .collect(Collectors.toList());
 
@@ -133,7 +129,7 @@ public class DishRestController implements DishRestControllerApi {
             tagService.addTagsToDish(principal.getName(), result.getId(), tagIds);
             result = dishService.getDishForUserById(principal.getName(), result.getId());
         }
-        DishResource resource = new DishResource(ModelMapper.toModel(result));
+        DishResource resource = new DishResource(ModelMapper.toModel(result, false));
         String link = resource.selfLink(request, resource).toString();
         return ResponseEntity.created(URI.create(link)).build();
     }
@@ -161,7 +157,7 @@ public class DishRestController implements DishRestControllerApi {
         sortedDishTags.sort(Comparator.comparing(TagEntity::getTagType)
                 .thenComparing(TagEntity::getName));
         dish.setTags(sortedDishTags);
-        DishResource resource = new DishResource(ModelMapper.toModel(dish));
+        DishResource resource = new DishResource(ModelMapper.toModel(dish, true));
 
         return new ResponseEntity(resource, HttpStatus.OK);
     }

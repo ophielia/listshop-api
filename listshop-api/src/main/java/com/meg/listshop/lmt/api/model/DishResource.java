@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DishResource extends AbstractListShopResource implements ListShopModel {
 
-    private final Dish dish;
+    private Dish dish;
 
     public DishResource(Dish dish) {
         this.dish = dish;
@@ -13,6 +13,10 @@ public class DishResource extends AbstractListShopResource implements ListShopMo
 
     public Dish getDish() {
         return dish;
+    }
+
+    public DishResource() {
+        // an empty constructor
     }
 
     @Override

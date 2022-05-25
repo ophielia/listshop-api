@@ -49,7 +49,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         List<MealPlanResource> mealPlanList = mealPlanService
                 .getMealPlansForUserName(principal.getName())
                 .stream()
-                .map(ModelMapper::toModel)
+                .map(mealPlanEntity -> ModelMapper.toModel(mealPlanEntity, false))
                 .map(MealPlanResource::new)
                 .collect(Collectors.toList());
 
@@ -67,7 +67,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity result = mealPlanService.createMealPlan(principal.getName(), mealPlanEntity);
 
         if (result != null) {
-            MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(result));
+            MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(result, false));
 
             HttpHeaders headers = new HttpHeaders();
             try {
@@ -90,7 +90,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity result = mealPlanService.createMealPlanFromProposal(principal.getName(), proposalId);
 
         if (result != null) {
-            MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(result));
+            MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(result, false));
             String link = resource.selfLink(request, resource).toString();
 
             return ResponseEntity.created(URI.create(link)).build();
@@ -103,7 +103,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity result = this.mealPlanService
                 .getMealPlanById(principal.getName(), mealPlanId);
 
-        MealPlanResource mealPlanResource = new MealPlanResource(ModelMapper.toModel(result));
+        MealPlanResource mealPlanResource = new MealPlanResource(ModelMapper.toModel(result, true));
         return new ResponseEntity<>(mealPlanResource, HttpStatus.OK);
     }
 
@@ -112,7 +112,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity mealPlan = this.mealPlanService.copyMealPlan(principal.getName(), mealPlanId);
 
         if (mealPlan != null) {
-            MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(mealPlan));
+            MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(mealPlan, false));
             String link = resource.selfLink(request, resource).toString();
 
             return ResponseEntity.created(URI.create(link)).build();

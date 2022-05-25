@@ -4,6 +4,7 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.controller.StatisticRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
+import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.StatisticListPost;
 import com.meg.listshop.lmt.api.model.StatisticListResource;
 import com.meg.listshop.lmt.data.entity.ListTagStatistic;
@@ -57,7 +58,7 @@ public class StatisticRestController implements StatisticRestControllerApi {
             resultLimit = 100;
         }
         List<ListTagStatistic> statistics = listTagStatisticService.getStatisticsForUser(user.getId(), resultLimit);
-        StatisticListResource resource = new StatisticListResource(statistics);
+        StatisticListResource resource = new StatisticListResource(ModelMapper.toModelListStatistic(statistics));
 
         return new ResponseEntity(resource, HttpStatus.OK);
     }

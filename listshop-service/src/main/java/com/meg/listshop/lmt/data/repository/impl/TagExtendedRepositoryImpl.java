@@ -25,16 +25,13 @@ public class TagExtendedRepositoryImpl implements TagExtendedRepositoryCustom {
     }
 
     @Override
-    public List<TagExtendedEntity> findTagsByCriteria(List<TagType> tagTypes, Boolean parentsOnly) {
+    public List<TagExtendedEntity> findTagsByCriteria(List<TagType> tagTypes) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<TagExtendedEntity> cq = cb.createQuery(TagExtendedEntity.class);
 
         Root<TagExtendedEntity> tagEntityRoot = cq.from(TagExtendedEntity.class);
         List<Predicate> predicates = new ArrayList<>();
 
-        if (parentsOnly != null) {
-            predicates.add(cb.isTrue(tagEntityRoot.get("isParent")));
-        }
         ParameterExpression<Collection> paramTagTypes = cb.parameter(Collection.class);
         if (tagTypes != null && !tagTypes.isEmpty()) {
             predicates.add(tagEntityRoot.get("tagType").in(paramTagTypes));

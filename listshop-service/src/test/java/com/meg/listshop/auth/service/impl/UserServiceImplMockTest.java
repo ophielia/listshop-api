@@ -19,6 +19,7 @@ import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.data.repository.AdminUserDetailsRepository;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,6 +59,9 @@ public class UserServiceImplMockTest {
     @MockBean
     private AuthenticationManager authenticationManager;
 
+    @MockBean
+    private AdminUserDetailsRepository adminUserDetailsRepository;
+
     private final String buildNumber = "buildNumber";
     private final String clientVersion = "clientVersion";
     private final ClientType clientType = ClientType.Mobile;
@@ -69,7 +73,8 @@ public class UserServiceImplMockTest {
 
     @Before
     public void setUp() {
-        userService = new UserServiceImpl(userRepository, userDeviceRepository, authorityRepository, authenticationManager);
+        userService = new UserServiceImpl(userRepository, userDeviceRepository, authorityRepository,
+                authenticationManager, adminUserDetailsRepository);
     }
 
     @Test

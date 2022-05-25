@@ -70,6 +70,9 @@ public class TagChangeToCategoryListener implements TagChangeListener {
 
     @Override
     public void onTagAdd(TagEntity newTag, TagEntity parentTag) {
+        if (newTag.getIsGroup()) {
+            return;
+        }
         assignFromSibling(parentTag, newTag);
     }
 
@@ -78,10 +81,20 @@ public class TagChangeToCategoryListener implements TagChangeListener {
 // not used in this implementation
     }
 
+    @Override
+    public void onTagCopy(TagEntity copiedTag, Long categoryId) {
+        if (categoryId == null) {
+            ListLayoutCategoryEntity defaultCategory = listLayoutService.getDefaultListCategory();
+            categoryId = defaultCategory.getId();
+        }
+        listLayoutService.addTagToCategory(categoryId, copiedTag);
+
+    }
+
 
     private void assignFromSibling(TagEntity newParentTag, TagEntity childTag) {
         // get sibling
-        List<TagEntity> siblings = tagStructureService.getDescendantTags(newParentTag, false);
+        List<TagEntity> siblings = tagStructureService.getDescendantTags(newParentTag);
         if (siblings == null) {
             return;
         }

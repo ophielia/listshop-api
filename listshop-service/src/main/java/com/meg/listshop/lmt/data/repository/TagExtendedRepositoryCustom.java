@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface TagExtendedRepositoryCustom {
 
-    List<TagExtendedEntity> findTagsByCriteria(List<TagType> tagTypes, Boolean parentsOnly);
+    List<TagExtendedEntity> findTagsByCriteria(List<TagType> tagTypes);
 }

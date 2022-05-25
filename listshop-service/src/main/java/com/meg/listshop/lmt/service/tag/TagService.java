@@ -6,6 +6,8 @@ import com.meg.listshop.lmt.api.model.TagFilterType;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
+import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
+import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
@@ -26,7 +28,7 @@ public interface TagService {
 
     List<TagExtendedEntity> getTagExtendedList(TagFilterType tagFilterType, List<TagType> tagTypes);
 
-    TagEntity createTag(TagEntity parent, TagEntity newTag);
+    TagEntity createTag(TagEntity parent, TagEntity newTag, String username);
 
     List<TagEntity> getTagsForDish(String username, Long dishId);
 
@@ -41,8 +43,6 @@ public interface TagService {
     void addTagsToDish(String userName, Long id, Set<Long> tagIds);
 
     void removeTagsFromDish(String userName, Long dishId, Set<Long> tagIds);
-
-    List<TagEntity> getTagList(TagFilterType baseTags, List<TagType> tagType);
 
     List<TagEntity> getIngredientTagsForDishes(List<Long> dishIdList);
 
@@ -67,4 +67,15 @@ public interface TagService {
     List<TagEntity> getReplacedTagsFromIds(Set<Long> tagKeys);
 
 
+    List<TagInfoDTO> getTagInfoList(String name, List<TagType> tagTypes);
+
+    List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys);
+
+    List<TagEntity> getTagList(TagSearchCriteria criteria);
+
+    void assignTagsToUser(Long userId, List<Long> tagIds);
+
+    void setTagsAsVerified(List<Long> tagIds);
+
+    void createStandardTagsFromUserTags(List<Long> tagIds);
 }

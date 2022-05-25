@@ -84,6 +84,12 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
 
     List<ListLayoutCategoryEntity> findByIsDefaultTrue();
 
+    @Query(value = "select * from list_category lc\n" +
+            "         join list_layout ll on lc.layout_id = ll.layout_id\n" +
+            "         where is_default = true\n" +
+            "and ll.layout_type = :layoutType", nativeQuery = true)
+    ListLayoutCategoryEntity findDefaultForLayoutType(@Param("layoutType") String layoutType);
+
     @Query(value = "select tag_id, category_id " +
             "from category_tags ct " +
             "join tag t using (tag_id) " +

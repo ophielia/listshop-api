@@ -14,6 +14,10 @@ public class EmbeddedDishListResource {
         this.dishResourceList = listLayoutResourceList;
     }
 
+    public EmbeddedDishListResource() {
+        // this is empty because I want it to be empty
+    }
+
     public List<DishResource> getDishResourceList() {
         return dishResourceList;
     }

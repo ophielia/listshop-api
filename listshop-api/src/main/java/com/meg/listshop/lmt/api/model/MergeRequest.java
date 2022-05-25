@@ -20,6 +20,9 @@ public class MergeRequest {
     @JsonProperty("merge_items")
     private List<Item> mergeItems = new ArrayList<>();
 
+    @JsonProperty("check_tag_conflict")
+    private boolean checkTagConflict;
+
     public MergeRequest() {
         // empty constructor for jackson
     }
@@ -54,5 +57,13 @@ public class MergeRequest {
 
     public void setMergeItems(List<Item> mergeItems) {
         this.mergeItems = mergeItems;
+    }
+
+    public boolean isCheckTagConflict() {
+        return checkTagConflict;
+    }
+
+    public void setCheckTagConflict(boolean checkTagConflict) {
+        this.checkTagConflict = checkTagConflict;
     }
 }

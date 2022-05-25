@@ -32,7 +32,7 @@ public class AutoTaggerTask {
         this.autoTagService = autoTagService;
     }
 
-    @Scheduled(fixedDelay = 300000)
+    @Scheduled(fixedDelayString = "${service.service.task.autotagger.interval.millis:21600000}")
     public void autoTagDishes() {
         if (!taskIsActive) {
             return;

@@ -22,6 +22,12 @@ import java.util.List;
                         name = "increment_size",
                         value = "1")}
 )
+@NamedEntityGraph(
+        name = "dish-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("tags")
+        }
+)
 public class DishEntity {
 
     @Column(name = "USER_ID")

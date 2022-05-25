@@ -6,9 +6,10 @@ package com.meg.listshop.lmt.api.model;
 public enum TagFilterType {
 
     All("All"),
-    ForSelectAssign("ForSelect"),
-    ForSelectSearch("ForSearchSelect"),
-    //BaseTags("Base"),
+    GroupsOnly("groups"),
+    NoGroups("excludeGroups"),
+
+    ToReview("review"),
     ParentTags("ParentTags");
 
     private final String display;

@@ -2,13 +2,11 @@ package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.entity.TagRelationEntity;
-import com.meg.listshop.lmt.data.entity.TagSearchGroupEntity;
 import com.meg.listshop.lmt.data.repository.TagRelationRepository;
-import com.meg.listshop.lmt.data.repository.TagSearchGroupRepository;
+import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,18 +17,17 @@ import java.util.stream.Collectors;
 @Service
 public class TagStructureServiceImpl implements TagStructureService {
 
-
-    private final TagSearchGroupRepository tagSearchGroupRepository;
-
     private final TagRelationRepository tagRelationRepository;
+
+    private final TagRepository tagRepository;
 
     @Autowired
     public TagStructureServiceImpl(
-            TagSearchGroupRepository tagSearchGroupRepository,
+            TagRepository tagRepository,
             TagRelationRepository tagRelationRepository
     ) {
-        this.tagSearchGroupRepository = tagSearchGroupRepository;
         this.tagRelationRepository = tagRelationRepository;
+        this.tagRepository = tagRepository;
     }
 
     @Override
@@ -127,42 +124,25 @@ public class TagStructureServiceImpl implements TagStructureService {
     }
 
     @Override
-    public List<TagEntity> getAscendantTags(TagEntity tag, Boolean searchSelectOnly) {
-
-        // get parent of tag
-        Optional<TagRelationEntity> parenttag = tagRelationRepository.findByChild(tag);
-        if (parenttag.isPresent() && parenttag.get().getParent() != null) {
-            boolean stopForSearch = searchSelectOnly && (parenttag.get().getParent().getSearchSelect());
-            if (!stopForSearch) {
-                // if parenttag is not null, add to list, and call for parent tag
-                List<TagEntity> nextCall = getAscendantTags(parenttag.get().getParent(), searchSelectOnly);
-                nextCall.add(parenttag.get().getParent());
-                return nextCall;
-            }
+    public List<TagEntity> getAscendantTags(TagEntity tag) {
+        if (tag == null) {
+            return new ArrayList<>();
         }
 
-        return new ArrayList<>();
+        // get children of tag
+        List<Long> tagIds = tagRelationRepository.getTagWithAscendants(tag.getId());
+        return tagRepository.findAllById(tagIds);
     }
 
     @Override
-    public List<TagEntity> getDescendantTags(TagEntity tag, Boolean searchSelectOnly) {
-
-        // get children of tag
-        List<TagRelationEntity> childrentags = tagRelationRepository.findByParent(tag);
-        if (childrentags != null && !childrentags.isEmpty()) {
-            // if parenttag is not null, add to list, and call for parent tag
-            List<TagEntity> nextCall = new ArrayList<>();
-            for (TagRelationEntity tagRelation : childrentags) {
-                if (searchSelectOnly && !tagRelation.getChild().getSearchSelect()) {
-                    continue;
-                }
-                nextCall.addAll(getDescendantTags(tagRelation.getChild(), searchSelectOnly));
-                nextCall.add(tagRelation.getChild());
-            }
-            return nextCall;
+    public List<TagEntity> getDescendantTags(TagEntity tag) {
+        if (tag == null) {
+            return new ArrayList<>();
         }
 
-        return new ArrayList<>();
+        // get children of tag
+        List<Long> tagIds = tagRelationRepository.getTagWithDescendants(tag.getId());
+        return tagRepository.findAllById(tagIds);
     }
 
     @Override
@@ -196,7 +176,7 @@ public class TagStructureServiceImpl implements TagStructureService {
         }
         // circular reference exists if ascendants of parentTag include
         // the (new) childTag
-        List<TagEntity> grandparents = getAscendantTags(parentTag, false);
+        List<TagEntity> grandparents = getAscendantTags(parentTag);
         List<Long> exists = grandparents.stream()
                 .filter(t -> t.getId() == tag.getId())
                 .map(TagEntity::getId)
@@ -204,81 +184,35 @@ public class TagStructureServiceImpl implements TagStructureService {
         return !exists.isEmpty();
     }
 
+    public Set<Long> getLegacyDescendantsTagIds(Set<Long> tagIdSet) {
+        Map<Long, List<Long>> descendantMap = getDescendantTagIds(tagIdSet, null);
+        return descendantMap.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+    }
 
-    @Override
-    public List<TagSearchGroupEntity> buildGroupAssignments(Long groupId, List<TagEntity> members) {
-        List<TagSearchGroupEntity> newGroupAssignments = new ArrayList<>();
-        members.forEach(t -> {
-            TagSearchGroupEntity newSearchGroup = new TagSearchGroupEntity(groupId, t.getId());
-            newGroupAssignments.add(newSearchGroup);
-        });
-        return newGroupAssignments;
+    public Set<Long> getDescendantTagIds(Long tagId) {
+        List<Long> tagAndDescendants = tagRelationRepository.getTagWithDescendants(tagId);
+        if (tagAndDescendants == null) {
+            return new HashSet<>();
+        }
+        return new HashSet<>(tagAndDescendants);
+    }
+
+    public Map<Long, List<Long>> getDescendantTagIds(Set<Long> tagIds, Long userId) {
+        return tagRelationRepository.getDescendantMap(tagIds, userId);
     }
 
     @Override
-    public void createGroupsForMember(Long memberId, List<Long> groupsToAdd) {
-        List<TagSearchGroupEntity> newGroups = new ArrayList<>();
-        groupsToAdd.forEach(i -> {
-            TagSearchGroupEntity newSearchGroup = new TagSearchGroupEntity(i, memberId);
-            newGroups.add(newSearchGroup);
-        });
-        tagSearchGroupRepository.saveAll(newGroups);
-    }
-
-    @Transactional
-    @Override
-    public void removeGroupsForMember(Long memberid, List<Long> groupIds) {
-        deleteTagGroupsByGroupAndMember(groupIds, Collections.singletonList(memberid));
-    }
-
-    @Override
-    public void createMembersForGroup(Long groupId, List<Long> membersToAdd) {
-        List<TagSearchGroupEntity> newGroups = new ArrayList<>();
-        membersToAdd.forEach(i -> {
-            TagSearchGroupEntity newMemberForGroup = new TagSearchGroupEntity(groupId, i);
-            newGroups.add(newMemberForGroup);
-        });
-        tagSearchGroupRepository.saveAll(newGroups);
-    }
-
-    @Override
-    public void removeMembersForGroup(Long groupId, List<Long> membersToDelete) {
-        deleteTagGroupsByGroupAndMember(Collections.singletonList(groupId), membersToDelete);
-    }
-
-    @Transactional
-    @Override
-    public void deleteTagGroupsByGroupAndMember(List<Long> groupTagIds, List<Long> memberTagIds) {
-        tagSearchGroupRepository.deleteByGroupAndMember(groupTagIds, memberTagIds);
-    }
-
-
-    @Override
-    public Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags) {
-        List<TagSearchGroupEntity> rawSearchGroups = tagSearchGroupRepository.findByGroupIdIn(allTags);
-
-        // put the results in a HashMap
+    public Map<Long, List<Long>> getSearchGroupsForTagIds(Set<Long> allTags, Long userId) {
         HashMap<Long, List<Long>> results = new HashMap<>();
-        for (TagSearchGroupEntity result : rawSearchGroups) {
-            if (!results.containsKey(result.getGroupId())) {
-                results.put(result.getGroupId(), new ArrayList<>());
-            }
-            results.get(result.getGroupId()).add(result.getMemberId());
+        for (Long tagId : allTags) {
+            Set<Long> descendantIds = getDescendantTagIds(tagId);
+            results.put(tagId, new ArrayList<>(descendantIds));
         }
         return results;
     }
 
-    @Override
-    public List<Long> getSearchGroupIdsByMember(Long memberid) {
-        List<TagSearchGroupEntity> groups = tagSearchGroupRepository.findByMemberId(memberid);
-        return groups.stream().map(TagSearchGroupEntity::getGroupId).collect(Collectors.toList());
+    public Map<Long, List<Long>> getRatingsWithSiblingsByPower(List<Long> filterTagIds, boolean isExclude, Long userId) {
+        return tagRelationRepository.getRatingsWithSiblingsByPower(filterTagIds, isExclude, userId);
     }
-
-    @Override
-    public List<Long> getSearchMemberIdsByGroup(Long groupId) {
-        List<TagSearchGroupEntity> members = tagSearchGroupRepository.findByGroupId(groupId);
-        return members.stream().map(TagSearchGroupEntity::getMemberId).collect(Collectors.toList());
-    }
-
 
 }

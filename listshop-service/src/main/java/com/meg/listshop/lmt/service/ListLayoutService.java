@@ -1,18 +1,14 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.lmt.api.model.ListLayoutType;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 import com.meg.listshop.lmt.service.categories.ListShopCategory;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by margaretmartin on 06/11/2017.
@@ -23,6 +19,8 @@ public interface ListLayoutService {
     ListLayoutEntity getListLayoutByType(ListLayoutType listLayoutType);
 
     ListLayoutEntity createListLayout(ListLayoutEntity listLayoutEntity);
+
+    ListLayoutCategoryEntity getDefaultListCategory();
 
     ListLayoutEntity getListLayoutById(Long listLayoutId);
 
@@ -44,9 +42,9 @@ public interface ListLayoutService {
 
     void addTagsToCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList);
 
-    void deleteTagsFromCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList);
+    void addTagToCategory(Long layoutCategoryId, TagEntity tag);
 
-    List<ListLayoutCategoryEntity> getListCategoriesForIds(Set<Long> categoryIds);
+    void deleteTagsFromCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList);
 
     List<ListLayoutCategoryEntity> getListCategoriesForLayout(Long layoutId);
 
@@ -58,10 +56,6 @@ public interface ListLayoutService {
 
     void moveCategory(Long categoryId, boolean moveUp) throws ListLayoutException;
 
-
-    List<Pair<TagEntity, ListLayoutCategoryEntity>> getTagCategoryChanges(Long listLayoutId, Date changedAfter);
-
-    List<Pair<ItemEntity, ListLayoutCategoryEntity>> getItemChangesWithCategories(Long listLayoutId, List<ItemEntity> changedItems);
 
     void assignTagToDefaultCategories(TagEntity newtag);
 

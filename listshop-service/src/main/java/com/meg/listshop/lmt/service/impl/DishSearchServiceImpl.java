@@ -36,6 +36,12 @@ public class DishSearchServiceImpl implements DishSearchService {
 
     private NamedParameterJdbcTemplate jdbcTemplate;
 
+
+    private static final String FILTER_CASE_BEGIN = "having sum(case ";
+    private static final String FILTER_CASE_END = " else 0 end) =  ";
+    private static final String FILTER_CASE_END_EXCLUDE_ONLY = " else 0 end) >= 0  ";
+    private static final String GROUP_BY_BEGIN = " group by 1,2,3,4,5 ";
+
     @Autowired
     public void init(DataSource dataSource, TagStructureService tagStructureService) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -47,43 +53,36 @@ public class DishSearchServiceImpl implements DishSearchService {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", criteria.getUserId())
         ;
-        String sqlBase = "select d.* from dish d ";
-        StringBuilder includedWith = new StringBuilder("");
-        StringBuilder includedJoin = new StringBuilder("");
-        StringBuilder whereClause = new StringBuilder("where d.user_id = :userId ");
-        StringBuilder excludeWhereClause = new StringBuilder("");
+        String sqlBase = "select distinct d.user_id, lower(d.dish_name), d.description, d.dish_id, d.last_added  from dish d join dish_tags dt using (dish_id) ";
+        String whereClause = "where d.user_id = :userId ";
+        StringBuilder groupByFilter = new StringBuilder("");
         StringBuilder nameWhereClause = new StringBuilder("");
         StringBuilder sortClause = new StringBuilder(" ");
-        HashSet<Long> allTagIds = getAllTagIdsForCriteria(criteria);
-        Map<Long, List<Long>> groupDictionary = tagStructureService.getSearchGroupsForTagIds(allTagIds);
+
+        List<String> filterClauses = new ArrayList<>();
+        int excludeClauseCount = 0;
         if (!criteria.getIncludedTagIds().isEmpty()) {
-            Set<Long> includeTagList = tagIdsWithSearchTags(criteria.getIncludedTagIds(), groupDictionary);
-            String includeTagQueryString = String.join(", ", includeTagList.stream().map(String::valueOf).collect(Collectors.toList()));
-            int setCount = includeTagList.size();
-            // right now, just as strings - no named parameters
-            includedWith.append("with included as (");
-            includedWith.append("select dish_id, count(distinct tag_id) from dish_tags ");
-            includedWith.append("where tag_id in ( ");
-            includedWith.append(includeTagQueryString);
-            includedWith.append(") ");
-            includedWith.append(" group by dish_id having count(distinct tag_id) = ");
-            includedWith.append(setCount);
-            includedWith.append(") ");
-
-            includedJoin.append(" join included i using (dish_id) ");
-
+            List<String> includeClauses = getFilterClauses(criteria.getIncludedTagIds(), false, criteria.getUserId());
+            filterClauses.addAll(includeClauses);
         }
         if (!criteria.getExcludedTags().isEmpty()) {
-            Set<Long> excludeTagList = tagIdsWithSearchTags(criteria.getIncludedTagIds(), groupDictionary);
-            String excludeTagQueryString = String.join(", ", excludeTagList.stream().map(String::valueOf).collect(Collectors.toList()));
-
-
-            excludeWhereClause.append("and d.dish_id not in (  ");
-            excludeWhereClause.append("select dish_id from dish_tags ");
-            excludeWhereClause.append("        where tag_id in (");
-            excludeWhereClause.append(excludeTagQueryString);
-            excludeWhereClause.append(")) ");
-
+            List<String> excludeClauses = getFilterClauses(criteria.getExcludedTags(), true, criteria.getUserId());
+            filterClauses.addAll(excludeClauses);
+            excludeClauseCount = excludeClauses.size();
+        }
+        // create tag filter, if we have something to filter
+        if (!filterClauses.isEmpty()) {
+            // add all clauses to builder, separating by space
+            int countWithoutExclude = filterClauses.size() - excludeClauseCount;
+            filterClauses.stream().forEach(c -> groupByFilter.append(" ").append(c).append(" "));
+            groupByFilter.insert(0, FILTER_CASE_BEGIN);
+            groupByFilter.insert(0, GROUP_BY_BEGIN);
+            if (countWithoutExclude > 0) {
+                groupByFilter.append(FILTER_CASE_END);
+                groupByFilter.append(countWithoutExclude);
+            } else {
+                groupByFilter.append(FILTER_CASE_END_EXCLUDE_ONLY);
+            }
         }
         if (!StringUtils.isEmpty(criteria.getNameFragment())) {
             nameWhereClause.append(" and d.dish_name ilike '%");
@@ -101,20 +100,39 @@ public class DishSearchServiceImpl implements DishSearchService {
             sortClause.append(" NULLS LAST");
         }
 
-        String sql = includedWith + sqlBase + includedJoin + whereClause + excludeWhereClause + nameWhereClause + sortClause;
+        String sql = sqlBase + whereClause + nameWhereClause + groupByFilter + sortClause;
 
         return this.jdbcTemplate.query(sql, parameters, new DishMapper());
     }
 
-    private Set<Long> tagIdsWithSearchTags(List<Long> tagIdList, Map<Long, List<Long>> groupDictionary) {
-        // get dictionary for tag_ids
-        Set<Long> tagIdsForInclude = new HashSet(tagIdList);
-        tagIdList.forEach(tagid -> {
-            if (groupDictionary.containsKey(tagid)) {
-                tagIdsForInclude.addAll(groupDictionary.get(tagid).stream().collect(Collectors.toList()));
-            }
-        });
-        return tagIdsForInclude;
+    private List<String> getFilterClauses(List<Long> filterTagIds, boolean isExclude, Long userId) {
+        List<String> collectedClauses = new ArrayList<>();
+        String whenWeight = isExclude ? "-900" : "1";
+
+        // pull ratings tags
+        Map<Long, List<Long>> ratingTags = tagStructureService.getRatingsWithSiblingsByPower(filterTagIds, isExclude, userId);
+        collectedClauses.addAll(tagsToFilterClause(ratingTags, whenWeight));
+
+
+        Set<Long> tagIds = filterTagIds.stream()
+                .filter(t -> !ratingTags.containsKey(t))
+                .collect(Collectors.toSet());
+        if (!tagIds.isEmpty()) {
+            Map<Long, List<Long>> otherTags = tagStructureService.getDescendantTagIds(tagIds, userId);
+            collectedClauses.addAll(tagsToFilterClause(otherTags, whenWeight));
+        }
+
+        return collectedClauses;
+    }
+
+    private List<String> tagsToFilterClause(Map<Long, List<Long>> ratingTags, String whenWeight) {
+        List<String> collectedClauses = new ArrayList<>();
+        for (Map.Entry<Long, List<Long>> entry : ratingTags.entrySet()) {
+            var tagList = String.join(", ", entry.getValue().stream().map(String::valueOf).collect(Collectors.toList()));
+            var clause = String.format("when tag_id in (%s) then %s", tagList, whenWeight);
+            collectedClauses.add(clause);
+        }
+        return collectedClauses;
     }
 
     private String columnForSortKey(DishSortKey key) {
@@ -127,17 +145,6 @@ public class DishSearchServiceImpl implements DishSearchService {
                 return " d.dish_id";
         }
         return " d.dish_id";
-    }
-
-    private HashSet<Long> getAllTagIdsForCriteria(DishSearchCriteria criteria) {
-        HashSet<Long> allTagIds = new HashSet<>();
-        if (criteria.getIncludedTagIds() != null) {
-            allTagIds.addAll(criteria.getIncludedTagIds());
-        }
-        if (criteria.getExcludedTags() != null) {
-            allTagIds.addAll(criteria.getExcludedTags());
-        }
-        return allTagIds;
     }
 
     @Override
@@ -197,6 +204,7 @@ public class DishSearchServiceImpl implements DishSearchService {
             i++;
         }
 
+        List<String> filterClauses = new ArrayList<>();
         StringBuilder whereClause = new StringBuilder(" ");
         if (sqlFilteredDishes != null && !sqlFilteredDishes.isEmpty()) {
             whereClause.append(" where d.dish_id not in (");
@@ -218,7 +226,7 @@ public class DishSearchServiceImpl implements DishSearchService {
 
         public DishEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
             Long id = rs.getLong("user_id");
-            String dishName = rs.getString("dish_name");
+            String dishName = rs.getString(2);
             DishEntity dishEntity = new DishEntity(id, dishName);
             dishEntity.setDescription(rs.getString("description"));
             dishEntity.setId(rs.getLong("dish_id"));

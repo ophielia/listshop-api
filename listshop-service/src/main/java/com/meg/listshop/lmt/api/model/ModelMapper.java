@@ -7,11 +7,13 @@
 
 package com.meg.listshop.lmt.api.model;
 
+import com.meg.listshop.admin.model.AdminUser;
 import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.categories.ItemCategoryPojo;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 import com.meg.listshop.lmt.service.categories.ListShopCategory;
@@ -34,9 +36,13 @@ public class ModelMapper {
         throw new IllegalAccessError("Utility class");
     }
 
-    public static Dish toModel(DishEntity dishEntity) {
+
+    public static Dish toModel(DishEntity dishEntity, boolean includeTags) {
         if (dishEntity != null) {
-            List<Tag> tags = toModel(dishEntity.getTags());
+            List<Tag> tags = new ArrayList<>();
+            if (includeTags) {
+                tags = toModel(dishEntity.getTags());
+            }
             return new Dish(dishEntity.getId())
                     .description(dishEntity.getDescription())
                     .dishName(dishEntity.getDishName())
@@ -60,6 +66,28 @@ public class ModelMapper {
         return new User(null, null);
     }
 
+    public static AdminUser toAdminModel(UserEntity userEntity) {
+        if (userEntity != null) {
+            return new AdminUser(userEntity.getEmail())
+                    .created(userEntity.getCreationDate())
+                    .userId(String.valueOf(userEntity.getId()))
+                    .lastLogin(userEntity.getLastLogin());
+        }
+        return new AdminUser(null);
+    }
+
+    public static AdminUser toAdminModel(AdminUserDetailsEntity userEntity) {
+        if (userEntity != null) {
+            return new AdminUser(userEntity.getEmail())
+                    .created(userEntity.getCreationDate())
+                    .userId(String.valueOf(userEntity.getUserId()))
+                    .lastLogin(userEntity.getLastLogin())
+                    .listCount(userEntity.getListCount())
+                    .dishCount(userEntity.getDishCount())
+                    .mealPlanCount(userEntity.getMealPlanCount());
+        }
+        return new AdminUser(null);
+    }
 
 
     private static String[] toRoleListModel(List<AuthorityEntity> authorities) {
@@ -145,7 +173,7 @@ public class ModelMapper {
     public static TargetProposalDish toModel(DishSlotEntity dishEntity) {
         List<Tag> tags = toModel(dishEntity.getMatchedTags());
         return new TargetProposalDish(dishEntity.getDishId())
-                .dish(toModel(dishEntity.getDish()))
+                .dish(toModel(dishEntity.getDish(), false))
                 .matchedTags(tags);
     }
 
@@ -231,32 +259,30 @@ public class ModelMapper {
         }
 
         List<ListLayoutCategoryPojo> subcategories = cat.getSubCategories().stream()
-                .map(r -> (ListLayoutCategoryPojo) r)
+                .map(ListLayoutCategoryPojo.class::cast)
                 .collect(Collectors.toList());
         layout.setSubCategories(layoutCategoriesToModel(subcategories));
         return layout;
     }
 
-    public static ListLayoutCategoryPojo toModel(ListLayoutCategoryEntity cat) {
-        return toModel(cat, true);
+    public static Category toModel(ListLayoutCategoryEntity cat, boolean includeTags) {
 
-    }
-
-    public static ListLayoutCategoryPojo toModel(ListLayoutCategoryEntity cat, boolean includeTags) {
         if (cat == null) {
             return null;
         }
-        ListLayoutCategoryPojo returnval = (ListLayoutCategoryPojo) new ListLayoutCategoryPojo(cat.getId())
-                .name(cat.getName());
-        returnval = (ListLayoutCategoryPojo) returnval.layoutId(cat.getLayoutId());
+        Category returnval = new Category(cat.getId())
+                .name(cat.getName())
+                .displayOrder(cat.getDisplayOrder())
+                .categoryType(CategoryType.Standard.name());
+
         if (includeTags) {
-            returnval = (ListLayoutCategoryPojo) returnval.tags(toModel(cat.getTags()));
-        } else {
-            returnval = (ListLayoutCategoryPojo) returnval.tags(new ArrayList<>());
+            returnval = returnval.tags(toModel(cat.getTags()));
         }
+
         return returnval;
 
     }
+
 
     private static List<Item> simpleItemsToModel(List<ItemEntity> items) {
         List<Item> itemList = new ArrayList<>();
@@ -304,6 +330,21 @@ public class ModelMapper {
         return tags;
     }
 
+
+    public static Tag toModel(TagInfoDTO tagInfoDTO) {
+        return new Tag(tagInfoDTO.getTagId())
+                .name(tagInfoDTO.getName())
+                .description(tagInfoDTO.getDescription())
+                .userId(String.valueOf(tagInfoDTO.getUserId()))
+                .tagType(tagInfoDTO.getTagType())
+                .power(tagInfoDTO.getPower())
+                .isGroup(tagInfoDTO.isGroup())
+                .assignSelect(!tagInfoDTO.isGroup())
+                .searchSelect(tagInfoDTO.isGroup())
+                .parentId(String.valueOf(tagInfoDTO.getParentId()))
+                .toDelete(tagInfoDTO.isToDelete());
+    }
+
     public static Tag toModel(TagEntity tagEntity) {
         if (tagEntity == null) {
             return null;
@@ -312,13 +353,15 @@ public class ModelMapper {
         return new Tag(tagEntity.getId())
                 .name(tagEntity.getName())
                 .description(tagEntity.getDescription())
+                .userId(String.valueOf(tagEntity.getUserId()))
                 .tagType(tagEntity.getTagType().name())
                 .power(tagEntity.getPower())
+                .isGroup(tagEntity.getIsGroup())
                 // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
-                .assignSelect(tagEntity.getAssignSelect())
+                .assignSelect(!tagEntity.getIsGroup())
+                .searchSelect(tagEntity.getIsGroup())
                 .parentId(String.valueOf(tagEntity.getParentId()))
-                .toDelete(tagEntity.isToDelete())
-                .searchSelect(tagEntity.getSearchSelect());
+                .toDelete(tagEntity.isToDelete());
     }
 
     public static Tag toModel(TagExtendedEntity tagEntity) {
@@ -332,21 +375,37 @@ public class ModelMapper {
                 .tagType(tagEntity.getTagType().name())
                 .power(tagEntity.getPower())
                 // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
-                .assignSelect(tagEntity.getAssignSelect())
+                .isGroup(tagEntity.getIsGroup())
+                .assignSelect(!tagEntity.getIsGroup())
+                .searchSelect(tagEntity.getIsGroup())
                 .parentId(String.valueOf(tagEntity.getParentId()))
-                .toDelete(tagEntity.getToDelete())
-                .searchSelect(tagEntity.getSearchSelect());
+                .toDelete(tagEntity.getToDelete());
     }
 
-    public static MealPlan toModel(MealPlanEntity mealPlanEntity) {
-        List<Slot> slots = slotsToModel(mealPlanEntity.getSlots());
+    public static MealPlan toModel(MealPlanEntity mealPlanEntity, boolean includeSlots) {
+        List<Slot> slots = new ArrayList<>();
+        int slotCount = mealPlanEntity.getSlots().size();
+        if (includeSlots) {
+            slots = slotsToModel(mealPlanEntity.getSlots());
+        }
+
         return new MealPlan(mealPlanEntity.getId())
                 .name(mealPlanEntity.getName())
                 .created(mealPlanEntity.getCreated())
                 .mealPlanType(mealPlanEntity.getMealPlanType() != null ? mealPlanEntity.getMealPlanType().name() : "")
+                .slotCount(slotCount)
                 .userId(mealPlanEntity.getUserId().toString())
                 .slots(slots);
 
+    }
+
+    public static List<Statistic> toModelListStatistic(List<ListTagStatistic> statisticEntities) {
+        List<Statistic> statistics = new ArrayList<>();
+        for (ListTagStatistic st : statisticEntities) {
+            Statistic statistic = ModelMapper.toModel(st);
+            statistics.add(statistic);
+        }
+        return statistics;
     }
 
     public static Statistic toModel(ListTagStatistic statistic) {
@@ -361,7 +420,7 @@ public class ModelMapper {
     private static Slot toModel(SlotEntity slotEntity) {
         return new Slot(slotEntity.getMealPlanSlotId())
                 .mealPlanId(slotEntity.getMealPlan().getId())
-                .dish(toModel(slotEntity.getDish()));
+                .dish(toModel(slotEntity.getDish(), false));
     }
 
     private static List<Slot> slotsToModel(List<SlotEntity> slots) {
@@ -488,8 +547,7 @@ public class ModelMapper {
         tagEntity.setName(tag.getName().trim());
         tagEntity.setDescription(tag.getDescription());
         tagEntity.setTagType(TagType.valueOf(tag.getTagType()));
-        tagEntity.setSearchSelect(tag.getSearchSelect());
-        tagEntity.setAssignSelect(tag.getAssignSelect());
+        tagEntity.setIsGroup(tag.getIsGroup());
         tagEntity.setPower(tag.getPower());
 
         return tagEntity;
@@ -500,7 +558,7 @@ public class ModelMapper {
             return null;
         }
         Long targetId = target.getTargetId();
-        TargetType targetType=null;
+        TargetType targetType = null;
         if (target.getTargetType() != null) {
             targetType = TargetType.valueOf(target.getTargetType());
         }
@@ -580,48 +638,12 @@ public class ModelMapper {
     }
 
     public static ListLayoutEntity toEntity(ListLayout listLayout) {
-        ListLayoutType layoutType = listLayout.getLayoutType()!=null?ListLayoutType.valueOf(listLayout.getLayoutType()):null;
+        ListLayoutType layoutType = listLayout.getLayoutType() != null ? ListLayoutType.valueOf(listLayout.getLayoutType()) : null;
         ListLayoutEntity listLayoutEntity = new ListLayoutEntity();
         listLayoutEntity.setName(listLayout.getName());
         listLayoutEntity.setLayoutType(layoutType);
         return listLayoutEntity;
     }
-
-    private static List<TagDrilldown> childrenTagsToModel(List<FatTag> childrenTags) {
-        List<TagDrilldown> drilldownList = new ArrayList<>();
-        if (childrenTags != null) {
-            for (FatTag cat : childrenTags) {
-                drilldownList.add(toModel(cat));
-            }
-        }
-        return drilldownList;
-    }
-
-    public static TagDrilldown toModel(FatTag fatTag) {
-        if (fatTag == null) {
-            return null;
-        }
-
-        List<TagDrilldown> children = new ArrayList<>();
-        if (fatTag.getChildren() != null) {
-            children = childrenTagsToModel(fatTag.getChildren());
-        }
-        TagDrilldown result = new TagDrilldown(fatTag.getId());
-        result.name(fatTag.getName())
-                .description(fatTag.getDescription())
-                .tagType(fatTag.getTagType().name())
-                .power(fatTag.getPower())
-                // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
-                .assignSelect(fatTag.getAssignSelect())
-                .parentId(String.valueOf(fatTag.getParentId()))
-                .searchSelect(fatTag.getSearchSelect());
-
-        result.parentId(String.valueOf(fatTag.getParentId()));
-        result.childrenList(children);
-
-        return result;
-    }
-
 
     // possibly unused
     public static ListTagStatistic toEntity(Statistic statistic) {
@@ -639,5 +661,6 @@ public class ModelMapper {
 
         return statEntity;
     }
+
 
 }

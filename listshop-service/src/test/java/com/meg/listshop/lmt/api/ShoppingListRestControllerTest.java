@@ -99,6 +99,12 @@ public class ShoppingListRestControllerTest {
     @Value("classpath:/data/shoppingListRestControllerTest_mergeList.json")
     Resource resourceFile;
 
+    @Value("classpath:/data/shoppingListRestControllerTest_mergeListEmpty.json")
+    Resource resourceFileEmpty;
+
+    @Value("classpath:/data/shoppingListRestControllerTest_mergeListWithConflicts.json")
+    Resource mergeConflictFileSource;
+
 
     private MockMvc mockMvc;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
@@ -566,6 +572,67 @@ public class ShoppingListRestControllerTest {
 
     }
 
+    @Test
+    @WithMockUser
+    public void testMergeList_Empty() throws Exception {
+        //// load statistics into file
+        String testMergeList = StreamUtils.copyToString(resourceFileEmpty.getInputStream(), Charset.forName("utf8"));
+
+        Long listId = 130000L;
+
+        String url = "/shoppinglist/shared";
+        mockMvc.perform(put(url)
+                        .with(user(meUserDetails))
+                        .contentType(contentType)
+                        .content(testMergeList))
+                .andExpect(status().isOk());
+
+        // now, retrieve the list
+        ShoppingList source = retrieveList(meUserDetails, listId);
+        Map<String, Item> sourceResultMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(sourceResultMap);
+
+        // check result
+        // should have 9 items
+        Assert.assertTrue("should be empty - empty list - empty merge request", sourceResultMap.isEmpty());
+    }
+
+    @Test
+    @WithMockUser
+    public void testMergeList_TagConflict() throws Exception {
+        String testMergeList = StreamUtils.copyToString(mergeConflictFileSource.getInputStream(), Charset.forName("utf8"));
+
+        Long listId = 120000L;
+
+        String url = "/shoppinglist/shared";
+        mockMvc.perform(put(url)
+                        .with(user(meUserDetails))
+                        .contentType(contentType)
+                        .content(testMergeList))
+                .andExpect(status().isOk());
+
+        // now, retrieve the list
+        ShoppingList source = retrieveList(meUserDetails, listId);
+        Map<String, Item> sourceResultMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(sourceResultMap);
+
+        // check result
+        // should have 9 items
+        Assert.assertEquals("should have 9 items", 3, sourceResultMap.keySet().size());
+        // should not contain tag 12001 or 12002 (standard)
+        Assert.assertFalse("shouldn't contain tag 12001", sourceResultMap.containsKey("12001"));
+        Assert.assertFalse("shouldn't contain tag 12002", sourceResultMap.containsKey("12002"));
+        // should  contain tag 13001 or 13002 (standard)
+        Assert.assertTrue("shouldn't contain tag 13001", sourceResultMap.containsKey("13001"));
+        Assert.assertTrue("shouldn't contain tag 13002", sourceResultMap.containsKey("13002"));
+        // should contain 21 - no conflict
+        Assert.assertTrue("shouldn't contain tag 21", sourceResultMap.containsKey("21"));
+
+    }
 
     @Test
     @WithMockUser
