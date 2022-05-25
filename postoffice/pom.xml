@@ -5,7 +5,7 @@
 
     <groupId>com.meg.postoffice</groupId>
     <artifactId>postoffice-service</artifactId>
-    <version>1.8.0</version>
+    <version>1.8.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>postoffice-service</name>
@@ -14,7 +14,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-parent</artifactId>
-        <version>1.8.0</version>
+        <version>1.8.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
