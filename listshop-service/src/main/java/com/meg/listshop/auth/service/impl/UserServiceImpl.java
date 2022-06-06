@@ -8,10 +8,8 @@
 package com.meg.listshop.auth.service.impl;
 
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
-import com.meg.listshop.auth.data.entity.AuthorityEntity;
-import com.meg.listshop.auth.data.entity.AuthorityName;
-import com.meg.listshop.auth.data.entity.UserDeviceEntity;
-import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.data.entity.*;
+import com.meg.listshop.auth.data.repository.AdminUserDetailsRepository;
 import com.meg.listshop.auth.data.repository.AuthorityRepository;
 import com.meg.listshop.auth.data.repository.UserDeviceRepository;
 import com.meg.listshop.auth.data.repository.UserRepository;
@@ -19,8 +17,6 @@ import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.data.entity.AdminUserDetailsEntity;
-import com.meg.listshop.lmt.data.repository.AdminUserDetailsRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

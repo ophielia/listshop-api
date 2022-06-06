@@ -8,6 +8,8 @@ import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishTagSearchResult;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,8 +17,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,8 +29,7 @@ import java.util.stream.Collectors;
 @Service
 public class DishSearchServiceImpl implements DishSearchService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private static final Logger logger = LogManager.getLogger(DishSearchServiceImpl.class);
 
     private TagStructureService tagStructureService;
 
@@ -101,7 +100,7 @@ public class DishSearchServiceImpl implements DishSearchService {
         }
 
         String sql = sqlBase + whereClause + nameWhereClause + groupByFilter + sortClause;
-
+        logger.debug("Querying dishes: sql [{}], parameters [{}]", sql, parameters);
         return this.jdbcTemplate.query(sql, parameters, new DishMapper());
     }
 

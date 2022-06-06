@@ -1013,13 +1013,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<LongTagIdPairDTO> conflicts = tagService.getStandardUserDuplicates(userId, tagKeys);
         for (LongTagIdPairDTO conflict : conflicts) {
             ItemEntity replaceItem = mergeMap.get(String.valueOf(conflict.getLeftId()));
-            replaceItem.setTagId(conflict.getRightId());
-            if (replaceItem.getTag() != null) {
-                replaceItem.getTag().setId(conflict.getRightId());
+            if (replaceItem != null) {
+
+                replaceItem.setTagId(conflict.getRightId());
+                if (replaceItem.getTag() != null) {
+                    replaceItem.getTag().setId(conflict.getRightId());
+                }
+                mergeMap.put(String.valueOf(conflict.getRightId()), replaceItem);
+                mergeMap.remove(String.valueOf(conflict.getLeftId()));
             }
-            mergeMap.put(String.valueOf(conflict.getRightId()), replaceItem);
-            mergeMap.remove(String.valueOf(conflict.getLeftId()));
         }
+
     }
 
     private void addItemToClientMap(ItemEntity item, Map<Long, ItemEntity> itemMap) {

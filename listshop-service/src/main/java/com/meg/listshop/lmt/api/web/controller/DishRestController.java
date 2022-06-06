@@ -62,7 +62,7 @@ public class DishRestController implements DishRestControllerApi {
                                                            @RequestParam(value = "sortKey", required = false) String sortKey,
                                                            @RequestParam(value = "sortDirection", required = false) String sortDirection
     ) {
-        logger.info("Entered retrieveDishes includedTags: [%s], excludedTags: [%s], sortKey: [%s], sortDirection: [%s]", includedTags, excludedTags, sortKey, sortDirection);
+        logger.info("Entered retrieveDishes includedTags: [{}], excludedTags: [{}], sortKey: [{}], sortDirection: [{}]", includedTags, excludedTags, sortKey, sortDirection);
         List<DishResource> dishList;
         if (StringUtils.isEmpty(includedTags) && StringUtils.isEmpty(excludedTags)
                 && StringUtils.isEmpty(sortKey) && StringUtils.isEmpty(sortDirection)) {
@@ -100,7 +100,7 @@ public class DishRestController implements DishRestControllerApi {
         if (!StringUtils.isEmpty(searchFragment)) {
             criteria.setNameFragment(searchFragment);
         }
-        logger.debug(String.format("Searching for dishes with criteria [%s]. ", criteria));
+        logger.debug("Searching for dishes with criteria [{}]. ", criteria);
         return dishSearchService.findDishes(criteria).stream()
                 .map(d -> ModelMapper.toModel(d, false))
                 .map(DishResource::new)

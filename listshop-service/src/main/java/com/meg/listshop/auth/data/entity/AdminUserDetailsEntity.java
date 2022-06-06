@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.data.entity;
+package com.meg.listshop.auth.data.entity;
 
 import org.hibernate.annotations.Immutable;
 

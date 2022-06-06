@@ -9,6 +9,7 @@ package com.meg.listshop.lmt.api.model;
 
 import com.meg.listshop.admin.model.AdminUser;
 import com.meg.listshop.auth.api.model.*;
+import com.meg.listshop.auth.data.entity.AdminUserDetailsEntity;
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.common.FlatStringUtils;
