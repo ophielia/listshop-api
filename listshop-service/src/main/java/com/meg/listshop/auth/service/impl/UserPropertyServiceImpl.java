@@ -19,8 +19,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -64,15 +67,16 @@ public class UserPropertyServiceImpl implements UserPropertyService {
         }
         UserEntity user = getUserForUserName(userName);
 
+        List<UserPropertyEntity> databaseProperties = userPropertyRepository.findByUserId(user.getId());
+        Map<String, UserPropertyEntity> existingProperties = databaseProperties.stream()
+                .collect(Collectors.toMap(UserPropertyEntity::getKey, Function.identity()));
+
+        List<UserPropertyEntity> toSaveList = new ArrayList<>();
         for (UserPropertyEntity toSave : userPropertyEntities) {
-            if (toSave.getKey() == null) {
-                continue;
-            }
             // get any existing entry for this property / user
-            Optional<UserPropertyEntity> dbPropertyOpt = userPropertyRepository.findByUserIdAndPropertyKey(user.getId(), toSave.getKey());
-            UserPropertyEntity dbProperty = dbPropertyOpt.orElse(null);
+            UserPropertyEntity dbProperty = existingProperties.getOrDefault(toSave.getKey(), null);
             // if none exists, created one
-            if (!dbPropertyOpt.isPresent()) {
+            if (dbProperty == null) {
                 dbProperty = new UserPropertyEntity();
                 dbProperty.setUser(user);
                 dbProperty.setKey(toSave.getKey());
@@ -80,8 +84,9 @@ public class UserPropertyServiceImpl implements UserPropertyService {
             // set value
             dbProperty.setValue(toSave.getValue());
             // save or update
-            userPropertyRepository.save(dbProperty);
+            toSaveList.add(dbProperty);
         }
+        userPropertyRepository.saveAll(toSaveList);
     }
 
     private UserEntity getUserForUserName(String userName) throws UserNotFoundException {
