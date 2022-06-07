@@ -55,7 +55,7 @@ public class UserPropertyServiceImplMockTest {
         UserPropertyEntity property = buildUserPropertyEntity(testUser, "key1", "value1");
 
         Mockito.when(userService.getUserByUserEmail(TestConstants.USER_3_NAME)).thenReturn(testUser);
-        Mockito.when(userPropertyRepository.findByUserIdAndPropertyKey(TestConstants.USER_3_ID, "key2")).thenReturn(Optional.of(property));
+        Mockito.when(userPropertyRepository.findByUserIdAndKey(TestConstants.USER_3_ID, "key2")).thenReturn(Optional.of(property));
 
         UserPropertyEntity result = userPropertyService.getPropertyForUser(TestConstants.USER_3_NAME, "key2");
 
@@ -74,7 +74,7 @@ public class UserPropertyServiceImplMockTest {
         UserPropertyEntity property = buildUserPropertyEntity(testUser, "key1", "value1");
 
         Mockito.when(userService.getUserByUserEmail(TestConstants.USER_3_NAME)).thenReturn(testUser);
-        Mockito.when(userPropertyRepository.findByUserIdAndPropertyKey(TestConstants.USER_3_ID, "key2")).thenReturn(Optional.ofNullable(null));
+        Mockito.when(userPropertyRepository.findByUserIdAndKey(TestConstants.USER_3_ID, "key2")).thenReturn(Optional.ofNullable(null));
 
         UserPropertyEntity result = userPropertyService.getPropertyForUser(TestConstants.USER_3_NAME, "key2");
 

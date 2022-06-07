@@ -57,7 +57,7 @@ public class UserPropertyServiceImpl implements UserPropertyService {
         }
         UserEntity user = getUserForUserName(userName);
 
-        return userPropertyRepository.findByUserIdAndPropertyKey(user.getId(), propertyKey).orElse(null);
+        return userPropertyRepository.findByUserIdAndKey(user.getId(), propertyKey).orElse(null);
     }
 
     @Override

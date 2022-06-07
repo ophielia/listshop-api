@@ -12,5 +12,5 @@ public interface UserPropertyRepository extends JpaRepository<UserPropertyEntity
 
     List<UserPropertyEntity> findByUserId(Long userId);
 
-    Optional<UserPropertyEntity> findByUserIdAndPropertyKey(Long userId, String propertyKey);
+    Optional<UserPropertyEntity> findByUserIdAndKey(Long userId, String propertyKey);
 }
