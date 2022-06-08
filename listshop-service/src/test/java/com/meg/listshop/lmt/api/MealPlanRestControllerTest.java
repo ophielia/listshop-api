@@ -242,7 +242,7 @@ public class MealPlanRestControllerTest {
         this.mockMvc.perform(post(url)
                         .with(user(userDetails))
                         .contentType(contentType))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
 
@@ -365,7 +365,7 @@ public class MealPlanRestControllerTest {
         MvcResult result = this.mockMvc.perform(post(url)
                         .with(user(userDetails))
                         .contentType(contentType))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andReturn();
 
     }

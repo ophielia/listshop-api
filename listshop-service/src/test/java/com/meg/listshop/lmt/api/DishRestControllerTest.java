@@ -132,7 +132,7 @@ public class DishRestControllerTest {
         MvcResult result = mockMvc.perform(get("/dish/"
                         + testId)
                         .with(user(userDetails)))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andReturn();
 
     }
@@ -381,7 +381,7 @@ public class DishRestControllerTest {
         mockMvc.perform(put("/dish/"
                         + dishId + "/rating/" + ratingIdAsString + "/" + stepAsString)
                         .with(user(userDetails)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
 
     }
 

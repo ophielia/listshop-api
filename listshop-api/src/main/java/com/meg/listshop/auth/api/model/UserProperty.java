@@ -17,6 +17,11 @@ public class UserProperty {
         // empty constructor for jackson
     }
 
+    public UserProperty(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+
     public String getKey() {
         return key;
     }

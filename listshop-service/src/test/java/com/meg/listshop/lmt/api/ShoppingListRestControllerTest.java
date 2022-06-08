@@ -210,7 +210,7 @@ public class ShoppingListRestControllerTest {
     public void testRetrieveStarterListNotFound() throws Exception {
         mockMvc.perform(get("/shoppinglist/starter")
                         .with(user(noStarterUserDetails)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -642,7 +642,7 @@ public class ShoppingListRestControllerTest {
         mockMvc.perform(delete(url)
                         .with(user(userDetails))
                         .contentType(contentType))
-                .andExpect(status().isBadRequest());  // bad request, because user doesn't own this dish
+                .andExpect(status().isNotFound());  // bad request, because user doesn't own this dish
 
         listId = TestConstants.LIST_1_ID;
         url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_7_ID;

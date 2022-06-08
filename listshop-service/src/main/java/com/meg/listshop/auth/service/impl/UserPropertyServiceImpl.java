@@ -72,21 +72,34 @@ public class UserPropertyServiceImpl implements UserPropertyService {
                 .collect(Collectors.toMap(UserPropertyEntity::getKey, Function.identity()));
 
         List<UserPropertyEntity> toSaveList = new ArrayList<>();
+        List<UserPropertyEntity> toDeleteList = new ArrayList<>();
         for (UserPropertyEntity toSave : userPropertyEntities) {
             // get any existing entry for this property / user
             UserPropertyEntity dbProperty = existingProperties.getOrDefault(toSave.getKey(), null);
-            // if none exists, created one
-            if (dbProperty == null) {
-                dbProperty = new UserPropertyEntity();
-                dbProperty.setUser(user);
-                dbProperty.setKey(toSave.getKey());
+            if (toSave.getValue() == null && dbProperty != null) {
+                toDeleteList.add(dbProperty);
+            } else if (toSave.getValue() == null) {
+                continue;
+            } else {
+                // if none exists, created one
+                if (dbProperty == null) {
+                    dbProperty = new UserPropertyEntity();
+                    dbProperty.setUser(user);
+                    dbProperty.setKey(toSave.getKey());
+                }
+
+                // set value
+                dbProperty.setValue(toSave.getValue());
+                // save or update
+                toSaveList.add(dbProperty);
             }
-            // set value
-            dbProperty.setValue(toSave.getValue());
-            // save or update
-            toSaveList.add(dbProperty);
         }
-        userPropertyRepository.saveAll(toSaveList);
+        if (!toSaveList.isEmpty()) {
+            userPropertyRepository.saveAll(toSaveList);
+        }
+        if (!toDeleteList.isEmpty()) {
+            userPropertyRepository.deleteAll(toDeleteList);
+        }
     }
 
     private UserEntity getUserForUserName(String userName) throws UserNotFoundException {

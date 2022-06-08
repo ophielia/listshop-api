@@ -67,6 +67,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class UserRestControllerTest {
 
+    private static final Long USER_WITH_PROPERTIES_ID = 999L;
+    private static final String USER_WITH_PROPERTIES_NAME = "rufus@barkingmad.com";
     @ClassRule
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
@@ -77,6 +79,9 @@ public class UserRestControllerTest {
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private UserDetails userDetailsChangePassword;
     private UserDetails userDetailsAnotherChangePassword;
+    private UserDetails userWithoutProperties;
+
+    private UserDetails userWithProperties;
     private UserDetails userToDelete;
     private UserDetails userNotFound;
 
@@ -117,6 +122,22 @@ public class UserRestControllerTest {
 
         userDetailsAnotherChangePassword = new JwtUser(TestConstants.USER_5_ID,
                 TestConstants.USER_5_NAME,
+                null,
+                "Passw0rd",
+                null,
+                true,
+                null);
+
+        userWithoutProperties = new JwtUser(TestConstants.USER_4_ID,
+                TestConstants.USER_4_NAME,
+                null,
+                "Passw0rd",
+                null,
+                true,
+                null);
+
+        userWithProperties = new JwtUser(USER_WITH_PROPERTIES_ID,
+                USER_WITH_PROPERTIES_NAME,
                 null,
                 "Passw0rd",
                 null,
@@ -559,12 +580,127 @@ public class UserRestControllerTest {
 
     }
 
-    // remaining tests
-    // test set - existing entries
-    // test set - no existing entries
-    // test update - with 999
-    // test update to null
-    //
+    @Test
+    @WithMockUser
+    public void testSetUserProperties() throws Exception {
+        UserProperty property1 = new UserProperty("key1", "value1");
+        UserProperty property2 = new UserProperty("key2", "value2");
+        PostUserProperties propertiesPost = new PostUserProperties();
+        propertiesPost.setProperties(Arrays.asList(property1, property2));
+
+        String url = "/user/properties";
+        mockMvc.perform(post(url)
+                        .with(user(userWithoutProperties))
+                        .contentType(contentType)
+                        .content(json(propertiesPost))
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk());
+
+        // now retrieve what we just saved
+        mockMvc.perform(get(url)
+                        .with(user(userWithoutProperties))
+                        .contentType(contentType)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_properties", Matchers.hasSize(2)))
+                .andExpect(jsonPath("$.user_properties[*].key", Matchers.hasItem("key1")))
+                .andExpect(jsonPath("$.user_properties[*].value", Matchers.hasItem("value1")))
+                .andExpect(jsonPath("$.user_properties[*].key", Matchers.hasItem("key2")))
+                .andExpect(jsonPath("$.user_properties[*].value", Matchers.hasItem("value2")))
+        ;
+
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testSetUserProperties_Existing() throws Exception {
+        UserProperty property1 = new UserProperty("key1", "value1");
+        UserProperty property2 = new UserProperty("key2", "value2");
+        PostUserProperties propertiesPost = new PostUserProperties();
+        propertiesPost.setProperties(Arrays.asList(property1, property2));
+
+        String url = "/user/properties";
+        mockMvc.perform(post(url)
+                        .with(user(userWithProperties))
+                        .contentType(contentType)
+                        .content(json(propertiesPost))
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk());
+
+        // now retrieve what we just saved
+        mockMvc.perform(get(url)
+                        .with(user(userWithProperties))
+                        .contentType(contentType)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_properties", Matchers.hasSize(4)))
+                .andExpect(jsonPath("$.user_properties[*].key", Matchers.hasItem("key1")))
+                .andExpect(jsonPath("$.user_properties[*].key", Matchers.hasItem("key2")))
+                .andExpect(jsonPath("$.user_properties[*].key", Matchers.hasItem("test_property")))
+                .andExpect(jsonPath("$.user_properties[*].key", Matchers.hasItem("another_property")))
+                .andExpect(jsonPath("$.user_properties[*].value", Matchers.hasItem("value1")))
+                .andExpect(jsonPath("$.user_properties[*].value", Matchers.hasItem("value2")))
+                .andExpect(jsonPath("$.user_properties[*].value", Matchers.hasItem("ho hum value")))
+                .andExpect(jsonPath("$.user_properties[*].value", Matchers.hasItem("good value")))
+        ;
+    }
+
+    @Test
+    @WithMockUser
+    public void testSetUserProperties_Update() throws Exception {
+        UserProperty property1 = new UserProperty("test_property", "scintillating value");
+        PostUserProperties propertiesPost = new PostUserProperties();
+        propertiesPost.setProperties(Arrays.asList(property1));
+
+        String url = "/user/properties";
+        mockMvc.perform(post(url)
+                        .with(user(userWithProperties))
+                        .contentType(contentType)
+                        .content(json(propertiesPost))
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk());
+
+        // now retrieve what we just saved
+        mockMvc.perform(get(url)
+                        .with(user(userWithProperties))
+                        .contentType(contentType)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_properties[*].key", Matchers.hasItem("test_property")))
+                .andExpect(jsonPath("$.user_properties[*].value", Matchers.hasItem("scintillating value")))
+        ;
+
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testSetUserProperties_UpdateToNull() throws Exception {
+        UserProperty property1 = new UserProperty("another_property", null);
+        PostUserProperties propertiesPost = new PostUserProperties();
+        propertiesPost.setProperties(Arrays.asList(property1));
+
+        String url = "/user/properties";
+        mockMvc.perform(post(url)
+                        .with(user(userWithProperties))
+                        .contentType(contentType)
+                        .content(json(propertiesPost))
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk());
+
+        // now retrieve what we just saved
+        mockMvc.perform(get(url)
+                        .with(user(userWithProperties))
+                        .contentType(contentType)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_properties[*].key", Matchers.not(Matchers.hasItem("another_property"))))
+        ;
+
+
+    }
+
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
