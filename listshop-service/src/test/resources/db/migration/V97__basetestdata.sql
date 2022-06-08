@@ -5968,3 +5968,8 @@ values (500, 320, 1, 500, '406', 'TargetSlotEntity'),
        (513, 320, 1, 503, '329;301', 'TargetSlotEntity'),
        (514, 320, 1, 503, '81;301', 'TargetSlotEntity'),
        (515, 320, 1, 503, '89;301', 'TargetSlotEntity');
+
+
+insert into user_properties (user_property_id, user_id, property_key, property_value)
+values (50, 500, 'test_property', 'ho hum value'),
+       (51, 500, 'another_property', 'good value');

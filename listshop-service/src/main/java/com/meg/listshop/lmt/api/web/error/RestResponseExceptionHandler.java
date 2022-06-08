@@ -32,7 +32,7 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         logger.info(ex.getClass().getName());
         logger.error(message, ex);
         //
-        var apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), message);
+        var apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), message);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 

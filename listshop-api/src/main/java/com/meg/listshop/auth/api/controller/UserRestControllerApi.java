@@ -49,4 +49,12 @@ public interface UserRestControllerApi {
     @GetMapping(value = "client/version", produces = "application/json")
     ResponseEntity<Object> getMinimumClientVersion();
 
+    @GetMapping(value = "properties", produces = "application/json")
+    ResponseEntity<Object> getUserProperties(Principal principal);
+
+    @GetMapping(value = "properties/key/{key}", produces = "application/json")
+    ResponseEntity<Object> getUserProperty(Principal principal, @PathVariable String key) throws BadParameterException;
+
+    @PostMapping(value = "properties", produces = "application/json")
+    ResponseEntity<Object> setUserProperties(Principal principal, @RequestBody PostUserProperties properties) throws BadParameterException;
 }

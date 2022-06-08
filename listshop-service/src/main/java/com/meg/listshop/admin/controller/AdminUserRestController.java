@@ -5,6 +5,8 @@ import com.meg.listshop.admin.model.AdminUserListResource;
 import com.meg.listshop.admin.model.PostSearchUsers;
 import com.meg.listshop.auth.data.entity.AdminUserDetailsEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.data.entity.UserPropertyEntity;
+import com.meg.listshop.auth.service.UserPropertyService;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
@@ -31,10 +33,12 @@ public class AdminUserRestController implements AdminUserRestControllerApi {
     private static final Logger logger = LogManager.getLogger(AdminUserRestController.class);
 
     private UserService userService;
+    private UserPropertyService userPropertyService;
 
     @Autowired
-    public AdminUserRestController(UserService userService) {
+    public AdminUserRestController(UserService userService, UserPropertyService userPropertyService) {
         this.userService = userService;
+        this.userPropertyService = userPropertyService;
     }
 
     @Override
@@ -46,7 +50,7 @@ public class AdminUserRestController implements AdminUserRestControllerApi {
         String userIdString = input.getUserId();
         String listIdString = input.getListId();
 
-        logger.debug(String.format("Received search parameters: email [%s], userId [%s], listId [%s]", searchEmail, userIdString, listIdString));
+        logger.debug("Received search parameters: email [{}], userId [{}], listId [{}]", searchEmail, userIdString, listIdString);
 
         List<UserEntity> users = new ArrayList<>();
         if (searchEmail != null && !searchEmail.isEmpty()) {
@@ -77,7 +81,7 @@ public class AdminUserRestController implements AdminUserRestControllerApi {
         }
 
         AdminUserListResource result = new AdminUserListResource(users.stream()
-                .map(d -> ModelMapper.toAdminModel(d))
+                .map(ModelMapper::toAdminModel)
                 .collect(Collectors.toList()));
 
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -93,8 +97,9 @@ public class AdminUserRestController implements AdminUserRestControllerApi {
         if (user == null) {
             throw new ObjectNotFoundException(String.format("User not found for userId [%s]", userId));
         }
+        List<UserPropertyEntity> propertyEntities = this.userPropertyService.getPropertiesForUser(user.getUserName());
 
-        return new ResponseEntity<>(ModelMapper.toAdminModel(user), HttpStatus.OK);
+        return new ResponseEntity<>(ModelMapper.toAdminModel(user, propertyEntities), HttpStatus.OK);
     }
 
 

@@ -12,6 +12,7 @@ import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.AdminUserDetailsEntity;
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -78,6 +79,17 @@ public class ModelMapper {
     }
 
     public static AdminUser toAdminModel(AdminUserDetailsEntity userEntity) {
+        return toAdminModel(userEntity, null);
+    }
+
+    public static AdminUser toAdminModel(AdminUserDetailsEntity userEntity, List<UserPropertyEntity> properties) {
+        List<UserProperty> propertyModelList = null;
+        if (properties != null) {
+            propertyModelList = properties.stream()
+                    .map(ModelMapper::toModel)
+                    .collect(Collectors.toList());
+
+        }
         if (userEntity != null) {
             return new AdminUser(userEntity.getEmail())
                     .created(userEntity.getCreationDate())
@@ -85,8 +97,10 @@ public class ModelMapper {
                     .lastLogin(userEntity.getLastLogin())
                     .listCount(userEntity.getListCount())
                     .dishCount(userEntity.getDishCount())
-                    .mealPlanCount(userEntity.getMealPlanCount());
+                    .mealPlanCount(userEntity.getMealPlanCount())
+                    .userProperties(propertyModelList);
         }
+
         return new AdminUser(null);
     }
 
@@ -525,6 +539,13 @@ public class ModelMapper {
                 .handles(itemEntity.getHandles());
     }
 
+    public static UserProperty toModel(UserPropertyEntity entity) {
+        UserProperty userProperty = new UserProperty();
+        userProperty.setKey(entity.getKey());
+        userProperty.setValue(entity.getValue());
+        return userProperty;
+    }
+
     public static DishEntity toEntity(Dish dish) {
         if (dish == null) {
             return null;
@@ -664,4 +685,10 @@ public class ModelMapper {
     }
 
 
+    public static UserPropertyEntity toEntity(UserProperty property) {
+        UserPropertyEntity entity = new UserPropertyEntity();
+        entity.setKey(property.getKey());
+        entity.setValue(property.getValue());
+        return entity;
+    }
 }

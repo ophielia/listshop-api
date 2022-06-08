@@ -1,8 +1,10 @@
 package com.meg.listshop.admin.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meg.listshop.auth.api.model.UserProperty;
 
 import java.util.Date;
+import java.util.List;
 
 public class AdminUser {
 
@@ -20,6 +22,8 @@ public class AdminUser {
     private long dishCount;
     @JsonProperty("meal_plan_count")
     private long mealPlanCount;
+    @JsonProperty("user_properties")
+    private List<UserProperty> userProperties;
 
     public AdminUser() {
         // empty constructor, because Jackson likes it that way.
@@ -92,6 +96,11 @@ public class AdminUser {
         return this;
     }
 
+    public AdminUser userProperties(List<UserProperty> properties) {
+        this.userProperties = properties;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "AdminUser{" +
@@ -102,6 +111,7 @@ public class AdminUser {
                 ", listCount=" + listCount +
                 ", dishCount=" + dishCount +
                 ", mealPlanCount=" + mealPlanCount +
+                ", userProperties=" + userProperties +
                 '}';
     }
 }

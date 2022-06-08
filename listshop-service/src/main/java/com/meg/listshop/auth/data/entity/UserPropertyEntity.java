@@ -34,6 +34,7 @@ public class UserPropertyEntity {
     @Column(name = "property_key")
     private String key;
 
+    @Column(name = "property_value")
     private String value;
 
     public Long getId() {

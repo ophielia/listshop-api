@@ -427,7 +427,7 @@ public class UserRestControllerTest {
                         .with(user(userNotFound))
                         .contentType(contentType)
                         .characterEncoding("utf-8"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
 
     }
 
@@ -498,6 +498,73 @@ public class UserRestControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @WithMockUser
+    public void testGetUserProperties() throws Exception {
+
+        String url = "/user/properties";
+        mockMvc.perform(get(url)
+                        .with(user(userDetailsChangePassword))
+                        .contentType(contentType)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_properties", Matchers.hasSize(2)))
+                .andExpect(jsonPath("$.user_properties[0].key", Matchers.equalTo("test_property")))
+                .andExpect(jsonPath("$.user_properties[0].value", Matchers.equalTo("ho hum value")))
+                .andExpect(jsonPath("$.user_properties[1].key", Matchers.equalTo("another_property")))
+                .andExpect(jsonPath("$.user_properties[1].value", Matchers.equalTo("good value")));
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetUserProperties_NoProperties() throws Exception {
+
+        String url = "/user/properties";
+        mockMvc.perform(get(url)
+                        .with(user(userDetailsAnotherChangePassword))
+                        .contentType(contentType)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_properties", Matchers.hasSize(0)));
+
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetUserProperty() throws Exception {
+
+        String url = "/user/properties/key/test_property";
+        mockMvc.perform(get(url)
+                        .with(user(userDetailsChangePassword))
+                        .contentType(contentType)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_property.key", Matchers.equalTo("test_property")))
+                .andExpect(jsonPath("$.user_property.value", Matchers.equalTo("ho hum value")));
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetUserProperty_NoProperty() throws Exception {
+
+        String url = "/user/properties/key/test_missing_property";
+        mockMvc.perform(get(url)
+                        .with(user(userDetailsChangePassword))
+                        .contentType(contentType)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isNotFound());
+
+    }
+
+    // remaining tests
+    // test set - existing entries
+    // test set - no existing entries
+    // test update - with 999
+    // test update to null
+    //
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);

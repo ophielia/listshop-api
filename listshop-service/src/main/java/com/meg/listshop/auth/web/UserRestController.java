@@ -10,9 +10,12 @@ package com.meg.listshop.auth.web;
 import com.meg.listshop.auth.api.controller.UserRestControllerApi;
 import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.data.entity.UserPropertyEntity;
+import com.meg.listshop.auth.service.UserPropertyService;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtTokenUtil;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ProcessingException;
 import com.meg.listshop.lmt.api.exception.TokenException;
 import com.meg.listshop.lmt.api.model.ModelMapper;
@@ -29,12 +32,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserRestController implements UserRestControllerApi {
@@ -43,6 +49,8 @@ public class UserRestController implements UserRestControllerApi {
     private final TokenService tokenService;
 
     private final UserService userService;
+
+    private final UserPropertyService userPropertyService;
 
     private final AuthenticationManager authenticationManager;
 
@@ -56,11 +64,12 @@ public class UserRestController implements UserRestControllerApi {
 
     @Autowired
     public UserRestController(UserService userService, AuthenticationManager authenticationManager,
-                              JwtTokenUtil jwtTokenUtil, TokenService tokenService) {
+                              JwtTokenUtil jwtTokenUtil, TokenService tokenService, UserPropertyService userPropertyService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.tokenService = tokenService;
+        this.userPropertyService = userPropertyService;
     }
 
     @Override
@@ -69,7 +78,7 @@ public class UserRestController implements UserRestControllerApi {
         decodeAndValidateCreateUserInput(inputPut);
 
         var user = inputPut.getUser();
-        LOG.info(String.format("Create new user[%s], input validated.", user.getEmail()));
+        LOG.info("Create new user[{}], input validated.", user.getEmail());
         ClientDeviceInfo deviceInfo = inputPut.getDeviceInfo();
 
         // get email and password
@@ -78,7 +87,7 @@ public class UserRestController implements UserRestControllerApi {
 
 
         // call service to create user
-        UserEntity newUser = userService.createUser(email  , password);
+        UserEntity newUser = userService.createUser(email, password);
 
         // authenticate new user
         var authentication = authenticationManager.authenticate(
@@ -97,7 +106,7 @@ public class UserRestController implements UserRestControllerApi {
         this.userService.createDeviceForUserAndDevice(newUser.getId(), deviceInfo, token);
 
         // update last login time
-        this.userService.updateLoginForUser(newUser.getUsername(), token,deviceInfo );
+        this.userService.updateLoginForUser(newUser.getUsername(), token, deviceInfo);
 
         // Return the token
         return ResponseEntity.ok(new UserResource(ModelMapper.toModel(userDetails, token)));
@@ -130,7 +139,7 @@ public class UserRestController implements UserRestControllerApi {
 
     @Override
     public ResponseEntity<Object> deleteUser(Principal principal) {
-        LOG.info(String.format("Begin delete user [%s]",principal.getName()));
+        LOG.info("Begin delete user [{}]", principal.getName());
         this.userService.deleteUser(principal.getName());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -175,7 +184,7 @@ public class UserRestController implements UserRestControllerApi {
 
     @Override
     public ResponseEntity<Object> processToken(@RequestBody PostToken postToken) throws BadParameterException, TokenException {
-        LOG.debug(String.format("Entering processToken with tokenType[%s]", postToken.getTokenType()));
+        LOG.debug("Entering processToken with tokenType[{}]", postToken.getTokenType());
         validateToken(postToken);
 
         // convert token type string to TokenType
@@ -184,13 +193,13 @@ public class UserRestController implements UserRestControllerApi {
         // call service method
         tokenService.processTokenFromUser(type, postToken.getToken(), postToken.getTokenParameter());
 
-        LOG.debug(String.format("Completing processToken for tokenType[%s]", postToken.getTokenType()));
+        LOG.debug("Completing processToken for tokenType[{}]", postToken.getTokenType());
         return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<Object> changeUserPassword(Principal principal, @RequestBody PostChangePassword input) throws BadParameterException {
-        LOG.debug(String.format("Begin changeUserPassword, user[%s]", principal.getName()));
+        LOG.debug("Begin changeUserPassword, user[{}]", principal.getName());
         // get username from principal
         String principalUsername = principal.getName();
         validatateUserForPasswordChange(input, principalUsername);
@@ -201,8 +210,8 @@ public class UserRestController implements UserRestControllerApi {
         // get original password from input
         byte[] origPasswordBytes = Base64.getDecoder().decode(input.getOriginalPassword());
         var originalPassword = new String(origPasswordBytes);
-        userService.changePassword(principalUsername, newPassword, originalPassword );
-        LOG.debug(String.format("Finished changeUserPassword, user[%s]", principal.getName()));
+        userService.changePassword(principalUsername, newPassword, originalPassword);
+        LOG.debug("Finished changeUserPassword, user[{}]", principal.getName());
         return ResponseEntity.ok().build();
 
     }
@@ -215,8 +224,59 @@ public class UserRestController implements UserRestControllerApi {
         return new ResponseEntity<>(clientVersions, HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<Object> getUserProperties(Principal principal) {
+        List<UserPropertyEntity> propertyEntities = this.userPropertyService.getPropertiesForUser(principal.getName());
+        List<UserProperty> properties = propertyEntities.stream()
+                .map(ModelMapper::toModel)
+                .collect(Collectors.toList());
+
+        var userPropertiesResource = new UserPropertiesResource(properties);
+
+        return new ResponseEntity<>(userPropertiesResource, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Object> getUserProperty(Principal principal, @PathVariable String key) throws BadParameterException {
+        if (key == null) {
+            throw new BadParameterException("key is required for /user/property/key");
+        }
+        UserPropertyEntity propertyEntity = this.userPropertyService.getPropertyForUser(principal.getName(), key);
+        if (propertyEntity == null) {
+            throw new ObjectNotFoundException(String.format("key [%s] not found for user", key));
+        }
+        UserProperty property = ModelMapper.toModel(propertyEntity);
+
+        var userPropertyResource = new UserPropertyResource(property);
+
+        return new ResponseEntity<>(userPropertyResource, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Object> setUserProperties(Principal principal, @RequestBody PostUserProperties properties) throws BadParameterException {
+        validateUserProperties(properties);
+        List<UserPropertyEntity> propertyEntities = properties.getProperties().stream()
+                .map(ModelMapper::toEntity)
+                .collect(Collectors.toList());
+
+        this.userPropertyService.setPropertiesForUser(principal.getName(), propertyEntities);
+
+        return ResponseEntity.ok().build();
+    }
+
+    private void validateUserProperties(PostUserProperties properties) throws BadParameterException {
+        if (properties == null) {
+            throw new BadParameterException("properties required in POST /user/properties");
+        }
+        for (UserProperty property : properties.getProperties()) {
+            if (property.getKey() == null) {
+                throw new BadParameterException("property key is required in POST /user/properties");
+            }
+        }
+    }
+
     private void validatateUserForPasswordChange(PostChangePassword postChangePassword, String principalUsername) throws BadParameterException {
-        if (principalUsername == null ) {
+        if (principalUsername == null) {
             throw new BadParameterException("User or username in input is blank or missing");
         }
         if (postChangePassword.getNewPassword() == null || postChangePassword.getNewPassword().isEmpty()) {
