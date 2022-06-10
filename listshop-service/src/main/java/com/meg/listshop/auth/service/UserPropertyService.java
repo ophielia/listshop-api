@@ -17,7 +17,9 @@ import java.util.List;
  */
 public interface UserPropertyService {
 
-    List<UserPropertyEntity> getPropertiesForUser(String userName);
+    void addUserPropertyChangeListener(UserPropertyChangeListener propertyChangeListener);
+
+    List<UserPropertyEntity> getPropertiesForUser(String userName) throws BadParameterException;
 
     UserPropertyEntity getPropertyForUser(String userName, String propertyKey) throws BadParameterException;
 

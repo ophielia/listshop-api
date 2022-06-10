@@ -10,6 +10,7 @@ package com.meg.listshop.auth.service.impl;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.auth.data.repository.UserPropertyRepository;
+import com.meg.listshop.auth.service.UserPropertyChangeListener;
 import com.meg.listshop.auth.service.UserPropertyService;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,6 +37,8 @@ public class UserPropertyServiceImpl implements UserPropertyService {
 
     private final UserPropertyRepository userPropertyRepository;
 
+    private final List<UserPropertyChangeListener> listeners = new CopyOnWriteArrayList<>();
+
     protected final Log logger = LogFactory.getLog(UserPropertyServiceImpl.class);
 
     @Autowired
@@ -43,9 +47,13 @@ public class UserPropertyServiceImpl implements UserPropertyService {
         this.userPropertyRepository = userPropertyRepository;
     }
 
+    @Override
+    public void addUserPropertyChangeListener(UserPropertyChangeListener propertyChangeListener) {
+        listeners.add(propertyChangeListener);
+    }
 
     @Override
-    public List<UserPropertyEntity> getPropertiesForUser(String userName) {
+    public List<UserPropertyEntity> getPropertiesForUser(String userName) throws BadParameterException {
         UserEntity user = getUserForUserName(userName);
         return userPropertyRepository.findByUserId(user.getId());
     }
@@ -78,9 +86,7 @@ public class UserPropertyServiceImpl implements UserPropertyService {
             UserPropertyEntity dbProperty = existingProperties.getOrDefault(toSave.getKey(), null);
             if (toSave.getValue() == null && dbProperty != null) {
                 toDeleteList.add(dbProperty);
-            } else if (toSave.getValue() == null) {
-                continue;
-            } else {
+            } else if (toSave.getValue() != null) {
                 // if none exists, created one
                 if (dbProperty == null) {
                     dbProperty = new UserPropertyEntity();
@@ -96,15 +102,23 @@ public class UserPropertyServiceImpl implements UserPropertyService {
         }
         if (!toSaveList.isEmpty()) {
             userPropertyRepository.saveAll(toSaveList);
+            firePropertiesUpdatedEvent(toSaveList);
         }
         if (!toDeleteList.isEmpty()) {
             userPropertyRepository.deleteAll(toDeleteList);
         }
     }
 
-    private UserEntity getUserForUserName(String userName) throws UserNotFoundException {
+    private void firePropertiesUpdatedEvent(List<UserPropertyEntity> updatedProperties) {
+        for (UserPropertyChangeListener listener : listeners) {
+            listener.onPropertyUpdate(updatedProperties);
+        }
+    }
+
+
+    private UserEntity getUserForUserName(String userName) throws UserNotFoundException, BadParameterException {
         if (userName == null) {
-            return null;
+            throw new BadParameterException(userName);
         }
         UserEntity user = userService.getUserByUserEmail(userName);
         if (user == null) {

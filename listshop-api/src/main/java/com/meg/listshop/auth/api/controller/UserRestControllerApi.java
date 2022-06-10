@@ -13,6 +13,7 @@ import com.meg.listshop.lmt.api.exception.TokenException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 
 /**
@@ -56,5 +57,5 @@ public interface UserRestControllerApi {
     ResponseEntity<Object> getUserProperty(Principal principal, @PathVariable String key) throws BadParameterException;
 
     @PostMapping(value = "properties", produces = "application/json")
-    ResponseEntity<Object> setUserProperties(Principal principal, @RequestBody PostUserProperties properties) throws BadParameterException;
+    ResponseEntity<Object> setUserProperties(Principal principal, @RequestBody PostUserProperties properties) throws BadParameterException, IOException;
 }

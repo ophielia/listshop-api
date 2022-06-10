@@ -253,7 +253,7 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> setUserProperties(Principal principal, @RequestBody PostUserProperties properties) throws BadParameterException {
+    public ResponseEntity<Object> setUserProperties(Principal principal, @RequestBody PostUserProperties properties) throws BadParameterException, IOException {
         validateUserProperties(properties);
         List<UserPropertyEntity> propertyEntities = properties.getProperties().stream()
                 .map(ModelMapper::toEntity)

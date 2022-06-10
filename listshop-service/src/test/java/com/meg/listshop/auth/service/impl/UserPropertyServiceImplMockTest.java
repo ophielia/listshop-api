@@ -109,6 +109,7 @@ public class UserPropertyServiceImplMockTest {
 
     }
 
+
     @Test
     public void testGetPropertiesForUser_NoExisting() {
         UserEntity testUser = new UserEntity();
@@ -220,6 +221,49 @@ public class UserPropertyServiceImplMockTest {
         assertEquals("key1 value is value1", "crazy new value", resultMap.get("key1").getValue());
         assertTrue("key2 exists", resultMap.containsKey("key2"));
         assertEquals("key2 value is value1", "calm value", resultMap.get("key2").getValue());
+
+    }
+
+    @Test
+    public void testSetPropertiesForUser_Delete() throws BadParameterException {
+        UserEntity testUser = new UserEntity();
+        testUser.setId(TestConstants.USER_3_ID);
+        testUser.setEmail(TestConstants.USER_3_NAME);
+
+        UserPropertyEntity property1 = buildUserPropertyEntity(testUser, "key1", "value1");
+        UserPropertyEntity property1Entry = buildUserPropertyEntity(testUser, "key1", null);
+        UserPropertyEntity property2 = buildUserPropertyEntity(testUser, "key2", "value2");
+        UserPropertyEntity property2Entry = buildUserPropertyEntity(testUser, "key2", "calm value");
+        List<UserPropertyEntity> propertyListEntry = Arrays.asList(property1Entry, property2Entry);
+        List<UserPropertyEntity> propertyListExisting = Arrays.asList(property1, property2);
+
+        ArgumentCaptor<List<UserPropertyEntity>> saveCapture = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<UserPropertyEntity>> deleteCapture = ArgumentCaptor.forClass(List.class);
+        Mockito.when(userService.getUserByUserEmail(TestConstants.USER_3_NAME)).thenReturn(testUser);
+        Mockito.when(userPropertyRepository.findByUserId(TestConstants.USER_3_ID)).thenReturn(propertyListExisting);
+        Mockito.when(userPropertyRepository.saveAll(saveCapture.capture())).thenReturn(null);
+        Mockito.doNothing().when(userPropertyRepository).deleteAll(deleteCapture.capture());
+
+        userPropertyService.setPropertiesForUser(TestConstants.USER_3_NAME, propertyListEntry);
+
+        assertNotNull(saveCapture);
+        List<UserPropertyEntity> savedProperties = saveCapture.getValue();
+        assertNotNull(savedProperties);
+        assertFalse(savedProperties.isEmpty());
+        assertEquals("size is 1", 1, savedProperties.size());
+        Map<String, UserPropertyEntity> resultMap = savedProperties.stream()
+                .collect(Collectors.toMap(UserPropertyEntity::getKey, Function.identity()));
+        assertTrue("key2 exists", resultMap.containsKey("key2"));
+        assertEquals("key2 value is value1", "calm value", resultMap.get("key2").getValue());
+
+        assertNotNull(deleteCapture);
+        List<UserPropertyEntity> deletedProperties = deleteCapture.getValue();
+        assertNotNull(deletedProperties);
+        assertFalse(deletedProperties.isEmpty());
+        assertEquals("size is 1", 1, deletedProperties.size());
+        Map<String, UserPropertyEntity> deletedResults = deletedProperties.stream()
+                .collect(Collectors.toMap(UserPropertyEntity::getKey, Function.identity()));
+        assertTrue("key1 exists", deletedResults.containsKey("key1"));
 
     }
 

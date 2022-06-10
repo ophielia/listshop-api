@@ -109,7 +109,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
 
-            <!--
+            <!---->
             <plugin>
                 <groupId>com.coderplus.maven.plugins</groupId>
                 <artifactId>copy-rename-maven-plugin</artifactId>
@@ -121,14 +121,19 @@
                         <goals>
                             <goal>copy</goal>
                         </goals>
-                            <configuration>
-                                <sourceFile>src/main/resources/emailtemplates/</sourceFile>
-                                <destinationFile>target/test-classes/emailtemplates/</destinationFile>
-                            </configuration>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <sourceFile>src/main/resources/emailtemplates/</sourceFile>
+                                    <destinationFile>target/test-classes/emailtemplates/</destinationFile>
+                                </fileSet>
+                            </fileSets>
+
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
-            -->
+            <!---->
 
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
