@@ -25,3 +25,5 @@ CREATE SEQUENCE public.user_properties_id_seq
 -- test undo
 --drop table user_properties;
 --drop sequence user_properties_id_seq;
+
+

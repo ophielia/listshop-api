@@ -82,7 +82,7 @@ public class UserPropertyServiceImplMockTest {
     }
 
     @Test
-    public void testGetPropertiesForUser() {
+    public void testGetPropertiesForUser() throws BadParameterException {
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setEmail(TestConstants.USER_3_NAME);
@@ -111,7 +111,7 @@ public class UserPropertyServiceImplMockTest {
 
 
     @Test
-    public void testGetPropertiesForUser_NoExisting() {
+    public void testGetPropertiesForUser_NoExisting() throws BadParameterException {
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setEmail(TestConstants.USER_3_NAME);

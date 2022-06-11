@@ -25,4 +25,6 @@ public interface UserPropertyService {
 
     void setPropertiesForUser(String userName, List<UserPropertyEntity> userPropertyEntities) throws BadParameterException;
 
+    void setPropertiesForUser(String userName, List<UserPropertyEntity> userPropertyEntities, boolean suppressNotifications) throws BadParameterException;
+
 }

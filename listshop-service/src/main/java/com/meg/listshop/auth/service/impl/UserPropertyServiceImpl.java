@@ -70,6 +70,11 @@ public class UserPropertyServiceImpl implements UserPropertyService {
 
     @Override
     public void setPropertiesForUser(String userName, List<UserPropertyEntity> userPropertyEntities) throws BadParameterException {
+        setPropertiesForUser(userName, userPropertyEntities, false);
+    }
+
+    @Override
+    public void setPropertiesForUser(String userName, List<UserPropertyEntity> userPropertyEntities, boolean suppressNotifications) throws BadParameterException {
         if (userPropertyEntities == null) {
             throw new BadParameterException("We can take an empty list  - but not null. Check userPropertyEntities");
         }
@@ -102,11 +107,14 @@ public class UserPropertyServiceImpl implements UserPropertyService {
         }
         if (!toSaveList.isEmpty()) {
             userPropertyRepository.saveAll(toSaveList);
-            firePropertiesUpdatedEvent(toSaveList);
+            if (!suppressNotifications) {
+                firePropertiesUpdatedEvent(toSaveList);
+            }
         }
         if (!toDeleteList.isEmpty()) {
             userPropertyRepository.deleteAll(toDeleteList);
         }
+
     }
 
     private void firePropertiesUpdatedEvent(List<UserPropertyEntity> updatedProperties) {

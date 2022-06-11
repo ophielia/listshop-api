@@ -1,9 +1,11 @@
 package com.meg.listshop.auth.service.impl;
 
+import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.auth.service.UserPropertyChangeListener;
 import com.meg.listshop.auth.service.UserPropertyKey;
 import com.meg.listshop.auth.service.UserPropertyService;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.postoffice.api.model.EmailParameters;
 import com.meg.postoffice.api.model.EmailType;
 import com.meg.postoffice.service.MailService;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,6 +32,7 @@ public class BetaTestUserPropertyListener implements UserPropertyChangeListener 
     private static final String EMAIL_ERROR = "Unable to send email for property update, user[{}]";
     private UserPropertyService userPropertyService;
 
+
     private MailService mailService;
     @Value("${listservice.email.sender:support@the-list-shop.com}")
     String EMAIL_SENDER;
@@ -36,10 +40,6 @@ public class BetaTestUserPropertyListener implements UserPropertyChangeListener 
     private static final Logger logger = LogManager.getLogger(BetaTestUserPropertyListener.class);
 
     @Autowired
-    public BetaTestUserPropertyListener(UserPropertyService userPropertyService) {
-        this.userPropertyService = userPropertyService;
-    }
-
     public BetaTestUserPropertyListener(UserPropertyService userPropertyService, MailService mailService) {
         this.userPropertyService = userPropertyService;
         this.mailService = mailService;
@@ -78,8 +78,29 @@ public class BetaTestUserPropertyListener implements UserPropertyChangeListener 
 
         try {
             mailService.processEmail(parameters);
+            // update mail sent
+            setEmailSentProperty(infoProperty.getUser());
         } catch (TemplateException | MessagingException | IOException e) {
             logger.warn(EMAIL_ERROR, infoProperty.getUser().getId(), e);
+        } catch (BadParameterException e) {
+            logger.warn("Error saving user property", e);
         }
+    }
+
+    private void setEmailSentProperty(UserEntity user) throws BadParameterException {
+        UserPropertyEntity emailSentProperty = userPropertyService.getPropertyForUser(user.getUsername(), UserPropertyKey.TestEmailSent.getDisplayName());
+        if (emailSentProperty == null) {
+            emailSentProperty = new UserPropertyEntity();
+            emailSentProperty.setUser(user);
+            emailSentProperty.setKey(UserPropertyKey.TestEmailSent.getDisplayName());
+            emailSentProperty.setValue("0");
+        }
+
+        int initialCount = Integer.parseInt(emailSentProperty.getValue());
+        initialCount++;
+        emailSentProperty.setValue(String.valueOf(initialCount));
+        userPropertyService.setPropertiesForUser(user.getUsername(), Collections.singletonList(emailSentProperty), true);
+
+
     }
 }
