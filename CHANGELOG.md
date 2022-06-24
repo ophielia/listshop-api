@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.0] June 2022
+
+### Added
+
+- user properties
+- email for beta test
+- listener which sends email for beta test
+
+### Changed
+
+- finished separation into api maven module
+
 ## [1.8.0] June 2022
 
 ### Added

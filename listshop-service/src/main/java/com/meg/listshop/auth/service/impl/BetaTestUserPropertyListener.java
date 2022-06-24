@@ -74,7 +74,7 @@ public class BetaTestUserPropertyListener implements UserPropertyChangeListener 
         parameters.setSubject("Testing Information");
         parameters.addParameter("staticRoot", "https://nastyvarmits.fr/api/static");
         parameters.addParameter("supportEmail", "support@the-list-shop.com");
-        parameters.addParameter("testLink", "http://localhost:4200/home");
+        parameters.addParameter("testLink", "https://testflight.apple.com/join/hXxCpVMY");
 
         try {
             mailService.processEmail(parameters);

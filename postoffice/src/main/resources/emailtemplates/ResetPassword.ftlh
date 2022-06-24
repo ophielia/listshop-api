@@ -41,7 +41,7 @@ font-size: large">
     border-style: solid;
     box-shadow: 10px 10px 26px 5px rgb(0 0 0 / 28%);">
     <tr>
-        <td><img style="width:75px;margin-top:-40px; margin-left:40px;" src="${staticRoot}/lock.png"></td>
+        <td><img style="width:75px;margin-top:-40px; margin-left:40px;" src="${staticRoot}/images/lock.png"></td>
     </tr>
     <tr>
         <td>
@@ -58,7 +58,7 @@ font-size: large">
             <p>Didn&rsquo;t request a password reset? You can ignore this message.</p>
             <p>See you soon,</p>
             <div style="vertical-align: top">
-                <div style="background-image: url(${staticRoot}/smallorangelogo.png);
+                <div style="background-image: url(${staticRoot}/images/smallorangelogo.png);
                         width: 90px;
                         height: 90px;
                         background-repeat: no-repeat;
