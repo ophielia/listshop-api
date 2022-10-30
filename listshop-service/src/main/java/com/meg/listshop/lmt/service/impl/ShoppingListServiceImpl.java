@@ -9,13 +9,12 @@ import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.data.pojos.ItemMappingDTO;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.repository.ItemChangeRepository;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.service.*;
-import com.meg.listshop.lmt.service.categories.ItemCategoryPojo;
-import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,8 +45,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final
     ListLayoutService listLayoutService;
     private final
-    ListSearchService listSearchService;
-    private final
     MealPlanService mealPlanService;
     private final
     ItemRepository itemRepository;
@@ -56,8 +53,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     private final
     ItemChangeRepository itemChangeRepository;
-
-    private final ShoppingListProperties shoppingListProperties;
 
     @Value("${service.shoppinglistservice.merge.items.deleted.after.days}")
     int mergeDeleteAfterDays = 6;
@@ -71,22 +66,18 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                                    DishService dishService,
                                    ShoppingListRepository shoppingListRepository,
                                    ListLayoutService listLayoutService,
-                                   ListSearchService listSearchService,
                                    MealPlanService mealPlanService,
                                    ItemRepository itemRepository,
                                    ItemChangeRepository itemChangeRepository,
-                                   ShoppingListProperties shoppingListProperties,
                                    ListTagStatisticService listTagStatisticService) {
         this.userService = userService;
         this.tagService = tagService;
         this.dishService = dishService;
         this.shoppingListRepository = shoppingListRepository;
         this.listLayoutService = listLayoutService;
-        this.listSearchService = listSearchService;
         this.mealPlanService = mealPlanService;
         this.itemRepository = itemRepository;
         this.itemChangeRepository = itemChangeRepository;
-        this.shoppingListProperties = shoppingListProperties;
         this.listTagStatisticService = listTagStatisticService;
     }
 
@@ -957,9 +948,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         shoppingListRepository.save(shoppingList);
     }
 
-    private Map<Long, Long> getCategoryDictionary(Long layoutId, List<TagEntity> tagList) {
-        return listSearchService.getTagToCategoryMap(layoutId, tagList);
-    }
 
     private void checkReplaceTagsInCollector(ItemCollector mergeCollector) {
         Set<Long> allServerTagIds = new HashSet<>();
@@ -1060,19 +1048,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         itemMap.put(tagId, item);
     }
 
-    private List<ListShopCategory> cleanUpResults(Map<Long, ListShopCategory> filledCategories) {
-        List<ListShopCategory> result = new ArrayList<>();
-        for (ListShopCategory cat : filledCategories.values()) {
-            ItemCategoryPojo c = (ItemCategoryPojo) cat;
-            if (!c.isEmpty()) {
-                result.add(c);
-            }
-        }
-
-        // return list of categories
-        result.sort(Comparator.comparing(ListShopCategory::getDisplayOrder));
-        return result;
-    }
 
     private void addDishToList(String name, ListItemCollector collector, Long dishId) throws ShoppingListException {
         // gather tags for dish to add

@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.10.0] November 2022
+
+### Added
+
+- listlayouts now saved with default flag, and user id
+
+### Changed
+
+### Deprecated
+
+- ListLayoutType still present, but no longer used.
+
+### Removed
+
+- code implementing (unused) subcategories for list layouts
+
+### Fixed
+
 ## [1.9.0] June 2022
 
 ### Added

@@ -73,11 +73,9 @@ public class ShoppingListServiceImplMockTest {
                 dishService,
                 shoppingListRepository,
                 listLayoutService,
-                listSearchService,
                 mealPlanService,
                 itemRepository,
                 itemChangeRepository,
-                shoppingListProperties,
                 listTagStatisticService);
     }
 

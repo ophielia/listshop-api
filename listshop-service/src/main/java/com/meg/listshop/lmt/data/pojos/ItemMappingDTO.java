@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.data.entity;
+package com.meg.listshop.lmt.data.pojos;
 
 import com.meg.listshop.lmt.api.model.ShoppingListItem;
 

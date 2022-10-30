@@ -1,10 +1,9 @@
 package com.meg.listshop.lmt.service;
 
-import com.meg.listshop.lmt.data.entity.ItemMappingDTO;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
+import com.meg.listshop.lmt.data.pojos.ItemMappingDTO;
 
 import java.util.List;
 
@@ -43,10 +42,6 @@ public interface ListLayoutService {
     void deleteTagsFromCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList);
 
     List<ListLayoutCategoryEntity> getListCategoriesForLayout(Long layoutId);
-
-    List<ListLayoutCategoryPojo> getStructuredCategories(ListLayoutEntity listLayout);
-
-    void assignTagToDefaultCategories(TagEntity newtag);
 
     ListLayoutCategoryEntity getLayoutCategoryForTag(Long listLayoutId, Long tagId);
 

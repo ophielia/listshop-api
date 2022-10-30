@@ -71,8 +71,8 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
                 .getListLayoutById(listLayoutId);
 
         if (listLayout != null) {
-            List<ListLayoutCategoryPojo> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
-            ListLayout layoutModel = ModelMapper.toModel(listLayout, structuredCategories);
+            List<ListLayoutCategoryPojo> structuredCategories = null;//this.listLayoutService.getStructuredCategories(listLayout);
+            ListLayout layoutModel = ModelMapper.toModel(listLayout, null);
             ListLayoutResource rescource = new ListLayoutResource(layoutModel);
             rescource.fillLinks(request, rescource);
 

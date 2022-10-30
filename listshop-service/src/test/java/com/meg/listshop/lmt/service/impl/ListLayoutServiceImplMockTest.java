@@ -1,8 +1,6 @@
 package com.meg.listshop.lmt.service.impl;
 
-import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
@@ -14,14 +12,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -57,32 +50,6 @@ public class ListLayoutServiceImplMockTest {
                 tagRepository, tagService, listSearchService);
     }
 
-
-    @Test
-    public void testGetAllDefaultCategories() {
-        Long tagId = 66L;
-        TagEntity mockTag = new TagEntity();
-        mockTag.setId(66L);
-        List<ListLayoutCategoryEntity> mockCategories = new ArrayList<>();
-        mockCategories.add(new ListLayoutCategoryEntity());
-        mockCategories.add(new ListLayoutCategoryEntity());
-        mockCategories.add(new ListLayoutCategoryEntity());
-
-        Mockito.when(tagService.getTagById(tagId)).thenReturn(mockTag);
-        Mockito.when(listLayoutCategoryRepository.findByIsDefaultTrue())
-                .thenReturn(mockCategories);
-
-        ArgumentCaptor<TagEntity> argument = ArgumentCaptor.forClass(TagEntity.class);
-
-        ArgumentCaptor<List<ListLayoutCategoryEntity>> listCaptor
-                = ArgumentCaptor.forClass((Class) List.class);
-
-        listLayoutService.assignTagToDefaultCategories(mockTag);
-
-        Mockito.verify(tagService).save(argument.capture());
-        Mockito.verify(listLayoutCategoryRepository).saveAll(listCaptor.capture());
-
-    }
 
     @Test
     public void testGetDefaultListLayout() {

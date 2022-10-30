@@ -2,18 +2,16 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.ListLayoutType;
-import com.meg.listshop.lmt.data.entity.ItemMappingDTO;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.ItemMappingDTO;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.ListLayoutException;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.lmt.service.ListSearchService;
-import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
-import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -237,7 +235,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         }
         ListLayoutCategoryEntity categoryEntity = listLayoutEntityOpt.get();
         List<TagEntity> tags = categoryEntity.getTags();
-        if (tags.stream().filter(t -> t.getId() == tag.getId()).findFirst().isPresent()) {
+        if (tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
             return;
         }
         tags.add(tag);
@@ -287,49 +285,6 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         return listLayoutCategoryRepository.findByLayoutIdEquals(layoutId);
     }
 
-    @Override
-    public List<ListLayoutCategoryPojo> getStructuredCategories(ListLayoutEntity listLayout) {
-        if (listLayout.getCategories() == null || listLayout.getCategories().isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        // gather categories
-        Map<Long, ListShopCategory> allCategories = new HashMap<>();
-        listLayout.getCategories().forEach(c -> {
-            // copy into listlayoutcategory
-            ListLayoutCategoryPojo lc = (ListLayoutCategoryPojo) new ListLayoutCategoryPojo(c.getId())
-                    .name(c.getName());
-            lc = (ListLayoutCategoryPojo) lc.layoutId(c.getLayoutId());
-            lc = (ListLayoutCategoryPojo) lc.tagEntities(c.getTags());
-            lc = (ListLayoutCategoryPojo) lc.displayOrder(c.getDisplayOrder());
-            allCategories.put(c.getId(), lc);
-        });
-
-        List<ListLayoutCategoryPojo> mainCategorySort = allCategories.values()
-                .stream()
-                .map(r -> (ListLayoutCategoryPojo) r)
-                .sorted(Comparator.comparing(ListShopCategory::getDisplayOrder))
-                .collect(Collectors.toList());
-        return mainCategorySort;
-    }
-
-    @Override
-    public void assignTagToDefaultCategories(TagEntity newtag) {
-        // repull tag from db
-        TagEntity tagToUpdate = tagService.getTagById(newtag.getId());
-        // get default categories for all list categories
-        List<ListLayoutCategoryEntity> defaultCategories = getAllDefaultCategories();
-
-        // for each category, assign the category to the tag, and the tag to the category
-        for (ListLayoutCategoryEntity category : defaultCategories) {
-            tagToUpdate.getCategories().add(category);
-            category.getTags().add(tagToUpdate);
-        }
-
-        tagService.save(tagToUpdate);
-        listLayoutCategoryRepository.saveAll(defaultCategories);
-
-    }
 
     @Override
     public ListLayoutCategoryEntity getLayoutCategoryForTag(Long listLayoutId, Long tagId) {
@@ -365,9 +320,6 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         return null;
     }
 
-    private List<ListLayoutCategoryEntity> getAllDefaultCategories() {
-        return listLayoutCategoryRepository.findByIsDefaultTrue();
-    }
 
 
 }
