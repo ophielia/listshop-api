@@ -3,7 +3,6 @@ package com.meg.listshop.lmt.service;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ItemEntity;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
-import com.meg.listshop.lmt.service.categories.ListShopCategory;
 
 import java.util.Date;
 import java.util.List;
@@ -37,7 +36,7 @@ public interface ShoppingListService {
 
     ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId);
 
-    List<ListShopCategory> categorizeList(ShoppingListEntity shoppingListEntity);
+    List<ShoppingListCategory> categorizeList(ShoppingListEntity shoppingListEntity);
 
     void addDishToList(String name, Long listId, Long dishId) throws ShoppingListException;
 

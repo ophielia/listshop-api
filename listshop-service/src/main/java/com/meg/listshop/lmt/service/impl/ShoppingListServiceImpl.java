@@ -627,56 +627,73 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    public List<ListShopCategory> categorizeList(ShoppingListEntity shoppingListEntity) {
+    public List<ShoppingListCategory> categorizeList(ShoppingListEntity shoppingListEntity) {
 
         if (shoppingListEntity == null) {
             return new ArrayList<>();
         }
+        boolean usesStandardLayout = false;
+        ListLayoutEntity layout = listLayoutService.getUserListLayout(shoppingListEntity.getUserId(), shoppingListEntity.getListLayoutId());
 
-        if (shoppingListEntity.getItems() == null || shoppingListEntity.getItems().isEmpty()) {
-            return new ArrayList<>();
+
+        if (layout == null) {
+            usesStandardLayout = true;
+            layout = listLayoutService.getStandardLayout();
         }
-
-        // get category to item dictionary (tag key, category value)
-        List<TagEntity> tagList = shoppingListEntity.getItems().stream().map(ItemEntity::getTag).collect(Collectors.toList());
-        Map<Long, Long> dictionary = getCategoryDictionary(shoppingListEntity.getListLayoutId(), tagList);
-        if (dictionary.isEmpty()) {
-            return new ArrayList<>();
-        }
-        // get categories for items
-        List<ListLayoutCategoryEntity> categoriesEntities = listLayoutService.getListCategoriesForLayout(shoppingListEntity.getListLayoutId());
-        Map<Long, ListShopCategory> filledCategories = new HashMap<>();
-        categoriesEntities.forEach(ce -> {
-            ItemCategoryPojo cat = (ItemCategoryPojo) new ItemCategoryPojo(ce.getName(), ce.getId(), CategoryType.Standard)
-                    .displayOrder(ce.getDisplayOrder());
-            filledCategories.put(cat.getId(), cat);
-        });
-
         // find frequently crossed off
         List<Long> frequentTagIds = listTagStatisticService.findFrequentIdsForList(shoppingListEntity.getId(), shoppingListEntity.getUserId());
 
-        // put items into categories
-        for (ItemEntity item : shoppingListEntity.getItems()) {
-            if (item.getRemovedOn() != null) {
-                continue;
-            }
-            if (frequentTagIds.contains(item.getTag().getId())) {
-                item.addHandle(ShoppingListService.FREQUENT);
-            }
+        List<ItemMappingDTO> mappedItems = listLayoutService.getListMappings(layout.getId(), shoppingListEntity.getId(), usesStandardLayout);
 
-            ItemCategoryPojo category = (ItemCategoryPojo) filledCategories.get(dictionary.get(item.getTag().getId()));
-            if (category != null) {
-                category.addItemEntity(item);
-            }
-        }
+        Map<String, List<ShoppingListItem>> itemLists = new HashMap<>();
+        Map<String, ShoppingListCategory> filledCategories = new HashMap<>();
+
+        mappedItems.stream()
+                .filter(im -> im.getRemovedOn() == null)
+                .forEach(im -> {
+                    // add frequent handle
+
+                    // create Item from ItemMapping
+                    ShoppingListItem item = im.mapToShoppingListItem();
+
+                    // handle category
+                    ShoppingListCategory category = null;
+                    if (filledCategories.containsKey(im.getCategoryName())) {
+                        category = filledCategories.get(im.getCategoryName());
+                        updateCategoryModelFromMapping(category, im);
+                    } else {
+                        category = createCategoryModelFromMapping(im);
+                        filledCategories.put(category.getName(), category);
+                    }
+                    (itemLists.computeIfAbsent(im.getCategoryName(), k -> new ArrayList<ShoppingListItem>())).add(item);
+
+                });
 
         // sort items in filled categories - content sort
-        for (Map.Entry entry : filledCategories.entrySet()) {
-            ((ItemCategoryPojo) entry.getValue()).sortItems();
+        for (Map.Entry entry : itemLists.entrySet()) {
+            Collections.sort(((List<ShoppingListItem>) entry.getValue()), new ShoppingListItemComparator());
         }
 
         // prune and sort categories - sorts the categories themselves, not the contents
-        return cleanUpResults(filledCategories);
+        List<ShoppingListCategory> result = new ArrayList<>();
+        filledCategories.forEach((categoryname, category) -> {
+            category.setShoppingListItems(itemLists.get(categoryname));
+            result.add(category);
+        });
+
+        // return list of categories
+        result.sort(Comparator.comparing(ShoppingListCategory::getDisplayOrder));
+
+        return result;
+    }
+
+    private ShoppingListCategory createCategoryModelFromMapping(ItemMappingDTO itemMappingDTO) {
+        //MM layout fill in
+        return null;
+    }
+
+    private void updateCategoryModelFromMapping(ShoppingListCategory category, ItemMappingDTO itemMappingDTO) {
+        //MM layout fill in
     }
 
     // Note - this method doesn't check yet for MergeConflicts.  But the signature

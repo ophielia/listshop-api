@@ -515,11 +515,6 @@ public class ModelMapper {
             model.displayOrder = cm.getDisplayOrder();
             model.setItems(items);
 
-            // now - subcategories
-            if (!categoryModel.getSubCategories().isEmpty()) {
-                List<ShoppingListCategory> filledSubCats = itemCategoriesToModel(categoryModel.getSubCategories());
-                model.setSubCategories(filledSubCats);
-            }
             modelCategories.add(model);
         }
         return modelCategories;

@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.ListLayoutType;
+import com.meg.listshop.lmt.data.entity.ItemMappingDTO;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -344,6 +345,24 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         Long categoryId = dictionary.get(tagId);
         return listLayoutCategoryRepository.getOne(categoryId);
 
+    }
+
+    @Override
+    public ListLayoutEntity getUserListLayout(Long userId, Long listLayoutId) {
+        //MM layout fill this in
+        return null;
+    }
+
+    @Override
+    public ListLayoutEntity getStandardLayout() {
+        //MM layout fill this in
+        return null;
+    }
+
+    @Override
+    public List<ItemMappingDTO> getListMappings(Long la, Long listId, boolean usesStandardLayout) {
+        //MM layout fill this in
+        return null;
     }
 
     private List<ListLayoutCategoryEntity> getAllDefaultCategories() {

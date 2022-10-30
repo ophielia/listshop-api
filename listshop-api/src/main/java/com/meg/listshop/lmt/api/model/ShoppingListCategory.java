@@ -2,7 +2,6 @@ package com.meg.listshop.lmt.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingListCategory {
@@ -12,11 +11,11 @@ public class ShoppingListCategory {
     @JsonProperty("category_id")
     private Long id;
 
+    @JsonProperty("user_category_id")
+    private Long userCategoryId;
+
     @JsonProperty("displayOrder")
     int displayOrder;
-
-    @JsonProperty("subcategories")
-    private List<ShoppingListCategory> subCategories = new ArrayList<>();
 
     @JsonProperty("items")
     private List<Item> items;
@@ -44,13 +43,12 @@ public class ShoppingListCategory {
         this.id = id;
     }
 
-
-    public List<ShoppingListCategory> getSubCategories() {
-        return subCategories;
+    public Long getUserCategoryId() {
+        return userCategoryId;
     }
 
-    public void setSubCategories(List<ShoppingListCategory> subCategories) {
-        this.subCategories = subCategories;
+    public void setUserCategoryId(Long userCategoryId) {
+        this.userCategoryId = userCategoryId;
     }
 
     public List<Item> getItems() {
@@ -59,5 +57,17 @@ public class ShoppingListCategory {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public int getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(int displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+
+    public void setShoppingListItems(List<ShoppingListItem> shoppingListItems) {
+        //MM layout fill in - sidecar for replacing items
     }
 }

@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service;
 
+import com.meg.listshop.lmt.data.entity.ItemMappingDTO;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -48,4 +49,10 @@ public interface ListLayoutService {
     void assignTagToDefaultCategories(TagEntity newtag);
 
     ListLayoutCategoryEntity getLayoutCategoryForTag(Long listLayoutId, Long tagId);
+
+    ListLayoutEntity getUserListLayout(Long userId, Long listLayoutId);
+
+    ListLayoutEntity getStandardLayout();
+
+    List<ItemMappingDTO> getListMappings(Long la, Long listId, boolean usesStandardLayout);
 }
