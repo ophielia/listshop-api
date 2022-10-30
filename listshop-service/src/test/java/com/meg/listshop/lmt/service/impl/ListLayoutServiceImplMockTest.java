@@ -3,7 +3,6 @@ package com.meg.listshop.lmt.service.impl;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.repository.CategoryRelationRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
@@ -36,8 +35,6 @@ public class ListLayoutServiceImplMockTest {
     @MockBean
     private ListLayoutProperties listLayoutProperties;
 
-    @MockBean
-    private CategoryRelationRepository categoryRelationRepository;
 
     @MockBean
     private ListLayoutRepository listLayoutRepository;
@@ -56,8 +53,8 @@ public class ListLayoutServiceImplMockTest {
 
     @Before
     public void setUp() {
-        listLayoutService = new ListLayoutServiceImpl(listLayoutCategoryRepository, listLayoutProperties, categoryRelationRepository, listLayoutRepository,
-                tagRepository, tagService, shoppingListProperties, listSearchService);
+        listLayoutService = new ListLayoutServiceImpl(listLayoutCategoryRepository, listLayoutRepository,
+                tagRepository, tagService, listSearchService);
     }
 
 

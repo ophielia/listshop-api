@@ -2,15 +2,15 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.ListLayoutType;
-import com.meg.listshop.lmt.data.entity.CategoryRelationEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.repository.CategoryRelationRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.*;
+import com.meg.listshop.lmt.service.ListLayoutException;
+import com.meg.listshop.lmt.service.ListLayoutService;
+import com.meg.listshop.lmt.service.ListSearchService;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -28,31 +28,22 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
 
     private final ListLayoutCategoryRepository listLayoutCategoryRepository;
-    private final ListLayoutProperties listLayoutProperties;
-    private final CategoryRelationRepository categoryRelationRepository;
     private final ListLayoutRepository listLayoutRepository;
     private final TagRepository tagRepository;
     private final TagService tagService;
-    private final ShoppingListProperties shoppingListProperties;
     private final ListSearchService listSearchService;
 
 
     @Autowired
     public ListLayoutServiceImpl(ListLayoutCategoryRepository listLayoutCategoryRepository,
-                                 ListLayoutProperties listLayoutProperties,
-                                 CategoryRelationRepository categoryRelationRepository,
                                  ListLayoutRepository listLayoutRepository,
                                  TagRepository tagRepository,
                                  TagService tagService,
-                                 ShoppingListProperties shoppingListProperties,
                                  ListSearchService listSearchService) {
         this.listLayoutCategoryRepository = listLayoutCategoryRepository;
-        this.listLayoutProperties = listLayoutProperties;
-        this.categoryRelationRepository = categoryRelationRepository;
         this.listLayoutRepository = listLayoutRepository;
         this.tagRepository = tagRepository;
         this.tagService = tagService;
-        this.shoppingListProperties = shoppingListProperties;
         this.listSearchService = listSearchService;
     }
 
@@ -127,19 +118,13 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         // save list layout category
         listLayoutRepository.save(layoutEntity);
 
-        // save relationship info for new layout entity
-        try {
-            addCategoryToParent(result.getId(), 0L);
-        } catch (ListLayoutException e) {
-            // TODO - log exception here
-        }
         return result.getId();
     }
 
     @Override
     public void deleteCategoryFromListLayout(Long listLayoutId, Long layoutCategoryId) throws ListLayoutException {
 // get list
-        Optional<ListLayoutEntity> listLayoutEntityOpt =  listLayoutRepository.findById(listLayoutId);
+        Optional<ListLayoutEntity> listLayoutEntityOpt = listLayoutRepository.findById(listLayoutId);
         if (!listLayoutEntityOpt.isPresent()) {
             return;
         }
@@ -148,20 +133,8 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         List<ListLayoutCategoryEntity> filtered = layoutEntity.getCategories().stream()
                 .filter(c -> c.getId().longValue() != layoutCategoryId.longValue())
                 .collect(Collectors.toList());
-        // move any subcategories
-        List<ListLayoutCategoryEntity> subcategories = listLayoutCategoryRepository.getSubcategoriesForOrder(listLayoutId, layoutCategoryId);
-        if (subcategories != null && !subcategories.isEmpty()) {
-            for (ListLayoutCategoryEntity subcat : subcategories) {
-                addCategoryToParent(subcat.getId(), 0L);
-            }
-        }
-        listLayoutCategoryRepository.flush();
 
-        // delete category relation
-        List<CategoryRelationEntity> childDeletes = categoryRelationRepository.findCategoryRelationsByChildId(layoutCategoryId);
-        categoryRelationRepository.deleteAll(childDeletes);
-        List<CategoryRelationEntity> parentDeletes = categoryRelationRepository.findCategoryRelationsByParentId(layoutCategoryId);
-        categoryRelationRepository.deleteAll(parentDeletes);
+        listLayoutCategoryRepository.flush();
 
         // delete category
         listLayoutCategoryRepository.deleteById(layoutCategoryId);
@@ -178,7 +151,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
             return null;
         }
         // get layout category
-        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt =  listLayoutCategoryRepository.findById(listLayoutId);
+        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt = listLayoutCategoryRepository.findById(listLayoutId);
         if (!listLayoutEntityOpt.isPresent()) {
             return null;
         }
@@ -215,13 +188,13 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     @Override
     public void addTagsToCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList) {
         // get  category
-        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt =  listLayoutCategoryRepository.findById(layoutCategoryId);
+        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt = listLayoutCategoryRepository.findById(layoutCategoryId);
         if (!listLayoutEntityOpt.isPresent()) {
             return;
         }
         ListLayoutCategoryEntity categoryEntity = listLayoutEntityOpt.get();
         // assure list owns category
-        if (!categoryEntity.getLayoutId().equals(listLayoutId) ) {
+        if (!categoryEntity.getLayoutId().equals(listLayoutId)) {
             return;
         }
 
@@ -308,17 +281,6 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         listLayoutCategoryRepository.save(categoryEntity);
     }
 
-    public Map<Long, Long> getSubCategoryMappings(Long listLayoutId) {
-        List<CategoryRelationEntity> relations = listLayoutRepository.getSubCategoryMappings(listLayoutId);
-        Map<Long, Long> map = new HashMap<>();
-        if (relations == null) {
-            return map;
-        }
-        relations.forEach(c -> {if (c.getParent() != null) {map.put(c.getChild().getId(), c.getParent().getId());}});
-        return map;
-    }
-
-
     @Override
     public List<ListLayoutCategoryEntity> getListCategoriesForLayout(Long layoutId) {
         return listLayoutCategoryRepository.findByLayoutIdEquals(layoutId);
@@ -342,8 +304,6 @@ public class ListLayoutServiceImpl implements ListLayoutService {
             allCategories.put(c.getId(), lc);
         });
 
-        // structure subcategories
-        structureCategories(allCategories, listLayout.getId(), false);
         List<ListLayoutCategoryPojo> mainCategorySort = allCategories.values()
                 .stream()
                 .map(r -> (ListLayoutCategoryPojo) r)
@@ -351,130 +311,6 @@ public class ListLayoutServiceImpl implements ListLayoutService {
                 .collect(Collectors.toList());
         return mainCategorySort;
     }
-
-    @Override
-    public void structureCategories(Map<Long, ListShopCategory> filledCategories, Long listLayoutId, boolean pruneSubcategories) {
-
-        Map<Long, Long> subCategoryMappings = getSubCategoryMappings(listLayoutId);
-        for (Map.Entry<Long, Long> entry : subCategoryMappings.entrySet()) {
-            ListShopCategory child = filledCategories.get(entry.getKey());
-            ListShopCategory parent = filledCategories.get(entry.getValue());
-            if (child == null || (pruneSubcategories && child.isEmpty())) {
-                continue;
-            }
-            if (parent != null) {
-                parent.addSubCategory(child);
-            }
-        }
-        for (Long childId : subCategoryMappings.keySet()) {
-            filledCategories.remove(childId);
-        }
-
-        // sort subcategories in categories
-        for (ListShopCategory sortCategory : filledCategories.values()) {
-            if (sortCategory.getSubCategories().isEmpty()) {
-                continue;
-            }
-            sortCategory.getSubCategories()
-                    .sort(Comparator.comparing(ListShopCategory::getDisplayOrder));
-        }
-
-    }
-
-    @Override
-    public void addCategoryToParent(Long categoryId, Long parentId) throws ListLayoutException {
-
-        if (categoryId == null || parentId == null) {
-            throw new ListLayoutException("Invalid Parameters in addCategoryToParent: categoryId[" + categoryId + "] parentId[" + parentId + "]");
-        }
-        // get category
-        Optional<ListLayoutCategoryEntity> categoryOpt = listLayoutCategoryRepository.findById(categoryId);
-        if (!categoryOpt.isPresent()) {
-            throw new ListLayoutException("Category not found in addCategoryToParent: categoryId[" + categoryId + "]");
-        }
-        ListLayoutCategoryEntity category = categoryOpt.get();
-        // get parent category
-        ListLayoutCategoryEntity parent = null;
-        if (!parentId.equals(0L)) {
-            Optional<ListLayoutCategoryEntity> parentOpt = listLayoutCategoryRepository.findById(parentId);
-            if (!parentOpt.isPresent()) {
-                throw new ListLayoutException("Parent not found in addCategoryToParent: parentId[" + parentId + "]");
-            }
-            parent = parentOpt.get();
-        }
-
-        // check that both are in the same layout
-        if (parent != null && !parent.getLayoutId().equals(category.getLayoutId())) {
-                throw new ListLayoutException("Parent and child don't belong to same layout in addCategoryToParent: childId[" + categoryId + "] parentId[" + parentId + "]");
-        }
-
-        // pull relationship
-Long relationshipId = getCategoryRelationForCategory(category);
-        // update relationship
-            Optional<CategoryRelationEntity> relationshipOpt = categoryRelationRepository.findById(relationshipId);
-            if (!relationshipOpt.isPresent()) {
-                return;
-            }
-            CategoryRelationEntity relationship = relationshipOpt.get();
-        relationship.setParent(parent);
-        relationship.setChild(category);
-        categoryRelationRepository.save(relationship);
-
-        // get new display order
-        Integer newOrder = getDisplayOrderInCategory(category.getLayoutId(), parent);
-        category.setDisplayOrder(newOrder);
-        listLayoutCategoryRepository.save(category);
-    }
-
-    private Long getCategoryRelationForCategory(ListLayoutCategoryEntity category) throws ListLayoutException {
-
-
-        List<CategoryRelationEntity> relationships = categoryRelationRepository.findCategoryRelationsByChildId(category.getId());
-        CategoryRelationEntity relationship;
-        if (relationships == null || relationships.isEmpty()) {
-            // create new relationship
-            relationship = new CategoryRelationEntity();
-            relationship.setChild(category);
-            relationship = categoryRelationRepository.save(relationship);
-            return relationship.getId();
-        } else {
-            if (relationships.size() > 1) {
-                throw new ListLayoutException("More than one relationship found for category [" + category.getId() + "]");
-            }
-            return relationships.get(0).getId();
-        }
-    }
-
-    @Override
-    public void moveCategory(Long categoryId, boolean moveUp) throws ListLayoutException {
-        if (categoryId == null) {
-            throw new ListLayoutException("Null categoryId passed to moveCategory. Can't do much");
-        }
-        // retrieve category
-        Optional<ListLayoutCategoryEntity> categoryOpt = listLayoutCategoryRepository.findById(categoryId);
-        if (!categoryOpt.isPresent()) {
-            throw new ListLayoutException("No category found for categoryId [" + categoryId + "] in moveCategory. ");
-        }
-        ListLayoutCategoryEntity category = categoryOpt.get();
-
-        //  get category with which to swap
-        ListLayoutCategoryEntity swapCategory = getCategoryForSwap(category, moveUp);
-        if (swapCategory == null) {
-            throw new ListLayoutException("No swapCategory found for categoryId [" + categoryId + "] in moveCategory. ");
-        }
-
-        // swap categories
-        Integer holding = swapCategory.getDisplayOrder();
-        swapCategory.setDisplayOrder(category.getDisplayOrder());
-        category.setDisplayOrder(holding);
-
-        // save both categories
-        listLayoutCategoryRepository.save(swapCategory);
-        listLayoutCategoryRepository.save(category);
-
-        // return
-    }
-
 
     @Override
     public void assignTagToDefaultCategories(TagEntity newtag) {
@@ -507,61 +343,6 @@ Long relationshipId = getCategoryRelationForCategory(category);
 
         Long categoryId = dictionary.get(tagId);
         return listLayoutCategoryRepository.getOne(categoryId);
-
-    }
-
-
-    private ListLayoutCategoryEntity getCategoryForSwap(ListLayoutCategoryEntity category, boolean moveUp) throws ListLayoutException {
-        // get category relationship
-        List<CategoryRelationEntity> relationships = categoryRelationRepository.findCategoryRelationsByChildId(category.getId());
-        if (relationships == null || relationships.size() != 1) {
-            throw new ListLayoutException("Bad results for finding relationship for category [" + category + "].");
-        }
-        // get list depending upon parent and direction
-        CategoryRelationEntity relationship = relationships.get(0);
-        boolean isBaseCategory = relationship.getParent() == null;
-        List<ListLayoutCategoryEntity> listForSwapout;
-        if (isBaseCategory && moveUp) {
-            listForSwapout = listLayoutCategoryRepository.getCategoriesAbove(category.getLayoutId(), category.getDisplayOrder());
-        } else if (isBaseCategory) {
-            listForSwapout = listLayoutCategoryRepository.getCategoriesBelow(category.getLayoutId(), category.getDisplayOrder());
-
-        } else if (!isBaseCategory && moveUp) {
-            listForSwapout = listLayoutCategoryRepository.getSubcategoriesAbove(category.getLayoutId(), relationship.getParent().getId(), category.getDisplayOrder());
-
-        } else if (!isBaseCategory) {
-            listForSwapout = listLayoutCategoryRepository.getSubcategoriesBelow(category.getLayoutId(), relationship.getParent().getId(), category.getDisplayOrder());
-
-        } else {
-            throw new ListLayoutException("Shoudn't arrive here - error case.");
-        }
-
-        if (listForSwapout == null || listForSwapout.isEmpty()) {
-            // no eligible categories found
-            return null;
-        }
-
-        return listForSwapout.get(0);
-
-    }
-
-    private Integer getDisplayOrderInCategory(Long listLayoutId, ListLayoutCategoryEntity parent) {
-        Integer lastCategory = null;
-        List<ListLayoutCategoryEntity> layouts;
-        if (parent == null) {
-            layouts = listLayoutCategoryRepository.getCategoriesForOrder(listLayoutId);
-
-        } else {
-            layouts = listLayoutCategoryRepository.getSubcategoriesForOrder(listLayoutId, parent.getId());
-
-        }
-        if (layouts != null && !layouts.isEmpty()) {
-            lastCategory = layouts.get(0).getDisplayOrder();
-        }
-
-        // add increment
-        Integer increment = listLayoutProperties.getDispOrderIncrement();
-        return lastCategory != null ? lastCategory + increment : increment;
 
     }
 

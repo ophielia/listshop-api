@@ -60,9 +60,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-//@Ignore // ignoring this test, because all of the methods to check afterwards throw a LazyInitializationException -
-// because all of the test methods call directly on the db to get the list to check.  Waiting until I move this
-// to my self-baked returns - so that I can call the list, parse the data, and check that way...
 @Sql(value = {"/sql/com/meg/atable/lmt/api/ShoppingListRestControllerTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sql/com/meg/atable/lmt/api/ShoppingListRestControllerTest_rollback.sql"},

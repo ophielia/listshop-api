@@ -384,17 +384,6 @@ public class ListLayoutRestControllerTest {
                 .andExpect(status().is4xxClientError());
     }
 
-    @Test
-    @WithMockUser
-    public void testMoveCategory() throws Exception {
-        String url = "/listlayout/category/" + TestConstants.LIST_LAYOUT_2_CATEGORY_ID5
-                + "?move=up";
-
-        mockMvc.perform(post(url)
-                .with(user(userDetails)))
-                .andExpect(status().isNoContent());
-    }
-
 
     private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

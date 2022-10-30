@@ -675,9 +675,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             ((ItemCategoryPojo) entry.getValue()).sortItems();
         }
 
-        // structure categories
-        listLayoutService.structureCategories(filledCategories, shoppingListEntity.getListLayoutId(), true);
-
         // prune and sort categories - sorts the categories themselves, not the contents
         return cleanUpResults(filledCategories);
     }

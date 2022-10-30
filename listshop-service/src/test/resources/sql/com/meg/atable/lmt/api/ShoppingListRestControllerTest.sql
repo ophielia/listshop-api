@@ -13,7 +13,7 @@ VALUES (999, NULL, 'tag_to_be_deleted', 'Ingredient', NULL, true, false, NULL, N
 INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id)
 VALUES (99999, 999, 381);
 INSERT INTO category_tags (category_id, tag_id)
-VALUES (11, 999);
+VALUES (5, 999);
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
 VALUES (99999, 999, 99999, now(), null, null, 1, null, null);

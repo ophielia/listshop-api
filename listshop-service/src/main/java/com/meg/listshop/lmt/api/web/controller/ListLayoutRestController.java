@@ -48,7 +48,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
                 .collect(Collectors.toList());
         ListLayoutListResource resource = new ListLayoutListResource(listLayoutList);
         resource.fillLinks(request, resource);
-        return new ResponseEntity(resource, HttpStatus.OK);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
 
     }
 
@@ -116,7 +116,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         try {
             this.listLayoutService.deleteCategoryFromListLayout(listLayoutId, layoutCategoryId);
         } catch (ListLayoutException e) {
-            logger.error("Unable to delete Category [" + layoutCategoryId + "] from list layout [" + listLayoutId + "].",e);
+            logger.error("Unable to delete Category [%d] from list layout [%d]. Exception: %s", layoutCategoryId, listLayoutId, e);
         }
 
         return ResponseEntity.noContent().build();
@@ -143,7 +143,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         resource.setReflectRequest(true);
         resource.fillLinks(request, resource);
 
-        return new ResponseEntity(resource, HttpStatus.OK);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> getTagsForCategory(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) {
@@ -156,7 +156,7 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
                 .collect(Collectors.toList());
         TagListResource tagListResource = new TagListResource(taglist);
         tagListResource.fillLinks(request, tagListResource);
-        return new ResponseEntity(tagListResource, HttpStatus.OK);
+        return new ResponseEntity<>(tagListResource, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> addTagsToCategory(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId, @RequestParam(value = "tags", required = true) String commaSeparatedIds) {
@@ -191,36 +191,9 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         }
         CategoryResource result = new CategoryResource(ModelMapper.toModel(layoutCategory, false));
 
-        return new ResponseEntity(result, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
 
     }
-
-
-    //@RequestMapping(method = RequestMethod.POST, value = "/category/{layoutCategoryId}/parent/{parentCategoryId}", produces = "application/json")
-    public ResponseEntity<Object> addSubcategoryToCategory(Principal principal, @PathVariable Long layoutCategoryId,
-                                                           @PathVariable Long parentCategoryId) {
-        try {
-            this.listLayoutService.addCategoryToParent(layoutCategoryId, parentCategoryId);
-        } catch (ListLayoutException e) {
-            logger.error("Unable to add Category [" + layoutCategoryId + "] to Parent [" + parentCategoryId + "].", e);
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.noContent().build();
-    }
-
-    //@RequestMapping(method = RequestMethod.POST, value = "/category/{categoryId}", produces = "application/json")
-    public ResponseEntity<Object> moveCategory(Principal principal, @PathVariable Long categoryId, @RequestParam(value = "move", required = true) String direction) {
-        boolean moveUp = "up".equalsIgnoreCase(direction);
-        try {
-            this.listLayoutService.moveCategory(categoryId, moveUp);
-        } catch (ListLayoutException e) {
-            logger.error("Unable to move Category [" + categoryId + "] direction up[" + moveUp + "].",e);
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.noContent().build();
-    }
-
-
 
     private List<Long> commaDelimitedToList(String commaSeparatedIds) {
 // translate tags into list of Long ids

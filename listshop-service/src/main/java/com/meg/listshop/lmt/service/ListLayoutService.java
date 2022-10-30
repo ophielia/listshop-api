@@ -4,10 +4,8 @@ import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
-import com.meg.listshop.lmt.service.categories.ListShopCategory;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by margaretmartin on 06/11/2017.
@@ -46,13 +44,6 @@ public interface ListLayoutService {
     List<ListLayoutCategoryEntity> getListCategoriesForLayout(Long layoutId);
 
     List<ListLayoutCategoryPojo> getStructuredCategories(ListLayoutEntity listLayout);
-
-    void structureCategories(Map<Long, ListShopCategory> filledCategories, Long listLayoutId, boolean pruneSubcategories);
-
-    void addCategoryToParent(Long categoryId, Long parentId) throws ListLayoutException;
-
-    void moveCategory(Long categoryId, boolean moveUp) throws ListLayoutException;
-
 
     void assignTagToDefaultCategories(TagEntity newtag);
 
