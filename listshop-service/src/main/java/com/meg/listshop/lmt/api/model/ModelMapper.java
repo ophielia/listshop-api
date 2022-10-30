@@ -132,7 +132,6 @@ public class ModelMapper {
 
         return new ListLayout(listLayoutEntity.getId())
                 .name(listLayoutEntity.getName())
-                .layoutType(listLayoutEntity.getLayoutType().name())
                 .categories(categories);
     }
 
@@ -660,10 +659,8 @@ public class ModelMapper {
     }
 
     public static ListLayoutEntity toEntity(ListLayout listLayout) {
-        ListLayoutType layoutType = listLayout.getLayoutType() != null ? ListLayoutType.valueOf(listLayout.getLayoutType()) : null;
         ListLayoutEntity listLayoutEntity = new ListLayoutEntity();
         listLayoutEntity.setName(listLayout.getName());
-        listLayoutEntity.setLayoutType(layoutType);
         return listLayoutEntity;
     }
 

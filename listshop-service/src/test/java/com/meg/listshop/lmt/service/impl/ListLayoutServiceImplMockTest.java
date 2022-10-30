@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.service.impl;
 
-import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -23,7 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -91,8 +89,9 @@ public class ListLayoutServiceImplMockTest {
 
     @Test
     public void testGetDefaultListLayout() {
-        Mockito.when(shoppingListProperties.getDefaultListLayoutType()).thenReturn(ListLayoutType.RoughGrained);
-        Mockito.when(listLayoutRepository.findByLayoutType(ListLayoutType.RoughGrained)).thenReturn(Collections.singletonList(new ListLayoutEntity()));
+        //MM layout
+        //Mockito.when(shoppingListProperties.getDefaultListLayoutType()).thenReturn(ListLayoutType.RoughGrained);
+        //Mockito.when(listLayoutRepository.findByLayoutType(ListLayoutType.RoughGrained)).thenReturn(Collections.singletonList(new ListLayoutEntity()));
 
         ListLayoutEntity testResult = listLayoutService.getDefaultListLayout();
 

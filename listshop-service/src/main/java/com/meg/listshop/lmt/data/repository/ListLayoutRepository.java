@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.data.repository;
 
-import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.data.entity.CategoryRelationEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,8 +11,6 @@ import java.util.List;
  * Created by margaretmartin on 09/11/2017.
  */
 public interface ListLayoutRepository extends JpaRepository<ListLayoutEntity, Long> {
-
-    List<ListLayoutEntity> findByLayoutType(ListLayoutType listLayoutType);
 
 
     @Query("select t FROM CategoryRelationEntity t  " +

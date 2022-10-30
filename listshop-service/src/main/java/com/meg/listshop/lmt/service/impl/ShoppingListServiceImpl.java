@@ -369,20 +369,20 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     private ListLayoutEntity getListLayout(ListLayoutType listLayoutType) {
-        // nothing yet for user - eventually, we could consider user preferences / properties here
-
-
         if (listLayoutType != null) {
-            return listLayoutService.getListLayoutByType(listLayoutType);
+            //MM layout return listLayoutService.getListLayoutByType(listLayoutType);
+            return null;
         }
-        listLayoutType = shoppingListProperties.getDefaultLayout();
+        listLayoutType = null;
+        //MM layout shoppingListProperties.getDefaultLayout();
         if (listLayoutType != null) {
-            return listLayoutService.getListLayoutByType(listLayoutType);
+            return null;
+            //MM layout return listLayoutService.getListLayoutByType(listLayoutType);
         }
 
         // get layout for listtype
-        return listLayoutService.getListLayoutByType(ListLayoutType.All);
-
+        //MM layout return listLayoutService.getListLayoutByType(ListLayoutType.All);
+        return null;
 
     }
 
@@ -566,10 +566,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) {
         // get list layout by type
-        ListLayoutType generalLayout = shoppingListProperties.getDefaultLayout();
+        //MM layout use new default here
+        ListLayoutType generalLayout = ListLayoutType.All;//shoppingListProperties.getDefaultLayout();
         Optional<ListLayoutEntity> listLayoutEntityOptional = listLayoutService.getListLayouts()
                 .stream()
-                .filter(t -> t.getLayoutType().equals(generalLayout))
+                //.filter(t -> t.getLayoutType().equals(generalLayout))
                 .findFirst();
 
         if (!listLayoutEntityOptional.isPresent()) {
@@ -1096,6 +1097,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private ShoppingListEntity createList(Long userId, String listName) {
         ShoppingListEntity newList = new ShoppingListEntity();
         // get list layout for user, list_type
+        //MM layout
         ListLayoutEntity listLayout = getListLayout(null);
         newList.setListLayoutId(listLayout.getId());
         newList.setName(listName);

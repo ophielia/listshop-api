@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.service;
 
-import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -15,8 +14,6 @@ import java.util.Map;
  */
 public interface ListLayoutService {
     List<ListLayoutEntity> getListLayouts();
-
-    ListLayoutEntity getListLayoutByType(ListLayoutType listLayoutType);
 
     ListLayoutEntity createListLayout(ListLayoutEntity listLayoutEntity);
 

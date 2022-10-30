@@ -738,8 +738,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.findByUserIdAndName(userId, listName)).thenReturn(Collections.singletonList(listDuplicate1));
         Mockito.when(shoppingListRepository.findByUserIdAndNameLike(userId, listName + "%"))
                 .thenReturn(Arrays.asList(listDuplicate1, listDuplicate2, listDuplicate3));
-        Mockito.when(listLayoutService.getListLayoutByType(ListLayoutType.All))
-                .thenReturn(listLayout);
         Mockito.when(shoppingListRepository.save(listArgument.capture())).thenReturn(createdList);
 
         ShoppingListEntity result = shoppingListService.generateListForUser(userName, properties);
@@ -770,7 +768,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
         // fixtures
         ListLayoutEntity listLayoutEntity = new ListLayoutEntity();
-        listLayoutEntity.setLayoutType(ListLayoutType.All);
         MealPlanEntity mealPlan = new MealPlanEntity(mealPlanId);
         // make 6 tags
         TagEntity tag1 = ServiceTestUtils.buildTag(1L, "first tag", TagType.Ingredient);
@@ -795,12 +792,8 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         // expectations
         Mockito.when(userService.getUserByUserEmail(username))
                 .thenReturn(userEntity);
-        Mockito.when(shoppingListProperties.getDefaultLayout())
-                .thenReturn(ListLayoutType.All);
         Mockito.when(listLayoutService.getListLayouts())
                 .thenReturn(Collections.singletonList(listLayoutEntity));
-        Mockito.when(listLayoutService.getListLayoutByType(ListLayoutType.All))
-                .thenReturn(listLayoutEntity);
         Mockito.when(mealPlanService.getMealPlanById(username, mealPlanId))
                 .thenReturn(mealPlan);
         Mockito.when(shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId))

@@ -9,7 +9,6 @@ import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.Category;
 import com.meg.listshop.lmt.api.model.ListLayout;
-import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
@@ -201,7 +200,6 @@ public class ListLayoutRestControllerTest {
                 null);
         ListLayoutEntity test = new ListLayoutEntity();
         test.setName("new list layout");
-        test.setLayoutType(ListLayoutType.All);
         ListLayout model = ModelMapper.toModel(test, null);
         String url = "/listlayout";
         String listLayoutJson = json(model);

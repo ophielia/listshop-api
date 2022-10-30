@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.lmt.api.model.CategoryType;
-import com.meg.listshop.lmt.api.model.ListLayoutType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,20 +17,15 @@ public class ShoppingListProperties {
     private String testValue;
 
 
-
     private String frequentCategoryName = "frequent";
     private Integer frequentIdAndSort = -2;
     private String uncategorizedCategoryName = "non-cat";
     private Integer uncategorizedIdAndSort = 999;
     private Integer highlightIdAndSort = -1;
     private final Integer highlightListIdAndSort = -3;
-    private String defaultListLayout = null;
     private final Long defaultIdAndSort = 800L;
     private Map<CategoryType, String> nameMapByType = null;
     private Map<CategoryType, Long> idMapByType = null;
-
-
-    private Long defaultListLayoutId = 5L;
 
     public String getTestValue() {
         return testValue;
@@ -40,10 +34,6 @@ public class ShoppingListProperties {
 
     public void setTestValue(String testValue) {
         this.testValue = testValue;
-    }
-
-    public ListLayoutType getDefaultLayout() {
-        return ListLayoutType.valueOf(this.defaultListLayout);
     }
 
     public String getFrequentCategoryName() {
@@ -106,28 +96,20 @@ public class ShoppingListProperties {
         this.highlightIdAndSort = highlightIdAndSort;
     }
 
-    public ListLayoutType getDefaultListLayoutType() {
-        return ListLayoutType.valueOf(this.defaultListLayout);
-    }
-
-    public void setDefaultListLayout(String defaultListLayout) {
-        this.defaultListLayout = defaultListLayout;
-    }
-
     public String getCategoryNameByType(CategoryType categoryType) {
         if (nameMapByType == null) {
             createNameMapByType();
         }
         if (nameMapByType.containsKey(categoryType)) {
-        return nameMapByType.get(categoryType);
+            return nameMapByType.get(categoryType);
         }
         return null;
     }
 
     private void createNameMapByType() {
-            nameMapByType = new EnumMap<CategoryType,String>(CategoryType.class);
-            nameMapByType.put(CategoryType.Frequent,getFrequentCategoryName());
-            nameMapByType.put(CategoryType.UnCategorized,getUncategorizedCategoryName());
+        nameMapByType = new EnumMap<CategoryType, String>(CategoryType.class);
+        nameMapByType.put(CategoryType.Frequent, getFrequentCategoryName());
+        nameMapByType.put(CategoryType.UnCategorized, getUncategorizedCategoryName());
     }
 
     public Long getIdAndSortByType(CategoryType categoryType) {
@@ -148,11 +130,5 @@ public class ShoppingListProperties {
         idMapByType.put(CategoryType.HighlightList, getHighlightListIdAndSortAsLong());
     }
 
-    public Long getDefaultListLayoutId() {
-        return defaultListLayoutId;
-    }
 
-    public void setDefaultListLayoutId(Long defaultListLayoutId) {
-        this.defaultListLayoutId = defaultListLayoutId;
-    }
 }

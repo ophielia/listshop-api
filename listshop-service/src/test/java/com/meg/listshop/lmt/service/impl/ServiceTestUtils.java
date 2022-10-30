@@ -42,7 +42,7 @@ public class ServiceTestUtils {
 
     public static ListLayoutEntity buildListLayout(Long id, String name, ListLayoutType listlayoutType) {
         ListLayoutEntity listLayoutEntity = new ListLayoutEntity(id);
-        listLayoutEntity.setLayoutType(listlayoutType);
+        //MM layout listLayoutEntity.setLayoutType(listlayoutType);
         listLayoutEntity.setName(name);
         return listLayoutEntity;
     }

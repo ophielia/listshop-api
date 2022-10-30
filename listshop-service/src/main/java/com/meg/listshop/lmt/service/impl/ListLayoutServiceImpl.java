@@ -62,15 +62,6 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     }
 
     @Override
-    public ListLayoutEntity getListLayoutByType(ListLayoutType listLayoutType) {
-        List<ListLayoutEntity> listLayoutEntities = listLayoutRepository.findByLayoutType(listLayoutType);
-        if (listLayoutEntities == null || listLayoutEntities.isEmpty()) {
-            return null;
-        }
-        return listLayoutEntities.get(0);
-    }
-
-    @Override
     public ListLayoutEntity createListLayout(ListLayoutEntity listLayoutEntity) {
         // createListLayout with repository and return
         return listLayoutRepository.save(listLayoutEntity);
@@ -78,9 +69,12 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
     @Override
     public ListLayoutEntity getDefaultListLayout() {
-        ListLayoutType layoutType = shoppingListProperties.getDefaultListLayoutType();
+        //MM layout
+        //ListLayoutType layoutType = shoppingListProperties.getDefaultListLayoutType();
+        ListLayoutType layoutType = ListLayoutType.All;
 
-        List<ListLayoutEntity> listLayoutEntity = listLayoutRepository.findByLayoutType(layoutType);
+        List<ListLayoutEntity> listLayoutEntity = null;
+        //listLayoutRepository.findByLayoutType(layoutType);
 
         if (listLayoutEntity == null || listLayoutEntity.isEmpty()) {
             return null;
@@ -90,10 +84,12 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
     @Override
     public ListLayoutCategoryEntity getDefaultListCategory() {
+        //MM layout
         // get default list layout first
-        ListLayoutType layoutType = shoppingListProperties.getDefaultListLayoutType();
+        ListLayoutType layoutType = ListLayoutType.All;
+        //ListLayoutType layoutType = shoppingListProperties.getDefaultListLayoutType();
 
-        return getDefaultCategoryForLayoutType(layoutType);
+        return null;//getDefaultCategoryForLayoutType(layoutType);
     }
 
     @Override
@@ -573,8 +569,5 @@ Long relationshipId = getCategoryRelationForCategory(category);
         return listLayoutCategoryRepository.findByIsDefaultTrue();
     }
 
-    private ListLayoutCategoryEntity getDefaultCategoryForLayoutType(ListLayoutType layoutType) {
-        return listLayoutCategoryRepository.findDefaultForLayoutType(layoutType.toString());
-    }
 
 }

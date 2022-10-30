@@ -12,9 +12,6 @@ public class ListLayout {
 
     private String name;
 
-    @JsonProperty("list_layout_type")
-    private String layoutType;
-
     private List<ListLayoutCategory> categories;
 
     public ListLayout(Long layoutId) {
@@ -36,16 +33,6 @@ public class ListLayout {
 
     public ListLayout name(String name) {
         this.name = name;
-        return this;
-    }
-
-
-    public String getLayoutType() {
-        return layoutType;
-    }
-
-    public ListLayout layoutType(String layoutType) {
-        this.layoutType = layoutType;
         return this;
     }
 
