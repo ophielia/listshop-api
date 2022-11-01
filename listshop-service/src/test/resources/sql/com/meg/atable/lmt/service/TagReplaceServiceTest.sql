@@ -1,7 +1,7 @@
 -- make new tag (will be replaced by rice - 13)
-INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, assign_select, search_select, is_verified,
+INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,
                  power)
-VALUES (999, NULL, 'tag_to_be_deleted', 'Ingredient', NULL, true, false, NULL, NULL);
+VALUES (999, NULL, 'tag_to_be_deleted', 'Ingredient', NULL, NULL, NULL);
 INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id)
 VALUES (99999, 999, 381);
 INSERT INTO category_tags (category_id, tag_id)

@@ -7,9 +7,9 @@ VALUES (99999, 'username@testitytest.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14
         'email@email.com');
 insert into list (created_on, list_layout_id, name, user_id, list_id)
 values (now(), 1, 'BaseList', 99999, 99999);
-INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, assign_select, search_select, is_verified,
+INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,
                  power)
-VALUES (999, NULL, 'tag_to_be_deleted', 'Ingredient', NULL, true, false, NULL, NULL);
+VALUES (999, NULL, 'tag_to_be_deleted', 'Ingredient', NULL, NULL, NULL);
 INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id)
 VALUES (99999, 999, 381);
 INSERT INTO category_tags (category_id, tag_id)
@@ -261,18 +261,18 @@ values (110000, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, n
 
 -- test for merge conflicts
 -- insert two tags with user and standard name the same
-INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, assign_select, search_select, is_verified,
+INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,
                  power, user_id)
-VALUES (12001, NULL, 'tag conflict - delete', 'Ingredient', NULL, true, false, NULL, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, assign_select, search_select, is_verified,
+VALUES (12001, NULL, 'tag conflict - delete', 'Ingredient', NULL, NULL, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,
                  power, user_id)
-VALUES (13001, NULL, 'tag conflict - delete', 'Ingredient', NULL, true, false, NULL, NULL, 20);
-INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, assign_select, search_select, is_verified,
+VALUES (13001, NULL, 'tag conflict - delete', 'Ingredient', NULL, NULL, NULL, 20);
+INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,
                  power, user_id)
-VALUES (12002, NULL, 'tag conflict - add', 'Ingredient', NULL, true, false, NULL, NULL, NULL);
-INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, assign_select, search_select, is_verified,
+VALUES (12002, NULL, 'tag conflict - add', 'Ingredient', NULL, NULL, NULL, NULL);
+INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,
                  power, user_id)
-VALUES (13002, NULL, 'tag conflict - add', 'Ingredient', NULL, true, false, NULL, NULL, 20);
+VALUES (13002, NULL, 'tag conflict - add', 'Ingredient', NULL, NULL, NULL, 20);
 
 insert into category_tags (category_id, tag_id)
 values (5, 12001),
