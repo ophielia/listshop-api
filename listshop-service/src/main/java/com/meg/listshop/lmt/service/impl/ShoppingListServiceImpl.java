@@ -557,18 +557,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId) {
-        // get list layout by type
-        //MM layout use new default here
-        ListLayoutType generalLayout = ListLayoutType.All;//shoppingListProperties.getDefaultLayout();
-        Optional<ListLayoutEntity> listLayoutEntityOptional = listLayoutService.getListLayouts()
-                .stream()
-                //.filter(t -> t.getLayoutType().equals(generalLayout))
-                .findFirst();
-
-        if (!listLayoutEntityOptional.isPresent()) {
-            return null;
-        }
-
         // get the mealplan
         MealPlanEntity mealPlan = mealPlanService.getMealPlanById(name, mealPlanId);
 
@@ -1103,8 +1091,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     private ShoppingListEntity createList(Long userId, String listName) {
         ShoppingListEntity newList = new ShoppingListEntity();
-        // get list layout for user, list_type
-        //MM layout
+
         ListLayoutEntity listLayout = listLayoutService.getDefaultUserLayout(userId);
         if (listLayout == null) {
             listLayout = listLayoutService.getStandardLayout();

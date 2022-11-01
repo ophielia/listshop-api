@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 
-- code implementing (unused) subcategories for list layouts
+- code implementing (unused) subcategories for list layouts removed
 
 ### Fixed
 

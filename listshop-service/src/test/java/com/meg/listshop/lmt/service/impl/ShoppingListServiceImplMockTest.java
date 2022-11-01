@@ -12,7 +12,6 @@ import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
-import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +22,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -47,8 +45,6 @@ public class ShoppingListServiceImplMockTest {
     private TagService tagService;
     @MockBean
     private DishService dishService;
-    @MockBean
-    private ShoppingListProperties shoppingListProperties;
     @MockBean
     private ShoppingListRepository shoppingListRepository;
     @MockBean
@@ -97,7 +93,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
     public void testGetListById() {
         Long userId = 99L;
         String userName = "userName";
-        String listName = "ShoppingList";
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -132,7 +127,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
 
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
-        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.ofNullable(null));
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.empty());
         Mockito.when(shoppingListRepository.findById(listId)).thenReturn(Optional.of(shoppingList));
 
         // test call
@@ -183,7 +178,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
     public void testGetListById_BadUser() {
         Long userId = 99L;
         String userName = "userName";
-        String listName = "ShoppingList";
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -211,7 +205,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
     public void testDeleteList() {
         Long userId = 99L;
         String userName = "userName";
-        String listName = "ShoppingList";
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -307,9 +300,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         user.setId(userId);
 
         Long listId = 199L;
-        List<ShoppingListEntity> listOfLists = Arrays.asList(
-                ServiceTestUtils.buildShoppingList(userId, listId)
-        );
+        List<ShoppingListEntity> listOfLists = Collections.singletonList(ServiceTestUtils.buildShoppingList(userId, listId));
 
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
         Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(listOfLists);
@@ -490,7 +481,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
     public void testGetListsByUsername() {
         Long userId = 99L;
         String userName = "userName";
-        String listName = "ShoppingList";
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -500,7 +490,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
 
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
-        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(new ArrayList<ShoppingListEntity>());
+        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(new ArrayList<>());
 
         // test call
         shoppingListService.getListsByUsername(userName);
@@ -593,7 +583,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
     @Test
     public void testCategorizeList() {
         Long userId = 99L;
-        String userName = "userName";
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -610,8 +599,8 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         shoppingList.setItems(items);
 
         Map<Long, Long> tagIdToCategoryId = items.stream()
-                .map(i -> i.getTag())
-                .collect(Collectors.toMap(t -> t.getId(), tt -> tt.getId() + 300));
+                .map(ItemEntity::getTag)
+                .collect(Collectors.toMap(TagEntity::getId, tt -> tt.getId() + 300));
 
         Long listLayoutId = 1001L;
         ListLayoutEntity testLayout = ServiceTestUtils.buildListLayout(listLayoutId, "listLayoutName", ListLayoutType.RoughGrained);
@@ -623,7 +612,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
 
         Mockito.when(listSearchService.getTagToCategoryMap(layoutId, items
-                        .stream().map(i -> i.getTag())
+                        .stream().map(ItemEntity::getTag)
                         .collect(Collectors.toList())))
                 .thenReturn(tagIdToCategoryId);
         Mockito.when(listLayoutService.getListCategoriesForLayout(layoutId)).thenReturn(categories);
@@ -631,10 +620,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
         // test call
         List<ShoppingListCategory> resultList = shoppingListService.categorizeList(shoppingList);
-//MM layout test
-
-        Mockito.verify(listLayoutService, times(1)).getListCategoriesForLayout(layoutId);
-        //Mockito.verify(listLayoutService, times(1));
 
         // Assertions
         Assert.assertNotNull(resultList);
@@ -644,7 +629,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
     public void testGetStarterList() {
         Long userId = 99L;
         String userName = "userName";
-        String listName = "ShoppingList";
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -671,7 +655,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
     public void testGetMostRecentList() {
         Long userId = 99L;
         String userName = "userName";
-        String listName = "ShoppingList";
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -707,10 +690,12 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
     // removeListItemsFromList
 
     @Test
-    public void testCreateList_duplicateName() throws ShoppingListException, InvocationTargetException, IllegalAccessException {
+    public void testCreateList_duplicateName() throws ShoppingListException, IllegalAccessException {
         Long userId = 99L;
         String userName = "userName";
         String listName = "ShoppingList";
+        Long listLayoutId = 666L;
+
         // set up fixtures
         ListGenerateProperties properties = new ListGenerateProperties();
         properties.setListName(listName);
@@ -727,8 +712,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         ShoppingListEntity createdList = new ShoppingListEntity();
         createdList.setName("ShoppingList 4");
 
-        ListLayoutEntity listLayout = new ListLayoutEntity();
-        BeanUtils.setProperty(listLayout, "id", 666L);
+        ListLayoutEntity listLayout = new ListLayoutEntity(listLayoutId);
 
         ArgumentCaptor<ShoppingListEntity> listArgument = ArgumentCaptor.forClass(ShoppingListEntity.class);
 
@@ -737,6 +721,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.findByUserIdAndNameLike(userId, listName + "%"))
                 .thenReturn(Arrays.asList(listDuplicate1, listDuplicate2, listDuplicate3));
         Mockito.when(shoppingListRepository.save(listArgument.capture())).thenReturn(createdList);
+        Mockito.when(listLayoutService.getDefaultUserLayout(userId)).thenReturn(listLayout);
 
         ShoppingListEntity result = shoppingListService.generateListForUser(userName, properties);
 
@@ -754,6 +739,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Long mealPlanId = 999L;
         Long userId = 9L;
         String listName = "list name";
+        Long listLayoutId = 9999L;
 
         UserEntity userEntity = new UserEntity();
         userEntity.setId(userId);
@@ -765,7 +751,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         tagTypeList.add(TagType.NonEdible);
 
         // fixtures
-        ListLayoutEntity listLayoutEntity = new ListLayoutEntity();
+        ListLayoutEntity listLayoutEntity = new ListLayoutEntity(listLayoutId);
         MealPlanEntity mealPlan = new MealPlanEntity(mealPlanId);
         // make 6 tags
         TagEntity tag1 = ServiceTestUtils.buildTag(1L, "first tag", TagType.Ingredient);
@@ -790,10 +776,10 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         // expectations
         Mockito.when(userService.getUserByUserEmail(username))
                 .thenReturn(userEntity);
-        Mockito.when(listLayoutService.getListLayouts())
-                .thenReturn(Collections.singletonList(listLayoutEntity));
         Mockito.when(mealPlanService.getMealPlanById(username, mealPlanId))
                 .thenReturn(mealPlan);
+        Mockito.when(listLayoutService.getDefaultUserLayout(userId))
+                .thenReturn(listLayoutEntity);
         Mockito.when(shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId))
                 .thenReturn(Optional.of(createdShoppingList));
         Mockito.when(tagService.getTagsForDish(username, dish1.getId(), tagTypeList))
@@ -899,7 +885,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         // verifications before
         // list contain doesn't item from meal plan
         Optional<ItemEntity> mealPlanItem = shoppingList.getItems().stream()
-                .filter(item -> item.getTag().getId().longValue() == 1L)
+                .filter(item -> item.getTag().getId() == 1L)
                 .findFirst();
         Assert.assertFalse(mealPlanItem.isPresent());
 
@@ -990,7 +976,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         // verifications before
         // list contain doesn't item from meal plan
         Optional<ItemEntity> mealPlanItem = shoppingList.getItems().stream()
-                .filter(item -> item.getTag().getId().longValue() == 1L)
+                .filter(item -> item.getTag().getId() == 1L)
                 .findFirst();
         Assert.assertFalse(mealPlanItem.isPresent());
 
