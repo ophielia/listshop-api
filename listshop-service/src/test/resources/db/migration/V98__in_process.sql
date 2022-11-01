@@ -5,6 +5,10 @@ ALTER TABLE list_layout
 ALTER TABLE list_layout
     DROP COLUMN layout_type;
 
+ALTER TABLE TAG
+    DROP COLUMN assign_select;
+ALTER TABLE TAG
+    DROP COLUMN search_select;
 
 -- delete old entries
 truncate table category_relation;
@@ -51,3 +55,5 @@ set list_layout_id = null;
 --            references list_category
 --);
 
+-- ALTER TABLE TAG ADD COLUMN assign_select BOOLEAN;
+-- ALTER TABLE TAG ADD COLUMN search_select BOOLEAN;

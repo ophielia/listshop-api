@@ -58,14 +58,8 @@ public class TagEntity {
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<ListLayoutCategoryEntity> categories = new ArrayList<>();
 
-    @Deprecated
-    private Boolean assignSelect;
-
     @Column(name = "is_group")
     private boolean isGroup;
-
-    @Deprecated
-    private Boolean searchSelect;
 
     private Boolean isVerified;
 
@@ -292,8 +286,6 @@ public class TagEntity {
                 ", tagTypeDefault=" + tagTypeDefault +
                 ", dishes=" + dishes +
                 ", categories=" + categories +
-                ", assignSelect=" + assignSelect +
-                ", searchSelect=" + searchSelect +
                 ", isVerified=" + isVerified +
                 ", power=" + power +
                 ", childrenIds=" + childrenIds +
