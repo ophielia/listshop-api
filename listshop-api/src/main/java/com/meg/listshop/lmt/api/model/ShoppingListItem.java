@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,8 +24,8 @@ public class ShoppingListItem {
     @JsonProperty("updated")
     private Date updated;
 
-    @JsonProperty("free_text")
-    private String freeText;
+    @JsonProperty("tag_name")
+    private String tagName;
 
     @JsonProperty("crossed_off")
     private Date crossedOff;
@@ -32,23 +33,32 @@ public class ShoppingListItem {
     @JsonProperty("list_id")
     private String listId;
 
-    @JsonProperty("tag_id")
-    private String tagId;
-
     @JsonProperty("used_count")
     private Integer usedCount;
 
     @JsonProperty("source_keys")
     private List<String> sourceKeys;
 
-    private Set<String> handles;
+    @JsonIgnore
+    private String rawSourceKeys;
+
+    @JsonProperty("handles")
+    private Set<String> handles = new HashSet<>();
+
+    @JsonIgnore
+    private String rawListSources;
+
+    @JsonIgnore
+    private String rawDishSources;
 
     public ShoppingListItem(Long id) {
         this.item_id = id;
+        this.tag = new Tag();
     }
 
     public ShoppingListItem() {
         // necessary for json construction
+        this.tag = new Tag();
     }
 
     @JsonIgnore
@@ -61,12 +71,6 @@ public class ShoppingListItem {
         return tag;
     }
 
-    public ShoppingListItem tag(Tag tag) {
-        this.tag = tag;
-        return this;
-    }
-
-
     public Date getAddedOn() {
         return addedOn;
     }
@@ -77,12 +81,12 @@ public class ShoppingListItem {
     }
 
 
-    public String getFreeText() {
-        return freeText;
+    public String getTagName() {
+        return this.tag != null ? this.tag.getName() : null;
     }
 
-    public ShoppingListItem freeText(String freeText) {
-        this.freeText = freeText;
+    public ShoppingListItem tagName(String tagName) {
+        this.tag.name(tagName);
         return this;
     }
 
@@ -106,16 +110,13 @@ public class ShoppingListItem {
         return this;
     }
 
+    @JsonIgnore
     public String getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(String tagId) {
-        this.tagId = tagId;
+        return tag != null ? tag.getId() : null;
     }
 
     public ShoppingListItem tagId(String tagId) {
-        this.tagId = tagId;
+        this.tag.setTag_id(tagId);
         return this;
     }
 
@@ -156,6 +157,33 @@ public class ShoppingListItem {
         return sourceKeys;
     }
 
+    public String getRawSourceKeys() {
+        return rawSourceKeys;
+    }
+
+    public ShoppingListItem rawSourceKeys(String rawSourceKeys) {
+        this.rawSourceKeys = rawSourceKeys;
+        return this;
+    }
+
+    public String getRawListSources() {
+        return rawListSources;
+    }
+
+    public ShoppingListItem rawListSources(String rawListSources) {
+        this.rawListSources = rawListSources;
+        return this;
+    }
+
+    public String getRawDishSources() {
+        return rawDishSources;
+    }
+
+    public ShoppingListItem rawDishSources(String rawDishSources) {
+        this.rawDishSources = rawDishSources;
+        return this;
+    }
+
     public Set<String> getHandles() {
         return handles;
     }
@@ -164,4 +192,13 @@ public class ShoppingListItem {
         this.handles = handles;
         return this;
     }
+
+    public void addHandle(String handle) {
+        if (this.handles == null) {
+            this.handles = new HashSet<>();
+        }
+        handles.add(handle);
+    }
+
+
 }

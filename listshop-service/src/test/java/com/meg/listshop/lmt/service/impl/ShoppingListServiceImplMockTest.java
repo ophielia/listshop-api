@@ -11,7 +11,6 @@ import com.meg.listshop.lmt.data.repository.ItemChangeRepository;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.service.*;
-import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Assert;
@@ -631,7 +630,8 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(listTagStatisticService.findFrequentIdsForList(listId, userId)).thenReturn(new ArrayList<>());
 
         // test call
-        List<ListShopCategory> resultList = shoppingListService.categorizeList(shoppingList);
+        List<ShoppingListCategory> resultList = shoppingListService.categorizeList(shoppingList);
+//MM layout test
 
         Mockito.verify(listLayoutService, times(1)).getListCategoriesForLayout(layoutId);
         //Mockito.verify(listLayoutService, times(1));
@@ -1071,7 +1071,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         List<ItemEntity> items = listResult.getItems();
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
-        Assert.assertTrue(items.size() == 3);
+        Assert.assertEquals(3, items.size());
         // put items into map
         Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1139,7 +1139,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         List<ItemEntity> items = listResult.getItems();
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
-        Assert.assertTrue(items.size() == 3);
+        Assert.assertEquals(3, items.size());
         // put items into map
         Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1208,7 +1208,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         List<ItemEntity> items = listResult.getItems();
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
-        Assert.assertTrue(items.size() == 3);
+        Assert.assertEquals(3, items.size());
         // put items into map
         Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1267,7 +1267,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         List<ItemEntity> items = listResult.getItems();
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
-        Assert.assertTrue(items.size() == 3);
+        Assert.assertEquals(3, items.size());
         // put items into map
         Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));

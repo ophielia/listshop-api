@@ -84,7 +84,7 @@ public class ListItemCollector extends AbstractItemCollector {
 
 
     private CollectedItem copyFreeTextItem(ItemEntity item) {
-        ItemEntity copiedItem = item.clone();
+        ItemEntity copiedItem = item.createCopy();
 
         CollectedItem copied = new CollectedItem(copiedItem);
         copied.setFreeText(item.getFreeText());

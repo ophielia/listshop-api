@@ -18,11 +18,29 @@ from list_category lc using list_layout l
 where l.layout_id = lc.layout_id
   and l.name <> 'RoughGrained';
 
+delete
+from list_layout l
+where l.name <> 'RoughGrained';
+
 
 drop table category_relation;
+
+update list_layout
+set is_default = true;
 
 -- test undo
 --ALTER TABLE list_layout DROP COLUMN user_id;
 --ALTER TABLE list_layout DROP COLUMN is_default;
 
 
+--create table category_relation
+--(
+--    category_relation_id bigint not null
+--        primary key,
+--    child_category_id    bigint
+--        constraint category_relation__list_category_id_child
+--            references list_category,
+--    parent_category_id   bigint
+--        constraint category_relation__list_category_id_parent
+--            references list_category
+--);

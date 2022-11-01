@@ -16,7 +16,6 @@ import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
-import com.meg.listshop.lmt.service.categories.ItemCategoryPojo;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 import com.meg.listshop.lmt.service.categories.ListShopCategory;
 
@@ -298,20 +297,16 @@ public class ModelMapper {
     }
 
 
-    private static List<Item> simpleItemsToModel(List<ItemEntity> items) {
-        List<Item> itemList = new ArrayList<>();
+    private static void enhanceSources(List<ShoppingListItem> items) {
         if (items == null) {
-            return itemList;
+            return;
         }
-        for (ItemEntity entity : items) {
-            Item item = toModel(entity);
-            List<String> sources = toListItemSourceKeys(ModelMapper.DISH_PREFIX, entity.getRawDishSources());
-            sources.addAll(toListItemSourceKeys(ModelMapper.LIST_PREFIX, entity.getRawListSources()));
-            sources.addAll(toListItemSourceKeys(ModelMapper.SPECIAL_PREFIX, entity.getHandles()));
-            item.sourceKeys(sources);
-            itemList.add(item);
-        }
-        return itemList;
+        items.forEach(i -> {
+            List<String> sources = toListItemSourceKeys(ModelMapper.DISH_PREFIX, i.getRawDishSources());
+            sources.addAll(toListItemSourceKeys(ModelMapper.LIST_PREFIX, i.getRawListSources()));
+            sources.addAll(toListItemSourceKeys(ModelMapper.SPECIAL_PREFIX, i.getHandles()));
+            i.sourceKeys(sources);
+        });
     }
 
     private static List<String> toListItemSourceKeys(String keyPrefix, Set<String> idSet) {
@@ -448,7 +443,7 @@ public class ModelMapper {
         return slotList;
     }
 
-    public static ShoppingList toModel(ShoppingListEntity shoppingListEntity, List<ListShopCategory> itemCategories) {
+    public static ShoppingList toModel(ShoppingListEntity shoppingListEntity, List<ShoppingListCategory> itemCategories) {
         List<LegendSource> legendSources = new ArrayList<>();
         if (shoppingListEntity.getDishSources() != null &&
                 !shoppingListEntity.getDishSources().isEmpty()) {
@@ -470,9 +465,8 @@ public class ModelMapper {
             });
             legendSources.addAll(listLegends);
         }
-        //MM?? open for now - how to know if item frequent exists?
 
-        List<ShoppingListCategory> categories = itemCategoriesToModel(itemCategories);
+        enhanceCategories(itemCategories);
 
         long itemCount = 0;
         if (shoppingListEntity.getItems() != null) {
@@ -482,7 +476,7 @@ public class ModelMapper {
         }
         return new ShoppingList(shoppingListEntity.getId())
                 .createdOn(shoppingListEntity.getCreatedOn())
-                .categories(categories)
+                .categories(itemCategories)
                 .legendSources(legendSources)
                 .isStarterList(shoppingListEntity.getIsStarterList())
                 .name(shoppingListEntity.getName())
@@ -493,31 +487,14 @@ public class ModelMapper {
 
     }
 
-    private static List<ShoppingListCategory> itemCategoriesToModel(List<ListShopCategory> filledCategories
+
+    private static void enhanceCategories(List<ShoppingListCategory> filledCategories
     ) {
         if (filledCategories == null) {
-            return new ArrayList<>();
+            return;
         }
-
-        List<ShoppingListCategory> modelCategories = new ArrayList<>();
-
-        // go through list, converting items in category and subcategories
-        // (category is already in model - the server needed to organize, but
-        // the item mapping is still handled here)
-        for (ListShopCategory categoryModel : filledCategories) {
-            ItemCategoryPojo cm = (ItemCategoryPojo) categoryModel;
-            ShoppingListCategory model = new ShoppingListCategory(cm.getId());
-            List<Item> items = new ArrayList<>();
-            if (cm.getItemEntities() != null && !cm.getItemEntities().isEmpty()) {
-                items = simpleItemsToModel(cm.getItemEntities());
-            }
-            model.setName(cm.getName());
-            model.displayOrder = cm.getDisplayOrder();
-            model.setItems(items);
-
-            modelCategories.add(model);
-        }
-        return modelCategories;
+        // go through list, converting items in categories to Items
+        filledCategories.forEach(c -> enhanceSources(c.getItems()));
     }
 
     public static Item toModel(ItemEntity itemEntity) {

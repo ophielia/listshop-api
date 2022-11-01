@@ -5,7 +5,6 @@ import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.pojos.ItemMappingDTO;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
@@ -304,22 +303,18 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
     @Override
     public ListLayoutEntity getUserListLayout(Long userId, Long listLayoutId) {
-        //MM layout fill this in
-        return null;
+        // get user layout
+        return listLayoutRepository.getUserListLayout(userId, listLayoutId);
+    }
+
+    @Override
+    public ListLayoutEntity getDefaultUserLayout(Long userId) {
+        return listLayoutRepository.getDefaultUserLayout(userId);
     }
 
     @Override
     public ListLayoutEntity getStandardLayout() {
-        //MM layout fill this in
-        return null;
+        return listLayoutRepository.getStandardLayout();
     }
-
-    @Override
-    public List<ItemMappingDTO> getListMappings(Long la, Long listId, boolean usesStandardLayout) {
-        //MM layout fill this in
-        return null;
-    }
-
-
 
 }

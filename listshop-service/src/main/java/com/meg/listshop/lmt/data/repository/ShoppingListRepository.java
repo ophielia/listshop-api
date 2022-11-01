@@ -9,10 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity, Long> {
-
-    List<ShoppingListEntity> findByUserId(Long userid);
-
+public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity, Long>, ListMappingCustomRepository {
 
     List<ShoppingListEntity> findByListIdAndUserId(Long listId, Long userId);
 

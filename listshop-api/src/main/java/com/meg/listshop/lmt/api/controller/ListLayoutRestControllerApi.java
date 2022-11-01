@@ -4,6 +4,7 @@ package com.meg.listshop.lmt.api.controller;
 import com.meg.listshop.lmt.api.model.ListLayout;
 import com.meg.listshop.lmt.api.model.ListLayoutCategory;
 import com.meg.listshop.lmt.api.model.ListLayoutListResource;
+import com.meg.listshop.lmt.api.model.ListLayoutResource;
 import com.meg.listshop.lmt.service.ListLayoutException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public interface ListLayoutRestControllerApi {
     ResponseEntity<Object> createListLayout(HttpServletRequest request, Principal principal, @RequestBody ListLayout input);
 
     @GetMapping(value = "/{listLayoutId}", produces = "application/json")
-    ResponseEntity<ListLayout> readListLayout(HttpServletRequest request, Principal principal, @PathVariable("listLayoutId") Long listLayoutId);
+    ResponseEntity<ListLayoutResource> readListLayout(HttpServletRequest request, Principal principal, @PathVariable("listLayoutId") Long listLayoutId);
 
     @GetMapping(value = "/default", produces = "application/json")
     ResponseEntity<ListLayout> readDefaultListLayout(HttpServletRequest request);

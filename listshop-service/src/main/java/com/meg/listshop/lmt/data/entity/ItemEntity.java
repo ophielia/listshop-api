@@ -174,13 +174,6 @@ public class ItemEntity {
         return handles != null ? handles : new HashSet<>();
     }
 
-    public void addHandle(String handle) {
-        if (this.handles == null) {
-            this.handles = new HashSet<>();
-        }
-        handles.add(handle);
-    }
-
     @Override
     public String toString() {
         return "ItemEntity{" +
@@ -195,7 +188,7 @@ public class ItemEntity {
                 '}';
     }
 
-    public ItemEntity clone() {
+    public ItemEntity createCopy() {
         ItemEntity cloned = new ItemEntity();
         cloned.setAddedOn(this.getAddedOn());
         cloned.setCrossedOff(this.getCrossedOff());

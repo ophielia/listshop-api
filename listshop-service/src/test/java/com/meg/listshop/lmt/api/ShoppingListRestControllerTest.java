@@ -160,6 +160,8 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentType(contentType));
+
+
     }
 
     @Test
@@ -178,7 +180,6 @@ public class ShoppingListRestControllerTest {
                         .content(payload).contentType(contentType))
                 .andExpect(status().isOk())
                 .andReturn();
-
         // now, testing the most recent call
         result = mockMvc.perform(get("/shoppinglist/mostrecent")
                         .with(user(meUserDetails)))
@@ -226,14 +227,11 @@ public class ShoppingListRestControllerTest {
                 .andReturn();
 
 
-        Assert.assertTrue(1 == 1);
-
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(result.getResponse().getContentAsString());
         JsonNode containedListJson = jsonNode.get("shopping_list");
         jsonNode.get("shopping_list");
-        //ShoppingList list = objectMapper.(containedListJson, ShoppingList.class);
-        Assert.assertTrue(1 == 1);
+
     }
 
     @Test
@@ -338,7 +336,7 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingList source = retrieveList(userDetails, listId);
-        Map<String, Item> resultMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> resultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
@@ -352,7 +350,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertTrue(resultMap.get("12").getUsedCount() == 1); // showing 1 in result map
         // 436 - 1
         Assert.assertNotNull(resultMap.get("81"));
-        Assert.assertTrue(resultMap.get("81").getUsedCount() == 1);
+        Assert.assertEquals(Long.valueOf(1), resultMap.get("81").getUsedCount());
 
     }
 
@@ -509,7 +507,7 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingList source = retrieveList(userDetails, listId);
-        Map<String, Item> sourceResultMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
@@ -521,13 +519,13 @@ public class ShoppingListRestControllerTest {
 
         // 502 - 3
         Assert.assertNotNull(sourceResultMap.get("1"));
-        Assert.assertTrue(sourceResultMap.get("1").getUsedCount() == 3);  // showing 1 in result map
+        Assert.assertEquals(Long.valueOf(3), sourceResultMap.get("1").getUsedCount());  // showing 1 in result map
         // 503 - 2
         Assert.assertNotNull(sourceResultMap.get("12"));
-        Assert.assertTrue(sourceResultMap.get("12").getUsedCount() == 2); // showing 1 in result map
+        Assert.assertEquals(Long.valueOf(2), sourceResultMap.get("12").getUsedCount()); // showing 1 in result map
         // 436 - 1
         Assert.assertNotNull(sourceResultMap.get("436"));
-        Assert.assertTrue(sourceResultMap.get("436").getUsedCount() == 1);
+        Assert.assertEquals(Long.valueOf(1), sourceResultMap.get("436").getUsedCount());
 
     }
 
@@ -548,7 +546,7 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingList source = retrieveList(meUserDetails, listId);
-        Map<String, Item> sourceResultMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(sourceResultMap);
@@ -559,7 +557,7 @@ public class ShoppingListRestControllerTest {
         // should not contain tag 33 (which was removed)
         Assert.assertFalse("shouldn't contain tag 32", sourceResultMap.containsKey("32"));
         // not crossed off - 33, 16
-        Map<String, Item> activeMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> activeMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getCrossedOff() == null)
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -586,7 +584,7 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingList source = retrieveList(meUserDetails, listId);
-        Map<String, Item> sourceResultMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(sourceResultMap);
@@ -612,7 +610,7 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingList source = retrieveList(meUserDetails, listId);
-        Map<String, Item> sourceResultMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(sourceResultMap);
@@ -697,7 +695,7 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingList source = retrieveList(userDetails, listId);
-        Map<String, Item> resultMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> resultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
@@ -729,7 +727,7 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingList source = retrieveList(meUserDetails, sourceListId);
-        Map<String, Item> sourceResultMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
@@ -739,14 +737,14 @@ public class ShoppingListRestControllerTest {
         Assert.assertFalse(sourceResultMap.keySet().contains("500"));
         // check destination list
         ShoppingList destination = retrieveList(meUserDetails, destinationListId);
-        Map<String, Item> destinationResultMap = destination.getCategories().stream()
+        Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(destinationResultMap);
         Assert.assertEquals(5, destinationResultMap.keySet().size());
         // 500 should be there with count 1
         Assert.assertTrue(destinationResultMap.containsKey("500"));
-        Item testElement = destinationResultMap.get("500");
+        ShoppingListItem testElement = destinationResultMap.get("500");
         Assert.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
         // 502 should be there with a count of 2
         testElement = destinationResultMap.get("502");
@@ -779,14 +777,14 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingList source = retrieveList(meUserDetails, sourceListId);
-        Map<String, Item> sourceResultMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
         Assert.assertEquals(4, sourceResultMap.keySet().size());
         // check destination list
         ShoppingList destination = retrieveList(meUserDetails, destinationListId);
-        Map<String, Item> destinationResultMap = destination.getCategories().stream()
+        Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
@@ -794,7 +792,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertEquals(5, destinationResultMap.keySet().size());
         // 500 should be there with count 1
         Assert.assertTrue(destinationResultMap.containsKey("500"));
-        Item testElement = destinationResultMap.get("500");
+        ShoppingListItem testElement = destinationResultMap.get("500");
         Assert.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
         // 501 should be there with a count of 2
         testElement = destinationResultMap.get("501");
@@ -827,7 +825,7 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingList source = retrieveList(meUserDetails, sourceListId);
-        Map<String, Item> sourceResultMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
@@ -837,7 +835,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertFalse(sourceResultMap.keySet().contains(500L));
         // check destination list
         ShoppingList destination = retrieveList(meUserDetails, destinationListId);
-        Map<String, Item> destinationResultMap = destination.getCategories().stream()
+        Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
@@ -845,7 +843,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertEquals(5, destinationResultMap.keySet().size());
         // 500 should be there with count 1, crossedOff
         Assert.assertTrue(destinationResultMap.containsKey("500"));
-        Item testElement = destinationResultMap.get("500");
+        ShoppingListItem testElement = destinationResultMap.get("500");
         Assert.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
         Assert.assertNotNull(testElement.getCrossedOff());
         // 502 should be there with a count of 2
@@ -885,7 +883,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertNotNull(afterList);
         ShoppingList list = afterList.getShoppingList();
 
-        Map<String, Item> allSourceResultMap = list.getCategories().stream()
+        Map<String, ShoppingListItem> allSourceResultMap = list.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
@@ -896,7 +894,7 @@ public class ShoppingListRestControllerTest {
 
         // check destination list
         ShoppingList destination = retrieveList(meUserDetails, destinationListId);
-        Map<String, Item> destinationResultMap = destination.getCategories().stream()
+        Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
@@ -904,7 +902,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertEquals(4, destinationResultMap.keySet().size());
         // 505 should be there with count 2, not crossedOff
         Assert.assertTrue(destinationResultMap.containsKey("505"));
-        Item testElement = destinationResultMap.get("505");
+        ShoppingListItem testElement = destinationResultMap.get("505");
         Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
         Assert.assertNull(testElement.getCrossedOff());
         // 502 should be there with a count of 2
@@ -947,9 +945,8 @@ public class ShoppingListRestControllerTest {
                 .andReturn();
 
         // now, retrieve the list
-        // now, retrieve the list
         ShoppingList source = retrieveList(meUserDetails, sourceListId);
-        Map<String, Item> sourceResultMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
@@ -991,7 +988,7 @@ public class ShoppingListRestControllerTest {
 
         // now, retrieve the list
         ShoppingList source = retrieveList(meUserDetails, sourceListId);
-        Map<String, Item> sourceResultMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
@@ -1028,7 +1025,7 @@ public class ShoppingListRestControllerTest {
         // now, retrieve the list
         // check destination list
         ShoppingList source = retrieveList(meUserDetails, sourceListId);
-        Map<String, Item> destinationResultMap = source.getCategories().stream()
+        Map<String, ShoppingListItem> destinationResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
@@ -1105,11 +1102,11 @@ public class ShoppingListRestControllerTest {
                 .filter(c -> c.getName().equals("Produce"))
                 .findFirst();
         Assert.assertTrue("list contains category produce", produce.isPresent());
-        Optional<Item> carrotOpt = produce.get().getItems().stream()
+        Optional<ShoppingListItem> carrotOpt = produce.get().getItems().stream()
                 .filter(i -> i.getTag().getName().equals("carrots"))
                 .findFirst();
         Assert.assertTrue("carrots present in list", carrotOpt.isPresent());
-        Item carrot = carrotOpt.get();
+        ShoppingListItem carrot = carrotOpt.get();
         Assert.assertEquals("only one source key for carrots shown", 1, carrot.getSourceKeys().size());
         Assert.assertNotNull("carrots should be crossed off", carrot.getCrossedOff());
     }

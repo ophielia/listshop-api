@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -18,7 +19,10 @@ public class ShoppingListCategory {
     int displayOrder;
 
     @JsonProperty("items")
-    private List<Item> items;
+    private List<ShoppingListItem> items;
+
+    @JsonIgnore
+    private int userDisplayOrder;
 
     public ShoppingListCategory() {
     }
@@ -40,6 +44,9 @@ public class ShoppingListCategory {
     }
 
     public void setId(Long id) {
+        if (this.id != null && this.userCategoryId != null) {
+            return;
+        }
         this.id = id;
     }
 
@@ -49,13 +56,26 @@ public class ShoppingListCategory {
 
     public void setUserCategoryId(Long userCategoryId) {
         this.userCategoryId = userCategoryId;
+        this.id = userCategoryId;
     }
 
-    public List<Item> getItems() {
+    public int getUserDisplayOrder() {
+        return userDisplayOrder;
+    }
+
+    public void setUserDisplayOrder(int userDisplayOrder) {
+        if (userDisplayOrder == 0) {
+            return;
+        }
+        this.userDisplayOrder = userDisplayOrder;
+        this.displayOrder = userDisplayOrder;
+    }
+
+    public List<ShoppingListItem> getItems() {
         return items;
     }
 
-    public void setItems(List<Item> items) {
+    public void setItems(List<ShoppingListItem> items) {
         this.items = items;
     }
 
@@ -64,10 +84,10 @@ public class ShoppingListCategory {
     }
 
     public void setDisplayOrder(int displayOrder) {
+        if (displayOrder == 0 || (this.displayOrder > 0 && this.userDisplayOrder > 0)) {
+            return;
+        }
         this.displayOrder = displayOrder;
     }
 
-    public void setShoppingListItems(List<ShoppingListItem> shoppingListItems) {
-        //MM layout fill in - sidecar for replacing items
-    }
 }

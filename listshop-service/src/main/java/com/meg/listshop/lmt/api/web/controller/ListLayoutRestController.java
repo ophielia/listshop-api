@@ -6,7 +6,6 @@ import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.service.ListLayoutException;
 import com.meg.listshop.lmt.service.ListLayoutService;
-import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,17 +65,16 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         return ResponseEntity.badRequest().build();
     }
 
-    public ResponseEntity<ListLayout> readListLayout(HttpServletRequest request, Principal principal, @PathVariable("listLayoutId") Long listLayoutId) {
+    public ResponseEntity<ListLayoutResource> readListLayout(HttpServletRequest request, Principal principal, @PathVariable("listLayoutId") Long listLayoutId) {
         ListLayoutEntity listLayout = this.listLayoutService
                 .getListLayoutById(listLayoutId);
 
         if (listLayout != null) {
-            List<ListLayoutCategoryPojo> structuredCategories = null;//this.listLayoutService.getStructuredCategories(listLayout);
             ListLayout layoutModel = ModelMapper.toModel(listLayout, null);
             ListLayoutResource rescource = new ListLayoutResource(layoutModel);
             rescource.fillLinks(request, rescource);
 
-            return new ResponseEntity(rescource, HttpStatus.OK);
+            return new ResponseEntity<>(rescource, HttpStatus.OK);
         }
         return ResponseEntity.notFound().build();
     }
@@ -87,12 +85,12 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
                 .getDefaultListLayout();
 
         if (listLayout != null) {
-            List<ListLayoutCategoryPojo> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
-            ListLayout layoutModel = ModelMapper.toModel(listLayout, structuredCategories);
+            //MM layout - finish cleaning upList<ListLayoutCategoryPojo> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
+            /*ListLayout layoutModel = ModelMapper.toModel(listLayout, structuredCategories);
             ListLayoutResource listLayoutResource = new ListLayoutResource(layoutModel);
             listLayoutResource.fillLinks(request, listLayoutResource);
 
-            return new ResponseEntity(listLayoutResource, HttpStatus.OK);
+            return new ResponseEntity(listLayoutResource, HttpStatus.OK);*/
         }
         return ResponseEntity.notFound().build();
     }

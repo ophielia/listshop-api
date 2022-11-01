@@ -3,7 +3,6 @@ package com.meg.listshop.lmt.service;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.pojos.ItemMappingDTO;
 
 import java.util.List;
 
@@ -47,7 +46,8 @@ public interface ListLayoutService {
 
     ListLayoutEntity getUserListLayout(Long userId, Long listLayoutId);
 
+    ListLayoutEntity getDefaultUserLayout(Long userId);
+
     ListLayoutEntity getStandardLayout();
 
-    List<ItemMappingDTO> getListMappings(Long la, Long listId, boolean usesStandardLayout);
 }

@@ -5,10 +5,8 @@ import com.meg.listshop.lmt.api.controller.ShoppingListRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
-import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.lmt.service.ShoppingListException;
 import com.meg.listshop.lmt.service.ShoppingListService;
-import com.meg.listshop.lmt.service.categories.ListShopCategory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +32,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     private static final Logger logger = LogManager.getLogger(ShoppingListRestController.class);
 
-    private ShoppingListService shoppingListService;
+    private final ShoppingListService shoppingListService;
+
     @Autowired
     public ShoppingListRestController(ShoppingListService shoppingListService) {
         this.shoppingListService = shoppingListService;
@@ -52,7 +51,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
         ShoppingListListResource resource = new ShoppingListListResource(shoppingListList);
         resource.fillLinks(request, resource);
-        return new ResponseEntity(resource, HttpStatus.OK);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @Override
@@ -93,12 +92,12 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             if (layoutId != null && !layoutId.equals(shoppingList.getListLayoutId())) {
                 shoppingList.setListLayoutId(layoutId);
             }
-            List<ListShopCategory> categories = shoppingListService.categorizeList(shoppingList);
+            List<ShoppingListCategory> categories = shoppingListService.categorizeList(shoppingList);
             shoppingListService.fillSources(shoppingList);
             mergeResult.setShoppingList(ModelMapper.toModel(shoppingList, categories));
             MergeResultResource resource = new MergeResultResource(mergeResult);
 
-            return new ResponseEntity(resource, HttpStatus.OK);
+            return new ResponseEntity<>(resource, HttpStatus.OK);
         }
 
         return ResponseEntity.badRequest().build();
@@ -144,7 +143,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         if (result == null) {
             throw new ObjectNotFoundException("No lists found for user [" + principal.getName() + "] in retrieveMostRecentList()");
         }
-        List<ListShopCategory> categories = shoppingListService.categorizeList(result);
+        List<ShoppingListCategory> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
         return singleResult(request, result, categories);
     }
@@ -154,7 +153,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         if (result == null) {
             throw new ObjectNotFoundException("No lists found for user [" + principal.getName() + "] in retrieveStarterList()");
         }
-        List<ListShopCategory> categories = shoppingListService.categorizeList(result);
+        List<ShoppingListCategory> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
         return singleResult(request, result, categories);
     }
@@ -163,7 +162,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<ShoppingListResource> retrieveListById(HttpServletRequest request, Principal principal, @PathVariable("listId") Long listId) {
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
 
-        List<ListShopCategory> categories = shoppingListService.categorizeList(result);
+        List<ShoppingListCategory> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
         return singleResult(request, result, categories);
     }
@@ -270,7 +269,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         try {
             this.shoppingListService.addDishToList(principal.getName(), listId, dishId);
         } catch (ShoppingListException s) {
-            logger.error("Unable to add Dish [" + dishId + "] to List [" + listId + "]", s);
+            logger.error("Unable to add Dish [%d] to List [%d]", s, dishId, listId);
             return ResponseEntity.badRequest().build();
         }
 
@@ -309,13 +308,13 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
 
-    private ResponseEntity<ShoppingListResource> singleResult(HttpServletRequest request, ShoppingListEntity result, List<ListShopCategory> categories) {
+    private ResponseEntity<ShoppingListResource> singleResult(HttpServletRequest request, ShoppingListEntity result, List<ShoppingListCategory> categories) {
         if (result != null) {
 
             ShoppingList shoppingList = ModelMapper.toModel(result, categories);
             ShoppingListResource resource = new ShoppingListResource(shoppingList);
             resource.fillLinks(request, resource);
-            return new ResponseEntity(resource, HttpStatus.OK);
+            return new ResponseEntity<>(resource, HttpStatus.OK);
         }
         return ResponseEntity.noContent().build();
     }

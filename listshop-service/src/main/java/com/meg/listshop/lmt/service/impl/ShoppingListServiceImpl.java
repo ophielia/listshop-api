@@ -148,6 +148,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 doCrossOffActions(sourceList, operationType, tagIds);
                 break;
         }
+        String beep = "bop";
     }
 
     private void doCrossOffActions(ShoppingListEntity sourceList, ItemOperationType operationType, List<Long> tagIds) {
@@ -623,18 +624,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (shoppingListEntity == null) {
             return new ArrayList<>();
         }
-        boolean usesStandardLayout = false;
-        ListLayoutEntity layout = listLayoutService.getUserListLayout(shoppingListEntity.getUserId(), shoppingListEntity.getListLayoutId());
+        Long userLayoutId = getUserLayoutId(shoppingListEntity.getUserId(), shoppingListEntity.getListLayoutId());
 
-
-        if (layout == null) {
-            usesStandardLayout = true;
-            layout = listLayoutService.getStandardLayout();
-        }
         // find frequently crossed off
         List<Long> frequentTagIds = listTagStatisticService.findFrequentIdsForList(shoppingListEntity.getId(), shoppingListEntity.getUserId());
 
-        List<ItemMappingDTO> mappedItems = listLayoutService.getListMappings(layout.getId(), shoppingListEntity.getId(), usesStandardLayout);
+        List<ItemMappingDTO> mappedItems = shoppingListRepository.getListMappings(userLayoutId, shoppingListEntity.getId());
 
         Map<String, List<ShoppingListItem>> itemLists = new HashMap<>();
         Map<String, ShoppingListCategory> filledCategories = new HashMap<>();
@@ -642,13 +637,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         mappedItems.stream()
                 .filter(im -> im.getRemovedOn() == null)
                 .forEach(im -> {
-                    // add frequent handle
-
                     // create Item from ItemMapping
                     ShoppingListItem item = im.mapToShoppingListItem();
 
+                    // add frequent handle
+                    if (frequentTagIds.contains(im.getTagId())) {
+                        item.addHandle(ShoppingListService.FREQUENT);
+                    }
                     // handle category
-                    ShoppingListCategory category = null;
+                    ShoppingListCategory category;
                     if (filledCategories.containsKey(im.getCategoryName())) {
                         category = filledCategories.get(im.getCategoryName());
                         updateCategoryModelFromMapping(category, im);
@@ -656,7 +653,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                         category = createCategoryModelFromMapping(im);
                         filledCategories.put(category.getName(), category);
                     }
-                    (itemLists.computeIfAbsent(im.getCategoryName(), k -> new ArrayList<ShoppingListItem>())).add(item);
+                    (itemLists.computeIfAbsent(im.getCategoryName(), k -> new ArrayList<>())).add(item);
 
                 });
 
@@ -668,7 +665,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // prune and sort categories - sorts the categories themselves, not the contents
         List<ShoppingListCategory> result = new ArrayList<>();
         filledCategories.forEach((categoryname, category) -> {
-            category.setShoppingListItems(itemLists.get(categoryname));
+            category.setItems(itemLists.get(categoryname));
             result.add(category);
         });
 
@@ -678,13 +675,34 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         return result;
     }
 
+
+    private Long getUserLayoutId(Long userId, Long listLayoutId) {
+        Optional<ListLayoutEntity> layout;
+        if (listLayoutId == null) {
+            layout = Optional.ofNullable(listLayoutService.getDefaultUserLayout(userId));
+        } else {
+            layout = Optional.ofNullable(listLayoutService.getUserListLayout(userId, listLayoutId));
+        }
+
+        return layout.map(v -> v.getId())
+                .orElse(null);
+    }
+
     private ShoppingListCategory createCategoryModelFromMapping(ItemMappingDTO itemMappingDTO) {
-        //MM layout fill in
-        return null;
+
+        ShoppingListCategory category = new ShoppingListCategory(itemMappingDTO.getCategoryId());
+        category.setUserCategoryId(itemMappingDTO.getUserCategoryId());
+        category.setName(itemMappingDTO.getCategoryName());
+        category.setDisplayOrder(itemMappingDTO.getDisplayOrder());
+        category.setUserDisplayOrder(itemMappingDTO.getUserDisplayOrder());
+
+        return category;
     }
 
     private void updateCategoryModelFromMapping(ShoppingListCategory category, ItemMappingDTO itemMappingDTO) {
-        //MM layout fill in
+        category.setUserCategoryId(itemMappingDTO.getUserCategoryId());
+        category.setName(itemMappingDTO.getCategoryName());
+        category.setUserDisplayOrder(itemMappingDTO.getUserDisplayOrder());
     }
 
     // Note - this method doesn't check yet for MergeConflicts.  But the signature
@@ -1087,7 +1105,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ShoppingListEntity newList = new ShoppingListEntity();
         // get list layout for user, list_type
         //MM layout
-        ListLayoutEntity listLayout = getListLayout(null);
+        ListLayoutEntity listLayout = listLayoutService.getDefaultUserLayout(userId);
+        if (listLayout == null) {
+            listLayout = listLayoutService.getStandardLayout();
+        }
         newList.setListLayoutId(listLayout.getId());
         newList.setName(listName);
         newList.setIsStarterList(false);

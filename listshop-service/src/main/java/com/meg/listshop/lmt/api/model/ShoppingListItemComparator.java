@@ -17,8 +17,8 @@ public class ShoppingListItemComparator implements Comparator<ShoppingListItem> 
     public int compare(ShoppingListItem item1, ShoppingListItem item2) {
 
         //MM layout fill in
-        String name = item1 this.tag.getName();
-        String comparename = ((ShoppingListItem) o).tag != null ? ((ShoppingListItem) o).getTag().getName() : ((ShoppingListItem) o).getFreeText();
+        String name = item1 == null ? null : item1.getTagName();
+        String comparename = item2 == null ? null : item2.getTagName();
         if (name == null) {
             name = "";
         }
