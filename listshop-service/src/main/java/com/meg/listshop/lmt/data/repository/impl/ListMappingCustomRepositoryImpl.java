@@ -19,7 +19,7 @@ public class ListMappingCustomRepositoryImpl implements ListMappingCustomReposit
 
     private static final String STANDARD_MAPPING_QUERY =
             "select i.item_id, i.added_on, i.removed_on, i.crossed_off, i.updated_on, i.tag_id, " +
-                    "       t.name as tagname, i.used_count, i.dish_sources, i.list_sources,lc.category_id, " +
+                    "       t.name as tagname, t.tag_type, i.used_count, i.dish_sources, i.list_sources,lc.category_id, " +
                     "       lc.name as categoryname,lc.display_order,null as user_category_id,null as user_category_name,0 as user_display_order" +
                     " from list_item i " +
                     "         join tag t on i.tag_id = t.tag_id " +
@@ -31,7 +31,7 @@ public class ListMappingCustomRepositoryImpl implements ListMappingCustomReposit
                     "  and ll.is_default = true";
     private static final String USER_MAPPING_QUERY_PART_1 =
             "select i.item_id, i.added_on, i.removed_on, i.crossed_off, i.updated_on, i.tag_id, " +
-                    "       t.name as tagname, i.used_count, i.dish_sources, i.list_sources, min(lc.category_id) as category_id, min(lc.name) as categoryname, min(lc.display_order) as display_order , " +
+                    "       t.name as tagname, t.tag_type, i.used_count, i.dish_sources, i.list_sources, min(lc.category_id) as category_id, min(lc.name) as categoryname, min(lc.display_order) as display_order , " +
                     "       min(uc.category_id) as user_category_id, min(uc.name) as user_category_name, min(uc.display_order) as user_display_order " +
                     " from list_item i " +
                     "         join tag t on i.tag_id = t.tag_id " +
@@ -45,7 +45,7 @@ public class ListMappingCustomRepositoryImpl implements ListMappingCustomReposit
             " where list_id = :list_id " +
                     "  and ll.user_id is null " +
                     "  and ll.is_default = true " +
-                    "group by 1,2,3,4,5,6,7,8,9,10 ";
+                    "group by 1,2,3,4,5,6,7,8,9,10 ,11";
     NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -86,6 +86,7 @@ public class ListMappingCustomRepositoryImpl implements ListMappingCustomReposit
             Date updatedOn = rs.getDate("updated_on");
             Long tagId = rs.getLong("tag_id");
             String tagName = rs.getString("tagname");
+            String tagType = rs.getString("tag_type");
             int usedCount = rs.getInt("used_count");
             String rawDishSources = rs.getString("dish_sources");
             String rawListSources = rs.getString("list_sources");
@@ -96,9 +97,11 @@ public class ListMappingCustomRepositoryImpl implements ListMappingCustomReposit
             String userCategoryName = rs.getString("user_category_name");
             int userDisplayOrder = rs.getInt("user_display_order");
 
+            // cleaning up userCategoryId
+            userCategoryId = userCategoryId == 0 ? null : userCategoryId;
 
             return new ItemMappingDTO(
-                    itemId, addedOn, removedOn, crossedOffOn, updatedOn, tagId, tagName, usedCount, rawDishSources, rawListSources, categoryId, categoryName, displayOrder, userCategoryId, userCategoryName, userDisplayOrder
+                    itemId, addedOn, removedOn, crossedOffOn, updatedOn, tagId, tagName, tagType, usedCount, rawDishSources, rawListSources, categoryId, categoryName, displayOrder, userCategoryId, userCategoryName, userDisplayOrder
             );
 
         }

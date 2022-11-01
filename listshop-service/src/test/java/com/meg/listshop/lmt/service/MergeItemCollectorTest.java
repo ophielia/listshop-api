@@ -55,7 +55,7 @@ public class MergeItemCollectorTest {
     public void testLoadTestList() {
         ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_EMAIL, 5000L);
 
-        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
+        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
         // blow up test
         Assert.assertTrue(1 == 1);
     }
@@ -65,7 +65,7 @@ public class MergeItemCollectorTest {
     public void testMergeWithEmpty() {
         ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_EMAIL, 5000L);
 
-        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
+        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
 
         collector.addMergeItems(new ArrayList<>());
 
@@ -77,7 +77,7 @@ public class MergeItemCollectorTest {
     public void testUpdatesToItem() {
         ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_EMAIL, 5000L);
 
-        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
+        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
         ItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
         updated.setUpdatedOn(new Date());
         List<ItemEntity> mergeItems = new ArrayList<>();
@@ -94,7 +94,7 @@ public class MergeItemCollectorTest {
     public void testUpdatesToItemServerMoreRecent() {
         ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_EMAIL, 5000L);
 
-        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
+        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
         ItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
         LocalDateTime dateTime = LocalDateTime.now().minusDays(22L);
         updated.setUpdatedOn(java.sql.Timestamp.valueOf(dateTime));
@@ -112,7 +112,7 @@ public class MergeItemCollectorTest {
     public void testAddingNewItem() {
         ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_EMAIL, 5000L);
 
-        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems());
+        MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
         ItemEntity updated = createItemForTagId(45L);
         List<ItemEntity> mergeItems = new ArrayList<>();
         mergeItems.add(updated);

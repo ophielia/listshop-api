@@ -360,23 +360,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
     }
 
-    private ListLayoutEntity getListLayout(ListLayoutType listLayoutType) {
-        if (listLayoutType != null) {
-            //MM layout return listLayoutService.getListLayoutByType(listLayoutType);
-            return null;
-        }
-        listLayoutType = null;
-        //MM layout shoppingListProperties.getDefaultLayout();
-        if (listLayoutType != null) {
-            return null;
-            //MM layout return listLayoutService.getListLayoutByType(listLayoutType);
-        }
-
-        // get layout for listtype
-        //MM layout return listLayoutService.getListLayoutByType(ListLayoutType.All);
-        return null;
-
-    }
 
     @Override
     public ShoppingListEntity getStarterList(String userName) {
@@ -714,7 +697,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // create MergeCollector from list
-        MergeItemCollector mergeCollector = new MergeItemCollector(list.getId(), list.getItems());
+        MergeItemCollector mergeCollector = new MergeItemCollector(list.getId(), list.getItems(), list.getLastUpdate());
         checkReplaceTagsInCollector(mergeCollector);
 
         // prepare items from client

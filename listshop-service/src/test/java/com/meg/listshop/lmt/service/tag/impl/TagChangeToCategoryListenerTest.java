@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.service.tag.impl;
 
-import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
@@ -82,8 +81,8 @@ categories = new ArrayList<ListLayoutCategoryEntity>();
         // set up categories
         for (int i=0;i<3;i++) {
 
-        ListLayoutEntity listLayout = ServiceTestUtils.buildListLayout(Long.valueOf(""+i),"listLayout" + 1, ListLayoutType.All);
-        ListLayoutCategoryEntity category = ServiceTestUtils.buildListCategory(Long.valueOf(""+i),"category" + i, listLayout);
+        ListLayoutEntity listLayout = ServiceTestUtils.buildListLayout(Long.valueOf("" + i), "listLayout" + 1);
+            ListLayoutCategoryEntity category = ServiceTestUtils.buildListCategory(Long.valueOf("" + i), "category" + i, listLayout);
         categories.add(category);
         }
     }

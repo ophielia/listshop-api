@@ -2,6 +2,8 @@ ALTER TABLE list_layout
     ADD COLUMN user_id bigint;
 ALTER TABLE list_layout
     ADD COLUMN is_default boolean;
+ALTER TABLE list_layout
+    DROP COLUMN layout_type;
 
 
 -- delete old entries
@@ -28,9 +30,13 @@ drop table category_relation;
 update list_layout
 set is_default = true;
 
+update list
+set list_layout_id = null;
+
 -- test undo
 --ALTER TABLE list_layout DROP COLUMN user_id;
 --ALTER TABLE list_layout DROP COLUMN is_default;
+--ALTER TABLE list_layout ADD COLUMN layout_type varchar(255);
 
 
 --create table category_relation
@@ -44,3 +50,4 @@ set is_default = true;
 --        constraint category_relation__list_category_id_parent
 --            references list_category
 --);
+

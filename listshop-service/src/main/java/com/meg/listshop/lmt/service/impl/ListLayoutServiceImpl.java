@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -60,7 +59,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     public ListLayoutEntity getDefaultListLayout() {
         //MM layout
         //ListLayoutType layoutType = shoppingListProperties.getDefaultListLayoutType();
-        ListLayoutType layoutType = ListLayoutType.All;
+        //ListLayoutType layoutType = ListLayoutType.All;
 
         List<ListLayoutEntity> listLayoutEntity = null;
         //listLayoutRepository.findByLayoutType(layoutType);
@@ -75,7 +74,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
     public ListLayoutCategoryEntity getDefaultListCategory() {
         //MM layout
         // get default list layout first
-        ListLayoutType layoutType = ListLayoutType.All;
+        //ListLayoutType layoutType = ListLayoutType.All;
         //ListLayoutType layoutType = shoppingListProperties.getDefaultListLayoutType();
 
         return null;//getDefaultCategoryForLayoutType(layoutType);

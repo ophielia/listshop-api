@@ -603,7 +603,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                 .collect(Collectors.toMap(TagEntity::getId, tt -> tt.getId() + 300));
 
         Long listLayoutId = 1001L;
-        ListLayoutEntity testLayout = ServiceTestUtils.buildListLayout(listLayoutId, "listLayoutName", ListLayoutType.RoughGrained);
+        ListLayoutEntity testLayout = ServiceTestUtils.buildListLayout(listLayoutId, "listLayoutName");
         ListLayoutCategoryEntity llCategory1 = ServiceTestUtils.buildListCategory(333L, "one oh two", testLayout);
         ListLayoutCategoryEntity llCategory2 = ServiceTestUtils.buildListCategory(322L, "one oh two", testLayout);
         ListLayoutCategoryEntity llCategory3 = ServiceTestUtils.buildListCategory(333L, "one oh two", testLayout);

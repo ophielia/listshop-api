@@ -96,6 +96,9 @@ public class ShoppingListRestControllerTest {
     @Value("classpath:/data/shoppingListRestControllerTest_mergeList.json")
     Resource resourceFile;
 
+    @Value("classpath:/data/shoppingListRestControllerTest_mergeListStale.json")
+    Resource resourceFileStale;
+
     @Value("classpath:/data/shoppingListRestControllerTest_mergeListEmpty.json")
     Resource resourceFileEmpty;
 
@@ -350,7 +353,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertTrue(resultMap.get("12").getUsedCount() == 1); // showing 1 in result map
         // 436 - 1
         Assert.assertNotNull(resultMap.get("81"));
-        Assert.assertEquals(Long.valueOf(1), resultMap.get("81").getUsedCount());
+        Assert.assertEquals(Integer.valueOf(1), resultMap.get("81").getUsedCount());
 
     }
 
@@ -519,20 +522,19 @@ public class ShoppingListRestControllerTest {
 
         // 502 - 3
         Assert.assertNotNull(sourceResultMap.get("1"));
-        Assert.assertEquals(Long.valueOf(3), sourceResultMap.get("1").getUsedCount());  // showing 1 in result map
+        Assert.assertEquals(Integer.valueOf(3), sourceResultMap.get("1").getUsedCount());  // showing 1 in result map
         // 503 - 2
         Assert.assertNotNull(sourceResultMap.get("12"));
-        Assert.assertEquals(Long.valueOf(2), sourceResultMap.get("12").getUsedCount()); // showing 1 in result map
+        Assert.assertEquals(Integer.valueOf(2), sourceResultMap.get("12").getUsedCount()); // showing 1 in result map
         // 436 - 1
         Assert.assertNotNull(sourceResultMap.get("436"));
-        Assert.assertEquals(Long.valueOf(1), sourceResultMap.get("436").getUsedCount());
+        Assert.assertEquals(Integer.valueOf(1), sourceResultMap.get("436").getUsedCount());
 
     }
 
     @Test
     @WithMockUser
     public void testMergeList() throws Exception {
-        //// load statistics into file
         String testMergeList = StreamUtils.copyToString(resourceFile.getInputStream(), Charset.forName("utf8"));
 
         Long listId = 110000L;
@@ -553,18 +555,69 @@ public class ShoppingListRestControllerTest {
 
         // check result
         // should have 9 items
-        Assert.assertEquals("should have 9 items", 9, sourceResultMap.keySet().size());
-        // should not contain tag 33 (which was removed)
+        Assert.assertEquals("should have 15 items", 15, sourceResultMap.keySet().size());
+        // should not contain tag 32 (which was removed)
         Assert.assertFalse("shouldn't contain tag 32", sourceResultMap.containsKey("32"));
         // not crossed off - 33, 16
         Map<String, ShoppingListItem> activeMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getCrossedOff() == null)
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertEquals("two active items", 2, activeMap.keySet().size());
+        Assert.assertEquals("10 active items", 10, activeMap.keySet().size());
         Assert.assertTrue("33 should be actice", activeMap.containsKey("33"));
         Assert.assertTrue("16 should be actice", activeMap.containsKey("16"));
 
+        //  crossed off - 19, 34
+        Map<String, ShoppingListItem> crossedOffMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .filter(i -> i.getCrossedOff() != null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertEquals("5 crossed off items", 5, crossedOffMap.keySet().size());
+        Assert.assertTrue("33 should be crossed off", crossedOffMap.containsKey("19"));
+        Assert.assertTrue("16 should be crossed off", crossedOffMap.containsKey("34"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testMergeList_Stale() throws Exception {
+        String testMergeList = StreamUtils.copyToString(resourceFileStale.getInputStream(), Charset.forName("utf8"));
+
+        Long listId = 11000001L;
+
+        String url = "/shoppinglist/shared";
+        mockMvc.perform(put(url)
+                        .with(user(meUserDetails))
+                        .contentType(contentType)
+                        .content(testMergeList))
+                .andExpect(status().isOk());
+
+        // now, retrieve the list
+        ShoppingList source = retrieveList(meUserDetails, listId);
+        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(sourceResultMap);
+
+        // check result
+        // should have 12 items
+        Assert.assertEquals("should have 13 items", 13, sourceResultMap.keySet().size());
+        // should not contain tag 32 (which was removed)
+        Assert.assertFalse("shouldn't contain tag 32", sourceResultMap.containsKey("32"));
+        // not crossed off - 16
+        Map<String, ShoppingListItem> activeMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .filter(i -> i.getCrossedOff() == null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertEquals("9 active items", 9, activeMap.keySet().size());
+        Assert.assertTrue("16 should be actice", activeMap.containsKey("16"));
+
+        //  crossed off - 19
+        Map<String, ShoppingListItem> crossedOffMap = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .filter(i -> i.getCrossedOff() != null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertEquals("4 crossed off items", 4, crossedOffMap.keySet().size());
+        Assert.assertTrue("19 should be crossed off", crossedOffMap.containsKey("19"));
     }
 
     @Test

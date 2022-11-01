@@ -466,4 +466,21 @@ public class CollectedItem {
                 break;
         }
     }
+
+    public boolean createdBefore(Date listLastUpdate) {
+        if (listLastUpdate == null) {
+            return false;
+        }
+
+        LocalDateTime date1 = getAddedOn();
+        LocalDateTime date2 = new java.sql.Timestamp(
+                listLastUpdate.getTime()).toLocalDateTime();
+
+        if (date1 == null || date2 == null) {
+            return false;
+        }
+        Duration period = Duration.between(date1, date2);
+        long days = period.toDays();
+        return days > 7; // removed items are purged after 7 days.
+    }
 }

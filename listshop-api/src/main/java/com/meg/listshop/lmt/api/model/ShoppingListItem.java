@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
@@ -8,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShoppingListItem {
 
     @JsonProperty("item_id")
@@ -42,7 +44,7 @@ public class ShoppingListItem {
     @JsonIgnore
     private String rawSourceKeys;
 
-    @JsonProperty("handles")
+    @JsonIgnore
     private Set<String> handles = new HashSet<>();
 
     @JsonIgnore
@@ -87,6 +89,16 @@ public class ShoppingListItem {
 
     public ShoppingListItem tagName(String tagName) {
         this.tag.name(tagName);
+        return this;
+    }
+
+    @JsonIgnore
+    public String getTagType() {
+        return this.tag != null ? this.tag.getTagType() : null;
+    }
+
+    public ShoppingListItem tagType(String tagType) {
+        this.tag.tagType(tagType);
         return this;
     }
 
@@ -146,7 +158,6 @@ public class ShoppingListItem {
         this.updated = updated;
         return this;
     }
-
 
     public ShoppingListItem sourceKeys(List<String> sourceKeys) {
         this.sourceKeys = sourceKeys;

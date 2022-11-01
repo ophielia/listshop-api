@@ -1,9 +1,11 @@
 package com.meg.listshop.lmt.api.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Tag {
 
     private String tag_id;

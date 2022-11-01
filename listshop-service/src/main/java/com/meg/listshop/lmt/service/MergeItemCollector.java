@@ -3,6 +3,7 @@ package com.meg.listshop.lmt.service;
 import com.meg.listshop.lmt.data.entity.ItemEntity;
 
 import java.time.Duration;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,9 +12,11 @@ import java.util.List;
  */
 public class MergeItemCollector extends AbstractItemCollector {
 
+    private Date listLastUpdate;
 
-    public MergeItemCollector(Long listId, List<ItemEntity> items) {
+    public MergeItemCollector(Long listId, List<ItemEntity> items, Date listLastUpdate) {
         super(listId, items);
+        this.listLastUpdate = listLastUpdate;
     }
 
     public MergeItemCollector(Long listId) {
@@ -51,6 +54,11 @@ public class MergeItemCollector extends AbstractItemCollector {
         for (ItemEntity newMergeItem : mergeItems ) {
             // create new collected item
             CollectedItem item = new CollectedItem(newMergeItem);
+
+            // skip items created before server list was last updated
+            if (item.createdBefore(listLastUpdate)) {
+                continue;
+            }
 
             // set added date, and changed, and null out the id
             item.setIsAdded(true);

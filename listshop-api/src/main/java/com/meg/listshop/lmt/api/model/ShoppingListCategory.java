@@ -12,7 +12,7 @@ public class ShoppingListCategory {
     @JsonProperty("category_id")
     private Long id;
 
-    @JsonProperty("user_category_id")
+    @JsonIgnore
     private Long userCategoryId;
 
     @JsonProperty("displayOrder")
@@ -55,6 +55,9 @@ public class ShoppingListCategory {
     }
 
     public void setUserCategoryId(Long userCategoryId) {
+        if (userCategoryId == null) {
+            return;
+        }
         this.userCategoryId = userCategoryId;
         this.id = userCategoryId;
     }

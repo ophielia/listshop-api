@@ -17,6 +17,8 @@ public class ItemMappingDTO {
 
     private String tagName;
 
+    private String tagType;
+
     private int usedCount;
 
     private String rawDishSources;
@@ -34,7 +36,7 @@ public class ItemMappingDTO {
     private String userCategoryName;
     private int userDisplayOrder;
 
-    public ItemMappingDTO(Long itemId, Date addedOn, Date removedOn, Date crossedOffOn, Date updatedOn, Long tagId, String tagName, int usedCount, String rawDishSources, String rawListSources, Long categoryId, String categoryName, int displayOrder, Long userCategoryId, String userCategoryName, int userDisplayOrder) {
+    public ItemMappingDTO(Long itemId, Date addedOn, Date removedOn, Date crossedOffOn, Date updatedOn, Long tagId, String tagName, String tagType, int usedCount, String rawDishSources, String rawListSources, Long categoryId, String categoryName, int displayOrder, Long userCategoryId, String userCategoryName, int userDisplayOrder) {
         this.itemId = itemId;
         this.addedOn = addedOn;
         this.removedOn = removedOn;
@@ -51,6 +53,7 @@ public class ItemMappingDTO {
         this.userCategoryId = userCategoryId;
         this.userDisplayOrder = userDisplayOrder;
         this.userCategoryName = userCategoryName;
+        this.tagType = tagType;
     }
 
     public Long getItemId() {
@@ -180,6 +183,14 @@ public class ItemMappingDTO {
         this.userCategoryName = userCategoryName;
     }
 
+    public String getTagType() {
+        return tagType;
+    }
+
+    public void setTagType(String tagType) {
+        this.tagType = tagType;
+    }
+
     @Override
     public String toString() {
         return "ItemMappingDTO{" +
@@ -199,6 +210,7 @@ public class ItemMappingDTO {
                 ", userCategoryId=" + userCategoryId +
                 ", userCategoryName='" + userCategoryName + '\'' +
                 ", userDisplayOrder=" + userDisplayOrder +
+                ", tagType=" + tagType +
                 '}';
     }
 
@@ -227,6 +239,7 @@ public class ItemMappingDTO {
                 .crossedOff(crossedOffOn)
                 .tagId(String.valueOf(tagId))
                 .tagName(tagName)
+                .tagType(tagType)
                 .usedCount(usedCount)
                 .rawListSources(rawListSources)
                 .rawDishSources(rawDishSources);

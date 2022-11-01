@@ -161,7 +161,9 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     @Override
     public ResponseEntity<ShoppingListResource> retrieveListById(HttpServletRequest request, Principal principal, @PathVariable("listId") Long listId) {
         ShoppingListEntity result = shoppingListService.getListById(principal.getName(), listId);
-
+        if (result == null) {
+            return ResponseEntity.notFound().build();
+        }
         List<ShoppingListCategory> categories = shoppingListService.categorizeList(result);
         shoppingListService.fillSources(result);
         return singleResult(request, result, categories);

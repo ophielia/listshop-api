@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
-import com.meg.listshop.lmt.api.model.ListLayoutType;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
 
@@ -40,7 +39,7 @@ public class ServiceTestUtils {
     }
 
 
-    public static ListLayoutEntity buildListLayout(Long id, String name, ListLayoutType listlayoutType) {
+    public static ListLayoutEntity buildListLayout(Long id, String name) {
         ListLayoutEntity listLayoutEntity = new ListLayoutEntity(id);
         //MM layout listLayoutEntity.setLayoutType(listlayoutType);
         listLayoutEntity.setName(name);

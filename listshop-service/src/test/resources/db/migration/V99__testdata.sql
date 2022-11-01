@@ -1,6 +1,6 @@
 -- new default user layout
-insert into list_layout (layout_id, layout_type, name, user_id, is_default)
-values (nextval('list_layout_sequence'), 'RoughGrained', 'Default', 20, true);
+insert into list_layout (layout_id, name, user_id, is_default)
+values (nextval('list_layout_sequence'), 'Default', 20, true);
 
 -- new category for default user layout
 insert into list_category (category_id, name, layout_id, display_order, is_default)
