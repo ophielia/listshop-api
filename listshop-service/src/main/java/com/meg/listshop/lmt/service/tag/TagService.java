@@ -2,10 +2,8 @@ package com.meg.listshop.lmt.service.tag;
 
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
-import com.meg.listshop.lmt.api.model.TagFilterType;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +23,6 @@ public interface TagService {
 
     TagEntity getTagById(Long tagId);
 
-
-    List<TagExtendedEntity> getTagExtendedList(TagFilterType tagFilterType, List<TagType> tagTypes);
 
     TagEntity createTag(TagEntity parent, TagEntity newTag, String username);
 

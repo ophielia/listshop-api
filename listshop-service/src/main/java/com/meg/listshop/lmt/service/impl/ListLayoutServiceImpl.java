@@ -1,13 +1,11 @@
 package com.meg.listshop.lmt.service.impl;
 
-import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.ListLayoutException;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.lmt.service.ListSearchService;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -44,16 +42,6 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         this.listSearchService = listSearchService;
     }
 
-    @Override
-    public List<ListLayoutEntity> getListLayouts() {
-        return listLayoutRepository.findAll();
-    }
-
-    @Override
-    public ListLayoutEntity createListLayout(ListLayoutEntity listLayoutEntity) {
-        // createListLayout with repository and return
-        return listLayoutRepository.save(listLayoutEntity);
-    }
 
     @Override
     public ListLayoutEntity getDefaultListLayout() {
@@ -85,91 +73,6 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
         Optional<ListLayoutEntity> listLayoutEntityOpt = listLayoutRepository.findById(listLayoutId);
         return listLayoutEntityOpt.orElse(null);
-    }
-
-    @Override
-    public void deleteListLayout(Long listLayoutId) {
-        listLayoutRepository.deleteById(listLayoutId);
-    }
-
-    @Override
-    public Long addCategoryToListLayout(Long listLayoutId, ListLayoutCategoryEntity entity) {
-        // get list
-        Optional<ListLayoutEntity> listLayoutEntityOpt = listLayoutRepository.findById(listLayoutId);
-        if (!listLayoutEntityOpt.isPresent()) {
-            throw new ObjectNotFoundException("list layout not found for id :" + listLayoutId);
-        }
-        ListLayoutEntity layoutEntity = listLayoutEntityOpt.get();
-
-        // save listlayout category
-        entity.setLayoutId(layoutEntity.getId());
-        ListLayoutCategoryEntity result = listLayoutCategoryRepository.save(entity);
-        // add to list layout category list
-        List<ListLayoutCategoryEntity> categories = layoutEntity.getCategories();
-        if (categories == null) {
-            categories = new ArrayList<>();
-        }
-        categories.add(result);
-        layoutEntity.setCategories(categories);
-
-        // save list layout category
-        listLayoutRepository.save(layoutEntity);
-
-        return result.getId();
-    }
-
-    @Override
-    public void deleteCategoryFromListLayout(Long listLayoutId, Long layoutCategoryId) throws ListLayoutException {
-// get list
-        Optional<ListLayoutEntity> listLayoutEntityOpt = listLayoutRepository.findById(listLayoutId);
-        if (!listLayoutEntityOpt.isPresent()) {
-            return;
-        }
-        ListLayoutEntity layoutEntity = listLayoutEntityOpt.get();
-        // filter category to delete from list categories
-        List<ListLayoutCategoryEntity> filtered = layoutEntity.getCategories().stream()
-                .filter(c -> c.getId().longValue() != layoutCategoryId.longValue())
-                .collect(Collectors.toList());
-
-        listLayoutCategoryRepository.flush();
-
-        // delete category
-        listLayoutCategoryRepository.deleteById(layoutCategoryId);
-
-
-        // set categories in list layout and save
-        layoutEntity.setCategories(filtered);
-        listLayoutRepository.save(layoutEntity);
-    }
-
-    @Override
-    public ListLayoutCategoryEntity updateListLayoutCategory(Long listLayoutId, ListLayoutCategoryEntity listLayoutCategory) {
-        if (listLayoutCategory == null || listLayoutCategory.getId() == null) {
-            return null;
-        }
-        // get layout category
-        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt = listLayoutCategoryRepository.findById(listLayoutId);
-        if (!listLayoutEntityOpt.isPresent()) {
-            return null;
-        }
-        ListLayoutCategoryEntity layoutCategoryEntity = listLayoutEntityOpt.get();
-        if (layoutCategoryEntity == null) {
-            return null;
-        }
-        // ensure that the list layout id is the same
-        if (layoutCategoryEntity.getLayoutId().longValue() != listLayoutId.longValue()) {
-            return null;
-        }
-        // update layout category name
-        layoutCategoryEntity.setName(listLayoutCategory.getName());
-        // save layout category and return
-
-        return listLayoutCategoryRepository.save(layoutCategoryEntity);
-    }
-
-    @Override
-    public List<TagEntity> getUncategorizedTagsForList(Long listLayoutId) {
-        return tagRepository.getUncategorizedTagsForList(listLayoutId);
     }
 
     @Override
@@ -242,41 +145,6 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         listLayoutCategoryRepository.save(categoryEntity);
     }
 
-
-    @Override
-    public void deleteTagsFromCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList) {
-        // get  category
-        Optional<ListLayoutCategoryEntity> categoryEntityOpt = listLayoutCategoryRepository.findById(layoutCategoryId);
-        if (!categoryEntityOpt.isPresent()) {
-            return;
-        }
-        ListLayoutCategoryEntity categoryEntity = categoryEntityOpt.get();
-        // assure list owns category
-        if (categoryEntity.getLayoutId().longValue() != listLayoutId.longValue()) {
-            return;
-        }
-
-        // get tags for list
-        List<TagEntity> tagCategories = tagRepository.getTagsForLayoutCategory(layoutCategoryId);
-
-        // create filtered list - getting all tags not in list
-        List<Long> filteredList = tagCategories.stream()
-                .filter(t -> !tagIdList.contains(t.getId()))
-                .map(TagEntity::getId)
-                .collect(Collectors.toList());
-
-        // set tags in category
-        List<TagEntity> filteredTagList = tagRepository.findAllById(filteredList);
-        for (TagEntity tagToUpdate : filteredTagList) {
-            tagToUpdate.setCategoryUpdatedOn(new Date());
-            //MM TODO update this
-        }
-
-        categoryEntity.setTags(filteredTagList);
-
-        // save category
-        listLayoutCategoryRepository.save(categoryEntity);
-    }
 
     @Override
     public List<ListLayoutCategoryEntity> getListCategoriesForLayout(Long layoutId) {

@@ -373,24 +373,6 @@ public class ModelMapper {
                 .toDelete(tagEntity.isToDelete());
     }
 
-    public static Tag toModel(TagExtendedEntity tagEntity) {
-        if (tagEntity == null) {
-            return null;
-        }
-
-        return new Tag(tagEntity.getId())
-                .name(tagEntity.getName())
-                .description(tagEntity.getDescription())
-                .tagType(tagEntity.getTagType().name())
-                .power(tagEntity.getPower())
-                // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
-                .isGroup(tagEntity.getIsGroup())
-                .assignSelect(!tagEntity.getIsGroup())
-                .searchSelect(tagEntity.getIsGroup())
-                .parentId(String.valueOf(tagEntity.getParentId()))
-                .toDelete(tagEntity.getToDelete());
-    }
-
     public static MealPlan toModel(MealPlanEntity mealPlanEntity, boolean includeSlots) {
         List<Slot> slots = new ArrayList<>();
         int slotCount = mealPlanEntity.getSlots().size();

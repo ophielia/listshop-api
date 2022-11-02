@@ -256,14 +256,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagExtendedEntity> getTagExtendedList(TagFilterType tagFilterType, List<TagType> tagTypes) {
-        // assign_select
-        Boolean parentsOnly = tagFilterType == TagFilterType.ParentTags ? true : null;
-        return tagExtendedRepository.findTagsByCriteria(tagTypes);
-
-    }
-
-    @Override
     public TagEntity createTag(TagEntity parent, TagEntity newtag, String name) {
         Long tagUserId = null;
         // check for duplicate

@@ -6,7 +6,6 @@ import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.TagExtendedRepository;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
@@ -527,31 +526,6 @@ public class TagServiceImplMockTest {
         Assert.assertFalse("List should not include old tag", resultDishTags.stream().filter(t -> t.getId().equals(tagId)).findFirst().isPresent());
     }
 
-    @Test
-    public void testGetTagExtendedList() {
-        List<TagType> tagTypes = new ArrayList<>();
-        tagTypes.add(TagType.NonEdible);
-        tagTypes.add(TagType.Rating);
-        List<TagExtendedEntity> allTags = new ArrayList<>();
-        allTags.add(buildTagExtendedEntity(99L, "tag99", TagType.NonEdible));
-        allTags.add(buildTagExtendedEntity(199L, "tag199", TagType.Ingredient));
-        allTags.add(buildTagExtendedEntity(299L, "tag299", TagType.DishType));
-
-        Mockito.when(tagExtendedRepository.findTagsByCriteria(tagTypes)).thenReturn(allTags);
-
-        tagService.getTagExtendedList(TagFilterType.NoGroups, tagTypes);
-
-        Mockito.verify(tagExtendedRepository, times(1)).findTagsByCriteria(tagTypes);
-
-        Mockito.reset(tagExtendedRepository);
-
-        Mockito.when(tagExtendedRepository.findTagsByCriteria(tagTypes)).thenReturn(allTags);
-
-        tagService.getTagExtendedList(TagFilterType.ParentTags, tagTypes);
-
-        Mockito.verify(tagExtendedRepository, times(1)).findTagsByCriteria(tagTypes);
-
-    }
 
     @Test
     public void testGetTagsForDish() {
@@ -900,16 +874,6 @@ public class TagServiceImplMockTest {
         return returnList;
     }
 
-
-    private TagExtendedEntity buildTagExtendedEntity(Long tagId, String tagName,
-                                                     TagType tagType) {
-        return buildTagExtendedEntity(tagId, tagName, tagType, 0.0, 0L);
-    }
-
-    private TagExtendedEntity buildTagExtendedEntity(Long tagId, String tagName,
-                                                     TagType tagType, Double power, Long parentId) {
-        return new TagExtendedEntity(ServiceTestUtils.buildTagEntity(tagId, tagName, tagType, power), parentId);
-    }
 
     private TagInfoDTO buildTagInfoDTO(Long tagId, String tagName,
                                        TagType tagType, Double power, Long parentId) {

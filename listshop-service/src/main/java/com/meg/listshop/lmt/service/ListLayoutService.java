@@ -10,25 +10,12 @@ import java.util.List;
  * Created by margaretmartin on 06/11/2017.
  */
 public interface ListLayoutService {
-    List<ListLayoutEntity> getListLayouts();
-
-    ListLayoutEntity createListLayout(ListLayoutEntity listLayoutEntity);
 
     ListLayoutCategoryEntity getDefaultListCategory();
 
     ListLayoutEntity getListLayoutById(Long listLayoutId);
 
     ListLayoutEntity getDefaultListLayout();
-
-    void deleteListLayout(Long listLayoutId);
-
-    Long addCategoryToListLayout(Long listLayoutId, ListLayoutCategoryEntity entity);
-
-    void deleteCategoryFromListLayout(Long listLayoutId, Long layoutCategoryId) throws ListLayoutException;
-
-    ListLayoutCategoryEntity updateListLayoutCategory(Long listLayoutId, ListLayoutCategoryEntity listLayoutCategory);
-
-    List<TagEntity> getUncategorizedTagsForList(Long listLayoutId);
 
     List<TagEntity> getTagsForLayoutCategory(Long layoutCategoryId);
 
@@ -37,8 +24,6 @@ public interface ListLayoutService {
     void addTagsToCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList);
 
     void addTagToCategory(Long layoutCategoryId, TagEntity tag);
-
-    void deleteTagsFromCategory(Long listLayoutId, Long layoutCategoryId, List<Long> tagIdList);
 
     List<ListLayoutCategoryEntity> getListCategoriesForLayout(Long layoutId);
 

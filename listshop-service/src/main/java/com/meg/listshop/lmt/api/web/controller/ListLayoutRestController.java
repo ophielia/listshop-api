@@ -4,7 +4,6 @@ import com.meg.listshop.lmt.api.controller.ListLayoutRestControllerApi;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
-import com.meg.listshop.lmt.service.ListLayoutException;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 @Controller
 public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
+
     private static final Logger logger = LogManager.getLogger(ListLayoutRestController.class);
 
     private ListLayoutService listLayoutService;
@@ -38,30 +38,53 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
         this.listLayoutService = listLayoutService;
     }
 
-    public ResponseEntity<ListLayoutListResource> retrieveListLayouts(HttpServletRequest request, Principal principal) {
-        List<ListLayoutResource> listLayoutList = listLayoutService
-                .getListLayouts()
-                .stream()
-                .map(ll -> ModelMapper.toModel(ll, null))
-                .map(ListLayoutResource::new)
-                .collect(Collectors.toList());
-        ListLayoutListResource resource = new ListLayoutListResource(listLayoutList);
-        resource.fillLinks(request, resource);
-        return new ResponseEntity<>(resource, HttpStatus.OK);
+    public ResponseEntity<ListLayout> readDefaultListLayout(HttpServletRequest request) {
+        ListLayoutEntity listLayout = this.listLayoutService
+                .getDefaultListLayout();
+
+        if (listLayout != null) {
+            //MM layout - finish cleaning upList<ListLayoutCategoryPojo> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
+            /*ListLayout layoutModel = ModelMapper.toModel(listLayout, structuredCategories);
+            ListLayoutResource listLayoutResource = new ListLayoutResource(layoutModel);
+            listLayoutResource.fillLinks(request, listLayoutResource);
+
+            return new ResponseEntity(listLayoutResource, HttpStatus.OK);*/
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    public ResponseEntity<Object> getCategoryForTag(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long tagId) {
+        ListLayoutCategoryEntity layoutCategory = this.listLayoutService
+                .getLayoutCategoryForTag(listLayoutId, tagId);
+        if (layoutCategory == null) {
+            return ResponseEntity.notFound().build();
+        }
+        CategoryResource result = new CategoryResource(ModelMapper.toModel(layoutCategory, false));
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
 
     }
 
+
+    public ResponseEntity<ListLayoutListResource> retrieveListLayouts(HttpServletRequest request, Principal principal) {
+        return ResponseEntity.badRequest().build();
+
+    }
+
+    public ResponseEntity<Object> getTagsForCategory(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) {
+
+        List<TagResource> taglist = this.listLayoutService
+                .getTagsForLayoutCategory(layoutCategoryId)
+                .stream()
+                .map(ModelMapper::toModel)
+                .map(TagResource::new)
+                .collect(Collectors.toList());
+        TagListResource tagListResource = new TagListResource(taglist);
+        tagListResource.fillLinks(request, tagListResource);
+        return new ResponseEntity<>(tagListResource, HttpStatus.OK);
+    }
+
     public ResponseEntity<Object> createListLayout(HttpServletRequest request, Principal principal, @RequestBody ListLayout input) {
-        ListLayoutEntity listLayoutEntity = ModelMapper.toEntity(input);
-
-        ListLayoutEntity result = listLayoutService.createListLayout(listLayoutEntity);
-
-        if (result != null) {
-            ListLayout model = ModelMapper.toModel(listLayoutEntity, null);
-            ListLayoutResource resource = new ListLayoutResource(model);
-
-            return ResponseEntity.created(resource.selfLink(request, resource)).build();
-        }
         return ResponseEntity.badRequest().build();
     }
 
@@ -80,82 +103,29 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
     }
 
 
-    public ResponseEntity<ListLayout> readDefaultListLayout(HttpServletRequest request) {
-        ListLayoutEntity listLayout = this.listLayoutService
-                .getDefaultListLayout();
-
-        if (listLayout != null) {
-            //MM layout - finish cleaning upList<ListLayoutCategoryPojo> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
-            /*ListLayout layoutModel = ModelMapper.toModel(listLayout, structuredCategories);
-            ListLayoutResource listLayoutResource = new ListLayoutResource(layoutModel);
-            listLayoutResource.fillLinks(request, listLayoutResource);
-
-            return new ResponseEntity(listLayoutResource, HttpStatus.OK);*/
-        }
-        return ResponseEntity.notFound().build();
-    }
-
     public ResponseEntity<ListLayout> deleteListLayout(Principal principal, @PathVariable("listLayoutId") Long listLayoutId) {
 
-        listLayoutService.deleteListLayout(listLayoutId);
+        //listLayoutService.deleteListLayout(listLayoutId);
         return ResponseEntity.noContent().build();
 
     }
 
     public ResponseEntity<Object> addCategoryToListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategory input) {
-        ListLayoutCategoryEntity entity = ModelMapper.toEntity(input);
-        this.listLayoutService.addCategoryToListLayout(listLayoutId, entity);
-
-
         return ResponseEntity.noContent().build();
     }
 
     public ResponseEntity<Object> deleteCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) {
-        try {
-            this.listLayoutService.deleteCategoryFromListLayout(listLayoutId, layoutCategoryId);
-        } catch (ListLayoutException e) {
-            logger.error("Unable to delete Category [%d] from list layout [%d]. Exception: %s", layoutCategoryId, listLayoutId, e);
-        }
-
         return ResponseEntity.noContent().build();
     }
 
     public ResponseEntity<Object> updateCategoryFromListLayout(Principal principal, @PathVariable Long listLayoutId, @RequestBody ListLayoutCategory layoutCategory) {
-        ListLayoutCategoryEntity listLayoutCategory = ModelMapper.toEntity(layoutCategory);
-        ListLayoutCategoryEntity result = this.listLayoutService.updateListLayoutCategory(listLayoutId, listLayoutCategory);
-
-        if (result != null) {
-            return ResponseEntity.noContent().build();
-        }
         return ResponseEntity.badRequest().build();
     }
 
     public ResponseEntity<Object> getUncategorizedTags(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId) {
-        List<TagResource> tagList = this.listLayoutService.getUncategorizedTagsForList(listLayoutId)
-                .stream()
-                .map(ModelMapper::toModel)
-                .map(TagResource::new)
-                .collect(Collectors.toList());
-
-        TagListResource resource = new TagListResource(tagList);
-        resource.setReflectRequest(true);
-        resource.fillLinks(request, resource);
-
-        return new ResponseEntity<>(resource, HttpStatus.OK);
+        return ResponseEntity.badRequest().build();
     }
 
-    public ResponseEntity<Object> getTagsForCategory(HttpServletRequest request, Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId) {
-
-        List<TagResource> taglist = this.listLayoutService
-                .getTagsForLayoutCategory(layoutCategoryId)
-                .stream()
-                .map(ModelMapper::toModel)
-                .map(TagResource::new)
-                .collect(Collectors.toList());
-        TagListResource tagListResource = new TagListResource(taglist);
-        tagListResource.fillLinks(request, tagListResource);
-        return new ResponseEntity<>(tagListResource, HttpStatus.OK);
-    }
 
     public ResponseEntity<Object> addTagsToCategory(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId, @RequestParam(value = "tags", required = true) String commaSeparatedIds) {
         // translate tags into list of Long ids
@@ -169,32 +139,14 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
     }
 
     public ResponseEntity<Object> deleteTagsFromCategory(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long layoutCategoryId, @RequestParam(value = "tags", required = true) String commaSeparatedIds) {
-        // translate tags into list of Long ids
-        List<Long> tagIdList = commaDelimitedToList(commaSeparatedIds);
-        if (tagIdList == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.listLayoutService.deleteTagsFromCategory(listLayoutId, layoutCategoryId, tagIdList);
-
         return ResponseEntity.noContent().build();
 
     }
 
     //    @RequestMapping(method = RequestMethod.GET, value = "/{listLayoutId}/tag/{tagId}/category", produces = "application/json")
-    public ResponseEntity<Object> getCategoryForTag(Principal principal, @PathVariable Long listLayoutId, @PathVariable Long tagId) {
-        ListLayoutCategoryEntity layoutCategory = this.listLayoutService
-                .getLayoutCategoryForTag(listLayoutId, tagId);
-        if (layoutCategory == null) {
-            return ResponseEntity.notFound().build();
-        }
-        CategoryResource result = new CategoryResource(ModelMapper.toModel(layoutCategory, false));
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
-
-    }
 
     private List<Long> commaDelimitedToList(String commaSeparatedIds) {
-// translate tags into list of Long ids
+        // translate tags into list of Long ids
         if (commaSeparatedIds == null) {
             return new ArrayList<>();
         }
