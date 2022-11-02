@@ -16,7 +16,6 @@ public class ShoppingListItemComparator implements Comparator<ShoppingListItem> 
     @Override
     public int compare(ShoppingListItem item1, ShoppingListItem item2) {
 
-        //MM layout fill in
         String name = item1 == null ? null : item1.getTagName();
         String comparename = item2 == null ? null : item2.getTagName();
         if (name == null) {

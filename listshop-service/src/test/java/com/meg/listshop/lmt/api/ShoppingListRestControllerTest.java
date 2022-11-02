@@ -74,6 +74,7 @@ public class ShoppingListRestControllerTest {
     private static UserDetails meUserDetails;
     private static UserDetails lastListUserDetails;
     private static UserDetails noStarterUserDetails;
+    private static UserDetails dadStarterUserDetails;
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype());
     @Autowired
@@ -145,6 +146,14 @@ public class ShoppingListRestControllerTest {
 
         noStarterUserDetails = new JwtUser(TestConstants.USER_4_ID,
                 TestConstants.USER_4_NAME,
+                null,
+                null,
+                null,
+                true,
+                null);
+
+        dadStarterUserDetails = new JwtUser(34L,
+                "dad@userdetails.com",
                 null,
                 null,
                 null,
@@ -236,6 +245,40 @@ public class ShoppingListRestControllerTest {
         jsonNode.get("shopping_list");
 
     }
+
+    @Test
+    @WithMockUser
+    public void testCustomLayout() throws Exception {
+        Long customLayoutListId = 10101010L;
+        Long standardLayoutListId = 90909090L;
+
+        ShoppingList standardLayoutList = retrieveList(dadStarterUserDetails, standardLayoutListId);
+        Map<String, ShoppingListItem> standardResultMap = standardLayoutList.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(standardResultMap);
+
+
+        ShoppingList customLayoutList = retrieveList(meUserDetails, customLayoutListId);
+        Map<String, ShoppingListItem> customResultMap = customLayoutList.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(customResultMap);
+
+        // item count should be equal
+        Assert.assertEquals("item count should be equal.", customResultMap.keySet().size(), standardResultMap.keySet().size());
+        // category count should not be equal
+        Assert.assertNotEquals("category count should not be equal.", standardLayoutList.getCategories().size(), customLayoutList.getCategories().size());
+        // custom
+        Assert.assertEquals("custom should have 3 categories", 3, customLayoutList.getCategories().size());
+        Optional<ShoppingListCategory> specialCategory = customLayoutList.getCategories().stream()
+                .filter(c -> c.getName().equals("Special")).findFirst();
+        Assert.assertTrue("on category should be called 'Special'", specialCategory.isPresent());
+        Assert.assertEquals("special contains one item", 1, specialCategory.get().getItems().size());
+        ShoppingListItem tomatoes = specialCategory.get().getItems().get(0);
+        Assert.assertEquals("tomatoes are tomatoes", "tomatoes", tomatoes.getTagName());
+    }
+
 
     @Test
     @WithMockUser

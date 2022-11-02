@@ -10,11 +10,14 @@ insert into public.users (user_id, email, enabled, last_password_reset_date, pas
 values (1, 'rufus', true, null, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'rufus', null, null),
        (20, 'me', true, null, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'me', null, null),
        (23, 'carrie', true, null, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'carrie', null, null),
-       (26, 'mom@test.com', true, null, '$2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK', 'mom@test.com', null, null),
+       (26, 'mom@test.com', true, null, '$2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK', 'mom@test.com',
+        null, null),
        (29, 'michelle', true, null, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'michelle', null,
         null),
        (2, 'testname', null, null, 'password', 'testname', null, null),
-       (500, 'testuser@testuser.com', true, null, '$2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK', 'testuser', null, null),
+       (34, 'dad@userdetails.com', null, null, 'password', 'testname', null, null),
+       (500, 'testuser@testuser.com', true, null, '$2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK',
+        'testuser', null, null),
        (501, 'adduser', true, null, 'password', 'adduser', null, null),
        (502, 'deleteuser', true, null, 'password', 'deleteuser', null, null);
 

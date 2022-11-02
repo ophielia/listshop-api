@@ -337,3 +337,78 @@ values (11000001, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 1100000
        (22110013, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 11000001, null, 318, 1, null, '109', null,
         null,
         null);
+
+-- my user layout list
+
+insert into list (list_id, created_on, user_id, list_types, list_layout_id, last_update, meal_plan_id, is_starter_list,
+                  name)
+values (10101010, '2022-04-16 05:32:38.898000 +00:00', 20, null, null, now(), null, false,
+        'Shopping List');
+
+insert into list_item (item_id, added_on, crossed_off, free_text, source, list_id, list_category, tag_id, used_count,
+                       category_id, dish_sources, list_sources, removed_on, updated_on)
+values (10101010, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 10101010, null, 33, 1, null, '109', null,
+        null,
+        null),
+       (2992110001, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 10101010, null, 34, 1, null, '109', null,
+        null,
+        null),
+       (2992110002, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 10101010, null, 32, 1, null, '109', null,
+        null,
+        null),
+       (2992110003, '2022-04-16 03:32:39.319000 +00:00', null, null, null, 10101010, null, 44, 1, null, '109', null,
+        null,
+        null),
+       (2992110004, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 10101010, null, 53, 1, null, '109', now(),
+        now(),
+        now())
+;
+
+-- my user custom layout
+update list_layout
+set is_default = false
+where user_id = 20;
+insert into list_layout (layout_id, name, user_id, is_default)
+values (nextval('list_layout_sequence'), 'Special', 20, true);
+
+-- new category for default user layout
+insert into list_category (category_id, name, layout_id, display_order, is_default)
+select nextval('list_layout_category_sequence'), 'Special' as name, layout_id, 20, false
+from list_layout
+where user_id = 20
+  and is_default = true;
+
+insert into category_tags (category_id, tag_id)
+select category_id, 33 -- tomatoes
+from list_category lc
+         join list_layout ll on lc.layout_id = ll.layout_id
+where user_id = 20
+  and ll.is_default = true
+  and lc.name = 'Special';
+
+
+-- other user layout list - uses standard
+
+insert into list (list_id, created_on, user_id, list_types, list_layout_id, last_update, meal_plan_id, is_starter_list,
+                  name)
+values (90909090, '2022-04-16 05:32:38.898000 +00:00', 34, null, 5, now(), null, false,
+        'Shopping List');
+
+insert into list_item (item_id, added_on, crossed_off, free_text, source, list_id, list_category, tag_id, used_count,
+                       category_id, dish_sources, list_sources, removed_on, updated_on)
+values (90909090, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 90909090, null, 33, 1, null, '109', null,
+        null,
+        null),
+       (922110001, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 90909090, null, 34, 1, null, '109', null,
+        null,
+        null),
+       (922110002, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 90909090, null, 32, 1, null, '109', null,
+        null,
+        null),
+       (922110003, '2022-04-16 03:32:39.319000 +00:00', null, null, null, 90909090, null, 44, 1, null, '109', null,
+        null,
+        null),
+       (922110004, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 90909090, null, 53, 1, null, '109', now(),
+        now(),
+        now())
+;

@@ -1,9 +1,11 @@
 delete
 from list_item
-where list_id in (509990, 509991, 509999, 609990, 609991, 51000, 6666, 7777, 77777, 500777, 110000, 11000001);
+where list_id in
+      (509990, 509991, 509999, 609990, 609991, 51000, 6666, 7777, 77777, 500777, 110000, 11000001, 90909090, 10101010);
 delete
 from list
-where list_id in (509990, 509991, 509999, 609990, 609991, 51000, 6666, 7777, 77777, 500777, 110000, 11000001);
+where list_id in
+      (509990, 509991, 509999, 609990, 609991, 51000, 6666, 7777, 77777, 500777, 110000, 11000001, 90909090, 10101010);
 
 
 -- delete objects related to add menu plan to new or existing list
@@ -77,3 +79,22 @@ where tag_id in (12001, 12002, 13001, 13002);
 delete
 from tag
 where tag_id in (12001, 12002, 13001, 13002);
+
+
+-- delete custom layout
+delete
+from category_tags ct using list_layout l, list_category lc
+where l.layout_id = lc.layout_id
+  and user_id = 20
+  and l.name = 'Special'
+  and ct.category_id = lc.category_id;
+delete
+from list_category lc using list_layout l
+where l.layout_id = lc.layout_id and user_id = 20 and l.name = 'Special';
+delete
+from list_layout
+where user_id = 20
+  and name = 'Special';
+update list_layout
+set is_default = true
+where user_id = 20;
