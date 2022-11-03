@@ -197,6 +197,17 @@ public class TagStructureServiceImpl implements TagStructureService {
         return new HashSet<>(tagAndDescendants);
     }
 
+    public List<TagEntity> getDescendantTags(Long tagId) {
+        if (tagId == null) {
+            return new ArrayList<>();
+        }
+
+        // get children of tag
+        List<Long> tagIds = tagRelationRepository.getTagWithDescendants(tagId);
+        return tagRepository.findAllById(tagIds);
+    }
+
+
     public Map<Long, List<Long>> getDescendantTagIds(Set<Long> tagIds, Long userId) {
         return tagRelationRepository.getDescendantMap(tagIds, userId);
     }

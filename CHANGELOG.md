@@ -10,15 +10,19 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- merge algorithm when client list is older than server.
+
 ### Deprecated
 
 - ListLayoutType still present, but no longer used.
+- All (currently) unused methods in ListLayoutRestController set to depracated, and gutted.
 
 ### Removed
 
 - code implementing (unused) subcategories for list layouts removed
+- deprecated tag code (TagExtendedEntity)
+- assign_select, search_select in TagEntity
 
-### Fixed
 
 ## [1.9.0] June 2022
 

@@ -7,10 +7,8 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.entity.TagExtendedEntity;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
-import com.meg.listshop.lmt.data.repository.TagExtendedRepository;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.DishSearchCriteria;
@@ -44,7 +42,6 @@ public class TagServiceImpl implements TagService {
 
     private final DishService dishService;
     private final ListTagStatisticService tagStatisticService;
-    private final TagExtendedRepository tagExtendedRepository;
     private final TagReplaceService tagReplaceService;
     private final TagRepository tagRepository;
     private final TagStructureService tagStructureService;
@@ -61,14 +58,12 @@ public class TagServiceImpl implements TagService {
                           @Lazy DishService dishService,
                           TagStructureService tagStructureService,
                           @Lazy TagReplaceService tagReplaceService,
-                          TagExtendedRepository tagExtendedRepository,
                           TagRepository tagRepository,
                           UserService userService,
                           TagInfoCustomRepository tagInfoCustomRepository,
                           DishSearchService dishSearchService) {
         this.dishService = dishService;
         this.tagStatisticService = tagStatisticService;
-        this.tagExtendedRepository = tagExtendedRepository;
         this.tagReplaceService = tagReplaceService;
         this.tagRepository = tagRepository;
         this.tagStructureService = tagStructureService;
@@ -737,7 +732,8 @@ public class TagServiceImpl implements TagService {
     }
 
     private Long getDefaultTagIdForRatingHeader(Long ratingHeaderId) {
-        List<TagExtendedEntity> ratings = tagExtendedRepository.getRatingTagsForRatingType(ratingHeaderId);
+        List<TagEntity> ratings = tagStructureService.getDescendantTags(ratingHeaderId);
+        //List<TagExtendedEntity> ratings = tagExtendedRepository.getRatingTagsForRatingType(ratingHeaderId);
         if (ratings == null || ratings.isEmpty()) {
             return null;
         }
@@ -747,7 +743,7 @@ public class TagServiceImpl implements TagService {
         Double order = Math.ceil((ratingsSize) / 2.0);
         // get the middle tag
         var index = order.intValue();
-        TagExtendedEntity middle = ratings.get(index - 1);
+        TagEntity middle = ratings.get(index - 1);
         // return the middle tag id
 
         return middle.getId();

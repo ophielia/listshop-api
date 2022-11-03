@@ -44,21 +44,6 @@ public class ListLayoutServiceImpl implements ListLayoutService {
 
 
     @Override
-    public ListLayoutEntity getDefaultListLayout() {
-        //MM layout
-        //ListLayoutType layoutType = shoppingListProperties.getDefaultListLayoutType();
-        //ListLayoutType layoutType = ListLayoutType.All;
-
-        List<ListLayoutEntity> listLayoutEntity = null;
-        //listLayoutRepository.findByLayoutType(layoutType);
-
-        if (listLayoutEntity == null || listLayoutEntity.isEmpty()) {
-            return null;
-        }
-        return listLayoutEntity.get(0);
-    }
-
-    @Override
     public ListLayoutCategoryEntity getDefaultListCategory() {
         //MM layout
         // get default list layout first

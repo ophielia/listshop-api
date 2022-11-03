@@ -15,8 +15,6 @@ public interface ListLayoutService {
 
     ListLayoutEntity getListLayoutById(Long listLayoutId);
 
-    ListLayoutEntity getDefaultListLayout();
-
     List<TagEntity> getTagsForLayoutCategory(Long layoutCategoryId);
 
     List<ListLayoutCategoryEntity> getCategoriesForTag(TagEntity tag);

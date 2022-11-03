@@ -29,6 +29,8 @@ public interface TagStructureService {
 
     Set<Long> getDescendantTagIds(Long tagId);
 
+    List<TagEntity> getDescendantTags(Long tagId);
+
     Map<Long, List<Long>> getDescendantTagIds(Set<Long> tagIs, Long userId);
 
     TagEntity getParentTag(TagEntity tag);

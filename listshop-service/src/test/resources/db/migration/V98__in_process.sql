@@ -30,6 +30,7 @@ where l.name <> 'RoughGrained';
 
 
 drop table category_relation;
+drop view tag_extended;
 
 update list_layout
 set is_default = true;
@@ -57,3 +58,37 @@ set list_layout_id = null;
 
 -- ALTER TABLE TAG ADD COLUMN assign_select BOOLEAN;
 -- ALTER TABLE TAG ADD COLUMN search_select BOOLEAN;
+
+-- create view tag_extended
+--             (tag_id, user_id, is_group, assign_select, category_updated_on, created_on, description, is_verified, name,
+--              power, removed_on, replacement_tag_id, search_select, tag_type, tag_type_default, to_delete, updated_on,
+--              parent_tag_id, is_parent)
+-- as
+-- WITH parent_ids AS (SELECT DISTINCT parent.parent_tag_id
+--                     FROM tag_relation parent
+--                     WHERE parent.parent_tag_id IS NOT NULL)
+-- SELECT t.tag_id,
+--        t.user_id,
+--        t.is_group,
+--        false                        AS assign_select,
+--        t.category_updated_on,
+--        t.created_on,
+--        t.description,
+--        t.is_verified,
+--        t.name,
+--        t.power,
+--        t.removed_on,
+--        t.replacement_tag_id,
+--        false                        AS search_select,
+--        t.tag_type,
+--        t.tag_type_default,
+--        t.to_delete,
+--        t.updated_on,
+--        r.parent_tag_id,
+--        ip.parent_tag_id IS NOT NULL AS is_parent
+-- FROM tag t
+--          JOIN tag_relation r ON t.tag_id = r.child_tag_id
+--          LEFT JOIN parent_ids ip ON t.tag_id = ip.parent_tag_id;
+--
+-- alter table tag_extended
+--     owner to bank;

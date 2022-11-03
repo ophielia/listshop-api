@@ -4,20 +4,18 @@ import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.ListLayoutProperties;
 import com.meg.listshop.lmt.service.ListSearchService;
-import com.meg.listshop.lmt.service.ShoppingListProperties;
 import com.meg.listshop.lmt.service.tag.TagService;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 public class ListLayoutServiceImplMockTest {
 
@@ -25,10 +23,6 @@ public class ListLayoutServiceImplMockTest {
 
     @MockBean
     private ListLayoutCategoryRepository listLayoutCategoryRepository;
-
-    @MockBean
-    private ListLayoutProperties listLayoutProperties;
-
 
     @MockBean
     private ListLayoutRepository listLayoutRepository;
@@ -40,12 +34,9 @@ public class ListLayoutServiceImplMockTest {
     private TagService tagService;
 
     @MockBean
-    private ShoppingListProperties shoppingListProperties;
-
-    @MockBean
     private ListSearchService listSearchService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         listLayoutService = new ListLayoutServiceImpl(listLayoutCategoryRepository, listLayoutRepository,
                 tagRepository, tagService, listSearchService);
@@ -53,17 +44,68 @@ public class ListLayoutServiceImplMockTest {
 
 
     @Test
-    @Ignore
-    public void testGetDefaultListLayout() {
-        //MM layout
-        //Mockito.when(shoppingListProperties.getDefaultListLayoutType()).thenReturn(ListLayoutType.RoughGrained);
-        //Mockito.when(listLayoutRepository.findByLayoutType(ListLayoutType.RoughGrained)).thenReturn(Collections.singletonList(new ListLayoutEntity()));
+    public void testGetStandardLayout() {
+        Mockito.when(listLayoutRepository.getStandardLayout()).thenReturn(new ListLayoutEntity());
 
-        ListLayoutEntity testResult = listLayoutService.getDefaultListLayout();
+        ListLayoutEntity testResult = listLayoutService.getStandardLayout();
 
-        Assert.assertNotNull(testResult);
+        Assertions.assertNotNull(testResult);
 
     }
 
+    @Test
+    public void testGetDefaultUserLayoutLayout() {
+        Long userId = 12L;
+        Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(new ListLayoutEntity());
+
+        ListLayoutEntity testResult = listLayoutService.getDefaultUserLayout(userId);
+
+        Assertions.assertNotNull(testResult);
+    }
+
+    @Test
+    public void testGetDefaultUserLayoutLayout_DoesntExist() {
+        Long userId = 12L;
+        Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(null);
+
+        ListLayoutEntity testResult = listLayoutService.getDefaultUserLayout(userId);
+
+        Assertions.assertNull(testResult);
+    }
+
+    @Test
+    public void testGetUserListLayout() {
+        Long userId = 12L;
+        Long listId = 13L;
+
+        Mockito.when(listLayoutRepository.getUserListLayout(userId, listId)).thenReturn(new ListLayoutEntity());
+
+        ListLayoutEntity testResult = listLayoutService.getUserListLayout(userId, listId);
+
+        Assertions.assertNotNull(testResult);
+    }
+
+    @Test
+    public void testGetUserListLayout_DoesntExist() {
+        Long userId = 12L;
+        Long listId = 13L;
+
+        Mockito.when(listLayoutRepository.getUserListLayout(userId, listId)).thenReturn(null);
+
+        ListLayoutEntity testResult = listLayoutService.getDefaultUserLayout(userId);
+
+        Assertions.assertNull(testResult);
+    }
+    /*
+
+        @Override
+    public ListLayoutEntity getUserListLayout(Long userId, Long listLayoutId) {
+        // get user layout
+        return listLayoutRepository.getUserListLayout(userId, listLayoutId);
+    }
+
+
+
+     */
 
 }

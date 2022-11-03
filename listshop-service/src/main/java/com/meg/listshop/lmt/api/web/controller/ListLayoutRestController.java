@@ -40,15 +40,14 @@ public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
     public ResponseEntity<ListLayout> readDefaultListLayout(HttpServletRequest request) {
         ListLayoutEntity listLayout = this.listLayoutService
-                .getDefaultListLayout();
+                .getStandardLayout();
 
         if (listLayout != null) {
-            //MM layout - finish cleaning upList<ListLayoutCategoryPojo> structuredCategories = this.listLayoutService.getStructuredCategories(listLayout);
-            /*ListLayout layoutModel = ModelMapper.toModel(listLayout, structuredCategories);
+            ListLayout layoutModel = ModelMapper.toModel(listLayout, new ArrayList<>());
             ListLayoutResource listLayoutResource = new ListLayoutResource(layoutModel);
             listLayoutResource.fillLinks(request, listLayoutResource);
 
-            return new ResponseEntity(listLayoutResource, HttpStatus.OK);*/
+            return new ResponseEntity(listLayoutResource, HttpStatus.OK);
         }
         return ResponseEntity.notFound().build();
     }
