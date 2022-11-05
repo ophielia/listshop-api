@@ -7,6 +7,7 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.ICountResult;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
@@ -76,22 +77,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void deleteTagFromDish(String userName, Long dishId, Long tagId) {
-        if (tagId == null) {
-            return;
-        }
-        // get dish
-        DishEntity dish = dishService.getDishForUserById(userName, dishId);
-        if (dish == null) {
-            return;
-        }
-        // filter tag to be deleted from dish
-        List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
-        List<TagEntity> dishTagsDeletedTag = dishTags.stream()
-                .filter(t -> !t.getId().equals(tagId))
-                .collect(Collectors.toList());
-        // add tags to dish
-        dish.setTags(dishTagsDeletedTag);
-        dishService.save(dish, false);
+        removeTagsFromDish(userName, dishId, Collections.singleton(tagId));
     }
 
     @Override
@@ -397,20 +383,14 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void addTagToDish(String userName, Long dishId, Long tagId) {
+        TagEntity tag = getTagById(tagId);
         if (dishId == null || tagId == null) {
             return;
         }
 
         // get dish
         DishEntity dish = dishService.getDishForUserById(userName, dishId);
-        if (dish == null) {
-            return;
-        }
 
-        TagEntity tag = getTagById(tagId);
-        if (tag == null) {
-            return;
-        }
         addTagToDish(dish, tag);
     }
 
@@ -449,10 +429,16 @@ public class TagServiceImpl implements TagService {
             return;
         }
 
-        List<TagEntity> tagList = tagRepository.getTagsForIdList(tagIds);
+        List<TagEntity> dishTags = dish.getTags();
+        Set<Long> existingTagIds = dishTags.stream()
+                .map(TagEntity::getId)
+                .collect(Collectors.toSet());
 
-        List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
+        Set<Long> filteredTagIds = tagIds.stream()
+                .filter(t -> !existingTagIds.contains(t))
+                .collect(Collectors.toSet());
 
+        List<TagEntity> tagList = tagRepository.getTagsForIdList(filteredTagIds);
         List<TagEntity> ratingChecks = new ArrayList<>();
 
         for (TagEntity addTag : tagList) {
@@ -481,7 +467,42 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void removeTagsFromDish(String userName, Long dishId, Set<Long> tagIds) {
-        tagIds.forEach(t -> deleteTagFromDish(userName, dishId, t));
+        // get dish
+        DishEntity dish = dishService.getDishForUserById(userName, dishId);
+        if (dish == null) {
+            return;
+        }
+        Set<Long> validatedRemovals = determineValidTagsToRemove(dishId, tagIds);
+
+        // filter tag to be deleted from dish
+        List<TagEntity> dishTags = dish.getTags();
+        List<TagEntity> dishTagsDeletedTag = dishTags.stream()
+                .filter(t -> !(validatedRemovals.contains(t.getId())))
+                .collect(Collectors.toList());
+        // add tags to dish
+        dish.setTags(dishTagsDeletedTag);
+        dishService.save(dish, false);
+        //MM will need to return partialUpdate - boolean to integrate into endpoint
+    }
+
+    private Set<Long> determineValidTagsToRemove(Long dishId, Set<Long> tagIds) {
+        List<ICountResult> remainingCounts = tagRepository.countRemainingDishTypeTags(dishId, tagIds);
+        if (remainingCounts == null || remainingCounts.isEmpty()) {
+            return tagIds;
+        }
+        int remainingCount = remainingCounts.get(0).getCountResult();
+        if (remainingCount >= 1) {
+            // last dish type tag not removed in this set
+            return tagIds;
+        }
+
+        // deleting this set would result in a dish without any dish tag. We'll remove
+        // all dish type tags, so that the algorithm won't "decide" which tag stays
+        List<TagEntity> tagsToBeDeleted = tagRepository.findAllById(tagIds);
+        return tagsToBeDeleted.stream()
+                .filter(t -> !t.getTagType().equals(TagType.DishType))
+                .map(TagEntity::getId)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -753,7 +774,7 @@ public class TagServiceImpl implements TagService {
         if (dish == null || tag == null) {
             return;
         }
-        List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
+        List<TagEntity> dishTags = dish.getTags();
 
         // check if tag exists already
         if (dishTags.contains(tag)) {

@@ -214,6 +214,8 @@ public class DishRestControllerTest {
                         .with(user(userDetails))
                         .contentType(contentType))
                 .andExpect(status().isNoContent());
+
+        //MM NOV - need test to make sure that it's not there
     }
 
     @Test

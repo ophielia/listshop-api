@@ -4,6 +4,7 @@ package com.meg.listshop.lmt.data.repository;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.ICountResult;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -119,4 +120,13 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
     @Query(value = "select t from TagEntity t where lower(trim(t.name)) = :name " +
             " and t.isGroup = :isGroup and t.tagType = :tagType ")
     Optional<TagEntity> findTagDuplicate(@Param("name") String name, @Param("tagType") TagType tagType, @Param("isGroup") boolean isGroup);
+
+    @Query(value = "select count(*) as countResult  " +
+            "from dish_tags dt  " +
+            "         join dish d on d.dish_id = dt.dish_id  " +
+            "         join tag t on t.tag_id = dt.tag_id  " +
+            "where tag_type = 'DishType'  " +
+            "  and d.dish_id = :dishId  " +
+            "  and t.tag_id not in (:tagIds)", nativeQuery = true)
+    List<ICountResult> countRemainingDishTypeTags(@Param("dishId") Long dishId, @Param("tagIds") Set<Long> tagIds);
 }
