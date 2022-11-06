@@ -279,7 +279,6 @@ public class ShoppingListRestControllerTest {
         Assert.assertEquals("tomatoes are tomatoes", "tomatoes", tomatoes.getTagName());
     }
 
-
     @Test
     @WithMockUser
     public void testUpdateList() throws Exception {
@@ -402,7 +401,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testNewCreateList() throws Exception {
+    public void testCreateList() throws Exception {
         ListGenerateProperties properties = new ListGenerateProperties();
         properties.setAddFromStarter(true);
         properties.setGenerateMealplan(false);
@@ -536,7 +535,6 @@ public class ShoppingListRestControllerTest {
 
         Assert.assertEquals(usedCount, resultItem.getUsedCount());
     }
-
 
     @Test
     @WithMockUser
@@ -743,7 +741,6 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());  // this one is successful
     }
 
-
     @Test
     @WithMockUser
     public void testChangeListLayout() throws Exception {
@@ -756,7 +753,6 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
 
     }
-
 
     @Test
     @WithMockUser
@@ -1006,17 +1002,6 @@ public class ShoppingListRestControllerTest {
         Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
     }
 
-    private ShoppingList retrieveList(UserDetails userDetails, Long listId) throws Exception {
-        MvcResult listResultsAfter = this.mockMvc.perform(get("/shoppinglist/" + listId)
-                        .with(user(userDetails)))
-                .andReturn();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonList = listResultsAfter.getResponse().getContentAsString();
-        ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
-        Assert.assertNotNull(afterList);
-        return afterList.getShoppingList();
-    }
-
 
     @Test
     @WithMockUser
@@ -1205,6 +1190,40 @@ public class ShoppingListRestControllerTest {
         ShoppingListItem carrot = carrotOpt.get();
         Assert.assertEquals("only one source key for carrots shown", 1, carrot.getSourceKeys().size());
         Assert.assertNotNull("carrots should be crossed off", carrot.getCrossedOff());
+    }
+
+    private Long createList(UserDetails userDetails) throws Exception {
+        ListGenerateProperties properties = new ListGenerateProperties();
+        properties.setAddFromStarter(true);
+        properties.setGenerateMealplan(false);
+
+        String jsonProperties = json(properties);
+
+        String url = "/shoppinglist";
+
+        MvcResult result = this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(jsonProperties))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        List<String> headers = result.getResponse().getHeaders("Location");
+        String header = headers.get(0);
+        String stringId = header.substring(header.lastIndexOf("/") + 1);
+        return Long.valueOf(stringId);
+
+    }
+
+    private ShoppingList retrieveList(UserDetails userDetails, Long listId) throws Exception {
+        MvcResult listResultsAfter = this.mockMvc.perform(get("/shoppinglist/" + listId)
+                        .with(user(userDetails)))
+                .andReturn();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonList = listResultsAfter.getResponse().getContentAsString();
+        ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
+        Assert.assertNotNull(afterList);
+        return afterList.getShoppingList();
     }
 
     private String json(Object o) throws IOException {

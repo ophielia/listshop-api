@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.service.impl;
+package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.lmt.api.model.TagType;

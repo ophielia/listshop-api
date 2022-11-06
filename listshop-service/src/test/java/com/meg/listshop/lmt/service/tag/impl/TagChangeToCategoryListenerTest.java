@@ -5,7 +5,7 @@ import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.ListLayoutService;
-import com.meg.listshop.lmt.service.impl.ServiceTestUtils;
+import com.meg.listshop.lmt.service.ServiceTestUtils;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.junit.Before;
