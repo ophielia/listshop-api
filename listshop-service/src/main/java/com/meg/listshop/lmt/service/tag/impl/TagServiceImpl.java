@@ -293,7 +293,7 @@ public class TagServiceImpl implements TagService {
         // mark tag to be deleted
         tag.setToDelete(true);
         tag.setRemovedOn(new Date());
-        //MM TEST THIS
+
         tag.setReplacementTagId(replacement.getId());
         // update and replace usage
         updateTag(tagId, tag);

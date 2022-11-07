@@ -107,11 +107,6 @@ public class TagReplaceServiceImpl implements TagReplaceService {
     }
 
     private void removeShadowTags(Long toReplaceId) {
-        //MM change - don't want to delete this - want to combine it with previous
-        // 3 steps
-        // merge thosw eith duplicates
-        // update those without duplicates (old tag to new tag)
-        // delete old tags
         StringBuilder baseSql = new StringBuilder();
         baseSql.append("delete from  list_tag_stats " +
                 "where tag_id = ");
