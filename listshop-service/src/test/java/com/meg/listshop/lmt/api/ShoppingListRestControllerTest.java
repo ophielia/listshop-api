@@ -247,6 +247,16 @@ public class ShoppingListRestControllerTest {
     }
 
     @Test
+    public void testRetrieveListById_NotFound() throws Exception {
+        Long dummyTestId = 12345678901L;
+
+        MvcResult result = mockMvc.perform(get("/shoppinglist/" + dummyTestId)
+                        .with(user(meUserDetails)))
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Test
     @WithMockUser
     public void testCustomLayout() throws Exception {
         Long customLayoutListId = 10101010L;

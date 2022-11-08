@@ -38,11 +38,11 @@ public interface TagService {
 
     void addTagsToDish(String userName, Long id, Set<Long> tagIds);
 
-    void removeTagsFromDish(String userName, Long dishId, Set<Long> tagIds);
+    int removeTagsFromDish(String userName, Long dishId, Set<Long> tagIds);
 
     List<TagEntity> getIngredientTagsForDishes(List<Long> dishIdList);
 
-    void deleteTagFromDish(String userName, Long dishId, Long tagId);
+    int deleteTagFromDish(String userName, Long dishId, Long tagId);
 
     Map<Long, TagEntity> getDictionaryForIds(Set<Long> tagIds);
 

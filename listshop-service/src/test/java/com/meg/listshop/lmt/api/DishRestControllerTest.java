@@ -208,7 +208,7 @@ public class DishRestControllerTest {
         this.mockMvc.perform(delete(url)
                         .with(user(userDetails))
                         .contentType(contentType))
-                .andExpect(status().isNoContent());
+                .andExpect(status().is2xxSuccessful());
 
         Dish result = retrieveDish(userDetails, TestConstants.DISH_1_ID);
         Optional<Tag> threeFourFourTag = result.getTags().stream().filter(t -> t.getId().equals(344L)).findFirst();
@@ -227,7 +227,7 @@ public class DishRestControllerTest {
         this.mockMvc.perform(put(url)
                         .with(user(userDetails))
                         .contentType(contentType))
-                .andExpect(status().isNoContent());
+                .andExpect(status().is2xxSuccessful());
     }
 
     @Test
@@ -472,7 +472,7 @@ public class DishRestControllerTest {
         this.mockMvc.perform(put(url)
                         .with(user(userDetails))
                         .contentType(contentType))
-                .andExpect(status().isNoContent());
+                .andExpect(status().is2xxSuccessful());
 
         // retrieve list, and check
         Dish updated = retrieveDish(userDetails, createdId);
@@ -513,7 +513,7 @@ public class DishRestControllerTest {
         this.mockMvc.perform(put(url)
                         .with(user(userDetails))
                         .contentType(contentType))
-                .andExpect(status().isNoContent());
+                .andExpect(status().is2xxSuccessful());
 
         // retrieve list, and check
         Dish updated = retrieveDish(userDetails, createdId);

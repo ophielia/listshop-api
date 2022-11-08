@@ -76,8 +76,8 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public void deleteTagFromDish(String userName, Long dishId, Long tagId) {
-        removeTagsFromDish(userName, dishId, Collections.singleton(tagId));
+    public int deleteTagFromDish(String userName, Long dishId, Long tagId) {
+        return removeTagsFromDish(userName, dishId, Collections.singleton(tagId));
     }
 
     @Override
@@ -466,23 +466,34 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void removeTagsFromDish(String userName, Long dishId, Set<Long> tagIds) {
+    public int removeTagsFromDish(String userName, Long dishId, Set<Long> tagIds) {
         // get dish
         DishEntity dish = dishService.getDishForUserById(userName, dishId);
         if (dish == null) {
-            return;
+            return 0;
         }
         Set<Long> validatedRemovals = determineValidTagsToRemove(dishId, tagIds);
+
+        // if nothing is validated - we return
+        if (validatedRemovals.isEmpty()) {
+            return 0;
+        }
 
         // filter tag to be deleted from dish
         List<TagEntity> dishTags = dish.getTags();
         List<TagEntity> dishTagsDeletedTag = dishTags.stream()
                 .filter(t -> !(validatedRemovals.contains(t.getId())))
                 .collect(Collectors.toList());
+
+        // if nothing is validated - we return
+        if (dishTagsDeletedTag.isEmpty()) {
+            return 0;
+        }
+
         // add tags to dish
         dish.setTags(dishTagsDeletedTag);
         dishService.save(dish, false);
-        //MM will need to return partialUpdate - boolean to integrate into endpoint
+        return dishTagsDeletedTag.size();
     }
 
     private Set<Long> determineValidTagsToRemove(Long dishId, Set<Long> tagIds) {

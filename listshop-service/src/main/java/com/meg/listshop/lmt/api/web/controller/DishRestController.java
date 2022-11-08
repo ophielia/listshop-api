@@ -138,7 +138,7 @@ public class DishRestController implements DishRestControllerApi {
     public ResponseEntity<Object> updateDish(Principal principal, @PathVariable Long dishId, @RequestBody Dish input) {
         UserEntity user = this.getUserForPrincipal(principal);
 
-        DishEntity dish =  this.dishService
+        DishEntity dish = this.dishService
                 .getDishForUserById(user.getEmail(), dishId);
 
         dish.setDescription(input.getDescription());
@@ -176,7 +176,7 @@ public class DishRestController implements DishRestControllerApi {
     public ResponseEntity<Object> addTagToDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId) {
         getUserForPrincipal(principal);
 
-        this.tagService.addTagToDish(principal.getName(),dishId, tagId);
+        this.tagService.addTagToDish(principal.getName(), dishId, tagId);
 
         return ResponseEntity.noContent().build();
 
@@ -186,28 +186,39 @@ public class DishRestController implements DishRestControllerApi {
     public ResponseEntity<Object> deleteTagFromDish(Principal principal, @PathVariable Long dishId, @PathVariable Long tagId) {
         getUserForPrincipal(principal);
 
-        this.tagService.deleteTagFromDish(principal.getName(), dishId, tagId);
+        int updated = this.tagService.deleteTagFromDish(principal.getName(), dishId, tagId);
 
-        return ResponseEntity.noContent().build();
+        if (updated == 1) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).build();
+        }
     }
 
     @Override
     public ResponseEntity<Object> addAndRemoveTags(Principal principal, @PathVariable Long dishId,
-                                                                  @RequestParam(value = "addTags", required = false) String addTags,
-                                                                  @RequestParam(value = "removeTags", required = false) String removeTags)
-    {
+                                                   @RequestParam(value = "addTags", required = false) String addTags,
+                                                   @RequestParam(value = "removeTags", required = false) String removeTags) {
 
         if (addTags != null && !addTags.isEmpty()) {
             Set<Long> tagIds = commaDelimitedToSet(addTags);
             this.tagService.addTagsToDish(principal.getName(), dishId, tagIds);
         }
 
+        boolean partialContent = false;
         if (removeTags != null && !removeTags.isEmpty()) {
             Set<Long> tagIds = commaDelimitedToSet(removeTags);
-            this.tagService.removeTagsFromDish(principal.getName(), dishId, tagIds);
+            int updated = this.tagService.removeTagsFromDish(principal.getName(), dishId, tagIds);
+            partialContent = updated != tagIds.size();
         }
 
-        return ResponseEntity.noContent().build();
+
+        if (partialContent) {
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).build();
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+
     }
 
     public ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable Long dishId) {
