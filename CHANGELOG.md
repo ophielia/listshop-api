@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - merge algorithm when client list is older than server.
+- server ensures that a dish always has a dish type tag, by not deleting a dish tag for a dish if only one remains.
 
 ### Deprecated
 
