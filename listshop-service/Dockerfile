@@ -5,4 +5,8 @@ ARG DEPENDENCY=target/dependency
 COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY ${DEPENDENCY}/META-INF /app/META-INF
 COPY ${DEPENDENCY}/BOOT-INF/classes /app
+
+RUN mkdir /home/listshop/tomcat
+RUN chmod 777 /home/listshop/tomcat
+
 ENTRYPOINT ["java","-cp","app:app/lib/*","com.meg.listshop.Application"]
