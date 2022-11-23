@@ -1,0 +1,157 @@
+---
+# Source: listshop-api/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: listshop-listshop-api
+  labels:
+    helm.sh/chart: listshop-api-1.10.1-SNAPSHOT
+    app.kubernetes.io/name: listshop-api
+    app.kubernetes.io/instance: listshop
+    app.kubernetes.io/version: "1.10.1-SNAPSHOT"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: listshop-api/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: listshop-listshop-api
+  labels:
+    helm.sh/chart: listshop-api-1.10.1-SNAPSHOT
+    app.kubernetes.io/name: listshop-api
+    app.kubernetes.io/instance: listshop
+    app.kubernetes.io/version: "1.10.1-SNAPSHOT"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8181
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: listshop-api
+    app.kubernetes.io/instance: listshop
+---
+# Source: listshop-api/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: listshop-listshop-api
+  labels:
+    helm.sh/chart: listshop-api-1.10.1-SNAPSHOT
+    app.kubernetes.io/name: listshop-api
+    app.kubernetes.io/instance: listshop
+    app.kubernetes.io/version: "1.10.1-SNAPSHOT"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: listshop-api
+      app.kubernetes.io/instance: listshop
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: listshop-api
+        app.kubernetes.io/instance: listshop
+    spec:
+      volumes:
+        - name: list-service-static
+          persistentVolumeClaim:
+            claimName: list-service-pvc-list-service-static-set-0
+      imagePullSecrets:
+        - name: dockerservercred
+      serviceAccountName: listshop-listshop-api
+      securityContext:
+        { }
+      containers:
+        - name: listshop-api
+          securityContext:
+            { }
+          image: "ophieliamoon/listshop-server:1.10.1-SNAPSHOT"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: LISTSHOP_EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: list-service-secret
+                  key: emailPassword
+            - name: LISTSHOP_SERVER_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: list-service-secret
+                  key: dbPassword
+            - name: LISTSHOP_SERVER_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: list-service-secret
+                  key: dbUser
+            - name: LISTSHOP_SERVER_DB_URL
+              value: jdbc:postgresql://4.tcp.ngrok.io:16684/dishhelm
+            - name: LISTSHOP_SERVER_PORT
+              value: '8181'
+            - name: SPRING_PROFILES_ACTIVE
+              value: container
+          volumeMounts:
+            - name: list-service-static
+              mountPath: /opt/listshop/static
+          ports:
+            - name: http
+              containerPort: 8181
+              protocol: TCP
+          #          livenessProbe:
+          #            httpGet:
+          #              path: /
+          #              port: http
+          #          readinessProbe:
+          #            httpGet:
+          #              path: /
+          #              port: http
+          resources:
+            { }
+---
+# Source: listshop-api/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: listshop-listshop-api
+  labels:
+    helm.sh/chart: listshop-api-1.10.1-SNAPSHOT
+    app.kubernetes.io/name: listshop-api
+    app.kubernetes.io/instance: listshop
+    app.kubernetes.io/version: "1.10.1-SNAPSHOT"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  rules:
+    - host: "chart-example.local"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: listshop-listshop-api
+                port:
+                  number: 8181
+---
+# Source: listshop-api/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "listshop-listshop-api-test-connection"
+  labels:
+    helm.sh/chart: listshop-api-1.10.1-SNAPSHOT
+    app.kubernetes.io/name: listshop-api
+    app.kubernetes.io/instance: listshop
+    app.kubernetes.io/version: "1.10.1-SNAPSHOT"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: [ 'wget' ]
+      args: [ 'listshop-listshop-api:8181' ]
+  restartPolicy: Never
