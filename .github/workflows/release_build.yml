@@ -63,6 +63,8 @@ jobs:
         run: |
           pwd
           ls
+          cd listshop-service
+          ls
       - name: Helm Package
         run: helm package listshop-service/target/helm/listshop-api --version "0.1.0+$(git rev-parse --short "$GITHUB_SHA")" -d helm-chart-repository
       - name: Helm Push
