@@ -43,9 +43,7 @@ jobs:
         run: echo ${PWD}
       - name: Helm Push
         run: |
-          ls
-          pwd
-          cd ..
+          cd listshop-service/target
           ls
       - name: Chart Checkout
         uses: actions/checkout@v2
