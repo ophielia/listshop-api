@@ -43,7 +43,7 @@ jobs:
         run: echo ${PWD}
       - name: Helm Push
         run: |
-          cd listshop-service/target
+          cd listshop-service/target/helm
           ls
       - name: Chart Checkout
         uses: actions/checkout@v2
@@ -61,7 +61,7 @@ jobs:
           ref: main
           path: helm-chart-repository
       - name: Helm Package
-        run: helm package ${GITHUB_WORKSPACE}/listshop-service/target/helm/listshop-api --version "0.1.0+$(git rev-parse --short "$GITHUB_SHA")" -d helm-chart-repository
+        run: helm package listshop-service/target/helm/listshop-api --version "0.1.0+$(git rev-parse --short "$GITHUB_SHA")" -d helm-chart-repository
       - name: Helm Push
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.YOUR_BOT_GH_TOKEN }}
