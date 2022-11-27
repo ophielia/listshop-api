@@ -76,7 +76,9 @@ jobs:
           git config --global user.email "dev@listshop.com"
           git config --global user.name "Listshop Bot"
           CHART_PACKAGE_NAME="listshop-api-0.1.0+$(git rev-parse --short "$GITHUB_SHA").tgz"
+          cp $CHART_PACKAGE_NAME helm-chart-repository/$CHART_REPOSITORY_NAME
           cd helm-chart-repository
+          ls
           git add "$CHART_PACKAGE_NAME"
           git commit -m "$CHART_PACKAGE_NAME"
           git push origin main        
