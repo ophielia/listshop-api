@@ -58,10 +58,10 @@ jobs:
           ref: main
           path: helm-chart-repository
       - name: Print pwd
-        run: echo ${PWD}
+        run: echo ${GITHUB_WORKSPACE}
       - name: Helm Push
         run: |
-          cd listshop-service/target/helm/listshop-api
+          pwd
           ls
       - name: Helm Package
         run: helm package listshop-service/target/helm/listshop-api --version "0.1.0+$(git rev-parse --short "$GITHUB_SHA")" -d helm-chart-repository
