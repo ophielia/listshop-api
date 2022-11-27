@@ -37,7 +37,8 @@ jobs:
 ##
 ##      - name: now push
 ##        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/listshop-server:${GITHUB_REF##*/}
-
+      - name: XDTesting Print Directory Structure
+        uses: FiorelaCiroku/XDTesting-Print-Directory-Structure@v1.0.2
       - name: Chart Checkout
         uses: actions/checkout@v2
       - name: Helm Installation
