@@ -27,16 +27,16 @@ jobs:
         run: mvn clean compile
 
       - name: build docker image using maven
-        run: mvn install -DskipTests
+        run: mvn install -DskipTests -Phelm
 
-      - name: ensure fresh docker login by logging out
-        run: docker logout
-      
-      - name: log back in now
-        run: docker login --username=${{ secrets.DOCKER_HUB_USERNAME }} --password=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-      
-      - name: now push
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/listshop-server:${GITHUB_REF##*/}
+##      - name: ensure fresh docker login by logging out
+##        run: docker logout
+##
+##      - name: log back in now
+##        run: docker login --username=${{ secrets.DOCKER_HUB_USERNAME }} --password=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+##
+##      - name: now push
+##        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/listshop-server:${GITHUB_REF##*/}
         
 
 
