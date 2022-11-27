@@ -23,9 +23,6 @@ jobs:
         with:
           java-version: 11
 
-      - name: clean build with maven - no tests
-        run: mvn clean compile
-
       - name: build docker image using maven
         run: mvn install -DskipTests -Phelm
 
@@ -43,7 +40,7 @@ jobs:
         run: echo ${PWD}
       - name: Helm Push
         run: |
-          cd listshop-service/target/helm
+          cd listshop-service/target/helm/listshop-api
           ls
       - name: Chart Checkout
         uses: actions/checkout@v2
@@ -60,6 +57,12 @@ jobs:
           persist-credentials: true
           ref: main
           path: helm-chart-repository
+      - name: Print pwd
+        run: echo ${PWD}
+      - name: Helm Push
+        run: |
+          cd listshop-service/target/helm/listshop-api
+          ls
       - name: Helm Package
         run: helm package listshop-service/target/helm/listshop-api --version "0.1.0+$(git rev-parse --short "$GITHUB_SHA")" -d helm-chart-repository
       - name: Helm Push
