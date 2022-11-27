@@ -56,7 +56,7 @@ jobs:
       - name: Helm Package
         run: helm package listshop-service/target/helm/listshop-api --version "0.1.0+$(git rev-parse --short "$GITHUB_SHA")" -d helm-chart-repository
       - name: Helm Push
-        env:
+#        env:
 #          GITHUB_TOKEN: ${{ secrets.YOUR_BOT_GH_TOKEN }}
         run: |
           git config --global user.email "dev@listshop.com"
