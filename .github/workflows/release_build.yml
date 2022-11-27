@@ -41,6 +41,12 @@ jobs:
         run: echo ${GITHUB_WORKSPACE}
       - name: Print pwd
         run: echo ${PWD}
+      - name: Helm Push
+        run: |
+          ls
+          pwd
+          cd ..
+          ls
       - name: Chart Checkout
         uses: actions/checkout@v2
       - name: Helm Installation
