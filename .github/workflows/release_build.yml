@@ -32,7 +32,7 @@ jobs:
         run: mvn install -DskipTests -Phelm
 
       - name: Helm Package
-        run: helm package listshop-service/target/helm/listshop-api --version "0.1.0+$(git rev-parse --short "$GITHUB_SHA")" -d .
+        run: helm package listshop-service/target/helm/listshop-api --version "${GITHUB_REF##*/}+$(git rev-parse --short "$GITHUB_SHA")" -d .
 
 
     ##      - name: ensure fresh docker login by logging out
