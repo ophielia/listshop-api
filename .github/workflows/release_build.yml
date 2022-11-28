@@ -15,12 +15,14 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v2
-
       - name: Helm Installation
         uses: azure/setup-helm@v1.1
         with:
           version: v3.7.0
+
+      - uses: actions/checkout@v2
+        with:
+          ref: master
 
       - name: Set up JDK 11
         uses: actions/setup-java@v1
@@ -33,9 +35,10 @@ jobs:
       - name: Git Version Push
         run: |
           git config --global user.name "Listshop Bot"
+          git config --global user.email "dev@listshop.com"
           git add .
           git commit -m "bumping to release version ${GITHUB_REF##*/}"
-          git push  
+          git push origin master  
 
       - name: build docker image using maven
         run: mvn clean install -DskipTests -Phelm
