@@ -40,7 +40,7 @@ service:
   type: ClusterIP
   port: 8181
   database:
-    url: jdbc:postgresql://0.tcp.ngrok.io:16403/dishhelm
+    url: jdbc:postgresql://4.tcp.ngrok.io:18281/dishhelm
   profile: container
   secrets: list-service-secret
 
