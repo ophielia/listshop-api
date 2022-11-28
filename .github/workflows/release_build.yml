@@ -70,8 +70,8 @@ jobs:
           cd listshop-service
           ls
       - name: Helm Push
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.YOUR_BOT_GH_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
           git config --global user.email "dev@listshop.com"
           git config --global user.name "Listshop Bot"
