@@ -27,6 +27,16 @@ jobs:
         with:
           java-version: 11
 
+      - name: increment version of project
+        run:  mvn versions:set -DnewVersion=${GITHUB_REF##*/}
+
+      - name: Git Version Push
+        run: |
+          git config --global user.name "Listshop Bot"
+          git add .
+          git commit -m "bumping to release version ${GITHUB_REF##*/}"
+          git push  
+
       - name: build docker image using maven
         run: mvn clean install -DskipTests -Phelm
 
