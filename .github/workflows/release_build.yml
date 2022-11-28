@@ -15,28 +15,70 @@ jobs:
 
     steps:
 
-
-      - uses: actions/checkout@v2
+      - name: Helm Installation
+        uses: azure/setup-helm@v1.1
+        with:
+          version: v3.7.0
 
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
           java-version: 11
 
-      - name: clean build with maven - no tests
-        run: mvn clean compile
+      - name: Checkout Project
+        uses: actions/checkout@v2
+        with:
+          ref: master
 
-      - name: build docker image using maven
-        run: mvn install -DskipTests
+      - name: Increment Version of Project
+        run:  mvn versions:set -DnewVersion=${GITHUB_REF##*/} -DgenerateBackupPoms=false
 
-      - name: ensure fresh docker login by logging out
+      - name: Git Version Push
+        run: |
+          git config --global user.name "Listshop Bot"
+          git config --global user.email "dev@listshop.com"
+          git add .
+          git commit -m "bumping to release version ${GITHUB_REF##*/}"
+          git push origin master  
+
+
+      - name: Build - helmfiles and docker image
+        run: mvn clean install -DskipTests -Phelm
+
+      - name: Helm Package
+        run: helm package listshop-service/target/helm/listshop-api --version "${GITHUB_REF##*/}+$(git rev-parse --short "$GITHUB_SHA")" -d .
+
+      - name: Ensure Fresh Docker Login - logging out
         run: docker logout
-      
-      - name: log back in now
+
+      - name: Login to Docker
         run: docker login --username=${{ secrets.DOCKER_HUB_USERNAME }} --password=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-      
-      - name: now push
+
+      - name: Now, Push to Docker
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/listshop-server:${GITHUB_REF##*/}
-        
+
+      - name: Helm Repository Checkout
+        uses: actions/checkout@v2
+        with:
+          repository: ophielia/listshop-helm-repo
+          token: ${{ secrets.BOT_TOKEN }}
+          fetch-depth: 0
+          persist-credentials: true
+          ref: main
+          path: helm-chart-repository
+
+      - name: Push Helm Charts
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: |
+          git config --global user.email "dev@listshop.com"
+          git config --global user.name "Listshop Bot"
+          CHART_PACKAGE_NAME="listshop-api-${GITHUB_REF##*/}+$(git rev-parse --short "$GITHUB_SHA").tgz"
+          cp $CHART_PACKAGE_NAME helm-chart-repository/$CHART_REPOSITORY_NAME
+          cd helm-chart-repository
+          ls
+          git add "$CHART_PACKAGE_NAME"
+          git commit -m "checking in $CHART_PACKAGE_NAME"
+          git push origin main        
 
 
