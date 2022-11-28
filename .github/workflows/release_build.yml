@@ -15,7 +15,6 @@ jobs:
 
     steps:
 
-
       - uses: actions/checkout@v2
 
       - name: Helm Installation
@@ -43,14 +42,6 @@ jobs:
 ##
 ##      - name: now push
 ##        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/listshop-server:${GITHUB_REF##*/}
-      - name: Print GITHUB_WORKSPACE
-        run: echo ${GITHUB_WORKSPACE}
-      - name: Print pwd
-        run: echo ${PWD}
-      - name: Helm Push
-        run: |
-          cd listshop-service/target/helm/listshop-api
-          ls
 
       - name: Helm Repository Checkout
         uses: actions/checkout@v2
@@ -61,26 +52,19 @@ jobs:
           persist-credentials: true
           ref: main
           path: helm-chart-repository
-      - name: Print pwd
-        run: echo ${GITHUB_WORKSPACE}
-      - name: Helm Push
-        run: |
-          pwd
-          ls
-          cd listshop-service
-          ls
+
       - name: Helm Push
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
           git config --global user.email "dev@listshop.com"
           git config --global user.name "Listshop Bot"
-          CHART_PACKAGE_NAME="listshop-api-0.1.0+$(git rev-parse --short "$GITHUB_SHA").tgz"
+          CHART_PACKAGE_NAME="listshop-api-${GITHUB_REF##*/}+$(git rev-parse --short "$GITHUB_SHA").tgz"
           cp $CHART_PACKAGE_NAME helm-chart-repository/$CHART_REPOSITORY_NAME
           cd helm-chart-repository
           ls
           git add "$CHART_PACKAGE_NAME"
-          git commit -m "$CHART_PACKAGE_NAME"
+          git commit -m "checking in $CHART_PACKAGE_NAME"
           git push origin main        
 
 
