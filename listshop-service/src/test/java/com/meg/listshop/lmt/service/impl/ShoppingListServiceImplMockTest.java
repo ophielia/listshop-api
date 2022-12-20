@@ -48,7 +48,7 @@ public class ShoppingListServiceImplMockTest {
     @MockBean
     private ShoppingListRepository shoppingListRepository;
     @MockBean
-    private ListLayoutService listLayoutService;
+    private LayoutService layoutService;
     @MockBean
     private ListSearchService listSearchService;
     @MockBean
@@ -67,7 +67,7 @@ public class ShoppingListServiceImplMockTest {
                 tagService,
                 dishService,
                 shoppingListRepository,
-                listLayoutService,
+                layoutService,
                 mealPlanService,
                 itemRepository,
                 itemChangeRepository,
@@ -615,7 +615,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                         .stream().map(ItemEntity::getTag)
                         .collect(Collectors.toList())))
                 .thenReturn(tagIdToCategoryId);
-        Mockito.when(listLayoutService.getListCategoriesForLayout(layoutId)).thenReturn(categories);
+        //Mockito.when(layoutService.getListCategoriesForLayout(layoutId)).thenReturn(categories);
         Mockito.when(listTagStatisticService.findFrequentIdsForList(listId, userId)).thenReturn(new ArrayList<>());
 
         // test call
@@ -721,7 +721,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.findByUserIdAndNameLike(userId, listName + "%"))
                 .thenReturn(Arrays.asList(listDuplicate1, listDuplicate2, listDuplicate3));
         Mockito.when(shoppingListRepository.save(listArgument.capture())).thenReturn(createdList);
-        Mockito.when(listLayoutService.getDefaultUserLayout(userId)).thenReturn(listLayout);
+        Mockito.when(layoutService.getDefaultUserLayout(userId)).thenReturn(listLayout);
 
         ShoppingListEntity result = shoppingListService.generateListForUser(userName, properties);
 
@@ -778,7 +778,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                 .thenReturn(userEntity);
         Mockito.when(mealPlanService.getMealPlanById(username, mealPlanId))
                 .thenReturn(mealPlan);
-        Mockito.when(listLayoutService.getDefaultUserLayout(userId))
+        Mockito.when(layoutService.getDefaultUserLayout(userId))
                 .thenReturn(listLayoutEntity);
         Mockito.when(shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId))
                 .thenReturn(Optional.of(createdShoppingList));

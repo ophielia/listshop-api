@@ -81,7 +81,6 @@ public class TagEntity {
     private Long parentId;
 
 
-
     public TagEntity() {
         // jpa empty constructor
     }
@@ -101,7 +100,6 @@ public class TagEntity {
     }
 
     public void setId(Long tagId) {
-        // TODO - this is just for tests - make a DaoUtils so we can remove this method
         this.tag_id = tagId;
     }
 
@@ -109,8 +107,8 @@ public class TagEntity {
         return userId;
     }
 
-    public void setUserId(Long user_id) {
-        this.userId = user_id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getName() {
@@ -244,6 +242,15 @@ public class TagEntity {
         return copy;
     }
 
+    public void addCategory(ListLayoutCategoryEntity category) {
+        this.categories.add(category);
+        category.getTags().add(this);
+    }
+
+    public void removeCategory(ListLayoutCategoryEntity category) {
+        this.categories.remove(category);
+        category.getTags().remove(this);
+    }
 
     public Boolean isToDelete() {
         return toDelete;

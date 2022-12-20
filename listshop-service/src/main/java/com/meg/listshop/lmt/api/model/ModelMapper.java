@@ -134,6 +134,14 @@ public class ModelMapper {
                 .categories(categories);
     }
 
+    public static ListLayout toModel(ListLayoutEntity listLayoutEntity) {
+        List<ListLayoutCategory> categories = layoutCategoryEntitiesToModel(listLayoutEntity.getCategories());
+
+        return new ListLayout(listLayoutEntity.getId())
+                .name(listLayoutEntity.getName())
+                .categories(categories);
+    }
+
     public static Target toModel(TargetEntity targetEntity) {
         List<TargetSlot> slots = targetSlotsToModel(targetEntity.getSlots());
         List<Tag> tags = toModel(targetEntity.getTargetTags());
@@ -224,6 +232,22 @@ public class ModelMapper {
         return dishSlots;
     }
 
+    private static List<ListLayoutCategory> layoutCategoryEntitiesToModel(List<ListLayoutCategoryEntity> categories) {
+        if (categories == null) {
+            return new ArrayList<>();
+        }
+
+        List<ListLayoutCategory> categoryList = new ArrayList<>();
+        for (ListLayoutCategoryEntity cat : categories) {
+            ListLayoutCategory llc = new ListLayoutCategory(cat.getId());
+            llc.name = cat.getName();
+            llc.displayOrder = cat.getDisplayOrder();
+            llc.setTags(toModel(cat.getTags()));
+            categoryList.add(llc);
+        }
+        return categoryList;
+
+    }
     private static List<ListLayoutCategory> layoutCategoriesToModel(List<ListLayoutCategoryPojo> categories) {
         if (categories == null) {
             return new ArrayList<>();

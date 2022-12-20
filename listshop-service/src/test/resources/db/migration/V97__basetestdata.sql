@@ -31,8 +31,7 @@ values ('TAG', 1000, 346, false, '9;88;368;372;374;375', null),
        ('TAG', 4, 199, true, '371', '433');
 
 insert into public.list_layout (layout_id, name, user_id, is_default)
-values (5, 'RoughGrained', null, true),
-       (10000, 'Default', 20, true);
+values (5, 'RoughGrained', null, true);
 
 insert into public.tag (tag_id, description, name, tag_type, tag_type_default, is_verified, power, to_delete,
                         replacement_tag_id, created_on, updated_on, category_updated_on, removed_on, is_group, user_id)
@@ -1367,8 +1366,7 @@ values (5, 'Meat', 5, 5, null),
        (503, 'Four', 5, 7, null),
        (504, 'Parent', 5, 9, null),
        (505, 'FirstChild', 5, 11, null),
-       (506, 'SecondChild', 5, 12, null),
-       (10000, 'Other', 10000, 20, false);
+       (506, 'SecondChild', 5, 12, null);
 
 insert into public.category_tags (category_id, tag_id)
 values (501, 500),
@@ -1883,8 +1881,7 @@ values (501, 500),
        (1041, 1084),
        (1041, 1085),
        (1041, 1086),
-       (1041, 1190),
-       (10000, 50532);
+       (1041, 1190);
 
 insert into public.dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status, created_on, reference)
 values (1009, null, 'tagTest', null, null, null, null, null),

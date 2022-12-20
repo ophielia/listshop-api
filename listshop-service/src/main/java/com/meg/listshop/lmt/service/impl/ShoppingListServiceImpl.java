@@ -43,7 +43,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final
     ShoppingListRepository shoppingListRepository;
     private final
-    ListLayoutService listLayoutService;
+    LayoutService listLayoutService;
     private final
     MealPlanService mealPlanService;
     private final
@@ -65,7 +65,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                                    TagService tagService,
                                    DishService dishService,
                                    ShoppingListRepository shoppingListRepository,
-                                   ListLayoutService listLayoutService,
+                                   LayoutService listLayoutService,
                                    MealPlanService mealPlanService,
                                    ItemRepository itemRepository,
                                    ItemChangeRepository itemChangeRepository,
@@ -148,7 +148,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 doCrossOffActions(sourceList, operationType, tagIds);
                 break;
         }
-        String beep = "bop";
     }
 
     private void doCrossOffActions(ShoppingListEntity sourceList, ItemOperationType operationType, List<Long> tagIds) {
@@ -220,7 +219,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     private List<ItemEntity> itemsForTags(List<TagEntity> tagList, Long sourceListId) {
-        Map tagMap = tagList.stream().collect(Collectors.toMap(TagEntity::getId, TagEntity::getId));
+        Map<Long, Long> tagMap = tagList.stream().collect(Collectors.toMap(TagEntity::getId, TagEntity::getId));
         List<ItemEntity> listItems = itemRepository.findByListId(sourceListId);
         return listItems.stream()
                 .filter(t -> t.getTag() != null)
@@ -629,8 +628,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 });
 
         // sort items in filled categories - content sort
-        for (Map.Entry entry : itemLists.entrySet()) {
-            Collections.sort(((List<ShoppingListItem>) entry.getValue()), new ShoppingListItemComparator());
+        for (Map.Entry<String, List<ShoppingListItem>> entry : itemLists.entrySet()) {
+            Collections.sort((entry.getValue()), new ShoppingListItemComparator());
         }
 
         // prune and sort categories - sorts the categories themselves, not the contents
@@ -655,7 +654,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             layout = Optional.ofNullable(listLayoutService.getUserListLayout(userId, listLayoutId));
         }
 
-        return layout.map(v -> v.getId())
+        return layout.map(ListLayoutEntity::getId)
                 .orElse(null);
     }
 

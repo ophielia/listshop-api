@@ -4,8 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.hateoas.Link;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class StringTools {
     private static final Logger logger = LogManager.getLogger(StringTools.class);
@@ -39,8 +41,22 @@ public class StringTools {
         try {
             return Long.valueOf(string);
         } catch (NumberFormatException e) {
-            logger.error("received non-numeric string [" + string + "]");
+            logger.error("received non-numeric string [%s]", string);
             return -1L;
         }
+    }
+
+    public static List<Long> stringListToLongs(List<String> stringList) {
+        if (stringList == null || stringList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return stringList.stream().map(t -> {
+                    try {
+                        return Long.valueOf(t);
+                    } catch (NumberFormatException e) {
+                        return 0L;
+                    }
+                }).filter(t -> t > 0)
+                .collect(Collectors.toList());
     }
 }

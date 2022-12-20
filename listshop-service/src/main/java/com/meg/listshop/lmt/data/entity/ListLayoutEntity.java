@@ -3,6 +3,7 @@ package com.meg.listshop.lmt.data.entity;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +21,18 @@ import java.util.List;
                         name = "increment_size",
                         value = "1")}
 )
+/*
+@NamedEntityGraph(
+        name = "graph.LayoutCategoriesItems",
+        attributeNodes = @NamedAttributeNode(value = "categories", subgraph = "subgraph.categories"),
+        subgraphs = {
+        @NamedSubgraph(name = "subgraph.categories",
+        attributeNodes = @NamedAttributeNode(value = "tags")) })
+ */
+@NamedEntityGraph(
+        name = "graph.LayoutCategoriesItems",
+        attributeNodes = @NamedAttributeNode(value = "categories", subgraph = "tags"),
+subgraphs = @NamedSubgraph( name = "tags", attributeNodes = @NamedAttributeNode("tags")))
 public class ListLayoutEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_layout_sequence")
@@ -80,5 +93,16 @@ public class ListLayoutEntity {
 
     public void setDefault(Boolean aDefault) {
         isDefault = aDefault;
+    }
+
+    public void addCategory(ListLayoutCategoryEntity category) {
+        if (this.categories == null) {
+            this.categories = new ArrayList<>();
+        }
+        this.categories.add(category);
+    }
+
+    public void removeCategory(ListLayoutCategoryEntity category) {
+        this.categories.remove(category);
     }
 }

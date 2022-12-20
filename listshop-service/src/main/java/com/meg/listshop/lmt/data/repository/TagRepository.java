@@ -5,13 +5,11 @@ import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.ICountResult;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -60,7 +58,6 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
     TagEntity getAssignedTagForRating(Long dishId, Long ratingId);
 
 
-
     @Query(value = "SELECT t.*  " +
             "FROM   tag t  " +
             "       JOIN tag_relation tr  " +
@@ -84,12 +81,6 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
             "ORDER  BY power DESC  " +
             "LIMIT  1 ", nativeQuery = true)
     TagEntity getNextRatingDown(Long parentRatingId, Long currentId);
-
-    @EntityGraph(value = "tag-category-graph")
-    @Query(value = "select distinct t FROM TagEntity t , ListLayoutCategoryEntity c " +
-            "            where c member of t.categories and c.layoutId = ?2 " +
-            "            and t.categoryUpdatedOn > ?1 ")
-    List<TagEntity> getTagsWithCategoriesChangedAfter(Date changedAfter, Long listLayoutId);
 
     @Query(value = "select t from TagEntity t where t.tag_id in (:tagIds)")
     List<TagEntity> getTagsForIdList(@Param("tagIds") Set<Long> tagIds);

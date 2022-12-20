@@ -42,8 +42,6 @@ public class ListLayoutCategoryEntity {
     @Transient
     private final List<ItemEntity> items = new ArrayList<>();
 
-    @Transient
-    private final List<ListLayoutCategoryEntity> subCategories = new ArrayList<>();
 
     private Integer displayOrder;
 
@@ -93,13 +91,7 @@ public class ListLayoutCategoryEntity {
         return items;
     }
 
-    public void addSubCategory(ListLayoutCategoryEntity child) {
-        this.subCategories.add(child);
-    }
 
-    public List<ListLayoutCategoryEntity> getSubCategories() {
-        return subCategories;
-    }
 
 
     public Integer getDisplayOrder() {
@@ -116,5 +108,15 @@ public class ListLayoutCategoryEntity {
 
     public void setDefault(Boolean aDefault) {
         isDefault = aDefault;
+    }
+
+    public void addTag(TagEntity tag) {
+        this.tags.add(tag);
+        tag.getCategories().add(this);
+    }
+
+    public void removeTag(TagEntity tag) {
+        this.tags.remove(tag);
+        tag.getCategories().remove(this);
     }
 }
