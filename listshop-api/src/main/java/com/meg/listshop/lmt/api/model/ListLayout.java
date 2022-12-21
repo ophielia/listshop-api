@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -11,6 +12,9 @@ public class ListLayout {
     private Long layoutId;
 
     private String name;
+
+    @JsonProperty(value="is_default")
+    private boolean isDefault;
 
     private List<ListLayoutCategory> categories;
 
@@ -33,6 +37,17 @@ public class ListLayout {
 
     public ListLayout name(String name) {
         this.name = name;
+        return this;
+    }
+
+    @JsonIgnore
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    @JsonIgnore
+    public ListLayout isDefault(Boolean isDefault) {
+        this.isDefault = isDefault;
         return this;
     }
 

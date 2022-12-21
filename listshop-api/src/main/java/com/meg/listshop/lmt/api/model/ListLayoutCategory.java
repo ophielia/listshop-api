@@ -2,7 +2,6 @@ package com.meg.listshop.lmt.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ListLayoutCategory {
@@ -14,8 +13,6 @@ public class ListLayoutCategory {
 
     int displayOrder;
 
-    @JsonProperty("subcategories")
-    private List<ListLayoutCategory> subCategories = new ArrayList<>();
 
     @JsonProperty("tags")
     private List<Tag> tags;
@@ -51,12 +48,8 @@ public class ListLayoutCategory {
         this.displayOrder = displayOrder;
     }
 
-    public List<ListLayoutCategory> getSubCategories() {
-        return subCategories;
-    }
-
-    public void setSubCategories(List<ListLayoutCategory> subCategories) {
-        this.subCategories = subCategories;
+    public List<Tag> getTags() {
+        return tags;
     }
 
     public void setTags(List<Tag> tags) {

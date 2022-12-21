@@ -4,7 +4,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 24/10/2017.
@@ -34,7 +36,7 @@ public class ListLayoutCategoryEntity {
     @JoinTable(name = "CATEGORY_TAGS",
             joinColumns = @JoinColumn(name = "CATEGORY_ID"),
             inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
-    private List<TagEntity> tags = new ArrayList<>();
+    private Set<TagEntity> tags = new HashSet<>();
 
     @Column(name = "layout_id")
     private Long layoutId;
@@ -67,11 +69,11 @@ public class ListLayoutCategoryEntity {
         this.name = name;
     }
 
-    public List<TagEntity> getTags() {
+    public Set<TagEntity> getTags() {
         return tags;
     }
 
-    public void setTags(List<TagEntity> tags) {
+    public void setTags(Set<TagEntity> tags) {
         this.tags = tags;
     }
 

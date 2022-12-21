@@ -3,8 +3,8 @@ package com.meg.listshop.lmt.data.entity;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 24/10/2017.
@@ -21,18 +21,10 @@ import java.util.List;
                         name = "increment_size",
                         value = "1")}
 )
-/*
-@NamedEntityGraph(
-        name = "graph.LayoutCategoriesItems",
-        attributeNodes = @NamedAttributeNode(value = "categories", subgraph = "subgraph.categories"),
-        subgraphs = {
-        @NamedSubgraph(name = "subgraph.categories",
-        attributeNodes = @NamedAttributeNode(value = "tags")) })
- */
 @NamedEntityGraph(
         name = "graph.LayoutCategoriesItems",
         attributeNodes = @NamedAttributeNode(value = "categories", subgraph = "tags"),
-subgraphs = @NamedSubgraph( name = "tags", attributeNodes = @NamedAttributeNode("tags")))
+        subgraphs = @NamedSubgraph(name = "tags", attributeNodes = @NamedAttributeNode("tags")))
 public class ListLayoutEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_layout_sequence")
@@ -43,7 +35,7 @@ public class ListLayoutEntity {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "layout_id", referencedColumnName = "layout_id")
-    private List<ListLayoutCategoryEntity> categories;
+    private Set<ListLayoutCategoryEntity> categories;
 
     @Column(name = "user_id")
     private Long userId;
@@ -63,11 +55,11 @@ public class ListLayoutEntity {
         return layoutId;
     }
 
-    public List<ListLayoutCategoryEntity> getCategories() {
+    public Set<ListLayoutCategoryEntity> getCategories() {
         return categories;
     }
 
-    public void setCategories(List<ListLayoutCategoryEntity> categories) {
+    public void setCategories(Set<ListLayoutCategoryEntity> categories) {
         this.categories = categories;
     }
 
@@ -97,7 +89,7 @@ public class ListLayoutEntity {
 
     public void addCategory(ListLayoutCategoryEntity category) {
         if (this.categories == null) {
-            this.categories = new ArrayList<>();
+            this.categories = new HashSet<>();
         }
         this.categories.add(category);
     }

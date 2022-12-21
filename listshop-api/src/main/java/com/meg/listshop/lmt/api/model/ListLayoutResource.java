@@ -7,10 +7,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ListLayoutResource extends AbstractListShopResource implements ListShopModel {
 
     @JsonProperty("list_layout")
-    private final ListLayout listLayout;
+    private  ListLayout listLayout;
 
     public ListLayoutResource(ListLayout listLayout) {
         this.listLayout = listLayout;
+    }
+
+    public ListLayoutResource() {
+        // empty constructor for jackson
     }
 
     public ListLayout getListLayout() {

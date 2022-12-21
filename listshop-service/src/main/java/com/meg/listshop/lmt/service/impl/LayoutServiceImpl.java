@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.service.impl;
 
-import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
@@ -25,7 +24,7 @@ import java.util.*;
 @Transactional
 public class LayoutServiceImpl implements LayoutService {
 
-    private static final Logger LOG = LogManager.getLogger(Application.class);
+    private static final Logger LOG = LogManager.getLogger(LayoutServiceImpl.class);
 
     private final ListLayoutRepository listLayoutRepository;
     private final ListLayoutCategoryRepository categoryRepository;
@@ -56,7 +55,7 @@ public class LayoutServiceImpl implements LayoutService {
 
 
     @Override
-    public void addDefaultUserMappings(Long userId, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException{
+    public void addDefaultUserMappings(Long userId, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException {
         // get default user mappings - and send to next
         ListLayoutEntity defaultUserLayout = getOrCreateDefaultUserLayout(userId);
         addMappingsToLayout(defaultUserLayout, categoryId, tagIds);
@@ -78,14 +77,14 @@ public class LayoutServiceImpl implements LayoutService {
         return listLayoutRepository.save(newDefault);
     }
 
-    private void addMappingsToLayout(ListLayoutEntity listLayout, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException{
+    private void addMappingsToLayout(ListLayoutEntity listLayout, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException {
         if (tagIds.isEmpty()) {
             LOG.warn("Empty tag list sent to addMappingsToLayout [%s][%s]", listLayout.getId(), categoryId);
             return;
         }
         // retrieve category for mappings
         ListLayoutCategoryEntity givenCategory = categoryRepository.getById(categoryId);
-        if (givenCategory == null ) {
+        if (givenCategory == null) {
             LOG.warn("Template category in addMappingsToLayout not found [%s][%s]", listLayout.getId(), categoryId);
             throw new ObjectNotFoundException(String.format("Template category in addMappingsToLayout not found [%s][%s]", listLayout.getId(), categoryId));
         }

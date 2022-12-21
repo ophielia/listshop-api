@@ -23,6 +23,7 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
 
     @Override
     public List<ListLayoutEntity> getFilledUserLayouts(Long userId) {
+        logger.debug("Retrieving user layouts for user [%d]", userId);
         EntityGraph<?> graph = entityManager.createEntityGraph("graph.LayoutCategoriesItems");
         TypedQuery<ListLayoutEntity> q = entityManager.createQuery("SELECT l FROM ListLayoutEntity l WHERE l.userId = ?1", ListLayoutEntity.class);
         q.setParameter(1, userId);

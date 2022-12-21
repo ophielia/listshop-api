@@ -17,7 +17,6 @@ import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
-import com.meg.listshop.lmt.service.categories.ListShopCategory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -134,11 +133,13 @@ public class ModelMapper {
                 .categories(categories);
     }
 
+
     public static ListLayout toModel(ListLayoutEntity listLayoutEntity) {
         List<ListLayoutCategory> categories = layoutCategoryEntitiesToModel(listLayoutEntity.getCategories());
 
         return new ListLayout(listLayoutEntity.getId())
                 .name(listLayoutEntity.getName())
+                .isDefault(listLayoutEntity.getDefault())
                 .categories(categories);
     }
 
@@ -232,7 +233,7 @@ public class ModelMapper {
         return dishSlots;
     }
 
-    private static List<ListLayoutCategory> layoutCategoryEntitiesToModel(List<ListLayoutCategoryEntity> categories) {
+    private static List<ListLayoutCategory> layoutCategoryEntitiesToModel(Set<ListLayoutCategoryEntity> categories) {
         if (categories == null) {
             return new ArrayList<>();
         }
@@ -258,26 +259,8 @@ public class ModelMapper {
             ListLayoutCategory llc = new ListLayoutCategory(cat.getId());
             llc.name = cat.getName();
             llc.displayOrder = cat.getDisplayOrder();
-            llc.setSubCategories(layoutSubCategoriesToModel(cat.getSubCategories()));
+            //llc.setSubCategories(layoutSubCategoriesToModel(cat.getSubCategories()));
             llc.setTags(toModel(cat.getTagEntities()));
-            categoryList.add(llc);
-        }
-        return categoryList;
-
-    }
-
-    private static List<ListLayoutCategory> layoutSubCategoriesToModel(List<ListShopCategory> categories) {
-        if (categories == null) {
-            return new ArrayList<>();
-        }
-
-        List<ListLayoutCategory> categoryList = new ArrayList<>();
-        for (ListShopCategory cat : categories) {
-            ListLayoutCategory llc = new ListLayoutCategory(cat.getId());
-            llc.name = cat.getName();
-            llc.displayOrder = cat.getDisplayOrder();
-            llc.setSubCategories(layoutSubCategoriesToModel(cat.getSubCategories()));
-            llc.setTags(toModel(((ListLayoutCategoryPojo) cat).getTagEntities()));
             categoryList.add(llc);
         }
         return categoryList;
@@ -295,10 +278,10 @@ public class ModelMapper {
             return toModel(cat);
         }
 
-        List<ListLayoutCategoryPojo> subcategories = cat.getSubCategories().stream()
-                .map(ListLayoutCategoryPojo.class::cast)
-                .collect(Collectors.toList());
-        layout.setSubCategories(layoutCategoriesToModel(subcategories));
+        //List<ListLayoutCategoryPojo> subcategories = cat.getSubCategories().stream()
+         //       .map(ListLayoutCategoryPojo.class::cast)
+          //      .collect(Collectors.toList());
+        //layout.setSubCategories(layoutCategoriesToModel(subcategories));
         return layout;
     }
 
@@ -353,6 +336,17 @@ public class ModelMapper {
     }
 
     private static List<Tag> toModel(List<TagEntity> tagEntities) {
+        List<Tag> tags = new ArrayList<>();
+        if (tagEntities == null) {
+            return tags;
+        }
+        for (TagEntity entity : tagEntities) {
+            tags.add(toModel(entity));
+        }
+        return tags;
+    }
+
+    private static List<Tag> toModel(Set<TagEntity> tagEntities) {
         List<Tag> tags = new ArrayList<>();
         if (tagEntities == null) {
             return tags;

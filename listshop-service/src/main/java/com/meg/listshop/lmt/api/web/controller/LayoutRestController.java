@@ -69,11 +69,11 @@ public class LayoutRestController implements LayoutRestControllerApi {
         UserEntity user = userService.getUserByUserEmail(principal.getName());
 
         // service call
-        List<ListLayoutResource> listOfLayoutsResource = new ArrayList();
+        List<ListLayoutResource> listOfLayoutsResource = new ArrayList<>();
         try {
             listOfLayoutsResource = layoutService.getUserLayouts(user)
                     .stream()
-                    .map(t -> ModelMapper.toModel(t))
+                    .map(ModelMapper::toModel)
                     .map(ListLayoutResource::new)
                     .collect(Collectors.toList());
         } catch (ObjectNotFoundException e) {

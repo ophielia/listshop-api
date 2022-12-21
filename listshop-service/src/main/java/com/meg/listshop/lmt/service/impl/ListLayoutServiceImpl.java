@@ -107,7 +107,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
             updateTag.setCategoryUpdatedOn(new Date());
         }
         tagCategories.addAll(tagsToAdd);
-        categoryEntity.setTags(tagCategories);
+        categoryEntity.setTags(new HashSet<>(tagCategories));
 
         // save category
         listLayoutCategoryRepository.save(categoryEntity);
@@ -120,7 +120,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
             return;
         }
         ListLayoutCategoryEntity categoryEntity = listLayoutEntityOpt.get();
-        List<TagEntity> tags = categoryEntity.getTags();
+        Set<TagEntity> tags = categoryEntity.getTags();
         if (tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
             return;
         }
@@ -149,7 +149,7 @@ public class ListLayoutServiceImpl implements ListLayoutService {
         }
 
         Long categoryId = dictionary.get(tagId);
-        return listLayoutCategoryRepository.getOne(categoryId);
+        return listLayoutCategoryRepository.getById(categoryId);
 
     }
 

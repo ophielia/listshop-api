@@ -14,6 +14,10 @@ public class ListLayoutListResource extends AbstractListShopResource implements 
         this.embeddedList = new EmbeddedListLayoutListResource(listLayoutResourceList);
     }
 
+    public ListLayoutListResource() {
+        // empty constructor for jackson
+    }
+
     public EmbeddedListLayoutListResource getEmbeddedList() {
         return embeddedList;
     }

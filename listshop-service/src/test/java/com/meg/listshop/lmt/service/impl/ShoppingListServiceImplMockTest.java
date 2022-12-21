@@ -608,7 +608,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         ListLayoutCategoryEntity llCategory2 = ServiceTestUtils.buildListCategory(322L, "one oh two", testLayout);
         ListLayoutCategoryEntity llCategory3 = ServiceTestUtils.buildListCategory(333L, "one oh two", testLayout);
         List<ListLayoutCategoryEntity> categories = Arrays.asList(llCategory1, llCategory2, llCategory3);
-        testLayout.setCategories(categories);
+        testLayout.setCategories(new HashSet<>(categories));
 
 
         Mockito.when(listSearchService.getTagToCategoryMap(layoutId, items

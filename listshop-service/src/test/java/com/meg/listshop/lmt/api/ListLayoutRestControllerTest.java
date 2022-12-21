@@ -39,6 +39,7 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -111,12 +112,6 @@ public class ListLayoutRestControllerTest {
     }
 
 
-    @Test
-    @WithMockUser
-    public void testReadListLayout() throws Exception {
-
-
-    }
 
     @Test
     @WithMockUser
@@ -134,7 +129,7 @@ public class ListLayoutRestControllerTest {
                         TestConstants.TAG_3_ID, TestConstants.TAG_4_ID)
                 .collect(Collectors.toList());
         List<TagEntity> tags = tagRepository.findAllById(ids);
-        testcategory.setTags(tags);
+        testcategory.setTags(new HashSet<>(tags));
         Category categoryModel = ModelMapper.toModel(testcategory, false);
         String url = "/listlayout/"
                 + TestConstants.LIST_LAYOUT_1_ID + "/category";
@@ -157,7 +152,7 @@ public class ListLayoutRestControllerTest {
                 .collect(Collectors.toList());
         String taglist = "?tags=" + FlatStringUtils.flattenListToString(idList, ",");
         ListLayoutEntity test = listLayoutSErvice.getListLayoutById(TestConstants.LIST_LAYOUT_1_ID);
-        ListLayoutCategoryEntity testcategory = test.getCategories().get(0);
+        ListLayoutCategoryEntity testcategory = test.getCategories().iterator().next();
         mockMvc.perform(post("/listlayout/"
                 + TestConstants.LIST_LAYOUT_1_ID + "/category/"
                 + testcategory.getId() + "/tag" + taglist)
@@ -214,7 +209,7 @@ public class ListLayoutRestControllerTest {
     @WithMockUser
     public void testGetTagsForCategory() throws Exception {
         ListLayoutEntity test = listLayoutSErvice.getListLayoutById(TestConstants.LIST_LAYOUT_2_ID);
-        ListLayoutCategoryEntity testcategory = test.getCategories().get(0);
+        ListLayoutCategoryEntity testcategory = test.getCategories().iterator().next();
         MvcResult result = mockMvc.perform(get("/listlayout/"
                 + TestConstants.LIST_LAYOUT_2_ID + "/category/"
                 + testcategory.getId() + "/tag")
@@ -248,9 +243,9 @@ public class ListLayoutRestControllerTest {
                 true,
                 null);
         ListLayoutEntity test = listLayoutSErvice.getListLayoutById(TestConstants.LIST_LAYOUT_1_ID);
-        ListLayoutCategoryEntity testcategory = test.getCategories().get(0);
+        ListLayoutCategoryEntity testcategory = test.getCategories().iterator().next();
         List<TagEntity> tags = listLayoutSErvice.getTagsForLayoutCategory(testcategory.getId());
-        testcategory.setTags(tags);
+        testcategory.setTags(new HashSet<>(tags));
         testcategory.setName("wokkawokka");
         Category categoryModel = ModelMapper.toModel(testcategory, false);
         String url = "/listlayout/"
@@ -307,7 +302,7 @@ public class ListLayoutRestControllerTest {
         List<Long> ids = Arrays.asList(TestConstants.TAG_1_ID, TestConstants.TAG_2_ID,
                 TestConstants.TAG_3_ID, TestConstants.TAG_4_ID);
         List<TagEntity> tags = tagRepository.findAllById(ids);
-        testcategory.setTags(tags);
+        testcategory.setTags(new HashSet<>(tags));
         Category categoryModel = ModelMapper.toModel(testcategory, false);
         String url = "/listlayout/"
                 + TestConstants.LIST_LAYOUT_2_ID + "/category";
@@ -349,7 +344,7 @@ public class ListLayoutRestControllerTest {
                 .collect(Collectors.toList());
         String taglist = "?tags=" + String.join(",", idList);
         ListLayoutEntity test = listLayoutSErvice.getListLayoutById(TestConstants.LIST_LAYOUT_1_ID);
-        ListLayoutCategoryEntity testcategory = test.getCategories().get(0);
+        ListLayoutCategoryEntity testcategory = test.getCategories().iterator().next();
         mockMvc.perform(delete("/listlayout/"
                 + TestConstants.LIST_LAYOUT_1_ID + "/category/"
                 + testcategory.getId() + "/tag" + taglist)
