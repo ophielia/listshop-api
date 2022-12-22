@@ -48,6 +48,14 @@ public class ListLayoutCategory {
         this.displayOrder = displayOrder;
     }
 
+    public void setDisplayOrder(Integer displayOrder) {
+        if (displayOrder == null) {
+            this.displayOrder = 0;
+            return;
+        }
+        this.displayOrder = displayOrder;
+    }
+
     public List<Tag> getTags() {
         return tags;
     }

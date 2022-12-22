@@ -241,8 +241,8 @@ public class ModelMapper {
         List<ListLayoutCategory> categoryList = new ArrayList<>();
         for (ListLayoutCategoryEntity cat : categories) {
             ListLayoutCategory llc = new ListLayoutCategory(cat.getId());
-            llc.name = cat.getName();
-            llc.displayOrder = cat.getDisplayOrder();
+            llc.setName(cat.getName());
+            llc.setDisplayOrder(cat.getDisplayOrder());
             llc.setTags(toModel(cat.getTags()));
             categoryList.add(llc);
         }
