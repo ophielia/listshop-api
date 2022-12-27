@@ -5,10 +5,7 @@ import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.LayoutRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.model.ListLayoutListResource;
-import com.meg.listshop.lmt.api.model.ListLayoutResource;
-import com.meg.listshop.lmt.api.model.MappingPost;
-import com.meg.listshop.lmt.api.model.ModelMapper;
+import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.service.LayoutService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +16,6 @@ import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,9 +25,9 @@ import java.util.stream.Collectors;
 @Controller
 public class LayoutRestController implements LayoutRestControllerApi {
 
-    private UserService userService;
+    private final UserService userService;
 
-    private LayoutService layoutService;
+    private final LayoutService layoutService;
 
     private static final Logger LOG = LogManager.getLogger(LayoutRestController.class);
 
@@ -69,7 +65,7 @@ public class LayoutRestController implements LayoutRestControllerApi {
         UserEntity user = userService.getUserByUserEmail(principal.getName());
 
         // service call
-        List<ListLayoutResource> listOfLayoutsResource = new ArrayList<>();
+        List<ListLayoutResource> listOfLayoutsResource;
         try {
             listOfLayoutsResource = layoutService.getUserLayouts(user)
                     .stream()
@@ -86,4 +82,19 @@ public class LayoutRestController implements LayoutRestControllerApi {
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<ListLayoutResource> retrieveDefaultLayout(HttpServletRequest request, Principal principal) {
+        // service call
+        try {
+            ListLayout layout = ModelMapper.toModel(layoutService.getDefaultLayout());
+            ListLayoutResource layoutResource = new ListLayoutResource(layout);
+            layoutResource.fillLinks(request, layoutResource);
+            return new ResponseEntity<>(layoutResource, HttpStatus.OK);
+        } catch (ObjectNotFoundException e) {
+            LOG.error("Exception while retrieving user layouts ", e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
+

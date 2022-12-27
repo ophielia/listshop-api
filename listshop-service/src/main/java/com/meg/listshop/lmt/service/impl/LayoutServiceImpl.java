@@ -68,6 +68,11 @@ public class LayoutServiceImpl implements LayoutService {
     }
 
     @Override
+    public ListLayoutEntity getDefaultLayout() {
+        return listLayoutRepository.getFilledDefaultLayout();
+    }
+
+    @Override
     public void assignDefaultCategoryToTag(List<TagEntity> siblings, TagEntity tagToAssign) {
         Long idToAssign = null;
         if (!siblings.isEmpty()) {

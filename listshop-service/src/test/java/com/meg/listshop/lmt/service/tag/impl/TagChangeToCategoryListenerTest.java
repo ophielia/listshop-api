@@ -4,6 +4,7 @@ import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.service.LayoutService;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.lmt.service.ServiceTestUtils;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -38,8 +39,8 @@ public class TagChangeToCategoryListenerTest {
         }
     }
 
-@Autowired
-private TagChangeToCategoryListener tagChangeToCategoryListener;
+    @Autowired
+    private TagChangeToCategoryListener tagChangeToCategoryListener;
 
     @MockBean
     private TagService tagService;
@@ -50,6 +51,10 @@ private TagChangeToCategoryListener tagChangeToCategoryListener;
     @MockBean
     private ListLayoutService listLayoutService;
 
+
+    @MockBean
+    private LayoutService layoutService;
+
     TagEntity origParent;
     TagEntity newParent;
     TagEntity childTag;
@@ -59,10 +64,10 @@ private TagChangeToCategoryListener tagChangeToCategoryListener;
     @Before
     public void setup() {
 
-         // TODO finish this test - make sure it's really testing
+        // TODO finish this test - make sure it's really testing
 //     public void onParentChange(TagEntity origParentTag, TagEntity newParentTag, TagEntity childTag) {
-siblings = new ArrayList<TagEntity>();
-categories = new ArrayList<ListLayoutCategoryEntity>();
+        siblings = new ArrayList<TagEntity>();
+        categories = new ArrayList<ListLayoutCategoryEntity>();
         // set up original parent tag
         origParent = ServiceTestUtils.buildTag("origParent", TagType.Ingredient);
 
@@ -70,20 +75,20 @@ categories = new ArrayList<ListLayoutCategoryEntity>();
         newParent = ServiceTestUtils.buildTag("newParent", TagType.Ingredient);
 
         // set up child tag
-        childTag = ServiceTestUtils.buildTag(55L,"childTag", TagType.Ingredient);
+        childTag = ServiceTestUtils.buildTag(55L, "childTag", TagType.Ingredient);
 
 
         // set up siblings
-        siblings.add( ServiceTestUtils.buildTag("sibling1", TagType.Ingredient));
-        siblings.add( ServiceTestUtils.buildTag("sibling2", TagType.Ingredient));
-        siblings.add( ServiceTestUtils.buildTag("sibling3", TagType.Ingredient));
+        siblings.add(ServiceTestUtils.buildTag("sibling1", TagType.Ingredient));
+        siblings.add(ServiceTestUtils.buildTag("sibling2", TagType.Ingredient));
+        siblings.add(ServiceTestUtils.buildTag("sibling3", TagType.Ingredient));
 
         // set up categories
-        for (int i=0;i<3;i++) {
+        for (int i = 0; i < 3; i++) {
 
-        ListLayoutEntity listLayout = ServiceTestUtils.buildListLayout(Long.valueOf("" + i), "listLayout" + 1);
+            ListLayoutEntity listLayout = ServiceTestUtils.buildListLayout(Long.valueOf("" + i), "listLayout" + 1);
             ListLayoutCategoryEntity category = ServiceTestUtils.buildListCategory(Long.valueOf("" + i), "category" + i, listLayout);
-        categories.add(category);
+            categories.add(category);
         }
     }
 
@@ -91,7 +96,7 @@ categories = new ArrayList<ListLayoutCategoryEntity>();
     public void testOnParentChange_NotFromDefault() {
         origParent.setTagTypeDefault(false);
 
-        tagChangeToCategoryListener.onParentChange(origParent,newParent,childTag);
+        tagChangeToCategoryListener.onParentChange(origParent, newParent, childTag);
     }
 
     @Test
@@ -106,11 +111,11 @@ categories = new ArrayList<ListLayoutCategoryEntity>();
         Mockito.when(listLayoutService.getCategoriesForTag(siblings.get(0)))
                 .thenReturn(categories);
 
-        for (ListLayoutCategoryEntity categoryEntity: categories) {
+        for (ListLayoutCategoryEntity categoryEntity : categories) {
             Mockito.doNothing().when(
-                    listLayoutService).addTagsToCategory(isA(Long.class),isA(Long.class),isA(List.class));
+                    listLayoutService).addTagsToCategory(isA(Long.class), isA(Long.class), isA(List.class));
         }
 
-        tagChangeToCategoryListener.onParentChange(origParent,newParent,childTag);
+        tagChangeToCategoryListener.onParentChange(origParent, newParent, childTag);
     }
 }

@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.api.controller;
 
 
 import com.meg.listshop.lmt.api.model.ListLayoutListResource;
+import com.meg.listshop.lmt.api.model.ListLayoutResource;
 import com.meg.listshop.lmt.api.model.MappingPost;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,5 +24,8 @@ public interface LayoutRestControllerApi {
 
     @GetMapping(value = "/user", produces = "application/json")
     ResponseEntity<ListLayoutListResource> retrieveUserLayouts( HttpServletRequest request, Principal principal);
+
+    @GetMapping(value = "/default", produces = "application/json")
+    ResponseEntity<ListLayoutResource> retrieveDefaultLayout(HttpServletRequest request, Principal principal);
 
 }

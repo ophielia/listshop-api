@@ -22,6 +22,8 @@ public interface LayoutService {
 
     List<ListLayoutEntity> getUserLayouts(UserEntity user);
 
+    ListLayoutEntity getDefaultLayout();
+
     void assignDefaultCategoryToTag(List<TagEntity> siblings, TagEntity tagToAssign);
 
     void assignUserDefaultCategoriesToTag(List<TagEntity> siblings, TagEntity tagToAssign);

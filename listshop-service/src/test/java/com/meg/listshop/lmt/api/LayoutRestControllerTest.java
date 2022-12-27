@@ -171,6 +171,32 @@ public class LayoutRestControllerTest {
 
     }
 
+
+    @Test
+    @WithMockUser
+    public void testGetDefaultLayout() throws Exception {
+        // get base user layouts - checking that given layout is fully filled in
+        String url = "/layout/default";
+        MvcResult result = this.mockMvc.perform(get(url)
+                        .with(user(baseUserDetails))
+                        .contentType(contentType))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assert.assertNotNull(result);
+        ListLayoutResource resource = parseSingleResourceFromString(result.getResponse().getContentAsString());
+        Assert.assertNotNull(resource);
+        ListLayout defaultLayout = resource.getListLayout();
+        Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
+        Assert.assertTrue("default layout has more than 10", defaultLayout.getCategories().size() > 10);
+        Optional<ListLayoutCategory> produce = defaultLayout.getCategories().stream()
+                        .filter(c -> Objects.equals(c.getName(), "Produce"))
+                                .findFirst();
+        Assert.assertTrue("produce category exists", produce.isPresent());
+        Assert.assertTrue("produce has at least 10 tags", produce.get().getTags().size() > 10);
+
+    }
+
     @Test
     @WithMockUser
     public void testGetUserLayoutsEmpty() throws Exception {
@@ -504,6 +530,14 @@ public class LayoutRestControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         ListLayoutListResource afterList = objectMapper.readValue(resultString, ListLayoutListResource.class);
+        Assert.assertNotNull(afterList);
+        return afterList;
+    }
+
+    private ListLayoutResource parseSingleResourceFromString(String resultString) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        ListLayoutResource afterList = objectMapper.readValue(resultString, ListLayoutResource.class);
         Assert.assertNotNull(afterList);
         return afterList;
     }

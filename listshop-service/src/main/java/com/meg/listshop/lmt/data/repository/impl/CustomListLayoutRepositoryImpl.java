@@ -33,6 +33,15 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
         return q.getResultList();
     }
 
+    @Override
+    public ListLayoutEntity getFilledDefaultLayout() {
+        logger.debug("Retrieving default layout");
+        EntityGraph<?> graph = entityManager.createEntityGraph("graph.LayoutCategoriesItems");
+        TypedQuery<ListLayoutEntity> q = entityManager.createQuery("SELECT l FROM ListLayoutEntity l WHERE l.userId is null and l.isDefault = true", ListLayoutEntity.class);
+        q.setHint("javax.persistence.fetchgraph", graph);
+
+        return q.getResultList().get(0);
+    }
 
     public Long getDefaultCategoryForSiblings(Set<Long> siblingIds) {
 
