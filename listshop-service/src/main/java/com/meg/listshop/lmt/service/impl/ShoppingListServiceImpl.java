@@ -1074,11 +1074,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private ShoppingListEntity createList(Long userId, String listName) {
         ShoppingListEntity newList = new ShoppingListEntity();
 
-        ListLayoutEntity listLayout = listLayoutService.getDefaultUserLayout(userId);
-        if (listLayout == null) {
-            listLayout = listLayoutService.getStandardLayout();
-        }
-        newList.setListLayoutId(listLayout.getId());
         newList.setName(listName);
         newList.setIsStarterList(false);
         newList.setCreatedOn(new Date());

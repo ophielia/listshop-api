@@ -19,3 +19,12 @@ delete from tag where tag_id in (9991234,
 delete from users where user_id = 99999;
 delete from users where user_id = 101010;
 delete from users where user_id = 121212;
+
+
+/* tags for automatic assignment */
+delete from tag_relation where parent_tag_id = 1000123;
+delete from tag_relation where child_tag_id = 1000123;
+delete from category_tags where tag_id in (select tag_id from tag where tag_id in (1000123, 1000124, 1000125));
+delete from category_tags where tag_id in (select tag_id from tag where name = 'Aaron Burr, sir');
+delete from tag where tag_id in (1000123, 1000124, 1000125);
+delete from tag where name = 'Aaron Burr, sir';

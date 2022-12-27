@@ -5,11 +5,12 @@ import com.meg.listshop.lmt.data.repository.CustomListLayoutRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
+import java.math.BigInteger;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 21/10/2017.
@@ -30,5 +31,32 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
         q.setHint("javax.persistence.fetchgraph", graph);
 
         return q.getResultList();
+    }
+
+
+    public Long getDefaultCategoryForSiblings(Set<Long> siblingIds) {
+
+        Query query = entityManager.createNamedQuery("ListLayoutCategoryEntity.defaultCategoryForSiblings");
+        query.setParameter("sibling_tags", siblingIds);
+        query.setMaxResults(1);
+        List<BigInteger> resultList = query.getResultList();
+        if (!resultList.isEmpty() ) {
+            return resultList.get(0).longValue();
+        }
+        return null;
+    }
+
+    public Set<Long> getUserCategoriesForSiblings(Long userId, Set<Long> siblingIds) {
+
+        Query query = entityManager.createNamedQuery("ListLayoutCategoryEntity.userCategoriesForSiblings");
+        query.setParameter("sibling_ids", siblingIds);
+        query.setParameter("user_id", userId);
+        List<BigInteger> resultList = query.getResultList();
+        if (!resultList.isEmpty() ) {
+            return resultList.stream()
+                    .map(BigInteger::longValue)
+                    .collect(Collectors.toSet());
+        }
+        return new HashSet<>();
     }
 }

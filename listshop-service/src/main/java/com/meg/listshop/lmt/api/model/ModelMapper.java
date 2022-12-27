@@ -259,7 +259,6 @@ public class ModelMapper {
             ListLayoutCategory llc = new ListLayoutCategory(cat.getId());
             llc.name = cat.getName();
             llc.displayOrder = cat.getDisplayOrder();
-            //llc.setSubCategories(layoutSubCategoriesToModel(cat.getSubCategories()));
             llc.setTags(toModel(cat.getTagEntities()));
             categoryList.add(llc);
         }
@@ -278,10 +277,6 @@ public class ModelMapper {
             return toModel(cat);
         }
 
-        //List<ListLayoutCategoryPojo> subcategories = cat.getSubCategories().stream()
-         //       .map(ListLayoutCategoryPojo.class::cast)
-          //      .collect(Collectors.toList());
-        //layout.setSubCategories(layoutCategoriesToModel(subcategories));
         return layout;
     }
 
@@ -474,13 +469,14 @@ public class ModelMapper {
                     .filter(item -> item.getRemovedOn() == null && item.getCrossedOff() == null)
                     .count();
         }
+        String layoutId = shoppingListEntity.getListLayoutId() != null ? String.valueOf(shoppingListEntity.getListLayoutId()) : null;
         return new ShoppingList(shoppingListEntity.getId())
                 .createdOn(shoppingListEntity.getCreatedOn())
                 .categories(itemCategories)
                 .legendSources(legendSources)
                 .isStarterList(shoppingListEntity.getIsStarterList())
                 .name(shoppingListEntity.getName())
-                .layoutId(String.valueOf(shoppingListEntity.getListLayoutId()))
+                .layoutId(layoutId)
                 .updated(shoppingListEntity.getLastUpdate())
                 .itemCount((int) itemCount)
                 .userId(shoppingListEntity.getUserId());

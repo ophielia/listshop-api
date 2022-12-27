@@ -22,11 +22,8 @@ import java.util.Objects;
                         value = "1")}
 )
 @NamedEntityGraph(
-        name = "tag-category-graph",
-        attributeNodes = {
-                @NamedAttributeNode("categories")
-        }
-)
+        name = "graph.TagCategory",
+        attributeNodes = @NamedAttributeNode(value = "categories"))
 @NamedNativeQuery(
         name = "TagEntity.findRatingByParent",
         query = "select t.tag_id from tag t " +

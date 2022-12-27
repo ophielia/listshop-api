@@ -108,4 +108,16 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
     @Query("select llc from ListLayoutCategoryEntity llc " +
             "where lower(trim(llc.name)) = ?1 and llc.layoutId = ?2")
     ListLayoutCategoryEntity findByNameInLayout(String name, Long layoutId);
+
+    @Query(value = "select lc.category_id " +
+            "from list_category lc " +
+            "         join list_layout ll on lc.layout_id = ll.layout_id " +
+            "where lc.is_default = true " +
+            "  and ll.user_id is null " +
+            "  and ll.is_default = true", nativeQuery = true)
+    Long getDefaultCategoryId();
+
+    @Query("select llc from ListLayoutCategoryEntity llc " +
+            "where llc.categoryId in (?1)")
+    List<ListLayoutCategoryEntity> getByIds(Set<Long> idsToAssign);
 }

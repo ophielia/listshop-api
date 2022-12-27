@@ -402,7 +402,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertNotNull(resultMap.get("1"));
         // 503 - 2
         Assert.assertNotNull(resultMap.get("12"));
-        Assert.assertTrue(resultMap.get("12").getUsedCount() == 1); // showing 1 in result map
+        Assert.assertEquals(Optional.of(1L), resultMap.get("12").getUsedCount()); // showing 1 in result map
         // 436 - 1
         Assert.assertNotNull(resultMap.get("81"));
         Assert.assertEquals(Integer.valueOf(1), resultMap.get("81").getUsedCount());
@@ -569,7 +569,7 @@ public class ShoppingListRestControllerTest {
         // check tag occurences in result
         // 501 - 1
         Assert.assertNotNull(sourceResultMap.get("81"));
-        Assert.assertTrue(sourceResultMap.get("81").getUsedCount() == 1);
+        Assert.assertEquals(Optional.of(1L), sourceResultMap.get("81").getUsedCount());
 
         // 502 - 3
         Assert.assertNotNull(sourceResultMap.get("1"));
@@ -1201,30 +1201,6 @@ public class ShoppingListRestControllerTest {
         Assert.assertEquals("only one source key for carrots shown", 1, carrot.getSourceKeys().size());
         Assert.assertNotNull("carrots should be crossed off", carrot.getCrossedOff());
     }
-
-    private Long createList(UserDetails userDetails) throws Exception {
-        ListGenerateProperties properties = new ListGenerateProperties();
-        properties.setAddFromStarter(true);
-        properties.setGenerateMealplan(false);
-
-        String jsonProperties = json(properties);
-
-        String url = "/shoppinglist";
-
-        MvcResult result = this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        List<String> headers = result.getResponse().getHeaders("Location");
-        String header = headers.get(0);
-        String stringId = header.substring(header.lastIndexOf("/") + 1);
-        return Long.valueOf(stringId);
-
-    }
-
     private ShoppingList retrieveList(UserDetails userDetails, Long listId) throws Exception {
         MvcResult listResultsAfter = this.mockMvc.perform(get("/shoppinglist/" + listId)
                         .with(user(userDetails)))

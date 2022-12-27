@@ -64,3 +64,15 @@ INSERT INTO category_tags (category_id, tag_id)
 VALUES (998901, 9991235);
 INSERT INTO category_tags (category_id, tag_id)
 VALUES (998901, 9991236);
+
+/* tags for automatic assignment */
+INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,
+                 power)
+VALUES (1000123, NULL, 'Hamilton', 'Ingredient', NULL, NULL, NULL),
+(1000124, NULL, 'Eliza', 'Ingredient', NULL, NULL, NULL),
+(1000125, NULL, 'Alexander', 'Ingredient', NULL, NULL, NULL);
+
+insert into public.tag_relation (tag_relation_id, child_tag_id, parent_tag_id)
+values (1000123, 1000123, 388),
+       (1000124, 1000124, 1000123),
+       (1000125, 1000125, 1000123);

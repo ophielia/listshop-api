@@ -23,6 +23,36 @@ import java.util.Set;
                         name = "increment_size",
                         value="1")}
 )
+@NamedNativeQuery(
+        name = "ListLayoutCategoryEntity.defaultCategoryForSiblings",
+        query = "with default_categories as (select distinct ll.layout_id, lc.name, lc.category_id, count(*) " +
+                "                            from list_category lc " +
+                "                                     join list_layout ll on lc.layout_id = ll.layout_id " +
+                "                                     join category_tags ct on lc.category_id = ct.category_id " +
+                "                                     join tag t on ct.tag_id = t.tag_id " +
+                "                            where ll.user_id is null " +
+                "                              and ll.is_default = true " +
+                "                              and t.tag_id in (:sibling_tags) " +
+                "                            group by ll.layout_id, lc.name, lc.category_id " +
+                "                            order by count(*) desc " +
+                "                            limit 1) " +
+                "select category_id " +
+                "from default_categories"
+)
+@NamedNativeQuery(
+        name = "ListLayoutCategoryEntity.userCategoriesForSiblings",
+        query = "with rankings as ( " +
+                "select distinct ll.layout_id,lc.category_id, first_value(lc.category_id) OVER (partition by lc.layout_id " +
+                "    order by count(*) desc) as default_category_ids " +
+                "from list_category lc " +
+                "         join list_layout ll on lc.layout_id = ll.layout_id " +
+                "         join category_tags ct on lc.category_id = ct.category_id " +
+                "         join tag t on ct.tag_id = t.tag_id " +
+                "where ll.user_id = :user_id " +
+                "      and t.tag_id in (:sibling_ids) " +
+                "group by ll.layout_id, lc.category_id) " +
+                "select distinct default_category_ids from rankings;"
+)
 public class ListLayoutCategoryEntity {
 
     @Id

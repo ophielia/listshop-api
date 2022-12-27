@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 20/10/2017.
@@ -64,6 +65,46 @@ public class LayoutServiceImpl implements LayoutService {
     @Override
     public List<ListLayoutEntity> getUserLayouts(UserEntity user) {
         return listLayoutRepository.getFilledUserLayouts(user.getId());
+    }
+
+    @Override
+    public void assignDefaultCategoryToTag(List<TagEntity> siblings, TagEntity tagToAssign) {
+        Long idToAssign = null;
+        if (!siblings.isEmpty()) {
+            Set<Long> siblingsTagIds = siblings.stream().map(TagEntity::getId).collect(Collectors.toSet());
+            idToAssign = listLayoutRepository.getDefaultCategoryForSiblings(siblingsTagIds);
+        }
+
+        if (idToAssign == null)  {
+            idToAssign = categoryRepository.getDefaultCategoryId();
+        }
+
+        ListLayoutCategoryEntity toAssign = categoryRepository.getById(idToAssign);
+
+        toAssign.addTag(tagToAssign);
+
+    }
+
+    @Override
+    public void assignUserDefaultCategoriesToTag(List<TagEntity> siblings, TagEntity tagToAssign) {
+        Long userId = tagToAssign.getUserId();
+        if (userId == null) {
+            // the only way to get the user_id is through the tag
+            return;
+        }
+        Set<Long> idsToAssign = new HashSet<>();
+        if (!siblings.isEmpty()) {
+            Set<Long> siblingsTagIds = siblings.stream().map(TagEntity::getId).collect(Collectors.toSet());
+            idsToAssign = listLayoutRepository.getUserCategoriesForSiblings(userId, siblingsTagIds);
+        }
+
+        if (idsToAssign.isEmpty()) {
+            return;
+        }
+
+        List<ListLayoutCategoryEntity> toAssign = categoryRepository.getByIds(idsToAssign);
+
+        toAssign.forEach(c -> c.addTag(tagToAssign));
     }
 
     private ListLayoutEntity getOrCreateDefaultUserLayout(Long userId) {

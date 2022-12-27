@@ -32,10 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -409,8 +406,87 @@ public class LayoutRestControllerTest {
         Assert.assertFalse("lemons are not there", tagIdsInFrozen.contains(tagIdLemon));
     }
 
+    @Test
+    @WithMockUser
+    public void testDefaultLayoutAssignment() throws Exception {
+        String categoryTemplateId = "998901";  // Forbidden Area
+        String tagIdEliza = "1000124";
+        String tagIdAlexander = "1000125";
 
+        // Base User assigns alexander (1000125) to Layout "Forbidden Area" (998901)
+        // Base User assigns eliza (1000124) to Layout "Forbidden Area" (998901)
+        MappingPost mapping = new MappingPost();
+        mapping.setCategoryId(categoryTemplateId);
+        mapping.setTagIds( Arrays.asList(tagIdEliza, tagIdAlexander));
+        String payload = json(mapping);
 
+        // make call
+        String url = "/layout/user/mapping";
+        this.mockMvc.perform(post(url)
+                        .with(user(baseUserDetails))
+                        .contentType(contentType)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        // New User creates new tag as child of hamilton (1000123)
+        String newTagUlr = "/tag/1000123/child";
+
+        Tag tag = new Tag("Aaron Burr, sir");
+        tag = tag.tagType(TagType.Ingredient.name());
+        String tagString = json(tag);
+
+        MvcResult resultNewTag = this.mockMvc.perform(post(newTagUlr)
+                        .with(user(newUserDetails))
+                        .contentType(contentType)
+                        .content(tagString))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String newTagId = extractResultId(resultNewTag);
+
+        // New user creates new list
+        ListGenerateProperties properties = new ListGenerateProperties();
+        properties.setAddFromStarter(false);
+        properties.setGenerateMealplan(false);
+
+        String jsonProperties = json(properties);
+
+        String createListUrl = "/shoppinglist";
+        MvcResult resultNewList = this.mockMvc.perform(post(createListUrl)
+                        .with(user(newUserDetails))
+                        .contentType(contentType)
+                        .content(jsonProperties))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String newListId = extractResultId(resultNewList);
+
+        // New user adds new tag to list
+        String addToListUrl = String.format("/shoppinglist/%s/tag/%s",newListId, newTagId);
+        this.mockMvc.perform(post(addToListUrl)
+                        .with(user(newUserDetails))
+                        .contentType(contentType)
+                        .content(jsonProperties))
+                .andReturn();
+
+        // New user retrieves list
+        String retrieveList = String.format("/shoppinglist/%s",newListId);
+        MvcResult listResultsAfter = this.mockMvc.perform(get(retrieveList)
+                        .with(user(newUserDetails)))
+                .andReturn();
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        String jsonList = listResultsAfter.getResponse().getContentAsString();
+        ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
+        ShoppingList resultList =  afterList.getShoppingList();
+
+        // Creation of new tag
+        Assert.assertNotNull(resultList);
+        Assert.assertEquals(1,resultList.getCategories().size());
+    }
+
+    private String extractResultId(MvcResult result) {
+        List<String> headers = result.getResponse().getHeaders("Location");
+        String[] locationParts = headers.get(0).split("/");
+        return locationParts[locationParts.length - 1];
+    }
 
 
     private String json(Object o) throws IOException {

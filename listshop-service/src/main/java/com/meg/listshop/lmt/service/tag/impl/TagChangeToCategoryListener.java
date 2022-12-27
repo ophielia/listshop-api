@@ -1,8 +1,8 @@
 package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.lmt.api.model.TagType;
-import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.service.LayoutService;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.lmt.service.tag.TagChangeListener;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -30,6 +30,8 @@ public class TagChangeToCategoryListener implements TagChangeListener {
     @Autowired
     private ListLayoutService listLayoutService;
 
+    @Autowired
+    private LayoutService layoutService;
 
     @PostConstruct
     public void init() {
@@ -50,7 +52,7 @@ public class TagChangeToCategoryListener implements TagChangeListener {
             return;
         }
 
-        if (!origParentTag.getTagTypeDefault()) {
+        if (!origParentTag.getTagTypeDefault() == true) {
             return;
         }
 
@@ -84,8 +86,8 @@ public class TagChangeToCategoryListener implements TagChangeListener {
     @Override
     public void onTagCopy(TagEntity copiedTag, Long categoryId) {
         if (categoryId == null) {
-            ListLayoutCategoryEntity defaultCategory = listLayoutService.getDefaultListCategory();
-            categoryId = defaultCategory.getId();
+            layoutService.assignDefaultCategoryToTag(new ArrayList<>(), copiedTag);
+            return;
         }
         listLayoutService.addTagToCategory(categoryId, copiedTag);
 
@@ -95,24 +97,15 @@ public class TagChangeToCategoryListener implements TagChangeListener {
     private void assignFromSibling(TagEntity newParentTag, TagEntity childTag) {
         // get sibling
         List<TagEntity> siblings = tagStructureService.getDescendantTags(newParentTag);
-        if (siblings == null) {
-            return;
+        if (siblings != null) {
+            // filter out child tag, because it could be part of siblings
+            siblings = siblings.stream().filter(t -> (!t.getId().equals(childTag.getId())
+                            && !t.getId().equals(newParentTag.getId())))
+                    .collect(Collectors.toList());
         }
-        // filter out child tag, because it could be part of siblings
-        siblings = siblings.stream().filter(t -> !t.getId().equals(childTag.getId()))
-                .collect(Collectors.toList());
-        if (siblings.isEmpty()) {
-            return;
-        }
-        TagEntity sibling = siblings.get(0);
-        List<Long> toAdd = new ArrayList<>();
-        toAdd.add(childTag.getId());
 
-        // get list categories
-        List<ListLayoutCategoryEntity> tagCategories = listLayoutService.getCategoriesForTag(sibling);
-        for (ListLayoutCategoryEntity tagCategory : tagCategories) {
-            // assign childTag to this layout
-            listLayoutService.addTagsToCategory(tagCategory.getLayoutId(), tagCategory.getId(), toAdd);
-        }
+        layoutService.assignDefaultCategoryToTag(siblings, childTag);
+        layoutService.assignUserDefaultCategoriesToTag(siblings, childTag);
+
     }
 }
