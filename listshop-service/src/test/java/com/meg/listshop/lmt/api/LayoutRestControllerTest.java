@@ -1,19 +1,17 @@
 package com.meg.listshop.lmt.api;
 
-
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
-import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.ListLayoutService;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,8 +42,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
-;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -84,13 +80,8 @@ public class LayoutRestControllerTest {
     private WebApplicationContext webApplicationContext;
     @Autowired
     private UserService userService;
-    @Autowired
-    private ListLayoutService listLayoutSErvice;
-    @Autowired
-    private TagRepository tagRepository;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private MockMvc mockMvc;
-    private String userName = "testname";
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
@@ -139,7 +130,6 @@ public class LayoutRestControllerTest {
     }
 
 
-
     @Test
     @WithMockUser
     public void testGetUserLayouts() throws Exception {
@@ -159,7 +149,7 @@ public class LayoutRestControllerTest {
                 .map(ListLayoutResource::getListLayout)
                 .collect(Collectors.toMap(ListLayout::getLayoutId, Function.identity()));
         Assert.assertEquals("two layouts returned", 2, resultMap.keySet().size());
-        Assert.assertTrue("contains layout 999",  resultMap.containsKey(999L));
+        Assert.assertTrue("contains layout 999", resultMap.containsKey(999L));
         ListLayout defaultLayout = resultMap.get(999L);
         Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
         Assert.assertEquals("default layout has 1 category", 1, defaultLayout.getCategories().size());
@@ -170,7 +160,6 @@ public class LayoutRestControllerTest {
         Assert.assertEquals("other layouts category contains 3 tags", 3, otherLayout.getCategories().get(0).getTags().size());
 
     }
-
 
     @Test
     @WithMockUser
@@ -188,10 +177,10 @@ public class LayoutRestControllerTest {
         Assert.assertNotNull(resource);
         ListLayout defaultLayout = resource.getListLayout();
         Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
-        Assert.assertTrue("default layout has more than 10", defaultLayout.getCategories().size() > 10);
+        Assert.assertTrue("default layout has more than 5", defaultLayout.getCategories().size() > 5);
         Optional<ListLayoutCategory> produce = defaultLayout.getCategories().stream()
-                        .filter(c -> Objects.equals(c.getName(), "Produce"))
-                                .findFirst();
+                .filter(c -> Objects.equals(c.getName(), "Produce"))
+                .findFirst();
         Assert.assertTrue("produce category exists", produce.isPresent());
         Assert.assertTrue("produce has at least 10 tags", produce.get().getTags().size() > 10);
 
@@ -223,7 +212,7 @@ public class LayoutRestControllerTest {
 
         MappingPost mapping = new MappingPost();
         mapping.setCategoryId(categoryTemplateId);
-        mapping.setTagIds( Arrays.asList(tagIdApple, tagIdLemon, tagIdOrange));
+        mapping.setTagIds(Arrays.asList(tagIdApple, tagIdLemon, tagIdOrange));
         String payload = json(mapping);
 
         // make call
@@ -272,7 +261,7 @@ public class LayoutRestControllerTest {
         //  999901, 'Special Category'
         categoryTemplateId = "999901";
         mapping.setCategoryId(categoryTemplateId);
-        mapping.setTagIds( Arrays.asList( tagIdLemon));
+        mapping.setTagIds(Arrays.asList(tagIdLemon));
         payload = json(mapping);
 
         // make the call
@@ -323,7 +312,6 @@ public class LayoutRestControllerTest {
         Assert.assertFalse("lemons are not there", tagIdsInFrozen.contains(tagIdLemon));
     }
 
-
     @Test
     @WithMockUser
     public void testPostUserMappingsNewUser() throws Exception {
@@ -332,7 +320,7 @@ public class LayoutRestControllerTest {
 
         MappingPost mapping = new MappingPost();
         mapping.setCategoryId(categoryTemplateId);
-        mapping.setTagIds( Arrays.asList(tagIdApple, tagIdLemon, tagIdOrange));
+        mapping.setTagIds(Arrays.asList(tagIdApple, tagIdLemon, tagIdOrange));
         String payload = json(mapping);
 
         // make call
@@ -381,7 +369,7 @@ public class LayoutRestControllerTest {
         //  999901, 'Special Category'
         categoryTemplateId = "999901";
         mapping.setCategoryId(categoryTemplateId);
-        mapping.setTagIds( Arrays.asList( tagIdLemon));
+        mapping.setTagIds(Arrays.asList(tagIdLemon));
         payload = json(mapping);
 
         // make the call
@@ -443,7 +431,7 @@ public class LayoutRestControllerTest {
         // Base User assigns eliza (1000124) to Layout "Forbidden Area" (998901)
         MappingPost mapping = new MappingPost();
         mapping.setCategoryId(categoryTemplateId);
-        mapping.setTagIds( Arrays.asList(tagIdEliza, tagIdAlexander));
+        mapping.setTagIds(Arrays.asList(tagIdEliza, tagIdAlexander));
         String payload = json(mapping);
 
         // make call
@@ -486,7 +474,7 @@ public class LayoutRestControllerTest {
         String newListId = extractResultId(resultNewList);
 
         // New user adds new tag to list
-        String addToListUrl = String.format("/shoppinglist/%s/tag/%s",newListId, newTagId);
+        String addToListUrl = String.format("/shoppinglist/%s/tag/%s", newListId, newTagId);
         this.mockMvc.perform(post(addToListUrl)
                         .with(user(newUserDetails))
                         .contentType(contentType)
@@ -494,18 +482,105 @@ public class LayoutRestControllerTest {
                 .andReturn();
 
         // New user retrieves list
-        String retrieveList = String.format("/shoppinglist/%s",newListId);
+        String retrieveList = String.format("/shoppinglist/%s", newListId);
         MvcResult listResultsAfter = this.mockMvc.perform(get(retrieveList)
                         .with(user(newUserDetails)))
                 .andReturn();
         com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
         String jsonList = listResultsAfter.getResponse().getContentAsString();
         ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
-        ShoppingList resultList =  afterList.getShoppingList();
+        ShoppingList resultList = afterList.getShoppingList();
 
         // Creation of new tag
         Assert.assertNotNull(resultList);
-        Assert.assertEquals(1,resultList.getCategories().size());
+        Assert.assertEquals(1, resultList.getCategories().size());
+    }
+
+    @Test
+    public void testGetUserCategories() throws Exception {
+        String url = "/layout/user/categories";
+        MvcResult result = this.mockMvc.perform(get(url)
+                        .with(user(emptyUserDetails))
+                        .contentType(contentType))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assert.assertNotNull(result);
+        CategoryListResource categoryList = parseCategoryListResourceFromString(result.getResponse().getContentAsString());
+        // the empty user should contain only the default categories
+        // note - the layout id isn't included in the category resource, so we have to test with ids.
+        Assertions.assertEquals(7, categoryList.getEmbeddedList().getCategoryResourceList().size());
+        Set<Long> categoryIds = categoryList.getEmbeddedList().getCategoryResourceList().stream()
+                .map(CategoryResource::getCategory)
+                .map(Category::getId)
+                .filter(cid -> cid > 10 && !cid.equals(1041L))
+                .collect(Collectors.toSet());
+        Assertions.assertTrue(categoryIds.isEmpty());
+    }
+
+    @Test
+    public void testGetUserCategoriesWithOverlap() throws Exception {
+        // map tags to default category "Meat" (category_id 5)
+        String categoryTemplateId = "5";
+
+        MappingPost mapping = new MappingPost();
+        mapping.setCategoryId(categoryTemplateId);
+        mapping.setTagIds(Arrays.asList(tagIdApple, tagIdLemon, tagIdOrange));
+        String payload = json(mapping);
+
+        // make call
+        String mapUrl = "/layout/user/mapping";
+        this.mockMvc.perform(post(mapUrl)
+                        .with(user(newUserDetails))
+                        .contentType(contentType)
+                        .content(payload))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // retrieve categories, and verify that category Meat does not have the id 10
+        String url = "/layout/user/categories";
+        MvcResult result = this.mockMvc.perform(get(url)
+                        .with(user(newUserDetails))
+                        .contentType(contentType))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assert.assertNotNull(result);
+        CategoryListResource categoryList = parseCategoryListResourceFromString(result.getResponse().getContentAsString());
+        // the base user will overlap categories - the category Meat exists in both the default, and the user categories
+        Map<String, Category> categoryMap = categoryList.getEmbeddedList().getCategoryResourceList().stream()
+                .map(CategoryResource::getCategory)
+                .collect(Collectors.toMap(Category::getName, Function.identity()));
+        Assertions.assertTrue(categoryMap.containsKey("Meat"));
+        Category meat = categoryMap.get("Meat");
+        Assertions.assertNotEquals(10L, meat.getId(),"Id for category shouldn't be 10");
+        // verify that Meat is the first category returned
+        Assertions.assertEquals("Meat", categoryList.getEmbeddedList().getCategoryResourceList().get(0).getCategory().getName());
+    }
+
+
+    @Test
+    public void testGetUserCategoriesWithUserLayout() throws Exception {
+        String url = "/layout/user/categories";
+        MvcResult result = this.mockMvc.perform(get(url)
+                        .with(user(baseUserDetails))
+                        .contentType(contentType))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assert.assertNotNull(result);
+        CategoryListResource categoryList = parseCategoryListResourceFromString(result.getResponse().getContentAsString());
+        // the base user will contain their categories, as well as the default categories
+        // but there aren't any overlaps in the names - the use categories are distinct
+        // note - the layout id isn't included in the category resource, so we have to test with ids.
+        Assertions.assertEquals(8, categoryList.getEmbeddedList().getCategoryResourceList().size());
+        Set<Long> categoryIds = categoryList.getEmbeddedList().getCategoryResourceList().stream()
+                .map(CategoryResource::getCategory)
+                .filter(c -> !c.getName().equalsIgnoreCase("special category"))  // exclude user category
+                .map(Category::getId)
+                .filter(cid -> cid > 10 && !cid.equals(1041L)) // exclude standard categories
+                .collect(Collectors.toSet());
+        Assertions.assertTrue(categoryIds.isEmpty());
     }
 
     private String extractResultId(MvcResult result) {
@@ -513,7 +588,6 @@ public class LayoutRestControllerTest {
         String[] locationParts = headers.get(0).split("/");
         return locationParts[locationParts.length - 1];
     }
-
 
     private String json(Object o) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -538,6 +612,14 @@ public class LayoutRestControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         ListLayoutResource afterList = objectMapper.readValue(resultString, ListLayoutResource.class);
+        Assert.assertNotNull(afterList);
+        return afterList;
+    }
+
+    private CategoryListResource parseCategoryListResourceFromString(String resultString) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        CategoryListResource afterList = objectMapper.readValue(resultString, CategoryListResource.class);
         Assert.assertNotNull(afterList);
         return afterList;
     }
