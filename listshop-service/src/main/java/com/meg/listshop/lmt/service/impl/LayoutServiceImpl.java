@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
@@ -31,11 +32,14 @@ public class LayoutServiceImpl implements LayoutService {
     private final ListLayoutCategoryRepository categoryRepository;
     private final TagRepository tagRepository;
 
+    private final UserService userService;
+
     @Autowired
-    public LayoutServiceImpl(ListLayoutRepository listLayoutRepository, ListLayoutCategoryRepository categoryRepository, TagRepository tagRepository) {
+    public LayoutServiceImpl(ListLayoutRepository listLayoutRepository, ListLayoutCategoryRepository categoryRepository, TagRepository tagRepository, UserService userService) {
         this.listLayoutRepository = listLayoutRepository;
         this.categoryRepository = categoryRepository;
         this.tagRepository = tagRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -68,7 +72,7 @@ public class LayoutServiceImpl implements LayoutService {
     }
 
     @Override
-    public ListLayoutEntity getDefaultLayout() {
+    public ListLayoutEntity getFilledDefaultLayout() {
         return listLayoutRepository.getFilledDefaultLayout();
     }
 
@@ -110,6 +114,50 @@ public class LayoutServiceImpl implements LayoutService {
         List<ListLayoutCategoryEntity> toAssign = categoryRepository.getByIds(idsToAssign);
 
         toAssign.forEach(c -> c.addTag(tagToAssign));
+    }
+
+    @Override
+    public List<ListLayoutCategoryEntity> getUserCategories(String userName) {
+        UserEntity user = userService.getUserByUserEmail(userName);
+        if (user == null) {
+            LOG.error("No user found for username [%s]",userName);
+            return new ArrayList<>();
+        }
+        // get default layout for user
+        ListLayoutEntity userDefaultLayout = getDefaultUserLayout(user.getId());
+
+        // return categories for this layout
+        return getAvailableCategoriesForLayout(userDefaultLayout);
+    }
+
+    private List<ListLayoutCategoryEntity> getAvailableCategoriesForLayout(ListLayoutEntity layout) {
+        ListLayoutEntity defaultLayout = getStandardLayout();
+        Map<String, ListLayoutCategoryEntity> userCategoryMap = layoutCategoriesToMap(layout);
+        Map<String, ListLayoutCategoryEntity> defaultCategoryMap = layoutCategoriesToMap(defaultLayout);
+
+        Set<String> userSortedKeys = userCategoryMap.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<String> defaultSortedKeys = defaultCategoryMap.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
+
+        // produce sorted list of categories
+        List<ListLayoutCategoryEntity> result = new ArrayList<>();
+        userSortedKeys.forEach( key -> result.add(userCategoryMap.get(key)));
+        defaultSortedKeys.stream()
+                .filter( key -> !userSortedKeys.contains(key))
+                .forEach( key -> result.add(defaultCategoryMap.get(key)));
+
+        return result;
+    }
+
+    private static Map<String, ListLayoutCategoryEntity> layoutCategoriesToMap(ListLayoutEntity layout) {
+        Map<String, ListLayoutCategoryEntity> categoryMap = new HashMap<>();
+        if (layout == null) {
+            return categoryMap;
+        }
+        layout.getCategories().forEach( c -> {
+                String name = c.getName();
+                categoryMap.put(name.trim().toLowerCase(), c);
+                });
+        return categoryMap;
     }
 
     private ListLayoutEntity getOrCreateDefaultUserLayout(Long userId) {

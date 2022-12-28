@@ -280,6 +280,9 @@ public class ModelMapper {
         return layout;
     }
 
+    public static Category toModel(ListLayoutCategoryEntity cat) {
+        return toModel(cat, false);
+    }
     public static Category toModel(ListLayoutCategoryEntity cat, boolean includeTags) {
 
         if (cat == null) {

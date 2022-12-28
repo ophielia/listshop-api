@@ -594,7 +594,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (shoppingListEntity == null) {
             return new ArrayList<>();
         }
-        Long userLayoutId = getUserLayoutId(shoppingListEntity.getUserId(), shoppingListEntity.getListLayoutId());
+        Long userLayoutId = determineUserLayout(shoppingListEntity.getUserId(), shoppingListEntity.getListLayoutId());
 
         // find frequently crossed off
         List<Long> frequentTagIds = listTagStatisticService.findFrequentIdsForList(shoppingListEntity.getId(), shoppingListEntity.getUserId());
@@ -646,7 +646,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
 
-    private Long getUserLayoutId(Long userId, Long listLayoutId) {
+    private Long determineUserLayout(Long userId, Long listLayoutId) {
         Optional<ListLayoutEntity> layout;
         if (listLayoutId == null) {
             layout = Optional.ofNullable(listLayoutService.getDefaultUserLayout(userId));

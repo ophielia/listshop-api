@@ -84,10 +84,32 @@ public class LayoutRestController implements LayoutRestControllerApi {
     }
 
     @Override
+    public ResponseEntity<CategoryListResource> retrieveUserCategories(HttpServletRequest request, Principal principal) {
+
+        // service call
+        List<CategoryResource> listOfCategoryResources;
+        try {
+            listOfCategoryResources = layoutService.getUserCategories(principal.getName())
+                    .stream()
+                    .map(ModelMapper::toModel)
+                    .map(CategoryResource::new)
+                    .collect(Collectors.toList());
+        } catch (ObjectNotFoundException e) {
+            LOG.error("Exception while retrieving user layouts ", e);
+            return ResponseEntity.badRequest().build();
+        }
+
+        CategoryListResource resource = new CategoryListResource(listOfCategoryResources);
+        resource.fillLinks(request, resource);
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<ListLayoutResource> retrieveDefaultLayout(HttpServletRequest request, Principal principal) {
         // service call
         try {
-            ListLayout layout = ModelMapper.toModel(layoutService.getDefaultLayout());
+            ListLayout layout = ModelMapper.toModel(layoutService.getFilledDefaultLayout());
             ListLayoutResource layoutResource = new ListLayoutResource(layout);
             layoutResource.fillLinks(request, layoutResource);
             return new ResponseEntity<>(layoutResource, HttpStatus.OK);

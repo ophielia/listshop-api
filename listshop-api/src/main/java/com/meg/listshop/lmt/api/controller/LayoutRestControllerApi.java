@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.api.controller;
 
 
+import com.meg.listshop.lmt.api.model.CategoryListResource;
 import com.meg.listshop.lmt.api.model.ListLayoutListResource;
 import com.meg.listshop.lmt.api.model.ListLayoutResource;
 import com.meg.listshop.lmt.api.model.MappingPost;
@@ -24,6 +25,9 @@ public interface LayoutRestControllerApi {
 
     @GetMapping(value = "/user", produces = "application/json")
     ResponseEntity<ListLayoutListResource> retrieveUserLayouts( HttpServletRequest request, Principal principal);
+
+    @GetMapping(value = "/user/categories", produces = "application/json")
+    ResponseEntity<CategoryListResource> retrieveUserCategories(HttpServletRequest request, Principal principal);
 
     @GetMapping(value = "/default", produces = "application/json")
     ResponseEntity<ListLayoutResource> retrieveDefaultLayout(HttpServletRequest request, Principal principal);

@@ -1,5 +1,7 @@
 package com.meg.listshop.lmt.service.impl;
 
+import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
@@ -38,11 +40,14 @@ class LayoutServiceImplMockTest {
     private ListLayoutCategoryRepository categoryRepositoryRepository;
 
     @MockBean
+    private UserService userService;
+
+    @MockBean
     private TagRepository tagRepository;
 
     @BeforeEach
     void setUp() {
-        listLayoutService = new LayoutServiceImpl(listLayoutRepository, categoryRepositoryRepository, tagRepository);
+        listLayoutService = new LayoutServiceImpl(listLayoutRepository, categoryRepositoryRepository, tagRepository,userService );
     }
 
 
@@ -538,7 +543,138 @@ class LayoutServiceImplMockTest {
             Assertions.assertNotNull(savedLayout);
             Assertions.assertEquals(userId, savedLayout.getUserId(), "saved layout should have userId");
             Assertions.assertTrue(savedLayout.getDefault(), "saved layout should have default set to true");
-
-
     }
+
+    @Test
+    void testGetUserCategories() {
+        // standard - user layout exists
+        String userName = "testUserName";
+        Long userId = 99L;
+        Long userLayoutId = 109L;
+        Long defaultLayoutId = 209L;
+
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+        user.setUsername(userName);
+
+        ListLayoutCategoryEntity userCategoryOne = buildCategory(1L, "aardvark");
+        ListLayoutCategoryEntity userCategoryTwo = buildCategory(2L, "Badger");
+        ListLayoutCategoryEntity userCategoryThree = buildCategory(3L, "capybera");
+        ListLayoutEntity layout = new ListLayoutEntity(userLayoutId);
+        Set<ListLayoutCategoryEntity> userCategories = new HashSet<>(Arrays.asList(userCategoryOne,userCategoryTwo,userCategoryThree));
+        layout.setCategories(userCategories);
+
+        ListLayoutCategoryEntity defaultCategoryOne = buildCategory(4L, "Ant");
+        ListLayoutCategoryEntity defaultCategoryTwo = buildCategory(5L, "bee");
+        ListLayoutCategoryEntity defaultCategoryThree = buildCategory(6L, "Caterpillar");
+        ListLayoutEntity defaultLayout = new ListLayoutEntity(defaultLayoutId);
+        Set<ListLayoutCategoryEntity> defaultCategories = new HashSet<>(Arrays.asList(defaultCategoryOne,defaultCategoryTwo,defaultCategoryThree));
+        defaultLayout.setCategories(defaultCategories);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(layout);
+        Mockito.when(listLayoutRepository.getStandardLayout()).thenReturn(defaultLayout);
+
+        // service call
+        List<ListLayoutCategoryEntity> result = listLayoutService.getUserCategories(userName);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals( 6, result.size(),"6 results returned");
+        // verify order
+        Assertions.assertEquals("aardvark", result.get(0).getName(), "name matches");
+        Assertions.assertEquals("Badger", result.get(1).getName(), "name matches");
+        Assertions.assertEquals("capybera", result.get(2).getName(), "name matches");
+        Assertions.assertEquals("Ant", result.get(3).getName(), "name matches");
+        Assertions.assertEquals("bee", result.get(4).getName(), "name matches");
+        Assertions.assertEquals("Caterpillar", result.get(5).getName(), "name matches");
+    }
+
+    @Test
+    void testGetUserCategoriesNoUserDefault() {
+        // standard - user layout exists
+        String userName = "testUserName";
+        Long userId = 99L;
+        Long defaultLayoutId = 209L;
+
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+        user.setUsername(userName);
+
+        ListLayoutCategoryEntity defaultCategoryOne = buildCategory(4L, "Ant");
+        ListLayoutCategoryEntity defaultCategoryTwo = buildCategory(5L, "bee");
+        ListLayoutCategoryEntity defaultCategoryThree = buildCategory(6L, "Caterpillar");
+        ListLayoutEntity defaultLayout = new ListLayoutEntity(defaultLayoutId);
+        Set<ListLayoutCategoryEntity> defaultCategories = new HashSet<>(Arrays.asList(defaultCategoryOne,defaultCategoryTwo,defaultCategoryThree));
+        defaultLayout.setCategories(defaultCategories);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(null);
+        Mockito.when(listLayoutRepository.getStandardLayout()).thenReturn(defaultLayout);
+
+        // service call
+        List<ListLayoutCategoryEntity> result = listLayoutService.getUserCategories(userName);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals( 3, result.size(),"3 results returned");
+        // verify order
+        Assertions.assertEquals("Ant", result.get(0).getName(), "name matches");
+        Assertions.assertEquals("bee", result.get(1).getName(), "name matches");
+        Assertions.assertEquals("Caterpillar", result.get(2).getName(), "name matches");
+    }
+
+    @Test
+    void testGetUserCategoriesOverlap() {
+        // standard - user layout exists and duplicates categories in default
+        String userName = "testUserName";
+        Long userId = 99L;
+        Long userLayoutId = 109L;
+        Long defaultLayoutId = 209L;
+
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+        user.setUsername(userName);
+
+        ListLayoutCategoryEntity userCategoryOne = buildCategory(1L, "aardvark");
+        ListLayoutCategoryEntity userCategoryTwo = buildCategory(2L, "Badger");
+        ListLayoutCategoryEntity userCategoryThree = buildCategory(3L, "capybera");
+        ListLayoutEntity layout = new ListLayoutEntity(userLayoutId);
+        Set<ListLayoutCategoryEntity> userCategories = new HashSet<>(Arrays.asList(userCategoryOne,userCategoryTwo,userCategoryThree));
+        layout.setCategories(userCategories);
+
+        ListLayoutCategoryEntity defaultCategoryOne = buildCategory(4L, "Ant");
+        ListLayoutCategoryEntity defaultCategoryTwo = buildCategory(5L, "Badger");
+        ListLayoutCategoryEntity defaultCategoryThree = buildCategory(6L, "Capybera");
+        ListLayoutEntity defaultLayout = new ListLayoutEntity(defaultLayoutId);
+        Set<ListLayoutCategoryEntity> defaultCategories = new HashSet<>(Arrays.asList(defaultCategoryOne,defaultCategoryTwo,defaultCategoryThree));
+        defaultLayout.setCategories(defaultCategories);
+
+        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
+        Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(layout);
+        Mockito.when(listLayoutRepository.getStandardLayout()).thenReturn(defaultLayout);
+
+        // service call
+        List<ListLayoutCategoryEntity> result = listLayoutService.getUserCategories(userName);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals( 4, result.size(),"4 results returned");
+        // verify order
+        Assertions.assertEquals("aardvark", result.get(0).getName(), "name matches");
+        Assertions.assertEquals("Badger", result.get(1).getName(), "name matches");
+        Assertions.assertEquals("capybera", result.get(2).getName(), "name matches");
+        Assertions.assertEquals("Ant", result.get(3).getName(), "name matches");
+        // verify ids
+        Set<Long> categoryIds = result.stream().map(ListLayoutCategoryEntity::getId).collect(Collectors.toSet());
+        Assertions.assertTrue(categoryIds.contains(1L));
+        Assertions.assertTrue(categoryIds.contains(2L));
+        Assertions.assertTrue(categoryIds.contains(3L));
+        Assertions.assertTrue(categoryIds.contains(4L));
+    }
+
+    private ListLayoutCategoryEntity buildCategory(Long categoryId, String categoryName) {
+        ListLayoutCategoryEntity category = new ListLayoutCategoryEntity(categoryId);
+        category.setName(categoryName);
+        return category;
+    }
+
+
 }
