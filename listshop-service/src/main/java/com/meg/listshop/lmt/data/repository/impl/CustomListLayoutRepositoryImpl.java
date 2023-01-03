@@ -1,12 +1,16 @@
 package com.meg.listshop.lmt.data.repository.impl;
 
+import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
+import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.repository.CustomListLayoutRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.persistence.*;
+import javax.persistence.criteria.*;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,11 +40,33 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
     @Override
     public ListLayoutEntity getFilledDefaultLayout() {
         logger.debug("Retrieving default layout");
-        EntityGraph<?> graph = entityManager.createEntityGraph("graph.LayoutCategoriesItems");
-        TypedQuery<ListLayoutEntity> q = entityManager.createQuery("SELECT l FROM ListLayoutEntity l WHERE l.userId is null and l.isDefault = true", ListLayoutEntity.class);
-        q.setHint("javax.persistence.fetchgraph", graph);
 
-        return q.getResultList().get(0);
+        // get layout
+        EntityGraph<?> graph = entityManager.createEntityGraph("graph.LayoutCategoriesItems");
+        List<Predicate> predicates = new ArrayList<Predicate>();
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ListLayoutEntity> criteriaQuery = cb.createQuery(ListLayoutEntity.class);
+        Root<ListLayoutEntity> root = criteriaQuery.from(ListLayoutEntity.class);
+        SetJoin<ListLayoutEntity, ListLayoutCategoryEntity> categoryJoin = root.joinSet("categories");
+        SetJoin<ListLayoutCategoryEntity, TagEntity> tagJoin = categoryJoin.joinSet("tags");
+
+        predicates.add(cb.isNull(root.get("userId")));
+        predicates.add(cb.isTrue(root.get("isDefault")));
+        predicates.add(cb.isNull(tagJoin.get("userId")));
+
+        criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+        TypedQuery<ListLayoutEntity> query = entityManager.createQuery(criteriaQuery);
+        query.setHint("javax.persistence.fetchgraph", graph);
+        List<ListLayoutEntity> returnList = query.getResultList();
+
+        if (returnList.isEmpty()) {
+            return null;
+        } else {
+            return returnList.get(0);
+        }
+
     }
 
     public Long getDefaultCategoryForSiblings(Set<Long> siblingIds) {
@@ -67,5 +93,31 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
                     .collect(Collectors.toSet());
         }
         return new HashSet<>();
+    }
+
+    private Set<ListLayoutCategoryEntity> getCategoriesForDefault(Long layoutId) {
+        logger.debug("Retrieving categories for default layout [%d]", layoutId);
+
+       // EntityGraph<?> graph = entityManager.createEntityGraph("graph.CategoryTags");
+        TypedQuery<ListLayoutCategoryEntity> q = entityManager.createQuery("SELECT l from ListLayoutCategoryEntity  l " +
+                "JOIN FETCH TagEntity t  " +
+                "WHERE t.userId is null " +
+                "AND l.layoutId = ?1", ListLayoutCategoryEntity.class);
+        q.setParameter(1, layoutId);
+    //    q.setHint("javax.persistence.fetchgraph", graph);
+
+        return new HashSet<>(q.getResultList());
+
+        // EntityGraph<?> graph = entityManager.createEntityGraph("graph.CategoryTags");
+   /*
+         TypedQuery<ListLayoutEntity> q = entityManager.createQuery("SELECT l FROM ListLayoutCategoryEntity l " +
+                "LEFT JOIN FETCH TagEntity t ON t.categories = l " +
+                "WHERE t.userId is null " +
+                "AND l.layoutId = ?1", ListLayoutEntity.class);
+        q.setParameter(1, userId);
+        q.setHint("javax.persistence.fetchgraph", graph);
+
+        return q.getResultList();
+   */
     }
 }

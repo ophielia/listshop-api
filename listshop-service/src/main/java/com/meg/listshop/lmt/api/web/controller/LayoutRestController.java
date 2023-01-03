@@ -69,7 +69,7 @@ public class LayoutRestController implements LayoutRestControllerApi {
         try {
             listOfLayoutsResource = layoutService.getUserLayouts(user)
                     .stream()
-                    .map(ModelMapper::toModel)
+                    .map(ModelMapper::toShortModel)
                     .map(ListLayoutResource::new)
                     .collect(Collectors.toList());
         } catch (ObjectNotFoundException e) {
@@ -109,7 +109,7 @@ public class LayoutRestController implements LayoutRestControllerApi {
     public ResponseEntity<ListLayoutResource> retrieveDefaultLayout(HttpServletRequest request, Principal principal) {
         // service call
         try {
-            ListLayout layout = ModelMapper.toModel(layoutService.getFilledDefaultLayout());
+            ListLayout layout = ModelMapper.toShortModel(layoutService.getFilledDefaultLayout());
             ListLayoutResource layoutResource = new ListLayoutResource(layout);
             layoutResource.fillLinks(request, layoutResource);
             return new ResponseEntity<>(layoutResource, HttpStatus.OK);

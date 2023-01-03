@@ -13,6 +13,7 @@ import com.meg.listshop.lmt.service.LayoutService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +32,10 @@ public class LayoutServiceImpl implements LayoutService {
     private final ListLayoutRepository listLayoutRepository;
     private final ListLayoutCategoryRepository categoryRepository;
     private final TagRepository tagRepository;
-
     private final UserService userService;
+
+    @Value("${service.layoutservice.default.layout.name:Default}")
+    String defaultLayoutDefaultName;
 
     @Autowired
     public LayoutServiceImpl(ListLayoutRepository listLayoutRepository, ListLayoutCategoryRepository categoryRepository, TagRepository tagRepository, UserService userService) {
@@ -167,6 +170,7 @@ public class LayoutServiceImpl implements LayoutService {
         }
         ListLayoutEntity newDefault = new ListLayoutEntity();
         newDefault.setDefault(true);
+        newDefault.setName(defaultLayoutDefaultName);
         newDefault.setUserId(userId);
         return listLayoutRepository.save(newDefault);
     }
@@ -206,6 +210,7 @@ public class LayoutServiceImpl implements LayoutService {
         category = new ListLayoutCategoryEntity();
         category.setLayoutId(layout.getId());
         category.setName(categoryTemplate.getName());
+        category.setDisplayOrder(categoryTemplate.getDisplayOrder());
         ListLayoutCategoryEntity savedCategory = categoryRepository.save(category);
         layout.addCategory(savedCategory);
         return savedCategory;

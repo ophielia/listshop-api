@@ -12,11 +12,15 @@ public class ListLayoutCategory {
     @JsonProperty("category_id")
     private Long id;
 
+    @JsonProperty("display_order")
     int displayOrder;
 
 
     @JsonProperty("tags")
     private List<Tag> tags;
+
+    @JsonProperty("is_default")
+    private boolean isDefault;
 
     public ListLayoutCategory() {
     }
@@ -63,5 +67,13 @@ public class ListLayoutCategory {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean aDefault) {
+        isDefault = aDefault;
     }
 }

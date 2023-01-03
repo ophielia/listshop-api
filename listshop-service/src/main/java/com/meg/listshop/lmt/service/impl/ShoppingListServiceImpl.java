@@ -1067,6 +1067,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     private ShoppingListEntity createList(String userName, String listName) {
         UserEntity user = userService.getUserByUserEmail(userName);
+
         return createList(user.getId(), listName);
 
     }
@@ -1074,6 +1075,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private ShoppingListEntity createList(Long userId, String listName) {
         ShoppingListEntity newList = new ShoppingListEntity();
 
+        ListLayoutEntity listLayout = listLayoutService.getDefaultUserLayout(userId);
+        if (listLayout != null) {
+            newList.setListLayoutId(listLayout.getId());
+        }
         newList.setName(listName);
         newList.setIsStarterList(false);
         newList.setCreatedOn(new Date());

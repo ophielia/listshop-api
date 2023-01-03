@@ -16,6 +16,9 @@ public class ListLayout {
     @JsonProperty(value="is_default")
     private boolean isDefault;
 
+    @JsonProperty(value="user_id")
+    private String userId;
+
     private List<ListLayoutCategory> categories;
 
     public ListLayout(Long layoutId) {
@@ -58,5 +61,25 @@ public class ListLayout {
     public ListLayout categories(List<ListLayoutCategory> categories) {
         this.categories = categories;
         return this;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public ListLayout userId(String userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "ListLayout{" +
+                "layoutId=" + layoutId +
+                ", name='" + name + '\'' +
+                ", isDefault=" + isDefault +
+                ", userId='" + userId + '\'' +
+                ", categories=" + categories +
+                '}';
     }
 }

@@ -76,10 +76,6 @@ public class ModelMapper {
         return new AdminUser(null);
     }
 
-    public static AdminUser toAdminModel(AdminUserDetailsEntity userEntity) {
-        return toAdminModel(userEntity, null);
-    }
-
     public static AdminUser toAdminModel(AdminUserDetailsEntity userEntity, List<UserPropertyEntity> properties) {
         List<UserProperty> propertyModelList = null;
         if (properties != null) {
@@ -101,7 +97,6 @@ public class ModelMapper {
 
         return new AdminUser(null);
     }
-
 
     private static String[] toRoleListModel(List<AuthorityEntity> authorities) {
         List<String> roleList = new ArrayList<>();
@@ -136,9 +131,20 @@ public class ModelMapper {
 
     public static ListLayout toModel(ListLayoutEntity listLayoutEntity) {
         List<ListLayoutCategory> categories = layoutCategoryEntitiesToModel(listLayoutEntity.getCategories());
-
+        String userId = listLayoutEntity.getUserId() != null ? String.valueOf(listLayoutEntity.getUserId()) : null;
         return new ListLayout(listLayoutEntity.getId())
                 .name(listLayoutEntity.getName())
+                .userId(userId)
+                .isDefault(listLayoutEntity.getDefault())
+                .categories(categories);
+    }
+
+    public static ListLayout toShortModel(ListLayoutEntity listLayoutEntity) {
+        List<ListLayoutCategory> categories = layoutCategoryEntitiesToShortModel(listLayoutEntity.getCategories());
+        String userId = listLayoutEntity.getUserId() != null ? String.valueOf(listLayoutEntity.getUserId()) : null;
+        return new ListLayout(listLayoutEntity.getId())
+                .name(listLayoutEntity.getName())
+                .userId(userId)
                 .isDefault(listLayoutEntity.getDefault())
                 .categories(categories);
     }
@@ -244,6 +250,23 @@ public class ModelMapper {
             llc.setName(cat.getName());
             llc.setDisplayOrder(cat.getDisplayOrder());
             llc.setTags(toModel(cat.getTags()));
+            categoryList.add(llc);
+        }
+        return categoryList;
+
+    }
+
+    private static List<ListLayoutCategory> layoutCategoryEntitiesToShortModel(Set<ListLayoutCategoryEntity> categories) {
+        if (categories == null) {
+            return new ArrayList<>();
+        }
+
+        List<ListLayoutCategory> categoryList = new ArrayList<>();
+        for (ListLayoutCategoryEntity cat : categories) {
+            ListLayoutCategory llc = new ListLayoutCategory(cat.getId());
+            llc.setName(cat.getName());
+            llc.setDefault(cat.getDefault() != null ? cat.getDefault() : false);
+            llc.setTags(toShortModel(cat.getTags()));
             categoryList.add(llc);
         }
         return categoryList;
@@ -355,6 +378,17 @@ public class ModelMapper {
         return tags;
     }
 
+    private static List<Tag> toShortModel(Set<TagEntity> tagEntities) {
+        List<Tag> tags = new ArrayList<>();
+        if (tagEntities == null) {
+            return tags;
+        }
+        for (TagEntity entity : tagEntities) {
+            tags.add(toShortModel(entity));
+        }
+        return tags;
+    }
+
 
     public static Tag toModel(TagInfoDTO tagInfoDTO) {
         return new Tag(tagInfoDTO.getTagId())
@@ -387,6 +421,15 @@ public class ModelMapper {
                 .searchSelect(tagEntity.getIsGroup())
                 .parentId(String.valueOf(tagEntity.getParentId()))
                 .toDelete(tagEntity.isToDelete());
+    }
+
+    public static Tag toShortModel(TagEntity tagEntity) {
+        if (tagEntity == null) {
+            return null;
+        }
+
+        return new Tag(tagEntity.getId())
+                .name(tagEntity.getName());
     }
 
     public static MealPlan toModel(MealPlanEntity mealPlanEntity, boolean includeSlots) {
@@ -620,38 +663,6 @@ public class ModelMapper {
         shoppingListEntity.setIsStarterList(shoppingList.getStarterList());
         return shoppingListEntity;
     }
-
-    public static ListLayoutCategoryEntity toEntity(ListLayoutCategory layoutCategory) {
-        ListLayoutCategoryEntity categoryEntity = new ListLayoutCategoryEntity(layoutCategory.getId());
-        categoryEntity.setName(layoutCategory.getName());
-        categoryEntity.setLayoutId(layoutCategory.getId());
-        // not setting tags from here
-        return categoryEntity;
-    }
-
-    public static ListLayoutEntity toEntity(ListLayout listLayout) {
-        ListLayoutEntity listLayoutEntity = new ListLayoutEntity();
-        listLayoutEntity.setName(listLayout.getName());
-        return listLayoutEntity;
-    }
-
-    // possibly unused
-    public static ListTagStatistic toEntity(Statistic statistic) {
-        if (statistic == null) {
-            return null;
-        }
-
-        ListTagStatistic statEntity = new ListTagStatistic();
-        statEntity.setListTagStatId(statistic.getListTagStatId());
-        statEntity.setUserId(statistic.getUserId());
-        statEntity.setTagId(statistic.getTagId());
-        statEntity.setAddedToDishCount(statistic.getAddedToDish());
-        statEntity.setRemovedCount(statistic.getRemovedCount());
-        statEntity.setAddedCount(statistic.getAddedCount());
-
-        return statEntity;
-    }
-
 
     public static UserPropertyEntity toEntity(UserProperty property) {
         UserPropertyEntity entity = new UserPropertyEntity();
