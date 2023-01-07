@@ -108,8 +108,13 @@ public class LayoutRestController implements LayoutRestControllerApi {
     @Override
     public ResponseEntity<ListLayoutResource> retrieveDefaultLayout(HttpServletRequest request, Principal principal) {
         // service call
+        Long userId = null;
+        if (principal != null) {
+            UserEntity user = userService.getUserByUserEmail(principal.getName());
+            userId = user.getId();
+        }
         try {
-            ListLayout layout = ModelMapper.toShortModel(layoutService.getFilledDefaultLayout());
+            ListLayout layout = ModelMapper.toShortModel(layoutService.getFilledDefaultLayout(userId));
             ListLayoutResource layoutResource = new ListLayoutResource(layout);
             layoutResource.fillLinks(request, layoutResource);
             return new ResponseEntity<>(layoutResource, HttpStatus.OK);

@@ -243,6 +243,7 @@ public class TagServiceImpl implements TagService {
         if (standardTagExists(newtag)) {
             return null;
         }
+        //MM CHECK FOR EXISTING TAG!!!
         if (name != null) {
             UserEntity user = userService.getUserByUserEmail(name);
             tagUserId = user.getId();

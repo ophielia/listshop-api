@@ -75,8 +75,8 @@ public class LayoutServiceImpl implements LayoutService {
     }
 
     @Override
-    public ListLayoutEntity getFilledDefaultLayout() {
-        return listLayoutRepository.getFilledDefaultLayout();
+    public ListLayoutEntity getFilledDefaultLayout(Long userId) {
+        return listLayoutRepository.getFilledDefaultLayout(userId);
     }
 
     @Override

@@ -38,7 +38,7 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
     }
 
     @Override
-    public ListLayoutEntity getFilledDefaultLayout() {
+    public ListLayoutEntity getFilledDefaultLayout(Long userId) {
         logger.debug("Retrieving default layout");
 
         // get layout
@@ -53,7 +53,14 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
 
         predicates.add(cb.isNull(root.get("userId")));
         predicates.add(cb.isTrue(root.get("isDefault")));
-        predicates.add(cb.isNull(tagJoin.get("userId")));
+        if (userId != null) {
+            Predicate userIdIsNull = cb.isNull(tagJoin.get("userId"));
+            Predicate userIdEquals = cb.equal(tagJoin.get("userId"),userId);
+            predicates.add(cb.or(userIdIsNull,userIdEquals));
+        } else {
+            predicates.add(cb.isNull(tagJoin.get("userId")));
+        }
+
 
         criteriaQuery.where(predicates.toArray(new Predicate[0]));
 

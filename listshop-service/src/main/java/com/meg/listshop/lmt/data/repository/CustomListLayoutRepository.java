@@ -8,7 +8,7 @@ import java.util.Set;
 public interface CustomListLayoutRepository {
 
     List<ListLayoutEntity> getFilledUserLayouts(Long userId);
-    ListLayoutEntity getFilledDefaultLayout();
+    ListLayoutEntity getFilledDefaultLayout(Long userId);
 
     Long getDefaultCategoryForSiblings(Set<Long> siblings);
 

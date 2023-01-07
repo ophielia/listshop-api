@@ -23,7 +23,7 @@ public interface LayoutService {
 
     List<ListLayoutEntity> getUserLayouts(UserEntity user);
 
-    ListLayoutEntity getFilledDefaultLayout();
+    ListLayoutEntity getFilledDefaultLayout(Long userId);
 
     void assignDefaultCategoryToTag(List<TagEntity> siblings, TagEntity tagToAssign);
 

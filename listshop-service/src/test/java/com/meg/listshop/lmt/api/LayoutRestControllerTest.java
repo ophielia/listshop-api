@@ -55,24 +55,15 @@ public class LayoutRestControllerTest {
 
     @ClassRule
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
-    private static Long baseUserId = 99999L;
-    private static String baseUserEmail = "username@testitytest.com";
 
-
-    private static Long emptyUserId = 101010L;
-    private static String emptyUserEmail = "user@emptyuser.com";
-
-    private static Long newUserId = 121212L;
-    private static String newUserEmail = "user@brandnewuser.com";
-    private static UserEntity baseUserAccount;
     private static UserDetails baseUserDetails;
 
     private static UserDetails emptyUserDetails;
     private static UserDetails newUserDetails;
 
-    private static String tagIdApple = "65";
-    private static String tagIdOrange = "45";
-    private static String tagIdLemon = "357";
+    private static final String tagIdApple = "65";
+    private static final String tagIdOrange = "45";
+    private static final String tagIdLemon = "357";
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype());
@@ -80,18 +71,17 @@ public class LayoutRestControllerTest {
     private WebApplicationContext webApplicationContext;
     @Autowired
     private UserService userService;
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private MockMvc mockMvc;
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter = Arrays.stream(converters)
+        HttpMessageConverter mappingJackson2HttpMessageConverter = Arrays.stream(converters)
 
                 .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
                 .findAny()
                 .orElse(null);
 
-        assertNotNull("the JSON message converter must not be null");
+        assertNotNull("the JSON message converter must not be null",mappingJackson2HttpMessageConverter);
     }
 
     @Before
@@ -102,7 +92,8 @@ public class LayoutRestControllerTest {
                 .apply(springSecurity())
                 .build();
 
-        baseUserAccount = userService.getUserByUserEmail(baseUserEmail);
+        String baseUserEmail = "username@testitytest.com";
+        UserEntity baseUserAccount = userService.getUserByUserEmail(baseUserEmail);
         baseUserDetails = new JwtUser(baseUserAccount.getId(),
                 baseUserEmail,
                 null,
@@ -111,6 +102,8 @@ public class LayoutRestControllerTest {
                 true,
                 null);
 
+        Long emptyUserId = 101010L;
+        String emptyUserEmail = "user@emptyuser.com";
         emptyUserDetails = new JwtUser(emptyUserId,
                 emptyUserEmail,
                 null,
@@ -120,6 +113,8 @@ public class LayoutRestControllerTest {
                 null);
 
 
+        Long newUserId = 121212L;
+        String newUserEmail = "user@brandnewuser.com";
         newUserDetails = new JwtUser(newUserId,
                 newUserEmail,
                 null,
@@ -162,8 +157,50 @@ public class LayoutRestControllerTest {
     }
 
     @Test
+    public void testGetDefaultLayoutNotLoggedIn() throws Exception {
+        // get base user layouts - checking that given layout is fully filled in
+        String url = "/layout/default";
+        MvcResult result = this.mockMvc.perform(get(url)
+                        .contentType(contentType))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assert.assertNotNull(result);
+        ListLayoutResource resource = parseSingleResourceFromString(result.getResponse().getContentAsString());
+        Assert.assertNotNull(resource);
+        ListLayout defaultLayout = resource.getListLayout();
+        Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
+        Assert.assertTrue("default layout has more than 5", defaultLayout.getCategories().size() > 5);
+        Optional<ListLayoutCategory> produce = defaultLayout.getCategories().stream()
+                .filter(c -> Objects.equals(c.getName(), "Produce"))
+                .findFirst();
+        Assert.assertTrue("produce category exists", produce.isPresent());
+        Assert.assertTrue("produce has at least 10 tags", produce.get().getTags().size() > 10);
+        // tag "Peggy" is user-specific, and should not be in ListLayout
+        Optional<Tag> peggyTag = defaultLayout.getCategories().stream()
+                .flatMap(c -> c.getTags().stream())
+                .filter(t -> Objects.equals(t.getName(), "Peggy"))
+                .findFirst();
+        Assert.assertFalse(peggyTag.isPresent());
+    }
+
+    @Test
     @WithMockUser
-    public void testGetDefaultLayout() throws Exception {
+    public void testGetDefaultLayoutLoggedIn() throws Exception {
+        // New User creates new tag as child of hamilton (1000123)
+        String newTagUlr = "/tag/1000123/child";
+
+        Tag tag = new Tag("Thomas Jefferson");
+        tag = tag.tagType(TagType.Ingredient.name());
+        String tagString = json(tag);
+
+        this.mockMvc.perform(post(newTagUlr)
+                        .with(user(baseUserDetails))
+                        .contentType(contentType)
+                        .content(tagString))
+                .andExpect(status().is2xxSuccessful());
+
+
         // get base user layouts - checking that given layout is fully filled in
         String url = "/layout/default";
         MvcResult result = this.mockMvc.perform(get(url)
@@ -183,7 +220,12 @@ public class LayoutRestControllerTest {
                 .findFirst();
         Assert.assertTrue("produce category exists", produce.isPresent());
         Assert.assertTrue("produce has at least 10 tags", produce.get().getTags().size() > 10);
-
+        // check for existance of "Thomas Jefferson" tag
+        Optional<Tag> jeffersonTag = defaultLayout.getCategories().stream()
+                .flatMap(c -> c.getTags().stream())
+                .filter(t -> Objects.equals(t.getName(), "Thomas Jefferson"))
+                .findFirst();
+        Assert.assertTrue(jeffersonTag.isPresent());
     }
 
     @Test
@@ -237,7 +279,7 @@ public class LayoutRestControllerTest {
         Assert.assertNotNull(resource);
         Optional<ListLayout> listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
-                .filter(listLayout -> listLayout.isDefault())
+                .filter(ListLayout::isDefault)
                 .findFirst();
         Assert.assertTrue("default exists", listLayoutResult.isPresent());
         ListLayout layout = listLayoutResult.get();
@@ -261,7 +303,7 @@ public class LayoutRestControllerTest {
         //  999901, 'Special Category'
         categoryTemplateId = "999901";
         mapping.setCategoryId(categoryTemplateId);
-        mapping.setTagIds(Arrays.asList(tagIdLemon));
+        mapping.setTagIds(Collections.singletonList(tagIdLemon));
         payload = json(mapping);
 
         // make the call
@@ -284,7 +326,7 @@ public class LayoutRestControllerTest {
         Assert.assertNotNull(resource);
         listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
-                .filter(listLayout -> listLayout.isDefault())
+                .filter(ListLayout::isDefault)
                 .findFirst();
         Assert.assertTrue("default exists", listLayoutResult.isPresent());
         layout = listLayoutResult.get();
@@ -345,7 +387,7 @@ public class LayoutRestControllerTest {
         Assert.assertNotNull(resource);
         Optional<ListLayout> listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
-                .filter(listLayout -> listLayout.isDefault())
+                .filter(ListLayout::isDefault)
                 .findFirst();
         Assert.assertTrue("default exists", listLayoutResult.isPresent());
         ListLayout layout = listLayoutResult.get();
@@ -369,7 +411,7 @@ public class LayoutRestControllerTest {
         //  999901, 'Special Category'
         categoryTemplateId = "999901";
         mapping.setCategoryId(categoryTemplateId);
-        mapping.setTagIds(Arrays.asList(tagIdLemon));
+        mapping.setTagIds(Collections.singletonList(tagIdLemon));
         payload = json(mapping);
 
         // make the call
@@ -392,7 +434,7 @@ public class LayoutRestControllerTest {
         Assert.assertNotNull(resource);
         listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
-                .filter(listLayout -> listLayout.isDefault())
+                .filter(ListLayout::isDefault)
                 .findFirst();
         Assert.assertTrue("default exists", listLayoutResult.isPresent());
         layout = listLayoutResult.get();
@@ -553,7 +595,7 @@ public class LayoutRestControllerTest {
                 .collect(Collectors.toMap(Category::getName, Function.identity()));
         Assertions.assertTrue(categoryMap.containsKey("Meat"));
         Category meat = categoryMap.get("Meat");
-        Assertions.assertNotEquals(10L, meat.getId(),"Id for category shouldn't be 10");
+        Assertions.assertNotEquals(10L, meat.getId(), "Id for category shouldn't be 10");
         // verify that Meat is the first category returned
         Assertions.assertEquals("Meat", categoryList.getEmbeddedList().getCategoryResourceList().get(0).getCategory().getName());
     }

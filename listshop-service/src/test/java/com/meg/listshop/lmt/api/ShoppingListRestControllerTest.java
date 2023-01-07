@@ -569,7 +569,7 @@ public class ShoppingListRestControllerTest {
         // check tag occurences in result
         // 501 - 1
         Assert.assertNotNull(sourceResultMap.get("81"));
-        Assert.assertEquals(Optional.of(1L).get(), sourceResultMap.get("81").getUsedCount());
+        Assert.assertEquals(Optional.of(1).get(), sourceResultMap.get("81").getUsedCount());
 
         // 502 - 3
         Assert.assertNotNull(sourceResultMap.get("1"));

@@ -14,6 +14,7 @@ delete from  list_layout where layout_id in (select layout_id
 delete from tag where tag_id in (9991234,
                                   9991235,
                                   9991236,
+                                 1000126,
                                   9991237);
 
 delete from users where user_id = 99999;
