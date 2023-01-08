@@ -41,10 +41,10 @@ insert into list (created_on, list_layout_id, list_types, user_id, list_id, name
 values (now() - interval '3 days', 11, 'General', 20, 500777, 'merge test', false);
 -- copy from / to: sourceList
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
-values (now() - interval '3 days', 11, 'General', 20, 7777, 'list operations - source', false);
+values (now() - interval '3 days', null, 'General', 20, 7777, 'list operations - source', false);
 -- copy from / to: destinationList
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
-values (now() - interval '3 days', 11, 'General', 20, 6666, 'list operations - source', false);
+values (now() - interval '3 days', null, 'General', 20, 6666, 'list operations - source', false);
 -- copy from / to: sourceList
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
 values (now() - interval '3 days', 11, 'General', 20, 77777, 'list operations - source', false);
