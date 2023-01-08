@@ -14,195 +14,67 @@ ALTER TABLE ONLY public.auto_tag_instructions
     ADD CONSTRAINT auto_tag_instructions_pkey PRIMARY KEY (instruction_id);
 
 
---
--- Name: category_relation category_relation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.category_relation
-    ADD CONSTRAINT category_relation_pkey PRIMARY KEY (category_relation_id);
-
-
---
--- Name: dish dish_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY public.dish
     ADD CONSTRAINT dish_pkey PRIMARY KEY (dish_id);
-
-
-
---
--- Name: list_category list_category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY public.list_category
     ADD CONSTRAINT list_category_pkey PRIMARY KEY (category_id);
 
 
---
--- Name: list_item list_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY public.list_item
     ADD CONSTRAINT list_item_pkey PRIMARY KEY (item_id);
-
-
---
--- Name: list_layout list_layout_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY public.list_layout
     ADD CONSTRAINT list_layout_pkey PRIMARY KEY (layout_id);
 
-
---
--- Name: list list_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY public.list
     ADD CONSTRAINT list_pkey PRIMARY KEY (list_id);
-
-
---
--- Name: list_tag_stats list_tag_stats_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY public.list_tag_stats
     ADD CONSTRAINT list_tag_stats_pkey PRIMARY KEY (list_tag_stat_id);
 
-
---
--- Name: meal_plan meal_plan_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY public.meal_plan
     ADD CONSTRAINT meal_plan_pkey PRIMARY KEY (meal_plan_id);
-
-
---
--- Name: meal_plan_slot meal_plan_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY public.meal_plan_slot
     ADD CONSTRAINT meal_plan_slot_pkey PRIMARY KEY (meal_plan_slot_id);
 
-
---
--- Name: proposal_context proposal_context_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY public.proposal_context
     ADD CONSTRAINT proposal_context_pkey PRIMARY KEY (proposal_context_id);
-
-
---
--- Name: shadow_tags shadow_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY public.shadow_tags
     ADD CONSTRAINT shadow_tags_pkey PRIMARY KEY (shadow_tag_id);
 
-
---
--- Name: tag tag_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY public.tag
     ADD CONSTRAINT tag_pkey PRIMARY KEY (tag_id);
-
-
---
--- Name: tag_relation tag_relation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY public.tag_relation
     ADD CONSTRAINT tag_relation_pkey PRIMARY KEY (tag_relation_id);
 
-
---
--- Name: tag_search_group tag_search_group_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY public.tag_search_group
     ADD CONSTRAINT tag_search_group_pkey PRIMARY KEY (tag_search_group_id);
-
-
---
--- Name: target target_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY public.target
     ADD CONSTRAINT target_pkey PRIMARY KEY (target_id);
 
-
---
--- Name: target_slot target_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY public.target_slot
     ADD CONSTRAINT target_slot_pkey PRIMARY KEY (target_slot_id);
 
-
---
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (user_id);
-
-
-
---
--- Name: category_relation category_relation__list_category_id_child; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.category_relation
-    ADD CONSTRAINT category_relation__list_category_id_child FOREIGN KEY (child_category_id) REFERENCES public.list_category (category_id);
-
-
---
--- Name: category_relation category_relation__list_category_id_parent; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.category_relation
-    ADD CONSTRAINT category_relation__list_category_id_parent FOREIGN KEY (parent_category_id) REFERENCES public.list_category (category_id);
-
-
---
--- Name: list_item fk1ddq3ct1ulogjn5ijs8ert7hw; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY public.list_item
     ADD CONSTRAINT fk1ddq3ct1ulogjn5ijs8ert7hw FOREIGN KEY (list_id) REFERENCES public.list (list_id);
 
 
---
--- Name: tag_relation fk3vyajpbcb8wl8380yntahtgtf; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY public.tag_relation
     ADD CONSTRAINT fk3vyajpbcb8wl8380yntahtgtf FOREIGN KEY (parent_tag_id) REFERENCES public.tag (tag_id);
-
-
---
--- Name: dish fk4cvbymf9m9quckcouehn0p414; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY public.dish
     ADD CONSTRAINT fk4cvbymf9m9quckcouehn0p414 FOREIGN KEY (user_id) REFERENCES public.users (user_id);
 
-
---
--- Name: tag_relation fk6x8vvlp985udfs7g15uuxj42c; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY public.tag_relation
     ADD CONSTRAINT fk6x8vvlp985udfs7g15uuxj42c FOREIGN KEY (child_tag_id) REFERENCES public.tag (tag_id);
-
-
---
--- Name: dish_tags fkbh371e2vv53a3arqea0hf3jkl; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY public.dish_tags
     ADD CONSTRAINT fkbh371e2vv53a3arqea0hf3jkl FOREIGN KEY (dish_id) REFERENCES public.dish (dish_id);
@@ -315,16 +187,6 @@ GRANT ALL ON TABLE public.list_tag_stats TO bankuser;
 GRANT ALL ON TABLE public.calculated_stats TO bankuser;
 
 
---
--- Name: TABLE category_relation; Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON TABLE public.category_relation TO bankuser;
-
-
---
--- Name: TABLE category_tags; Type: ACL; Schema: public; Owner: postgres
---
 
 GRANT ALL ON TABLE public.category_tags TO bankuser;
 
@@ -440,13 +302,6 @@ GRANT ALL ON TABLE public.shadow_tags TO bankuser;
 --
 
 GRANT ALL ON TABLE public.tag TO bankuser;
-
-
---
--- Name: TABLE tag_extended; Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON TABLE public.tag_extended TO bankuser;
 
 
 --
