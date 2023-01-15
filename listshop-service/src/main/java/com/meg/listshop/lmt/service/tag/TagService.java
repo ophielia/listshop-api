@@ -74,4 +74,6 @@ public interface TagService {
     void setTagsAsVerified(List<Long> tagIds);
 
     void createStandardTagsFromUserTags(List<Long> tagIds);
+
+    void assignDefaultRatingsToDish(String userName, Long dishId);
 }

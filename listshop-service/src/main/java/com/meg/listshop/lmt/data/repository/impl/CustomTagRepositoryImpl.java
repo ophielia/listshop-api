@@ -27,8 +27,6 @@ import java.util.Set;
 @Repository
 public class CustomTagRepositoryImpl implements CustomTagRepository {
 
-    EntityManager em;
-    NamedParameterJdbcTemplate jdbcTemplate;
     private final static String TAG_CONFLICT_QUERY = "with list_tags as (select tag_id, " +
             "                          lower(trim(name))                             as name, " +
             "                          tag_type, " +
@@ -48,6 +46,10 @@ public class CustomTagRepositoryImpl implements CustomTagRepository {
             "select standard_tag_id, user_tag_id " +
             "from conflict_list " +
             "where user_id is not null";
+    EntityManager em;
+    NamedParameterJdbcTemplate jdbcTemplate;
+
+
 
     @Autowired
     public CustomTagRepositoryImpl(EntityManager em, NamedParameterJdbcTemplate jdbcTemplate) {
@@ -74,7 +76,7 @@ public class CustomTagRepositoryImpl implements CustomTagRepository {
         if (tagFilterType == TagFilterType.NoGroups ||
                 tagFilterType == TagFilterType.GroupsOnly) {
             predicates.add(cb.equal(tagEntityRoot.get("isGroup"), parameterGroupInclude));
-            groupFilterParameter = tagFilterType == TagFilterType.NoGroups ? false : true;
+            groupFilterParameter = tagFilterType != TagFilterType.NoGroups;
         }
         if (tagFilterType == TagFilterType.ToReview) {
             predicates.add(cb.isNotNull(tagEntityRoot.get("userId")));
@@ -141,6 +143,8 @@ public class CustomTagRepositoryImpl implements CustomTagRepository {
         return this.jdbcTemplate.query(TAG_CONFLICT_QUERY, parameters, new CustomTagRepositoryImpl.TagConflictMapper());
 
     }
+
+
 
 
     private static final class TagConflictMapper implements RowMapper<LongTagIdPairDTO> {

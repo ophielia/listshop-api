@@ -9,4 +9,6 @@ public interface TagInfoCustomRepository {
 
 
     List<TagInfoDTO> retrieveTagInfoByUser(Long userId, List<TagType> tagTypes);
+
+    List<TagInfoDTO> retrieveRatingInfoForDish(Long dishId);
 }

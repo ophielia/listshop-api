@@ -15,7 +15,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -83,7 +83,7 @@ public class DishSearchServiceImpl implements DishSearchService {
                 groupByFilter.append(FILTER_CASE_END_EXCLUDE_ONLY);
             }
         }
-        if (!StringUtils.isEmpty(criteria.getNameFragment())) {
+        if (!ObjectUtils.isEmpty(criteria.getNameFragment())) {
             nameWhereClause.append(" and d.dish_name ilike '%");
             nameWhereClause.append(criteria.getNameFragment());
             nameWhereClause.append("%'");
@@ -156,7 +156,7 @@ public class DishSearchServiceImpl implements DishSearchService {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", userId);
         parameters.addValue("slotTagId", targetSlotEntity.getSlotDishTagId());
-        params.forEach((key, value) -> parameters.addValue(key, value));
+        params.forEach(parameters::addValue);
 
         return this.jdbcTemplate.query(sql, parameters, new DishTagSearchResultMapper(size, tagListForSlot.size()));
 
@@ -203,7 +203,6 @@ public class DishSearchServiceImpl implements DishSearchService {
             i++;
         }
 
-        List<String> filterClauses = new ArrayList<>();
         StringBuilder whereClause = new StringBuilder(" ");
         if (sqlFilteredDishes != null && !sqlFilteredDishes.isEmpty()) {
             whereClause.append(" where d.dish_id not in (");

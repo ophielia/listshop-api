@@ -17,7 +17,7 @@ public interface DishService {
 
     DishEntity save(DishEntity dish, boolean doAutotag);
 
-    DishEntity create(DishEntity dish);
+    DishEntity createDish(String userName, DishEntity dish);
 
     List<DishEntity> save(List<DishEntity> dishes);
 

@@ -35,6 +35,20 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
 
     private static final String TAG_TYPE_FILTER = " where tag.tag_type in (:tagTypes) ";
 
+    private static final String TAGS_FOR_DISH_QUERY = "select t.tag_id, " +
+            "       t.name, " +
+            "       t.description, " +
+            "       t.power, " +
+            "       t.tag_type, " +
+            "       t.is_group, " +
+            "       tr.parent_tag_id as parent_id, " +
+            "       t.to_delete, " +
+            "       t.user_id " +
+            "from tag t " +
+            "join tag_relation tr on tr.child_tag_id = t.tag_id " +
+            "join dish_tags d on d.tag_id = t.tag_id " +
+            "where d.dish_id = :dishId";
+
     @Autowired
     public TagInfoRepositoryImpl(
             DataSource dataSource) {
@@ -60,9 +74,24 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
 
         if (!tagTypes.isEmpty()) {
             sql.append(TAG_TYPE_FILTER);
-            var tagTypesAsStrings = tagTypes.stream().map(tT -> tT.toString()).collect(Collectors.toList());
+            var tagTypesAsStrings = tagTypes.stream().map(Enum::toString).collect(Collectors.toList());
             parameters.addValue("tagTypes", tagTypesAsStrings);
         }
+
+        return this.jdbcTemplate.query(sql.toString(), parameters, new TagInfoRepositoryImpl.TagInfoMapper());
+
+    }
+
+    public List<TagInfoDTO> retrieveRatingInfoForDish(Long dishId) {
+        if (dishId == null) {
+            throw new IllegalStateException("can't get rating id for empty dish id");
+        }
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        // construct sql
+        StringBuilder sql = new StringBuilder(TAGS_FOR_DISH_QUERY);
+
+
+        parameters.addValue("dishId", dishId);
 
         return this.jdbcTemplate.query(sql.toString(), parameters, new TagInfoRepositoryImpl.TagInfoMapper());
 

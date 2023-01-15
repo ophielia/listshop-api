@@ -19,7 +19,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,8 +64,8 @@ public class DishRestController implements DishRestControllerApi {
     ) {
         logger.info("Entered retrieveDishes includedTags: [{}], excludedTags: [{}], sortKey: [{}], sortDirection: [{}]", includedTags, excludedTags, sortKey, sortDirection);
         List<DishResource> dishList;
-        if (StringUtils.isEmpty(includedTags) && StringUtils.isEmpty(excludedTags)
-                && StringUtils.isEmpty(sortKey) && StringUtils.isEmpty(sortDirection)) {
+        if (ObjectUtils.isEmpty(includedTags) && ObjectUtils.isEmpty(excludedTags)
+                && ObjectUtils.isEmpty(sortKey) && ObjectUtils.isEmpty(sortDirection)) {
             dishList = getAllDishes(principal);
         } else {
             dishList = findDishes(principal, includedTags, excludedTags, searchFragment, sortKey, sortDirection);
@@ -73,7 +73,7 @@ public class DishRestController implements DishRestControllerApi {
 
         DishListResource resource = new DishListResource(dishList);
         resource.fillLinks(request, resource);
-        return new ResponseEntity(resource, HttpStatus.OK);
+        return new ResponseEntity<DishListResource>(resource, HttpStatus.OK);
 
     }
 
@@ -89,15 +89,15 @@ public class DishRestController implements DishRestControllerApi {
             List<Long> tagIdList = commaDelimitedToList(excludedTags);
             criteria.setExcludedTagIds(tagIdList);
         }
-        if (!StringUtils.isEmpty(sortKey)) {
+        if (!ObjectUtils.isEmpty(sortKey)) {
             var dishSortKey = Enums.getIfPresent(DishSortKey.class, sortKey).orNull();
             criteria.setSortKey(dishSortKey);
         }
-        if (!StringUtils.isEmpty(sortDirection)) {
+        if (!ObjectUtils.isEmpty(sortDirection)) {
             var dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
             criteria.setSortDirection(dishSortDirection);
         }
-        if (!StringUtils.isEmpty(searchFragment)) {
+        if (!ObjectUtils.isEmpty(searchFragment)) {
             criteria.setNameFragment(searchFragment);
         }
         logger.debug("Searching for dishes with criteria [{}]. ", criteria);
@@ -119,7 +119,7 @@ public class DishRestController implements DishRestControllerApi {
         UserEntity user = userService.getUserByUserEmail(principal.getName());
         DishEntity inputDish = ModelMapper.toEntity(input);
         inputDish.setUserId(user.getId());
-        DishEntity result = dishService.create(inputDish);
+        DishEntity result = dishService.createDish(principal.getName(), inputDish);
         List<Tag> tagInputs = input.getTags();
         if (tagInputs != null && !tagInputs.isEmpty()) {
             Set<Long> tagIds = tagInputs.stream()
@@ -166,8 +166,8 @@ public class DishRestController implements DishRestControllerApi {
 
         List<TagResource> tagList = tagService
                 .getTagsForDish(principal.getName(), dishId)
-                .stream().map(te -> ModelMapper.toModel(te))
-                .map(tm -> new TagResource(tm))
+                .stream().map(ModelMapper::toModel)
+                .map(TagResource::new)
                 .collect(Collectors.toList());
         tagList.forEach(tr -> tr.fillLinks(request, tr));
         return new ResponseEntity(tagList, HttpStatus.OK);

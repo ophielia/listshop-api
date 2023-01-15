@@ -109,7 +109,7 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public DishEntity create(DishEntity createDish) {
+    public DishEntity createDish(String userName, DishEntity createDish) {
         // check name before saving
         String name = ensureDishNameIsUnique(createDish.getUserId(), createDish.getDishName());
         createDish.setDishName(name);
@@ -121,7 +121,9 @@ public class DishServiceImpl implements DishService {
                 createDish.getDescription());
         newDish.setReference(createDish.getReference());
 
-        return dishRepository.save(newDish);
+        DishEntity createdDish =  dishRepository.save(newDish);
+        tagService.assignDefaultRatingsToDish(userName, createdDish.getId() );
+        return createdDish;
     }
 
     private String ensureDishNameIsUnique(Long userId, String dishName) {
@@ -211,12 +213,10 @@ public class DishServiceImpl implements DishService {
     public void updateLastAddedForDish(Long dishId) {
         Optional<DishEntity> dish = getDishById(dishId);
 
-        dish.map(d -> {
+        dish.ifPresent(d -> {
             d.setLastAdded(new Date());
             dishRepository.save(d);
-            return d;
         });
-        return;
     }
 
     @Override

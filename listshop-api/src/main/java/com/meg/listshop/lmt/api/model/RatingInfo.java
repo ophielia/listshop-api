@@ -73,4 +73,5 @@ public class RatingInfo {
     public int hashCode() {
         return Objects.hash(ratingTagId, ratingTagLabel);
     }
+
 }

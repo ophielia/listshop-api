@@ -1,10 +1,16 @@
+/**
+ * Created by margaretmartin on 13/05/2017.
+ */
 package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.api.model.DishRatingInfo;
+import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
+import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
+import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.ICountResult;
@@ -29,9 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * Created by margaretmartin on 13/05/2017.
- */
+
 @Service
 @Transactional
 public class TagServiceImpl implements TagService {
@@ -53,6 +57,10 @@ public class TagServiceImpl implements TagService {
 
     @Value("${shopping.list.properties.default_list_layout_id:5}")
     private Long defaultLayoutId;
+    private long cachedRatingStructureExpires;
+    private RatingStructureTree cachedRatingStructureTree;
+    @Value("${tag.service.rating.cache.lifetime:5}")
+    private long cacheRatingStructureLifetime ;
 
     @Autowired
     public TagServiceImpl(ListTagStatisticService tagStatisticService,
@@ -103,44 +111,46 @@ public class TagServiceImpl implements TagService {
     }
 
     public RatingUpdateInfo getRatingUpdateInfoForDishIds(String userName, List<Long> dishIdList) {
-        // get ratings structure
-        List<TagInfoDTO> ratings = getTagInfoList(userName, Collections.singletonList(TagType.Rating));
-
         // put into lookup - rating info for child tags and create headers set
-        LookupInformation parsedInfo = parseRatingTags(ratings);
-        Map<Long, RatingInfo> ratingInfoById = parsedInfo.getTagToRatingInfo();
-        Set<RatingInfo> headers = parsedInfo.getParentRatings();
+        RatingStructureTree ratingStructure = getRatingStructure();
 
-        // get all tags for dishes
-        List<DishEntity> dishes = dishService.getDishes(userName, dishIdList);
+        Set<DishRatingInfo> ratingsForDishIds = processRatingInfo(ratingStructure, dishIdList);
 
-        // fill temporary hash with info objects
-        Map<DishRatingInfo, Set<RatingInfo>> unorderedInfo = processDishRatings(dishes, ratingInfoById);
+        return new RatingUpdateInfo(Collections.emptySet(), ratingsForDishIds);
+    }
 
-        // fill the MealRatingInfo objects in order of the headers
-        for (RatingInfo headerTag : headers) {
-            for (Map.Entry<DishRatingInfo, Set<RatingInfo>> entry : unorderedInfo.entrySet()) {
-                if (entry.getValue().contains(headerTag)) {
-                    // dish has this rating - add it to the DishRatingInfo
-                    Optional<RatingInfo> ratingInfoOpt = entry.getValue()
-                            .stream()
-                            .filter(r -> r.equals(headerTag)).findFirst();
-                    ratingInfoOpt.ifPresent(ratingInfo -> entry.getKey().addRating(ratingInfo));
-                } else {
-                    // dish does not have this rating -
-                    // create this tag for the dish, and add it to the DishRatingInfo
-                    Long assignTagId = getDefaultTagIdForRatingHeader(headerTag.getRatingTagId());
-                    if (assignTagId != null) {
-                        addTagToDish(userName, entry.getKey().getDishId(), assignTagId);
-                        var ratingInfo = ratingInfoById.get(assignTagId);
-                        entry.getKey().addRating(ratingInfo);
-                    }
-
-                }
-            }
+    private RatingStructureTree getRatingStructure() {
+        // check for cache
+        if (cachedRatingStructureExpires > new Date().getTime()) {
+            return cachedRatingStructureTree;
         }
 
-        return new RatingUpdateInfo(headers, unorderedInfo.keySet());
+        // get ratings structure
+        List<TagInfoDTO> ratings = getTagInfoList(null, Collections.singletonList(TagType.Rating));
+
+        // put into lookup - rating info for child tags and create headers set
+        cachedRatingStructureTree =  new RatingStructureTree(ratings);
+        cachedRatingStructureExpires = new Date().getTime() + (cacheRatingStructureLifetime * 60 * 60 * 1000);
+
+
+        return cachedRatingStructureTree;
+    }
+
+    private Set<DishRatingInfo> processRatingInfo(RatingStructureTree ratingInfoProvider, List<Long> dishIdList) {
+        Set<DishRatingInfo> dishRatingInfoSet = new HashSet<>();
+
+        // make set - loop through, adding to set
+        dishIdList.forEach( dishId -> {
+            // get tags for dish
+            List<TagInfoDTO> tagsForDish = tagInfoCustomRepository.retrieveRatingInfoForDish(dishId);
+            // use builder to retrieve dishinfo - defaults, or value from persisted rating tags
+            DishRatingInfo dishRatingInfo = new DishRatingBuilder(ratingInfoProvider)
+                    .withDishId(dishId)
+                    .buildRatingInfo(tagsForDish);
+            dishRatingInfoSet.add(dishRatingInfo);
+        });
+
+        return dishRatingInfoSet;
     }
 
     @Override
@@ -308,16 +318,24 @@ public class TagServiceImpl implements TagService {
         if (dish == null) {
             throw new ActionInvalidException("Can't find dish for id [" + dishId + "]");
         }
+        RatingStructureTree ratingStructure = getRatingStructure();
 
         // get current assigned tag for parent rating id
         TagEntity currentTag = tagRepository.getAssignedTagForRating(dishId, ratingId);
+        // if no tag is available, get the default
+        Long currentTagId = null;
+        if (currentTag == null) {
+            currentTagId = ratingStructure.getDefaultTagIdForRating(ratingId);
+        } else {
+            currentTagId = currentTag.getId();
+        }
 
         // get new tag (depending upon direction)
         TagEntity nextTag;
         if (SortOrMoveDirection.UP.equals(moveDirection)) {
-            nextTag = tagRepository.getNextRatingUp(ratingId, currentTag.getId());
+            nextTag = tagRepository.getNextRatingUp(ratingId, currentTagId);
         } else {
-            nextTag = tagRepository.getNextRatingDown(ratingId, currentTag.getId());
+            nextTag = tagRepository.getNextRatingDown(ratingId, currentTagId);
         }
         // assign new tag
         addTagToDish(dish, nextTag);
@@ -347,27 +365,6 @@ public class TagServiceImpl implements TagService {
     @Override
     public List<TagEntity> getTagsForDish(String username, Long dishId) {
         return getTagsForDish(username, dishId, null);
-    }
-
-    private Map<DishRatingInfo, Set<RatingInfo>> processDishRatings(List<DishEntity> dishes, Map<Long, RatingInfo> ratingInfoById) {
-        Map<DishRatingInfo, Set<RatingInfo>> unorderedInfo = new HashMap<>();
-        for (DishEntity dish : dishes) {
-            var dishInfo = new DishRatingInfo(dish.getId(), dish.getDishName());
-            unorderedInfo.computeIfAbsent(dishInfo, k -> new HashSet<>());
-
-            List<TagEntity> tagsForDish = getTagsForDish(dish, Collections.singletonList(TagType.Rating));
-            for (TagEntity ratingTag : tagsForDish) {
-                if (!ratingInfoById.containsKey(ratingTag.getId())) {
-                    continue;
-                }
-
-// create the RatingUpdateInfo object
-                var info = ratingInfoById.get(ratingTag.getId());
-                unorderedInfo.get(dishInfo).add(info);
-            }
-
-        }
-        return unorderedInfo;
     }
 
     @Override
@@ -425,6 +422,10 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void addTagsToDish(String userName, Long dishId, Set<Long> tagIds) {
+        addTagsToDish(userName,dishId,tagIds,true);
+    }
+
+    private void addTagsToDish(String userName, Long dishId, Set<Long> tagIds, boolean checkRatingSiblings) {
         DishEntity dish = dishService.getDishForUserById(userName, dishId);
         if (dish == null) {
             return;
@@ -447,7 +448,7 @@ public class TagServiceImpl implements TagService {
             if (dishTags.contains(addTag)) {
                 continue;
             }
-            // need to clean up ratings afterwars?
+            // need to clean up ratings afterwards?
             if (addTag.getTagType() == TagType.Rating) {
                 ratingChecks.add(addTag);
             }
@@ -455,7 +456,7 @@ public class TagServiceImpl implements TagService {
         }
 
         // if rating tags exist, remove related tags
-        if (!ratingChecks.isEmpty()) {
+        if (!ratingChecks.isEmpty() && checkRatingSiblings) {
             for (TagEntity ratingTag : ratingChecks) {
                 dishTags = removeRelatedTags(dishTags, ratingTag);
             }
@@ -495,6 +496,14 @@ public class TagServiceImpl implements TagService {
         dish.setTags(dishTagsDeletedTag);
         dishService.save(dish, false);
         return dishTagsDeletedTag.size();
+    }
+
+    public void assignDefaultRatingsToDish(String userName, Long dishId) {
+       RatingStructureTree ratingStructureTree  = getRatingStructure();
+       Set<Long> defaultTagIds = ratingStructureTree.getAllDefaultTagIds();
+
+        // add the tags to the dish
+        addTagsToDish(userName, dishId, defaultTagIds, false);
     }
 
     private Set<Long> determineValidTagsToRemove(Long dishId, Set<Long> tagIds) {
@@ -618,12 +627,11 @@ public class TagServiceImpl implements TagService {
     private Map<Long, Long> getStandardCategoriesForTags(Set<Long> copySet) {
 
         List<Object[]> categoryRelations = tagRepository.getStandardCategoriesForTags(copySet, defaultLayoutId);
-        Map<Long, Long> categoryRelationIds = categoryRelations.stream().map(o -> {
+        return categoryRelations.stream().map(o -> {
             BigInteger tagId = (BigInteger) o[0];
             BigInteger parentId = (BigInteger) o[1];
             return new LongTagIdPairDTO(tagId.longValue(), parentId.longValue());
         }).collect(Collectors.toMap(LongTagIdPairDTO::getLeftId, LongTagIdPairDTO::getRightId));
-        return categoryRelationIds;
     }
 
     private Map<Long, TagEntity> getStandardParentsForTags(Set<Long> copySet) {
@@ -641,9 +649,7 @@ public class TagServiceImpl implements TagService {
         Map<Long, TagEntity> parentsForTagIds = new HashMap<>();
         parentRelationIds.entrySet().stream()
                 .filter(e -> parentDictionary.containsKey(e.getKey()))
-                .forEach(e -> {
-                    parentsForTagIds.put(e.getKey(), parentDictionary.get(parentDictionary.get(e.getKey())));
-                });
+                .forEach(e -> parentsForTagIds.put(e.getKey(), parentDictionary.get(e.getKey())));
         return parentsForTagIds;
     }
 
@@ -695,92 +701,6 @@ public class TagServiceImpl implements TagService {
                 .collect(Collectors.toList());
     }
 
-    private LookupInformation parseRatingTags(List<TagInfoDTO> ratingTagsWithChildren) {
-        Map<Long, TagInfoDTO> idToTagMap = new HashMap<>();
-        Map<Long, RatingInfo> ratingInfoById = new HashMap<>();
-        Map<Long, List<Long>> childMapping = new HashMap<>();
-        Set<RatingInfo> headers = new HashSet<>();
-
-        // populate ratingInfoById
-        ratingTagsWithChildren.forEach(rt -> idToTagMap.put(rt.getTagId(), rt));
-
-        // determine relations
-        for (TagInfoDTO ratingTag : ratingTagsWithChildren) {
-            Long parentId = ratingTag.getParentId();
-            if (parentId == null ||
-                    parentId == 0 ||
-                    !idToTagMap.containsKey(parentId)
-            ) {
-                continue;
-            }
-            List<Long> children = childMapping.computeIfAbsent(parentId, l -> new ArrayList<>());
-            children.add(ratingTag.getTagId());
-            childMapping.put(parentId, children);
-        }
-
-        // fill in rating information
-        childMapping.keySet().forEach(ratingParentId -> {
-            TagInfoDTO parentTag = idToTagMap.get(ratingParentId);
-            List<TagInfoDTO> sortedChildren = childMapping.get(ratingParentId)
-                    .stream()
-                    .map(idToTagMap::get)
-                    .sorted(Comparator.comparing(TagInfoDTO::getPower))
-                    .collect(Collectors.toList());
-
-            if (!sortedChildren.isEmpty()) {
-                var parentRating = new RatingInfo(ratingParentId, parentTag.getName());
-                parentRating.setMaxPower(sortedChildren.size());
-                headers.add(parentRating);
-
-                var order = 1;
-                int maxPower = sortedChildren.size();
-                for (TagInfoDTO childTag : sortedChildren) {
-                    var childInfo = new RatingInfo(parentTag.getTagId(), parentTag.getName(), order);
-
-                    childInfo.setMaxPower(maxPower);
-                    ratingInfoById.put(childTag.getTagId(), childInfo);
-                    order++;
-                }
-            }
-        });
-        return new LookupInformation(ratingInfoById, headers);
-    }
-
-    private static class LookupInformation {
-        private final Map<Long, RatingInfo> tagToRatingInfo;
-        private final Set<RatingInfo> parentRatings;
-
-        public LookupInformation(Map<Long, RatingInfo> tagToRatingInfo, Set<RatingInfo> parentRatings) {
-            this.tagToRatingInfo = tagToRatingInfo;
-            this.parentRatings = parentRatings;
-        }
-
-        public Map<Long, RatingInfo> getTagToRatingInfo() {
-            return tagToRatingInfo;
-        }
-
-        public Set<RatingInfo> getParentRatings() {
-            return parentRatings;
-        }
-    }
-
-    private Long getDefaultTagIdForRatingHeader(Long ratingHeaderId) {
-        List<TagEntity> ratings = tagStructureService.getDescendantTags(ratingHeaderId);
-        //List<TagExtendedEntity> ratings = tagExtendedRepository.getRatingTagsForRatingType(ratingHeaderId);
-        if (ratings == null || ratings.isEmpty()) {
-            return null;
-        }
-        // get size of ratings children
-        int ratingsSize = ratings.size();
-        // get middle
-        Double order = Math.ceil((ratingsSize) / 2.0);
-        // get the middle tag
-        var index = order.intValue();
-        TagEntity middle = ratings.get(index - 1);
-        // return the middle tag id
-
-        return middle.getId();
-    }
 
     private void addTagToDish(DishEntity dish, TagEntity tag) {
         if (dish == null || tag == null) {
@@ -808,10 +728,14 @@ public class TagServiceImpl implements TagService {
     private List<TagEntity> getTagsForDish(DishEntity dish, List<TagType> tagtypes) {
         List<TagEntity> results = tagRepository.findTagsByDishes(dish);
 
+        return filterTagsByTagType(results, tagtypes);
+    }
+
+    private List<TagEntity> filterTagsByTagType(List<TagEntity> tagList, List<TagType> tagtypes) {
         if (tagtypes == null) {
-            return results;
+            return tagList;
         }
-        return results.stream()
+        return tagList.stream()
                 .filter(t -> tagtypes.contains(t.getTagType()))
                 .collect(Collectors.toList());
     }

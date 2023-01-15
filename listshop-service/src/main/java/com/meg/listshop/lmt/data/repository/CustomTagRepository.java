@@ -14,4 +14,6 @@ public interface CustomTagRepository {
     Long findRatingTagIdForStep(Long ratingId, Integer step);
 
     List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys);
+
+
 }
