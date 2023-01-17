@@ -22,6 +22,7 @@ import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.service.TokenService;
 import freemarker.template.TemplateException;
+import io.micrometer.core.instrument.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -116,8 +118,11 @@ public class UserRestController implements UserRestControllerApi {
         var user = inputPut.getUser();
         ClientDeviceInfo deviceInfo = inputPut.getDeviceInfo();
 
-        if (user == null || user.getEmail() == null || user.getPassword() == null) {
+        if (user == null || StringUtils.isEmpty(user.getEmail()) || StringUtils.isEmpty(user.getPassword())) {
             throw new BadParameterException("Parameter user missing in PutCreateUser.");
+        }
+        if (user.getEmail().length() > 255 || user.getPassword().length() > 255) {
+            throw new BadParameterException("Parameter user or password too long in PutCreateUser.");
         }
         if (deviceInfo == null) {
             throw new BadParameterException("Parameter deviceInfo missing in PutCreateUser.");
@@ -154,7 +159,7 @@ public class UserRestController implements UserRestControllerApi {
     @Override
     public ResponseEntity<Object> userNameIsTaken(@RequestBody ListShopPayload payload) throws BadParameterException {
         var parameters = payload.getParameters();
-        if (parameters == null || parameters.isEmpty()) {
+        if (ObjectUtils.isEmpty(parameters) ) {
             throw new BadParameterException("User email is required as first parameter");
         }
         var rawName = parameters.get(0);
@@ -276,14 +281,18 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     private void validatateUserForPasswordChange(PostChangePassword postChangePassword, String principalUsername) throws BadParameterException {
-        if (principalUsername == null) {
+        if (StringUtils.isEmpty(principalUsername)) {
             throw new BadParameterException("User or username in input is blank or missing");
         }
-        if (postChangePassword.getNewPassword() == null || postChangePassword.getNewPassword().isEmpty()) {
+        if (StringUtils.isEmpty(postChangePassword.getNewPassword())) {
             throw new BadParameterException("Input for change password does not include the new password");
         }
-        if (postChangePassword.getOriginalPassword() == null || postChangePassword.getOriginalPassword().isEmpty()) {
+        if (StringUtils.isEmpty(postChangePassword.getOriginalPassword())) {
             throw new BadParameterException("Input for change password does not include the original password");
+        }
+        if (principalUsername.length()>255 || postChangePassword.getNewPassword().length() > 255 ||
+        postChangePassword.getOriginalPassword().length() > 255) {
+            throw new BadParameterException("Input for change passowrd (userName, newPassword, oldPassword) contains an entry longer tahn 255 characters");
         }
     }
 
@@ -292,11 +301,15 @@ public class UserRestController implements UserRestControllerApi {
         if (postTokenRequest == null) {
             throw new BadParameterException("No TokenRequest in request");
         }
-        if (postTokenRequest.getTokenParameter() == null) {
+        if (StringUtils.isEmpty(postTokenRequest.getTokenParameter())) {
             throw new BadParameterException("No parameter in TokenRequest");
         }
-        if (postTokenRequest.getTokenType() == null) {
+        if (StringUtils.isEmpty(postTokenRequest.getTokenType())) {
             throw new BadParameterException("No token type in TokenRequest");
+        }
+
+        if (postTokenRequest.getTokenParameter().length() > 255) {
+            throw new BadParameterException("Token Parameter too long");
         }
     }
 
@@ -304,14 +317,17 @@ public class UserRestController implements UserRestControllerApi {
         if (postToken == null) {
             throw new BadParameterException("No Token in request");
         }
-        if (postToken.getTokenParameter() == null) {
+        if (StringUtils.isEmpty(postToken.getTokenParameter())) {
             throw new BadParameterException("No parameter in Token");
         }
-        if (postToken.getTokenType() == null) {
+        if (StringUtils.isEmpty(postToken.getTokenType())) {
             throw new BadParameterException("No token type in Token");
         }
-        if (postToken.getToken() == null) {
+        if (StringUtils.isEmpty(postToken.getToken())) {
             throw new BadParameterException("No token value in Token");
+        }
+        if (postToken.getToken().length() > 255) {
+            throw new BadParameterException("Token Parameter too long");
         }
     }
 
