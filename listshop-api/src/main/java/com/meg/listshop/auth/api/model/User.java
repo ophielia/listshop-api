@@ -13,6 +13,7 @@ import java.util.Date;
 
 public class User {
 
+
     private String email;
 
     @JsonProperty("creation_date")

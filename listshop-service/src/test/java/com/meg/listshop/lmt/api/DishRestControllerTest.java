@@ -400,6 +400,8 @@ public class DishRestControllerTest {
         Dish created = retrieveDish(userDetails, createdId);
         Assert.assertNotNull(created);
 
+        removeRatingTags(userDetails, createdId);
+
         // delete tag - main dish
         String url = String.format("/dish/%d/tag/%d", createdId, mainDishId);
         this.mockMvc.perform(delete(url)
@@ -431,6 +433,8 @@ public class DishRestControllerTest {
 
         Dish created = retrieveDish(userDetails, createdId);
         Assert.assertNotNull(created);
+
+        removeRatingTags(userDetails, createdId);
 
         // delete tag - main dish
         String url = String.format("/dish/%d/tag/%d", createdId, mainDishId);
@@ -464,6 +468,9 @@ public class DishRestControllerTest {
         Dish created = retrieveDish(userDetails, createdId);
         Assert.assertNotNull(created);
 
+        // remove rating tags
+        removeRatingTags(userDetails, createdId);
+
         // remove mainDish, blackPepper, and oliveOil should
         // result in deletion of blackPepper and oliveOil, but not mainDish
         List<Long> deleteTags = Arrays.asList(mainDishId, blackPepperId, oliveOilId);
@@ -481,6 +488,22 @@ public class DishRestControllerTest {
         Assert.assertEquals(1, updated.getTags().size());
         Tag lastTag = updated.getTags().get(0);
         Assert.assertEquals(String.valueOf(mainDishId), lastTag.getId());
+
+    }
+
+    private void removeRatingTags(UserDetails userDetails, Long createdId) throws Exception {
+        Dish created = retrieveDish(userDetails, createdId);
+        List<String> deleteTags = created.getTags().stream()
+                .filter(t -> t.getTagType().equals("Rating"))
+                .map(Tag::getId)
+                .collect(Collectors.toList());
+
+        String deleteList = FlatStringUtils.flattenListToString(deleteTags, ",");
+        String url = String.format("/dish/%d/tag?removeTags=%s", createdId, deleteList);
+        this.mockMvc.perform(put(url)
+                        .with(user(userDetails))
+                        .contentType(contentType))
+                .andExpect(status().is2xxSuccessful());
 
     }
 
@@ -503,6 +526,8 @@ public class DishRestControllerTest {
 
         Dish created = retrieveDish(userDetails, createdId);
         Assert.assertNotNull(created);
+
+        removeRatingTags(userDetails, createdId);
 
         // remove mainDish, blackPepper, and oliveOil should
         // result in deletion of mainDish, blackPepper and oliveOil: could deleted

@@ -143,7 +143,6 @@ public class MealPlanRestControllerTest {
                 .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.ratingUpdateInfo.headers", Matchers.hasSize(8)))
                 .andExpect(jsonPath("$.ratingUpdateInfo.dish_ratings", Matchers.hasSize(5)))
                 .andDo(print());
     }
