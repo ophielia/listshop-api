@@ -35,7 +35,7 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
 
     private static final String TAG_TYPE_FILTER = " where tag.tag_type in (:tagTypes) ";
 
-    private static final String TAGS_FOR_DISH_QUERY = "select t.tag_id, " +
+    private static final String RATING_TAGS_FOR_DISH_QUERY = "select t.tag_id, " +
             "       t.name, " +
             "       t.description, " +
             "       t.power, " +
@@ -47,7 +47,8 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
             "from tag t " +
             "join tag_relation tr on tr.child_tag_id = t.tag_id " +
             "join dish_tags d on d.tag_id = t.tag_id " +
-            "where d.dish_id = :dishId";
+            "where d.dish_id = :dishId" +
+            " and t.tag_type = 'Rating'";
 
     @Autowired
     public TagInfoRepositoryImpl(
@@ -88,7 +89,7 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
         }
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         // construct sql
-        StringBuilder sql = new StringBuilder(TAGS_FOR_DISH_QUERY);
+        StringBuilder sql = new StringBuilder(RATING_TAGS_FOR_DISH_QUERY);
 
 
         parameters.addValue("dishId", dishId);

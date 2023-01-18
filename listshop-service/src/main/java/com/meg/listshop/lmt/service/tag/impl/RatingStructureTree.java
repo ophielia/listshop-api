@@ -59,6 +59,9 @@ class RatingStructureTree {
 
     public RatingInfo getRatingInfo(Long ratingId, Double power) {
         RatingStructure rating = ratings.get(ratingId);
+        if (rating == null) {
+            return null;
+        }
         return rating.getRatingInfoForPower(power);
     }
 
@@ -79,7 +82,7 @@ class RatingStructureTree {
             // set values from children
             maxPower = children.size();
             var defaultPowerCeiling = Double.valueOf(Math.ceil((maxPower) / 2.0));
-            defaultPower = defaultPowerCeiling.intValue();
+            defaultPower = defaultPowerCeiling.intValue() - 1;
 
             // set children in RatingWithTags
             children.sort(Comparator.comparing(TagInfoDTO::getPower));

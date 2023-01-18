@@ -7,6 +7,7 @@ import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class DishRatingBuilder {
@@ -39,6 +40,7 @@ public class DishRatingBuilder {
         if (tagsForDish != null) {
             tagsForDish.stream()
                     .map(taginfo -> ratingStructure.getRatingInfo(taginfo.getParentId(), taginfo.getPower()))
+                    .filter(Objects::nonNull)
                     .forEach( rating -> collectedRatingInfo.put(rating.getRatingTagId(), rating));
         }
 
