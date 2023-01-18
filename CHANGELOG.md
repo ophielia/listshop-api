@@ -2,11 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.11.0] January 2023
+
+### Added
+
+- endpoint to return standard tag to category mapping
+- endpoint to return user tag to category mappings
+- endpoint to post user tag to category mapping
+- endpoint to retrieve categories available for user
+
+### Changed
+
+- tag not created if one already exists
+- default rating returned if it doesn't exist for dish
+
+### Deprecated
+
+- subcategories in Category
+
+### Removed
+
+- all handling of subcategories for headers
+- headers in DishRatingInfo
+- a lot of dead code in ModelMapper
+
+### Fixed
+
+- some database issues, for tests and uitests
+
 ## [1.10.0] November 2022
 
 ### Added
 
 - listlayouts now saved with default flag, and user id
+- string length checks in UserController and Service
 
 ### Changed
 
