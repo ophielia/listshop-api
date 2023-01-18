@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.controller;
 
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.Tag;
 import com.meg.listshop.lmt.api.model.TagListResource;
 import org.springframework.http.ResponseEntity;
@@ -23,21 +24,22 @@ public interface TagRestControllerApi {
             HttpServletRequest request);
 
     // remove this in August 2022
-    @Deprecated
-    @RequestMapping(method = RequestMethod.GET)
+    @Deprecated(forRemoval = true)
+    @GetMapping
     ResponseEntity<TagListResource> retrieveTagList(Principal principal, HttpServletRequest request,
                                                     @RequestParam(value = "extended", required = false) Boolean extended);
 
-    @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @Deprecated(forRemoval = true)
+    @PostMapping(produces = "application/json", consumes = "application/json")
     ResponseEntity<Tag> add(Principal principal, HttpServletRequest request, @RequestBody Tag input,
-                            @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard);
+                            @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException;
 
-    @RequestMapping(value = "{tagId}/child", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @PostMapping(value = "{tagId}/child",  produces = "application/json", consumes = "application/json")
     ResponseEntity<Tag> addAsChild(Principal principal, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
-                                   @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard);
+                                   @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException;
 
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{tagId}", produces = "application/json")
+    @GetMapping( value = "/{tagId}", produces = "application/json")
     ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId);
 
 

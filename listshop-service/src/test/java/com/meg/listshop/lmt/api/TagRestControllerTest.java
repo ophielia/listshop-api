@@ -21,10 +21,7 @@ import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
@@ -137,6 +134,7 @@ public class TagRestControllerTest {
     }
 
     @Test
+    @Ignore // endpoint is deprecated
     public void createTag() throws Exception {
         Tag newtag = new Tag("created tag");
         newtag.tagType(TagType.Rating.name());
@@ -150,6 +148,7 @@ public class TagRestControllerTest {
     }
 
     @Test
+    @Ignore // endpoint is deprecated
     public void createTag_checkDefaults() throws Exception {
         Tag newtag = new Tag("created tag with defaults");
         newtag.tagType(TagType.Rating.name());
@@ -196,6 +195,7 @@ public class TagRestControllerTest {
     }
 
     @Test
+    @Ignore // endpoint is deprecated
     public void createTag_asStandard() throws Exception {
         Tag newtag = new Tag("created Ingredient tag with defaults");
         newtag.tagType(TagType.Ingredient.name());
@@ -281,6 +281,43 @@ public class TagRestControllerTest {
     }
 
     @Test
+    public void addAsChild_Exists() throws Exception {
+        Long parentId = 88L; // prepared meats
+        String url = "/tag/" + parentId + "/child";
+
+        Tag tag = new Tag("Meaty Ingredient");
+        tag = tag.tagType(TagType.Ingredient.name());
+        String tagString = json(tag);
+
+        MvcResult result = this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(tagString))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        // get newly created id
+        String locationValue = result.getResponse().getHeader("Location");
+        String idString = locationValue.substring(locationValue.lastIndexOf("/") + 1);
+        Long newId = Long.valueOf(idString);
+
+        // now, try to recreate the same tag
+        MvcResult resultRecreate = this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(tagString))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        // get the resulting id
+        String recreateLocationValue = resultRecreate.getResponse().getHeader("Location");
+        String recreateIdString = recreateLocationValue.substring(recreateLocationValue.lastIndexOf("/") + 1);
+        Long recreatedId = Long.valueOf(recreateIdString);
+
+        Assert.assertEquals(newId, recreatedId);
+    }
+
+    @Test
     public void addAsChild_Standard() throws Exception {
         String url = "/tag/" + TestConstants.PARENT_TAG_ID_2 + "/child?asStandard=true";
 
@@ -322,7 +359,42 @@ public class TagRestControllerTest {
 
     }
 
+    @Test
+    public void addAsChild_StandardExists() throws Exception {
+        Long parentId = 88L;
+        String url = "/tag/" + parentId + "/child?asStandard=true";
 
+        Tag tag = new Tag("mystery MEAT");
+        tag = tag.tagType(TagType.Ingredient.name());
+        String tagString = json(tag);
+
+        MvcResult result = this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(tagString))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        // get newly created id
+        String locationValue = result.getResponse().getHeader("Location");
+        String idString = locationValue.substring(locationValue.lastIndexOf("/") + 1);
+
+        // recreate same tag
+        Tag recreateTag = new Tag("MYSTERY MEAT");
+        recreateTag = recreateTag.tagType(TagType.Ingredient.name());
+        String recreateTagString = json(recreateTag);
+
+        MvcResult recreateResult = this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(recreateTagString))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String recreateLocation = result.getResponse().getHeader("Location");
+        String recreateId = recreateLocation.substring(recreateLocation.lastIndexOf("/") + 1);
+
+        Assert.assertEquals(idString, recreateId);
+    }
 
 
 

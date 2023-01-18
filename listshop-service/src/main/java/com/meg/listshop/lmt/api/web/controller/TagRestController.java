@@ -1,7 +1,11 @@
 package com.meg.listshop.lmt.api.web.controller;
 
 import com.meg.listshop.lmt.api.controller.TagRestControllerApi;
-import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.model.ModelMapper;
+import com.meg.listshop.lmt.api.model.Tag;
+import com.meg.listshop.lmt.api.model.TagListResource;
+import com.meg.listshop.lmt.api.model.TagResource;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -17,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,7 +68,7 @@ public class TagRestController implements TagRestControllerApi {
 
     public ResponseEntity<Tag> add(Principal principal, HttpServletRequest request,
                                    @RequestBody Tag input,
-                                   @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) {
+                                   @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException {
         var tagEntity = ModelMapper.toEntity(input);
         String userName = null;
         if (!asStandard) {
@@ -85,25 +87,22 @@ public class TagRestController implements TagRestControllerApi {
     }
 
     public ResponseEntity<Tag> addAsChild(Principal principal, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
-                                          @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) {
+                                          @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException {
+        logger.debug("Beginning add tag.");
         String username = null;
         if (!asStandard) {
             username = principal.getName();
         }
-        TagEntity parent = this.tagService.getTagById(tagId);
 
-        if (parent != null) {
-            var tagEntity = ModelMapper.toEntity(input);
-            TagEntity result = this.tagService.createTag(parent, tagEntity, username);
-            if (result != null) {
-                var tagModel = ModelMapper.toModel(tagEntity);
-                var resource = new TagResource(tagModel);
-                return ResponseEntity.created(resource.selfLink(request, resource)).build();
-            } else {
-                return ResponseEntity.noContent().build();
-            }
+        var tagEntity = ModelMapper.toEntity(input);
+        TagEntity result = this.tagService.createTag(tagId, tagEntity, username);
+        if (result != null) {
+            var tagModel = ModelMapper.toModel(result);
+            var resource = new TagResource(tagModel);
+            return ResponseEntity.created(resource.selfLink(request, resource)).build();
+        } else {
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.badRequest().build();
 
     }
 
@@ -119,18 +118,6 @@ public class TagRestController implements TagRestControllerApi {
 
         return new ResponseEntity(new TagResource(tagModel), HttpStatus.OK);
 
-    }
-
-    private List<TagType> processTagTypeInput(String tagType) {
-        if (tagType == null) {
-            return new ArrayList<>();
-        } else if (tagType.contains(",")) {
-            return Arrays.asList(tagType.split(",")).stream()
-                    .map(t -> TagType.valueOf(t.trim()))
-                    .collect(Collectors.toList());
-        } else {
-            return Collections.singletonList(TagType.valueOf(tagType));
-        }
     }
 
 }

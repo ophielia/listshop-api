@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -143,13 +144,13 @@ public class TagProcessorImplTest {
     @Test
     @Sql(value = {"/sql/com/meg/atable/lmt/tag/impl/TagProcessorImplTest_restoreOriginal.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    public void processDishForInstruction_NewTag() {
+    public void processDishForInstruction_NewTag() throws BadParameterException {
         // add new tag
         TagEntity parentTag = tagService.getTagById(88L);
         TagEntity meatCake = new TagEntity();
         meatCake.setName("meat cake");
         meatCake.setTagType(TagType.Ingredient);
-        meatCake = tagService.createTag(parentTag, meatCake, null);
+        meatCake = tagService.createTag(88L, meatCake, null);
         Long newTagId = meatCake.getId();
         Set<Long> newTagSet = new HashSet<>();
         newTagSet.add(newTagId);

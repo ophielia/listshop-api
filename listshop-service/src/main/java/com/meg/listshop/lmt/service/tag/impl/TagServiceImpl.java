@@ -6,6 +6,7 @@ package com.meg.listshop.lmt.service.tag.impl;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.DishRatingInfo;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
@@ -247,33 +248,41 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagEntity createTag(TagEntity parent, TagEntity newtag, String name) {
-        Long tagUserId = null;
-        // check for duplicate
-        if (standardTagExists(newtag)) {
-            return null;
+    public TagEntity createTag(Long parentId, TagEntity newTag, String username) throws BadParameterException {
+        if (parentId == null) {
+            throw new BadParameterException("Parent Id is required to create tag.");
         }
-        //MM CHECK FOR EXISTING TAG!!!
-        if (name != null) {
-            UserEntity user = userService.getUserByUserEmail(name);
+        TagEntity parent = getTagById(parentId);
+        if (parent == null) {
+            throw new BadParameterException("Parent not found while creating tag.");
+        }
+
+        Long tagUserId = null;
+        if (username != null) {
+            UserEntity user = userService.getUserByUserEmail(username);
             tagUserId = user.getId();
         }
-        TagEntity parentTag = getParentForNewTag(parent, newtag);
-        newtag.setToDelete(false);
-        newtag.setCreatedOn(new Date());
-        newtag.setUserId(tagUserId);
-        TagEntity saved = tagRepository.save(newtag);
+        // check for duplicate
+        TagEntity existingTag = getExistingTag(newTag, tagUserId);
+        if (existingTag != null) {
+            return existingTag;
+        }
+
+        TagEntity parentTag = getParentForNewTag(parent, newTag);
+        newTag.setToDelete(false);
+        newTag.setCreatedOn(new Date());
+        newTag.setUserId(tagUserId);
+        TagEntity saved = tagRepository.save(newTag);
 
         tagStructureService.createRelation(parentTag, saved);
 
-
         fireTagAddedEvent(parentTag, saved);
-        return newtag;
+        return newTag;
     }
 
-    private boolean standardTagExists(TagEntity newtag) {
-        Optional<TagEntity> tag = tagRepository.findTagDuplicate(newtag.getName(), newtag.getTagType(), newtag.getIsGroup());
-        return tag.isPresent();
+    private TagEntity getExistingTag(TagEntity newtag, Long userId) {
+        Optional<TagEntity> tag = tagRepository.findTagDuplicate(newtag.getName().toLowerCase().trim(), newtag.getTagType(), newtag.getIsGroup(), userId);
+        return tag.orElse(null);
     }
 
     @Override

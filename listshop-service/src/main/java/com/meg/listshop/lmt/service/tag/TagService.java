@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.tag;
 
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
 import com.meg.listshop.lmt.api.model.TagType;
@@ -24,7 +25,7 @@ public interface TagService {
     TagEntity getTagById(Long tagId);
 
 
-    TagEntity createTag(TagEntity parent, TagEntity newTag, String username);
+    TagEntity createTag(Long parentId, TagEntity newTag, String username) throws BadParameterException;
 
     List<TagEntity> getTagsForDish(String username, Long dishId);
 

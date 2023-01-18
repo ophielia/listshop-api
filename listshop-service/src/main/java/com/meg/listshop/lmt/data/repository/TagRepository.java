@@ -107,8 +107,9 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
                                                 @Param("layoutId") Long layoutId);
 
     @Query(value = "select t from TagEntity t where lower(trim(t.name)) = :name " +
-            " and t.isGroup = :isGroup and t.tagType = :tagType ")
-    Optional<TagEntity> findTagDuplicate(@Param("name") String name, @Param("tagType") TagType tagType, @Param("isGroup") boolean isGroup);
+            " and t.isGroup = :isGroup and t.tagType = :tagType and t.userId = :userId")
+    Optional<TagEntity> findTagDuplicate(@Param("name") String name, @Param("tagType") TagType tagType, @Param("isGroup") boolean isGroup,
+                                         @Param("userId") Long userId);
 
     @Query(value = "select count(*) as countResult  " +
             "from dish_tags dt  " +
