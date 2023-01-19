@@ -30,6 +30,7 @@ All notable changes to this project will be documented in this file.
 
 - some database issues, for tests and uitests
 
+
 ## [1.10.0] November 2022
 
 ### Added
