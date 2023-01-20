@@ -11,5 +11,7 @@ ADD src/main/docker/glowroot.tar /helper
 RUN mkdir /home/listshop/tomcat
 RUN chmod 777 /home/listshop/tomcat
 
+EXPOSE 4000
+
 ENTRYPOINT ["java","-cp","app:app/lib/*","com.meg.listshop.Application"]
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
