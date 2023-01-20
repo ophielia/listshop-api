@@ -5,7 +5,7 @@
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>listshop-parent</artifactId>
-    <version>1.11.1-i</version>
+    <version>1.11.2-i</version>
     <packaging>pom</packaging>
 
     <name>listshop-parent</name>
