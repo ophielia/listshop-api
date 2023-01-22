@@ -7,7 +7,7 @@ COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY ${DEPENDENCY}/META-INF /app/META-INF
 COPY ${DEPENDENCY}/BOOT-INF/classes /app
 
-COPY ${STATIC_FILES}/celebrations.json /tmp/static
+COPY ${STATIC_FILES}/celebrations.json /app/static
 
 RUN mkdir /home/listshop/tomcat
 RUN chmod 777 /home/listshop/tomcat
