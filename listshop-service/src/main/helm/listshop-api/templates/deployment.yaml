@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "listshop-api.fullname" . }}
+  namespace: listshop
   labels:
     {{- include "listshop-api.labels" . | nindent 4 }}
 spec:
@@ -64,7 +65,11 @@ spec:
               mountPath: /opt/listshop/static
           ports:
             - name: http
+              {{- if .Values.service.glowrootEnabled -}}
               containerPort: {{ .Values.service.port }}
+              {{- else -}}
+              containerPort: {{ .Values.service.port }}, 4000
+              {{- end }}
               protocol: TCP
           livenessProbe:
             httpGet:
