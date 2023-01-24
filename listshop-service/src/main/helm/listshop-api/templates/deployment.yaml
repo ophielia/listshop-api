@@ -65,10 +65,10 @@ spec:
               mountPath: /opt/listshop/static
           ports:
           - name: http
-          {{- if not .Values.service.glowrootEnabled }}
-            containerPort: {{ .Values.service.port }}
-          {{- else }}
-            containerPort: {{ .Values.service.port }}, 4000
+            ports:
+            - containerPort: {{ .Values.service.port }}
+          {{- if .Values.service.glowrootEnabled }}
+            - containerPort: 4000
           {{- end}}
             protocol: TCP
           livenessProbe:
