@@ -43,7 +43,7 @@ service:
     url: jdbc:postgresql://4.tcp.ngrok.io:18281/dishhelm
   profile: container
   secrets: list-service-secret
-  glowrootEnabled: false
+  glowrootEnabled: true
   glowrootActivated: false
 
 ingress:

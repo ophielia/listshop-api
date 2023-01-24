@@ -64,13 +64,13 @@ spec:
             - name: list-service-static
               mountPath: /opt/listshop/static
           ports:
-            - name: http
-              {{- if .Values.service.glowrootEnabled -}}
-              containerPort: {{ .Values.service.port }}
-              {{- else -}}
-              containerPort: {{ .Values.service.port }}, 4000
-              {{- end }}
-              protocol: TCP
+          - name: http
+          {{- if not .Values.service.glowrootEnabled }}
+            containerPort: {{ .Values.service.port }}
+          {{- else }}
+            containerPort: {{ .Values.service.port }}, 4000
+          {{- end}}
+            protocol: TCP
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
