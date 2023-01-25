@@ -10,7 +10,7 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
-imagePullSecrets: [ { name: dockerservercred } ]
+imagePullSecrets: [ { name: dodockerservercred } ]
 nameOverride: ""
 fullnameOverride: ""
 
@@ -44,7 +44,7 @@ service:
   profile: container
   secrets: list-service-secret
   glowrootEnabled: true
-  glowrootActivated: false
+  glowrootActivated: true
 
 ingress:
   enabled: false

@@ -60,17 +60,26 @@ spec:
               value: '{{ .Values.service.port }}'
             - name: SPRING_PROFILES_ACTIVE
               value: {{ .Values.service.profile }}
+            {{- if .Values.service.glowrootActivated }}
+            - name: JAVA_TOOL_OPTIONS
+              value: '-javaagent:/opt/listshop/glowroot/glowroot.jar'
+            {{- end}}
           volumeMounts:
             - name: list-service-static
               mountPath: /opt/listshop/static
+            {{- if .Values.service.glowrootEnabled }}
+            - name: list-service-static
+              mountPath: /opt/listshop/glowroot
+            {{- end}}
           ports:
           - name: http
-            ports:
-            - containerPort: {{ .Values.service.port }}
-          {{- if .Values.service.glowrootEnabled }}
-            - containerPort: 4000
-          {{- end}}
+            containerPort: {{ .Values.service.port }}
             protocol: TCP
+          {{- if .Values.service.glowrootEnabled }}
+          - name: glowroot
+            containerPort: 4000
+            protocol: TCP
+          {{- end}}
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
