@@ -62,15 +62,11 @@ spec:
               value: {{ .Values.service.profile }}
             {{- if .Values.service.glowrootActivated }}
             - name: JAVA_TOOL_OPTIONS
-              value: '-javaagent:/etc/glowroot/glowroot.jar'
+              value: '-javaagent:/opt/listshop/glowroot/glowroot.jar'
             {{- end}}
           volumeMounts:
             - name: list-service-static
-              mountPath: /opt/listshop/static
-            {{- if .Values.service.glowrootEnabled }}
-            - name: list-service-static
-              mountPath: /etc/glowroot
-            {{- end}}
+              mountPath: /opt/listshop
           ports:
           - name: http
             containerPort: {{ .Values.service.port }}
@@ -96,6 +92,15 @@ spec:
             initialDelaySeconds: 30
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      {{- if .Values.service.copyStaticFilesVersion  }}
+      initContainers:
+      - name: listshop-init-static
+        image: "ophieliamoon/listshop-staticfiles:{{- print  .Values.service.copyStaticFilesVersion }}"
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: list-service-static
+          mountPath: /opt/listshop
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

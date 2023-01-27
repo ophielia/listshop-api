@@ -45,6 +45,7 @@ service:
   secrets: list-service-secret
   glowrootEnabled: true
   glowrootActivated: true
+  copyStaticFilesVersion: "1.0.11"
 
 ingress:
   enabled: false
