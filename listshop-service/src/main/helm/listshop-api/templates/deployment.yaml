@@ -62,14 +62,14 @@ spec:
               value: {{ .Values.service.profile }}
             {{- if .Values.service.glowrootActivated }}
             - name: JAVA_TOOL_OPTIONS
-              value: '-javaagent:/opt/listshop/glowroot/glowroot.jar'
+              value: '-javaagent:/etc/glowroot/glowroot.jar'
             {{- end}}
           volumeMounts:
             - name: list-service-static
               mountPath: /opt/listshop/static
             {{- if .Values.service.glowrootEnabled }}
             - name: list-service-static
-              mountPath: /opt/listshop/glowroot
+              mountPath: /etc/glowroot
             {{- end}}
           ports:
           - name: http
