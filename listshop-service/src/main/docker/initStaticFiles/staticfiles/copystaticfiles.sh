@@ -1,7 +1,11 @@
 #!/bin/bash
 
+
+ls /opt/listshop
 echo 'starting copy files'
+cd /opt/listshop
 mkdir glowroot
+mkdir static
 echo 'made directory, beginning to copy glowroot'
 cp  ./staticfiles/glowroot/* /opt/listshop/glowroot
 echo 'copied glowroot, beginning to copy json files'
