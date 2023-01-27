@@ -6,6 +6,7 @@ echo 'starting copy files'
 cd /opt/listshop
 mkdir glowroot
 mkdir static
+cd ../..
 echo 'made directory, beginning to copy glowroot'
 cp  ./staticfiles/glowroot/* /opt/listshop/glowroot
 echo 'copied glowroot, beginning to copy json files'
@@ -15,3 +16,7 @@ cp ./staticfiles/*.png /opt/listshop/static
 echo 'all done - lets do a ls'
 ls
 
+cd /opt/listshop
+ls
+ls static
+ls glowroot
