@@ -1,9 +1,6 @@
 #!/bin/bash
 
 
-ls /opt/listshop
-echo 'starting copy files'
-ls staticfiles
 echo 'starting copy files'
 cd /opt/listshop
 mkdir glowroot
@@ -15,10 +12,4 @@ echo 'copied glowroot, beginning to copy json files'
 cp ./staticfiles/*.json /opt/listshop/static
 echo 'copied json files, beginning to copy png files'
 cp ./staticfiles/*.png /opt/listshop/static
-echo 'all done - lets do a ls'
-ls
-
-cd /opt/listshop
-ls
-ls static
-ls glowroot
+echo 'Done!'
