@@ -8,8 +8,8 @@
     <Appenders>
         <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
             <JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" includeTimeMillis="true">
-                <KeyValuePair key="appName" value="${project.name}" />
-                <KeyValuePair key="version" value="${project.version}" />
+            <KeyValuePair key="appName" value="${project.name}" />
+            <KeyValuePair key="version" value="${project.version}" />
             </JSONLayout>
         </Console>
     </Appenders>

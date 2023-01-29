@@ -265,19 +265,6 @@
                     <groupId>com.spotify</groupId>
                     <artifactId>dockerfile-maven-plugin</artifactId>
                     <version>1.4.10</version>
-                    <executions>
-                        <execution>
-                            <id>build</id>
-                            <phase>install</phase>
-                            <goals>
-                                <goal>build</goal>
-                            </goals>
-                            <configuration>
-                                <repository>ophieliamoon/listshop-server</repository>
-                                <tag>${project.version}</tag>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
 
                 <plugin>
@@ -289,7 +276,11 @@
                     </configuration>
                 </plugin>
 
-
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
