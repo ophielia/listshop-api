@@ -10,22 +10,11 @@
             <JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" includeTimeMillis="true">
             <KeyValuePair key="appName" value="${project.name}" />
             <KeyValuePair key="version" value="${project.version}" />
-            <KeyValuePair key="area" value="app" />
-            </JSONLayout>
-        </Console>
-        <Console name="ConsoleWebAppender" target="SYSTEM_OUT" follow="true">
-            <JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" includeTimeMillis="true">
-                <KeyValuePair key="appName" value="${project.name}" />
-                <KeyValuePair key="version" value="${project.version}" />
-                <KeyValuePair key="area" value="web-requests" />
+            <KeyValuePair key="logSource" value="app" />
             </JSONLayout>
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="org.springframework.web" level="debug" additivity="false">
-            <AppenderRef ref="ConsoleWebAppender"/>
-        </Logger>
-
         <Root level="info">
             <AppenderRef ref="ConsoleAppender" />
         </Root>
