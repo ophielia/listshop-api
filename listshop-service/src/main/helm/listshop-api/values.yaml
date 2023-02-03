@@ -10,7 +10,7 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
-imagePullSecrets: [ { name: dockerservercred } ]
+imagePullSecrets: [ { name: dodockerservercred } ]
 nameOverride: ""
 fullnameOverride: ""
 
@@ -43,6 +43,9 @@ service:
     url: jdbc:postgresql://4.tcp.ngrok.io:18281/dishhelm
   profile: container
   secrets: list-service-secret
+  glowrootEnabled: true
+  glowrootActivated: true
+
 
 ingress:
   enabled: false

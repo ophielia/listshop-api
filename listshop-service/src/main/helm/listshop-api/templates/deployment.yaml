@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "listshop-api.fullname" . }}
+  namespace: listshop
   labels:
     {{- include "listshop-api.labels" . | nindent 4 }}
 spec:
@@ -59,29 +60,47 @@ spec:
               value: '{{ .Values.service.port }}'
             - name: SPRING_PROFILES_ACTIVE
               value: {{ .Values.service.profile }}
+            {{- if .Values.service.glowrootActivated }}
+            - name: JAVA_TOOL_OPTIONS
+              value: '-javaagent:/opt/listshop/glowroot/glowroot.jar'
+            {{- end}}
           volumeMounts:
             - name: list-service-static
-              mountPath: /opt/listshop/static
+              mountPath: /opt/listshop
           ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
+          - name: http
+            containerPort: {{ .Values.service.port }}
+            protocol: TCP
+          {{- if .Values.service.glowrootEnabled }}
+          - name: glowroot
+            containerPort: 4000
+            protocol: TCP
+          {{- end}}
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: http
-            failureThreshold: 3
+            failureThreshold: 4
             periodSeconds: 60
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: http
-            failureThreshold: 3
+            failureThreshold: 4
             periodSeconds: 60
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      {{- if .Values.service.copyStaticFilesVersion  }}
+      initContainers:
+      - name: listshop-init-static
+        image: "ophieliamoon/listshop-staticfiles:{{- print  .Values.service.copyStaticFilesVersion }}"
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: list-service-static
+          mountPath: /opt/listshop
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
