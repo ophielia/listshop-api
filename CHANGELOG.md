@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.11.1] February 2023
+
+### Changed
+
+- some configuration changed / fixed to run on kubernetes
+
 ## [1.11.0] January 2023
 
 ### Added
