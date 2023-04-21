@@ -1,13 +1,9 @@
 <configuration>
 
     <appender name="json" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
-            <jsonFormatter
-                    class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
-                <prettyPrint>true</prettyPrint>
-            </jsonFormatter>
-            <timestampFormat>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampFormat>
-        </layout>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"appName":"${project.name}", "version":"${project.version}", "logSource":"app"}</customFields>
+        </encoder>
     </appender>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -20,10 +16,3 @@
         <appender-ref ref="json" />
     </root>
 </configuration>
-
-
-<JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" includeTimeMillis="true">
-<KeyValuePair key="appName" value="${project.name}" />
-<KeyValuePair key="version" value="${project.version}" />
-<KeyValuePair key="logSource" value="app" />
-</JSONLayout>
