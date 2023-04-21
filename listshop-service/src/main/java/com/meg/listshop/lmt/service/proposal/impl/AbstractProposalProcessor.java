@@ -34,17 +34,17 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         this.dishSearchService = dishSearchService;
     }
 
-    @Value("${proposal.processor.dish.result.count.standard}")
-    protected static final int SEARCH_DISH_RESULT_COUNT =5;
+    @Value("${proposal.processor.dish.result.count.standard:5}")
+    protected int SEARCH_DISH_RESULT_COUNT;
 
-    @Value("${proposal.processor.dish.result.count.pickup}")
-    protected static final int SEARCH_DISH_RESULT_COUNT_PICKUP =10;
+    @Value("${proposal.processor.dish.result.count.pickup:10}")
+    protected int SEARCH_DISH_RESULT_COUNT_PICKUP;
 
-    @Value("${proposal.processor.dish.empty.count}")
-    protected static final int EMPTY_COUNT = 5;
+    @Value("${proposal.processor.dish.empty.count:5}")
+    protected int EMPTY_COUNT = 5;
 
-    @Value("${proposal.processor.fill.in.increment}")
-    protected static final int FILL_IN_INCREMENT = 5;
+    @Value("${proposal.processor.fill.in.increment:5}")
+    protected int FILL_IN_INCREMENT = 5;
 
     protected List<ProposalSlotEntity> mapRawSlotsToEntities(ProcessInformation info, List<NewRawSlotResult> rawSlotResults) {
         List<ProposalSlotEntity> resultList = new ArrayList<>();
@@ -54,7 +54,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
                 proposalSlot.setProposal(info.getProposal());
                 proposalSlot.setSlotNumber(slot.getSlotNumber());
                 proposalSlot.setSlotDishTagId(info.getDishTagBySlotNumber(slot.getSlotNumber()));
-                List<DishSlotEntity> dishSlots = mapDishSlots(info,slot, proposalSlot);
+                List<DishSlotEntity> dishSlots = mapDishSlots(info, slot, proposalSlot);
                 proposalSlot.setDishSlots(dishSlots);
                 resultList.add(proposalSlot);
             }
@@ -83,7 +83,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
 
     protected void fillFromApproach(ContextApproachEntity fillApproach, Map<Integer, NewRawSlotResult> resultsBySlot) throws ProposalProcessingException {
 
-        Integer[] order = FlatStringUtils.inflateStringToIntegerArray(fillApproach.getInstructions(),";");
+        Integer[] order = FlatStringUtils.inflateStringToIntegerArray(fillApproach.getInstructions(), ";");
         if (order == null) {
             throw new ProposalProcessingException("Invalid order [" + fillApproach.getInstructions() + "] for filling approach");
         }
@@ -194,7 +194,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
         information.setDishTagBySlotNumber(slot.getSlotOrder(), slot.getSlotDishTagId());
 
         // query db
-        List<DishTagSearchResult> dishResults = dishSearchService.retrieveDishResultsForTags(userId,slot , targetTagIds.size(), tagListForSlot, searchGroups, information.getSqlFilter());
+        List<DishTagSearchResult> dishResults = dishSearchService.retrieveDishResultsForTags(userId, slot, targetTagIds.size(), tagListForSlot, searchGroups, information.getSqlFilter());
 
         List<DishTagSearchResult> slotMatches = new ArrayList<>();
         List<DishTagSearchResult> targetMatches = new ArrayList<>();
@@ -238,7 +238,7 @@ public abstract class AbstractProposalProcessor implements ProposalProcessor {
             return new ArrayList<>();
         }
         List<Long> idsToFilter = new ArrayList<>();
-        for (NewRawSlotResult slot: slotResults) {
+        for (NewRawSlotResult slot : slotResults) {
             if (slot.getFilteredMatches().isEmpty()) {
                 continue;
             }
