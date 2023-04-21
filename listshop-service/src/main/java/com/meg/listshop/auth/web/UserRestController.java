@@ -22,7 +22,6 @@ import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.service.TokenService;
 import freemarker.template.TemplateException;
-import io.micrometer.core.instrument.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -118,7 +118,7 @@ public class UserRestController implements UserRestControllerApi {
         var user = inputPut.getUser();
         ClientDeviceInfo deviceInfo = inputPut.getDeviceInfo();
 
-        if (user == null || StringUtils.isEmpty(user.getEmail()) || StringUtils.isEmpty(user.getPassword())) {
+        if (user == null || !StringUtils.hasText(user.getEmail()) || !StringUtils.hasText(user.getPassword())) {
             throw new BadParameterException("Parameter user missing in PutCreateUser.");
         }
         if (user.getEmail().length() > 255 || user.getPassword().length() > 255) {
@@ -281,13 +281,13 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     private void validatateUserForPasswordChange(PostChangePassword postChangePassword, String principalUsername) throws BadParameterException {
-        if (StringUtils.isEmpty(principalUsername)) {
+        if (!StringUtils.hasText(principalUsername)) {
             throw new BadParameterException("User or username in input is blank or missing");
         }
-        if (StringUtils.isEmpty(postChangePassword.getNewPassword())) {
+        if (!StringUtils.hasText(postChangePassword.getNewPassword())) {
             throw new BadParameterException("Input for change password does not include the new password");
         }
-        if (StringUtils.isEmpty(postChangePassword.getOriginalPassword())) {
+        if (!StringUtils.hasText(postChangePassword.getOriginalPassword())) {
             throw new BadParameterException("Input for change password does not include the original password");
         }
         if (principalUsername.length()>255 || postChangePassword.getNewPassword().length() > 255 ||
@@ -301,10 +301,10 @@ public class UserRestController implements UserRestControllerApi {
         if (postTokenRequest == null) {
             throw new BadParameterException("No TokenRequest in request");
         }
-        if (StringUtils.isEmpty(postTokenRequest.getTokenParameter())) {
+        if (!StringUtils.hasText(postTokenRequest.getTokenParameter())) {
             throw new BadParameterException("No parameter in TokenRequest");
         }
-        if (StringUtils.isEmpty(postTokenRequest.getTokenType())) {
+        if (!StringUtils.hasText(postTokenRequest.getTokenType())) {
             throw new BadParameterException("No token type in TokenRequest");
         }
 
@@ -317,13 +317,13 @@ public class UserRestController implements UserRestControllerApi {
         if (postToken == null) {
             throw new BadParameterException("No Token in request");
         }
-        if (StringUtils.isEmpty(postToken.getTokenParameter())) {
+        if (!StringUtils.hasText(postToken.getTokenParameter())) {
             throw new BadParameterException("No parameter in Token");
         }
-        if (StringUtils.isEmpty(postToken.getTokenType())) {
+        if (!StringUtils.hasText(postToken.getTokenType())) {
             throw new BadParameterException("No token type in Token");
         }
-        if (StringUtils.isEmpty(postToken.getToken())) {
+        if (!StringUtils.hasText(postToken.getToken())) {
             throw new BadParameterException("No token value in Token");
         }
         if (postToken.getToken().length() > 255) {

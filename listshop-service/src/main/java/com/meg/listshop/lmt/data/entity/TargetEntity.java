@@ -196,7 +196,7 @@ public class TargetEntity extends AbstractInflateAndFlatten {
         // convert list of strings to list of longs and return
         if (!stringList.isEmpty()) {
             return stringList.stream()
-                    .map(Long::new)
+                    .map( s -> Long.valueOf(s))
                     .collect(Collectors.toSet());
         }
         return new HashSet<>();
