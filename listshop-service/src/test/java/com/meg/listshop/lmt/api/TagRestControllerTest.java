@@ -18,7 +18,7 @@ import com.meg.listshop.lmt.api.model.TagResource;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.repository.TagRelationRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.ListLayoutService;
+import com.meg.listshop.lmt.service.LayoutService;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
 import org.junit.*;
@@ -74,7 +74,7 @@ public class TagRestControllerTest {
     @Autowired
     private TagRepository tagRepository;
     @Autowired
-    private ListLayoutService listLayoutService;
+    private LayoutService listLayoutService;
     @Autowired
     private TagRelationRepository tagRelationRepository;
     @Autowired

@@ -57,7 +57,7 @@ class TagServiceImplMockTest {
     TagInfoCustomRepository tagInfoCustomRepository;
 
     @MockBean
-    ListLayoutService listLayoutService;
+    LayoutService listLayoutService;
 
     private static class CountResult implements ICountResult {
         int countResult;

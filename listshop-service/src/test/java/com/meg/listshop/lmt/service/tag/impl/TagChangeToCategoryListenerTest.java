@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.tag.impl;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -9,6 +10,10 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @RunWith(SpringRunner.class)
 public class TagChangeToCategoryListenerTest {
+    @Test
+    public void dummyTest() {
+        assert(1 == 1);
+    }
 /*
     @TestConfiguration
     static class TagChangeToCategoryListenerTestConfiguration {

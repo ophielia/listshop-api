@@ -5,18 +5,17 @@
  *
  */
 
-package com.meg.postoffice.templatetests;
+package com.meg.listshop.lmt.templatetests;
 
+import com.meg.listshop.configuration.PostofficeTestConfiguration;
 import com.meg.postoffice.api.model.EmailParameters;
 import com.meg.postoffice.api.model.EmailType;
-import com.meg.postoffice.config.PostOfficeConfiguration;
 import com.meg.postoffice.service.MailService;
 import freemarker.template.TemplateException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -24,16 +23,13 @@ import javax.mail.MessagingException;
 import java.io.IOException;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {PostOfficeConfiguration.class})
+@Import(PostofficeTestConfiguration.class)
 @TestPropertySource(locations = "/mytestsend.properties")
 public class BetaTestInformationSendTest {
 
     @Autowired
     private MailService mailService;
 
-    @SpringBootApplication
-    static class TestConfiguration {
-    }
 
     @Test
     public void testSendBetaTestInfo() throws TemplateException, IOException, MessagingException {

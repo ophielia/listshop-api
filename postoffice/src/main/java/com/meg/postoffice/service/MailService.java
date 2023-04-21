@@ -8,50 +8,42 @@
 package com.meg.postoffice.service;
 
 import com.meg.postoffice.api.model.EmailParameters;
-import com.meg.postoffice.config.ContentConfiguration;
+import com.meg.postoffice.config.MailConfiguration;
 import com.meg.postoffice.service.content.ContentBuilderFactory;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 
 //@Service
-@EnableConfigurationProperties(ContentConfiguration.class)
 public class MailService {
-    private static final Logger  LOG = LoggerFactory.getLogger(MailService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MailService.class);
 
-    private final ContentConfiguration contentConfiguration;
     private final Configuration configuration;
     private final String testDiversionEmail;
     private final boolean sendingEnabled;
 
     private JavaMailSender javaMailSender;
 
-    public MailService(ContentConfiguration contentConfiguration,
-                       Configuration freeMarkerViewResolver,
+    public MailService(FreeMarkerConfigurer freeMarkerConfigurer,
                        JavaMailSender javaMailSender,
-                       String testDiversionEmail,
-                       Boolean sendingEnabled) {
-        this.contentConfiguration = contentConfiguration;
-        this.configuration = freeMarkerViewResolver;
+                       MailConfiguration mailConfiguration) {
+        this.configuration = freeMarkerConfigurer.getConfiguration();
         this.javaMailSender = javaMailSender;
-        this.testDiversionEmail = testDiversionEmail;
-        this.sendingEnabled = sendingEnabled != null ? sendingEnabled : false;
+        this.testDiversionEmail = mailConfiguration.getTestDiversionEmail();
+        this.sendingEnabled = mailConfiguration.getSendingEnabled();
     }
 
     public void processEmail(EmailParameters emailParameters) throws TemplateException, IOException, MessagingException {
-        LOG.info(String.format("Begin processEmail: emailType[%s], recipient[%s]", emailParameters.getEmailType(), emailParameters.getReceiver().substring(0,5)));
+        LOG.info("Begin processEmail: emailType[{}], recipient[{}]", emailParameters.getEmailType(), emailParameters.getReceiver().substring(0, 5));
         var contentBuilder = new ContentBuilderFactory(emailParameters, configuration).build();
         String content = contentBuilder.buildContent();
         LOG.debug("Content created: {}", content);
@@ -84,16 +76,10 @@ public class MailService {
 
     private String getEmailSubject(EmailParameters emailParameters) {
         if (testDiversionEmail != null) {
-            return String.format("(%s) %s", emailParameters.getReceiver(), emailParameters.getSubject());
+            return String.format("({}) {}", emailParameters.getReceiver(), emailParameters.getSubject());
         }
         return emailParameters.getSubject();
     }
 
-    public String buildEmailContent() throws IOException, TemplateException {
-        var stringWriter = new StringWriter();
-        Map<String, Object> model = new HashMap<>();
-        model.put("test", this.contentConfiguration.getTest());
-        configuration.getTemplate("email.ftlh").process(model, stringWriter);
-        return stringWriter.toString();
-    }
+
 }

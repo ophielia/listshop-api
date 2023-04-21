@@ -12,7 +12,7 @@
         </encoder>
     </appender>
 
-    <root level="debug">
-        <appender-ref ref="json" />
+    <root level="warn">
+        <appender-ref ref="STDOUT" />
     </root>
 </configuration>

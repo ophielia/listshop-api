@@ -29,7 +29,7 @@ public class LayoutRestController implements LayoutRestControllerApi {
 
     private final LayoutService layoutService;
 
-    private static final Logger  LOG = LoggerFactory.getLogger(LayoutRestController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LayoutRestController.class);
 
     @Autowired
     public LayoutRestController(UserService userService, LayoutService layoutService) {
@@ -123,5 +123,7 @@ public class LayoutRestController implements LayoutRestControllerApi {
             return ResponseEntity.badRequest().build();
         }
     }
+
+
 }
 

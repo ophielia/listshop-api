@@ -1,66 +1,40 @@
-/*
- * The List Shop
- *
- * Copyright (c) 2022.
- *
- */
+package com.meg.listshop.configuration;
 
-package com.meg.postoffice.config;
-
+import com.meg.postoffice.config.MailConfiguration;
 import com.meg.postoffice.service.MailService;
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 @Configuration
-@EnableConfigurationProperties({ContentConfiguration.class, MailConfiguration.class})
-public class PostOfficeConfiguration {
-    @Autowired
-    private ContentConfiguration contentConfiguration;
-
-    @Autowired
-    MailConfiguration mailConfiguration;
+public class PostofficeConfiguration {
 
     @Bean
-    public MailService mailService() {
-        return new MailService(contentConfiguration,
-                freemarkerConfig().getConfiguration(),
-                javaMailSender(),
-                mailConfiguration.getTestDiversionEmail(),
-                mailConfiguration.getSendingEnabled()
-        );
-    }
-
-    @Bean
-    public ContentConfiguration contentConfiguration() {
-        return new ContentConfiguration();
-    }
-
-
-    @Bean
-    public FreeMarkerViewResolver freemarkerViewResolver() {
-
-        var resolver = new FreeMarkerViewResolver();
-        resolver.setCache(true);
-        resolver.setSuffix(".ftlh");
-        return resolver;
-    }
-
-    @Bean
-    public FreeMarkerConfigurer freemarkerConfig() {
-
-        var freeMarkerConfigurer = new FreeMarkerConfigurer();
-        freeMarkerConfigurer.setTemplateLoaderPath("classpath:/emailtemplates");
+    public FreeMarkerConfigurer freemarkerClassLoaderConfig() {
+        freemarker.template.Configuration configuration = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_31);
+        TemplateLoader templateLoader = new ClassTemplateLoader(this.getClass(), "/emailtemplates");
+        configuration.setTemplateLoader(templateLoader);
+        FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
+        freeMarkerConfigurer.setConfiguration(configuration);
         return freeMarkerConfigurer;
     }
 
     @Bean
-    public JavaMailSender javaMailSender() {
+    @ConfigurationProperties(prefix = "postoffice.mail")
+    public MailConfiguration mailConfiguration() {
+        return new MailConfiguration();
+    }
+
+    @Bean
+    @Autowired
+    public JavaMailSender javaMailSender(MailConfiguration mailConfiguration) {
+
         var mailSender = new JavaMailSenderImpl();
         if (mailConfiguration.getUsername() == null) {
             return mailSender;
@@ -85,5 +59,11 @@ public class PostOfficeConfiguration {
         }
 
         return mailSender;
+    }
+
+    @Bean
+    @Autowired
+    public MailService mailService(FreeMarkerConfigurer freemarkerConfigurer, JavaMailSender javaMailSender, MailConfiguration mailConfiguration) {
+        return new MailService( freemarkerConfigurer, javaMailSender, mailConfiguration);
     }
 }

@@ -15,7 +15,7 @@ import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.repository.TagRelationRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.ListLayoutService;
+import com.meg.listshop.lmt.service.LayoutService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;
@@ -69,7 +69,7 @@ public class AdminTagRestControllerTest {
     @Autowired
     private TagRepository tagRepository;
     @Autowired
-    private ListLayoutService listLayoutService;
+    private LayoutService listLayoutService;
     @Autowired
     private TagRelationRepository tagRelationRepository;
     @Autowired

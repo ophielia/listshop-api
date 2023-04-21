@@ -127,123 +127,80 @@ public class LayoutRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetUserLayouts() throws Exception {
-        // get base user layouts - checking that given layout is fully filled in
-        String url = "/layout/user";
-        MvcResult result = this.mockMvc.perform(get(url)
+    public void testDefaultLayoutAssignment() throws Exception {
+        String categoryTemplateId = "998901";  // Forbidden Area
+        String tagIdEliza = "1000124";
+        String tagIdAlexander = "1000125";
+
+        // Base User assigns alexander (1000125) to Layout "Forbidden Area" (998901)
+        // Base User assigns eliza (1000124) to Layout "Forbidden Area" (998901)
+        MappingPost mapping = new MappingPost();
+        mapping.setCategoryId(categoryTemplateId);
+        mapping.setTagIds(Arrays.asList(tagIdEliza, tagIdAlexander));
+        String payload = json(mapping);
+
+        // make call
+        String url = "/layout/user/mapping";
+        this.mockMvc.perform(post(url)
                         .with(user(baseUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.list_layout_list", Matchers.hasSize(2)))
-                .andReturn();
+                        .contentType(contentType)
+                        .content(payload))
+                .andExpect(status().isOk());
 
-        Assert.assertNotNull(result);
-        ListLayoutListResource resource = parseResourceFromString(result.getResponse().getContentAsString());
-        Assert.assertNotNull(resource);
-        Map<Long, ListLayout> resultMap = resource.getEmbeddedList().getListLayoutResourceList().stream()
-                .map(ListLayoutResource::getListLayout)
-                .collect(Collectors.toMap(ListLayout::getLayoutId, Function.identity()));
-        Assert.assertEquals("two layouts returned", 2, resultMap.keySet().size());
-        Assert.assertTrue("contains layout 999", resultMap.containsKey(999L));
-        ListLayout defaultLayout = resultMap.get(999L);
-        Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
-        Assert.assertEquals("default layout has 1 category", 1, defaultLayout.getCategories().size());
-        Assert.assertEquals("default layouts category contains 3 tags", 3, defaultLayout.getCategories().get(0).getTags().size());
-        ListLayout otherLayout = resultMap.get(998L);
-        Assert.assertFalse("other layout is not default", otherLayout.isDefault());
-        Assert.assertEquals("other layout has 1 category", 1, otherLayout.getCategories().size());
-        Assert.assertEquals("other layouts category contains 3 tags", 3, otherLayout.getCategories().get(0).getTags().size());
-
-    }
-
-    @Test
-    public void testGetDefaultLayoutNotLoggedIn() throws Exception {
-        // get base user layouts - checking that given layout is fully filled in
-        String url = "/layout/default";
-        MvcResult result = this.mockMvc.perform(get(url)
-                        .contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        Assert.assertNotNull(result);
-        ListLayoutResource resource = parseSingleResourceFromString(result.getResponse().getContentAsString());
-        Assert.assertNotNull(resource);
-        ListLayout defaultLayout = resource.getListLayout();
-        Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
-        Assert.assertTrue("default layout has more than 5", defaultLayout.getCategories().size() > 5);
-        Optional<ListLayoutCategory> produce = defaultLayout.getCategories().stream()
-                .filter(c -> Objects.equals(c.getName(), "Produce"))
-                .findFirst();
-        Assert.assertTrue("produce category exists", produce.isPresent());
-        Assert.assertTrue("produce has at least 10 tags", produce.get().getTags().size() > 10);
-        // tag "Peggy" is user-specific, and should not be in ListLayout
-        Optional<Tag> peggyTag = defaultLayout.getCategories().stream()
-                .flatMap(c -> c.getTags().stream())
-                .filter(t -> Objects.equals(t.getName(), "Peggy"))
-                .findFirst();
-        Assert.assertFalse(peggyTag.isPresent());
-    }
-
-    @Test
-    @WithMockUser
-    public void testGetDefaultLayoutLoggedIn() throws Exception {
         // New User creates new tag as child of hamilton (1000123)
         String newTagUlr = "/tag/1000123/child";
 
-        Tag tag = new Tag("Thomas Jefferson");
+        Tag tag = new Tag("Aaron Burr, sir");
         tag = tag.tagType(TagType.Ingredient.name());
         String tagString = json(tag);
 
-        this.mockMvc.perform(post(newTagUlr)
-                        .with(user(baseUserDetails))
+        MvcResult resultNewTag = this.mockMvc.perform(post(newTagUlr)
+                        .with(user(newUserDetails))
                         .contentType(contentType)
                         .content(tagString))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String newTagId = extractResultId(resultNewTag);
 
+        // New user creates new list
+        ListGenerateProperties properties = new ListGenerateProperties();
+        properties.setAddFromStarter(false);
+        properties.setGenerateMealplan(false);
 
-        // get base user layouts - checking that given layout is fully filled in
-        String url = "/layout/default";
-        MvcResult result = this.mockMvc.perform(get(url)
-                        .with(user(baseUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
+        String jsonProperties = json(properties);
+
+        String createListUrl = "/shoppinglist";
+        MvcResult resultNewList = this.mockMvc.perform(post(createListUrl)
+                        .with(user(newUserDetails))
+                        .contentType(contentType)
+                        .content(jsonProperties))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String newListId = extractResultId(resultNewList);
+
+        // New user adds new tag to list
+        String addToListUrl = String.format("/shoppinglist/%s/tag/%s", newListId, newTagId);
+        this.mockMvc.perform(post(addToListUrl)
+                        .with(user(newUserDetails))
+                        .contentType(contentType)
+                        .content(jsonProperties))
                 .andReturn();
 
-        Assert.assertNotNull(result);
-        ListLayoutResource resource = parseSingleResourceFromString(result.getResponse().getContentAsString());
-        Assert.assertNotNull(resource);
-        ListLayout defaultLayout = resource.getListLayout();
-        Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
-        Assert.assertTrue("default layout has more than 5", defaultLayout.getCategories().size() > 5);
-        Optional<ListLayoutCategory> produce = defaultLayout.getCategories().stream()
-                .filter(c -> Objects.equals(c.getName(), "Produce"))
-                .findFirst();
-        Assert.assertTrue("produce category exists", produce.isPresent());
-        Assert.assertTrue("produce has at least 10 tags", produce.get().getTags().size() > 10);
-        // check for existance of "Thomas Jefferson" tag
-        Optional<Tag> jeffersonTag = defaultLayout.getCategories().stream()
-                .flatMap(c -> c.getTags().stream())
-                .filter(t -> Objects.equals(t.getName(), "Thomas Jefferson"))
-                .findFirst();
-        Assert.assertTrue(jeffersonTag.isPresent());
-    }
-
-    @Test
-    @WithMockUser
-    public void testGetUserLayoutsEmpty() throws Exception {
-        // get base user layouts - checking that given layout is fully filled in
-        String url = "/layout/user";
-        MvcResult result = this.mockMvc.perform(get(url)
-                        .with(user(emptyUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isOk())
+        // New user retrieves list
+        String retrieveList = String.format("/shoppinglist/%s", newListId);
+        MvcResult listResultsAfter = this.mockMvc.perform(get(retrieveList)
+                        .with(user(newUserDetails)))
                 .andReturn();
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        String jsonList = listResultsAfter.getResponse().getContentAsString();
+        ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
+        ShoppingList resultList = afterList.getShoppingList();
 
-        Assert.assertNotNull(result);
-        ListLayoutListResource resource = parseResourceFromString(result.getResponse().getContentAsString());
-        Assert.assertNotNull(resource.getEmbeddedList().getListLayoutResourceList());
-        Assert.assertEquals("empty list should be returned", 0, resource.getEmbeddedList().getListLayoutResourceList().size());
+        // Creation of new tag
+        Assert.assertNotNull(resultList);
+        Assert.assertEquals(1, resultList.getCategories().size());
     }
+
 
     @Test
     @WithMockUser
@@ -464,78 +421,123 @@ public class LayoutRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testDefaultLayoutAssignment() throws Exception {
-        String categoryTemplateId = "998901";  // Forbidden Area
-        String tagIdEliza = "1000124";
-        String tagIdAlexander = "1000125";
+    public void testGetUserLayoutsEmpty() throws Exception {
+        // get base user layouts - checking that given layout is fully filled in
+        String url = "/layout/user";
+        MvcResult result = this.mockMvc.perform(get(url)
+                        .with(user(emptyUserDetails))
+                        .contentType(contentType))
+                .andExpect(status().isOk())
+                .andReturn();
 
-        // Base User assigns alexander (1000125) to Layout "Forbidden Area" (998901)
-        // Base User assigns eliza (1000124) to Layout "Forbidden Area" (998901)
-        MappingPost mapping = new MappingPost();
-        mapping.setCategoryId(categoryTemplateId);
-        mapping.setTagIds(Arrays.asList(tagIdEliza, tagIdAlexander));
-        String payload = json(mapping);
+        Assert.assertNotNull(result);
+        ListLayoutListResource resource = parseResourceFromString(result.getResponse().getContentAsString());
+        Assert.assertNotNull(resource.getEmbeddedList().getListLayoutResourceList());
+        Assert.assertEquals("empty list should be returned", 0, resource.getEmbeddedList().getListLayoutResourceList().size());
+    }
 
-        // make call
-        String url = "/layout/user/mapping";
-        this.mockMvc.perform(post(url)
+
+    @Test
+    @WithMockUser
+    public void testGetUserLayouts() throws Exception {
+        // get base user layouts - checking that given layout is fully filled in
+        String url = "/layout/user";
+        MvcResult result = this.mockMvc.perform(get(url)
                         .with(user(baseUserDetails))
-                        .contentType(contentType)
-                        .content(payload))
-                .andExpect(status().isOk());
+                        .contentType(contentType))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.list_layout_list", Matchers.hasSize(2)))
+                .andReturn();
 
+        Assert.assertNotNull(result);
+        ListLayoutListResource resource = parseResourceFromString(result.getResponse().getContentAsString());
+        Assert.assertNotNull(resource);
+        Map<Long, ListLayout> resultMap = resource.getEmbeddedList().getListLayoutResourceList().stream()
+                .map(ListLayoutResource::getListLayout)
+                .collect(Collectors.toMap(ListLayout::getLayoutId, Function.identity()));
+        Assert.assertEquals("two layouts returned", 2, resultMap.keySet().size());
+        Assert.assertTrue("contains layout 999", resultMap.containsKey(999L));
+        ListLayout defaultLayout = resultMap.get(999L);
+        Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
+        Assert.assertEquals("default layout has 1 category", 1, defaultLayout.getCategories().size());
+        Assert.assertEquals("default layouts category contains 3 tags", 3, defaultLayout.getCategories().get(0).getTags().size());
+        ListLayout otherLayout = resultMap.get(998L);
+        Assert.assertFalse("other layout is not default", otherLayout.isDefault());
+        Assert.assertEquals("other layout has 1 category", 1, otherLayout.getCategories().size());
+        Assert.assertEquals("other layouts category contains 3 tags", 3, otherLayout.getCategories().get(0).getTags().size());
+
+    }
+
+    @Test
+    public void testGetDefaultUserLayoutNotLoggedIn() throws Exception {
+        // get base user layouts - checking that given layout is fully filled in
+        String url = "/layout/default";
+        MvcResult result = this.mockMvc.perform(get(url)
+                        .contentType(contentType))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assert.assertNotNull(result);
+        ListLayoutResource resource = parseSingleResourceFromString(result.getResponse().getContentAsString());
+        Assert.assertNotNull(resource);
+        ListLayout defaultLayout = resource.getListLayout();
+        Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
+        Assert.assertTrue("default layout has more than 5", defaultLayout.getCategories().size() > 5);
+        Optional<ListLayoutCategory> produce = defaultLayout.getCategories().stream()
+                .filter(c -> Objects.equals(c.getName(), "Produce"))
+                .findFirst();
+        Assert.assertTrue("produce category exists", produce.isPresent());
+        Assert.assertTrue("produce has at least 10 tags", produce.get().getTags().size() > 10);
+        // tag "Peggy" is user-specific, and should not be in ListLayout
+        Optional<Tag> peggyTag = defaultLayout.getCategories().stream()
+                .flatMap(c -> c.getTags().stream())
+                .filter(t -> Objects.equals(t.getName(), "Peggy"))
+                .findFirst();
+        Assert.assertFalse(peggyTag.isPresent());
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetDefaultLayoutLoggedIn() throws Exception {
         // New User creates new tag as child of hamilton (1000123)
         String newTagUlr = "/tag/1000123/child";
 
-        Tag tag = new Tag("Aaron Burr, sir");
+        Tag tag = new Tag("Thomas Jefferson");
         tag = tag.tagType(TagType.Ingredient.name());
         String tagString = json(tag);
 
-        MvcResult resultNewTag = this.mockMvc.perform(post(newTagUlr)
-                        .with(user(newUserDetails))
+        this.mockMvc.perform(post(newTagUlr)
+                        .with(user(baseUserDetails))
                         .contentType(contentType)
                         .content(tagString))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-        String newTagId = extractResultId(resultNewTag);
+                .andExpect(status().is2xxSuccessful());
 
-        // New user creates new list
-        ListGenerateProperties properties = new ListGenerateProperties();
-        properties.setAddFromStarter(false);
-        properties.setGenerateMealplan(false);
 
-        String jsonProperties = json(properties);
-
-        String createListUrl = "/shoppinglist";
-        MvcResult resultNewList = this.mockMvc.perform(post(createListUrl)
-                        .with(user(newUserDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isCreated())
-                .andReturn();
-        String newListId = extractResultId(resultNewList);
-
-        // New user adds new tag to list
-        String addToListUrl = String.format("/shoppinglist/%s/tag/%s", newListId, newTagId);
-        this.mockMvc.perform(post(addToListUrl)
-                        .with(user(newUserDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
+        // get base user layouts - checking that given layout is fully filled in
+        String url = "/layout/default";
+        MvcResult result = this.mockMvc.perform(get(url)
+                        .with(user(baseUserDetails))
+                        .contentType(contentType))
+                .andExpect(status().isOk())
                 .andReturn();
 
-        // New user retrieves list
-        String retrieveList = String.format("/shoppinglist/%s", newListId);
-        MvcResult listResultsAfter = this.mockMvc.perform(get(retrieveList)
-                        .with(user(newUserDetails)))
-                .andReturn();
-        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
-        String jsonList = listResultsAfter.getResponse().getContentAsString();
-        ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
-        ShoppingList resultList = afterList.getShoppingList();
-
-        // Creation of new tag
-        Assert.assertNotNull(resultList);
-        Assert.assertEquals(1, resultList.getCategories().size());
+        Assert.assertNotNull(result);
+        ListLayoutResource resource = parseSingleResourceFromString(result.getResponse().getContentAsString());
+        Assert.assertNotNull(resource);
+        ListLayout defaultLayout = resource.getListLayout();
+        Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
+        Assert.assertTrue("default layout has more than 5", defaultLayout.getCategories().size() > 5);
+        Optional<ListLayoutCategory> produce = defaultLayout.getCategories().stream()
+                .filter(c -> Objects.equals(c.getName(), "Produce"))
+                .findFirst();
+        Assert.assertTrue("produce category exists", produce.isPresent());
+        Assert.assertTrue("produce has at least 10 tags", produce.get().getTags().size() > 10);
+        // check for existance of "Thomas Jefferson" tag
+        Optional<Tag> jeffersonTag = defaultLayout.getCategories().stream()
+                .flatMap(c -> c.getTags().stream())
+                .filter(t -> Objects.equals(t.getName(), "Thomas Jefferson"))
+                .findFirst();
+        Assert.assertTrue(jeffersonTag.isPresent());
     }
 
     @Test
@@ -624,6 +626,21 @@ public class LayoutRestControllerTest {
                 .collect(Collectors.toSet());
         Assertions.assertTrue(categoryIds.isEmpty());
     }
+
+    @Test
+    public void testRetrieveUserDefaultLayout() throws Exception {
+        String url = "/layout/user/categories";
+        MvcResult result = this.mockMvc.perform(get(url)
+                        .with(user(baseUserDetails))
+                        .contentType(contentType))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assert.assertNotNull(result);
+    }
+
+
+
 
     private String extractResultId(MvcResult result) {
         List<String> headers = result.getResponse().getHeaders("Location");

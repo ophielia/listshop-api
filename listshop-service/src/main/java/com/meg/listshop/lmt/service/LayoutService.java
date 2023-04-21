@@ -30,4 +30,6 @@ public interface LayoutService {
     void assignUserDefaultCategoriesToTag(List<TagEntity> siblings, TagEntity tagToAssign);
 
     List<ListLayoutCategoryEntity> getUserCategories(String userName);
+
+    void addTagToCategory(Long layoutCategoryId, TagEntity tag);
 }

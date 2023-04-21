@@ -3,7 +3,6 @@ package com.meg.listshop.lmt.service.tag.impl;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.LayoutService;
-import com.meg.listshop.lmt.service.ListLayoutService;
 import com.meg.listshop.lmt.service.tag.TagChangeListener;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -27,8 +26,6 @@ public class TagChangeToCategoryListener implements TagChangeListener {
     @Autowired
     private TagStructureService tagStructureService;
 
-    @Autowired
-    private ListLayoutService listLayoutService;
 
     @Autowired
     private LayoutService layoutService;
@@ -89,8 +86,7 @@ public class TagChangeToCategoryListener implements TagChangeListener {
             layoutService.assignDefaultCategoryToTag(new ArrayList<>(), copiedTag);
             return;
         }
-        listLayoutService.addTagToCategory(categoryId, copiedTag);
-
+        layoutService.addTagToCategory(categoryId, copiedTag);
     }
 
 

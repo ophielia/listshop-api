@@ -91,9 +91,11 @@ public class LayoutServiceImpl implements LayoutService {
             idToAssign = categoryRepository.getDefaultCategoryId();
         }
 
-        ListLayoutCategoryEntity toAssign = categoryRepository.getById(idToAssign);
+        Optional<ListLayoutCategoryEntity> toAssign = categoryRepository.findById(idToAssign);
 
-        toAssign.addTag(tagToAssign);
+        if (toAssign.isPresent()) {
+        toAssign.get().addTag(tagToAssign);
+        }
 
     }
 
@@ -123,7 +125,7 @@ public class LayoutServiceImpl implements LayoutService {
     public List<ListLayoutCategoryEntity> getUserCategories(String userName) {
         UserEntity user = userService.getUserByUserEmail(userName);
         if (user == null) {
-            LOG.error("No user found for username [%s]",userName);
+            LOG.error("No user found for username [{}]",userName);
             return new ArrayList<>();
         }
         // get default layout for user
@@ -177,13 +179,13 @@ public class LayoutServiceImpl implements LayoutService {
 
     private void addMappingsToLayout(ListLayoutEntity listLayout, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException {
         if (tagIds.isEmpty()) {
-            LOG.warn("Empty tag list sent to addMappingsToLayout [%s][%s]", listLayout.getId(), categoryId);
+            LOG.warn("Empty tag list sent to addMappingsToLayout [{}][{}]", listLayout.getId(), categoryId);
             return;
         }
         // retrieve category for mappings
         ListLayoutCategoryEntity givenCategory = categoryRepository.getById(categoryId);
         if (givenCategory == null) {
-            LOG.warn("Template category in addMappingsToLayout not found [%s][%s]", listLayout.getId(), categoryId);
+            LOG.warn("Template category in addMappingsToLayout not found [{}][{}]", listLayout.getId(), categoryId);
             throw new ObjectNotFoundException(String.format("Template category in addMappingsToLayout not found [%s][%s]", listLayout.getId(), categoryId));
         }
         Set<Long> mappingTagIds = new HashSet<>(tagIds);
@@ -225,13 +227,32 @@ public class LayoutServiceImpl implements LayoutService {
                     .filter(c -> Objects.equals(c.getLayoutId(), layoutId))
                     .findFirst();
             if (categoryToDelete.isPresent()) {
-                ListLayoutCategoryEntity category = categoryRepository.getById(categoryToDelete.get().getId());
+                Optional<ListLayoutCategoryEntity> category = categoryRepository.findById(categoryToDelete.get().getId());
+                if (category.isPresent()) {
 
-                // do deletion
-                category.removeTag(t);
+                    // do deletion
+                    category.get().removeTag(t);
+                }
             }
 
         });
 
+    }
+
+    @Override
+    public void addTagToCategory(Long layoutCategoryId, TagEntity tag) {
+        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt = categoryRepository.findById(layoutCategoryId);
+        if (!listLayoutEntityOpt.isPresent()) {
+            return;
+        }
+        ListLayoutCategoryEntity categoryEntity = listLayoutEntityOpt.get();
+        Set<TagEntity> tags = categoryEntity.getTags();
+        if (tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
+            return;
+        }
+        tags.add(tag);
+        tag.getCategories().add(categoryEntity);
+        categoryEntity.setTags(tags);
+        categoryRepository.save(categoryEntity);
     }
 }

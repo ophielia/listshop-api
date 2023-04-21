@@ -7,9 +7,6 @@
 
 package com.meg.postoffice.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-@ConfigurationProperties(prefix = "postoffice.mail")
 public class MailConfiguration {
 
     private String test;
@@ -115,7 +112,7 @@ public class MailConfiguration {
     }
 
     public Boolean getSendingEnabled() {
-        return sendingEnabled;
+        return sendingEnabled != null && sendingEnabled;
     }
 
     public void setSendingEnabled(Boolean sendingEnabled) {

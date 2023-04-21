@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * Created by margaretmartin on 09/11/2017.
  */
-public interface ListLayoutRepository extends JpaRepository<ListLayoutEntity, Long> , CustomListLayoutRepository {
+public interface ListLayoutRepository extends JpaRepository<ListLayoutEntity, Long>, CustomListLayoutRepository {
 
 
     @Query("select e from ListLayoutEntity e where e.userId = ?1 and e.layoutId = ?2")
