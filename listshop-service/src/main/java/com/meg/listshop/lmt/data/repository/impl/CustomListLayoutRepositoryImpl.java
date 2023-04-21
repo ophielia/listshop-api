@@ -4,8 +4,8 @@ import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.repository.CustomListLayoutRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import javax.persistence.criteria.*;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepository {
 
-    private static final Logger logger = LogManager.getLogger(CustomListLayoutRepositoryImpl.class);
+    private static final Logger  logger = LoggerFactory.getLogger(CustomListLayoutRepositoryImpl.class);
 
     @PersistenceContext
     private EntityManager entityManager;

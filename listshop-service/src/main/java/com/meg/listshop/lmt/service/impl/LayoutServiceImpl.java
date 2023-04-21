@@ -10,8 +10,8 @@ import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.LayoutService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class LayoutServiceImpl implements LayoutService {
 
-    private static final Logger LOG = LogManager.getLogger(LayoutServiceImpl.class);
+    private static final Logger  LOG = LoggerFactory.getLogger(LayoutServiceImpl.class);
 
     private final ListLayoutRepository listLayoutRepository;
     private final ListLayoutCategoryRepository categoryRepository;

@@ -16,8 +16,8 @@ import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class ShoppingListServiceImpl implements ShoppingListService {
-    private static final Logger logger = LogManager.getLogger(ShoppingListServiceImpl.class);
+    private static final Logger  logger = LoggerFactory.getLogger(ShoppingListServiceImpl.class);
 
     private final
     UserService userService;

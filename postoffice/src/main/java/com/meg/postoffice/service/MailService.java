@@ -29,7 +29,7 @@ import java.util.Map;
 //@Service
 @EnableConfigurationProperties(ContentConfiguration.class)
 public class MailService {
-    private static final Logger LOG = LoggerFactory.getLogger(MailService.class);
+    private static final Logger  LOG = LoggerFactory.getLogger(MailService.class);
 
     private final ContentConfiguration contentConfiguration;
     private final Configuration configuration;

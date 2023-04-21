@@ -11,8 +11,8 @@ import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.ModelMapper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class AdminUserRestController implements AdminUserRestControllerApi {
 
-    private static final Logger logger = LogManager.getLogger(AdminUserRestController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdminUserRestController.class);
 
     private UserService userService;
     private UserPropertyService userPropertyService;

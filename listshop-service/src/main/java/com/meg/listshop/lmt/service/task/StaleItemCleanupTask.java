@@ -2,8 +2,8 @@ package com.meg.listshop.lmt.service.task;
 
 import com.meg.listshop.lmt.data.entity.ItemEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,7 +19,7 @@ import java.util.List;
 @Component
 public class StaleItemCleanupTask {
 
-    private static final Logger logger = LogManager.getLogger(StaleItemCleanupTask.class);
+    private static final Logger  logger = LoggerFactory.getLogger(StaleItemCleanupTask.class);
 
 
     @Value("${component.staleitemcleanuptask.items.deleted.after.days}")

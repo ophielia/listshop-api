@@ -15,8 +15,8 @@ import com.meg.listshop.auth.service.UserPropertyService;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +39,7 @@ public class UserPropertyServiceImpl implements UserPropertyService {
 
     private final List<UserPropertyChangeListener> listeners = new CopyOnWriteArrayList<>();
 
-    protected final Log logger = LogFactory.getLog(UserPropertyServiceImpl.class);
+    protected final Logger logger = LoggerFactory.getLogger(UserPropertyServiceImpl.class);
 
     @Autowired
     public UserPropertyServiceImpl(UserService userService, UserPropertyRepository userPropertyRepository) {

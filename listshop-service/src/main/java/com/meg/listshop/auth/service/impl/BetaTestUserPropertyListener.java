@@ -10,8 +10,8 @@ import com.meg.postoffice.api.model.EmailParameters;
 import com.meg.postoffice.api.model.EmailType;
 import com.meg.postoffice.service.MailService;
 import freemarker.template.TemplateException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class BetaTestUserPropertyListener implements UserPropertyChangeListener 
     @Value("${listservice.email.sender:support@the-list-shop.com}")
     String EMAIL_SENDER;
 
-    private static final Logger logger = LogManager.getLogger(BetaTestUserPropertyListener.class);
+    private static final Logger  logger = LoggerFactory.getLogger(BetaTestUserPropertyListener.class);
 
     @Autowired
     public BetaTestUserPropertyListener(UserPropertyService userPropertyService, MailService mailService) {

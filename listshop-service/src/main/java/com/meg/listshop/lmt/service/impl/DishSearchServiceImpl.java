@@ -8,8 +8,8 @@ import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishTagSearchResult;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Service
 public class DishSearchServiceImpl implements DishSearchService {
 
-    private static final Logger logger = LogManager.getLogger(DishSearchServiceImpl.class);
+    private static final Logger  logger = LoggerFactory.getLogger(DishSearchServiceImpl.class);
 
     private TagStructureService tagStructureService;
 

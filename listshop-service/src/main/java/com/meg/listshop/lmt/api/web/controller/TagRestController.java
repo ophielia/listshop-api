@@ -9,8 +9,8 @@ import com.meg.listshop.lmt.api.model.TagResource;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.tag.TagService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +34,7 @@ public class TagRestController implements TagRestControllerApi {
 
     private final TagService tagService;
 
-    private static final Logger logger = LogManager.getLogger(TagRestController.class);
+    private static final Logger  logger = LoggerFactory.getLogger(TagRestController.class);
 
     @Autowired
     TagRestController(TagService tagService) {

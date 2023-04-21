@@ -1,7 +1,7 @@
 package com.meg.listshop.lmt.api.exception;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class ObjectNotYoursException extends RuntimeException {
 
-    private static final Logger logger = LogManager.getLogger(ObjectNotYoursException.class);
+    private static final Logger  logger = LoggerFactory.getLogger(ObjectNotYoursException.class);
 
     public ObjectNotYoursException(Long objectId, Long userId) {
         super("Object [" + objectId+"] found, but doesn't belong to user [" + userId + "]");

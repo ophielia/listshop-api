@@ -7,8 +7,8 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.service.ShoppingListException;
 import com.meg.listshop.lmt.service.ShoppingListService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Controller
 public class ShoppingListRestController implements ShoppingListRestControllerApi {
 
-    private static final Logger logger = LogManager.getLogger(ShoppingListRestController.class);
+    private static final Logger  logger = LoggerFactory.getLogger(ShoppingListRestController.class);
 
     private final ShoppingListService shoppingListService;
 

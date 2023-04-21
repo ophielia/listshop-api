@@ -13,7 +13,6 @@ import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.TokenException;
 import com.meg.listshop.lmt.api.model.TokenType;
-import com.meg.listshop.lmt.api.web.controller.TagRestController;
 import com.meg.listshop.lmt.data.entity.TokenEntity;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
 import com.meg.listshop.lmt.service.TokenService;
@@ -21,8 +20,8 @@ import com.meg.postoffice.api.model.EmailParameters;
 import com.meg.postoffice.api.model.EmailType;
 import com.meg.postoffice.service.MailService;
 import freemarker.template.TemplateException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -40,7 +39,7 @@ import java.util.UUID;
 @Service
 public class TokenServiceImpl implements TokenService {
 
-    private static final Logger logger = LogManager.getLogger(TokenServiceImpl.class);
+    private static final Logger  logger = LoggerFactory.getLogger(TokenServiceImpl.class);
 
     @Value("${listservice.email.sender:support@the-list-shop.com}")
     String EMAIL_SENDER;

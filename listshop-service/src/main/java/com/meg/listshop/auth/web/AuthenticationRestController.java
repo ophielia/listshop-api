@@ -26,11 +26,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.Locale;
 
 @Controller
 public class AuthenticationRestController implements AuthenticationRestControllerApi {
-    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationRestController.class);
+    private static final Logger  LOG = LoggerFactory.getLogger(AuthenticationRestController.class);
 
     @Value("${jwt.header}")
     private String tokenHeader;

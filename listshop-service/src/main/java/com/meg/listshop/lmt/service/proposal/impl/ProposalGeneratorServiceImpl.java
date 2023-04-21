@@ -14,8 +14,8 @@ import com.meg.listshop.lmt.service.MealPlanService;
 import com.meg.listshop.lmt.service.TargetService;
 import com.meg.listshop.lmt.service.proposal.*;
 import com.meg.listshop.lmt.service.tag.TagService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
 
-    private static final Logger logger = LogManager.getLogger(ProposalGeneratorServiceImpl.class);
+    private static final Logger  logger = LoggerFactory.getLogger(ProposalGeneratorServiceImpl.class);
 
     ProposalProcessorFactory proposalProcessorFactory;
 

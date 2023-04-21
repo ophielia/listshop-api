@@ -9,8 +9,8 @@ import com.meg.listshop.lmt.api.model.StatisticListPost;
 import com.meg.listshop.lmt.api.model.StatisticListResource;
 import com.meg.listshop.lmt.data.entity.ListTagStatistic;
 import com.meg.listshop.lmt.service.ListTagStatisticService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.CollectionModel;
@@ -33,7 +33,7 @@ public class StatisticRestController implements StatisticRestControllerApi {
     private final ListTagStatisticService listTagStatisticService;
     private final UserService userService;
 
-    private static final Logger logger = LogManager.getLogger(StatisticRestController.class);
+    private static final Logger  logger = LoggerFactory.getLogger(StatisticRestController.class);
 
     @Value("${statistic.list.default.limit:100}")
     private int statisticListDefaultLimit;

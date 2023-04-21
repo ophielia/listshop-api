@@ -17,8 +17,8 @@ import com.meg.listshop.lmt.service.tag.TagService;
 import io.jsonwebtoken.lang.Collections;
 import me.atrox.haikunator.Haikunator;
 import me.atrox.haikunator.HaikunatorBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Service
 public class MealPlanServiceImpl implements MealPlanService {
 
-    private static final Logger logger = LogManager.getLogger(MealPlanServiceImpl.class);
+    private static final Logger  logger = LoggerFactory.getLogger(MealPlanServiceImpl.class);
 
     private UserService userService;
 

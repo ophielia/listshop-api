@@ -5,8 +5,8 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.service.ListLayoutService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class ListLayoutRestController implements ListLayoutRestControllerApi {
 
 
-    private static final Logger logger = LogManager.getLogger(ListLayoutRestController.class);
+    private static final Logger  logger = LoggerFactory.getLogger(ListLayoutRestController.class);
 
     private ListLayoutService listLayoutService;
 

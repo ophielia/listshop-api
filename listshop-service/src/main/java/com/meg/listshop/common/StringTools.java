@@ -1,7 +1,7 @@
 package com.meg.listshop.common;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.Link;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class StringTools {
-    private static final Logger logger = LogManager.getLogger(StringTools.class);
+    private static final Logger  logger = LoggerFactory.getLogger(StringTools.class);
 
     private StringTools() {
         throw new IllegalAccessError("Utility class");

@@ -2,8 +2,8 @@ package com.meg.listshop.lmt.service.task;
 
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 public class AutoTaggerTask {
 
-    private static final Logger logger = LogManager.getLogger(AutoTaggerTask.class);
+    private static final Logger  logger = LoggerFactory.getLogger(AutoTaggerTask.class);
 
     @Value("${component.autotaggertask.is.active}")
     boolean taskIsActive;

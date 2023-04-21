@@ -3,8 +3,8 @@ package com.meg.listshop.lmt.data.repository.impl;
 import com.meg.listshop.lmt.api.model.StatisticCountType;
 import com.meg.listshop.lmt.data.repository.CustomStatisticRepository;
 import com.meg.listshop.lmt.service.impl.StatisticOperationType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class CustomStatisticRepositoryImpl implements CustomStatisticRepository {
 
-    private static final Logger logger = LogManager.getLogger(CustomStatisticRepositoryImpl.class);
+    private static final Logger  logger = LoggerFactory.getLogger(CustomStatisticRepositoryImpl.class);
 
     @PersistenceContext
     private EntityManager entityManager;

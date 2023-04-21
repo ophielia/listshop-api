@@ -12,8 +12,8 @@ import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.tag.TagService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class DishRestController implements DishRestControllerApi {
 
-    private static final Logger logger = LogManager.getLogger(DishRestController.class);
+    private static final Logger  logger = LoggerFactory.getLogger(DishRestController.class);
 
     private final DishService dishService;
     private final DishSearchService dishSearchService;

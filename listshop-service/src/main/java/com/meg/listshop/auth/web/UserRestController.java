@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 
 @Controller
 public class UserRestController implements UserRestControllerApi {
-    private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
+    private static final Logger  LOG = LoggerFactory.getLogger(UserRestController.class);
 
     private final TokenService tokenService;
 

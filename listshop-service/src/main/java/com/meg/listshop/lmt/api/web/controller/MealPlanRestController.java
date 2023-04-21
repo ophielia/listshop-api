@@ -8,8 +8,8 @@ import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.MealPlanEntity;
 import com.meg.listshop.lmt.service.MealPlanService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Controller
 public class MealPlanRestController implements MealPlanRestControllerApi {
 
-    private static final Logger logger = LogManager.getLogger(MealPlanRestController.class);
+    private static final Logger  logger = LoggerFactory.getLogger(MealPlanRestController.class);
 
 
     private final MealPlanService mealPlanService;
