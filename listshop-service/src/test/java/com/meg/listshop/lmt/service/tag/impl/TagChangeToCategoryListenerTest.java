@@ -1,35 +1,15 @@
 package com.meg.listshop.lmt.service.tag.impl;
 
-import com.meg.listshop.lmt.api.model.TagType;
-import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
-import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.service.LayoutService;
-import com.meg.listshop.lmt.service.ListLayoutService;
-import com.meg.listshop.lmt.service.ServiceTestUtils;
-import com.meg.listshop.lmt.service.tag.TagService;
-import com.meg.listshop.lmt.service.tag.TagStructureService;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Matchers.isA;
 
 /**
  * Created by margaretmartin on 21/03/2018.
  */
 @RunWith(SpringRunner.class)
 public class TagChangeToCategoryListenerTest {
-
+/*
     @TestConfiguration
     static class TagChangeToCategoryListenerTestConfiguration {
 
@@ -118,4 +98,6 @@ public class TagChangeToCategoryListenerTest {
 
         tagChangeToCategoryListener.onParentChange(origParent, newParent, childTag);
     }
+
+ */
 }

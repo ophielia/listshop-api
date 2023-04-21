@@ -5,7 +5,7 @@ import com.meg.listshop.lmt.service.tag.AutoTagService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -46,7 +46,7 @@ public class AutoTaggerTaskTest {
         // call under test
         autoTaggerTask.autoTagDishes();
         // verification
-        Mockito.verify(autoTagService, times(5)).doAutoTag(any(DishEntity.class), Matchers.eq(false));
+        Mockito.verify(autoTagService, times(5)).doAutoTag(any(DishEntity.class), ArgumentMatchers.eq(false));
 
     }
 }
