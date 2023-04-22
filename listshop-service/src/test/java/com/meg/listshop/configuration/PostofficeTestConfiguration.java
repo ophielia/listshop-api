@@ -6,6 +6,7 @@ import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,6 +14,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 @TestConfiguration
+@EnableConfigurationProperties
 public class PostofficeTestConfiguration {
 
     @Bean
@@ -26,7 +28,7 @@ public class PostofficeTestConfiguration {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "postoffice.mail")
+    @ConfigurationProperties(prefix = "postoffice.test..mail")
     public MailConfiguration mailConfiguration() {
         return new MailConfiguration();
     }
