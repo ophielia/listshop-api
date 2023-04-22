@@ -7,6 +7,6 @@ COPY /staticfiles/celebrations.json /staticfiles/check.png  ./staticfiles/
 COPY /staticfiles/features.json /staticfiles/lock.png /staticfiles/smallorangelogo.png ./staticfiles/
 
 # copy script into image
-COPY /staticfiles/copystaticfiles.sh ./staticfiles/
+COPY /staticfiles/copystaticfiles.sh ./
 
 ENTRYPOINT ["sh","/copystaticfiles.sh"]
