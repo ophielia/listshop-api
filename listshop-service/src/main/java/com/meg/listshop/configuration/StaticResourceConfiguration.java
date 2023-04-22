@@ -2,6 +2,7 @@ package com.meg.listshop.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -9,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * Created by margaretmartin on 04/10/2017.
  */
 @Configuration
+@Profile("!container")
 public class StaticResourceConfiguration implements WebMvcConfigurer {
 
     @Value("${listshop.static.resources.location}")
