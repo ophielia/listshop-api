@@ -108,7 +108,6 @@ public class TagStructureServiceImpl implements TagStructureService {
         if (tag == null) {
             return false;
         }
-        // TODO replace this with call to method which throws exception
         // get tag relation for tag
         Optional<TagRelationEntity> tagRelationOpt = tagRelationRepository.findByChild(tag);
         if (!tagRelationOpt.isPresent()) {
@@ -178,7 +177,7 @@ public class TagStructureServiceImpl implements TagStructureService {
         // the (new) childTag
         List<TagEntity> grandparents = getAscendantTags(parentTag);
         List<Long> exists = grandparents.stream()
-                .filter(t -> t.getId() == tag.getId())
+                .filter(t -> t.getId().equals(tag.getId()))
                 .map(TagEntity::getId)
                 .collect(Collectors.toList());
         return !exists.isEmpty();
@@ -196,17 +195,6 @@ public class TagStructureServiceImpl implements TagStructureService {
         }
         return new HashSet<>(tagAndDescendants);
     }
-
-    public List<TagEntity> getDescendantTags(Long tagId) {
-        if (tagId == null) {
-            return new ArrayList<>();
-        }
-
-        // get children of tag
-        List<Long> tagIds = tagRelationRepository.getTagWithDescendants(tagId);
-        return tagRepository.findAllById(tagIds);
-    }
-
 
     public Map<Long, List<Long>> getDescendantTagIds(Set<Long> tagIds, Long userId) {
         return tagRelationRepository.getDescendantMap(tagIds, userId);

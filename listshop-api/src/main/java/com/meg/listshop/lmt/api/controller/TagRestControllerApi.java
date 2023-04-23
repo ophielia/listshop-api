@@ -23,18 +23,7 @@ public interface TagRestControllerApi {
             Principal principal,
             HttpServletRequest request);
 
-    // remove this in August 2022
-    @Deprecated(forRemoval = true)
-    @GetMapping
-    ResponseEntity<TagListResource> retrieveTagList(Principal principal, HttpServletRequest request,
-                                                    @RequestParam(value = "extended", required = false) Boolean extended);
-
-    @Deprecated(forRemoval = true)
-    @PostMapping(produces = "application/json", consumes = "application/json")
-    ResponseEntity<Tag> add(Principal principal, HttpServletRequest request, @RequestBody Tag input,
-                            @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException;
-
-    @PostMapping(value = "{tagId}/child",  produces = "application/json", consumes = "application/json")
+     @PostMapping(value = "{tagId}/child", produces = "application/json", consumes = "application/json")
     ResponseEntity<Tag> addAsChild(Principal principal, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
                                    @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException;
 

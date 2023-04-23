@@ -55,37 +55,6 @@ public class TagRestController implements TagRestControllerApi {
         var returnValue = new TagListResource(resourceList);
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
-
-    public ResponseEntity<TagListResource> retrieveTagList(Principal principal, HttpServletRequest request,
-                                                           @RequestParam(value = "extended", required = false) Boolean extended) {
-        return retrieveUserTagList(principal, request);
-        // when we remove this, also remove
-        // * search_select and assign_select from db, model, mapper
-        // * remove view tag_extended, plus associated entity and repository
-
-    }
-
-
-    public ResponseEntity<Tag> add(Principal principal, HttpServletRequest request,
-                                   @RequestBody Tag input,
-                                   @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException {
-        var tagEntity = ModelMapper.toEntity(input);
-        String userName = null;
-        if (!asStandard) {
-            userName = principal.getName();
-        }
-        TagEntity result = this.tagService.createTag(null, tagEntity, userName);
-
-        if (result != null) {
-
-            var tagModel = ModelMapper.toModel(tagEntity);
-            var resource = new TagResource(tagModel);
-            return ResponseEntity.created(resource.selfLink(request, resource)).build();
-
-        }
-        return ResponseEntity.noContent().build();
-    }
-
     public ResponseEntity<Tag> addAsChild(Principal principal, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
                                           @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException {
         logger.debug("Beginning add tag.");

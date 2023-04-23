@@ -53,7 +53,7 @@ public class BetaTestUserPropertyListener implements UserPropertyChangeListener 
 
     @Override
     public void onPropertyUpdate(List<UserPropertyEntity> savedProperties) {
-        // only intereste if we have the request info property
+        // only interested if we have the request info property
         UserPropertyEntity infoProperty = savedProperties.stream()
                 .filter(p -> p.getKey().equals(UserPropertyKey.TestInfoRequested.getDisplayName()))
                 .findFirst()

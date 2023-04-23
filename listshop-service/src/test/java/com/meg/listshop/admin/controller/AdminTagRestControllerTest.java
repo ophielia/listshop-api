@@ -7,16 +7,20 @@
 
 package com.meg.listshop.admin.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
+import com.meg.listshop.lmt.api.model.TagListResource;
+import com.meg.listshop.lmt.api.model.TagResource;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.repository.TagRelationRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.LayoutService;
 import com.meg.listshop.test.TestConstants;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -29,9 +33,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -40,8 +46,8 @@ import java.util.Optional;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -52,6 +58,11 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @AutoConfigureJsonTesters
+@Sql(value = {"/sql/com/meg/atable/admin/AdminTagControllerTest.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/sql/com/meg/atable/admin/AdminTagControllerTest_rollback.sql"},
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+
 @ActiveProfiles("test")
 public class AdminTagRestControllerTest {
 
@@ -134,7 +145,7 @@ public class AdminTagRestControllerTest {
     }
 
     @Test
-    public void moveTag() throws Exception {
+    public void assignChildToParent() throws Exception {
         String url = "/admin/tag/" + TestConstants.PARENT_TAG_ID_2
                 + "/child/" + TestConstants.CHILD_TAG_ID_1;
 
@@ -160,13 +171,69 @@ public class AdminTagRestControllerTest {
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful());
 
+
     }
 
+    @Test
+    public void getUserTagListForGrid() throws Exception {
+        // this user has two custom tags, one in Animal Products(367), one in Produce(388)
+        Long userId = 101010L;
+
+        String url = "/admin/tag/user/" + userId + "/grid";
+        MvcResult result = this.mockMvc.perform(get(url)
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$._embedded.tagResourceList", Matchers.hasSize(478)))
+                .andReturn();
+
+        Assert.assertNotNull(result);
+        String resultBody = result.getResponse().getContentAsString();
+        Assert.assertNotNull(resultBody);
+        TagListResource resultResource = deserializeTagListResource(resultBody);
+        Assert.assertNotNull(resultResource);
+
+// check that results contain custom tags "some green thing" and "some black thing"
+
+        Optional<TagResource> customGreen = resultResource.getEmbeddedList().getTagResourceList().stream()
+                .filter(t -> t.getTag().getName().equalsIgnoreCase("some green thing"))
+                .findFirst();
+        Optional<TagResource> customBlack = resultResource.getEmbeddedList().getTagResourceList().stream()
+                .filter(t -> t.getTag().getName().equalsIgnoreCase("some black thing"))
+                .findFirst();
+        Assert.assertTrue(customGreen.isPresent());
+        Assert.assertTrue(customBlack.isPresent());
+    }
+
+    /*
+
+    @PutMapping(consumes = "application/json")
+    ResponseEntity<Object> performOperation(@RequestBody TagOperationPut input);
+
+    @PutMapping(value = "/{fromTagId}/dish/{toTagId}", produces = "application/json")
+    ResponseEntity replaceTagsInDishes(HttpServletRequest request, Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId);
+    @RequestMapping(value = "/delete/{tagId}", method = RequestMethod.DELETE)
+    ResponseEntity<Object> saveTagForDelete(@PathVariable("tagId") Long tagId, @RequestParam(value = "replacementTagId", required = true) Long replacementTagId);
+    @GetMapping(value = "/user/{userId}/grid")
+    ResponseEntity<TagListResource> getUserTagListForGrid(@PathVariable("userId") Long userId);
+
+    @GetMapping(value = "/standard/grid")
+    ResponseEntity<TagListResource> getStandardTagListForGrid(Principal principal, HttpServletRequest request);
+    @GetMapping(value = "/user/{userId}/list")
+    ResponseEntity<TagListResource> getUserTagList(@PathVariable("userId") Long userId,
+                                                   @RequestParam(value = "filter", required = false) String filter);
+    @GetMapping(value = "/standard/list")
+    public ResponseEntity<TagListResource> getStandardTagList(@RequestParam(value = "filter", required = false) String filter);
+
+     */
     private String json(Object o) throws IOException {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
 
         return objectMapper.writeValueAsString(o);
     }
 
+    private TagListResource deserializeTagListResource(String json) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(json, TagListResource.class);
 
+    }
 }

@@ -112,7 +112,7 @@ public class TagServiceImpl implements TagService {
     }
 
     public RatingUpdateInfo getRatingUpdateInfoForDishIds(String userName, List<Long> dishIdList) {
-        // put into lookup - rating info for child tags and create headers set
+        // put into lookup - rating info for child tags
         RatingStructureTree ratingStructure = getRatingStructure();
 
         Set<DishRatingInfo> ratingsForDishIds = processRatingInfo(ratingStructure, dishIdList);

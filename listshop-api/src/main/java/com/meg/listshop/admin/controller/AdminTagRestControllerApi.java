@@ -31,16 +31,16 @@ public interface AdminTagRestControllerApi {
     @GetMapping(value = "/user/{userId}/grid")
     ResponseEntity<TagListResource> getUserTagListForGrid(@PathVariable("userId") Long userId);
 
-    @RequestMapping(value = "/delete/{tagId}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/delete/{tagId}")
     ResponseEntity<Object> saveTagForDelete(@PathVariable("tagId") Long tagId, @RequestParam(value = "replacementTagId", required = true) Long replacementTagId);
 
     @PostMapping(value = "{tagId}/children", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds", required = false) String filter);
 
-    @RequestMapping(value = "{parentId}/child/{childId}", method = RequestMethod.PUT, produces = "application/json")
+    @PutMapping(value = "{parentId}/child/{childId}", produces = "application/json")
     ResponseEntity assignChildToParent(@PathVariable("parentId") Long parentId, @PathVariable("childId") Long childId);
 
-    @RequestMapping(value = "/base/{tagId}", method = RequestMethod.PUT, produces = "application/json")
+    @PutMapping(value = "/base/{tagId}", produces = "application/json")
     ResponseEntity assignChildToBaseTag(@PathVariable("tagId") Long tagId);
 
     @PutMapping(value = "/{tagId}", consumes = "application/json")

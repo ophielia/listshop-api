@@ -253,23 +253,22 @@ class TagServiceImplMockTest {
         Mockito.when(tagRepository.findTagsByDishes(dish1)).thenReturn(dish1.getTags());
         Mockito.when(tagRepository.findTagsByDishes(dish2)).thenReturn(dish2.getTags());
         Mockito.when(tagRepository.findTagsByDishes(dish3)).thenReturn(dish3.getTags());
-        Mockito.when(tagInfoCustomRepository.retrieveTagInfoByUser(2000L, Collections.singletonList(TagType.Rating))).thenReturn(ratingTagList);
+        Mockito.when(tagInfoCustomRepository.retrieveTagInfoByUser(null, Collections.singletonList(TagType.Rating))).thenReturn(ratingTagList);
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(userEntity);
 
         RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds(userName, Arrays.asList(1L, 2L, 3L));
 
+        // defaults are returned for dishes, even if not assigned.
+        // contract is that ratings are always returned
+
         Assertions.assertNotNull(updateInfo);
         Assertions.assertNotNull(updateInfo.getRatingHeaders());
-        Assertions.assertEquals(1, updateInfo.getRatingHeaders().size());
         Assertions.assertNotNull(updateInfo.getDishRatingInfoSet());
         Assertions.assertEquals(3, updateInfo.getDishRatingInfoSet().size());
         for (DishRatingInfo info : updateInfo.getDishRatingInfoSet()) {
-            if (info.getDishName().equals("great dish3")) {
-                Assertions.assertNull(info.getRatings());
-            } else {
-                Assertions.assertNotNull(info.getRatings());
-                Assertions.assertEquals(1, info.getRatings().size());
-            }
+
+            Assertions.assertNotNull(info.getRatings());
+            Assertions.assertEquals(1, info.getRatings().size());
         }
 
         Set<RatingInfo> testHeaders = updateInfo.getRatingHeaders();
