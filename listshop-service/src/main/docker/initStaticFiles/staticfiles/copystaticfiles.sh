@@ -5,7 +5,7 @@ pwd
 ls
 cd /opt/listshop/static
 mkdir images
-cd
+cd /
 pwd
 ls
 echo 'starting copy files'
