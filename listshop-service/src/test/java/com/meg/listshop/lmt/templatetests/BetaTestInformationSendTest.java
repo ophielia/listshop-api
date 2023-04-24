@@ -38,7 +38,7 @@ public class BetaTestInformationSendTest {
         parameters.setReceiver("margaret.martin@orange.fr");
         parameters.setSender("mophielia@gmail.com");
         parameters.setSubject("The List Shop - testing information");
-        parameters.addParameter("staticRoot", "https://nastyvarmits.fr/api/static");
+        parameters.addParameter("staticRoot", "https://static.nastyvarmits.fr");
         parameters.addParameter("supportEmail", "support@the-list-shop.com");
         parameters.addParameter("testLink", "http://localhost:4200/home");
 

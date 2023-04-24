@@ -204,27 +204,7 @@ public class AdminTagRestControllerTest {
         Assert.assertTrue(customBlack.isPresent());
     }
 
-    /*
 
-    @PutMapping(consumes = "application/json")
-    ResponseEntity<Object> performOperation(@RequestBody TagOperationPut input);
-
-    @PutMapping(value = "/{fromTagId}/dish/{toTagId}", produces = "application/json")
-    ResponseEntity replaceTagsInDishes(HttpServletRequest request, Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId);
-    @RequestMapping(value = "/delete/{tagId}", method = RequestMethod.DELETE)
-    ResponseEntity<Object> saveTagForDelete(@PathVariable("tagId") Long tagId, @RequestParam(value = "replacementTagId", required = true) Long replacementTagId);
-    @GetMapping(value = "/user/{userId}/grid")
-    ResponseEntity<TagListResource> getUserTagListForGrid(@PathVariable("userId") Long userId);
-
-    @GetMapping(value = "/standard/grid")
-    ResponseEntity<TagListResource> getStandardTagListForGrid(Principal principal, HttpServletRequest request);
-    @GetMapping(value = "/user/{userId}/list")
-    ResponseEntity<TagListResource> getUserTagList(@PathVariable("userId") Long userId,
-                                                   @RequestParam(value = "filter", required = false) String filter);
-    @GetMapping(value = "/standard/list")
-    public ResponseEntity<TagListResource> getStandardTagList(@RequestParam(value = "filter", required = false) String filter);
-
-     */
     private String json(Object o) throws IOException {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
 

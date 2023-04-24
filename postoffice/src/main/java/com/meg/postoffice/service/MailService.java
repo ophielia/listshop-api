@@ -76,7 +76,7 @@ public class MailService {
 
     private String getEmailSubject(EmailParameters emailParameters) {
         if (testDiversionEmail != null) {
-            return String.format("({}) {}", emailParameters.getReceiver(), emailParameters.getSubject());
+            return String.format("(%s) %s", emailParameters.getReceiver(), emailParameters.getSubject());
         }
         return emailParameters.getSubject();
     }
