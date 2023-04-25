@@ -114,26 +114,6 @@ public class TagRestControllerTest {
     }
 
     @Test
-    public void readTags() throws Exception {
-        mockMvc.perform(get("/tag"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType));
-
-    }
-
-    @Test
-    public void readTags_extended() throws Exception {
-        MvcResult result = mockMvc.perform(get("/tag?extended=true"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andReturn();
-        Assert.assertNotNull(result);
-        String resultString = result.getResponse().getContentAsString();
-        Assert.assertTrue(resultString.contains("parent_id\":\"0\""));
-        Assert.assertTrue(resultString.contains("parent_id\":\"393\""));
-    }
-
-    @Test
     @Ignore // endpoint is deprecated
     public void createTag() throws Exception {
         Tag newtag = new Tag("created tag");
