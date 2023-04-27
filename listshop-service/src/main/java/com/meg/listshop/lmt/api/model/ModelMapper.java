@@ -267,6 +267,7 @@ public class ModelMapper {
             llc.setName(cat.getName());
             llc.setDefault(cat.getDefault() != null ? cat.getDefault() : false);
             llc.setTags(toShortModel(cat.getTags()));
+            llc.setDisplayOrder(cat.getDisplayOrder());
             categoryList.add(llc);
         }
         return categoryList;

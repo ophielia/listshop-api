@@ -23,12 +23,10 @@
         <dependency>
             <groupId>com.meg.listshop</groupId>
             <artifactId>listshop-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.meg.postoffice</groupId>
             <artifactId>postoffice-service</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

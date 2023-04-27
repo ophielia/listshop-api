@@ -121,6 +121,8 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
                 .map(TagResource::new)
                 .collect(Collectors.toList());
         var returnValue = new TagListResource(resourceList);
+        System.out.println("returnValue: " + returnValue);
+        System.out.println("returnValue: ");
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
