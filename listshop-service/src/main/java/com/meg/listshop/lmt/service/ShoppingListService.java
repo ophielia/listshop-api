@@ -1,10 +1,8 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.lmt.api.model.*;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,61 +10,60 @@ import java.util.List;
  */
 public interface ShoppingListService {
 
-     String FREQUENT = "frequent";
+    String FREQUENT = "frequent";
 
-    List<ShoppingListEntity> getListsByUsername(String userName);
+    List<ShoppingListEntity> getListsByUserId(Long userId);
 
-    ShoppingListEntity generateListForUser(String userName, ListGenerateProperties listGeneratProperties) throws ShoppingListException;
+    ShoppingListEntity generateListForUser(Long userId, ListGenerateProperties listGeneratProperties) throws ShoppingListException;
 
-    ShoppingListEntity getStarterList(String userName);
+    ShoppingListEntity getStarterList(Long userId);
 
-    ShoppingListEntity getMostRecentList(String userName);
+    ShoppingListEntity getMostRecentList(Long userId);
 
-    ShoppingListEntity getListById(String userName, Long listId);
+    ShoppingListEntity getListForUserById(Long userId, Long listId);
 
-    void deleteList(String userName, Long listId);
+    void deleteList(Long userId, Long listId);
 
-    ShoppingListEntity updateList(String name, Long listId, ShoppingListEntity updateFrom);
+    ShoppingListEntity updateList(Long userId, Long listId, ShoppingListEntity updateFrom);
 
-    void performItemOperation(String userName, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId);
+    void performItemOperation(Long userId, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId);
 
-    void addItemToListByTag(String name, Long listId, Long tagId);
+    void addItemToListByTag(Long userId, Long listId, Long tagId);
 
-    void deleteItemFromList(String name, Long listId, Long itemId, Boolean removeEntireItem, Long dishSourceId);
+    void deleteItemFromList(Long userId, Long listId, Long itemId, Boolean removeEntireItem, Long dishSourceId);
 
-    ShoppingListEntity generateListFromMealPlan(String name, Long mealPlanId);
+    ShoppingListEntity generateListFromMealPlan(Long userId, Long mealPlanId);
 
     List<ShoppingListCategory> categorizeList(ShoppingListEntity shoppingListEntity);
 
-    void addDishToList(String name, Long listId, Long dishId) throws ShoppingListException;
+    void addDishToList(Long userId, Long listId, Long dishId) throws ShoppingListException;
+
 
     void fillSources(ShoppingListEntity result);
 
-    void changeListLayout(String name, Long listId, Long layoutId);
+    void changeListLayout(Long userId, Long listId, Long layoutId);
 
-    void removeDishFromList(String name, Long listId, Long dishId);
+    void removeDishFromList(Long userId, Long listId, Long dishId);
 
-    void removeListItemsFromList(String name, Long listId, Long fromListId);
+    void removeListItemsFromList(Long userId, Long listId, Long fromListId);
 
-    void updateItemCrossedOff(String name, Long listId, Long itemId, Boolean crossedOff);
+    void updateItemCrossedOff(Long userId, Long listId, Long itemId, Boolean crossedOff);
 
-    void crossOffAllItems(String name, Long listId, boolean crossOff);
+    void crossOffAllItems(Long userId, Long listId, boolean crossOff);
 
-    void deleteAllItemsFromList(String name, Long listId);
+    void deleteAllItemsFromList(Long userId, Long listId);
 
     // Note - this method doesn't check yet for MergeConflicts.  But the signature
     // is there to build the interface, so that MergeConflicts can be added later
     // less painfully.  Right now just going for basic functionality - taking the
     // last modified item.
-    MergeResult mergeFromClient(String userName, MergeRequest mergeRequest);
+    MergeResult mergeFromClient(Long userId, MergeRequest mergeRequest);
 
-    void addListToList(String name, Long listId, Long fromListId);
+    void addListToList(Long userId, Long listId, Long fromListId);
 
-    List<ItemEntity> getChangedItemsForMostRecentList(String name, Date changedAfter, Long layoutId);
+    void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException;
 
-    void addDishesToList(String userName, Long listId, ListAddProperties listAddProperties) throws ShoppingListException;
+    ShoppingListEntity addToListFromMealPlan(Long userId, Long listId, Long mealPlanId);
 
-    ShoppingListEntity addToListFromMealPlan(String name, Long listId, Long mealPlanId);
-
-    void updateItemCount(String name, Long listId, Long tagId, Integer usedCount);
+    void updateItemCount(Long userId, Long listId, Long tagId, Integer usedCount);
 }

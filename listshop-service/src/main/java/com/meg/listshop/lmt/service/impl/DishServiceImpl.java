@@ -100,6 +100,21 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
+    public DishEntity getDishForUserById(Long userId, Long dishId) {
+        if (dishId == null) {
+            final String msg = String.format("Null dishId passed as argument userId [%s].", userId);
+            throw new ObjectNotFoundException(msg, null, "Dish");
+        }
+
+        Optional<DishEntity> dishOpt = dishRepository.findByDishIdForUser(userId, dishId);
+        if (!dishOpt.isPresent()) {
+            final String msg = String.format("No dish found by id for user [%s] and dishId [%s]", userId, dishId);
+            throw new ObjectNotFoundException(msg, dishId, "Dish");
+        }
+        return dishOpt.get();
+    }
+
+    @Override
     public DishEntity save(DishEntity dish, boolean doAutotag) {
         // autotag dish
         if (doAutotag) {

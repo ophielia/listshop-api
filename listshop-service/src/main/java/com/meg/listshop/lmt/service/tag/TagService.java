@@ -29,11 +29,15 @@ public interface TagService {
 
     List<TagEntity> getTagsForDish(String username, Long dishId);
 
+    List<TagEntity> getTagsForDish(Long userId, Long dishId);
+
     List<TagEntity> getTagsForDish(String username, Long dishId, List<TagType> tagtypes);
 
     void assignTagToParent(Long tagId, Long parentId);
 
     void assignChildrenToParent(Long parentId, List<Long> childrenIds);
+
+    List<TagEntity> getTagsForDish(Long userId, Long dishId, List<TagType> tagtypes);
 
     void addTagToDish(String userName, Long dishId, Long tagId);
 

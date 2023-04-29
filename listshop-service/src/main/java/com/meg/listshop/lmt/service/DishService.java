@@ -11,9 +11,11 @@ import java.util.Map;
  */
 public interface DishService {
 
-    List<DishEntity> getDishesForUserName(String userId) ;
+    List<DishEntity> getDishesForUserName(String userId);
 
-    DishEntity getDishForUserById(String username, Long dishId) ;
+    DishEntity getDishForUserById(String username, Long dishId);
+
+    DishEntity getDishForUserById(Long userId, Long dishId);
 
     DishEntity save(DishEntity dish, boolean doAutotag);
 

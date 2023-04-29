@@ -53,17 +53,17 @@ public class MergeItemCollectorTest {
 
     @Test
     public void testLoadTestList() {
-        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_EMAIL, 5000L);
+        ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
         // blow up test
-        Assert.assertTrue(1 == 1);
+        Assert.assertEquals(1, 1);
     }
 
 
     @Test
     public void testMergeWithEmpty() {
-        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_EMAIL, 5000L);
+        ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
 
@@ -75,7 +75,7 @@ public class MergeItemCollectorTest {
 
     @Test
     public void testUpdatesToItem() {
-        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_EMAIL, 5000L);
+        ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
         ItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
@@ -92,7 +92,7 @@ public class MergeItemCollectorTest {
 
     @Test
     public void testUpdatesToItemServerMoreRecent() {
-        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_EMAIL, 5000L);
+        ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
         ItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
@@ -110,7 +110,7 @@ public class MergeItemCollectorTest {
 
     @Test
     public void testAddingNewItem() {
-        ShoppingListEntity listEntity = shoppingListService.getListById(TestConstants.USER_1_EMAIL, 5000L);
+        ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
         ItemEntity updated = createItemForTagId(45L);

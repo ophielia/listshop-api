@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.0] next - February 2023
+
+### Added
+
+- display order added to TagResource, short version
+
+### Changed
+
+- mail module now configured from list-service
+- updated to SpringBoot 2.7
+- static files configured to read from seperate component on live deployment
+- logback used instead of log4j
+- ListLayoutService and LayoutService consolidated into LayoutService
+- ShoppingListController now uses userId directly and logs each endpoint
+- ShoppingListService refactored to use userIds
+-
+
+### Fixed
+
+- test fixes, coverage improved
+- small mail fixes
+
+### Removed
+
+- removed depracated code - tags
+
 ## [1.11.1] February 2023
 
 ### Changed

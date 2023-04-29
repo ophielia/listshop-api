@@ -63,8 +63,7 @@ public class ShoppingListServiceImplMockTest {
     @Before
     public void setUp() {
 
-        shoppingListService = new ShoppingListServiceImpl(userService,
-                tagService,
+        shoppingListService = new ShoppingListServiceImpl(tagService,
                 dishService,
                 shoppingListRepository,
                 layoutService,
@@ -105,9 +104,9 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
 
         // test call
-        ShoppingListEntity result = shoppingListService.getListById(userName, listId);
+        ShoppingListEntity result = shoppingListService.getListForUserById(userId, listId);
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
 
         // Assertions
@@ -131,9 +130,9 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.findById(listId)).thenReturn(Optional.of(shoppingList));
 
         // test call
-        ShoppingListEntity result = shoppingListService.getListById(userName, listId);
+        ShoppingListEntity result = shoppingListService.getListForUserById(userId, listId);
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
         Mockito.verify(shoppingListRepository, times(1)).findById(listId);
 
@@ -161,9 +160,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
 
         // test call
-        ShoppingListEntity result = shoppingListService.getListById(userName, listId);
-
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+        ShoppingListEntity result = shoppingListService.getListForUserById(userId, listId);
 
         // Assertions
         Assert.assertNull(result);
@@ -190,9 +187,8 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
 
         // test call
-        ShoppingListEntity result = shoppingListService.getListById(userName, listId);
+        ShoppingListEntity result = shoppingListService.getListForUserById(userId, listId);
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
 
         // Assertions
@@ -228,7 +224,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
         ArgumentCaptor<ShoppingListEntity> listArgument = ArgumentCaptor.forClass(ShoppingListEntity.class);
 
-        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
         Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(listOfLists);
         Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingListForSave));
         Mockito.when(itemRepository.findByListId(listId)).thenReturn(items);
@@ -236,9 +231,8 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
 
         // test call
-        shoppingListService.deleteList(userName, listId);
+        shoppingListService.deleteList(userId, listId);
 
-        Mockito.verify(userService, times(2)).getUserByUserEmail(userName);
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
         Mockito.verify(shoppingListRepository, times(1)).findByUserIdOrderByLastUpdateDesc(userId);
         Mockito.verify(itemRepository, times(1)).findByListId(listId);
@@ -265,7 +259,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(listId)).thenReturn(new ArrayList<>());
 
         // test call
-        shoppingListService.deleteList(userName, listId);
+        shoppingListService.deleteList(userId, listId);
     }
 
     @Test(expected = ObjectNotFoundException.class)
@@ -287,7 +281,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(listOfLists);
 
         // test call
-        shoppingListService.deleteList(userName, listId);
+        shoppingListService.deleteList(userId, listId);
 
 
     }
@@ -306,7 +300,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(listOfLists);
 
         // test call
-        shoppingListService.deleteList(userName, listId);
+        shoppingListService.deleteList(userId, listId);
 
 
     }
@@ -342,13 +336,12 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(tagService.getTagById(tagId)).thenReturn(tagToAdd);
 
         // test call
-        shoppingListService.addItemToListByTag(userName, listId, tagId);
+        shoppingListService.addItemToListByTag(userId, listId, tagId);
 
         Mockito.verify(itemChangeRepository, times(1)).saveItemChanges(any(ShoppingListEntity.class),
                 any(ListItemCollector.class), any(Long.class), any(CollectorContext.class));
         Mockito.verify(shoppingListRepository, times(1)).save(listCapture.capture());
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
         Mockito.verify(tagService, times(1)).getTagById(tagId);
 
@@ -383,9 +376,9 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(itemRepository.getItemByListAndTag(listId, tagId)).thenReturn(item);
 
         // test call
-        shoppingListService.updateItemCount(userName, listId, tagId, usedCount);
+        shoppingListService.updateItemCount(userId, listId, tagId, usedCount);
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
         Mockito.verify(itemRepository, times(1)).save(itemCapture.capture());
         Mockito.verify(shoppingListRepository, times(1)).save(listCapture.capture());
@@ -430,9 +423,9 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(itemRepository.findByListId(listId)).thenReturn(items);
 
         // test call
-        shoppingListService.deleteAllItemsFromList(userName, listId);
+        shoppingListService.deleteAllItemsFromList(userId, listId);
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
         Mockito.verify(itemRepository, times(1)).findByListId(listId);
         Mockito.verify(itemChangeRepository, times(1)).saveItemChanges(any(ShoppingListEntity.class),
@@ -469,9 +462,9 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.findById(listId)).thenReturn(Optional.ofNullable(null));
 
         // test call
-        shoppingListService.deleteAllItemsFromList(userName, listId);
+        shoppingListService.deleteAllItemsFromList(userId, listId);
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
         Mockito.verify(shoppingListRepository, times(1)).findById(listId);
 
@@ -493,9 +486,9 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(new ArrayList<>());
 
         // test call
-        shoppingListService.getListsByUsername(userName);
+        shoppingListService.getListsByUserId(userId);
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+
         Mockito.verify(shoppingListRepository, times(1)).findByUserIdOrderByLastUpdateDesc(userId);
 
     }
@@ -524,9 +517,9 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
 
         // test call
-        shoppingListService.crossOffAllItems(userName, listId, true);
+        shoppingListService.crossOffAllItems(userId, listId, true);
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
         Mockito.verify(itemRepository, times(1)).saveAll(crossedOffItems.capture());
 
@@ -566,9 +559,9 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
         // test call
-        shoppingListService.updateItemCrossedOff(userName, listId, itemId, true);
+        shoppingListService.updateItemCrossedOff(userId, listId, itemId, true);
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
         Mockito.verify(itemRepository, times(1)).save(itemCapture.capture());
         Mockito.verify(shoppingListRepository, times(1)).save(any(ShoppingListEntity.class));
@@ -642,9 +635,9 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
 
         // test call
-        ShoppingListEntity result = shoppingListService.getStarterList(userName);
+        ShoppingListEntity result = shoppingListService.getStarterList(userId);
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+
         Mockito.verify(shoppingListRepository, times(1)).findByUserIdAndIsStarterListTrue(userId);
 
         // Assertions
@@ -671,9 +664,9 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                 .thenReturn(listOfLists);
 
         // test call
-        ShoppingListEntity result = shoppingListService.getMostRecentList(userName);
+        ShoppingListEntity result = shoppingListService.getMostRecentList(userId);
 
-        Mockito.verify(userService, times(1)).getUserByUserEmail(userName);
+
         Mockito.verify(shoppingListRepository, times(1)).findByUserIdOrderByLastUpdateDesc(userId);
 
         // Assertions
@@ -723,7 +716,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.save(listArgument.capture())).thenReturn(createdList);
         Mockito.when(layoutService.getDefaultUserLayout(userId)).thenReturn(listLayout);
 
-        ShoppingListEntity result = shoppingListService.generateListForUser(userName, properties);
+        ShoppingListEntity result = shoppingListService.generateListForUser(userId, properties);
 
         Assert.assertNotNull(result);
         ShoppingListEntity captured = listArgument.getValue();
@@ -776,15 +769,15 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         // expectations
         Mockito.when(userService.getUserByUserEmail(username))
                 .thenReturn(userEntity);
-        Mockito.when(mealPlanService.getMealPlanById(username, mealPlanId))
+        Mockito.when(mealPlanService.getMealPlanForUserById(userId, mealPlanId))
                 .thenReturn(mealPlan);
         Mockito.when(layoutService.getDefaultUserLayout(userId))
                 .thenReturn(listLayoutEntity);
         Mockito.when(shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(listId))
                 .thenReturn(Optional.of(createdShoppingList));
-        Mockito.when(tagService.getTagsForDish(username, dish1.getId(), tagTypeList))
+        Mockito.when(tagService.getTagsForDish(userId, dish1.getId(), tagTypeList))
                 .thenReturn(Arrays.asList(tag1, tag2));
-        Mockito.when(tagService.getTagsForDish(username, dish2.getId(), tagTypeList))
+        Mockito.when(tagService.getTagsForDish(userId, dish2.getId(), tagTypeList))
                 .thenReturn(Arrays.asList(tag1, tag3, tag4, tag5));
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
 
@@ -796,7 +789,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
 
         // call
-        shoppingListService.generateListFromMealPlan(username, mealPlanId);
+        shoppingListService.generateListFromMealPlan(userId, mealPlanId);
 
         // verification afterwards
         // note - checking captured list
@@ -864,15 +857,13 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         ArgumentCaptor<ShoppingListEntity> argument = ArgumentCaptor.forClass(ShoppingListEntity.class);
 
         // expectations
-        Mockito.when(userService.getUserByUserEmail(username))
-                .thenReturn(userEntity);
-        Mockito.when(mealPlanService.getMealPlanById(username, mealPlanId))
+        Mockito.when(mealPlanService.getMealPlanForUserById(userId, mealPlanId))
                 .thenReturn(mealPlan);
         Mockito.when(shoppingListRepository.getWithItemsByListId(listId))
                 .thenReturn(Optional.of(shoppingList));
-        Mockito.when(tagService.getTagsForDish(username, dish1.getId(), tagTypeList))
+        Mockito.when(tagService.getTagsForDish(userId, dish1.getId(), tagTypeList))
                 .thenReturn(Arrays.asList(tag1, tag2));
-        Mockito.when(tagService.getTagsForDish(username, dish2.getId(), tagTypeList))
+        Mockito.when(tagService.getTagsForDish(userId, dish2.getId(), tagTypeList))
                 .thenReturn(Arrays.asList(tag1, tag3, tag4, tag5));
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
 
@@ -890,7 +881,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Assert.assertFalse(mealPlanItem.isPresent());
 
         // call
-        shoppingListService.addToListFromMealPlan(username, listId, mealPlanId);
+        shoppingListService.addToListFromMealPlan(userId, listId, mealPlanId);
 
         // verification afterwards
         // note - checking captured list
@@ -961,9 +952,9 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                 .thenReturn(Optional.of(shoppingList));
         Mockito.when(tagService.getReplacedTagsFromIds(any(Set.class)))
                 .thenReturn(new ArrayList<Long>());
-        Mockito.when(tagService.getTagsForDish(username, dish1.getId()))
+        Mockito.when(tagService.getTagsForDish(userId, dish1.getId()))
                 .thenReturn(Arrays.asList(tag1, tag2, tag3, tag4));
-        Mockito.when(tagService.getTagsForDish(username, dish2.getId()))
+        Mockito.when(tagService.getTagsForDish(userId, dish2.getId()))
                 .thenReturn(Arrays.asList(tag6, tag5, tag4, tag3));
         Mockito.doNothing().when(dishService).updateLastAddedForDish(dishId1);
         Mockito.doNothing().when(dishService).updateLastAddedForDish(dishId2);
@@ -981,7 +972,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Assert.assertFalse(mealPlanItem.isPresent());
 
         // call
-        shoppingListService.addDishesToList(username, listId, addProperties);
+        shoppingListService.addDishesToList(userId, listId, addProperties);
 
         // verification afterwards
         // note - checking captured list
@@ -1047,7 +1038,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                 .thenReturn(sourceList);
 
         // call under test
-        shoppingListService.performItemOperation(username, sourceListId, ItemOperationType.Remove, operationTagIds, null);
+        shoppingListService.performItemOperation(userId, sourceListId, ItemOperationType.Remove, operationTagIds, null);
 
         // after remove, the list should contain only one item - id 3
         // list is not null
@@ -1115,7 +1106,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                 .thenReturn(sourceList);
 
         // call under test
-        shoppingListService.performItemOperation(username, sourceListId, ItemOperationType.Remove, operationTagIds, null);
+        shoppingListService.performItemOperation(userId, sourceListId, ItemOperationType.Remove, operationTagIds, null);
 
         // after remove, the list should contain only one item - id 3
         // list is not null
@@ -1184,7 +1175,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                 .thenReturn(sourceList);
 
         // call under test
-        shoppingListService.performItemOperation(username, sourceListId, ItemOperationType.RemoveCrossedOff, operationTagIds, null);
+        shoppingListService.performItemOperation(userId, sourceListId, ItemOperationType.RemoveCrossedOff, operationTagIds, null);
 
         // after remove, the list should contain only one item - id 4
         // list is not null
@@ -1243,7 +1234,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                 .thenReturn(sourceList);
 
         // call under test
-        shoppingListService.performItemOperation(username, sourceListId, ItemOperationType.RemoveAll, new ArrayList<>(), null);
+        shoppingListService.performItemOperation(userId, sourceListId, ItemOperationType.RemoveAll, new ArrayList<>(), null);
 
         // after remove, the list should contain only one item - id 4
         // list is not null
@@ -1316,7 +1307,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                 .thenReturn(sourceList);
 
         // call under test
-        shoppingListService.performItemOperation(username, sourceListId, ItemOperationType.Move, operationTagIds, destinationListId);
+        shoppingListService.performItemOperation(userId, sourceListId, ItemOperationType.Move, operationTagIds, destinationListId);
 
         // after remove, the list should contain only one item - id 3
         // list is not null
@@ -1417,7 +1408,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                 .thenReturn(destinationList);
 
         // call under test
-        shoppingListService.performItemOperation(username, sourceListId, ItemOperationType.Copy, operationTagIds, destinationListId);
+        shoppingListService.performItemOperation(userId, sourceListId, ItemOperationType.Copy, operationTagIds, destinationListId);
 
         // list is not null
         List<ShoppingListEntity> resultLists = argument.getAllValues();
@@ -1506,7 +1497,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.save(any(ShoppingListEntity.class)))
                 .thenReturn(shoppingList);
 
-        shoppingListService.mergeFromClient(userEmail, clientMergeRequest);
+        shoppingListService.mergeFromClient(userId, clientMergeRequest);
 
 
         // for testing after call
@@ -1579,7 +1570,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.save(any(ShoppingListEntity.class)))
                 .thenReturn(emptyServerShoppingList);
 
-        shoppingListService.mergeFromClient(userEmail, clientMergeRequest);
+        shoppingListService.mergeFromClient(userId, clientMergeRequest);
 
 
         // for testing after call
@@ -1642,7 +1633,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.save(any(ShoppingListEntity.class)))
                 .thenReturn(shoppingList);
 
-        shoppingListService.mergeFromClient(userEmail, clientMergeRequest);
+        shoppingListService.mergeFromClient(userId, clientMergeRequest);
 
 
         // for testing after call
@@ -1698,7 +1689,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.save(any(ShoppingListEntity.class)))
                 .thenReturn(shoppingList);
 
-        shoppingListService.deleteItemFromList(userEmail, deleteFromListId, itemIdToRemove, false, null);
+        shoppingListService.deleteItemFromList(userId, deleteFromListId, itemIdToRemove, false, null);
 
 
         // for testing after call
@@ -1725,6 +1716,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
     @Test
     public void testUpdateList() {
         String userName = "george";
+        Long userId = 999L;
         Long listId = 99L;
         ShoppingListEntity updateFrom = new ShoppingListEntity();
         updateFrom.setName("has been updated");
@@ -1746,7 +1738,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(shoppingListRepository.save(listArgument.capture()))
                 .thenReturn(updateFrom);
 
-        shoppingListService.updateList(userName, listId, updateFrom);
+        shoppingListService.updateList(userId, listId, updateFrom);
 
         Assert.assertEquals("has been updated", listArgument.getValue().getName());
         Assert.assertEquals(false, listArgument.getValue().getIsStarterList());

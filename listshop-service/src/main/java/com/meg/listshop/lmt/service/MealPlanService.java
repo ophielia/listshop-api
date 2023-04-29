@@ -19,11 +19,17 @@ public interface MealPlanService {
 
     MealPlanEntity getMealPlanById(String userName, Long mealPlanId) throws ObjectNotFoundException, ObjectNotYoursException;
 
+    MealPlanEntity getMealPlanForUserById(Long userId, Long mealPlanId) throws ObjectNotFoundException, ObjectNotYoursException;
+
     MealPlanEntity createMealPlan(String username, MealPlanEntity mealPlanEntity);
+
+    MealPlanEntity createMealPlan(Long userId, MealPlanEntity mealPlanEntity);
 
     MealPlanEntity createMealPlanFromProposal(String name, Long proposalId) throws ObjectNotYoursException, ObjectNotFoundException;
 
     void addDishToMealPlan(String username, Long mealPlanId, Long dishId) throws ObjectNotYoursException, ObjectNotFoundException;
+
+    void addDishToMealPlan(Long userId, Long mealPlanId, Long dishId) throws ObjectNotYoursException, ObjectNotFoundException;
 
     void deleteDishFromMealPlan(String username, Long mealPlanId, Long dishId) throws ObjectNotYoursException, ObjectNotFoundException;
 

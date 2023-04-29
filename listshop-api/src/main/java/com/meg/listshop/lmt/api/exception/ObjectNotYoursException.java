@@ -14,11 +14,16 @@ public class ObjectNotYoursException extends RuntimeException {
     private static final Logger  logger = LoggerFactory.getLogger(ObjectNotYoursException.class);
 
     public ObjectNotYoursException(Long objectId, Long userId) {
-        super("Object [" + objectId+"] found, but doesn't belong to user [" + userId + "]");
+        super("Object [" + objectId + "] found, but doesn't belong to user [" + userId + "]");
     }
 
     public ObjectNotYoursException(String logmessage, String objectType, Long objectId, String userName) {
-        super("Object [" + objectId+"] of type [" + objectType + "] found, but doesn't belong to user [" + userName + "]");
+        super("Object [" + objectId + "] of type [" + objectType + "] found, but doesn't belong to user [" + userName + "]");
+        logger.error(logmessage);
+    }
+
+    public ObjectNotYoursException(String logmessage, String objectType, Long objectId, Long userId) {
+        super(String.format("Object [%s] of type [%s] found, but doesn't belong to user [%s]", objectId, objectType, userId));
         logger.error(logmessage);
     }
 
