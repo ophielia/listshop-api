@@ -21,10 +21,6 @@ spec:
       labels:
         {{- include "listshop-api.selectorLabels" . | nindent 8 }}
     spec:
-      volumes:
-        - name: list-service-static
-          persistentVolumeClaim:
-            claimName: list-service-pvc-list-service-static-set-0
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -60,22 +56,20 @@ spec:
               value: '{{ .Values.service.port }}'
             - name: SPRING_PROFILES_ACTIVE
               value: {{ .Values.service.profile }}
-            {{- if .Values.service.glowrootActivated }}
-            - name: JAVA_TOOL_OPTIONS
-              value: '-javaagent:/opt/listshop/glowroot/glowroot.jar'
-            {{- end}}
-          volumeMounts:
-            - name: list-service-static
-              mountPath: /opt/listshop
+          #            {{- if .Values.service.glowrootActivated }}
+          #            - name: JAVA_TOOL_OPTIONS
+          #              value: '-javaagent:/opt/listshop/glowroot/glowroot.jar'
+          #            {{- end}}
+
           ports:
           - name: http
             containerPort: {{ .Values.service.port }}
             protocol: TCP
-          {{- if .Values.service.glowrootEnabled }}
-          - name: glowroot
-            containerPort: 4000
-            protocol: TCP
-          {{- end}}
+          #          {{- if .Values.service.glowrootEnabled }}
+          #          - name: glowroot
+          #            containerPort: 4000
+          #            protocol: TCP
+          #          {{- end}}
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
@@ -92,15 +86,6 @@ spec:
             initialDelaySeconds: 60
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- if .Values.service.copyStaticFilesVersion  }}
-      initContainers:
-      - name: listshop-init-static
-        image: "ophieliamoon/listshop-staticfiles:{{- print  .Values.service.copyStaticFilesVersion }}"
-        imagePullPolicy: IfNotPresent
-        volumeMounts:
-        - name: list-service-static
-          mountPath: /opt/listshop
-      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
