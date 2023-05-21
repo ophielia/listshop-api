@@ -28,6 +28,24 @@ All notable changes to this project will be documented in this file.
 
 - removed depracated code - tags
 
+## [1.12.0] May 2023
+
+### Changed
+
+- Logs in ShoppingListRestController to use user id rather than name
+- upgraded to spring boot 2.7
+- post-office integrated as module - configuration in listshop-service
+- using logback
+- helmfiles changed for static files - use new separate static set
+
+### Deprecated
+
+- removed deprecated ListLayoutRestController
+
+### Fixed
+
+- some issues with mailing
+
 ## [1.11.1] February 2023
 
 ### Changed
