@@ -115,7 +115,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         if (user == null) {
             return ResponseEntity.badRequest().build();
         }
-        List<TagInfoDTO> infoTags = tagService.getTagInfoList(user.getUsername(), Collections.emptyList());
+        List<TagInfoDTO> infoTags = tagService.getTagInfoList(user.getId(), Collections.emptyList());
         List<TagResource> resourceList = infoTags.stream()
                 .map(ModelMapper::toModel)
                 .map(TagResource::new)
