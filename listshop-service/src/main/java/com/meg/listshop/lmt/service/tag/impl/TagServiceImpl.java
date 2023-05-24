@@ -228,13 +228,7 @@ public class TagServiceImpl implements TagService {
 
     }
 
-    public List<TagInfoDTO> getTagInfoList(String name, List<TagType> tagTypes) {
-        Long userId = null;
-        if (name != null) {
-            UserEntity user = userService.getUserByUserEmail(name);
-            userId = user.getId();
-        }
-
+    public List<TagInfoDTO> getTagInfoList(Long userId, List<TagType> tagTypes) {
         return tagInfoCustomRepository.retrieveTagInfoByUser(userId, tagTypes);
     }
 
@@ -248,7 +242,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagEntity createTag(Long parentId, TagEntity newTag, String username) throws BadParameterException {
+    public TagEntity createTag(Long parentId, TagEntity newTag, Long tagUserId) throws BadParameterException {
         if (parentId == null) {
             throw new BadParameterException("Parent Id is required to create tag.");
         }
@@ -257,11 +251,6 @@ public class TagServiceImpl implements TagService {
             throw new BadParameterException("Parent not found while creating tag.");
         }
 
-        Long tagUserId = null;
-        if (username != null) {
-            UserEntity user = userService.getUserByUserEmail(username);
-            tagUserId = user.getId();
-        }
         // check for duplicate
         TagEntity existingTag = getExistingTag(newTag, tagUserId);
         if (existingTag != null) {

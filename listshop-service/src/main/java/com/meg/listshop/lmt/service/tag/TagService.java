@@ -25,7 +25,7 @@ public interface TagService {
     TagEntity getTagById(Long tagId);
 
 
-    TagEntity createTag(Long parentId, TagEntity newTag, String username) throws BadParameterException;
+    TagEntity createTag(Long parentId, TagEntity newTag, Long userId) throws BadParameterException;
 
     List<TagEntity> getTagsForDish(String username, Long dishId);
 
@@ -68,7 +68,7 @@ public interface TagService {
     List<TagEntity> getReplacedTagsFromIds(Set<Long> tagKeys);
 
 
-    List<TagInfoDTO> getTagInfoList(String name, List<TagType> tagTypes);
+    List<TagInfoDTO> getTagInfoList(Long userId, List<TagType> tagTypes);
 
     List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys);
 

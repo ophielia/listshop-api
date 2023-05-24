@@ -4,10 +4,10 @@ import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.Tag;
 import com.meg.listshop.lmt.api.model.TagListResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -20,11 +20,11 @@ public interface TagRestControllerApi {
 
     @GetMapping(value = "/user")
     ResponseEntity<TagListResource> retrieveUserTagList(
-            Principal principal,
+            Authentication authentication,
             HttpServletRequest request);
 
-     @PostMapping(value = "{tagId}/child", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Tag> addAsChild(Principal principal, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
+    @PostMapping(value = "{tagId}/child", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
                                    @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException;
 
 

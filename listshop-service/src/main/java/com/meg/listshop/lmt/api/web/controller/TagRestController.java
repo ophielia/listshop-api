@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.web.controller;
 
+import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.controller.TagRestControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.ModelMapper;
@@ -14,13 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,11 +44,14 @@ public class TagRestController implements TagRestControllerApi {
 
 
     public ResponseEntity<TagListResource> retrieveUserTagList(
-            Principal principal,
+            Authentication authentication,
             HttpServletRequest request) {
-        String userName = principal != null ? principal.getName() : null;
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        String message = String.format("Creating list for user [%S]", authentication.getName());
+        logger.info(message);
+        Long userId = userDetails != null ? userDetails.getId() : null;
 
-        List<TagInfoDTO> infoTags = tagService.getTagInfoList(userName, Collections.emptyList());
+        List<TagInfoDTO> infoTags = tagService.getTagInfoList(userId, Collections.emptyList());
         List<TagResource> resourceList = infoTags.stream()
                 .map(ModelMapper::toModel)
                 .map(TagResource::new)
@@ -55,16 +59,20 @@ public class TagRestController implements TagRestControllerApi {
         var returnValue = new TagListResource(resourceList);
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
-    public ResponseEntity<Tag> addAsChild(Principal principal, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
+
+    public ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
                                           @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException {
-        logger.debug("Beginning add tag.");
-        String username = null;
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        String message = String.format("Creating add tag for user [%S]", authentication.getName());
+        logger.info(message);
+
+        Long userId = null;
         if (!asStandard) {
-            username = principal.getName();
+            userId = userDetails.getId();
         }
 
         var tagEntity = ModelMapper.toEntity(input);
-        TagEntity result = this.tagService.createTag(tagId, tagEntity, username);
+        TagEntity result = this.tagService.createTag(tagId, tagEntity, userId);
         if (result != null) {
             var tagModel = ModelMapper.toModel(result);
             var resource = new TagResource(tagModel);
