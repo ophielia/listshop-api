@@ -4,10 +4,10 @@ import com.meg.listshop.lmt.api.model.Tag;
 import com.meg.listshop.lmt.api.model.TagListResource;
 import com.meg.listshop.lmt.api.model.TagOperationPut;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -26,7 +26,7 @@ public interface AdminTagRestControllerApi {
                                                    @RequestParam(value = "filter", required = false) String filter);
 
     @GetMapping(value = "/standard/grid")
-    ResponseEntity<TagListResource> getStandardTagListForGrid(Principal principal, HttpServletRequest request);
+    ResponseEntity<TagListResource> getStandardTagListForGrid(HttpServletRequest request);
 
     @GetMapping(value = "/user/{userId}/grid")
     ResponseEntity<TagListResource> getUserTagListForGrid(@PathVariable("userId") Long userId);
@@ -50,7 +50,7 @@ public interface AdminTagRestControllerApi {
     ResponseEntity<Object> performOperation(@RequestBody TagOperationPut input);
 
     @PutMapping(value = "/{fromTagId}/dish/{toTagId}", produces = "application/json")
-    ResponseEntity replaceTagsInDishes(HttpServletRequest request, Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId);
+    ResponseEntity replaceTagsInDishes(HttpServletRequest request, Authentication authentication, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId);
 
 
 }

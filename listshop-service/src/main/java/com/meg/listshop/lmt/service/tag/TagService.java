@@ -53,7 +53,7 @@ public interface TagService {
 
     TagEntity updateTag(Long tagId, TagEntity toUpdate);
 
-    void replaceTagInDishes(String name, Long fromTagId, Long toTagId);
+    void replaceTagInDishes(Long userId, Long fromTagId, Long toTagId);
 
     void addTagChangeListener(TagChangeListener tagChangeListener);
 

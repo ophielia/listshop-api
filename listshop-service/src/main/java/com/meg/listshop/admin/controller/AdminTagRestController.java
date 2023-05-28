@@ -2,6 +2,7 @@ package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -13,13 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -100,7 +101,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         return tagListToResource(tagList);
     }
 
-    public ResponseEntity<TagListResource> getStandardTagListForGrid(Principal principal, HttpServletRequest request) {
+    public ResponseEntity<TagListResource> getStandardTagListForGrid(HttpServletRequest request) {
         List<TagInfoDTO> infoTags = tagService.getTagInfoList(null, Collections.emptyList());
         List<TagResource> resourceList = infoTags.stream()
                 .map(ModelMapper::toModel)
@@ -180,9 +181,12 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
 
+    public ResponseEntity<Object> replaceTagsInDishes(HttpServletRequest request, Authentication authentication, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId) {
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        String message = String.format("Admin - replace tag in dishes, admin user [%S]", userDetails.getId());
+        logger.info(message);
 
-    public ResponseEntity<Object> replaceTagsInDishes(HttpServletRequest request, Principal principal, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId) {
-        this.tagService.replaceTagInDishes(principal.getName(), tagId, toTagId);
+        this.tagService.replaceTagInDishes(userDetails.getId(), tagId, toTagId);
         return ResponseEntity.noContent().build();
     }
 

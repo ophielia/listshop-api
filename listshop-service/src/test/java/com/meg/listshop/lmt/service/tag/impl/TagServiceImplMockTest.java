@@ -807,7 +807,7 @@ class TagServiceImplMockTest {
                 .thenReturn(dishTags);
 
         // call under test
-        tagService.replaceTagInDishes(userName, forTagId, toTagId);
+        tagService.replaceTagInDishes(userId, forTagId, toTagId);
 
         DishEntity dish = dishList.get(0);
         dish.setTags(afterDishTags);

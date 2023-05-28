@@ -3,7 +3,6 @@
  */
 package com.meg.listshop.lmt.service.tag.impl;
 
-import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
@@ -541,9 +540,9 @@ public class TagServiceImpl implements TagService {
                 .collect(Collectors.toSet());
     }
 
+
     @Override
-    public void replaceTagInDishes(String name, Long fromTagId, Long toTagId) {
-        UserEntity user = userService.getUserByUserEmail(name);
+    public void replaceTagInDishes(Long userId, Long fromTagId, Long toTagId) {
         List<DishEntity> dishes;
         TagEntity toTag = getTagById(toTagId);
 
@@ -552,11 +551,11 @@ public class TagServiceImpl implements TagService {
             TagEntity parent = tagStructureService.getParentTag(toTag);
             List<TagEntity> allChildren = tagStructureService.getChildren(parent);
             List<Long> excludeTags = allChildren.stream().map(TagEntity::getId).collect(Collectors.toList());
-            var criteria = new DishSearchCriteria(user.getId());
+            var criteria = new DishSearchCriteria(userId);
             criteria.setExcludedTagIds(excludeTags);
             dishes = dishSearchService.findDishes(criteria);
         } else {
-            var criteria = new DishSearchCriteria(user.getId());
+            var criteria = new DishSearchCriteria(userId);
             criteria.setIncludedTagIds(Collections.singletonList(fromTagId));
             dishes = dishSearchService.findDishes(criteria);
         }

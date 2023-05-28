@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.12.0] next - February 2023
+## next 2023
+
+### Changed
+- 
+
+- TagController, AdminTagController now use userId directly and logs each endpoint
+
+## [1.12.0]  - May 2023
 
 ### Added
 
@@ -17,7 +24,7 @@ All notable changes to this project will be documented in this file.
 - ListLayoutService and LayoutService consolidated into LayoutService
 - ShoppingListController now uses userId directly and logs each endpoint
 - ShoppingListService refactored to use userIds
--
+- helmfiles changed for static files - use new separate static set
 
 ### Fixed
 
@@ -28,17 +35,7 @@ All notable changes to this project will be documented in this file.
 
 - removed depracated code - tags
 
-## [1.12.0] May 2023
-
-### Changed
-
-- Logs in ShoppingListRestController to use user id rather than name
-- upgraded to spring boot 2.7
-- post-office integrated as module - configuration in listshop-service
-- using logback
-- helmfiles changed for static files - use new separate static set
-
-### Deprecated
+### Removed
 
 - removed deprecated ListLayoutRestController
 
