@@ -5,9 +5,12 @@ All notable changes to this project will be documented in this file.
 ## next 2023
 
 ### Changed
-- 
 
 - TagController, AdminTagController now use userId directly and logs each endpoint
+
+### Fixed
+
+- Actuator liveness and readiness probes.
 
 ## [1.12.0]  - May 2023
 
