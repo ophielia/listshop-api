@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - Actuator liveness and readiness probes.
+- frequency of authentication log
+
+### Added
+
+- prometheus endpoint to actuator
 
 ## [1.12.0]  - May 2023
 
