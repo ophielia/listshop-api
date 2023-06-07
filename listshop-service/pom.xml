@@ -5,7 +5,7 @@
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>listshop-service</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.12.1-RC1</version>
     <packaging>jar</packaging>
 
     <name>listshop-service</name>
@@ -15,7 +15,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-parent</artifactId>
-        <version>1.13.0-SNAPSHOT</version>
+        <version>1.12.1-RC1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -92,7 +92,12 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
-
+        <!-- Micrometer Prometheus registry  -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>1.11.0</version>
+        </dependency>
         <!-- testcontainers -->
         <dependency>
             <groupId>org.testcontainers</groupId>
