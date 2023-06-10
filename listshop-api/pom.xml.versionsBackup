@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>listshop-api</artifactId>
-    <version>1.12.2-RC5</version>
+    <version>1.12.1</version>
     <packaging>jar</packaging>
 
     <name>listshop-api</name>
@@ -13,7 +13,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-parent</artifactId>
-        <version>1.12.2-RC5</version>
+        <version>1.12.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -59,15 +59,15 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>spring-releases</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </repository>
+
 
         <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>https://repo.spring.io/libs-snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
 
     </repositories>

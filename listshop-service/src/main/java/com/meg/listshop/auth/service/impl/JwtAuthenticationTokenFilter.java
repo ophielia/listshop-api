@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -35,17 +34,17 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
 
             // get user for token
-            UserDetails userDetails = this.userDetailsService.loadUserByToken(authToken);
+            JwtUser userDetails = (JwtUser) this.userDetailsService.loadUserByToken(authToken);
 
             if (userDetails != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                String username = userDetails.getUsername();
+                String userId = String.valueOf(userDetails.getId());
 
-                logger.debug("checking authentication for user " + username);
+                logger.debug("checking authentication for user " + userId);
 
                 if (jwtTokenUtil.validateToken(authToken, userDetails)) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    logger.info("authenticated user " + username + ", setting security context");
+                    logger.debug("authenticated user " + userId + ", setting security context");
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     logger.debug("Token exists for user, but it is invalid.");

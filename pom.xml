@@ -5,7 +5,7 @@
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>listshop-parent</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.12.2-RC5</version>
     <packaging>pom</packaging>
 
     <name>listshop-parent</name>
@@ -95,8 +95,8 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework.mobile</groupId>
-                <artifactId>spring-mobile-device</artifactId>
-                <version>2.0.0.BUILD-SNAPSHOT</version>
+                <artifactId>spring-mobile-starter</artifactId>
+                <version>2.0.0.M2</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -295,12 +295,9 @@
 
 
         <repository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/libs-snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
         </repository>
 
     </repositories>
