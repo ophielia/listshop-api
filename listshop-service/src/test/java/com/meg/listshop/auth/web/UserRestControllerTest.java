@@ -28,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mobile.device.Device;
+import org.springframework.mobile.device.DevicePlatform;
 import org.springframework.mobile.device.DeviceType;
 import org.springframework.mobile.device.LiteDevice;
 import org.springframework.mock.http.MockHttpOutputMessage;
@@ -163,7 +164,7 @@ public class UserRestControllerTest {
 
     @Test
     public void testCreateUser_KO() throws Exception {
-        Device device = new LiteDevice(DeviceType.NORMAL);
+        Device device = LiteDevice.from(DeviceType.NORMAL, DevicePlatform.IOS);
         final String username = "dXNlcm5hbWU=";
         final String email = "ZW1haWw=";
         final String password = "UGFzc3cwcmQ=";
@@ -182,7 +183,6 @@ public class UserRestControllerTest {
 
     @Test
     public void testCreateUser() throws Exception {
-        Device device = new LiteDevice(DeviceType.NORMAL);
         ClientDeviceInfo deviceInfo = new ClientDeviceInfo();
         deviceInfo.setModel("dummy device");
         deviceInfo.setBuildNumber("99.9");
