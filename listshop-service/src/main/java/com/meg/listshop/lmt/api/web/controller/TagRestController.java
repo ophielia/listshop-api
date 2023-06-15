@@ -35,7 +35,7 @@ public class TagRestController implements TagRestControllerApi {
 
     private final TagService tagService;
 
-    private static final Logger  logger = LoggerFactory.getLogger(TagRestController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TagRestController.class);
 
     @Autowired
     TagRestController(TagService tagService) {
@@ -46,10 +46,16 @@ public class TagRestController implements TagRestControllerApi {
     public ResponseEntity<TagListResource> retrieveUserTagList(
             Authentication authentication,
             HttpServletRequest request) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
-        String message = String.format("Creating list for user [%S]", authentication.getName());
-        logger.info(message);
-        Long userId = userDetails != null ? userDetails.getId() : null;
+        Long userId = null;
+        if (authentication == null) {
+            String message = String.format("Retrieving tags for anonymous user");
+            logger.info(message);
+        } else {
+            JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+            userId = userDetails.getId();
+            String message = String.format("Retrieving tags for user [%S]", authentication.getName());
+            logger.info(message);
+        }
 
         List<TagInfoDTO> infoTags = tagService.getTagInfoList(userId, Collections.emptyList());
         List<TagResource> resourceList = infoTags.stream()
