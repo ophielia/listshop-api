@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## next
+## [1.12.3]  - June 2023
+
+### Fixed
+
+- Fixed bug in endpoint /tag/user for anonymous users
 
 ## [1.12.2]  - June 2023
 
