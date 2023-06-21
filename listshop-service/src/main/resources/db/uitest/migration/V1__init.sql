@@ -27,1001 +27,960 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+COMMENT
+ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
-SET default_tablespace = '';
+SET
+default_tablespace = '';
 
-SET default_with_oids = false;
+SET
+default_with_oids = false;
 
+create sequence public.authority_id_seq
+    start with 1023;
 
+alter sequence public.authority_id_seq owner to postgres;
 
---CREATE ROLE postgres WITH
---    LOGIN  encrypted password 'postgres'
---    SUPERUSER
---    INHERIT
---    NOCREATEDB
---    NOCREATEROLE
---    NOREPLICATION;
---
--- Name: authority; Type: TABLE; Schema: public; Owner: postgres
---
+create sequence public.authority_seq
+    start with 6;
 
-CREATE TABLE public.authority
+alter sequence public.authority_seq owner to postgres;
+
+create sequence public.auto_tag_instructions_sequence
+    start with 1004;
+
+alter sequence public.auto_tag_instructions_sequence owner to postgres;
+
+create sequence public.category_relation_sequence
+    start with 50059;
+
+alter sequence public.category_relation_sequence owner to postgres;
+
+create sequence public.dish_sequence
+    start with 58033;
+
+alter sequence public.dish_sequence owner to postgres;
+
+create sequence public.hibernate_sequence
+    start with 6;
+
+alter sequence public.hibernate_sequence owner to postgres;
+
+create sequence public.list_item_sequence
+    start with 85210;
+
+alter sequence public.list_item_sequence owner to postgres;
+
+create sequence public.list_layout_category_sequence
+    start with 52021;
+
+alter sequence public.list_layout_category_sequence owner to postgres;
+
+create sequence public.list_layout_sequence
+    start with 14;
+
+alter sequence public.list_layout_sequence owner to postgres;
+
+create sequence public.list_sequence
+    start with 50991;
+
+alter sequence public.list_sequence owner to postgres;
+
+create sequence public.list_tag_stats_sequence
+    start with 54750;
+
+alter sequence public.list_tag_stats_sequence owner to postgres;
+
+create sequence public.meal_plan_sequence
+    start with 50690;
+
+alter sequence public.meal_plan_sequence owner to postgres;
+
+create sequence public.meal_plan_slot_sequence
+    start with 53074;
+
+alter sequence public.meal_plan_slot_sequence owner to postgres;
+
+create sequence public.proposal_approach_sequence
+    start with 1004;
+
+alter sequence public.proposal_approach_sequence owner to postgres;
+
+create sequence public.proposal_context_sequence
+    start with 50008;
+
+alter sequence public.proposal_context_sequence owner to postgres;
+
+create sequence public.proposal_context_slot_sequence
+    start with 50049;
+
+alter sequence public.proposal_context_slot_sequence owner to postgres;
+
+create sequence public.proposal_dish_sequence
+    start with 1040;
+
+alter sequence public.proposal_dish_sequence owner to postgres;
+
+create sequence public.proposal_sequence
+    start with 1004;
+
+alter sequence public.proposal_sequence owner to postgres;
+
+create sequence public.proposal_slot_sequence
+    start with 1007;
+
+alter sequence public.proposal_slot_sequence owner to postgres;
+
+create sequence public.shadow_tags_sequence
+    start with 52512;
+
+alter sequence public.shadow_tags_sequence owner to postgres;
+
+create sequence public.tag_relation_sequence
+    start with 51378;
+
+alter sequence public.tag_relation_sequence owner to postgres;
+
+create sequence public.tag_search_group_sequence
+    start with 279;
+
+alter sequence public.tag_search_group_sequence owner to postgres;
+
+create sequence public.tag_sequence
+    start with 51601;
+
+alter sequence public.tag_sequence owner to postgres;
+
+create sequence public.target_proposal_dish_sequence
+    start with 52100;
+
+alter sequence public.target_proposal_dish_sequence owner to postgres;
+
+create sequence public.target_proposal_sequence
+    start with 50004;
+
+alter sequence public.target_proposal_sequence owner to postgres;
+
+create sequence public.target_proposal_slot_sequence
+    start with 50018;
+
+alter sequence public.target_proposal_slot_sequence owner to postgres;
+
+create sequence public.target_sequence
+    start with 50006;
+
+alter sequence public.target_sequence owner to postgres;
+
+create sequence public.target_slot_sequence
+    start with 1024
+    increment by 2;
+
+alter sequence public.target_slot_sequence owner to postgres;
+
+create sequence public.token_sequence
+    start with 57008;
+
+alter sequence public.token_sequence owner to postgres;
+
+create sequence public.user_device_sequence
+    start with 741;
+
+alter sequence public.user_device_sequence owner to postgres;
+
+create sequence public.user_id_sequence
+    start with 46;
+
+alter sequence public.user_id_sequence owner to postgres;
+
+create sequence public.user_properties_id_seq
+    start with 10000;
+
+alter sequence public.user_properties_id_seq owner to postgres;
+
+create table if not exists public.dish
 (
-    authority_id bigint                NOT NULL,
-    name         character varying(50) NOT NULL,
-    user_id      bigint
-);
-
-
-ALTER TABLE public.authority
-    OWNER TO postgres;
-
---
--- Name: authority_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.authority_id_seq
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.authority_id_seq
-    OWNER TO postgres;
-
---
--- Name: authority_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.authority_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.authority_seq
-    OWNER TO postgres;
-
---
--- Name: auto_tag_instructions; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.auto_tag_instructions
+    dish_id
+    bigint
+    not
+    null,
+    description
+    varchar
 (
-    instruction_type character varying(31) NOT NULL,
-    instruction_id   bigint                NOT NULL,
-    assign_tag_id    bigint,
-    is_invert        boolean,
-    search_terms     character varying(255),
-    invert_filter    character varying(255)
-);
-
-
-ALTER TABLE public.auto_tag_instructions
-    OWNER TO postgres;
-
---
--- Name: auto_tag_instructions_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.auto_tag_instructions_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.auto_tag_instructions_sequence
-    OWNER TO postgres;
-
---
--- Name: list_stat_configs; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.list_stat_configs
+    255
+),
+    dish_name varchar
 (
-    added_dish_factor          integer,
-    added_single_factor        integer,
-    added_list_factor          integer,
-    added_starterlist_factor   integer,
-    removed_dish_factor        integer,
-    removed_single_factor      integer,
-    removed_list_factor        integer,
-    removed_starterlist_factor integer,
-    frequent_threshold         double precision
-);
-
-
-ALTER TABLE public.list_stat_configs
-    OWNER TO postgres;
-
---
--- Name: list_tag_stats; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.list_tag_stats
-(
-    list_tag_stat_id    bigint NOT NULL,
-    added_count         integer,
-    removed_count       integer,
-    tag_id              bigint,
-    user_id             bigint,
-    added_to_dish       integer DEFAULT 0,
-    added_single        bigint  DEFAULT 0,
-    added_dish          bigint  DEFAULT 0,
-    added_list          bigint  DEFAULT 0,
-    added_starterlist   bigint  DEFAULT 0,
-    removed_single      bigint  DEFAULT 0,
-    removed_dish        bigint  DEFAULT 0,
-    removed_list        bigint  DEFAULT 0,
-    removed_starterlist bigint  DEFAULT 0
-);
-
-
-ALTER TABLE public.list_tag_stats
-    OWNER TO postgres;
-
-
-
-
---
--- Name: category_relation; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.category_relation
-(
-    category_relation_id bigint NOT NULL,
-    child_category_id    bigint,
-    parent_category_id   bigint
-);
-
-
-ALTER TABLE public.category_relation
-    OWNER TO postgres;
-
---
--- Name: category_relation_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.category_relation_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.category_relation_sequence
-    OWNER TO postgres;
-
---
--- Name: category_tags; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.category_tags
-(
-    category_id bigint NOT NULL,
-    tag_id      bigint NOT NULL
-);
-
-
-ALTER TABLE public.category_tags
-    OWNER TO postgres;
-
---
--- Name: dish; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.dish
-(
-    dish_id         bigint NOT NULL,
-    description     character varying(255),
-    dish_name       character varying(255),
-    user_id         bigint,
-    last_added      timestamp with time zone,
+    255
+),
+    user_id bigint,
+    last_added timestamp with time zone,
     auto_tag_status bigint,
-    created_on      timestamp with time zone,
-    reference       character varying(255)
-);
-
-
-ALTER TABLE public.dish
-    OWNER TO postgres;
-
---
--- Name: dish_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.dish_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.dish_sequence
-    OWNER TO postgres;
-
---
--- Name: dish_tags; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.dish_tags
-(
-    dish_id bigint NOT NULL,
-    tag_id  bigint NOT NULL
-);
-
-
-ALTER TABLE public.dish_tags
-    OWNER TO postgres;
-
-
---
--- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.hibernate_sequence
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.hibernate_sequence
-    OWNER TO postgres;
-
---
--- Name: list; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.list
-(
-    list_id         bigint                 NOT NULL,
-    created_on      timestamp with time zone,
-    user_id         bigint,
-    list_types      character varying(255),
-    list_layout_id  bigint,
-    last_update     timestamp without time zone,
-    meal_plan_id    bigint,
-    is_starter_list boolean DEFAULT false,
-    name            character varying(255) NOT NULL
-);
-
-
-ALTER TABLE public.list
-    OWNER TO postgres;
-
---
--- Name: list_category; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.list_category
-(
-    category_id   bigint NOT NULL,
-    name          character varying(255),
-    layout_id     bigint,
-    display_order integer,
-    is_default    boolean
-);
-
-
-ALTER TABLE public.list_category
-    OWNER TO postgres;
-
---
--- Name: list_item; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.list_item
-(
-    item_id       bigint NOT NULL,
-    added_on      timestamp with time zone,
-    crossed_off   timestamp with time zone,
-    free_text     character varying(255),
-    source        character varying(255),
-    list_id       bigint,
-    list_category character varying(255),
-    tag_id        bigint,
-    used_count    integer,
-    category_id   bigint,
-    dish_sources  character varying(255),
-    list_sources  character varying(255),
-    removed_on    timestamp with time zone,
-    updated_on    timestamp with time zone
-);
-
-
-ALTER TABLE public.list_item
-    OWNER TO postgres;
-
---
--- Name: list_item_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.list_item_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.list_item_sequence
-    OWNER TO postgres;
-
---
--- Name: list_layout; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.list_layout
-(
-    layout_id   bigint NOT NULL,
-    layout_type character varying(255),
-    name        character varying(255)
-);
-
-
-ALTER TABLE public.list_layout
-    OWNER TO postgres;
-
---
--- Name: list_layout_category_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.list_layout_category_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.list_layout_category_sequence
-    OWNER TO postgres;
-
---
--- Name: list_layout_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.list_layout_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.list_layout_sequence
-    OWNER TO postgres;
-
---
--- Name: list_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.list_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.list_sequence
-    OWNER TO postgres;
-
---
--- Name: list_tag_stats_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.list_tag_stats_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.list_tag_stats_sequence
-    OWNER TO postgres;
-
---
--- Name: meal_plan; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.meal_plan
-(
-    meal_plan_id   bigint NOT NULL,
-    created        timestamp with time zone,
-    meal_plan_type character varying(255),
-    name           character varying(255),
-    user_id        bigint,
-    target_id      bigint
-);
-
-
-ALTER TABLE public.meal_plan
-    OWNER TO postgres;
-
---
--- Name: meal_plan_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.meal_plan_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.meal_plan_sequence
-    OWNER TO postgres;
-
---
--- Name: meal_plan_slot; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.meal_plan_slot
-(
-    meal_plan_slot_id bigint NOT NULL,
-    dish_dish_id      bigint,
-    meal_plan_id      bigint NOT NULL
-);
-
-
-ALTER TABLE public.meal_plan_slot
-    OWNER TO postgres;
-
---
--- Name: meal_plan_slot_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.meal_plan_slot_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.meal_plan_slot_sequence
-    OWNER TO postgres;
-
---
--- Name: proposal; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.proposal
-(
-    proposal_id    bigint NOT NULL,
-    user_id        bigint,
-    is_refreshable boolean,
-    created        timestamp with time zone
-);
-
-
-ALTER TABLE public.proposal
-    OWNER TO postgres;
-
---
--- Name: proposal_approach; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.proposal_approach
-(
-    proposal_approach_id bigint NOT NULL,
-    proposal_context_id  bigint NOT NULL,
-    approach_number      integer,
-    instructions         character varying(255)
-);
-
-
-ALTER TABLE public.proposal_approach
-    OWNER TO postgres;
-
---
--- Name: proposal_approach_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.proposal_approach_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.proposal_approach_sequence
-    OWNER TO postgres;
-
---
--- Name: proposal_context; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.proposal_context
-(
-    proposal_context_id    bigint NOT NULL,
-    proposal_id            bigint,
-    current_attempt_index  integer,
-    current_approach_type  character varying(255),
-    current_approach_index integer,
-    meal_plan_id           bigint,
-    target_id              bigint,
-    target_hash_code       character varying(255),
-    proposal_hash_code     character varying(255)
-);
-
-
-ALTER TABLE public.proposal_context
-    OWNER TO postgres;
-
---
--- Name: proposal_context_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.proposal_context_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.proposal_context_sequence
-    OWNER TO postgres;
-
---
--- Name: proposal_context_slot_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.proposal_context_slot_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.proposal_context_slot_sequence
-    OWNER TO postgres;
-
---
--- Name: proposal_dish; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.proposal_dish
-(
-    dish_slot_id    bigint NOT NULL,
-    slot_id         bigint NOT NULL,
-    dish_id         bigint,
-    matched_tag_ids character varying(255)
-);
-
-
-ALTER TABLE public.proposal_dish
-    OWNER TO postgres;
-
---
--- Name: proposal_dish_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.proposal_dish_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.proposal_dish_sequence
-    OWNER TO postgres;
-
---
--- Name: proposal_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.proposal_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.proposal_sequence
-    OWNER TO postgres;
-
---
--- Name: proposal_slot; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.proposal_slot
-(
-    slot_id              bigint NOT NULL,
-    slot_number          integer,
-    flat_matched_tag_ids character varying(255),
-    proposal_id          bigint NOT NULL,
-    picked_dish_id       bigint,
-    slot_dish_tag_id     bigint
-);
-
-
-ALTER TABLE public.proposal_slot
-    OWNER TO postgres;
-
---
--- Name: proposal_slot_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.proposal_slot_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.proposal_slot_sequence
-    OWNER TO postgres;
-
---
--- Name: tag_relation; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.tag_relation
-(
-    tag_relation_id bigint NOT NULL,
-    child_tag_id    bigint,
-    parent_tag_id   bigint
-);
-
-
-ALTER TABLE public.tag_relation
-    OWNER TO postgres;
-
-
---
--- Name: shadow_tags; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.shadow_tags
-(
-    shadow_tag_id bigint NOT NULL,
-    dish_id       bigint,
-    tag_id        bigint
-);
-
-
-ALTER TABLE public.shadow_tags
-    OWNER TO postgres;
-
---
--- Name: shadow_tags_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.shadow_tags_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.shadow_tags_sequence
-    OWNER TO postgres;
-
---
--- Name: tag; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.tag
-(
-    tag_id              bigint                NOT NULL,
-    description         character varying(255),
-    name                character varying(255),
-    tag_type            character varying(255),
-    tag_type_default    boolean,
-    assign_select       boolean,
-    search_select       boolean,
-    is_verified         boolean,
-    power               double precision,
-    to_delete           boolean DEFAULT false NOT NULL,
-    replacement_tag_id  bigint,
-    created_on          timestamp with time zone,
-    updated_on          timestamp with time zone,
-    category_updated_on timestamp with time zone,
-    removed_on          timestamp with time zone
-);
-
-
-ALTER TABLE public.tag
-    OWNER TO postgres;
-
-
---
--- Name: tag_relation_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.tag_relation_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.tag_relation_sequence
-    OWNER TO postgres;
-
---
--- Name: tag_search_group; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.tag_search_group
-(
-    tag_search_group_id bigint NOT NULL,
-    group_id            bigint,
-    member_id           bigint
-);
-
-
-ALTER TABLE public.tag_search_group
-    OWNER TO postgres;
-
---
--- Name: tag_search_group_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.tag_search_group_sequence
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.tag_search_group_sequence
-    OWNER TO postgres;
-
---
--- Name: tag_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.tag_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.tag_sequence
-    OWNER TO postgres;
-
---
--- Name: target; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.target
-(
-    target_id      bigint NOT NULL,
-    created        timestamp with time zone,
-    last_updated   timestamp with time zone,
-    last_used      timestamp without time zone,
-    target_name    character varying(255),
-    target_tag_ids character varying(255),
-    user_id        bigint,
-    proposal_id    bigint,
-    target         character varying(255),
-    expires        timestamp with time zone,
-    target_type    character varying
-);
-
-
-ALTER TABLE public.target
-    OWNER TO postgres;
-
---
--- Name: target_proposal_dish_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.target_proposal_dish_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.target_proposal_dish_sequence
-    OWNER TO postgres;
-
---
--- Name: target_proposal_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.target_proposal_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.target_proposal_sequence
-    OWNER TO postgres;
-
---
--- Name: target_proposal_slot_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.target_proposal_slot_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.target_proposal_slot_sequence
-    OWNER TO postgres;
-
---
--- Name: target_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.target_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.target_sequence
-    OWNER TO postgres;
-
---
--- Name: target_slot; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.target_slot
-(
-    target_slot_id   bigint NOT NULL,
-    slot_dish_tag_id bigint,
-    slot_order       integer,
-    target_id        bigint,
-    target_tag_ids   character varying(255),
-    target           character varying(255)
-);
-
-
-ALTER TABLE public.target_slot
-    OWNER TO postgres;
-
---
--- Name: target_slot_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.target_slot_sequence
-    START WITH 10000
-    INCREMENT BY 2
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.target_slot_sequence
-    OWNER TO postgres;
-
---
--- Name: user_device_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.user_device_sequence
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.user_device_sequence
-    OWNER TO postgres;
-
---
--- Name: user_devices; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.user_devices
-(
-    user_device_id   bigint NOT NULL,
-    user_id          bigint NOT NULL,
-    name             character varying(255),
-    model            character varying(255),
-    os               character varying(255),
-    os_version       character varying(255),
-    client_type      character varying(15),
-    build_number     character varying(255),
-    client_device_id character varying(255),
-    client_version   character varying(255),
-    token            text,
-    last_login       timestamp with time zone
-);
-
-
-ALTER TABLE public.user_devices
-    OWNER TO postgres;
-
---
--- Name: user_id_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.user_id_sequence
-    START WITH 10000
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.user_id_sequence
-    OWNER TO postgres;
-
---
--- Name: users; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.users
-(
-    user_id                  bigint NOT NULL,
-    email                    character varying(255),
-    enabled                  boolean,
-    last_password_reset_date timestamp without time zone,
-    password                 character varying(255),
-    username                 character varying(255),
-    creation_date            timestamp without time zone,
-    last_login               timestamp with time zone
-);
-
-
-ALTER TABLE public.users
-    OWNER TO postgres;
-
--- new table, tokens
-
-CREATE TABLE public.tokens
-(
-    token_id    bigint NOT NULL,
-    created_on  timestamp without time zone,
-    token_type  character varying(255) COLLATE pg_catalog."default",
-    token_value character varying(255) COLLATE pg_catalog."default",
-    user_id     bigint,
-    CONSTRAINT tokens_pkey PRIMARY KEY (token_id)
-)
-    WITH (
-        OIDS = FALSE
+    created_on timestamp with time zone,
+                             reference varchar (255)
     );
 
+alter table public.dish
+    owner to postgres;
 
-CREATE SEQUENCE public.token_sequence
-    INCREMENT 1
-    START 57000
-    MINVALUE 1
-    MAXVALUE 9223372036854775807
-    CACHE 1;
+alter table public.dish
+    add primary key (dish_id);
+
+create table if not exists public.list
+(
+    list_id
+    bigint
+    not
+    null,
+    created_on
+    timestamp
+    with
+    time
+    zone,
+    user_id
+    bigint,
+    list_types
+    varchar
+(
+    255
+),
+    list_layout_id bigint,
+    last_update timestamp,
+    meal_plan_id bigint,
+    is_starter_list boolean default false,
+    name varchar
+(
+    255
+) not null
+    );
+
+alter table public.list
+    owner to postgres;
+
+alter table public.list
+    add primary key (list_id);
+
+create table if not exists public.meal_plan
+(
+    meal_plan_id
+    bigint
+    not
+    null,
+    created
+    timestamp
+    with
+    time
+    zone,
+    meal_plan_type
+    varchar
+(
+    255
+),
+    name varchar
+(
+    255
+),
+    user_id bigint,
+    target_id bigint
+    );
+
+alter table public.meal_plan
+    owner to postgres;
+
+alter table public.meal_plan
+    add primary key (meal_plan_id);
+
+create table if not exists public.users
+(
+    user_id
+    bigint
+    not
+    null,
+    email
+    varchar
+(
+    255
+),
+    enabled boolean,
+    last_password_reset_date timestamp,
+    password varchar
+(
+    255
+),
+    username varchar
+(
+    255
+),
+    creation_date timestamp,
+    last_login timestamp with time zone
+                             );
+
+alter table public.users
+    owner to postgres;
+
+alter table public.users
+    add primary key (user_id);
+
+
+create table if not exists public.authority
+(
+    authority_id
+    bigint
+    not
+    null,
+    name
+    varchar
+(
+    50
+) not null,
+    user_id bigint
+    );
+
+alter table public.authority
+    owner to postgres;
+
+alter table public.authority
+    add primary key (authority_id);
+
+create table if not exists public.auto_tag_instructions
+(
+    instruction_type varchar
+(
+    31
+) not null,
+    instruction_id bigint not null,
+    assign_tag_id bigint,
+    is_invert boolean,
+    search_terms varchar
+(
+    255
+),
+    invert_filter varchar
+(
+    255
+)
+    );
+
+alter table public.auto_tag_instructions
+    owner to postgres;
+
+alter table public.auto_tag_instructions
+    add primary key (instruction_id);
+
+create table if not exists public.list_stat_configs
+(
+    added_dish_factor
+    integer,
+    added_single_factor
+    integer,
+    added_list_factor
+    integer,
+    added_starterlist_factor
+    integer,
+    removed_dish_factor
+    integer,
+    removed_single_factor
+    integer,
+    removed_list_factor
+    integer,
+    removed_starterlist_factor
+    integer,
+    frequent_threshold
+    double
+    precision
+);
+
+alter table public.list_stat_configs
+    owner to postgres;
+
+create table if not exists public.list_tag_stats
+(
+    list_tag_stat_id
+    bigint
+    not
+    null,
+    added_count
+    integer,
+    removed_count
+    integer,
+    tag_id
+    bigint,
+    user_id
+    bigint,
+    added_to_dish
+    integer
+    default
+    0,
+    added_single
+    bigint
+    default
+    0,
+    added_dish
+    bigint
+    default
+    0,
+    added_list
+    bigint
+    default
+    0,
+    added_starterlist
+    bigint
+    default
+    0,
+    removed_single
+    bigint
+    default
+    0,
+    removed_dish
+    bigint
+    default
+    0,
+    removed_list
+    bigint
+    default
+    0,
+    removed_starterlist
+    bigint
+    default
+    0
+);
+
+alter table public.list_tag_stats
+    owner to postgres;
+
+alter table public.list_tag_stats
+    add primary key (list_tag_stat_id);
+
+
+create table if not exists public.category_tags
+(
+    category_id
+    bigint
+    not
+    null,
+    tag_id
+    bigint
+    not
+    null
+);
+
+alter table public.category_tags
+    owner to postgres;
+
+create table if not exists public.dish_tags
+(
+    dish_id
+    bigint
+    not
+    null,
+    tag_id
+    bigint
+    not
+    null
+);
+
+alter table public.dish_tags
+    owner to postgres;
 
 
 
-GRANT ALL ON TABLE public.token_sequence TO postgres;
-GRANT ALL ON TABLE public.tokens TO postgres;
+create table if not exists public.list_category
+(
+    category_id
+    bigint
+    not
+    null,
+    name
+    varchar
+(
+    255
+),
+    layout_id bigint,
+    display_order integer,
+    is_default boolean
+    );
+
+alter table public.list_category
+    owner to postgres;
+
+alter table public.list_category
+    add primary key (category_id);
+
+
+create table if not exists public.list_item
+(
+    item_id
+    bigint
+    not
+    null,
+    added_on
+    timestamp
+    with
+    time
+    zone,
+    crossed_off
+    timestamp
+    with
+    time
+    zone,
+    free_text
+    varchar
+(
+    255
+),
+    source varchar
+(
+    255
+),
+    list_id bigint,
+    list_category varchar
+(
+    255
+),
+    tag_id bigint,
+    used_count integer,
+    category_id bigint,
+    dish_sources varchar
+(
+    255
+),
+    list_sources varchar
+(
+    255
+),
+    removed_on timestamp with time zone,
+    updated_on timestamp with time zone
+                             );
+
+alter table public.list_item
+    owner to postgres;
+
+alter table public.list_item
+    add primary key (item_id);
+
+
+
+create table if not exists public.list_layout
+(
+    layout_id
+    bigint
+    not
+    null,
+    name
+    varchar
+(
+    255
+),
+    user_id bigint,
+    is_default boolean
+    );
+
+alter table public.list_layout
+    owner to postgres;
+
+alter table public.list_layout
+    add primary key (layout_id);
+
+
+create table if not exists public.meal_plan_slot
+(
+    meal_plan_slot_id
+    bigint
+    not
+    null,
+    dish_dish_id
+    bigint,
+    meal_plan_id
+    bigint
+    not
+    null
+);
+
+alter table public.meal_plan_slot
+    owner to postgres;
+
+alter table public.meal_plan_slot
+    add primary key (meal_plan_slot_id);
+
+create table if not exists public.proposal
+(
+    proposal_id
+    bigint
+    not
+    null,
+    user_id
+    bigint,
+    is_refreshable
+    boolean,
+    created
+    timestamp
+    with
+    time
+    zone
+);
+
+alter table public.proposal
+    owner to postgres;
+
+alter table public.proposal
+    add primary key (proposal_id);
+
+
+create table if not exists public.proposal_approach
+(
+    proposal_approach_id
+    bigint
+    not
+    null,
+    proposal_context_id
+    bigint
+    not
+    null,
+    approach_number
+    integer,
+    instructions
+    varchar
+(
+    255
+)
+    );
+
+alter table public.proposal_approach
+    owner to postgres;
+
+create table if not exists public.proposal_context
+(
+    proposal_context_id
+    bigint
+    not
+    null,
+    proposal_id
+    bigint,
+    current_attempt_index
+    integer,
+    current_approach_type
+    varchar
+(
+    255
+),
+    current_approach_index integer,
+    meal_plan_id bigint,
+    target_id bigint,
+    target_hash_code varchar
+(
+    255
+),
+    proposal_hash_code varchar
+(
+    255
+)
+    );
+
+alter table public.proposal_context
+    owner to postgres;
+
+alter table public.proposal_context
+    add primary key (proposal_context_id);
+
+
+create table if not exists public.proposal_dish
+(
+    dish_slot_id
+    bigint
+    not
+    null,
+    slot_id
+    bigint
+    not
+    null,
+    dish_id
+    bigint,
+    matched_tag_ids
+    varchar
+(
+    255
+)
+    );
+
+alter table public.proposal_dish
+    owner to postgres;
+
+create table if not exists public.proposal_slot
+(
+    slot_id
+    bigint
+    not
+    null,
+    slot_number
+    integer,
+    flat_matched_tag_ids
+    varchar
+(
+    255
+),
+    proposal_id bigint not null,
+    picked_dish_id bigint,
+    slot_dish_tag_id bigint
+    );
+
+alter table public.proposal_slot
+    owner to postgres;
+
+alter table public.proposal_slot
+    add primary key (slot_id);
+
+
+create table if not exists public.q
+(
+    copy_single_dish integer
+);
+
+alter table public.q
+    owner to postgres;
+
+create table if not exists public.shadow_tags
+(
+    shadow_tag_id
+    bigint
+    not
+    null,
+    dish_id
+    bigint,
+    tag_id
+    bigint
+);
+
+alter table public.shadow_tags
+    owner to postgres;
+
+alter table public.shadow_tags
+    add primary key (shadow_tag_id);
+
+create table if not exists public.tag
+(
+    tag_id
+    bigint
+    not
+    null,
+    description
+    varchar
+(
+    255
+),
+    name varchar
+(
+    255
+),
+    tag_type varchar
+(
+    255
+),
+    tag_type_default boolean,
+    is_verified boolean,
+    power double precision,
+    to_delete boolean default false not null,
+    replacement_tag_id bigint,
+    created_on timestamp with time zone,
+    updated_on timestamp with time zone,
+    category_updated_on timestamp with time zone,
+    removed_on timestamp with time zone,
+                             is_group boolean default false not null,
+                             user_id bigint
+                             );
+
+alter table public.tag
+    owner to postgres;
+
+alter table public.tag
+    add primary key (tag_id);
+
+
+create table if not exists public.tag_relation
+(
+    tag_relation_id
+    bigint
+    not
+    null,
+    child_tag_id
+    bigint,
+    parent_tag_id
+    bigint
+);
+
+alter table public.tag_relation
+    owner to postgres;
+
+alter table public.tag_relation
+    add primary key (tag_relation_id);
+
+create table if not exists public.target
+(
+    target_id
+    bigint
+    not
+    null,
+    created
+    timestamp
+    with
+    time
+    zone,
+    last_updated
+    timestamp
+    with
+    time
+    zone,
+    last_used
+    timestamp,
+    target_name
+    varchar
+(
+    255
+),
+    target_tag_ids varchar
+(
+    255
+),
+    user_id bigint,
+    proposal_id bigint,
+    target varchar
+(
+    255
+),
+    expires timestamp with time zone,
+                          target_type varchar
+                          );
+
+alter table public.target
+    owner to postgres;
+
+alter table public.target
+    add primary key (target_id);
+
+
+create table if not exists public.target_slot
+(
+    target_slot_id
+    bigint
+    not
+    null,
+    slot_dish_tag_id
+    bigint,
+    slot_order
+    integer,
+    target_id
+    bigint,
+    target_tag_ids
+    varchar
+(
+    255
+),
+    target varchar
+(
+    255
+)
+    );
+
+alter table public.target_slot
+    owner to postgres;
+
+alter table public.target_slot
+    add primary key (target_slot_id);
+
+create table if not exists public.tokens
+(
+    token_id
+    bigint
+    not
+    null,
+    created_on
+    timestamp,
+    token_type
+    varchar
+(
+    255
+),
+    token_value varchar
+(
+    255
+),
+    user_id bigint
+    );
+
+alter table public.tokens
+    owner to postgres;
+
+alter table public.tokens
+    add primary key (token_id);
+
+create table if not exists public.user_devices
+(
+    user_device_id
+    bigint
+    not
+    null,
+    user_id
+    bigint
+    not
+    null,
+    name
+    varchar
+(
+    255
+),
+    model varchar
+(
+    255
+),
+    os varchar
+(
+    255
+),
+    os_version varchar
+(
+    255
+),
+    client_type varchar
+(
+    15
+),
+    build_number varchar
+(
+    255
+),
+    client_device_id varchar
+(
+    255
+),
+    client_version varchar
+(
+    255
+),
+    token text,
+    last_login timestamp with time zone
+                             );
+
+alter table public.user_devices
+    owner to postgres;
+
+create table if not exists public.user_properties
+(
+    user_property_id
+    bigint
+    not
+    null,
+    user_id
+    bigint,
+    property_key
+    varchar
+(
+    150
+) not null,
+    property_value varchar
+(
+    150
+) not null
+    );
+
+alter table public.user_properties
+    owner to postgres;
+
