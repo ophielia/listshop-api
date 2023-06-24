@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -38,7 +37,6 @@ public class UserMetricsTask {
     }
 
     @Scheduled(cron = "${metrics.cron.expression:0 0 */4 * * *}")
-    @Transactional
     public void gatherUserMetrics() {
         logger.info("About to gather metrics for users.");
 

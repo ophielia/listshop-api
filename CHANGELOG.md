@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.5]  - June 2023
+
+### Added
+
+- overriding properties from config map
+
+### Fixed
+
+- query error with metrics
+
 ## [1.12.4]  - June 2023
 
 ### Added

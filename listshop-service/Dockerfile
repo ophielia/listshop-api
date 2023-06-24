@@ -14,5 +14,6 @@ RUN chmod 777 /home/listshop/tomcat
 EXPOSE 4000
 
 USER root
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.meg.listshop.Application"]
+ENTRYPOINT exec java $JAVA_OPTS -cp app:app/lib/* com.meg.listshop.Application
+#ENTRYPOINT ["java","-cp","app:app/lib/*", "-Dspring.config.additional-location=" ,"com.meg.listshop.Application"]
 #ENTRYPOINT ["tail", "-f", "/dev/null"]

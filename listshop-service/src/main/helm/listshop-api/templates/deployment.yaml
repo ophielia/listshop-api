@@ -25,16 +25,23 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+      - name: additional-app-configs
+        configMap:
+          name: {{ include "listshop-api.fullname" . }}-configmap
+          items:
+          - key: application.properties
+            path: application.properties
       serviceAccountName: {{ include "listshop-api.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
+      - name: {{ .Chart.Name }}
+        securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
             - name: LISTSHOP_EMAIL_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -56,14 +63,16 @@ spec:
               value: '{{ .Values.service.port }}'
             - name: SPRING_PROFILES_ACTIVE
               value: {{ .Values.service.profile }}
-          #            {{- if .Values.service.glowrootActivated }}
-          #            - name: JAVA_TOOL_OPTIONS
-          #              value: '-javaagent:/opt/listshop/glowroot/glowroot.jar'
-          #            {{- end}}
-
-          ports:
-          - name: http
-            containerPort: {{ .Values.service.port }}
+            - name: JDK_JAVA_OPTIONS
+              value: >-
+                -Dspring.config.additional-location=optional:/app/additional-app-configs/application.properties
+        volumeMounts:
+        - name: additional-app-configs
+          mountPath: /app/additional-app-configs
+          readOnly: true
+        ports:
+        - name: http
+          containerPort: {{ .Values.service.port }}
             protocol: TCP
           #          {{- if .Values.service.glowrootEnabled }}
           #          - name: glowroot
