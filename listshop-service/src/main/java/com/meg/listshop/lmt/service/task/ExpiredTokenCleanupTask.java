@@ -19,13 +19,14 @@ import java.time.LocalDate;
 @Component
 public class ExpiredTokenCleanupTask {
 
-    private static final Logger  logger = LoggerFactory.getLogger(ExpiredTokenCleanupTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExpiredTokenCleanupTask.class);
 
 
     @Value("${web.login.period.in.days:8}")
-    int deleteLoginsOlderThan;
+    int deleteWebLoginsOlderThan;
 
-
+    @Value("${mobile.login.period.in.days:8}")
+    int deleteMobileLoginsOlderThan;
     UserDeviceRepository userDeviceRepository;
 
     @Autowired
@@ -37,10 +38,14 @@ public class ExpiredTokenCleanupTask {
     @Transactional
     public void removeExpiredLogins() {
         logger.info("About to delete expired logins from user_device table.");
-        LocalDate removLoginBeforeDate = LocalDate.now().minusDays(deleteLoginsOlderThan);
+        LocalDate removeWebLoginBeforeDate = LocalDate.now().minusDays(deleteWebLoginsOlderThan);
+        LocalDate removeMobileLoginBeforeDate = LocalDate.now().minusDays(deleteMobileLoginsOlderThan);
 
-        long deleted = userDeviceRepository.deleteByLastLoginBeforeAndClientTypeEquals(Date.valueOf(removLoginBeforeDate), ClientType.Web);
-        logger.info("... found [" + deleted + "] items to delete.");
+        long deleted = userDeviceRepository.deleteByLastLoginBeforeAndClientTypeEquals(Date.valueOf(removeWebLoginBeforeDate), ClientType.Web);
+        logger.info("... found [" + deleted + "] web tokens to delete.");
+
+        long deletedMobile = userDeviceRepository.deleteByLastLoginBeforeAndClientTypeEquals(Date.valueOf(removeMobileLoginBeforeDate), ClientType.Mobile);
+        logger.info("... found [" + deleted + "] mobile tokens to delete.");
 
         logger.info("StaleItemCleanupTask complete.");
     }
