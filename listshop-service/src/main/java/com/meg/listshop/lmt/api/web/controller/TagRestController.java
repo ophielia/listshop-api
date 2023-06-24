@@ -53,7 +53,7 @@ public class TagRestController implements TagRestControllerApi {
         } else {
             JwtUser userDetails = (JwtUser) authentication.getPrincipal();
             userId = userDetails.getId();
-            String message = String.format("Retrieving tags for user [%S]", authentication.getName());
+            String message = String.format("Retrieving tags for user [%S]", userId);
             logger.info(message);
         }
 
@@ -69,7 +69,7 @@ public class TagRestController implements TagRestControllerApi {
     public ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
                                           @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException {
         JwtUser userDetails = (JwtUser) authentication.getPrincipal();
-        String message = String.format("Creating add tag for user [%S]", authentication.getName());
+        String message = String.format("Creating add tag for user [%S]", userDetails.getId());
         logger.info(message);
 
         Long userId = null;
