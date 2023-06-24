@@ -42,7 +42,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
-            - name: LISTSHOP_EMAIL_PASSWORD
+        - name: LISTSHOP_EMAIL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.service.secrets }}
@@ -61,11 +61,11 @@ spec:
               value: {{ .Values.service.database.url }}
             - name: LISTSHOP_SERVER_PORT
               value: '{{ .Values.service.port }}'
-            - name: SPRING_PROFILES_ACTIVE
-              value: {{ .Values.service.profile }}
-            - name: JDK_JAVA_OPTIONS
-              value: >-
-                -Dspring.config.additional-location=optional:/app/additional-app-configs/application.properties
+        - name: SPRING_PROFILES_ACTIVE
+          value: {{ .Values.service.profile }}
+        - name: JDK_JAVA_OPTIONS
+          value: >-
+            -Dspring.config.additional-location=optional:/app/additional-app-configs/application.properties
         volumeMounts:
         - name: additional-app-configs
           mountPath: /app/additional-app-configs
@@ -73,16 +73,16 @@ spec:
         ports:
         - name: http
           containerPort: {{ .Values.service.port }}
-            protocol: TCP
-          #          {{- if .Values.service.glowrootEnabled }}
-          #          - name: glowroot
-          #            containerPort: 4000
-          #            protocol: TCP
-          #          {{- end}}
-          livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness
-              port: http
+          protocol: TCP
+        #          {{- if .Values.service.glowrootEnabled }}
+        #          - name: glowroot
+        #            containerPort: 4000
+        #            protocol: TCP
+        #          {{- end}}
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: http
             failureThreshold: 4
             periodSeconds: 60
             initialDelaySeconds: 60
