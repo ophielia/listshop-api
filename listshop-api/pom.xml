@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>listshop-api</artifactId>
-    <version>1.12.5-SNAPSHOT</version>
+    <version>1.12.5</version>
     <packaging>jar</packaging>
 
     <name>listshop-api</name>
@@ -13,7 +13,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-parent</artifactId>
-        <version>1.12.5-SNAPSHOT</version>
+        <version>1.12.5</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
