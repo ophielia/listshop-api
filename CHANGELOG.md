@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.4]  - June 2023
+
+### Added
+
+- metrics for user counts
+
+### Fixed
+
+- removed unnecesary email from logs
+
 ## [1.12.3]  - June 2023
 
 ### Fixed
