@@ -43,24 +43,24 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: LISTSHOP_EMAIL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.service.secrets }}
-                  key: emailPassword
-            - name: LISTSHOP_SERVER_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.service.secrets }}
-                  key: dbPassword
-            - name: LISTSHOP_SERVER_DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.service.secrets }}
-                  key: dbUser
-            - name: LISTSHOP_SERVER_DB_URL
-              value: {{ .Values.service.database.url }}
-            - name: LISTSHOP_SERVER_PORT
-              value: '{{ .Values.service.port }}'
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.service.secrets }}
+              key: emailPassword
+        - name: LISTSHOP_SERVER_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.service.secrets }}
+              key: dbPassword
+        - name: LISTSHOP_SERVER_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.service.secrets }}
+              key: dbUser
+        - name: LISTSHOP_SERVER_DB_URL
+          value: {{ .Values.service.database.url }}
+        - name: LISTSHOP_SERVER_PORT
+          value: '{{ .Values.service.port }}'
         - name: SPRING_PROFILES_ACTIVE
           value: {{ .Values.service.profile }}
         - name: JDK_JAVA_OPTIONS
@@ -83,18 +83,18 @@ spec:
           httpGet:
             path: /actuator/health/liveness
             port: http
-            failureThreshold: 4
-            periodSeconds: 60
-            initialDelaySeconds: 60
-          readinessProbe:
-            httpGet:
-              path: /actuator/health/readiness
-              port: http
-            failureThreshold: 4
-            periodSeconds: 60
-            initialDelaySeconds: 60
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+          failureThreshold: 4
+          periodSeconds: 60
+          initialDelaySeconds: 60
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: http
+          failureThreshold: 4
+          periodSeconds: 60
+          initialDelaySeconds: 60
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
