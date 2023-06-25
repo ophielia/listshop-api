@@ -92,6 +92,7 @@ public class UserMetricsTask {
 
     private void publishLoggedInByClient(LocalDate date, String timeTag) {
         Map<String, Integer> loggedInByClient = userRepository.getLoggedInUserCountByClient(date);
+
         loggedInByClient.forEach((key, value) -> {
             var metricName = String.format("users.logged-in.%s.%s", key, timeTag);
             Metrics.gauge(metricName, value);

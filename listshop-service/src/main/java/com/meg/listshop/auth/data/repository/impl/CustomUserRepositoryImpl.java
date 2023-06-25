@@ -20,7 +20,7 @@ import java.util.Map;
 @Transactional
 public class CustomUserRepositoryImpl implements CustomUserRepository {
 
-    private static final String LOGGED_IN_USERS_BY_CLIENT = "select lower(client_type), count(distinct user_id) as clientcount " +
+    private static final String LOGGED_IN_USERS_BY_CLIENT = "select lower(client_type) as client_type, count(distinct user_id) as clientcount " +
             "from user_devices " +
             "where last_login >= :dateLimit " +
             "group by 1;";
@@ -56,8 +56,13 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         String sql = LOGGED_IN_USERS_BY_CLIENT;
 
         List<Map<String, Object>> results = this.jdbcTemplate.queryForList(sql, parameters);
-
         Map<String, Integer> resultMap = new HashMap<>();
+
+        if (results.isEmpty()) {
+            resultMap.put("web", 0);
+            resultMap.put("mobile", 0);
+            return resultMap;
+        }
         results.stream()
                 .forEach(r -> {
                     var client = (String) r.get("client_type");
