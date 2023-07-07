@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.6]  - July 2023
+
+### Fixed
+
+- metrics
+
+### Added
+
+- screenshot profile
+-
+
 ## [1.12.5]  - June 2023
 
 ### Added
