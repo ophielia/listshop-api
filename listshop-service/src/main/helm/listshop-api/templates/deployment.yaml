@@ -26,77 +26,69 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-      - name: additional-app-configs
-        configMap:
-          name: {{ include "listshop-api.fullname" . }}-configmap
-          items:
-          - key: application.properties
-            path: application.properties
+        - name: additional-app-configs
+          configMap:
+            name: {{ include "listshop-api.fullname" . }}-configmap
+            items:
+              - key: application.properties
+                path: application.properties
       serviceAccountName: {{ include "listshop-api.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-      - name: {{ .Chart.Name }}
-        securityContext:
+        - name: {{ .Chart.Name }}
+          securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        resources:
-          limits:
-            memory: "715Mi"
-        env:
-          - name: LISTSHOP_EMAIL_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.service.secrets }}
-              key: emailPassword
-        - name: LISTSHOP_SERVER_DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.service.secrets }}
-              key: dbPassword
-        - name: LISTSHOP_SERVER_DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.service.secrets }}
-              key: dbUser
-        - name: LISTSHOP_SERVER_DB_URL
-          value: {{ .Values.service.database.url }}
-        - name: LISTSHOP_SERVER_PORT
-          value: '{{ .Values.service.port }}'
-        - name: SPRING_PROFILES_ACTIVE
-          value: {{ .Values.service.profile }}
-        - name: JDK_JAVA_OPTIONS
-          value: >-
-            -Dspring.config.additional-location=optional:/app/additional-app-configs/application.properties
-        volumeMounts:
-        - name: additional-app-configs
-          mountPath: /app/additional-app-configs
-          readOnly: true
-        ports:
-        - name: http
-          containerPort: {{ .Values.service.port }}
-          protocol: TCP
-        #          {{- if .Values.service.glowrootEnabled }}
-        #          - name: glowroot
-        #            containerPort: 4000
-        #            protocol: TCP
-        #          {{- end}}
-        livenessProbe:
-          httpGet:
-            path: /actuator/health/liveness
-            port: http
-          failureThreshold: 4
-          periodSeconds: 60
-          initialDelaySeconds: 60
-        readinessProbe:
-          httpGet:
-            path: /actuator/health/readiness
-            port: http
-          failureThreshold: 4
-          periodSeconds: 60
-          initialDelaySeconds: 60
-        resources:
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: LISTSHOP_EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.service.secrets }}
+                  key: emailPassword
+            - name: LISTSHOP_SERVER_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.service.secrets }}
+                  key: dbPassword
+            - name: LISTSHOP_SERVER_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.service.secrets }}
+                  key: dbUser
+            - name: LISTSHOP_SERVER_DB_URL
+              value: {{ .Values.service.database.url }}
+            - name: LISTSHOP_SERVER_PORT
+              value: '{{ .Values.service.port }}'
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.service.profile }}
+            - name: JDK_JAVA_OPTIONS
+              value: >-
+                -Dspring.config.additional-location=optional:/app/additional-app-configs/application.properties
+          volumeMounts:
+            - name: additional-app-configs
+              mountPath: /app/additional-app-configs
+              readOnly: true
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            failureThreshold: 4
+            periodSeconds: 60
+            initialDelaySeconds: 60
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            failureThreshold: 4
+            periodSeconds: 60
+            initialDelaySeconds: 60
+          resources:
           {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
