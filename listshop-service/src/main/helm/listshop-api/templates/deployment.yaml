@@ -41,11 +41,14 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          limits:
+            memory: "715Mi"
         env:
-        - name: LISTSHOP_EMAIL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.service.secrets }}
+          - name: LISTSHOP_EMAIL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.service.secrets }}
               key: emailPassword
         - name: LISTSHOP_SERVER_DB_PASSWORD
           valueFrom:

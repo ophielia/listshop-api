@@ -2,7 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.12.6]  - July 2023
+## [1.12.7]  - July 2023
+
+## [1.12.7-1]  - July 2023 (adding limits to chart)
 
 ### Fixed
 
@@ -11,7 +13,12 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - screenshot profile
--
+
+## [1.12.6]  - July 2023
+
+### Changed
+
+-- chart changes
 
 ## [1.12.5]  - June 2023
 
