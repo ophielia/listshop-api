@@ -89,7 +89,10 @@ spec:
             periodSeconds: 60
             initialDelaySeconds: 60
           resources:
-          {{- toYaml .Values.resources | nindent 12 }}
+            limits:
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              memory: {{ .Values.resources.requests.memory }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

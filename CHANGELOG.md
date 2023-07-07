@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 ## [1.12.7-2]  - July 2023 (adding limits to chart)
 
 ## [1.12.7-3]  - July 2023 (adding limits to chart)
+## [1.12.7-4]  - July 2023 (adding limits to chart)
 
 ### Fixed
 
