@@ -11,6 +11,7 @@ import freemarker.template.TemplateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -27,6 +28,9 @@ public class CampaignServiceImpl implements CampaignService {
     private final CampaignRepository campaignRepository;
     private final MailService mailService;
 
+    @Value("${campaigns.log.only:false}")
+    private boolean logOnly;
+
     public static final String BETA_RECEIVER = "meg@the-list-shop.com";
     public static final String BETA_SENDER = "support@the-list-shop.com";
 
@@ -35,8 +39,6 @@ public class CampaignServiceImpl implements CampaignService {
         this.campaignRepository = campaignRepository;
         this.mailService = mailService;
     }
-
-    @Autowired
 
 
     @Override
@@ -49,13 +51,17 @@ public class CampaignServiceImpl implements CampaignService {
         // if entry already exists, return
         CampaignEntity existing = campaignRepository.findByEmailAndCampaign(email, campaign);
         if (existing != null) {
-            logger.info("Not adding email - since it already exists [{}]", email.substring(3, 4));
+            logger.info("Not adding email - since it already exists [{}]", email.substring(0, 4));
             return;
         }
         // create entry
         CampaignEntity newEntity = new CampaignEntity(campaign, email);
         newEntity = campaignRepository.save(newEntity);
-        // send notification email
+
+        // send notification email or log
+        if (logOnly) {
+            logger.info("Logging request for beta info [{}]", campaign);
+        }
         sendEmail(newEntity);
 
     }

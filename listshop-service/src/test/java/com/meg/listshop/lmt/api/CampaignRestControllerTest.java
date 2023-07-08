@@ -81,8 +81,8 @@ public class CampaignRestControllerTest {
     @Test
     public void testHappyPath() throws Exception {
         String testinput = "{" +
-                "\"email\": \"okemail\", " +
-                "\"campaign\": \"okcampaign\" " +
+                "\"email\": \"email@test.com\", " +
+                "\"campaign\": \"beta\" " +
                 "}";
         mockMvc.perform(post("/campaign")
                         .content(testinput).contentType(contentType))

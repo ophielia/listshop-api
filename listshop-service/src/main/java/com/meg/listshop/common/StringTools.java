@@ -64,6 +64,6 @@ public class StringTools {
         if (toTest == null || toTest.isEmpty()) {
             return false;
         }
-        return toTest.matches("\\@.*\\.\\w{2}");
+        return toTest.matches("(.*)@(.*)\\.\\w{2,}?$");
     }
 }

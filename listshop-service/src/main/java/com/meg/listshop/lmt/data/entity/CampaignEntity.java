@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "campaign")
+@Table(name = "campaigns")
 @GenericGenerator(
         name = "campaign_sequence",
         strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
@@ -32,12 +32,12 @@ public class CampaignEntity {
 
     private String campaign;
     private String email;
-    private Date created;
+    private Date created_on;
 
     public CampaignEntity(String campaign, String email) {
         this.campaign = campaign;
         this.email = email;
-        this.created = new Date();
+        this.created_on = new Date();
     }
 
     public CampaignEntity() {
@@ -69,11 +69,11 @@ public class CampaignEntity {
     }
 
     public Date getCreated() {
-        return created;
+        return created_on;
     }
 
     public void setCreated(Date created) {
-        this.created = created;
+        this.created_on = created;
     }
 
     @Override
@@ -95,7 +95,7 @@ public class CampaignEntity {
                 "campaign_id=" + campaign_id +
                 ", campaign='" + campaign + '\'' +
                 ", email='" + email + '\'' +
-                ", created=" + created +
+                ", created=" + created_on +
                 '}';
     }
 }
