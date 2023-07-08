@@ -59,4 +59,11 @@ public class StringTools {
                 }).filter(t -> t > 0)
                 .collect(Collectors.toList());
     }
+
+    public static boolean isEmail(String toTest) {
+        if (toTest == null || toTest.isEmpty()) {
+            return false;
+        }
+        return toTest.matches("\\@.*\\.\\w{2}");
+    }
 }

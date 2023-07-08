@@ -46,6 +46,8 @@ public class CampaignRestController implements CampaignControllerApi {
             throw new BadParameterException("text is null, too long, or too short in CampaignController." + textToCheck);
         }
         textToCheck = textToCheck.replaceAll("\\p{Cc}", "");
+        textToCheck = textToCheck.replaceAll(" ", "");
+        textToCheck = textToCheck.toLowerCase();
         return textToCheck;
     }
 
