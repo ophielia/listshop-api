@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- endpoint /campaign to save email for users interested in beta
+- endpoint /campaign to send feedback email
 
 ## [1.12.7]  - July 2023
 
