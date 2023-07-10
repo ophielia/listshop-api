@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.web.controller;
 
+import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.CampaignControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.CampaignPut;
@@ -31,23 +32,21 @@ public class CampaignRestController implements CampaignControllerApi {
     @Override
     public ResponseEntity<Object> addCampaign(HttpServletRequest request, Principal principal, CampaignPut input) throws BadParameterException {
         logger.info("Received new campaign: [{}]", input);
-        // check email length
-        String email = checkTextInput(input.getEmail());
-        String campaign = checkTextInput(input.getCampaign());
+        // check input params
+        String email = checkTextInput(input.getEmail(), 7, 45, true, true, false);
+        String campaign = checkTextInput(input.getCampaign(), 7, 30, true, true, true);
+        String feedback = checkTextInput(input.getText(), 1, 500, false, false, true);
 
         // send off to the service
-        campaignService.addCampaignEmail(campaign, email);
+        campaignService.addCampaignEmail(campaign, email, feedback);
         return ResponseEntity.noContent().build();
     }
 
-    private String checkTextInput(String textToCheck) throws BadParameterException {
-        if (textToCheck == null || textToCheck.length() > 45 || textToCheck.length() < 5) {
-            // throw Exception
+    private String checkTextInput(String textToCheck, Integer minLength, Integer maxLength, boolean toLower, boolean stripSpaces, boolean isRequired) throws BadParameterException {
+        var checked = StringTools.safetyCheckTextInput(textToCheck, maxLength, minLength, true, true);
+        if (isRequired && checked == null) {
             throw new BadParameterException("text is null, too long, or too short in CampaignController." + textToCheck);
         }
-        textToCheck = textToCheck.replaceAll("\\p{Cc}", "");
-        textToCheck = textToCheck.replaceAll(" ", "");
-        textToCheck = textToCheck.toLowerCase();
         return textToCheck;
     }
 

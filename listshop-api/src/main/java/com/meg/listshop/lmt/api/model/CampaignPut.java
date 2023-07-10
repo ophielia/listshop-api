@@ -13,9 +13,13 @@ public class CampaignPut {
     private String campaign;
 
     @JsonProperty("email")
-    @NotEmpty()
-    @Size(max = 100, min = 7, message = "email field should be between 7 and 100 chars.")
+    @Size(max = 100, message = "email field should be between 7 and 100 chars.")
     private String email;
+
+    @JsonProperty("text")
+    @NotEmpty()
+    @Size(max = 500, message = "message field should be no more than 500 chars.")
+    private String text;
 
     public String getCampaign() {
         return campaign;
@@ -25,11 +29,16 @@ public class CampaignPut {
         return email;
     }
 
+    public String getText() {
+        return text;
+    }
+
     @Override
     public String toString() {
         return "CampaignPut{" +
                 "campaign='" + campaign + '\'' +
                 ", email='" + email + '\'' +
+                ", text='" + text + '\'' +
                 '}';
     }
 }

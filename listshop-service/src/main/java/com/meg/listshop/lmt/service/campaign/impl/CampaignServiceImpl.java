@@ -42,8 +42,21 @@ public class CampaignServiceImpl implements CampaignService {
 
 
     @Override
-    public void addCampaignEmail(String campaign, String email) {
+    public void addCampaignEmail(String campaign, String email, String text) {
         logger.info("Beginning Add Campaign Email: campaign[{}]", campaign);
+
+        // send notification email or log
+        if (logOnly) {
+            logger.info("Logging request for beta info [{}]", campaign);
+            return;
+        }
+        sendEmail(campaign, email, text);
+
+    }
+
+    public void addCampaignEmailLegacy(String campaign, String email) {
+        logger.info("Beginning Add Campaign Email: campaign[{}]", campaign);
+
         if (!StringTools.isEmail(email)) {
             logger.info("Not adding email - email does not appear to be valid[{}]", email);
             return;
@@ -62,19 +75,21 @@ public class CampaignServiceImpl implements CampaignService {
         if (logOnly) {
             logger.info("Logging request for beta info [{}]", campaign);
         }
-        sendEmail(newEntity);
+        sendEmail(email, "", "");  // not real
 
     }
 
-    private void sendEmail(CampaignEntity campaign) {
+    private void sendEmail(String email, String campaign, String text) {
+        var contentEmailAddress = StringTools.fillIfEmpty(email, "---");
         // send email
         EmailParameters parameters = new EmailParameters();
         parameters.setEmailType(EmailType.BetaNotification);
         parameters.setReceiver(BETA_RECEIVER);
         parameters.setSender(BETA_SENDER);
-        parameters.setSubject("Interest in Beta");
-        parameters.addParameter("userEmail", campaign.getEmail());
-        parameters.addParameter("campaign", campaign.getCampaign());
+        parameters.setSubject("Feedback from Beta");
+        parameters.addParameter("userEmail", contentEmailAddress);
+        parameters.addParameter("campaign", campaign);
+        parameters.addParameter("feedback", text);
 
         try {
             mailService.processEmail(parameters);

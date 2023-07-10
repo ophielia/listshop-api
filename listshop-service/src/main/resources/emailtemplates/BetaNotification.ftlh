@@ -4,8 +4,13 @@
 <body>
 
 
-<h1>Someone has shown interest in testing.</h1>
+<h1>Someone has sent some feedback!</h1>
 
-<p>Please contact ${userEmail}, and get them set up with TestFlight.</p>
+<div><span>Email: </span><span>${userEmail}</span></div>
+<div>
+    <div>Feedback:</div>
+    <div>${feedback}</div>
+</div>
+
 
 </body>

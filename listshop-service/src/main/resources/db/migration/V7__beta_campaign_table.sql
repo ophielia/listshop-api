@@ -1,4 +1,4 @@
-CREATE TABLE public.campaigns
+CREATE TABLE if not exists public.campaigns
 (
     campaign_id bigint NOT NULL,
     created_on  timestamp without time zone,
@@ -12,7 +12,7 @@ CREATE TABLE public.campaigns
         );
 
 
-CREATE SEQUENCE public.campaign_sequence
+CREATE SEQUENCE if not exists public.campaign_sequence
     INCREMENT 1
     START 1000
     MINVALUE 1
@@ -24,5 +24,8 @@ CREATE SEQUENCE public.campaign_sequence
  rollback
 
  drop table campaigns;
- drop sequence campaign_sequences;
+ drop sequence if exists campaign_sequences;
+
+delete from flyway_schema_history where installed_rank = 7
+select * from  flyway_schema_history
  */

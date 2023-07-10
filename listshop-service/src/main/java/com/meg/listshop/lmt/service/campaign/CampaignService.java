@@ -6,6 +6,6 @@ package com.meg.listshop.lmt.service.campaign;
 public interface CampaignService {
 
 
-    void addCampaignEmail(String campaign, String email);
+    void addCampaignEmail(String campaign, String email, String text);
 
 }
