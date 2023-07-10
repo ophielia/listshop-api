@@ -46,11 +46,11 @@ public class CampaignServiceImpl implements CampaignService {
         logger.info("Beginning Add Campaign Email: campaign[{}]", campaign);
 
         // send notification email or log
+        logger.info("Logging request for beta info [{}]", campaign);
         if (logOnly) {
-            logger.info("Logging request for beta info [{}]", campaign);
             return;
         }
-        sendEmail(campaign, email, text);
+        sendEmail(email, campaign, text);
 
     }
 
