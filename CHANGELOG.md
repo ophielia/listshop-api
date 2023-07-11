@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.13.0]  - July 2023
+
+### Added
+
+- endpoint /campaign to send feedback email
+
 ## [1.12.7]  - July 2023
 
 ## [1.12.7]  - July 2023

@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class StringTools {
-    private static final Logger  logger = LoggerFactory.getLogger(StringTools.class);
+    private static final Logger logger = LoggerFactory.getLogger(StringTools.class);
 
     private StringTools() {
         throw new IllegalAccessError("Utility class");
@@ -58,5 +58,40 @@ public class StringTools {
                     }
                 }).filter(t -> t > 0)
                 .collect(Collectors.toList());
+    }
+
+    public static boolean isEmail(String toTest) {
+        if (toTest == null || toTest.isEmpty()) {
+            return false;
+        }
+        return toTest.matches("(.*)@(.*)\\.\\w{2,}?$");
+    }
+
+    public static String safetyCheckTextInput(String textToCheck, Integer maxLength, Integer minLength, boolean toLower,
+                                              boolean stripSpaces) {
+        if (textToCheck == null) {
+            return textToCheck;
+        }
+        if (textToCheck.length() > maxLength || textToCheck.length() < minLength) {
+            return null;
+        }
+
+        textToCheck = textToCheck.replaceAll("\\p{Cc}", "");
+        if (toLower) {
+            textToCheck = textToCheck.replaceAll(" ", "");
+        }
+
+        if (stripSpaces) {
+            textToCheck = textToCheck.toLowerCase();
+        }
+
+        return textToCheck;
+    }
+
+    public static String fillIfEmpty(String text, String replacement) {
+        if (text == null || text.trim().isEmpty()) {
+            return replacement;
+        }
+        return text;
     }
 }
