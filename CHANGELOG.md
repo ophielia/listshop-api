@@ -8,7 +8,14 @@ All notable changes to this project will be documented in this file.
 
 - endpoint /campaign to send feedback email
 
-## [1.12.7]  - July 2023
+## [1.13.0]  - July 2023
+
+### Added
+
+- code to send email when receiving feedback
+- table to save feedback, but currently unused
+- deployment limits in charts
+- new email type
 
 ## [1.12.7]  - July 2023
 
