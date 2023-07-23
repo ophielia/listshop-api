@@ -1,0 +1,15 @@
+{
+  "celebrations": [
+    {
+      "handle": "It's Marisa's Birthday!!!",
+      "start_date": "2023-07-23T07:34:59.771+00:00",
+      "end_date": "2023-07-23T17:34:59.771+00:00",
+      "hostess_title": "We're celebrating!",
+      "hostess_text": "The sky is blue.",
+      "hostess_display": true,
+      "party_title": "We're Celebrating!!",
+      "party_text": "And the birds are singing",
+      "throw_confetti_count": 3
+    }
+  ]
+}
