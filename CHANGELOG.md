@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file.
 
 - endpoint /campaign to send feedback email
 
+## [next]  - July 2023
+
+### Added
+
+- static files - adding test celebration file - 1.1.9
+
 ## [1.13.0]  - July 2023
 
 ### Added
