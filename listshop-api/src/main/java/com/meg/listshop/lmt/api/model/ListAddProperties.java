@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ public class ListAddProperties {
         this.dishSources = dishSources;
     }
 
+
+    @JsonIgnore
     public List<Long> getDishSourceIds() {
         if (dishSources == null) {
             return new ArrayList<Long>();

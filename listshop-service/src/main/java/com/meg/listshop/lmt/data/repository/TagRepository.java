@@ -37,8 +37,7 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
     @Query(value = "select t.*  from tag t join category_tags ct on ct.tag_id = t.tag_id and ct.category_id = :layoutCategoryId order by t.name ", nativeQuery = true)
     List<TagEntity> getTagsForLayoutCategory(@Param("layoutCategoryId") Long layoutCategoryId);
 
-    @Query("select distinct t.tag_id FROM TagEntity t , DishEntity d " +
-            "where d member of t.dishes and d.dish_id = ?1")
+    @Query(value = "select distinct tag_id from dish_tags where dish_id = ?1", nativeQuery = true)
     Set<Long> getTagIdsForDish(Long dishId);
 
     @Query("select distinct t FROM TagEntity t , DishEntity d " +

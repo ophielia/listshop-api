@@ -22,6 +22,8 @@ import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
@@ -50,6 +52,8 @@ public class DishServiceImpl implements DishService {
     private final TagService tagService;
 
     private final TagStructureService tagStructureService;
+
+    private static final Logger logger = LoggerFactory.getLogger(DishServiceImpl.class);
 
     @Autowired
     public DishServiceImpl(
@@ -91,16 +95,12 @@ public class DishServiceImpl implements DishService {
 
         UserEntity user = userRepository.findByEmail(username);
 
-        Optional<DishEntity> dishOpt = dishRepository.findByDishIdForUser(user.getId(), dishId);
-        if (!dishOpt.isPresent()) {
-            final String msg = "No dish found by id for user [" + username + "] and dishId [" + dishId + "]";
-            throw new ObjectNotFoundException(msg, dishId, "Dish");
-        }
-        return dishOpt.get();
+        return getDishForUserById(user.getId(), dishId);
     }
 
     @Override
     public DishEntity getDishForUserById(Long userId, Long dishId) {
+
         if (dishId == null) {
             final String msg = String.format("Null dishId passed as argument userId [%s].", userId);
             throw new ObjectNotFoundException(msg, null, "Dish");
@@ -116,6 +116,8 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public DishEntity save(DishEntity dish, boolean doAutotag) {
+        String message = String.format("service - saving dish [%S], autotag [%S] ", dish.getId(), doAutotag);
+        logger.info(message);
         // autotag dish
         if (doAutotag) {
             autoTagService.doAutoTag(dish, true);

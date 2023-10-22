@@ -3,6 +3,7 @@ package com.meg.listshop.lmt.api.controller;
 import com.meg.listshop.lmt.api.model.*;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +33,7 @@ public interface DishRestControllerApi {
     ResponseEntity<Object> createDish(HttpServletRequest request, Principal principal, @RequestBody Dish input);
 
     @PutMapping(value = "/{dishId}", consumes = "application/json")
-    ResponseEntity<Object> updateDish(Principal principal, @PathVariable Long dishId, @RequestBody Dish input);
+    ResponseEntity<Object> updateDish(Authentication authentication, @PathVariable Long dishId, @RequestBody Dish input);
 
     @GetMapping(value = "/{dishId}", produces = "application/json")
     ResponseEntity<DishResource> readDish(HttpServletRequest request, Principal principal, @PathVariable("dishId") Long dishId);

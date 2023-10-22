@@ -11,6 +11,8 @@ import com.meg.listshop.lmt.service.tag.AutoTagProcessor;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
 import com.meg.listshop.lmt.service.tag.AutoTagSubject;
 import com.meg.listshop.lmt.service.tag.TagService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +40,8 @@ public class AutoTagServiceImpl implements AutoTagService {
 
     private final List<AutoTagProcessor> processorList;
 
+    private static final Logger logger = LoggerFactory.getLogger(AutoTagServiceImpl.class);
+
     @Autowired
     public AutoTagServiceImpl(TagRepository tagRepository, ShadowTagRepository shadowTagRepository, UserService userService, DishService dishService, TagService tagService, List<AutoTagProcessor> processorList) {
         this.tagRepository = tagRepository;
@@ -50,11 +54,11 @@ public class AutoTagServiceImpl implements AutoTagService {
 
     @Override
     public void doAutoTag(DishEntity dishEntity, boolean overrideStatus) {
+        String message = String.format("service - saving dish [%S], overrideStatus [%S] ", dishEntity.getId(), overrideStatus);
+        logger.info(message);
         if (dishEntity == null) {
             return;
         }
-        // get user
-        UserEntity user = userService.getUserById(dishEntity.getUserId());
 
         // pull items
         Set<Long> tagIdsForDish = tagRepository.getTagIdsForDish(dishEntity.getId());
@@ -87,6 +91,8 @@ public class AutoTagServiceImpl implements AutoTagService {
             return;
         }
 
+        // get user
+        UserEntity user = userService.getUserById(dishEntity.getUserId());
         tagService.addTagsToDish(user.getEmail(), subject.getDish().getId(), new HashSet(subject.getTagsToAssign()));
         createShadowTagsForDish(subject);
     }

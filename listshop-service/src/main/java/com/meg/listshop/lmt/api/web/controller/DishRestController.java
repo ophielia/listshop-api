@@ -3,6 +3,7 @@ package com.meg.listshop.lmt.api.web.controller;
 import com.google.common.base.Enums;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.controller.DishRestControllerApi;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -135,11 +137,14 @@ public class DishRestController implements DishRestControllerApi {
     }
 
 
-    public ResponseEntity<Object> updateDish(Principal principal, @PathVariable Long dishId, @RequestBody Dish input) {
-        UserEntity user = this.getUserForPrincipal(principal);
+    public ResponseEntity<Object> updateDish(Authentication authentication, @PathVariable Long dishId, @RequestBody Dish input) {
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        String message = String.format("updating dish [%S] for user [%S]", dishId, userDetails.getId());
+        logger.info(message);
+
 
         DishEntity dish = this.dishService
-                .getDishForUserById(user.getEmail(), dishId);
+                .getDishForUserById(userDetails.getId(), dishId);
 
         dish.setDescription(input.getDescription());
         dish.setDishName(input.getDishName());
