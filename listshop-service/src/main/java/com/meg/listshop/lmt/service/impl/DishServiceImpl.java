@@ -78,7 +78,13 @@ public class DishServiceImpl implements DishService {
         if (user == null) {
             throw new UserNotFoundException(userName);
         }
-        return dishRepository.findByUserId(user.getId());
+        return getDishesForUser(user.getId());
+    }
+
+    @Override
+    public List<DishEntity> getDishesForUser(Long userId) {
+
+        return dishRepository.findByUserId(userId);
     }
 
     private Optional<DishEntity> getDishById(Long dishId) {
@@ -126,7 +132,7 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public DishEntity createDish(String userName, DishEntity createDish) {
+    public DishEntity createDish(Long userId, DishEntity createDish) {
         // check name before saving
         String name = ensureDishNameIsUnique(createDish.getUserId(), createDish.getDishName());
         createDish.setDishName(name);
@@ -139,7 +145,7 @@ public class DishServiceImpl implements DishService {
         newDish.setReference(createDish.getReference());
 
         DishEntity createdDish =  dishRepository.save(newDish);
-        tagService.assignDefaultRatingsToDish(userName, createdDish.getId() );
+        tagService.assignDefaultRatingsToDish(userId, createdDish.getId());
         return createdDish;
     }
 

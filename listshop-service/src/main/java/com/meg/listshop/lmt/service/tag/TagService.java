@@ -39,15 +39,15 @@ public interface TagService {
 
     List<TagEntity> getTagsForDish(Long userId, Long dishId, List<TagType> tagtypes);
 
-    void addTagToDish(String userName, Long dishId, Long tagId);
+    void addTagToDish(Long userId, Long dishId, Long tagId);
 
-    void addTagsToDish(String userName, Long id, Set<Long> tagIds);
+    void addTagsToDish(Long userId, Long id, Set<Long> tagIds);
 
-    int removeTagsFromDish(String userName, Long dishId, Set<Long> tagIds);
+    int removeTagsFromDish(Long userId, Long dishId, Set<Long> tagIds);
 
     List<TagEntity> getIngredientTagsForDishes(List<Long> dishIdList);
 
-    int deleteTagFromDish(String userName, Long dishId, Long tagId);
+    int deleteTagFromDish(Long userId, Long dishId, Long tagId);
 
     Map<Long, TagEntity> getDictionaryForIds(Set<Long> tagIds);
 
@@ -59,11 +59,11 @@ public interface TagService {
 
     void saveTagForDelete(Long tagId, Long replacementTagId);
 
-    RatingUpdateInfo getRatingUpdateInfoForDishIds(String username, List<Long> dishIdList);
+    RatingUpdateInfo getRatingUpdateInfoForDishIds(List<Long> dishIdList);
 
-    void incrementDishRating(String name, Long dishId, Long ratingId, SortOrMoveDirection moveDirection);
+    void incrementDishRating(Long userId, Long dishId, Long ratingId, SortOrMoveDirection moveDirection);
 
-    void setDishRating(String name, Long dishId, Long ratingId, Integer step);
+    void setDishRating(Long userId, Long dishId, Long ratingId, Integer step);
 
     List<TagEntity> getReplacedTagsFromIds(Set<Long> tagKeys);
 
@@ -80,5 +80,5 @@ public interface TagService {
 
     void createStandardTagsFromUserTags(List<Long> tagIds);
 
-    void assignDefaultRatingsToDish(String userName, Long dishId);
+    void assignDefaultRatingsToDish(Long userId, Long dishId);
 }

@@ -317,7 +317,7 @@ public class MealPlanServiceImpl implements MealPlanService {
         }
 
         // call and return tag service method
-        return tagService.getRatingUpdateInfoForDishIds(username, dishIds);
+        return tagService.getRatingUpdateInfoForDishIds(dishIds);
     }
 
     public MealPlanEntity copyMealPlan(String name, Long mealPlanId) {

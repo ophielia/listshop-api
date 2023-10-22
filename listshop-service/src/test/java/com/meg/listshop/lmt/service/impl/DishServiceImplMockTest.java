@@ -61,6 +61,7 @@ public class DishServiceImplMockTest {
     public void testCreateDish() throws Exception {
         String testDishName = "test mock dish";
         String testUserName = "mojo.is.sleeping@test.com";
+        Long userId = 99L;
         DishEntity dish = new DishEntity();
         dish.setDishName(testDishName);
         dish.setReference("reference");
@@ -74,7 +75,7 @@ public class DishServiceImplMockTest {
         Mockito.when(dishRepository.save(argument.capture()))
                 .thenReturn(dish);
 
-        dishService.createDish(testUserName, dish);
+        dishService.createDish(userId, dish);
 
         DishEntity dishSaved = argument.getValue();
         Assert.assertEquals(testDishName, dishSaved.getDishName());
@@ -85,7 +86,7 @@ public class DishServiceImplMockTest {
     @Test
     public void testCreateDish_ExistingName() throws Exception {
         String testDishName = "test mock dish";
-        String testUserName = "test@username.com";
+        Long testUserId = 99L;
         DishEntity dish = new DishEntity();
         dish.setDishName(testDishName);
         dish.setUserId(99L);
@@ -111,7 +112,7 @@ public class DishServiceImplMockTest {
         Mockito.when(dishRepository.save(argument.capture()))
                 .thenReturn(dish);
 
-        dishService.createDish(testUserName, dish);
+        dishService.createDish(testUserId, dish);
 
         DishEntity dishSaved = argument.getValue();
         Assert.assertEquals(testDishName + " " + 4, dishSaved.getDishName());

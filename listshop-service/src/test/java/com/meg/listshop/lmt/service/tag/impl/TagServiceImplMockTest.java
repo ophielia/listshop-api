@@ -77,7 +77,7 @@ class TagServiceImplMockTest {
     void setUp() {
         this.tagService = new TagServiceImpl(
                 tagStatisticService, dishService, tagStructureService, tagReplaceService,
-                tagRepository, userService, tagInfoCustomRepository, dishSearchService
+                tagRepository, tagInfoCustomRepository, dishSearchService
         );
     }
 
@@ -256,7 +256,7 @@ class TagServiceImplMockTest {
         Mockito.when(tagInfoCustomRepository.retrieveTagInfoByUser(null, Collections.singletonList(TagType.Rating))).thenReturn(ratingTagList);
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(userEntity);
 
-        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds(userName, Arrays.asList(1L, 2L, 3L));
+        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds(Arrays.asList(1L, 2L, 3L));
 
         // defaults are returned for dishes, even if not assigned.
         // contract is that ratings are always returned
@@ -305,7 +305,7 @@ class TagServiceImplMockTest {
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(userEntity);
         Mockito.when(tagInfoCustomRepository.retrieveTagInfoByUser(2000L, Collections.singletonList(TagType.Rating))).thenReturn(ratingTagList);
 
-        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds(userName, Arrays.asList(1L, 2L, 3L));
+        RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds(Arrays.asList(1L, 2L, 3L));
 
 
         Assertions.assertNotNull(updateInfo);
@@ -371,7 +371,7 @@ class TagServiceImplMockTest {
         Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.of(newTag));
 
         // tested call
-        tagService.addTagToDish(userName, dishId, tagId);
+        tagService.addTagToDish(userId, dishId, tagId);
 
         Mockito.verify(dishService, times(1)).save(argumentCaptor.capture(), anyBoolean());
         Mockito.verify(tagStatisticService, times(1)).countTagAddedToDish(userId, tagId);
@@ -407,7 +407,7 @@ class TagServiceImplMockTest {
 
 
         // test call - increment
-        tagService.incrementDishRating(userName, dishId, ratingId, SortOrMoveDirection.UP);
+        tagService.incrementDishRating(userId, dishId, ratingId, SortOrMoveDirection.UP);
 
         Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
         Mockito.verify(tagRepository, times(1)).getAssignedTagForRating(dishId, ratingId);
@@ -437,7 +437,7 @@ class TagServiceImplMockTest {
 
 
         // test call - increment
-        tagService.incrementDishRating(userName, dishId, ratingId, SortOrMoveDirection.DOWN);
+        tagService.incrementDishRating(userId, dishId, ratingId, SortOrMoveDirection.DOWN);
 
         Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
         Mockito.verify(tagRepository, times(1)).getAssignedTagForRating(dishId, ratingId);
@@ -476,7 +476,7 @@ class TagServiceImplMockTest {
         Mockito.when(tagStructureService.getSiblingTags(newRatingTag)).thenReturn(siblingTags);
 
         // test call - increment
-        tagService.setDishRating(userName, dishId, ratingId, 5);
+        tagService.setDishRating(userId, dishId, ratingId, 5);
 
         Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
         Mockito.verify(tagRepository, times(1)).findRatingTagIdForStep(ratingId, step);
@@ -578,6 +578,7 @@ class TagServiceImplMockTest {
     @Test
     void replaceTagInDishes() {
         String userName = "userName";
+        Long userId = 99L;
         Long dishId = 10000L;
         Set<Long> tagIds = new HashSet<>();
         tagIds.add(100L);
@@ -605,7 +606,7 @@ class TagServiceImplMockTest {
                 .thenReturn(dishTags, dishTags, dishTags);
 
         // call under test
-        tagService.removeTagsFromDish(userName, dishId, tagIds);
+        tagService.removeTagsFromDish(userId, dishId, tagIds);
 
         Mockito.verify(dishService, times(1)).save(testDish, false);
 
@@ -615,6 +616,7 @@ class TagServiceImplMockTest {
     void removeLastDishTypeTagInDish_Valid() {
 
         String userName = "userName";
+        Long userId = 99L;
         Long dishId = 10000L;
 
         Set<Long> tagIdsToDelete = new HashSet<>();
@@ -644,7 +646,7 @@ class TagServiceImplMockTest {
                 .thenReturn(new DishEntity());
 
         // call under test
-        tagService.removeTagsFromDish(userName, dishId, tagIdsToDelete);
+        tagService.removeTagsFromDish(userId, dishId, tagIdsToDelete);
 
         // all tags should be saved, since last dish type tag for dish was not removed
         Assertions.assertNotNull(savedDish.getValue());
@@ -661,6 +663,7 @@ class TagServiceImplMockTest {
     void removeLastDishTypeTagInDish_Invalid() {
 
         String userName = "userName";
+        Long userId = 99L;
         Long dishId = 10000L;
 
         Set<Long> tagIdsToDelete = new HashSet<>();
@@ -708,7 +711,7 @@ class TagServiceImplMockTest {
                 .thenReturn(new DishEntity());
 
         // call under test
-        tagService.removeTagsFromDish(userName, dishId, tagIdsToDelete);
+        tagService.removeTagsFromDish(userId, dishId, tagIdsToDelete);
 
         // all tags should be saved, since last dish type tag for dish was not removed
         Assertions.assertNotNull(savedDish.getValue());
@@ -725,6 +728,7 @@ class TagServiceImplMockTest {
     @Test
     void testAddTagsToDish() {
         String userName = "test@test.com";
+        Long userId = 99L;
         Long dishId = 50L;
         Set<Long> tagIdSet = new HashSet<>();
         tagIdSet.add(1L);
@@ -759,7 +763,7 @@ class TagServiceImplMockTest {
 
 
         // call under test
-        tagService.addTagsToDish(userName, dishId, tagIdSet);
+        tagService.addTagsToDish(userId, dishId, tagIdSet);
 
         Mockito.verify(dishService, times(1)).save(dish, false);
     }

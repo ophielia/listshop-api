@@ -104,7 +104,7 @@ public class AutoTagServiceImplMockTest {
         Mockito.when(shadowTagRepository.findShadowTagsByDishId(dishId)).thenReturn(shadowTags);
         Mockito.when(mockProcessor.autoTagSubject(subjectCapture.capture())).thenReturn(processedSubject);
         Mockito.when(dishService.save(dishCapture.capture(), Mockito.eq(false))).thenReturn(dishEntity);
-        Mockito.doNothing().when(tagService).addTagsToDish(userName, dishId, tagIdsToAssign);
+        Mockito.doNothing().when(tagService).addTagsToDish(userId, dishId, tagIdsToAssign);
         Mockito.when(shadowTagRepository.saveAll(resultShadowTags)).thenReturn(resultShadowTags);
 
         autoTagService.doAutoTag(dishEntity, override);

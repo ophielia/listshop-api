@@ -3,7 +3,6 @@
  */
 package com.meg.listshop.lmt.service.tag.impl;
 
-import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
@@ -50,7 +49,6 @@ public class TagServiceImpl implements TagService {
     private final TagReplaceService tagReplaceService;
     private final TagRepository tagRepository;
     private final TagStructureService tagStructureService;
-    private final UserService userService;
     private final DishSearchService dishSearchService;
     private final TagInfoCustomRepository tagInfoCustomRepository;
 
@@ -68,7 +66,6 @@ public class TagServiceImpl implements TagService {
                           TagStructureService tagStructureService,
                           @Lazy TagReplaceService tagReplaceService,
                           TagRepository tagRepository,
-                          UserService userService,
                           TagInfoCustomRepository tagInfoCustomRepository,
                           DishSearchService dishSearchService) {
         this.dishService = dishService;
@@ -76,7 +73,6 @@ public class TagServiceImpl implements TagService {
         this.tagReplaceService = tagReplaceService;
         this.tagRepository = tagRepository;
         this.tagStructureService = tagStructureService;
-        this.userService = userService;
         this.dishSearchService = dishSearchService;
         this.tagInfoCustomRepository = tagInfoCustomRepository;
 
@@ -84,8 +80,8 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public int deleteTagFromDish(String userName, Long dishId, Long tagId) {
-        return removeTagsFromDish(userName, dishId, Collections.singleton(tagId));
+    public int deleteTagFromDish(Long userId, Long dishId, Long tagId) {
+        return removeTagsFromDish(userId, dishId, Collections.singleton(tagId));
     }
 
     @Override
@@ -98,7 +94,7 @@ public class TagServiceImpl implements TagService {
 
         Optional<TagEntity> tagOpt = tagRepository.findById(tagId);
 
-        if (!tagOpt.isPresent()) {
+        if (tagOpt.isEmpty()) {
             return null;
         }
 
@@ -110,7 +106,7 @@ public class TagServiceImpl implements TagService {
         return tag;
     }
 
-    public RatingUpdateInfo getRatingUpdateInfoForDishIds(String userName, List<Long> dishIdList) {
+    public RatingUpdateInfo getRatingUpdateInfoForDishIds(List<Long> dishIdList) {
         // put into lookup - rating info for child tags
         RatingStructureTree ratingStructure = getRatingStructure();
 
@@ -177,7 +173,7 @@ public class TagServiceImpl implements TagService {
     public TagEntity updateTag(Long tagId, TagEntity toUpdate) {
         // get tag from db
         Optional<TagEntity> dbTagOpt = tagRepository.findById(tagId);
-        if (!dbTagOpt.isPresent()) {
+        if (dbTagOpt.isEmpty()) {
             return null;
         }
         TagEntity dbTag = dbTagOpt.get();
@@ -309,9 +305,9 @@ public class TagServiceImpl implements TagService {
 
     }
 
-    public void incrementDishRating(String name, Long dishId, Long ratingId, SortOrMoveDirection moveDirection) {
+    public void incrementDishRating(Long userId, Long dishId, Long ratingId, SortOrMoveDirection moveDirection) {
         // get dish
-        DishEntity dish = dishService.getDishForUserById(name, dishId);
+        DishEntity dish = dishService.getDishForUserById(userId, dishId);
         if (dish == null) {
             throw new ActionInvalidException("Can't find dish for id [" + dishId + "]");
         }
@@ -320,7 +316,7 @@ public class TagServiceImpl implements TagService {
         // get current assigned tag for parent rating id
         TagEntity currentTag = tagRepository.getAssignedTagForRating(dishId, ratingId);
         // if no tag is available, get the default
-        Long currentTagId = null;
+        Long currentTagId;
         if (currentTag == null) {
             currentTagId = ratingStructure.getDefaultTagIdForRating(ratingId);
         } else {
@@ -339,9 +335,9 @@ public class TagServiceImpl implements TagService {
 
     }
 
-    public void setDishRating(String name, Long dishId, Long ratingId, Integer step) {
+    public void setDishRating(Long userId, Long dishId, Long ratingId, Integer step) {
         // get dish
-        DishEntity dish = dishService.getDishForUserById(name, dishId);
+        DishEntity dish = dishService.getDishForUserById(userId, dishId);
         if (dish == null) {
             throw new ActionInvalidException("Can't find dish for id [" + dishId + "]");
         }
@@ -352,7 +348,7 @@ public class TagServiceImpl implements TagService {
             throw new ObjectNotFoundException("Can't find step [" + step + "] for ratingId [" + ratingId + "]");
         }
         Optional<TagEntity> tag = tagRepository.findById(newTagId);
-        if (!tag.isPresent()) {
+        if (tag.isEmpty()) {
             throw new ObjectNotFoundException("Shouldn't happen: Can't retrieve tag for tag_id [" + newTagId + "]");
         }
         // assign new tag
@@ -393,15 +389,16 @@ public class TagServiceImpl implements TagService {
         return getTagsForDish(dish, tagtypes);
     }
 
+
     @Override
-    public void addTagToDish(String userName, Long dishId, Long tagId) {
+    public void addTagToDish(Long userId, Long dishId, Long tagId) {
         TagEntity tag = getTagById(tagId);
         if (dishId == null || tagId == null) {
             return;
         }
 
         // get dish
-        DishEntity dish = dishService.getDishForUserById(userName, dishId);
+        DishEntity dish = dishService.getDishForUserById(userId, dishId);
 
         addTagToDish(dish, tag);
     }
@@ -435,12 +432,12 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void addTagsToDish(String userName, Long dishId, Set<Long> tagIds) {
-        addTagsToDish(userName,dishId,tagIds,true);
+    public void addTagsToDish(Long userId, Long dishId, Set<Long> tagIds) {
+        addTagsToDish(userId, dishId, tagIds, true);
     }
 
-    private void addTagsToDish(String userName, Long dishId, Set<Long> tagIds, boolean checkRatingSiblings) {
-        DishEntity dish = dishService.getDishForUserById(userName, dishId);
+    private void addTagsToDish(Long userId, Long dishId, Set<Long> tagIds, boolean checkRatingSiblings) {
+        DishEntity dish = dishService.getDishForUserById(userId, dishId);
         if (dish == null) {
             return;
         }
@@ -482,9 +479,9 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public int removeTagsFromDish(String userName, Long dishId, Set<Long> tagIds) {
+    public int removeTagsFromDish(Long userId, Long dishId, Set<Long> tagIds) {
         // get dish
-        DishEntity dish = dishService.getDishForUserById(userName, dishId);
+        DishEntity dish = dishService.getDishForUserById(userId, dishId);
         if (dish == null) {
             return 0;
         }
@@ -512,12 +509,12 @@ public class TagServiceImpl implements TagService {
         return dishTagsDeletedTag.size();
     }
 
-    public void assignDefaultRatingsToDish(String userName, Long dishId) {
+    public void assignDefaultRatingsToDish(Long userId, Long dishId) {
        RatingStructureTree ratingStructureTree  = getRatingStructure();
        Set<Long> defaultTagIds = ratingStructureTree.getAllDefaultTagIds();
 
         // add the tags to the dish
-        addTagsToDish(userName, dishId, defaultTagIds, false);
+        addTagsToDish(userId, dishId, defaultTagIds, false);
     }
 
     private Set<Long> determineValidTagsToRemove(Long dishId, Set<Long> tagIds) {
@@ -591,7 +588,7 @@ public class TagServiceImpl implements TagService {
     }
 
     public void createStandardTagsFromUserTags(List<Long> tagIds) {
-        Set<Long> copySet = tagIds.stream().collect(Collectors.toSet());
+        Set<Long> copySet = new HashSet<>(tagIds);
         // get tags to copy
         List<TagEntity> tagsToCopy = tagRepository.getTagsForIdList(copySet);
         // get standard parents for tags
@@ -656,7 +653,7 @@ public class TagServiceImpl implements TagService {
             return new LongTagIdPairDTO(tagId.longValue(), parentId.longValue());
         }).collect(Collectors.toMap(LongTagIdPairDTO::getLeftId, LongTagIdPairDTO::getRightId));
 
-        List<TagEntity> parentTags = tagRepository.getTagsForIdList(parentRelationIds.values().stream().collect(Collectors.toSet()));
+        List<TagEntity> parentTags = tagRepository.getTagsForIdList(new HashSet<>(parentRelationIds.values()));
         Map<Long, TagEntity> parentDictionary = parentTags.stream()
                 .collect(Collectors.toMap(TagEntity::getId, Function.identity()));
 

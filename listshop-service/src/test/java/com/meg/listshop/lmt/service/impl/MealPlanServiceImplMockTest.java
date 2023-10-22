@@ -263,7 +263,7 @@ public class MealPlanServiceImplMockTest {
 
         mealPlanService.getRatingsForMealPlan(userName, mealPlanId);
 
-        Mockito.verify(tagService).getRatingUpdateInfoForDishIds(userName,
+        Mockito.verify(tagService).getRatingUpdateInfoForDishIds(
                 slotList.stream()
                         .map(s -> s.getDish().getId())
                         .collect(Collectors.toList()));

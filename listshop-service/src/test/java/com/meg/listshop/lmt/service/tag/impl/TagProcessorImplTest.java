@@ -156,7 +156,7 @@ public class TagProcessorImplTest {
         newTagSet.add(newTagId);
 
         // add tag to dish which doesn't have meat
-        tagService.addTagsToDish(USER_3_NAME, TestConstants.DISH_1_ID, newTagSet);
+        tagService.addTagsToDish(TestConstants.USER_3_ID, TestConstants.DISH_1_ID, newTagSet);
         // get instructions
         tagProcessor.fillInstructions();
         List<Instruction> instructions = tagProcessor.getInstructions();
@@ -175,7 +175,7 @@ public class TagProcessorImplTest {
 
         // clean up by removing tag afterwards
         // add tag to dish which doesn't have meat
-        tagService.removeTagsFromDish(USER_3_NAME, TestConstants.DISH_1_ID, newTagSet);
+        tagService.removeTagsFromDish(TestConstants.USER_3_ID, TestConstants.DISH_1_ID, newTagSet);
 
     }
 

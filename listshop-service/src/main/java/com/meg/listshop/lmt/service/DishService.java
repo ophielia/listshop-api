@@ -13,13 +13,15 @@ public interface DishService {
 
     List<DishEntity> getDishesForUserName(String userId);
 
+    List<DishEntity> getDishesForUser(Long userId);
+
     DishEntity getDishForUserById(String username, Long dishId);
 
     DishEntity getDishForUserById(Long userId, Long dishId);
 
     DishEntity save(DishEntity dish, boolean doAutotag);
 
-    DishEntity createDish(String userName, DishEntity dish);
+    DishEntity createDish(Long userId, DishEntity dish);
 
     List<DishEntity> save(List<DishEntity> dishes);
 

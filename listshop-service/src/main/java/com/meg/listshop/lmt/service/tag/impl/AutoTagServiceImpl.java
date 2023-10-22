@@ -93,7 +93,7 @@ public class AutoTagServiceImpl implements AutoTagService {
 
         // get user
         UserEntity user = userService.getUserById(dishEntity.getUserId());
-        tagService.addTagsToDish(user.getEmail(), subject.getDish().getId(), new HashSet(subject.getTagsToAssign()));
+        tagService.addTagsToDish(user.getId(), subject.getDish().getId(), new HashSet(subject.getTagsToAssign()));
         createShadowTagsForDish(subject);
     }
 
@@ -120,11 +120,4 @@ public class AutoTagServiceImpl implements AutoTagService {
         shadowTagRepository.saveAll(toInsert);
     }
 
-    private void addTagsToDish(String userName, AutoTagSubject subject) {
-        Long dishId = subject.getDish().getId();
-
-        tagService.addTagsToDish(userName, dishId, new HashSet(subject.getTagsToAssign()));
-
-
-    }
 }
