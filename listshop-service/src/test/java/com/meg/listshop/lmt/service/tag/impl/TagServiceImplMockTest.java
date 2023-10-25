@@ -289,38 +289,27 @@ class TagServiceImplMockTest {
         TagInfoDTO rating1 = buildTagInfoDTO(10L, "Taste 1", 1.0, 100L);
         TagInfoDTO rating2 = buildTagInfoDTO(11L, "Taste 2", 2.0, 100L);
         TagInfoDTO rating3 = buildTagInfoDTO(12L, "Taste 3", 3.0, 100L);
-        List<TagInfoDTO> ratingTagList = Arrays.asList(parentRating, rating1, rating2, rating3);
 
-        DishEntity dish1 = ServiceTestUtils.buildDish(300L, "great dish", Collections.singletonList(ServiceTestUtils.buildTagEntity(12L, "Taste 3", TagType.Rating, 3.0)));
-        DishEntity dish2 = ServiceTestUtils.buildDish(300L, "great dish2", Collections.singletonList(ServiceTestUtils.buildTagEntity(12L, "Taste 3", TagType.Rating, 3.0)));
-        DishEntity dish3 = ServiceTestUtils.buildDish(300L, "great dish3", Collections.singletonList(ServiceTestUtils.buildTagEntity(10L, "Taste 1", TagType.Rating, 1.0)));
-        List<DishEntity> testDishes = Arrays.asList(dish1, dish2, dish3);
+        Long dish1Id = 1L;
+        Long dish2Id = 2L;
+        Long dish3Id = 3L;
 
+        Mockito.when(tagInfoCustomRepository.retrieveTagInfoByUser(null, Collections.singletonList(TagType.Rating)))
+                .thenReturn(Arrays.asList(parentRating, rating1, rating2, rating3));
+        Mockito.when(tagInfoCustomRepository.retrieveRatingInfoForDish(dish1Id)).thenReturn(new ArrayList<>());
+        Mockito.when(tagInfoCustomRepository.retrieveRatingInfoForDish(dish2Id)).thenReturn(Collections.singletonList(rating3));
+        Mockito.when(tagInfoCustomRepository.retrieveRatingInfoForDish(dish3Id)).thenReturn(Collections.singletonList(rating3));
 
-        Mockito.when(dishService.getDishes(userName, Arrays.asList(1L, 2L, 3L)))
-                .thenReturn(testDishes);
-        Mockito.when(tagRepository.findTagsByDishes(dish1)).thenReturn(dish1.getTags());
-        Mockito.when(tagRepository.findTagsByDishes(dish2)).thenReturn(dish2.getTags());
-        Mockito.when(tagRepository.findTagsByDishes(dish3)).thenReturn(dish3.getTags());
-        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(userEntity);
-        Mockito.when(tagInfoCustomRepository.retrieveTagInfoByUser(2000L, Collections.singletonList(TagType.Rating))).thenReturn(ratingTagList);
-
+        // call under test
         RatingUpdateInfo updateInfo = tagService.getRatingUpdateInfoForDishIds(Arrays.asList(1L, 2L, 3L));
 
 
         Assertions.assertNotNull(updateInfo);
-        Assertions.assertNotNull(updateInfo.getRatingHeaders());
-        Assertions.assertEquals(1, updateInfo.getRatingHeaders().size());
         Assertions.assertNotNull(updateInfo.getDishRatingInfoSet());
         Assertions.assertEquals(3, updateInfo.getDishRatingInfoSet().size());
         for (DishRatingInfo info : updateInfo.getDishRatingInfoSet()) {
             Assertions.assertNotNull(info.getRatings());
             Assertions.assertEquals(1, info.getRatings().size());
-        }
-
-        Set<RatingInfo> testHeaders = updateInfo.getRatingHeaders();
-        for (RatingInfo toTest : testHeaders) {
-            Assertions.assertNotNull(toTest.getMaxPower());
         }
     }
 
@@ -367,7 +356,7 @@ class TagServiceImplMockTest {
 
         ArgumentCaptor<DishEntity> argumentCaptor = ArgumentCaptor.forClass(DishEntity.class);
 
-        Mockito.when(dishService.getDishForUserById(userName, dishId)).thenReturn(dish);
+        Mockito.when(dishService.getDishForUserById(userId, dishId)).thenReturn(dish);
         Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.of(newTag));
 
         // tested call
@@ -400,19 +389,19 @@ class TagServiceImplMockTest {
         dish.setId(dishId);
         dish.setUserId(userId);
 
-        Mockito.when(dishService.getDishForUserById(userName, dishId)).thenReturn(dish);
+        Mockito.when(dishService.getDishForUserById(userId, dishId)).thenReturn(dish);
         Mockito.when(tagRepository.getAssignedTagForRating(dishId, ratingId)).thenReturn(currentTag);
         Mockito.when(tagRepository.getNextRatingUp(ratingId, currentTag.getId())).thenReturn(currentTag);
-        Mockito.when(dishService.getDishForUserById(userName, dishId)).thenReturn(dish);
+        Mockito.when(dishService.getDishForUserById(userId, dishId)).thenReturn(dish);
 
 
         // test call - increment
         tagService.incrementDishRating(userId, dishId, ratingId, SortOrMoveDirection.UP);
 
-        Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
+        Mockito.verify(dishService, times(1)).getDishForUserById(userId, dishId);
         Mockito.verify(tagRepository, times(1)).getAssignedTagForRating(dishId, ratingId);
         Mockito.verify(tagRepository, times(1)).getNextRatingUp(ratingId, currentTag.getId());
-        Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
+        Mockito.verify(dishService, times(1)).getDishForUserById(userId, dishId);
 
     }
 
@@ -430,19 +419,19 @@ class TagServiceImplMockTest {
         dish.setId(dishId);
         dish.setUserId(userId);
 
-        Mockito.when(dishService.getDishForUserById(userName, dishId)).thenReturn(dish);
+        Mockito.when(dishService.getDishForUserById(userId, dishId)).thenReturn(dish);
         Mockito.when(tagRepository.getAssignedTagForRating(dishId, ratingId)).thenReturn(currentTag);
         Mockito.when(tagRepository.getNextRatingDown(ratingId, currentTag.getId())).thenReturn(currentTag);
-        Mockito.when(dishService.getDishForUserById(userName, dishId)).thenReturn(dish);
+        Mockito.when(dishService.getDishForUserById(userId, dishId)).thenReturn(dish);
 
 
         // test call - increment
         tagService.incrementDishRating(userId, dishId, ratingId, SortOrMoveDirection.DOWN);
 
-        Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
+        Mockito.verify(dishService, times(1)).getDishForUserById(userId, dishId);
         Mockito.verify(tagRepository, times(1)).getAssignedTagForRating(dishId, ratingId);
         Mockito.verify(tagRepository, times(1)).getNextRatingDown(ratingId, currentTag.getId());
-        Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
+        Mockito.verify(dishService, times(1)).getDishForUserById(userId, dishId);
     }
 
     @Test
@@ -470,7 +459,7 @@ class TagServiceImplMockTest {
 
         ArgumentCaptor<DishEntity> argumentCaptor = ArgumentCaptor.forClass(DishEntity.class);
 
-        Mockito.when(dishService.getDishForUserById(userName, dishId)).thenReturn(dish);
+        Mockito.when(dishService.getDishForUserById(userId, dishId)).thenReturn(dish);
         Mockito.when(tagRepository.findRatingTagIdForStep(ratingId, step)).thenReturn(newTagId);
         Mockito.when(tagRepository.findById(newTagId)).thenReturn(Optional.of(newRatingTag));
         Mockito.when(tagStructureService.getSiblingTags(newRatingTag)).thenReturn(siblingTags);
@@ -478,7 +467,7 @@ class TagServiceImplMockTest {
         // test call - increment
         tagService.setDishRating(userId, dishId, ratingId, 5);
 
-        Mockito.verify(dishService, times(1)).getDishForUserById(userName, dishId);
+        Mockito.verify(dishService, times(1)).getDishForUserById(userId, dishId);
         Mockito.verify(tagRepository, times(1)).findRatingTagIdForStep(ratingId, step);
         Mockito.verify(tagRepository, times(1)).findById(newTagId);
         Mockito.verify(tagStructureService, times(1)).getSiblingTags(newRatingTag);
@@ -495,6 +484,7 @@ class TagServiceImplMockTest {
 
     @Test
     void testGetTagsForDish() {
+        Long userId = 99L;
         Long dishId = 999L;
         List<TagType> tagTypes = new ArrayList<>();
         tagTypes.add(TagType.Ingredient);
@@ -507,10 +497,10 @@ class TagServiceImplMockTest {
         allTags.add(ServiceTestUtils.buildTagEntity(199L, "tag199", TagType.Ingredient));
         allTags.add(ServiceTestUtils.buildTagEntity(299L, "tag299", TagType.DishType));
 
-        Mockito.when(dishService.getDishForUserById(username, dishId)).thenReturn(dish);
+        Mockito.when(dishService.getDishForUserById(userId, dishId)).thenReturn(dish);
         Mockito.when(tagRepository.findTagsByDishes(dish)).thenReturn(allTags);
 
-        List<TagEntity> resultList = tagService.getTagsForDish(username, dishId, tagTypes);
+        List<TagEntity> resultList = tagService.getTagsForDish(userId, dishId, tagTypes);
 
         Mockito.verify(tagRepository, times(1)).findTagsByDishes(dish);
 
@@ -599,11 +589,12 @@ class TagServiceImplMockTest {
         dishTags.add(tag2);
         dishTags.add(tag3);
         dishTags.add(tag4);
+        testDish.setTags(dishTags);
 
-        Mockito.when(dishService.getDishForUserById(userName, dishId))
-                .thenReturn(testDish, testDish, testDish);
+        Mockito.when(dishService.getDishForUserById(userId, dishId))
+                .thenReturn(testDish);
         Mockito.when(tagRepository.findTagsByDishes(testDish))
-                .thenReturn(dishTags, dishTags, dishTags);
+                .thenReturn(dishTags);
 
         // call under test
         tagService.removeTagsFromDish(userId, dishId, tagIds);
@@ -638,7 +629,7 @@ class TagServiceImplMockTest {
         DishEntity testDish = testBuilder.build();
         ArgumentCaptor<DishEntity> savedDish = ArgumentCaptor.forClass(DishEntity.class);
 
-        Mockito.when(dishService.getDishForUserById(userName, dishId))
+        Mockito.when(dishService.getDishForUserById(userId, dishId))
                 .thenReturn(testDish);
         Mockito.when(tagRepository.countRemainingDishTypeTags(dishId, existingTagIds))
                 .thenReturn(Collections.singletonList(new CountResult(1)));
@@ -702,7 +693,7 @@ class TagServiceImplMockTest {
 
         ArgumentCaptor<DishEntity> savedDish = ArgumentCaptor.forClass(DishEntity.class);
 
-        Mockito.when(dishService.getDishForUserById(userName, dishId))
+        Mockito.when(dishService.getDishForUserById(userId, dishId))
                 .thenReturn(testDish);
         Mockito.when(tagRepository.countRemainingDishTypeTags(dishId, tagIdsToDelete))
                 .thenReturn(Collections.singletonList(new CountResult(0)));
@@ -752,13 +743,13 @@ class TagServiceImplMockTest {
         DishEntity dish = new DishEntity();
         dish.setId(dishId);
 
-        Mockito.when(dishService.getDishForUserById(userName, dishId))
+        Mockito.when(dishService.getDishForUserById(userId, dishId))
                 .thenReturn(dish);
         Mockito.when(tagRepository.getTagsForIdList(tagIdSet))
                 .thenReturn(tagList);
         Mockito.when(tagRepository.findTagsByDishes(dish))
                 .thenReturn(new ArrayList<>());
-        Mockito.when(dishService.getDishForUserById(userName, dishId))
+        Mockito.when(dishService.getDishForUserById(userId, dishId))
                 .thenReturn(dish);
 
 

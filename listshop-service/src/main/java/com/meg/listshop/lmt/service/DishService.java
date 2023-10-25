@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.lmt.data.entity.DishEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -30,8 +29,6 @@ public interface DishService {
     List<DishEntity> getDishes(String userName, List<Long> dishIds);
 
     Map<Long, DishEntity> getDictionaryForIdList(List<Long> dishIds);
-
-    List<TagEntity> getDishesForTagChildren(Long tagId, String name);
 
     void updateLastAddedForDish(Long dishId);
 

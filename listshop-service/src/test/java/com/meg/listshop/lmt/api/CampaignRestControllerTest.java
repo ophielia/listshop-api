@@ -82,7 +82,8 @@ public class CampaignRestControllerTest {
     public void testHappyPath() throws Exception {
         String testinput = "{" +
                 "\"email\": \"email@test.com\", " +
-                "\"campaign\": \"beta\" " +
+                "\"campaign\": \"betaCampaign\" " +
+                ",\"text\": \"some random text\" " +
                 "}";
         mockMvc.perform(post("/campaign")
                         .content(testinput).contentType(contentType))
@@ -97,6 +98,7 @@ public class CampaignRestControllerTest {
         String testinput = "{" +
                 "\"email\": \"okddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaign\", " +
                 "\"campaign\": \"okddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaign\" " +
+                ",\"text\": \"okddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaign\" " +
                 "}";
         mockMvc.perform(post("/campaign")
                         .content(testinput).contentType(contentType))
@@ -106,24 +108,18 @@ public class CampaignRestControllerTest {
         testinput = "{" +
                 "\"email\": \"email\", " +
                 "\"campaign\": \"okddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaign\" " +
+                ",\"text\": \"okddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaign\" " +
                 "}";
         mockMvc.perform(post("/campaign")
                         .content(testinput).contentType(contentType))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
 
-        testinput = "{" +
-                "\"email\": \"okddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaignokddssssssssssssssssssscampaign\", " +
-                "\"campaign\": \"campaign\" " +
-                "}";
-        mockMvc.perform(post("/campaign")
-                        .content(testinput).contentType(contentType))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
 
         testinput = "{" +
                 "\"email\": \"ok\", " +
                 "\"campaign\": \"ok\" " +
+                ",\"text\": \"ok\" " +
                 "}";
         mockMvc.perform(post("/campaign")
                         .content(testinput).contentType(contentType))
@@ -132,7 +128,8 @@ public class CampaignRestControllerTest {
 
         testinput = "{" +
                 "\"email\": \"a\\u0000b\\u0007c\\u008fd\", " +
-                "\"campaign\": \"beta_campaign\" " +
+                "\"campaign\": \"beta_campaign\", " +
+                "\"text\": \"beta_campaign\" " +
                 "}";
         mockMvc.perform(post("/campaign")
                         .content(testinput).contentType(contentType))
@@ -143,6 +140,7 @@ public class CampaignRestControllerTest {
         testinput = "{" +
                 "\"email\": \"1\", " +
                 "\"campaign\": \"2\" " +
+                ",\"text\": \"2\" " +
                 "}";
         mockMvc.perform(post("/campaign")
                         .content(testinput).contentType(contentType))

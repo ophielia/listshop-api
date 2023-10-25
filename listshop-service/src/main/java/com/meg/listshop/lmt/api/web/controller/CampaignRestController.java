@@ -34,7 +34,7 @@ public class CampaignRestController implements CampaignControllerApi {
         logger.info("Received new campaign: [{}]", input);
         // check input params
         String email = checkTextInput(input.getEmail(), 7, 45, true, true, false);
-        String campaign = checkTextInput(input.getCampaign(), 7, 30, true, true, true);
+        String campaign = checkTextInput(input.getCampaign(), 4, 30, true, true, true);
         String feedback = checkTextInput(input.getText(), 1, 500, false, false, true);
 
         // send off to the service

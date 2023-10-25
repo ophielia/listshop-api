@@ -518,14 +518,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    public ShoppingListEntity addToListFromMealPlan(Long userId, Long listId, Long mealPlanId) {
+    public void addToListFromMealPlan(Long userId, Long listId, Long mealPlanId) {
         // get the mealplan
         MealPlanEntity mealPlan = mealPlanService.getMealPlanForUserById(userId, mealPlanId);
 
         // create new inprocess list
         ShoppingListEntity shoppingList = getListForUserById(userId, listId);
 
-        return addToListFromMealPlan(userId, shoppingList, mealPlan);
+        addToListFromMealPlan(userId, shoppingList, mealPlan);
     }
 
     private ShoppingListEntity addToListFromMealPlan(Long userId, ShoppingListEntity shoppingList, MealPlanEntity mealPlan) {

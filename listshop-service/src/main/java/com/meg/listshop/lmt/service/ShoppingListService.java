@@ -63,7 +63,7 @@ public interface ShoppingListService {
 
     void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException;
 
-    ShoppingListEntity addToListFromMealPlan(Long userId, Long listId, Long mealPlanId);
+    void addToListFromMealPlan(Long userId, Long listId, Long mealPlanId);
 
     void updateItemCount(Long userId, Long listId, Long tagId, Integer usedCount);
 }

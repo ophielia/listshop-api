@@ -12,11 +12,8 @@ import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
-import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.repository.DishRepository;
-import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
@@ -193,43 +190,6 @@ public class DishServiceImpl implements DishService {
 
         }
         return new HashMap<>();
-    }
-
-    @Override
-    public List<TagEntity> getDishesForTagChildren(Long tagId, String name) {
-        UserEntity user = userRepository.findByEmail(name);
-        TagEntity tag = tagService.getTagById(tagId);
-
-        if (!TagType.Rating.equals(tag.getTagType())) {
-            return new ArrayList<>();
-        }
-
-        List<TagEntity> childrenTags = tagStructureService.getChildren(tag);
-        List<Long> allChildIds = new ArrayList<>();
-        for (TagEntity childTag : childrenTags) {
-            DishSearchCriteria criteria = new DishSearchCriteria(user.getId());
-            criteria.setIncludedTagIds(Collections.singletonList(childTag.getId()));
-            List<DishEntity> dishes = dishSearchService.findDishes(criteria);
-            Collections.sort(dishes, DISHNAME);
-            childTag.setDishes(dishes);
-            allChildIds.add(childTag.getId());
-        }
-        // now, see if there are any unassigned dishes
-        DishSearchCriteria criteria = new DishSearchCriteria(user.getId());
-        criteria.setExcludedTagIds(allChildIds);
-        List<DishEntity> unassigned = dishSearchService.findDishes(criteria);
-        if (unassigned != null && !unassigned.isEmpty()) {
-            // make a "dummy" non categorized tag
-            TagEntity noncattag = new TagEntity();
-            noncattag.setName("NonCategorized");
-            noncattag.setPower(0D);
-            noncattag.setTagType(TagType.Rating);
-            noncattag.setDishes(unassigned);
-            childrenTags.add(noncattag);
-        }
-
-        childrenTags.sort(Comparator.comparing(TagEntity::getPower));
-        return childrenTags;
     }
 
     @Override
