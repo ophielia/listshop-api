@@ -1,3 +1,7 @@
+delete
+from user_devices
+where user_id > 1;
+
 insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number,
                           client_device_id, client_version, token, last_login)
 values (99, 20, 'browser', 'iPhone', 'iOS', '12.4', 'Web', '26', '2C73FB19-3E57-4078-B517-7E5F248F4E19', '1.4.1',

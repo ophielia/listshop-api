@@ -53,10 +53,10 @@ public class ExpiredTokenCleanupTaskTest {
 
         // get all tags and count them
         alltokens = userDeviceRepository.findAll();
-        long newCount = alltokens.stream().count();
+        long newCount = alltokens.size();
 
         // count should be 3 less
-        Assert.assertEquals(count - 1, newCount);
+        Assert.assertEquals(count - 3, newCount);
     }
 
 }
