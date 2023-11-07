@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.14.0]  - November 2023
+
+### Added
+
+- some static files
+
+### Changed
+
+- DishRestController changed to use Authentication rather than Principal
+
+### Fixed
+
+- bad query for updating a dish
+- failing tests fixed
+
 ## [1.13.0]  - July 2023
 
 ### Added
