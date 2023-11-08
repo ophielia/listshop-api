@@ -304,8 +304,9 @@
 
     <modules>
         <module>postoffice</module>
+        <module>listshop-common</module>
         <module>listshop-api</module>
-        <module>listshop-service</module>
+        <module>listshop-lmt</module>
     </modules>
 
 </project>
