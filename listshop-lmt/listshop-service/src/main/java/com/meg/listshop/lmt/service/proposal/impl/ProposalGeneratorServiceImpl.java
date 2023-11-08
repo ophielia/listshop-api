@@ -384,7 +384,7 @@ public class ProposalGeneratorServiceImpl implements ProposalGeneratorService {
         }
 
         // add any results not found in existing to final List
-        resultSlot.getDishSlots().stream().forEach(s -> s.setSlot(existingSlot)); // TODO again - may need some conversion here
+        resultSlot.getDishSlots().stream().forEach(s -> s.setSlot(existingSlot)); // TODO again - may need some listshop here
 
         finalDishList.addAll(resultSlot.getDishSlots());
         return finalDishList;
