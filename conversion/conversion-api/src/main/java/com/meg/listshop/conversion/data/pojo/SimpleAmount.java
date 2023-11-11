@@ -1,0 +1,88 @@
+package com.meg.listshop.conversion.data.pojo;
+
+import com.meg.listshop.conversion.data.entity.Unit;
+import com.meg.listshop.conversion.service.ConvertibleAmount;
+
+import java.util.Objects;
+
+public class SimpleAmount implements ConvertibleAmount {
+
+    private double quantity;
+    private Unit unit;
+
+    private Long tagId;
+
+    private Boolean isLiquid;
+
+    private String tagName;
+
+
+    public SimpleAmount(double quantity, Unit unit, Long tagId, Boolean isLiquid, String tagName) {
+        this.quantity = quantity;
+        this.unit = unit;
+        this.tagId = tagId;
+        this.isLiquid = isLiquid;
+        this.tagName = tagName;
+    }
+
+    public SimpleAmount(double quantity, Unit unit) {
+        this.quantity = quantity;
+        this.unit = unit;
+    }
+
+    public SimpleAmount(double newQuantity, Unit newUnit, ConvertibleAmount toConvert) {
+        this.quantity = newQuantity;
+        this.unit = newUnit;
+        this.tagId = toConvert.getTagId();
+        this.isLiquid = toConvert.getIsLiquid();
+        this.tagName = toConvert.getTagName();
+    }
+
+    @Override
+    public double getQuantity() {
+        return quantity;
+    }
+
+    @Override
+    public Unit getUnit() {
+        return unit;
+    }
+
+    @Override
+    public long getTagId() {
+        return tagId;
+    }
+
+    @Override
+    public Boolean getIsLiquid() {
+        return isLiquid;
+    }
+
+    public String getTagName() {
+        return tagName;
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleAmount{" +
+                "quantity=" + quantity +
+                ", unit=" + unit +
+                ", tagId=" + tagId +
+                ", isLiquid=" + isLiquid +
+                ", tagName=" + tagName +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SimpleAmount that = (SimpleAmount) o;
+        return Double.compare(quantity, that.quantity) == 0 && Objects.equals(unit, that.unit);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(quantity, unit);
+    }
+}
