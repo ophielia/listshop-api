@@ -12,11 +12,11 @@ import java.util.Set;
 
 public class ConversionSpec {
 
-    private Long unitId;
+    private final Long unitId;
 
-    private UnitType unitType;
+    private final UnitType unitType;
 
-    private Set<UnitFlavor> flavors = new HashSet<>();
+    private final Set<UnitFlavor> flavors;
 
     private ConversionSpec(Long unitId, UnitType unitType, Set<UnitFlavor> flavors) {
         this.unitId = unitId;
@@ -93,6 +93,10 @@ public class ConversionSpec {
 
     public Long getUnitId() {
         return unitId;
+    }
+
+    public Set<UnitFlavor> getFlavors() {
+        return flavors;
     }
 
     @Override
