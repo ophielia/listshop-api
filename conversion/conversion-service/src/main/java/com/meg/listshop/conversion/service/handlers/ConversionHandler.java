@@ -1,15 +1,15 @@
 package com.meg.listshop.conversion.service.handlers;
 
-import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
+import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 
 public interface ConversionHandler {
 
 
-    boolean convertsTo(UnitType toUnit);
+    boolean convertsTo(ConversionSpec spec);
 
-    boolean handles(UnitType fromUnit, UnitType toUnit);
+    boolean handles(ConversionSpec fromUnit, ConversionSpec toUnit);
 
-    ConvertibleAmount convert(ConvertibleAmount toConvert) throws ConversionFactorException;
+    ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException;
 }

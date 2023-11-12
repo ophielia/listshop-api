@@ -3,18 +3,27 @@ package com.meg.listshop.conversion.data.pojo;
 public class ConversionContext {
     private ConversionContextType contextType;
 
-    private MeasurementDomain measurementDomain;
+    private UnitType unitType;
 
-    public ConversionContext(ConversionContextType contextType, MeasurementDomain measurementDomain) {
+    public ConversionContext(ConversionContextType contextType, UnitType unitType) {
         this.contextType = contextType;
-        this.measurementDomain = measurementDomain;
+        this.unitType = unitType;
     }
 
     public ConversionContextType getContextType() {
         return contextType;
     }
 
-    public MeasurementDomain getMeasurementDomain() {
-        return measurementDomain;
+
+    public UnitType getUnitType() {
+        return unitType;
+    }
+
+    @Override
+    public String toString() {
+        return "ConversionContext{" +
+                "contextType=" + contextType +
+                ", unitType=" + unitType +
+                '}';
     }
 }

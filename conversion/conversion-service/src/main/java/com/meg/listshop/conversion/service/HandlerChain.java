@@ -13,12 +13,12 @@ public class HandlerChain {
         this.handler = handler;
     }
 
-    public ConvertibleAmount process(ConvertibleAmount toConvert) throws ConversionFactorException {
-        ConvertibleAmount converted = handler.convert(toConvert);
+    public ConvertibleAmount process(ConvertibleAmount toConvert, ConversionSpec target) throws ConversionFactorException {
+        ConvertibleAmount converted = handler.convert(toConvert, target);
         if (nextLink == null) {
             return converted;
         }
-        return nextLink.process(converted);
+        return nextLink.process(converted, target);
     }
 
     public void setNextLink(HandlerChain nextLink) {

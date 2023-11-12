@@ -3,18 +3,19 @@ package com.meg.listshop.conversion.service;
 
 import com.meg.listshop.conversion.data.entity.Unit;
 import com.meg.listshop.conversion.data.pojo.ConversionContext;
-import com.meg.listshop.conversion.data.pojo.ConversionContextType;
-import com.meg.listshop.conversion.data.pojo.MeasurementDomain;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.handlers.ConversionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class ConversionServiceImpl implements ConversionService {
+    private static final Logger LOG = LoggerFactory.getLogger(ConversionServiceImpl.class);
 
     HashMap<HandlerChainKey, HandlerChain> chainMap;
     private final List<ConversionHandler> handlerList;
@@ -24,43 +25,76 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     @Override
-    public ConvertibleAmount convert(ConvertibleAmount amount, MeasurementDomain domain) {
-        return null;
+    public ConvertibleAmount convert(ConvertibleAmount amount, UnitType domain) throws ConversionPathException, ConversionFactorException {
+        ConversionSpec source = ConversionSpec.fromExactUnit(amount.getUnit());
+        ConversionSpec target = ConversionSpec.convertedFromUnit(amount.getUnit());
+
+        if (checkTargetEqualsSource(source, target)) {
+            LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
+            return amount;
+        }
+
+        // find or create handler chain for source / target
+        HandlerChain chain = getOrCreateChain(source, target);
+
+        // return converted amount
+        return chain.process(amount, target);
     }
 
     @Override
-    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionContext context) {
-        return null;
+    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
+        ConversionSpec source = ConversionSpec.fromExactUnit(amount.getUnit());
+        ConversionSpec target = ConversionSpec.fromContextAndSource(context, amount.getUnit());
+
+        if (checkTargetEqualsSource(source, target)) {
+            LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
+            return amount;
+        }
+
+        // find or create handler chain for source / target
+        HandlerChain chain = getOrCreateChain(source, target);
+
+        // return converted amount
+        return chain.process(amount, target);
+
     }
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, Unit targetUnit) throws ConversionPathException, ConversionFactorException {
+        ConversionSpec source = ConversionSpec.fromExactUnit(amount.getUnit());
+        ConversionSpec target = ConversionSpec.fromExactUnit(targetUnit);
+
+        if (checkTargetEqualsSource(source, target)) {
+            LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
+            return amount;
+        }
+
         // find or create handler chain for source / target
-        HandlerChain chain = getOrCreateChain(amount.getUnit(), targetUnit, null);
+        HandlerChain chain = getOrCreateChain(source, target);
 
         // return converted amount
-        return chain.process(amount);
+        return chain.process(amount, target);
     }
 
-    private HandlerChain getOrCreateChain(Unit fromUnit, Unit toUnit, ConversionContextType context) throws ConversionPathException {
-        HandlerChainKey conversionKey = new HandlerChainKey(fromUnit.getType(), toUnit.getType(), context);
+    private HandlerChain getOrCreateChain(ConversionSpec source, ConversionSpec target) throws ConversionPathException {
+        HandlerChainKey conversionKey = new HandlerChainKey(source, target);
 
         if (chainMap.containsKey(conversionKey)) {
             return chainMap.get(conversionKey);
         }
 
-        HandlerChain newChain = createConversionChain(fromUnit, toUnit);
+        HandlerChain newChain = createConversionChain(source, target);
         chainMap.put(conversionKey, newChain);
         return newChain;
     }
 
-    private HandlerChain createConversionChain(Unit fromUnit, Unit toUnit) throws ConversionPathException {
+    private HandlerChain createConversionChain(ConversionSpec sourceSpec, ConversionSpec targetSpec) throws ConversionPathException {
         // assemble handler chain list
-        List<ConversionHandler> handlers = assembleHandlerList(fromUnit.getType(), toUnit.getType(), new ArrayList<>(), 0);
+        List<ConversionHandler> handlers = assembleHandlerList(sourceSpec, targetSpec, new ArrayList<>(), 0);
 
         // convert list into handler chain
         if (handlers.isEmpty()) {
-            String message = String.format("No handler chain can be assembled for fromUnit: %s toUnit: %s", fromUnit.getType(), toUnit.getType());
+            String message = String.format("No handler chain can be assembled for source: %s target: %s", sourceSpec, targetSpec);
             throw new ConversionPathException(message);
         } else if (handlers.size() == 1) {
             return new HandlerChain(handlers.get(0));
@@ -81,23 +115,23 @@ public class ConversionServiceImpl implements ConversionService {
         return assembleHandlerChain(linkToBefore, handlers, i - 1);
     }
 
-    private List<ConversionHandler> assembleHandlerList(UnitType fromUnit, UnitType toUnit, List<ConversionHandler> handlers, int iteration) throws ConversionPathException {
+    private List<ConversionHandler> assembleHandlerList(ConversionSpec source, ConversionSpec target, List<ConversionHandler> handlers, int iteration) throws ConversionPathException {
         // look for direct match
-        ConversionHandler directMatch = findHandlerMatch(fromUnit, toUnit);
+        ConversionHandler directMatch = findHandlerMatch(source, target);
         if (directMatch != null) {
             handlers.add(0, directMatch);
             return handlers;
         }
         // check for too many iterations
         if (iteration > handlerList.size()) {
-            String message = String.format("No handler chain can be assembled for fromUnit: %s toUnit: %s", fromUnit, toUnit);
+            String message = String.format("No handler chain can be assembled for fromUnit: %s toUnit: %s", source, target);
             throw new ConversionPathException(message);
         }
 
         // look for step matches
         for (ConversionHandler handler : handlerList) {
-            if (handler.convertsTo(toUnit)) {
-                List<ConversionHandler> foundList = assembleHandlerList(fromUnit, toUnit, handlers, iteration + 1);
+            if (handler.convertsTo(target)) {
+                List<ConversionHandler> foundList = assembleHandlerList(source, target, handlers, iteration + 1);
                 if (foundList != null) {
                     foundList.add(handler);
                     return foundList;
@@ -107,9 +141,13 @@ public class ConversionServiceImpl implements ConversionService {
         return null;
     }
 
-    private ConversionHandler findHandlerMatch(UnitType fromUnit, UnitType toUnit) {
+    private ConversionHandler findHandlerMatch(ConversionSpec source, ConversionSpec target) {
         return handlerList.stream()
-                .filter(h -> h.handles(fromUnit, toUnit))
+                .filter(h -> h.handles(source, target))
                 .findFirst().orElse(null);
+    }
+
+    private boolean checkTargetEqualsSource(ConversionSpec source, ConversionSpec target) {
+        return (source.equals(target));
     }
 }
