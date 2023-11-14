@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ConversionFactorSource {
     List<ConversionFactor> getFactors(UnitType fromType);
+
+    ConversionFactor getFactor(Long fromUnitId, Long toUnitId);
 }

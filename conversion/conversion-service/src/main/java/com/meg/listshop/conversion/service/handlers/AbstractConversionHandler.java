@@ -8,6 +8,7 @@ import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     }
 
     public boolean convertsTo(ConversionSpec spec) {
-        return target.equals(spec);
+        return target.equals(spec) || source.equals(spec);
     }
 
     public boolean handles(ConversionSpec sourceSpec, ConversionSpec targetSpec) {
@@ -34,37 +35,41 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     }
 
     public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException {
-        boolean isReversed = toConvert.getUnit().getType().equals(target.getUnitType());
 
-        List<ConversionFactor> factors = conversionSource.getFactors(toConvert.getUnit().getType());
+        List<ConversionFactor> factors = new ArrayList<>();
+        if (targetSpec.getUnitId() != null) {
+            factors.add(conversionSource.getFactor(toConvert.getUnit().getId(), targetSpec.getUnitId()));
+        } else {
+            factors.addAll(conversionSource.getFactors(toConvert.getUnit().getType()));
+        }
 
         if (factors.isEmpty()) {
             String message = String.format("No factors found in handler %s.", this.getClass().getName());
             throw new ConversionFactorException(message);
         }
 
-        ConversionFactor factor = factors.stream()
-                .filter(f -> f.getUnit().getId().equals(targetSpec.getUnitId()))
-                .findFirst().orElse(null);
+        ConversionFactor factor = findBestFactor(factors);
 
-        if (factor == null) {
-            // find best factor for quantity
-            Comparator<ConversionFactor> comparator = (f1, f2) -> {
-                Double f1ToOne = Math.abs(f1.getFactor() - 1);
-                Double f2ToOne = Math.abs(f2.getFactor() - 1);
-                return f1ToOne.compareTo(f2ToOne);
-            };
-
-            factors.sort(comparator);
-            factor = factors.get(0);
-
-        }
-
-        double newQuantity = isReversed ? toConvert.getQuantity() / factor.getFactor() :
-                toConvert.getQuantity() * factor.getFactor();
-        Unit newUnit = factor.getUnit();
+        double newQuantity = toConvert.getQuantity() * factor.getFactor();
+        Unit newUnit = factor.getToUnit();
 
         return new SimpleAmount(newQuantity, newUnit, toConvert);
+    }
+
+    private ConversionFactor findBestFactor(List<ConversionFactor> factors) {
+        if (factors.size() == 1) {
+            return factors.get(0);
+        }
+
+        Comparator<ConversionFactor> comparator = (f1, f2) -> {
+            Double f1ToOne = Math.abs(f1.getFactor() - 1);
+            Double f2ToOne = Math.abs(f2.getFactor() - 1);
+            return f1ToOne.compareTo(f2ToOne);
+        };
+
+        factors.sort(comparator);
+        return factors.get(0);
+
     }
 }
 
