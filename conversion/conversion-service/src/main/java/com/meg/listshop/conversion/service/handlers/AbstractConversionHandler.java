@@ -35,11 +35,18 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     }
 
     public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException {
+        if (doesntRequireConversion(toConvert, targetSpec)) {
+            return toConvert;
+        }
 
         List<ConversionFactor> factors = new ArrayList<>();
-        if (targetSpec.getUnitId() != null) {
-            factors.add(conversionSource.getFactor(toConvert.getUnit().getId(), targetSpec.getUnitId()));
-        } else {
+        if (targetSpec.getUnitId() != null && toConvert.getUnit() != null && toConvert.getUnit().getId() != null) {
+            ConversionFactor exact = conversionSource.getFactor(toConvert.getUnit().getId(), targetSpec.getUnitId());
+            if (exact != null) {
+                factors.add(exact);
+            }
+        }
+        if (factors.isEmpty()) {
             factors.addAll(conversionSource.getFactors(toConvert.getUnit().getType()));
         }
 
@@ -55,6 +62,18 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
         return new SimpleAmount(newQuantity, newUnit, toConvert);
     }
+
+    private boolean doesntRequireConversion(ConvertibleAmount toConvert, ConversionSpec targetSpec) {
+        boolean specMatches = targetSpec.matches(toConvert.getUnit());
+        if (!specMatches) {
+            return false;
+        }
+        if (targetSpec.getUnitId() != null) {
+            return targetSpec.getUnitId().equals(toConvert.getUnit().getId());
+        }
+        return false;
+    }
+
 
     private ConversionFactor findBestFactor(List<ConversionFactor> factors) {
         if (factors.size() == 1) {

@@ -8,7 +8,7 @@ public interface ConvertibleAmount {
 
     Unit getUnit();
 
-    long getTagId();
+    Long getTagId();
 
     String getTagName();
 

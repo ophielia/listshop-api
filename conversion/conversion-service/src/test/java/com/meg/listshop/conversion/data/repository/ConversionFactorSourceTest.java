@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MockSimpleConversionFactorSourceTest {
+public class ConversionFactorSourceTest {
 
     ConversionFactorSource sourceToTest;
 
@@ -22,18 +22,18 @@ public class MockSimpleConversionFactorSourceTest {
         Unit unit1 = ConversionTestTools.makeMetricUnit(1L, false);
         // load metric unit, weight, id 2
         Unit unit2 = ConversionTestTools.makeImperialUnit(2L, false);
-        // load metric unit, weight, id 5
+        // load metric unit, weight, id 3
         Unit unit3 = ConversionTestTools.makeMetricUnit(3L, false);
         // load imperial unit, volume, id 3
         Unit unit4 = ConversionTestTools.makeImperialUnit(4L, true);
-        // load metric unit, volume, id 4
+        // load metric unit, volume, id 5
         Unit unit5 = ConversionTestTools.makeMetricUnit(5L, true);
 
         // create factor source
         this.sourceToTest = new ConversionFactorSourceBuilder()
                 .withFactor(unit1, unit2, 0.5)
                 .withFactor(unit3, unit4, 0.25)
-                .withFactor(unit3, unit5, 0.9)
+                .withFactor(unit5, unit2, 0.9)
                 .build();
 
     }
@@ -48,9 +48,10 @@ public class MockSimpleConversionFactorSourceTest {
 
         resultList = sourceToTest.getFactors(UnitType.Imperial);
         assertEquals(3, resultList.size(), "three factors should be returned");
-        assertTrue(resultList.stream()
+        double sum = resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)
-                .sum() == 1 / 1.65, () -> "Sum should be .606060");
+                .sum();
+        assertEquals(7.11D, ConversionTestTools.roundToHundredths(sum), () -> "Sum should be 7.11");
     }
 
     @Test

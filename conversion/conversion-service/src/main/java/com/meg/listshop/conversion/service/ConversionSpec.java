@@ -86,6 +86,11 @@ public class ConversionSpec {
         return flavors;
     }
 
+    public boolean matches(Unit unit) {
+        ConversionSpec toCheck = ConversionSpec.fromExactUnit(unit);
+        return this.equals(toCheck);
+    }
+
     public UnitType getUnitType() {
         return unitType;
     }

@@ -23,6 +23,14 @@ public class SimpleConversionFactor implements ConversionFactor {
         return reversed;
     }
 
+    public static ConversionFactor passThroughFactor(ConversionFactor factor) {
+        SimpleConversionFactor passThrough = new SimpleConversionFactor();
+        passThrough.setFactor(1D);
+        passThrough.setToUnit(factor.getToUnit());
+        passThrough.setFromUnit(factor.getToUnit());
+        return passThrough;
+    }
+
     @Override
     public Double getFactor() {
         return factor;

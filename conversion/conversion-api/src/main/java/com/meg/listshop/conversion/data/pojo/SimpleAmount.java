@@ -10,7 +10,7 @@ public class SimpleAmount implements ConvertibleAmount {
     private double quantity;
     private Unit unit;
 
-    private Long tagId;
+    private Long tagId = null;
 
     private Boolean isLiquid;
 
@@ -49,7 +49,7 @@ public class SimpleAmount implements ConvertibleAmount {
     }
 
     @Override
-    public long getTagId() {
+    public Long getTagId() {
         return tagId;
     }
 

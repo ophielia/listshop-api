@@ -45,6 +45,28 @@ public class ConversionSpecBuilder {
         return this;
     }
 
+    public ConversionSpecBuilder withFlavors(UnitFlavor... flavors) {
+        for (UnitFlavor flavor : flavors) {
+            switch (flavor) {
+                case Weight:
+                    buildingUnit.setWeight(true);
+                    break;
+                case Volume:
+                    buildingUnit.setVolume(true);
+                    break;
+                case DishUnit:
+                    buildingUnit.setDishUnit(true);
+                    break;
+                case Liquid:
+                    buildingUnit.setLiquid(true);
+                    break;
+                case ListUnit:
+                    buildingUnit.setLiquid(true);
+            }
+        }
+        return this;
+    }
+
     public ConversionSpec build() {
         return ConversionSpec.fromExactUnit(buildingUnit);
     }
