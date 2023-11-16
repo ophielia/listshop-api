@@ -446,6 +446,7 @@ public class TagServiceImpl implements TagService {
             return;
         }
 
+        // MM will use items - but can be without entity graph, since we're just accessing ids
         List<TagEntity> dishTags = dish.getTags();
         Set<Long> existingTagIds = dishTags.stream()
                 .map(TagEntity::getId)
@@ -497,6 +498,7 @@ public class TagServiceImpl implements TagService {
         }
 
         // filter tag to be deleted from dish
+        // MM will use items - but can be without full entity graph, since we're just using ids
         List<TagEntity> dishTags = dish.getTags();
         List<TagEntity> dishTagsDeletedTag = dishTags.stream()
                 .filter(t -> !(validatedRemovals.contains(t.getId())))
@@ -724,6 +726,7 @@ public class TagServiceImpl implements TagService {
         List<TagEntity> dishTags = dish.getTags();
 
         // check if tag exists already
+        // MM will use items - use items - or tags
         if (dishTags.contains(tag)) {
             return;
         }

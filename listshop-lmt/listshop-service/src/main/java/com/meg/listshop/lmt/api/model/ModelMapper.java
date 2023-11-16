@@ -41,6 +41,7 @@ public class ModelMapper {
         if (dishEntity != null) {
             List<Tag> tags = new ArrayList<>();
             if (includeTags) {
+                // MM will use items
                 tags = toModel(dishEntity.getTags());
             }
             return new Dish(dishEntity.getId())
@@ -540,17 +541,17 @@ public class ModelMapper {
         filledCategories.forEach(c -> enhanceSources(c.getItems()));
     }
 
-    public static Item toModel(ItemEntity itemEntity) {
-        return new Item(itemEntity.getId())
-                .tag(toModel(itemEntity.getTag()))
-                .listId(itemEntity.getListId().toString())
-                .addedOn(itemEntity.getAddedOn())
-                .updated(itemEntity.getUpdatedOn())
-                .removed(itemEntity.getRemovedOn())
-                .crossedOff(itemEntity.getCrossedOff())
-                .usedCount(itemEntity.getUsedCount())
-                .freeText(itemEntity.getFreeText())
-                .handles(itemEntity.getHandles());
+    public static Item toModel(ListItemEntity listItemEntity) {
+        return new Item(listItemEntity.getId())
+                .tag(toModel(listItemEntity.getTag()))
+                .listId(listItemEntity.getListId().toString())
+                .addedOn(listItemEntity.getAddedOn())
+                .updated(listItemEntity.getUpdatedOn())
+                .removed(listItemEntity.getRemovedOn())
+                .crossedOff(listItemEntity.getCrossedOff())
+                .usedCount(listItemEntity.getUsedCount())
+                .freeText(listItemEntity.getFreeText())
+                .handles(listItemEntity.getHandles());
     }
 
     public static UserProperty toModel(UserPropertyEntity entity) {
@@ -636,24 +637,24 @@ public class ModelMapper {
         return mealPlanEntity;
     }
 
-    public static ItemEntity toEntity(Item input) {
+    public static ListItemEntity toEntity(Item input) {
         Long id = input.getId() != null && input.getId() > 0 ?
                 input.getId() : null;
         Long listId = input.getListId() != null && !input.getListId().equals("0") ?
                 Long.valueOf(input.getListId()) : null;
         Long tagId = input.getTagId() != null ?
                 Long.valueOf(input.getTagId()) : null;
-        ItemEntity itemEntity = new ItemEntity(id);
-        itemEntity.setTag(toEntity(input.getTag()));
-        itemEntity.setFreeText(input.getFreeText());
-        itemEntity.setListId(listId);
-        itemEntity.setTagId(tagId);
-        itemEntity.setAddedOn(input.getAddedOn());
-        itemEntity.setUpdatedOn(input.getUpdated());
-        itemEntity.setCrossedOff(input.getCrossedOff());
-        itemEntity.setRemovedOn(input.getRemoved());
-        itemEntity.setUsedCount(input.getUsedCount());
-        return itemEntity;
+        ListItemEntity listItemEntity = new ListItemEntity(id);
+        listItemEntity.setTag(toEntity(input.getTag()));
+        listItemEntity.setFreeText(input.getFreeText());
+        listItemEntity.setListId(listId);
+        listItemEntity.setTagId(tagId);
+        listItemEntity.setAddedOn(input.getAddedOn());
+        listItemEntity.setUpdatedOn(input.getUpdated());
+        listItemEntity.setCrossedOff(input.getCrossedOff());
+        listItemEntity.setRemovedOn(input.getRemoved());
+        listItemEntity.setUsedCount(input.getUsedCount());
+        return listItemEntity;
     }
 
     public static ShoppingListEntity toEntity(ShoppingListPut shoppingList) {

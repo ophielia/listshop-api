@@ -215,7 +215,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         );
 
 
-        List<ItemEntity> items = new ArrayList<>();
+        List<ListItemEntity> items = new ArrayList<>();
         items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
         items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
         items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
@@ -317,7 +317,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
         shoppingList.setUserId(userId);
 
-        List<ItemEntity> items = new ArrayList<>();
+        List<ListItemEntity> items = new ArrayList<>();
         items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
         items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
         items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
@@ -326,7 +326,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
         Long tagId = 1199L;
         TagEntity tagToAdd = ServiceTestUtils.buildTagEntity(tagId, "tagName", TagType.Ingredient);
-        ItemEntity newItem = new ItemEntity();
+        ListItemEntity newItem = new ListItemEntity();
         newItem.setTag(tagToAdd);
 
         ArgumentCaptor<ShoppingListEntity> listCapture = ArgumentCaptor.forClass(ShoppingListEntity.class);
@@ -364,11 +364,11 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
         Long itemId = 1199L;
         Long tagId = 11199L;
-        ItemEntity item = ServiceTestUtils.buildItem(itemId, ServiceTestUtils.buildTagEntity(tagId, "tagName", TagType.Ingredient), listId);
+        ListItemEntity item = ServiceTestUtils.buildItem(itemId, ServiceTestUtils.buildTagEntity(tagId, "tagName", TagType.Ingredient), listId);
 
         Integer usedCount = 5;
 
-        ArgumentCaptor<ItemEntity> itemCapture = ArgumentCaptor.forClass(ItemEntity.class);
+        ArgumentCaptor<ListItemEntity> itemCapture = ArgumentCaptor.forClass(ListItemEntity.class);
         ArgumentCaptor<ShoppingListEntity> listCapture = ArgumentCaptor.forClass(ShoppingListEntity.class);
 
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
@@ -384,7 +384,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.verify(shoppingListRepository, times(1)).save(listCapture.capture());
 
         // Assertions
-        ItemEntity itemResult = itemCapture.getValue();
+        ListItemEntity itemResult = itemCapture.getValue();
         ShoppingListEntity listResult = listCapture.getValue();
         Assert.assertNotNull(itemResult);
         Assert.assertNotNull(listResult);
@@ -411,7 +411,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
         shoppingList.setUserId(userId);
 
-        List<ItemEntity> items = new ArrayList<>();
+        List<ListItemEntity> items = new ArrayList<>();
         items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
         items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
         items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
@@ -435,7 +435,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         // Assertions
         ShoppingListEntity testResult = savedList.getValue();
         Assert.assertNotNull(testResult);
-        Optional<ItemEntity> notCrossedOff = testResult.getItems().stream()
+        Optional<ListItemEntity> notCrossedOff = testResult.getItems().stream()
                 .filter(i -> i.getRemovedOn() == null)
                 .findFirst();
         Assert.assertFalse("All items should be shown as removed", notCrossedOff.isPresent());
@@ -452,7 +452,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
         shoppingList.setUserId(userId);
 
-        List<ItemEntity> items = new ArrayList<>();
+        List<ListItemEntity> items = new ArrayList<>();
         items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
         items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
         items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
@@ -504,13 +504,13 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
         shoppingList.setUserId(userId);
 
-        List<ItemEntity> items = new ArrayList<>();
+        List<ListItemEntity> items = new ArrayList<>();
         items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
         items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
         items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
         shoppingList.setItems(items);
 
-        ArgumentCaptor<List<ItemEntity>> crossedOffItems = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<ListItemEntity>> crossedOffItems = ArgumentCaptor.forClass(List.class);
 
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
         Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
@@ -523,7 +523,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
         Mockito.verify(itemRepository, times(1)).saveAll(crossedOffItems.capture());
 
-        List<ItemEntity> updatedItems = crossedOffItems.getValue();
+        List<ListItemEntity> updatedItems = crossedOffItems.getValue();
         Assert.assertNotNull(updatedItems);
         Assert.assertEquals("should be three items", 3, updatedItems.size());
         Assert.assertTrue("nothing uncrossed off should be found",
@@ -542,16 +542,16 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         shoppingList.setUserId(userId);
 
         Long itemId = 1199L;
-        ItemEntity item = new ItemEntity(itemId);
+        ListItemEntity item = new ListItemEntity(itemId);
         item.setListId(listId);
 
-        List<ItemEntity> items = new ArrayList<>();
+        List<ListItemEntity> items = new ArrayList<>();
         items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
         items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
         items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
         shoppingList.setItems(items);
 
-        ArgumentCaptor<ItemEntity> itemCapture = ArgumentCaptor.forClass(ItemEntity.class);
+        ArgumentCaptor<ListItemEntity> itemCapture = ArgumentCaptor.forClass(ListItemEntity.class);
 
 
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
@@ -567,7 +567,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.verify(shoppingListRepository, times(1)).save(any(ShoppingListEntity.class));
 
         // Assertions
-        ItemEntity resultItem = itemCapture.getValue();
+        ListItemEntity resultItem = itemCapture.getValue();
         Assert.assertNotNull(resultItem);
         Assert.assertEquals(item.getCrossedOff(), item.getUpdatedOn());
 
@@ -585,14 +585,14 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         shoppingList.setUserId(userId);
         shoppingList.setListLayoutId(layoutId);
 
-        List<ItemEntity> items = new ArrayList<>();
+        List<ListItemEntity> items = new ArrayList<>();
         items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
         items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
         items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
         shoppingList.setItems(items);
 
         Map<Long, Long> tagIdToCategoryId = items.stream()
-                .map(ItemEntity::getTag)
+                .map(ListItemEntity::getTag)
                 .collect(Collectors.toMap(TagEntity::getId, tt -> tt.getId() + 300));
 
         Long listLayoutId = 1001L;
@@ -605,7 +605,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
 
         Mockito.when(listSearchService.getTagToCategoryMap(layoutId, items
-                        .stream().map(ItemEntity::getTag)
+                        .stream().map(ListItemEntity::getTag)
                         .collect(Collectors.toList())))
                 .thenReturn(tagIdToCategoryId);
         //Mockito.when(layoutService.getListCategoriesForLayout(layoutId)).thenReturn(categories);
@@ -800,7 +800,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         //Assert.assertEquals(6, listResult.getItems().size());
         // verify items
         // put items into map
-        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+        Map<Long, ListItemEntity> resultMap = listResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
         // tag 1 should be there - twise
@@ -875,7 +875,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
         // verifications before
         // list contain doesn't item from meal plan
-        Optional<ItemEntity> mealPlanItem = shoppingList.getItems().stream()
+        Optional<ListItemEntity> mealPlanItem = shoppingList.getItems().stream()
                 .filter(item -> item.getTag().getId() == 1L)
                 .findFirst();
         Assert.assertFalse(mealPlanItem.isPresent());
@@ -892,7 +892,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         //Assert.assertEquals(6, listResult.getItems().size());
         // verify items
         // put items into map
-        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+        Map<Long, ListItemEntity> resultMap = listResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
         // tag 1 should be there - twise
@@ -966,7 +966,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
         // verifications before
         // list contain doesn't item from meal plan
-        Optional<ItemEntity> mealPlanItem = shoppingList.getItems().stream()
+        Optional<ListItemEntity> mealPlanItem = shoppingList.getItems().stream()
                 .filter(item -> item.getTag().getId() == 1L)
                 .findFirst();
         Assert.assertFalse(mealPlanItem.isPresent());
@@ -984,7 +984,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Assert.assertEquals(6, listResult.getItems().size());
         // verify items
         // put items into map
-        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+        Map<Long, ListItemEntity> resultMap = listResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
         // tag 1, 2, 5, 6 should be there - once
@@ -1045,12 +1045,12 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         ShoppingListEntity listResult = argument.getValue();
         Assert.assertNotNull(listResult);
         // list should contain 1 items - id 3
-        List<ItemEntity> items = listResult.getItems();
+        List<ListItemEntity> items = listResult.getItems();
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
         Assert.assertEquals(3, items.size());
         // put items into map
-        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+        Map<Long, ListItemEntity> resultMap = listResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
         // tag 3 should be there - twise
@@ -1113,12 +1113,12 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         ShoppingListEntity listResult = argument.getValue();
         Assert.assertNotNull(listResult);
         // list should contain 1 non-removed item - id 3
-        List<ItemEntity> items = listResult.getItems();
+        List<ListItemEntity> items = listResult.getItems();
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
         Assert.assertEquals(3, items.size());
         // put items into map
-        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+        Map<Long, ListItemEntity> resultMap = listResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
         // tag 3 should be there - with used count of 5
@@ -1152,7 +1152,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
         // 3 items, tagIds 3,4,8 - 3 and 8 are crossed off
         ShoppingListEntity sourceList = dummyShoppingList(sourceListId, userId);
-        Map<Long, ItemEntity> sourceItems = sourceList.getItems().stream()
+        Map<Long, ListItemEntity> sourceItems = sourceList.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         sourceItems.get(3L).setCrossedOff(new Date());
         sourceItems.get(8L).setCrossedOff(new Date());
@@ -1182,12 +1182,12 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         ShoppingListEntity listResult = argument.getValue();
         Assert.assertNotNull(listResult);
         // list should contain 1 items - id 3
-        List<ItemEntity> items = listResult.getItems();
+        List<ListItemEntity> items = listResult.getItems();
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
         Assert.assertEquals(3, items.size());
         // put items into map
-        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+        Map<Long, ListItemEntity> resultMap = listResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
         // tag 3 should be removed
@@ -1241,12 +1241,12 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         ShoppingListEntity listResult = argument.getValue();
         Assert.assertNotNull(listResult);
         // list should contain 1 items - id 3
-        List<ItemEntity> items = listResult.getItems();
+        List<ListItemEntity> items = listResult.getItems();
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
         Assert.assertEquals(3, items.size());
         // put items into map
-        Map<Long, ItemEntity> resultMap = listResult.getItems().stream()
+        Map<Long, ListItemEntity> resultMap = listResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
         // tag 3 should be removed
@@ -1319,12 +1319,12 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         // result list should contain original 4,7,8 plus moved 4,5,8
         // so - 4 and 8 (twice) and 5 (once) and 7 (once)
         // list should contain 1 items - id 3
-        List<ItemEntity> items = firstCallResult.getItems();
+        List<ListItemEntity> items = firstCallResult.getItems();
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
         Assert.assertEquals(4, items.size());
         // put items into map
-        Map<Long, ItemEntity> resultMap = firstCallResult.getItems().stream()
+        Map<Long, ListItemEntity> resultMap = firstCallResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         // tag 5 and 7 should be there - once
         Assert.assertNotNull(resultMap.get(5L));
@@ -1342,12 +1342,12 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Assert.assertNull(resultMap.get(8L).getRemovedOn());
 
         // source list should not containttagids 4 and 8
-        List<ItemEntity> sourceItems = secondCallResult.getItems();
+        List<ListItemEntity> sourceItems = secondCallResult.getItems();
         Assert.assertNotNull(sourceItems);
         Assert.assertFalse(sourceItems.isEmpty());
         Assert.assertEquals(3, sourceItems.size());
         // put sourceItems into map
-        Map<Long, ItemEntity> sourceResultMap = sourceItems.stream()
+        Map<Long, ListItemEntity> sourceResultMap = sourceItems.stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(sourceResultMap);
         // tags 4 and 8 should not be there
@@ -1419,12 +1419,12 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         // result list should contain original 4,7,8 plus moved 4,5,8
         // so - 4 and 8 (twice) and 5 (once) and 7 (once)
         // list should contain 1 items - id 3
-        List<ItemEntity> items = firstCallResult.getItems();
+        List<ListItemEntity> items = firstCallResult.getItems();
         Assert.assertNotNull(items);
         Assert.assertFalse(items.isEmpty());
         Assert.assertEquals(4, items.size());
         // put items into map
-        Map<Long, ItemEntity> resultMap = firstCallResult.getItems().stream()
+        Map<Long, ListItemEntity> resultMap = firstCallResult.getItems().stream()
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assert.assertNotNull(resultMap);
         // tag 5 and 7 should be there - once
@@ -1675,7 +1675,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         ShoppingListEntity shoppingList = expectGetShoppingListById(deleteFromListId, userId, Arrays.asList(listTagIds), userEmail);
         shoppingList.getItems().stream().forEach(item -> item.setAddedOn(addedDate));
 
-        final Optional<ItemEntity> itemToRemoveOpt = shoppingList.getItems()
+        final Optional<ListItemEntity> itemToRemoveOpt = shoppingList.getItems()
                 .stream()
                 .filter(item -> item.getId().equals(itemIdToRemove))
                 .findFirst();
@@ -1792,11 +1792,11 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         listEntity.setCreatedOn(new Date());
 
         // make 3 tags
-        List<ItemEntity> items = new ArrayList<>();
+        List<ListItemEntity> items = new ArrayList<>();
         for (Long tagbase : tagIds) {
             Long itemId = tagbase * 1111111;
             TagEntity tag = ServiceTestUtils.buildTag(tagbase, String.valueOf(tagbase), TagType.Ingredient);
-            ItemEntity item = ServiceTestUtils.buildItem(itemId, tag, shoppingListId);
+            ListItemEntity item = ServiceTestUtils.buildItem(itemId, tag, shoppingListId);
             item.setUsedCount(1);
             items.add(item);
         }

@@ -160,6 +160,7 @@ public class DishRestController implements DishRestControllerApi {
         logger.info(message);
         DishEntity dish = this.dishService
                 .getDishForUserById(userDetails.getId(), dishId);
+        // MM will use items
         List<TagEntity> sortedDishTags = dish.getTags();
         sortedDishTags.sort(Comparator.comparing(TagEntity::getTagType)
                 .thenComparing(TagEntity::getName));

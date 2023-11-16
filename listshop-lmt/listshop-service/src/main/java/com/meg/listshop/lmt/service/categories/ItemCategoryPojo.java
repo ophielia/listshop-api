@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meg.listshop.lmt.api.model.CategoryType;
 import com.meg.listshop.lmt.api.model.Item;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,7 +25,7 @@ public class ItemCategoryPojo extends AbstractCategory {
 
 
     @JsonIgnore
-    List<ItemEntity> itemEntities = new ArrayList<>();
+    List<ListItemEntity> itemEntities = new ArrayList<>();
 
     public ItemCategoryPojo() {
     }
@@ -54,15 +54,15 @@ public class ItemCategoryPojo extends AbstractCategory {
         return this;
     }
 
-    public void addItemEntity(ItemEntity item) {
+    public void addItemEntity(ListItemEntity item) {
         this.itemEntities.add(item);
     }
 
-    public List<ItemEntity> getItemEntities() {
+    public List<ListItemEntity> getItemEntities() {
         return itemEntities;
     }
 
-    public ListShopCategory itemEntities(List<ItemEntity> itemEntities) {
+    public ListShopCategory itemEntities(List<ListItemEntity> itemEntities) {
         this.itemEntities = itemEntities;
         return this;
     }
@@ -91,6 +91,6 @@ public class ItemCategoryPojo extends AbstractCategory {
     }
 
     public void sortItems() {
-        this.itemEntities.sort(Comparator.comparing(ItemEntity::getDisplay));
+        this.itemEntities.sort(Comparator.comparing(ListItemEntity::getDisplay));
     }
 }

@@ -2,7 +2,7 @@ package com.meg.listshop.lmt.data.impl;
 
 import com.meg.listshop.lmt.api.model.StatisticCountType;
 import com.meg.listshop.lmt.data.ItemChangeRepository;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.service.CollectorContext;
@@ -36,7 +36,7 @@ public class ListItemRepositoryImpl implements ItemChangeRepository {
             listTagStatisticService.processCollectorStatistics(userId, collector, context);
         }
 
-        List<ItemEntity> toUpdate = collector.getChangedItems();
+        List<ListItemEntity> toUpdate = collector.getChangedItems();
         toUpdate.stream().forEach(item -> item.setListId(shoppingList.getId()));
 
         if (!toUpdate.isEmpty()) {

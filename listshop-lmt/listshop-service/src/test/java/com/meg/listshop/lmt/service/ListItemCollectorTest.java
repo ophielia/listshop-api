@@ -1,7 +1,7 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.lmt.api.model.ContextType;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,14 +23,14 @@ public class ListItemCollectorTest {
     @Test
     public void testAdd() {
         ListItemCollector collector = new ListItemCollector(999L, new ArrayList<>());
-        ItemEntity item = createItem(1L, 100L);
+        ListItemEntity item = createItem(1L, 100L);
 
         CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified).build();
         // tested method
         collector.addItem(item, context);
 
         // check results
-        List<ItemEntity> changed = collector.getChangedItems();
+        List<ListItemEntity> changed = collector.getChangedItems();
         assertNotNull(changed);
         assertEquals(1, changed.size());
 
@@ -39,16 +39,16 @@ public class ListItemCollectorTest {
     @Test
     public void testUpdate() {
 
-        ItemEntity item = createItem(1L, 100L);
+        ListItemEntity item = createItem(1L, 100L);
         ListItemCollector collector = new ListItemCollector(999L, Collections.singletonList(item));
 
         // tested method
-        ItemEntity itemUpdate = createItem(1L, 100L);
+        ListItemEntity itemUpdate = createItem(1L, 100L);
         CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified).build();
         collector.addItem(itemUpdate, context);
 
         // check results
-        List<ItemEntity> changed = collector.getChangedItems();
+        List<ListItemEntity> changed = collector.getChangedItems();
         assertNotNull(changed);
         assertEquals(1, changed.size());
         assertNotNull(changed.get(0).getUpdatedOn() );
@@ -57,7 +57,7 @@ public class ListItemCollectorTest {
 
     @Test
     public void testDelete() {
-        ItemEntity item = createItem(1L, 100L);
+        ListItemEntity item = createItem(1L, 100L);
         ListItemCollector collector = new ListItemCollector(999L, Collections.singletonList(item));
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .build();
@@ -65,7 +65,7 @@ public class ListItemCollectorTest {
         collector.removeItemByTagId(1L, context);
 
         // check results
-        List<ItemEntity> changed = collector.getChangedItems();
+        List<ListItemEntity> changed = collector.getChangedItems();
         assertNotNull(changed);
         assertEquals(1, changed.size());
         assertNotNull(changed.get(0).getRemovedOn() );
@@ -74,9 +74,9 @@ public class ListItemCollectorTest {
 
     @Test
     public void testAddUpdateDelete() {
-        ItemEntity item = createItem(1L, 100L);
-        ItemEntity item2 = createItem(2L, 200L);
-        List<ItemEntity> items = new ArrayList<>();
+        ListItemEntity item = createItem(1L, 100L);
+        ListItemEntity item2 = createItem(2L, 200L);
+        List<ListItemEntity> items = new ArrayList<>();
         items.add(item);
         items.add(item2);
 
@@ -87,7 +87,7 @@ public class ListItemCollectorTest {
         ListItemCollector collector = new ListItemCollector(999L, items);
 
         // tested method(s)
-        ItemEntity item3 = createItem(3L, 300L);
+        ListItemEntity item3 = createItem(3L, 300L);
         // add item 3
         collector.addItem(item3, context);
         // remove item
@@ -96,7 +96,7 @@ public class ListItemCollectorTest {
         collector.addItem(item2, context);
 
         // check results
-        List<ItemEntity> changed = collector.getChangedItems();
+        List<ListItemEntity> changed = collector.getChangedItems();
         assertNotNull(changed);
         assertEquals(3, changed.size());
 
@@ -104,7 +104,7 @@ public class ListItemCollectorTest {
         int added =0;
         int updated = 0;
         int deleted = 0;
-        for (ItemEntity result : changed) {
+        for (ListItemEntity result : changed) {
             if (result.getRemovedOn() != null) {
                 deleted++;
             } else if (result.getUpdatedOn() != null) {
@@ -119,10 +119,10 @@ public class ListItemCollectorTest {
         assertTrue(updated > 0);
     }
 
-    private ItemEntity createItem(Long tagId, Long itemId) {
+    private ListItemEntity createItem(Long tagId, Long itemId) {
         TagEntity tag = new TagEntity();
         tag.setId(tagId);
-        ItemEntity item = new ItemEntity();
+        ListItemEntity item = new ListItemEntity();
         item.setId(itemId);
         item.setTag(tag);
         return item;

@@ -1,6 +1,6 @@
 package com.meg.listshop.lmt.service;
 
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class CollectedItemTest {
         LocalDateTime crossedOffDate = LocalDateTime.of(2019, 03, 04, 0, 0);
 
         // item with added only
-        ItemEntity item = new ItemEntity();
+        ListItemEntity item = new ListItemEntity();
         item.setAddedOn(java.sql.Timestamp.valueOf(addedDate));
 
         CollectedItem collectedItem = new CollectedItem(item);
@@ -59,11 +59,11 @@ public class CollectedItemTest {
         LocalDateTime closeToFirstDate = firstDate.minusSeconds(1L);
         LocalDateTime notSoCloseToFirstDate = firstDate.minusSeconds(5L);
 
-        ItemEntity item1 = new ItemEntity();
+        ListItemEntity item1 = new ListItemEntity();
         item1.setTag(tagEntity);
         item1.setUpdatedOn(java.sql.Timestamp.valueOf(firstDate));
 
-        ItemEntity item2 = new ItemEntity();
+        ListItemEntity item2 = new ListItemEntity();
         item2.setTag(tagEntity);
         item2.setUpdatedOn(java.sql.Timestamp.valueOf(closeToFirstDate));
 

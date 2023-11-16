@@ -72,7 +72,7 @@ public class ListLayoutCategoryEntity {
     private Long layoutId;
 
     @Transient
-    private final List<ItemEntity> items = new ArrayList<>();
+    private final List<ListItemEntity> items = new ArrayList<>();
 
 
     private Integer displayOrder;
@@ -115,11 +115,11 @@ public class ListLayoutCategoryEntity {
         this.layoutId = layoutId;
     }
 
-    public void addItem(ItemEntity item) {
+    public void addItem(ListItemEntity item) {
         this.items.add(item);
     }
 
-    public List<ItemEntity> getItems() {
+    public List<ListItemEntity> getItems() {
         return items;
     }
 

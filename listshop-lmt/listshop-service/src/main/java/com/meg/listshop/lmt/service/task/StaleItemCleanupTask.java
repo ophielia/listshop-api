@@ -1,6 +1,6 @@
 package com.meg.listshop.lmt.service.task;
 
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class StaleItemCleanupTask {
         logger.info("About to delete stale tags from item table.");
         LocalDate removedBeforeDate = LocalDate.now().minusDays(deleteAfterDays);
 
-        List<ItemEntity> itemsToRemove = itemRepository.findByRemovedOnBefore(Date.valueOf(removedBeforeDate));
+        List<ListItemEntity> itemsToRemove = itemRepository.findByRemovedOnBefore(Date.valueOf(removedBeforeDate));
         int removeCount = itemsToRemove != null ? itemsToRemove.size() : 0;
         logger.info("... found [" + removeCount + "] items to delete.");
 

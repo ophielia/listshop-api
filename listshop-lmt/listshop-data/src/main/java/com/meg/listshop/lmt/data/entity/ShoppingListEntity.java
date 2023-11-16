@@ -52,7 +52,7 @@ public class ShoppingListEntity {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "list_id", referencedColumnName = "list_id")
-    private List<ItemEntity> items = new ArrayList<>();
+    private List<ListItemEntity> items = new ArrayList<>();
 
     @Column(name = "user_id")
     private Long userId;
@@ -108,11 +108,11 @@ public class ShoppingListEntity {
         this.listType = listType;
     }
 
-    public List<ItemEntity> getItems() {
+    public List<ListItemEntity> getItems() {
         return items;
     }
 
-    public void setItems(List<ItemEntity> items) {
+    public void setItems(List<ListItemEntity> items) {
         this.items = items;
     }
 

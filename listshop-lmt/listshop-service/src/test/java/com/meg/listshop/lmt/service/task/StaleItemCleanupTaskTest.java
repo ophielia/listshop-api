@@ -2,7 +2,7 @@ package com.meg.listshop.lmt.service.task;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -39,12 +39,12 @@ public class StaleItemCleanupTaskTest {
 
     // 3 items in test data set which are stale
     // get all tags
-    List<ItemEntity> allitems = itemRepository.findAll();
+    List<ListItemEntity> allitems = itemRepository.findAll();
     // count them
     long count = allitems.stream().count();
     // retain count of stale items
-    List<ItemEntity> staleItems = allitems.subList(0,5);
-    for (ItemEntity item : allitems) {
+    List<ListItemEntity> staleItems = allitems.subList(0,5);
+    for (ListItemEntity item : allitems) {
         item.setRemovedOn(java.sql.Date.valueOf(testRemoveDate));
     }
     itemRepository.saveAll(staleItems);

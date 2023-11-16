@@ -6,7 +6,7 @@ import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.ContextType;
 import com.meg.listshop.lmt.api.model.Statistic;
 import com.meg.listshop.lmt.api.model.StatisticCountType;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.*;
 import org.junit.Assert;
@@ -290,7 +290,7 @@ public class ListTagStatisticServiceImplTest {
             TagEntity tag = new TagEntity();
             tag.setId(id);
             tag.setName(String.valueOf(id));
-            ItemEntity item = new ItemEntity();
+            ListItemEntity item = new ListItemEntity();
             item.setTag(tag);
             item.setUsedCount(1);
             dummyItems.add(new CollectedItem(item));

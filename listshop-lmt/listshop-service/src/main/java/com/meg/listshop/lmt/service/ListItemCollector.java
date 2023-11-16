@@ -1,7 +1,7 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.common.DateUtils;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class ListItemCollector extends AbstractItemCollector {
 
-    public ListItemCollector(Long listId, List<ItemEntity> items) {
+    public ListItemCollector(Long listId, List<ListItemEntity> items) {
         super(listId, items);
     }
 
@@ -32,14 +32,14 @@ public class ListItemCollector extends AbstractItemCollector {
         }
     }
 
-    public void copyExistingItemsIntoList(List<ItemEntity> items, CollectorContext context) {
+    public void copyExistingItemsIntoList(List<ListItemEntity> items, CollectorContext context) {
         if (items == null) {
             return;
         }
         items.stream().forEach(item -> copyOrUpdateExistingItem(item, context));
     }
 
-    private void copyOrUpdateExistingItem(ItemEntity item, CollectorContext context) {
+    private void copyOrUpdateExistingItem(ListItemEntity item, CollectorContext context) {
         // do not copy crossed off items
         if ((item.getCrossedOff() != null && !context.isCopyCrossedOff()) || item.getRemovedOn() != null) {
             return;
@@ -77,21 +77,21 @@ public class ListItemCollector extends AbstractItemCollector {
         }
     }
 
-    public void removeFreeTextItem(ItemEntity itemEntity) {
+    public void removeFreeTextItem(ListItemEntity listItemEntity) {
         // TODO implement this
 
     }
 
 
-    private CollectedItem copyFreeTextItem(ItemEntity item) {
-        ItemEntity copiedItem = item.createCopy();
+    private CollectedItem copyFreeTextItem(ListItemEntity item) {
+        ListItemEntity copiedItem = item.createCopy();
 
         CollectedItem copied = new CollectedItem(copiedItem);
         copied.setFreeText(item.getFreeText());
         return copied;
     }
 
-    public void removeItemsFromList(List<ItemEntity> fromListItems, CollectorContext context) {
+    public void removeItemsFromList(List<ListItemEntity> fromListItems, CollectorContext context) {
         Long fromListId = context.getListId();
         Set<Long> fromTagIds = new HashSet<>();
         if (fromListItems != null) {
@@ -104,7 +104,7 @@ public class ListItemCollector extends AbstractItemCollector {
 
         for (Map.Entry<Long, CollectedItem> tagCollectedEntry : getTagCollectedMap().entrySet()) {
             boolean fromListMatch = fromTagIds.contains(tagCollectedEntry.getKey());
-            ItemEntity item = tagCollectedEntry.getValue().getItem();
+            ListItemEntity item = tagCollectedEntry.getValue().getItem();
             String entryListSource = item.getRawListSources();
             boolean listSourceMatch = entryListSource.contains(String.valueOf(fromListId));
             if (fromListMatch || listSourceMatch) {

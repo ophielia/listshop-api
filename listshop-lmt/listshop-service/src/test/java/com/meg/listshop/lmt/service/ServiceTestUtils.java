@@ -52,13 +52,13 @@ public class ServiceTestUtils {
         return layoutCategoryEntity;
     }
 
-    public static ItemEntity buildItem(Long itemId, TagEntity tagEntity, Long listId) {
-        ItemEntity itemEntity = new ItemEntity(itemId);
-        itemEntity.setTag(tagEntity);
-        itemEntity.setListId(listId);
-        itemEntity.setAddedOn(new Date());
+    public static ListItemEntity buildItem(Long itemId, TagEntity tagEntity, Long listId) {
+        ListItemEntity listItemEntity = new ListItemEntity(itemId);
+        listItemEntity.setTag(tagEntity);
+        listItemEntity.setListId(listId);
+        listItemEntity.setAddedOn(new Date());
 
-        return itemEntity;
+        return listItemEntity;
     }
 
     public static ShoppingListEntity buildShoppingList(Long userId, Long listId) {

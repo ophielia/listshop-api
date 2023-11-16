@@ -1,13 +1,13 @@
 package com.meg.listshop.lmt.service;
 
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 
 import java.util.List;
 import java.util.Map;
 
 public interface ItemCollector {
-    List<ItemEntity> getAllItems();
+    List<ListItemEntity> getAllItems();
 
     List<CollectedItem> getCollectedTagItems();
 
@@ -15,7 +15,7 @@ public interface ItemCollector {
 
     boolean hasChanges();
 
-    List<ItemEntity> getChangedItems();
+    List<ListItemEntity> getChangedItems();
 
     void replaceOutdatedTags(List<TagEntity> outdatedTags, Map<Long, TagEntity> replacementDictionary);
 }

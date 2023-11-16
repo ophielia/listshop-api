@@ -1,7 +1,7 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.common.FlatStringUtils;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 
 import java.time.Duration;
@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public class CollectedItem {
 
-    private ItemEntity item;
+    private ListItemEntity item;
 
     private boolean isUpdated;
 
@@ -32,8 +32,8 @@ public class CollectedItem {
     private final int secondComparisonWindow = 2;
 
 
-    public CollectedItem(ItemEntity itemEntity) {
-        item = itemEntity;
+    public CollectedItem(ListItemEntity listItemEntity) {
+        item = listItemEntity;
         isRemoved = item.getRemovedOn() != null;
     }
     
@@ -253,7 +253,7 @@ public class CollectedItem {
 
     }
 
-    public void add(ItemEntity item, LocalDateTime crossedOffDate, CollectorContext context, boolean isNew) {
+    public void add(ListItemEntity item, LocalDateTime crossedOffDate, CollectorContext context, boolean isNew) {
 
         int newCount = item.getUsedCount() != null && item.getUsedCount() > 0 ? item.getUsedCount() : 1;
         add(newCount, context, crossedOffDate, isNew);
@@ -274,11 +274,11 @@ public class CollectedItem {
     }
 
 
-    public ItemEntity getItem() {
+    public ListItemEntity getItem() {
         return item;
     }
 
-    public void setItem(ItemEntity item) {
+    public void setItem(ListItemEntity item) {
         this.item = item;
     }
 
@@ -435,8 +435,8 @@ public class CollectedItem {
 
 
     public void mergeFrom(CollectedItem clientItem) {
-        ItemEntity nakedServer = getItem();
-        ItemEntity nakedClient = clientItem.getItem();
+        ListItemEntity nakedServer = getItem();
+        ListItemEntity nakedClient = clientItem.getItem();
         nakedServer.setAddedOn(nakedClient.getAddedOn());
         nakedServer.setCrossedOff(nakedClient.getCrossedOff());
         nakedServer.setFreeText(nakedClient.getFreeText());

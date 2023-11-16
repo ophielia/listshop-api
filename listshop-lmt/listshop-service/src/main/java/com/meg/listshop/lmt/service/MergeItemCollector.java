@@ -1,6 +1,6 @@
 package com.meg.listshop.lmt.service;
 
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 
 import java.time.Duration;
 import java.util.Date;
@@ -14,7 +14,7 @@ public class MergeItemCollector extends AbstractItemCollector {
 
     private Date listLastUpdate;
 
-    public MergeItemCollector(Long listId, List<ItemEntity> items, Date listLastUpdate) {
+    public MergeItemCollector(Long listId, List<ListItemEntity> items, Date listLastUpdate) {
         super(listId, items);
         this.listLastUpdate = listLastUpdate;
     }
@@ -24,19 +24,19 @@ public class MergeItemCollector extends AbstractItemCollector {
     }
 
     // merge collector
-    public void addMergeItems(List<ItemEntity> mergeItems) {
+    public void addMergeItems(List<ListItemEntity> mergeItems) {
         if (mergeItems == null || mergeItems.isEmpty()) {
             return;
         }
         // go through all merge items
-        Iterator<ItemEntity> mergeIterator = mergeItems.iterator();
+        Iterator<ListItemEntity> mergeIterator = mergeItems.iterator();
         while (mergeIterator.hasNext()) {
-            ItemEntity mergeItemEntity = mergeIterator.next();
-            Long tagId = mergeItemEntity.getTag().getId();
+            ListItemEntity mergeListItemEntity = mergeIterator.next();
+            Long tagId = mergeListItemEntity.getTag().getId();
 
             if (getTagCollectedMap().containsKey(tagId)) {
-                CollectedItem serverItem = getTagCollectedMap().get(mergeItemEntity.getTag().getId());
-                CollectedItem mergeItem = new CollectedItem(mergeItemEntity);
+                CollectedItem serverItem = getTagCollectedMap().get(mergeListItemEntity.getTag().getId());
+                CollectedItem mergeItem = new CollectedItem(mergeListItemEntity);
                 // if merge item matches an item in the tagCollectedItems
                 //  check change
                 if (!serverItem.equalsWithWindow(2,mergeItem)) {  //MM parameterize this window second
@@ -51,7 +51,7 @@ public class MergeItemCollector extends AbstractItemCollector {
         }
 
         // go through unmatched merge items, adding them to the list
-        for (ItemEntity newMergeItem : mergeItems ) {
+        for (ListItemEntity newMergeItem : mergeItems ) {
             // create new collected item
             CollectedItem item = new CollectedItem(newMergeItem);
 

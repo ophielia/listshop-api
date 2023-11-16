@@ -13,7 +13,7 @@ import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.test.TestConstants;
 import org.apache.commons.lang3.StringUtils;
@@ -541,7 +541,7 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
 
         // make sure the item has been updated
-        ItemEntity resultItem = itemRepository.getItemByListAndTag(listId, tagId);
+        ListItemEntity resultItem = itemRepository.getItemByListAndTag(listId, tagId);
 
         Assert.assertEquals(usedCount, resultItem.getUsedCount());
     }

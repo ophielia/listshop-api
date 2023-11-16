@@ -2,7 +2,7 @@ package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.lmt.api.model.ContextType;
 import com.meg.listshop.lmt.api.model.StatisticCountType;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,7 +22,7 @@ public abstract class AbstractItemCollector implements ItemCollector {
 
     private final Predicate<CollectedItem> isChanged = i -> i.isChanged();
 
-    public AbstractItemCollector(Long savedNewListId, List<ItemEntity> items) {
+    public AbstractItemCollector(Long savedNewListId, List<ListItemEntity> items) {
         this.listId = savedNewListId;
         tagCollectedItem = new HashMap<>();
         freeTextItems = new ArrayList<>();
@@ -44,7 +44,7 @@ public abstract class AbstractItemCollector implements ItemCollector {
     }
 
     @Override
-    public List<ItemEntity> getAllItems() {
+    public List<ListItemEntity> getAllItems() {
         return Stream.concat(tagCollectedItem.values().stream()
                 ,freeTextItems.stream())
         .map(CollectedItem::getItem)
@@ -75,7 +75,7 @@ public abstract class AbstractItemCollector implements ItemCollector {
     }
 
     @Override
-    public List<ItemEntity> getChangedItems() {
+    public List<ListItemEntity> getChangedItems() {
         return getTagCollectedMap().values().stream()
                 .filter(isChanged)
                 .map(CollectedItem::getItem)
@@ -120,7 +120,7 @@ public abstract class AbstractItemCollector implements ItemCollector {
 
     }
 
-    public void addItem(ItemEntity item, CollectorContext context) {
+    public void addItem(ListItemEntity item, CollectorContext context) {
         if (item.getTag() == null) {
             getFreeTextItemList().add(new CollectedItem(item));
             return;
@@ -149,7 +149,7 @@ public abstract class AbstractItemCollector implements ItemCollector {
         }
 
         // doesn't exist - we need to create it
-        CollectedItem item = new CollectedItem(new ItemEntity());
+        CollectedItem item = new CollectedItem(new ListItemEntity());
 
         item.setTag(tag);
         item.setListId(getListId());

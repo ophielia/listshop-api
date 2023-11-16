@@ -22,7 +22,7 @@ import java.util.Set;
                         name = "increment_size",
                         value="1")}
 )
-public class ItemEntity {
+public class ListItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_item_sequence")
@@ -63,11 +63,11 @@ public class ItemEntity {
     @Transient
     private Long tagId;
 
-    public ItemEntity(Long id) {
+    public ListItemEntity(Long id) {
         item_id = id;
     }
 
-    public ItemEntity() {
+    public ListItemEntity() {
         // necessary for jpa construction
     }
 
@@ -188,8 +188,8 @@ public class ItemEntity {
                 '}';
     }
 
-    public ItemEntity createCopy() {
-        ItemEntity cloned = new ItemEntity();
+    public ListItemEntity createCopy() {
+        ListItemEntity cloned = new ListItemEntity();
         cloned.setAddedOn(this.getAddedOn());
         cloned.setCrossedOff(this.getCrossedOff());
         cloned.setRemovedOn(this.getRemovedOn());

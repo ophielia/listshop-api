@@ -9,7 +9,7 @@ package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.lmt.data.entity.ItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -78,9 +78,9 @@ public class MergeItemCollectorTest {
         ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
-        ItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
+        ListItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
         updated.setUpdatedOn(new Date());
-        List<ItemEntity> mergeItems = new ArrayList<>();
+        List<ListItemEntity> mergeItems = new ArrayList<>();
         mergeItems.add(updated);
 
         collector.addMergeItems(mergeItems);
@@ -95,10 +95,10 @@ public class MergeItemCollectorTest {
         ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
-        ItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
+        ListItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
         LocalDateTime dateTime = LocalDateTime.now().minusDays(22L);
         updated.setUpdatedOn(java.sql.Timestamp.valueOf(dateTime));
-        List<ItemEntity> mergeItems = new ArrayList<>();
+        List<ListItemEntity> mergeItems = new ArrayList<>();
         mergeItems.add(updated);
 
         collector.addMergeItems(mergeItems);
@@ -113,8 +113,8 @@ public class MergeItemCollectorTest {
         ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
-        ItemEntity updated = createItemForTagId(45L);
-        List<ItemEntity> mergeItems = new ArrayList<>();
+        ListItemEntity updated = createItemForTagId(45L);
+        List<ListItemEntity> mergeItems = new ArrayList<>();
         mergeItems.add(updated);
 
         collector.addMergeItems(mergeItems);
@@ -124,16 +124,16 @@ public class MergeItemCollectorTest {
         Assert.assertEquals(5, collector.getAllItems().size());
     }
 
-    private ItemEntity createItemForTagId(long tagId) {
+    private ListItemEntity createItemForTagId(long tagId) {
         TagEntity tagEntity = tagService.getTagById(tagId);
-        ItemEntity updated = new ItemEntity();
+        ListItemEntity updated = new ListItemEntity();
         updated.setTag(tagEntity);
         return updated;
     }
 
-    private ItemEntity copyItemForTagId(long tagId, List<ItemEntity> items) {
-        ItemEntity copyFrom = items.stream().filter(i -> i.getTag().getId().equals(tagId)).findFirst().get();
-        ItemEntity returnItem = new ItemEntity();
+    private ListItemEntity copyItemForTagId(long tagId, List<ListItemEntity> items) {
+        ListItemEntity copyFrom = items.stream().filter(i -> i.getTag().getId().equals(tagId)).findFirst().get();
+        ListItemEntity returnItem = new ListItemEntity();
         returnItem.setId(copyFrom.getId());
         returnItem.setListId(copyFrom.getListId());
         returnItem.setAddedOn(copyFrom.getAddedOn());
