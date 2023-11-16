@@ -32,6 +32,9 @@ public class ConversionHandlerTest {
                 .withFactor(ConversionTestTools.makeImperialUnit(5L, UnitFlavor.Weight),
                         ConversionTestTools.makeMetricUnit(6L, UnitFlavor.Weight),
                         .9)
+                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitFlavor.Weight),
+                        ConversionTestTools.makeMetricUnit(6L, UnitFlavor.Weight),
+                        .5)
                 .withFromSpec(UnitType.Imperial, UnitFlavor.Weight)
                 .withToSpec(UnitType.Metric, UnitFlavor.Weight)
                 .build();
@@ -64,7 +67,7 @@ public class ConversionHandlerTest {
     @Test
     void testConvert() throws ConversionFactorException {
         Unit startUnit = ConversionTestTools.makeMetricUnit(null, UnitFlavor.Weight);
-        startUnit.setId(2L);
+        startUnit.setId(6L);
         ConvertibleAmount startAmount = new SimpleAmount(1D, startUnit);
         ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.Imperial).withFlavor(UnitFlavor.Weight).build();
 

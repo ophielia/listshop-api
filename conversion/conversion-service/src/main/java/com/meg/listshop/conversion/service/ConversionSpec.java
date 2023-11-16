@@ -79,9 +79,11 @@ public class ConversionSpec {
 
         }
         if (source.isLiquid()) {
-            flavors.add(UnitFlavor.Volume);
-        } else {
+            flavors.add(UnitFlavor.Liquid);
+        } else if (source.isWeight()) {
             flavors.add(UnitFlavor.Weight);
+        } else if (source.isVolume()) {
+            flavors.add(UnitFlavor.Volume);
         }
         return flavors;
     }
@@ -126,4 +128,9 @@ public class ConversionSpec {
                 '}';
     }
 
+    public boolean containedIn(ConversionSpec toCheck) {
+        // do all flavors in this object exit in toCheck
+        return unitType.equals(toCheck.getUnitType()) && toCheck.getFlavors().containsAll(flavors);
+
+    }
 }

@@ -36,7 +36,7 @@ public class ConversionTestTools {
                     unit.setLiquid(true);
                     break;
                 case ListUnit:
-                    unit.setLiquid(true);
+                    unit.setListUnit(true);
             }
 
 
@@ -63,7 +63,7 @@ public class ConversionTestTools {
                     unit.setLiquid(true);
                     break;
                 case ListUnit:
-                    unit.setLiquid(true);
+                    unit.setListUnit(true);
             }
 
 

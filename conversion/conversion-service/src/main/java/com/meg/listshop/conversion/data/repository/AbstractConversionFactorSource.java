@@ -2,7 +2,6 @@ package com.meg.listshop.conversion.data.repository;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
-import com.meg.listshop.conversion.data.pojo.UnitType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +15,13 @@ public abstract class AbstractConversionFactorSource implements ConversionFactor
     }
 
     @Override
-    public List<ConversionFactor> getFactors(UnitType fromType) {
+    public List<ConversionFactor> getFactors(Long unitId) {
         List<ConversionFactor> results = new ArrayList<>();
         // go through factors
         for (ConversionFactor factor : factors) {
-            if (factor.getFromUnit().getType().equals(fromType)) {
+            if (factor.getFromUnit().getId().equals(unitId)) {
                 results.add(factor);
-            } else if (factor.getToUnit().getType().equals(fromType)) {
+            } else if (factor.getToUnit().getId().equals(unitId)) {
                 results.add(SimpleConversionFactor.reverseFactor(factor));
             }
         }

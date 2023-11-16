@@ -30,8 +30,8 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     }
 
     public boolean handles(ConversionSpec sourceSpec, ConversionSpec targetSpec) {
-        return (source.equals(sourceSpec) && target.equals(targetSpec)) ||
-                (target.equals(sourceSpec) && source.equals(targetSpec));
+        return (source.containedIn(sourceSpec) && target.containedIn(targetSpec)) ||
+                (target.containedIn(sourceSpec) && source.containedIn(targetSpec));
     }
 
     public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException {
@@ -47,7 +47,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
             }
         }
         if (factors.isEmpty()) {
-            factors.addAll(conversionSource.getFactors(toConvert.getUnit().getType()));
+            factors.addAll(conversionSource.getFactors(toConvert.getUnit().getId()));
         }
 
         if (factors.isEmpty()) {
@@ -89,6 +89,14 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         factors.sort(comparator);
         return factors.get(0);
 
+    }
+
+    protected ConversionSpec getSource() {
+        return source;
+    }
+
+    protected ConversionSpec getTarget() {
+        return target;
     }
 }
 

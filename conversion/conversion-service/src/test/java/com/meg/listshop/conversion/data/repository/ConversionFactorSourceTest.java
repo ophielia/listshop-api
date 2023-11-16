@@ -2,7 +2,6 @@ package com.meg.listshop.conversion.data.repository;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.Unit;
-import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.service.tools.ConversionFactorSourceBuilder;
 import com.meg.listshop.conversion.tools.ConversionTestTools;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,24 +33,25 @@ public class ConversionFactorSourceTest {
                 .withFactor(unit1, unit2, 0.5)
                 .withFactor(unit3, unit4, 0.25)
                 .withFactor(unit5, unit2, 0.9)
+                .withFactor(unit1, unit4, 0.9)
                 .build();
 
     }
 
     @Test
     void testGetFactors() {
-        List<ConversionFactor> resultList = sourceToTest.getFactors(UnitType.Metric);
-        assertEquals(3, resultList.size(), "three factors should be returned");
+        List<ConversionFactor> resultList = sourceToTest.getFactors(1L);
+        assertEquals(2, resultList.size(), "two factors should be returned");
         assertTrue(resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)
-                .sum() == 1.65, () -> "Sum should be 1.65");
+                .sum() == 1.4, () -> "Sum should be 1.4");
 
-        resultList = sourceToTest.getFactors(UnitType.Imperial);
-        assertEquals(3, resultList.size(), "three factors should be returned");
+        resultList = sourceToTest.getFactors(4L);
+        assertEquals(2, resultList.size(), "two factors should be returned");
         double sum = resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)
                 .sum();
-        assertEquals(7.11D, ConversionTestTools.roundToHundredths(sum), () -> "Sum should be 7.11");
+        assertEquals(5.11D, ConversionTestTools.roundToHundredths(sum), () -> "Sum should be 5.11");
     }
 
     @Test

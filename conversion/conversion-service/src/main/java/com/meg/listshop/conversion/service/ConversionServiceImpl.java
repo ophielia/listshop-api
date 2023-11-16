@@ -17,7 +17,7 @@ import java.util.List;
 public class ConversionServiceImpl implements ConversionService {
     private static final Logger LOG = LoggerFactory.getLogger(ConversionServiceImpl.class);
 
-    HashMap<HandlerChainKey, HandlerChain> chainMap;
+    HashMap<HandlerChainKey, HandlerChain> chainMap = new HashMap<>();
     private final List<ConversionHandler> handlerList;
 
     public ConversionServiceImpl(List<ConversionHandler> handlerList) {
@@ -46,10 +46,6 @@ public class ConversionServiceImpl implements ConversionService {
         ConversionSpec source = ConversionSpec.fromExactUnit(amount.getUnit());
         ConversionSpec target = ConversionSpec.fromContextAndSource(context, amount.getUnit());
 
-        if (checkTargetEqualsSource(source, target)) {
-            LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
-            return amount;
-        }
 
         // find or create handler chain for source / target
         HandlerChain chain = getOrCreateChain(source, target);
@@ -93,7 +89,7 @@ public class ConversionServiceImpl implements ConversionService {
         List<ConversionHandler> handlers = assembleHandlerList(sourceSpec, targetSpec, new ArrayList<>(), 0);
 
         // convert list into handler chain
-        if (handlers.isEmpty()) {
+        if (handlers == null || handlers.isEmpty()) {
             String message = String.format("No handler chain can be assembled for source: %s target: %s", sourceSpec, targetSpec);
             throw new ConversionPathException(message);
         } else if (handlers.size() == 1) {
