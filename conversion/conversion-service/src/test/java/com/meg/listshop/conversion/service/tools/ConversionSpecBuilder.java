@@ -1,6 +1,6 @@
 package com.meg.listshop.conversion.service.tools;
 
-import com.meg.listshop.conversion.data.entity.Unit;
+import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.service.ConversionSpec;
@@ -9,7 +9,7 @@ public class ConversionSpecBuilder {
 
     Long unitId;
     UnitType unitType;
-    Unit buildingUnit = new Unit();
+    UnitEntity buildingUnit = new UnitEntity();
 
     public ConversionSpecBuilder() {
     }

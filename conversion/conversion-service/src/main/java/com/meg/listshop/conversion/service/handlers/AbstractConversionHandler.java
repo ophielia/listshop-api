@@ -1,23 +1,25 @@
 package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
-import com.meg.listshop.conversion.data.entity.Unit;
+import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.data.repository.ConversionFactorSource;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public abstract class AbstractConversionHandler implements ConversionHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractConversionHandler.class);
 
-
-    private ConversionSpec source;
-    private ConversionSpec target;
-    private ConversionFactorSource conversionSource;
+    private final ConversionSpec source;
+    private final ConversionSpec target;
+    private final ConversionFactorSource conversionSource;
 
     public AbstractConversionHandler(ConversionSpec source, ConversionSpec target, ConversionFactorSource conversionSource) {
         this.source = source;
@@ -36,6 +38,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
     public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException {
         if (doesntRequireConversion(toConvert, targetSpec)) {
+            LOG.debug("No conversion required for spec: [{}], amount [{}].", targetSpec, toConvert);
             return toConvert;
         }
 
@@ -43,6 +46,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         if (targetSpec.getUnitId() != null && toConvert.getUnit() != null && toConvert.getUnit().getId() != null) {
             ConversionFactor exact = conversionSource.getFactor(toConvert.getUnit().getId(), targetSpec.getUnitId());
             if (exact != null) {
+                LOG.trace("...exact match found for unitId: [{}], found [{}].", targetSpec.getUnitId(), exact.getToUnit().getId());
                 factors.add(exact);
             }
         }
@@ -52,13 +56,14 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
         if (factors.isEmpty()) {
             String message = String.format("No factors found in handler %s.", this.getClass().getName());
+            LOG.warn(message);
             throw new ConversionFactorException(message);
         }
 
         ConversionFactor factor = findBestFactor(factors);
 
         double newQuantity = toConvert.getQuantity() * factor.getFactor();
-        Unit newUnit = factor.getToUnit();
+        UnitEntity newUnit = factor.getToUnit();
 
         return new SimpleAmount(newQuantity, newUnit, toConvert);
     }

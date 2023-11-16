@@ -1,7 +1,7 @@
 package com.meg.listshop.conversion.data.repository;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
-import com.meg.listshop.conversion.data.entity.Unit;
+import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.service.tools.ConversionFactorSourceBuilder;
 import com.meg.listshop.conversion.tools.ConversionTestTools;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,15 +18,15 @@ public class ConversionFactorSourceTest {
     @BeforeEach
     void setUp() {
         // load imperial unit, weight, id 1
-        Unit unit1 = ConversionTestTools.makeMetricUnit(1L, false);
+        UnitEntity unit1 = ConversionTestTools.makeMetricUnit(1L, false);
         // load metric unit, weight, id 2
-        Unit unit2 = ConversionTestTools.makeImperialUnit(2L, false);
+        UnitEntity unit2 = ConversionTestTools.makeImperialUnit(2L, false);
         // load metric unit, weight, id 3
-        Unit unit3 = ConversionTestTools.makeMetricUnit(3L, false);
+        UnitEntity unit3 = ConversionTestTools.makeMetricUnit(3L, false);
         // load imperial unit, volume, id 3
-        Unit unit4 = ConversionTestTools.makeImperialUnit(4L, true);
+        UnitEntity unit4 = ConversionTestTools.makeImperialUnit(4L, true);
         // load metric unit, volume, id 5
-        Unit unit5 = ConversionTestTools.makeMetricUnit(5L, true);
+        UnitEntity unit5 = ConversionTestTools.makeMetricUnit(5L, true);
 
         // create factor source
         this.sourceToTest = new ConversionFactorSourceBuilder()

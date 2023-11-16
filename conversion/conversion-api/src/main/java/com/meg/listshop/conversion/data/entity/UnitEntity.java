@@ -2,7 +2,7 @@ package com.meg.listshop.conversion.data.entity;
 
 import com.meg.listshop.conversion.data.pojo.UnitType;
 
-public class Unit {
+public class UnitEntity {
 
     private Long id;
 

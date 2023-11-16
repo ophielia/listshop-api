@@ -1,6 +1,6 @@
 package com.meg.listshop.conversion.service.handlers;
 
-import com.meg.listshop.conversion.data.entity.Unit;
+import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitType;
@@ -66,7 +66,7 @@ public class ConversionHandlerTest {
 
     @Test
     void testConvert() throws ConversionFactorException {
-        Unit startUnit = ConversionTestTools.makeMetricUnit(null, UnitFlavor.Weight);
+        UnitEntity startUnit = ConversionTestTools.makeMetricUnit(null, UnitFlavor.Weight);
         startUnit.setId(6L);
         ConvertibleAmount startAmount = new SimpleAmount(1D, startUnit);
         ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.Imperial).withFlavor(UnitFlavor.Weight).build();

@@ -1,12 +1,12 @@
 package com.meg.listshop.conversion.tools;
 
-import com.meg.listshop.conversion.data.entity.Unit;
+import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 
 public class ConversionTestTools {
-    public static Unit makeImperialUnit(Long id, boolean isVolume) {
-        Unit unit = new Unit();
+    public static UnitEntity makeImperialUnit(Long id, boolean isVolume) {
+        UnitEntity unit = new UnitEntity();
         unit.setType(UnitType.Imperial);
         unit.setId(id);
         if (isVolume) {
@@ -17,8 +17,8 @@ public class ConversionTestTools {
         return unit;
     }
 
-    public static Unit makeUnit(Long id, UnitType type, UnitFlavor... flavors) {
-        Unit unit = new Unit();
+    public static UnitEntity makeUnit(Long id, UnitType type, UnitFlavor... flavors) {
+        UnitEntity unit = new UnitEntity();
         unit.setType(type);
         unit.setId(id);
         for (UnitFlavor flavor : flavors) {
@@ -44,8 +44,8 @@ public class ConversionTestTools {
         return unit;
     }
 
-    public static Unit makeImperialUnit(Long id, UnitFlavor... flavors) {
-        Unit unit = new Unit();
+    public static UnitEntity makeImperialUnit(Long id, UnitFlavor... flavors) {
+        UnitEntity unit = new UnitEntity();
         unit.setType(UnitType.Imperial);
         unit.setId(id);
         for (UnitFlavor flavor : flavors) {
@@ -71,8 +71,8 @@ public class ConversionTestTools {
         return unit;
     }
 
-    public static Unit makeMetricUnit(Long id, UnitFlavor... flavors) {
-        Unit unit = new Unit();
+    public static UnitEntity makeMetricUnit(Long id, UnitFlavor... flavors) {
+        UnitEntity unit = new UnitEntity();
         unit.setType(UnitType.Metric);
         unit.setId(id);
         for (UnitFlavor flavor : flavors) {
@@ -98,8 +98,8 @@ public class ConversionTestTools {
         return unit;
     }
 
-    public static Unit makeMetricUnit(Long id, boolean isVolume) {
-        Unit unit = new Unit();
+    public static UnitEntity makeMetricUnit(Long id, boolean isVolume) {
+        UnitEntity unit = new UnitEntity();
         unit.setType(UnitType.Metric);
         unit.setId(id);
         if (isVolume) {

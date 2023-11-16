@@ -1,7 +1,7 @@
 package com.meg.listshop.conversion.service;
 
 
-import com.meg.listshop.conversion.data.entity.Unit;
+import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionContext;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
@@ -26,6 +26,7 @@ public class ConversionServiceImpl implements ConversionService {
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, UnitType domain) throws ConversionPathException, ConversionFactorException {
+        LOG.debug("Beginning convert for domain [{}], amount [{}]", domain, amount);
         ConversionSpec source = ConversionSpec.fromExactUnit(amount.getUnit());
         ConversionSpec target = ConversionSpec.convertedFromUnit(amount.getUnit());
 
@@ -43,6 +44,7 @@ public class ConversionServiceImpl implements ConversionService {
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
+        LOG.debug("Beginning convert for context [{}], amount [{}]", context, amount);
         ConversionSpec source = ConversionSpec.fromExactUnit(amount.getUnit());
         ConversionSpec target = ConversionSpec.fromContextAndSource(context, amount.getUnit());
 
@@ -56,7 +58,8 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     @Override
-    public ConvertibleAmount convert(ConvertibleAmount amount, Unit targetUnit) throws ConversionPathException, ConversionFactorException {
+    public ConvertibleAmount convert(ConvertibleAmount amount, UnitEntity targetUnit) throws ConversionPathException, ConversionFactorException {
+        LOG.debug("Beginning convert for unit [{}], amount [{}]", targetUnit, amount);
         ConversionSpec source = ConversionSpec.fromExactUnit(amount.getUnit());
         ConversionSpec target = ConversionSpec.fromExactUnit(targetUnit);
 
@@ -76,6 +79,7 @@ public class ConversionServiceImpl implements ConversionService {
         HandlerChainKey conversionKey = new HandlerChainKey(source, target);
 
         if (chainMap.containsKey(conversionKey)) {
+            LOG.trace("Found existing chain for key: [{}]", conversionKey);
             return chainMap.get(conversionKey);
         }
 
@@ -85,12 +89,14 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     private HandlerChain createConversionChain(ConversionSpec sourceSpec, ConversionSpec targetSpec) throws ConversionPathException {
+        LOG.trace("Creating chain for source: [{}], target [{}]", sourceSpec, targetSpec);
         // assemble handler chain list
         List<ConversionHandler> handlers = assembleHandlerList(sourceSpec, targetSpec, new ArrayList<>(), 0);
 
         // convert list into handler chain
         if (handlers == null || handlers.isEmpty()) {
             String message = String.format("No handler chain can be assembled for source: %s target: %s", sourceSpec, targetSpec);
+            LOG.warn(message);
             throw new ConversionPathException(message);
         } else if (handlers.size() == 1) {
             return new HandlerChain(handlers.get(0));

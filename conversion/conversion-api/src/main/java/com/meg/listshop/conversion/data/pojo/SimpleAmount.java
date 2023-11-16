@@ -1,6 +1,6 @@
 package com.meg.listshop.conversion.data.pojo;
 
-import com.meg.listshop.conversion.data.entity.Unit;
+import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 
 import java.util.Objects;
@@ -8,7 +8,7 @@ import java.util.Objects;
 public class SimpleAmount implements ConvertibleAmount {
 
     private double quantity;
-    private Unit unit;
+    private UnitEntity unit;
 
     private Long tagId = null;
 
@@ -17,7 +17,7 @@ public class SimpleAmount implements ConvertibleAmount {
     private String tagName;
 
 
-    public SimpleAmount(double quantity, Unit unit, Long tagId, Boolean isLiquid, String tagName) {
+    public SimpleAmount(double quantity, UnitEntity unit, Long tagId, Boolean isLiquid, String tagName) {
         this.quantity = quantity;
         this.unit = unit;
         this.tagId = tagId;
@@ -25,12 +25,12 @@ public class SimpleAmount implements ConvertibleAmount {
         this.tagName = tagName;
     }
 
-    public SimpleAmount(double quantity, Unit unit) {
+    public SimpleAmount(double quantity, UnitEntity unit) {
         this.quantity = quantity;
         this.unit = unit;
     }
 
-    public SimpleAmount(double newQuantity, Unit newUnit, ConvertibleAmount toConvert) {
+    public SimpleAmount(double newQuantity, UnitEntity newUnit, ConvertibleAmount toConvert) {
         this.quantity = newQuantity;
         this.unit = newUnit;
         this.tagId = toConvert.getTagId();
@@ -44,7 +44,7 @@ public class SimpleAmount implements ConvertibleAmount {
     }
 
     @Override
-    public Unit getUnit() {
+    public UnitEntity getUnit() {
         return unit;
     }
 

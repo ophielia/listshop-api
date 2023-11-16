@@ -1,6 +1,6 @@
 package com.meg.listshop.conversion.service;
 
-import com.meg.listshop.conversion.data.entity.Unit;
+import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionContext;
 import com.meg.listshop.conversion.data.pojo.ConversionContextType;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
@@ -24,7 +24,7 @@ public class ConversionSpec {
         this.flavors = flavors;
     }
 
-    public static ConversionSpec fromExactUnit(Unit unitSource) {
+    public static ConversionSpec fromExactUnit(UnitEntity unitSource) {
         return new ConversionSpec(unitSource.getId(), unitSource.getType(), flavorsForUnit(unitSource));
     }
 
@@ -38,15 +38,15 @@ public class ConversionSpec {
         return unitType;
     }
 
-    public static ConversionSpec convertedFromUnit(Unit unitSource) {
+    public static ConversionSpec convertedFromUnit(UnitEntity unitSource) {
         return new ConversionSpec(null, oppositeType(unitSource.getType()), flavorsForUnit(unitSource));
     }
 
-    public static ConversionSpec fromContextAndSource(ConversionContext context, Unit source) {
+    public static ConversionSpec fromContextAndSource(ConversionContext context, UnitEntity source) {
         return new ConversionSpec(null, context.getUnitType(), flavorsForContextAndSource(context, source));
     }
 
-    private static Set<UnitFlavor> flavorsForUnit(Unit unit) {
+    private static Set<UnitFlavor> flavorsForUnit(UnitEntity unit) {
         Set<UnitFlavor> flavors = new HashSet<>();
         if (unit.isVolume()) {
             flavors.add(UnitFlavor.Volume);
@@ -66,7 +66,7 @@ public class ConversionSpec {
         return flavors;
     }
 
-    private static Set<UnitFlavor> flavorsForContextAndSource(ConversionContext context, Unit source) {
+    private static Set<UnitFlavor> flavorsForContextAndSource(ConversionContext context, UnitEntity source) {
         ConversionContextType conversionContextType = context.getContextType();
         Set<UnitFlavor> flavors = new HashSet<>();
 
@@ -88,7 +88,7 @@ public class ConversionSpec {
         return flavors;
     }
 
-    public boolean matches(Unit unit) {
+    public boolean matches(UnitEntity unit) {
         ConversionSpec toCheck = ConversionSpec.fromExactUnit(unit);
         return this.equals(toCheck);
     }

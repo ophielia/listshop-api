@@ -3,9 +3,9 @@ package com.meg.listshop.conversion.data.entity;
 public class SimpleConversionFactor implements ConversionFactor {
     private Double factor;
 
-    private Unit toUnit;
+    private UnitEntity toUnit;
 
-    private Unit fromUnit;
+    private UnitEntity fromUnit;
 
     public static ConversionFactor reverseFactor(ConversionFactor factor) {
         SimpleConversionFactor reversed = new SimpleConversionFactor();
@@ -15,7 +15,7 @@ public class SimpleConversionFactor implements ConversionFactor {
         return reversed;
     }
 
-    public static ConversionFactor conversionFactor(Unit fromUnit, Unit toUnit, double factor) {
+    public static ConversionFactor conversionFactor(UnitEntity fromUnit, UnitEntity toUnit, double factor) {
         SimpleConversionFactor reversed = new SimpleConversionFactor();
         reversed.setFactor(factor);
         reversed.setToUnit(toUnit);
@@ -41,20 +41,20 @@ public class SimpleConversionFactor implements ConversionFactor {
     }
 
     @Override
-    public Unit getToUnit() {
+    public UnitEntity getToUnit() {
         return toUnit;
     }
 
-    public void setToUnit(Unit toUnit) {
+    public void setToUnit(UnitEntity toUnit) {
         this.toUnit = toUnit;
     }
 
     @Override
-    public Unit getFromUnit() {
+    public UnitEntity getFromUnit() {
         return fromUnit;
     }
 
-    public void setFromUnit(Unit fromUnit) {
+    public void setFromUnit(UnitEntity fromUnit) {
         this.fromUnit = fromUnit;
     }
 }

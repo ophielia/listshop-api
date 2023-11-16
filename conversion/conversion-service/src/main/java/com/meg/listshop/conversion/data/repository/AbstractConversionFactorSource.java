@@ -2,12 +2,15 @@ package com.meg.listshop.conversion.data.repository;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractConversionFactorSource implements ConversionFactorSource {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractConversionFactorSource.class);
     private List<ConversionFactor> factors;
 
     private boolean oneWay;
@@ -22,6 +25,7 @@ public abstract class AbstractConversionFactorSource implements ConversionFactor
 
     @Override
     public List<ConversionFactor> getFactors(Long unitId) {
+        LOG.trace("... getting factors for unitId: [{}], oneWay: [{}]", unitId, oneWay);
         List<ConversionFactor> results = new ArrayList<>();
         // go through factors
         for (ConversionFactor factor : factors) {

@@ -1,12 +1,12 @@
 package com.meg.listshop.conversion.service;
 
-import com.meg.listshop.conversion.data.entity.Unit;
+import com.meg.listshop.conversion.data.entity.UnitEntity;
 
 public interface ConvertibleAmount {
 
     double getQuantity();
 
-    Unit getUnit();
+    UnitEntity getUnit();
 
     Long getTagId();
 

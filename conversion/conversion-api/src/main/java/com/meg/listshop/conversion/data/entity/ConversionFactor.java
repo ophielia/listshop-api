@@ -1,9 +1,9 @@
 package com.meg.listshop.conversion.data.entity;
 
 public interface ConversionFactor {
-    Unit getFromUnit();
+    UnitEntity getFromUnit();
 
     Double getFactor();
 
-    Unit getToUnit();
+    UnitEntity getToUnit();
 }

@@ -1,6 +1,6 @@
 package com.meg.listshop.conversion.service;
 
-import com.meg.listshop.conversion.data.entity.Unit;
+import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
@@ -18,12 +18,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ConversionServiceTest {
 
-    Unit metricGrams;
-    Unit imperialOunces;
-    Unit imperialQuart;
-    Unit imperialCups;
-    Unit metricLiter;
-    Unit imperialMadeUpCloser;
+    UnitEntity metricGrams;
+    UnitEntity imperialOunces;
+    UnitEntity imperialQuart;
+    UnitEntity imperialCups;
+    UnitEntity metricLiter;
+    UnitEntity imperialMadeUpCloser;
 
     ConversionService service;
 
