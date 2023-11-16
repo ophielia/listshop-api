@@ -11,5 +11,9 @@ public class TestConversionFactorSource extends AbstractConversionFactorSource {
         super(factors);
     }
 
+    public TestConversionFactorSource(List<ConversionFactor> factors, boolean oneWay) {
+        super(factors, oneWay);
+    }
+
 
 }

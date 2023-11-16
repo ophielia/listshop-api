@@ -10,6 +10,7 @@ import com.meg.listshop.conversion.data.repository.TestConversionFactorSource;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.handlers.ConversionHandler;
 import com.meg.listshop.conversion.service.handlers.TestConversionHandler;
+import com.meg.listshop.conversion.service.handlers.TestOneWayHandler;
 import com.meg.listshop.conversion.tools.ConversionTestTools;
 
 import java.util.ArrayList;
@@ -22,12 +23,21 @@ public class ConversionHandlerBuilder {
     ConversionSpec fromSpec;
     ConversionSpec toSpec;
 
+    boolean oneWay;
+
     public ConversionHandlerBuilder() {
     }
 
     public ConversionHandler build() {
-        ConversionFactorSource source = new TestConversionFactorSource(factorList);
-        return new TestConversionHandler(fromSpec, toSpec, source);
+
+        if (oneWay) {
+            ConversionFactorSource source = new TestConversionFactorSource(factorList, true);
+            return new TestOneWayHandler(fromSpec, toSpec, source);
+        } else {
+            ConversionFactorSource source = new TestConversionFactorSource(factorList);
+            return new TestConversionHandler(fromSpec, toSpec, source);
+        }
+
     }
 
     public ConversionHandlerBuilder withFactor(Unit fromUnit, Unit toUnit, double factor) {
@@ -45,6 +55,11 @@ public class ConversionHandlerBuilder {
     public ConversionHandlerBuilder withToSpec(UnitType unitType, UnitFlavor... unitFlavors) {
         Unit unit = ConversionTestTools.makeUnit(null, unitType, unitFlavors);
         this.toSpec = ConversionSpec.fromExactUnit(unit);
+        return this;
+    }
+
+    public ConversionHandlerBuilder withOneWay() {
+        this.oneWay = true;
         return this;
     }
 }

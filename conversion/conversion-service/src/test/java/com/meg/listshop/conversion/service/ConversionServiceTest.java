@@ -53,6 +53,7 @@ public class ConversionServiceTest {
                 .withFactor(imperialCups, imperialQuart, 4)
                 .withFromSpec(UnitType.Imperial, UnitFlavor.Volume)
                 .withToSpec(UnitType.Imperial, UnitFlavor.Volume, UnitFlavor.ListUnit)
+                .withOneWay()
                 .build();
         List<ConversionHandler> handlers = Arrays.asList(metricToMetricVolume, metricToMetricWeight, imperialListDestination);
         service = new ConversionServiceImpl(handlers);
@@ -109,18 +110,5 @@ public class ConversionServiceTest {
         assertNotNull(converted);
         assertEquals(4, ConversionTestTools.roundToHundredths(converted.getQuantity()));
 
-        /*
-        ConvertibleAmount backwardsAmount = new SimpleAmount(1, metricLiter);
-        ConvertibleAmount backwardsConverted = service.convert(backwardsAmount, UnitType.Imperial);
-        assertNotNull(backwardsConverted);
-        assertEquals(0.60, ConversionTestTools.roundToHundredths(backwardsConverted.getQuantity()));
-
-        // test looking for closest element
-        ConvertibleAmount closerAmount = new SimpleAmount(1, metricGrams);
-        ConvertibleAmount closerConverted = service.convert(closerAmount, UnitType.Imperial);
-        assertNotNull(closerConverted);
-        assertEquals(0.9, ConversionTestTools.roundToHundredths(closerConverted.getQuantity()));
-        assertEquals(5L, closerConverted.getUnit().getId());
-         */
     }
 }

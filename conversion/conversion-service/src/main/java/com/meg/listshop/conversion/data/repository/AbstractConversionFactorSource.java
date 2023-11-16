@@ -10,8 +10,14 @@ public abstract class AbstractConversionFactorSource implements ConversionFactor
 
     private List<ConversionFactor> factors;
 
+    private boolean oneWay;
     public AbstractConversionFactorSource(List<ConversionFactor> factors) {
         this.factors = factors;
+    }
+
+    public AbstractConversionFactorSource(List<ConversionFactor> factors, boolean oneWay) {
+        this.factors = factors;
+        this.oneWay = oneWay;
     }
 
     @Override
@@ -21,7 +27,7 @@ public abstract class AbstractConversionFactorSource implements ConversionFactor
         for (ConversionFactor factor : factors) {
             if (factor.getFromUnit().getId().equals(unitId)) {
                 results.add(factor);
-            } else if (factor.getToUnit().getId().equals(unitId)) {
+            } else if (!oneWay && factor.getToUnit().getId().equals(unitId)) {
                 results.add(SimpleConversionFactor.reverseFactor(factor));
             }
         }
