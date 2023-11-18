@@ -15,7 +15,7 @@ VALUES (99999, 'email@email.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mz
 --dish
 INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status)
 VALUES (99999, NULL, 'Test Dish with tag for delete', 99999, NULL, 105);
-INSERT INTO dish_tags (dish_id, tag_id)
+insert into dish_items (dish_item_id, dish_id, tag_id)
 VALUES (99999, 999);
 --list
 insert into list (created_on, list_layout_id, list_types, user_id, list_id)
@@ -32,7 +32,7 @@ VALUES (88888, 'email2@email.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08m
         'email2@email.com');
 INSERT INTO dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status)
 VALUES (88888, NULL, 'Test Dish with tag for delete', 88888, NULL, 105);
-INSERT INTO dish_tags (dish_id, tag_id)
+insert into dish_items (dish_item_id, dish_id, tag_id)
 VALUES (88888, 999);
 --list
 insert into list (created_on, list_layout_id, list_types, user_id, list_id)

@@ -27,12 +27,12 @@ public class DishItemEntity {
     @Column(name = "dish_item_id")
     private Long dishItemId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "tag_id")
     private TagEntity tag;
 
-    @OneToOne
-    @JoinColumn(name = "dish_id")
+    @ManyToOne
+    @JoinColumn(name = "dish_id", nullable = false)
     private DishEntity dish;
 
     public DishItemEntity(Long id) {

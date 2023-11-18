@@ -6,6 +6,7 @@ import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.controller.DishRestControllerApi;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
@@ -160,11 +162,15 @@ public class DishRestController implements DishRestControllerApi {
         logger.info(message);
         DishEntity dish = this.dishService
                 .getDishForUserById(userDetails.getId(), dishId);
-        // MM will use items
-        List<TagEntity> sortedDishTags = dish.getTags();
-        sortedDishTags.sort(Comparator.comparing(TagEntity::getTagType)
-                .thenComparing(TagEntity::getName));
-        dish.setTags(sortedDishTags);
+
+        List<DishItemEntity> sortedDishItems = dish.getItems();
+        Function<DishItemEntity, TagEntity> getTag = DishItemEntity::getTag;
+        Function<DishItemEntity, TagType> tagType = getTag.andThen(TagEntity::getTagType);
+        Function<DishItemEntity, String> tagName = getTag.andThen(TagEntity::getName);
+
+        sortedDishItems.sort(Comparator.comparing(tagType).thenComparing(tagName));
+        dish.setItems(sortedDishItems);
+
         DishResource resource = new DishResource(ModelMapper.toModel(dish, true));
 
         return new ResponseEntity(resource, HttpStatus.OK);

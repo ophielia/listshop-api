@@ -12,3 +12,4 @@ CREATE SEQUENCE public.dish_item_sequence
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE CACHE 1;
+

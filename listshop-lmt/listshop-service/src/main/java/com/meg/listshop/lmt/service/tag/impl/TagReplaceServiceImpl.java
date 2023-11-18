@@ -207,13 +207,13 @@ public class TagReplaceServiceImpl implements TagReplaceService {
         StringBuilder baseSql = new StringBuilder();
         StringBuilder withSql = new StringBuilder("with tag_replace as " +
                 "(select dt.dish_id , count(distinct dt.tag_id) as tag_count " +
-                "from dish_tags dt  " +
+                "from dish_items dt  " +
                 "where dt.tag_id in (");
         withSql.append(toReplaceId).append(",").append(replaceWithId).append(") ");
         withSql.append("group by dt.dish_id) ");
         baseSql.append(withSql);
         baseSql.append("delete  " +
-                "from dish_tags dt " +
+                "from dish_items dt " +
                 "using tag_replace tr  " +
                 "where tr.dish_id = dt.dish_id " +
                 "and dt.tag_id = ");
@@ -227,7 +227,7 @@ public class TagReplaceServiceImpl implements TagReplaceService {
         // write sql for replace
         baseSql = new StringBuilder();
         baseSql.append(withSql);
-        baseSql.append("update dish_tags dt " +
+        baseSql.append("update dish_items dt " +
                 "set tag_id = ");
         baseSql.append(replaceWithId).append(" ");
         baseSql.append("from tag_replace tr " +

@@ -52,7 +52,7 @@ public class DishSearchServiceImpl implements DishSearchService {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", criteria.getUserId())
         ;
-        String sqlBase = "select distinct d.user_id, lower(d.dish_name), d.description, d.dish_id, d.last_added  from dish d join dish_tags dt using (dish_id) ";
+        String sqlBase = "select distinct d.user_id, lower(d.dish_name), d.description, d.dish_id, d.last_added  from dish d join dish_items dt using (dish_id) ";
         String whereClause = "where d.user_id = :userId ";
         StringBuilder groupByFilter = new StringBuilder("");
         StringBuilder nameWhereClause = new StringBuilder("");
@@ -170,7 +170,7 @@ public class DishSearchServiceImpl implements DishSearchService {
         StringBuilder outerJoins = new StringBuilder();
         StringBuilder orderByClause = new StringBuilder(" order by d.last_added NULLS FIRST ");
         // construct basic joins and from clause
-        String fromClause = " from dish_tags dt join dish d on d.dish_id = dt.dish_id and d.user_id = :userId and dt.tag_id = :slotTagId";
+        String fromClause = " from dish_items dt join dish d on d.dish_id = dt.dish_id and d.user_id = :userId and dt.tag_id = :slotTagId";
         String groupByClause = " group by dt.dish_id, d.last_added ";
         // construct outerJoins and add to selectClause
         int i = 0;
@@ -179,7 +179,7 @@ public class DishSearchServiceImpl implements DishSearchService {
                     .append(i)
                     .append(".tag_id )");
 
-            outerJoins.append(" left outer join dish_tags iT")
+            outerJoins.append(" left outer join dish_items iT")
                     .append(i)
                     .append(" on d.dish_id = iT")
                     .append(i)

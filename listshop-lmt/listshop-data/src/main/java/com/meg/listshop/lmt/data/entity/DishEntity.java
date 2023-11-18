@@ -28,6 +28,23 @@ import java.util.List;
                 @NamedAttributeNode("tags")
         }
 )
+
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "filledDish",
+                attributeNodes = {
+                        @NamedAttributeNode(value = "items", subgraph = "itemWithTags")
+                },
+                subgraphs = {
+                        @NamedSubgraph(
+                                name = "itemWithTags",
+                                attributeNodes = {
+                                        @NamedAttributeNode("tag")
+                                }
+                        )
+                }
+        )
+})
 public class DishEntity {
 
     @Column(name = "USER_ID")
@@ -50,6 +67,8 @@ public class DishEntity {
             inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
     private List<TagEntity> tags = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "dish")
+    private List<DishItemEntity> items = new ArrayList<>();
     private Date lastAdded;
 
     private Long autoTagStatus;
@@ -95,6 +114,14 @@ public class DishEntity {
 
     public void setTags(List<TagEntity> tags) {
         this.tags = tags;
+    }
+
+    public List<DishItemEntity> getItems() {
+        return items;
+    }
+
+    public void setItems(List<DishItemEntity> items) {
+        this.items = items;
     }
 
     public String getDescription() {

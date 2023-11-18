@@ -792,7 +792,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public void removeDishFromList(Long userId, Long listId, Long dishId) {
         // get list
         //MM make method which will fetch with items
-        // MM tag work
         ShoppingListEntity shoppingList = getListForUserById(userId, listId);
 
         // make collector

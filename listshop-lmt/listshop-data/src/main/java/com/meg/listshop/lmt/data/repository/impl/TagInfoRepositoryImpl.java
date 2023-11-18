@@ -46,7 +46,7 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
             "       t.user_id " +
             "from tag t " +
             "join tag_relation tr on tr.child_tag_id = t.tag_id " +
-            "join dish_tags d on d.tag_id = t.tag_id " +
+            "join dish_items d on d.tag_id = t.tag_id " +
             "where d.dish_id = :dishId" +
             " and t.tag_type = 'Rating'";
 

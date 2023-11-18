@@ -18,7 +18,7 @@ public interface DishRepository extends JpaRepository<DishEntity, Long> {
     @Query("select d FROM DishEntity d where d.userId = ?1 and d.dish_id in (?2)")
     List<DishEntity> findByDishIdsForUser(Long userId, List<Long> dishIds);
 
-    @EntityGraph("dish-entity-graph")
+    @EntityGraph("filledDish")
     @Query("select d FROM DishEntity d where d.dish_id = ?2 and d.userId = ?1")
     Optional<DishEntity> findByDishIdForUser(Long userId, Long dishId);
 

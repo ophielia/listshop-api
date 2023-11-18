@@ -30,14 +30,14 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
     List<TagEntity> findTagsToBeReplaced(@Param("tagIds") Set<Long> tagIds);
 
 
-    @Query(value = "select t.* from dish_tags dt, " +
+    @Query(value = "select t.* from dish_items dt, " +
             "tag t where t.tag_id = dt.tag_id and  t.tag_type = 'Ingredient' and dt.dish_id in (:dishIdList) ", nativeQuery = true)
     List<TagEntity> getIngredientTagsForDishes(@Param("dishIdList") List<Long> dishIdList);
 
     @Query(value = "select t.*  from tag t join category_tags ct on ct.tag_id = t.tag_id and ct.category_id = :layoutCategoryId order by t.name ", nativeQuery = true)
     List<TagEntity> getTagsForLayoutCategory(@Param("layoutCategoryId") Long layoutCategoryId);
 
-    @Query(value = "select distinct tag_id from dish_tags where dish_id = ?1", nativeQuery = true)
+    @Query(value = "select distinct tag_id from dish_items where dish_id = ?1", nativeQuery = true)
     Set<Long> getTagIdsForDish(Long dishId);
 
     @Query("select distinct t FROM TagEntity t , DishEntity d " +
@@ -49,7 +49,7 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
     @Query(value = "    select t.* " +
             "    from tag t " +
             "    join tag_relation tr on tr.child_tag_id = t.tag_id " +
-            "    join dish_tags dt on dt.tag_id = t.tag_id " +
+            "    join dish_items dt on dt.tag_id = t.tag_id " +
             "    where tr.parent_tag_id = ?2 " +
             "    and dish_id = ?1", nativeQuery = true)
     TagEntity getAssignedTagForRating(Long dishId, Long ratingId);
@@ -111,7 +111,7 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
                                          @Param("userId") Long userId);
 
     @Query(value = "select count(*) as countResult  " +
-            "from dish_tags dt  " +
+            "from dish_items dt  " +
             "         join dish d on d.dish_id = dt.dish_id  " +
             "         join tag t on t.tag_id = dt.tag_id  " +
             "where tag_type = 'DishType'  " +

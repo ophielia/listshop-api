@@ -16,7 +16,7 @@ CREATE FUNCTION copy_dishes(integer, integer) RETURNS integer
 				from dish where user_id = pOrigUser and dish_id = pDish.dish_id 
          returning dish_id into nDish;
          RAISE NOTICE 'dish created(new:%, old:%)',nDish,pDish.dish_id;
-         insert into dish_tags (dish_id, tag_id)
+insert into dish_items (dish_item_id, dish_id, tag_id)
 			select nDish, tag_id from dish_tags where dish_id = pDish.dish_id;
       END LOOP;
       return 1;

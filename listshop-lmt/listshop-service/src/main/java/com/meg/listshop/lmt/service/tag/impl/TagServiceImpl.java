@@ -11,6 +11,7 @@ import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.ICountResult;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
@@ -446,40 +447,39 @@ public class TagServiceImpl implements TagService {
             return;
         }
 
-        // MM will use items - but can be without entity graph, since we're just accessing ids
-        List<TagEntity> dishTags = dish.getTags();
-        Set<Long> existingTagIds = dishTags.stream()
+        List<DishItemEntity> dishItems = dish.getItems();
+        Set<Long> existingTagIds = dishItems.stream()
+                .map(DishItemEntity::getTag)
                 .map(TagEntity::getId)
                 .collect(Collectors.toSet());
 
-        Set<Long> filteredTagIds = tagIds.stream()
+        Set<Long> tagIdsToAddFiltered = tagIds.stream()
                 .filter(t -> !existingTagIds.contains(t))
                 .collect(Collectors.toSet());
 
-        List<TagEntity> tagList = tagRepository.getTagsForIdList(filteredTagIds);
+        List<TagEntity> tagList = tagRepository.getTagsForIdList(tagIdsToAddFiltered);
         List<TagEntity> ratingChecks = new ArrayList<>();
 
         for (TagEntity addTag : tagList) {
-            // tag exists?
-            if (dishTags.contains(addTag)) {
-                continue;
-            }
             // need to clean up ratings afterwards?
             if (addTag.getTagType() == TagType.Rating) {
                 ratingChecks.add(addTag);
             }
-            dishTags.add(addTag);
+            DishItemEntity item = new DishItemEntity();
+            item.setDish(dish);
+            item.setTag(addTag);
+            dishItems.add(item);
         }
 
         // if rating tags exist, remove related tags
         if (!ratingChecks.isEmpty() && checkRatingSiblings) {
             for (TagEntity ratingTag : ratingChecks) {
-                dishTags = removeRelatedTags(dishTags, ratingTag);
+                dishItems = removeRelatedItems(dishItems, ratingTag);
             }
         }
 
         // add tags to dish
-        dish.setTags(dishTags);
+        dish.setItems(dishItems);
         dishService.save(dish, false);
     }
 
@@ -498,21 +498,20 @@ public class TagServiceImpl implements TagService {
         }
 
         // filter tag to be deleted from dish
-        // MM will use items - but can be without full entity graph, since we're just using ids
-        List<TagEntity> dishTags = dish.getTags();
-        List<TagEntity> dishTagsDeletedTag = dishTags.stream()
-                .filter(t -> !(validatedRemovals.contains(t.getId())))
+        List<DishItemEntity> dishItems = dish.getItems();
+        List<DishItemEntity> dishItemsCulled = dishItems.stream()
+                .filter(t -> !(validatedRemovals.contains(t.getTag().getId())))
                 .collect(Collectors.toList());
 
         // if nothing is validated - we return
-        if (dishTagsDeletedTag.isEmpty()) {
+        if (dishItemsCulled.isEmpty()) {
             return 0;
         }
 
         // add tags to dish
-        dish.setTags(dishTagsDeletedTag);
+        dish.setItems(dishItemsCulled);
         dishService.save(dish, false);
-        return dishTagsDeletedTag.size();
+        return dishItemsCulled.size();
     }
 
     public void assignDefaultRatingsToDish(Long userId, Long dishId) {
@@ -565,16 +564,21 @@ public class TagServiceImpl implements TagService {
 
         // for each dish
         for (DishEntity dish : dishes) {
-            List<TagEntity> dishTags = tagRepository.findTagsByDishes(dish);
-            dishTags.add(toTag);
-            // if rating tag, remove related tags
+
+
+            // new item
+            DishItemEntity newItem = new DishItemEntity();
+            newItem.setTag(toTag);
+            newItem.setDish(dish);
+
+            List<DishItemEntity> items = dish.getItems();
+            items.add(newItem);
             if (!fromTagId.equals(0L)) {
-                dishTags = dishTags.stream()
-                        .filter(t -> !t.getId().equals(fromTagId))
+                items = items.stream()
+                        .filter(t -> !t.getTag().getId().equals(fromTagId))
                         .collect(Collectors.toList());
             }
-            // add tags to dish
-            dish.setTags(dishTags);
+            dish.setItems(items);
             dishService.save(dish, false);
         }
     }
@@ -718,25 +722,44 @@ public class TagServiceImpl implements TagService {
                 .collect(Collectors.toList());
     }
 
+    private List<DishItemEntity> removeRelatedItems(List<DishItemEntity> dishItems, TagEntity tag) {
+        // get sibling tags for dish
+        List<TagEntity> siblings = tagStructureService.getSiblingTags(tag);
+        return dishItems.stream()
+                .filter(t -> !siblings.contains(t.getTag().getId()))
+                .collect(Collectors.toList());
+    }
+
 
     private void addTagToDish(DishEntity dish, TagEntity tag) {
         if (dish == null || tag == null) {
             return;
         }
-        List<TagEntity> dishTags = dish.getTags();
+
+        List<DishItemEntity> dishItems = dish.getItems();
 
         // check if tag exists already
-        // MM will use items - use items - or tags
-        if (dishTags.contains(tag)) {
+        TagEntity existingTag = dishItems.stream()
+                .map(DishItemEntity::getTag)
+                .filter(t -> t.getId().equals(tag.getId()))
+                .findFirst()
+                .orElse(null);
+
+        if (existingTag != null) {
             return;
         }
-        dishTags.add(tag);
+
+        DishItemEntity newItem = new DishItemEntity();
+        newItem.setDish(dish);
+        newItem.setTag(tag);
+        dishItems.add(newItem);
+
         // if rating tag, remove related tags
         if (tag.getTagType().equals(TagType.Rating)) {
-            dishTags = removeRelatedTags(dishTags, tag);
+            dishItems = removeRelatedItems(dishItems, tag);
         }
         // add tags to dish
-        dish.setTags(dishTags);
+        dish.setItems(dishItems);
         dishService.save(dish, false);
         // update statistic
         tagStatisticService.countTagAddedToDish(dish.getUserId(), tag.getId());
@@ -744,14 +767,15 @@ public class TagServiceImpl implements TagService {
 
 
     private List<TagEntity> getTagsForDish(DishEntity dish, List<TagType> tagtypes) {
-        List<TagEntity> results = tagRepository.findTagsByDishes(dish);
-
-        return filterTagsByTagType(results, tagtypes);
+        return filterTagsByTagType(dish.getTags(), tagtypes);
     }
 
     private List<TagEntity> filterTagsByTagType(List<TagEntity> tagList, List<TagType> tagtypes) {
         if (tagtypes == null) {
             return tagList;
+        }
+        if (tagList == null) {
+            return new ArrayList<>();
         }
         return tagList.stream()
                 .filter(t -> tagtypes.contains(t.getTagType()))

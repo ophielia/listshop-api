@@ -110,14 +110,15 @@ public class DishRestControllerTest {
     @WithMockUser
     public void readSingleDish() throws Exception {
         Long testId = TestConstants.DISH_1_ID;
-        mockMvc.perform(get("/dish/"
+        MvcResult result = mockMvc.perform(get("/dish/"
                         + testId)
                         .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.dish.dish_id", isA(Number.class)))
-                .andExpect(jsonPath("$.dish.dish_id").value(testId));
-
+                .andExpect(jsonPath("$.dish.dish_id").value(testId))
+                .andReturn();
+        Assert.assertNotNull(result);
     }
 
     @Test

@@ -39,16 +39,15 @@ public class ModelMapper {
 
     public static Dish toModel(DishEntity dishEntity, boolean includeTags) {
         if (dishEntity != null) {
-            List<Tag> tags = new ArrayList<>();
+            List<Tag> dishTags = new ArrayList<>();
             if (includeTags) {
-                // MM will use items
-                tags = toModel(dishEntity.getTags());
+                dishTags = toModelItemsAsTags(dishEntity.getItems());
             }
             return new Dish(dishEntity.getId())
                     .description(dishEntity.getDescription())
                     .dishName(dishEntity.getDishName())
                     .reference(dishEntity.getReference())
-                    .tags(tags)
+                    .tags(dishTags)
                     .lastAdded(dishEntity.getLastAdded())
                     .userId(dishEntity.getUserId());
         }
@@ -367,6 +366,14 @@ public class ModelMapper {
             tags.add(toModel(entity));
         }
         return tags;
+    }
+
+    private static List<Tag> toModelItemsAsTags(List<DishItemEntity> itemEntities) {
+        List<DishItemEntity> items = new ArrayList<>();
+        if (itemEntities == null) {
+            return new ArrayList<Tag>();
+        }
+        return toModel(itemEntities.stream().map(DishItemEntity::getTag).collect(Collectors.toList()));
     }
 
     private static List<Tag> toModel(Set<TagEntity> tagEntities) {
