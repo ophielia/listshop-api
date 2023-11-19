@@ -37,9 +37,9 @@ public interface TagService {
 
     void assignChildrenToParent(Long parentId, List<Long> childrenIds);
 
-    List<DishItemEntity> getItemsForDish(String username, Long dishId, List<TagType> tagtypes);
-
     List<TagEntity> getTagsForDish(Long userId, Long dishId, List<TagType> tagtypes);
+
+    List<DishItemEntity> getItemsForDish(Long userId, Long dishId, List<TagType> tagtypes);
 
     void addTagToDish(Long userId, Long dishId, Long tagId);
 

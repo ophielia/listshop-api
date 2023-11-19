@@ -57,7 +57,13 @@ public class DishTestBuilder {
     }
 
     public DishEntity build() {
-        dish.setTags(tags);
+        dish.setItems(tags.stream()
+                .map(t -> {
+                    DishItemEntity item = new DishItemEntity();
+                    item.setTag(t);
+                    return item;
+                })
+                .collect(Collectors.toList()));
         return dish;
     }
 

@@ -5,6 +5,7 @@ import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.ICountResult;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -245,17 +246,14 @@ class TagServiceImplMockTest {
         TagInfoDTO rating3 = buildTagInfoDTO(12L, "Taste 3", 3.0, 100L);
         List<TagInfoDTO> ratingTagList = Arrays.asList(parentRating, rating1, rating2, rating3);
 
-        DishEntity dish1 = ServiceTestUtils.buildDish(300L, "great dish", Collections.singletonList(ServiceTestUtils.buildTagEntity(12L, "Taste 3", TagType.Rating, 3.0)));
-        DishEntity dish2 = ServiceTestUtils.buildDish(300L, "great dish2", Collections.singletonList(ServiceTestUtils.buildTagEntity(12L, "Taste 3", TagType.Rating, 3.0)));
-        DishEntity dish3 = ServiceTestUtils.buildDish(300L, "great dish3", Collections.singletonList(ServiceTestUtils.buildTagEntity(10000L, "Taste 1", TagType.Ingredient, 1.0)));
+        DishEntity dish1 = ServiceTestUtils.buildDish(300L, "great dish", Collections.singletonList(ServiceTestUtils.buildDishItemFromTag(112L, 12L, "Taste 3", TagType.Rating, 3.0)));
+        DishEntity dish2 = ServiceTestUtils.buildDish(300L, "great dish2", Collections.singletonList(ServiceTestUtils.buildDishItemFromTag(113L, 12L, "Taste 3", TagType.Rating, 3.0)));
+        DishEntity dish3 = ServiceTestUtils.buildDish(300L, "great dish3", Collections.singletonList(ServiceTestUtils.buildDishItemFromTag(114L, 10000L, "Taste 1", TagType.Ingredient, 1.0)));
         List<DishEntity> testDishes = Arrays.asList(dish1, dish2, dish3);
 
 
         Mockito.when(dishService.getDishes(userName, Arrays.asList(1L, 2L, 3L)))
                 .thenReturn(testDishes);
-        Mockito.when(tagRepository.findTagsByDishes(dish1)).thenReturn(dish1.getTags());
-        Mockito.when(tagRepository.findTagsByDishes(dish2)).thenReturn(dish2.getTags());
-        Mockito.when(tagRepository.findTagsByDishes(dish3)).thenReturn(dish3.getTags());
         Mockito.when(tagInfoCustomRepository.retrieveTagInfoByUser(null, Collections.singletonList(TagType.Rating))).thenReturn(ratingTagList);
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(userEntity);
 
@@ -370,7 +368,7 @@ class TagServiceImplMockTest {
 
         DishEntity resultDish = argumentCaptor.getValue();
         Assertions.assertNotNull(resultDish);
-        List<TagEntity> resultTags = resultDish.getTags();
+        List<TagEntity> resultTags = resultDish.getItems().stream().map(DishItemEntity::getTag).collect(Collectors.toList());
         Assertions.assertNotNull(resultTags);
         Assertions.assertEquals(4, resultTags.size());
         Assertions.assertTrue(resultTags.stream().anyMatch(t -> t.getId().equals(tagId)));
@@ -478,7 +476,7 @@ class TagServiceImplMockTest {
 
         DishEntity result = argumentCaptor.getValue();
         Assertions.assertNotNull(result);
-        List<TagEntity> resultDishTags = result.getTags();
+        List<TagEntity> resultDishTags = result.getItems().stream().map(DishItemEntity::getTag).collect(Collectors.toList());
         Assertions.assertEquals(2, resultDishTags.size());
         Assertions.assertTrue(resultDishTags.stream().anyMatch(t -> t.getId().equals(newTagId)));
         Assertions.assertFalse(resultDishTags.stream().anyMatch(t -> t.getId().equals(tagId)));
@@ -495,17 +493,15 @@ class TagServiceImplMockTest {
         String username = "george";
         DishEntity dish = new DishEntity();
         dish.setId(dishId);
-        List<TagEntity> allTags = new ArrayList<>();
-        allTags.add(ServiceTestUtils.buildTagEntity(99L, "tag99", TagType.NonEdible));
-        allTags.add(ServiceTestUtils.buildTagEntity(199L, "tag199", TagType.Ingredient));
-        allTags.add(ServiceTestUtils.buildTagEntity(299L, "tag299", TagType.DishType));
+        List<DishItemEntity> allItems = new ArrayList<>();
+        allItems.add(ServiceTestUtils.buildDishItemFromTag(199L, 99L, "tag99", TagType.NonEdible));
+        allItems.add(ServiceTestUtils.buildDishItemFromTag(1199L, 199L, "tag199", TagType.Ingredient));
+        allItems.add(ServiceTestUtils.buildDishItemFromTag(1299L, 299L, "tag299", TagType.DishType));
+        dish.setItems(allItems);
 
         Mockito.when(dishService.getDishForUserById(userId, dishId)).thenReturn(dish);
-        Mockito.when(tagRepository.findTagsByDishes(dish)).thenReturn(allTags);
 
-        List<TagEntity> resultList = tagService.getTagsForDish(userId, dishId, tagTypes);
-
-        Mockito.verify(tagRepository, times(1)).findTagsByDishes(dish);
+        List<DishItemEntity> resultList = tagService.getItemsForDish(userId, dishId, tagTypes);
 
         Assertions.assertNotNull(resultList);
         Assertions.assertEquals(2, resultList.size());
@@ -592,7 +588,11 @@ class TagServiceImplMockTest {
         dishTags.add(tag2);
         dishTags.add(tag3);
         dishTags.add(tag4);
-        testDish.setTags(dishTags);
+        testDish.setItems(dishTags.stream().map(t -> {
+            DishItemEntity item = new DishItemEntity();
+            item.setTag(t);
+            return item;
+        }).collect(Collectors.toList()));
 
         Mockito.when(dishService.getDishForUserById(userId, dishId))
                 .thenReturn(testDish);
@@ -646,8 +646,11 @@ class TagServiceImplMockTest {
         Assertions.assertNotNull(savedDish.getValue());
         DishEntity saved = savedDish.getValue();
         // should have 2 tags after delete
-        Assertions.assertEquals(2, saved.getTags().size());
-        Set<Long> tagIdsAfterDelete = saved.getTags().stream().map(TagEntity::getId).collect(Collectors.toSet());
+        Assertions.assertEquals(2, saved.getItems().size());
+        Set<Long> tagIdsAfterDelete = saved.getItems().stream()
+                .map(DishItemEntity::getTag)
+                .map(TagEntity::getId)
+                .collect(Collectors.toSet());
         Assertions.assertTrue(tagIdsAfterDelete.contains(400L));
         Assertions.assertTrue(tagIdsAfterDelete.contains(500L));
 
@@ -700,7 +703,7 @@ class TagServiceImplMockTest {
                 .thenReturn(testDish);
         Mockito.when(tagRepository.countRemainingDishTypeTags(dishId, tagIdsToDelete))
                 .thenReturn(Collections.singletonList(new CountResult(0)));
-        Mockito.when(tagRepository.findAllById(tagIdsToDelete)).thenReturn(dummyBuilder.build().getTags());
+        Mockito.when(tagRepository.findAllById(tagIdsToDelete)).thenReturn(dummyBuilder.build().getItems().stream().map(DishItemEntity::getTag).collect(Collectors.toList()));
         Mockito.when(dishService.save(savedDish.capture(), ArgumentMatchers.anyBoolean()))
                 .thenReturn(new DishEntity());
 
@@ -711,8 +714,10 @@ class TagServiceImplMockTest {
         Assertions.assertNotNull(savedDish.getValue());
         DishEntity saved = savedDish.getValue();
         // should have 2 tags after delete
-        Assertions.assertEquals(3, saved.getTags().size());
-        Set<Long> tagIdsAfterDelete = saved.getTags().stream().map(TagEntity::getId).collect(Collectors.toSet());
+        Assertions.assertEquals(3, saved.getItems().size());
+        Set<Long> tagIdsAfterDelete = saved.getItems().stream()
+                .map(DishItemEntity::getTag)
+                .map(TagEntity::getId).collect(Collectors.toSet());
         Assertions.assertTrue(tagIdsAfterDelete.contains(200L));
         Assertions.assertTrue(tagIdsAfterDelete.contains(400L));
         Assertions.assertTrue(tagIdsAfterDelete.contains(500L));

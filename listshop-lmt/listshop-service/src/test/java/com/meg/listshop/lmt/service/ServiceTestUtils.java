@@ -36,11 +36,19 @@ public class ServiceTestUtils {
     }
 
 
-    public static DishEntity buildDish(Long userId,String dishName,List<TagEntity> tags) {
+    public static DishEntity buildDishWithTags(Long userId, String dishName, List<TagEntity> tags) {
         DishEntity dish = new DishEntity();
         dish.setUserId(userId);
         dish.setDishName(dishName);
         dish.setTags(tags);
+        return dish;
+    }
+
+    public static DishEntity buildDish(Long userId, String dishName, List<DishItemEntity> items) {
+        DishEntity dish = new DishEntity();
+        dish.setUserId(userId);
+        dish.setDishName(dishName);
+        dish.setItems(items);
         return dish;
     }
 
@@ -101,5 +109,19 @@ public class ServiceTestUtils {
         tag.setTagType(tagType);
         tag.setPower(power);
         return tag;
+    }
+
+    public static DishItemEntity buildDishItemFromTag(Long dishItemId, Long tagId, String tagName,
+                                                      TagType tagType, Double power) {
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+        tag.setName(tagName);
+        tag.setTagType(tagType);
+        tag.setPower(power);
+        return buildDishItemFromTag(dishItemId, tag);
+    }
+
+    public static DishItemEntity buildDishItemFromTag(long dishItemId, long tagId, String tagName, TagType tagType) {
+        return buildDishItemFromTag(dishItemId, tagId, tagName, tagType, null);
     }
 }

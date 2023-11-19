@@ -77,7 +77,7 @@ public class AutoTagServiceImplMockTest {
         Long shadowTagId = 111L;
         Long newTagId = 13L;
 
-        DishEntity dishEntity = ServiceTestUtils.buildDish(userId, dishName, new ArrayList<>());
+        DishEntity dishEntity = ServiceTestUtils.buildDishWithTags(userId, dishName, new ArrayList<>());
         dishEntity.setId(dishId);
         boolean override = false;
 

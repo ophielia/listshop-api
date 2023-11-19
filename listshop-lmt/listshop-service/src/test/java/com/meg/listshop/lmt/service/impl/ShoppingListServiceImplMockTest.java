@@ -754,8 +754,8 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         TagEntity tag5 = ServiceTestUtils.buildTag(5L, "fifth tag", TagType.Ingredient);
         TagEntity tag6 = ServiceTestUtils.buildTag(6L, "outlier tag", TagType.NonEdible);
         // make 2 dishes
-        DishEntity dish1 = ServiceTestUtils.buildDish(userId, "dish one", Arrays.asList(tag1, tag2));
-        DishEntity dish2 = ServiceTestUtils.buildDish(userId, "dish two", Arrays.asList(tag1, tag3, tag4, tag5, tag6));
+        DishEntity dish1 = ServiceTestUtils.buildDishWithTags(userId, "dish one", Arrays.asList(tag1, tag2));
+        DishEntity dish2 = ServiceTestUtils.buildDishWithTags(userId, "dish two", Arrays.asList(tag1, tag3, tag4, tag5, tag6));
         dish1.setId(1212L);
         dish2.setId(2323L);
         // make 2 slots
@@ -844,8 +844,8 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         TagEntity tag5 = ServiceTestUtils.buildTag(5L, "fifth tag", TagType.Ingredient);
         TagEntity tag6 = ServiceTestUtils.buildTag(6L, "outlier tag", TagType.NonEdible);
         // make 2 dishes
-        DishEntity dish1 = ServiceTestUtils.buildDish(userId, "dish one", Arrays.asList(tag1, tag2));
-        DishEntity dish2 = ServiceTestUtils.buildDish(userId, "dish two", Arrays.asList(tag1, tag3, tag4, tag5, tag6));
+        DishEntity dish1 = ServiceTestUtils.buildDishWithTags(userId, "dish one", Arrays.asList(tag1, tag2));
+        DishEntity dish2 = ServiceTestUtils.buildDishWithTags(userId, "dish two", Arrays.asList(tag1, tag3, tag4, tag5, tag6));
         dish1.setId(1212L);
         dish2.setId(2323L);
         // make 2 slots
@@ -942,8 +942,8 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
         Long dishId1 = 1212L;
         Long dishId2 = 2323L;
-        DishEntity dish1 = ServiceTestUtils.buildDish(userId, "dish one", Arrays.asList(tag1, tag2));
-        DishEntity dish2 = ServiceTestUtils.buildDish(userId, "dish two", Arrays.asList(tag1, tag3, tag4, tag5, tag6));
+        DishEntity dish1 = ServiceTestUtils.buildDishWithTags(userId, "dish one", Arrays.asList(tag1, tag2));
+        DishEntity dish2 = ServiceTestUtils.buildDishWithTags(userId, "dish two", Arrays.asList(tag1, tag3, tag4, tag5, tag6));
         dish1.setId(dishId1);
         dish2.setId(dishId2);
 

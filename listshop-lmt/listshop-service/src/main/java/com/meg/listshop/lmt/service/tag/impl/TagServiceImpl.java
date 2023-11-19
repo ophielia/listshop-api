@@ -377,8 +377,7 @@ public class TagServiceImpl implements TagService {
         return getItemsForDish(userId, dishId, null);
     }
 
-    @Override
-    public List<DishItemEntity> getItemsForDish(String username, Long dishId, List<TagType> tagtypes) {
+    private List<DishItemEntity> getItemsForDish(String username, Long dishId, List<TagType> tagtypes) {
         List<DishItemEntity> results = new ArrayList<>();
         DishEntity dish = dishService.getDishForUserById(username, dishId);
 
@@ -401,6 +400,7 @@ public class TagServiceImpl implements TagService {
         return getTagsForDish(dish, tagtypes);
     }
 
+    @Override
     public List<DishItemEntity> getItemsForDish(Long userId, Long dishId, List<TagType> tagtypes) {
         List<DishItemEntity> results = new ArrayList<>();
         DishEntity dish = dishService.getDishForUserById(userId, dishId);
