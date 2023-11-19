@@ -13,3 +13,44 @@ CREATE SEQUENCE public.dish_item_sequence
     NO MINVALUE
     NO MAXVALUE CACHE 1;
 
+
+-- units
+CREATE TABLE units
+(
+    unit_id      BIGINT NOT NULL,
+    type         VARCHAR(255),
+    is_liquid    BOOLEAN,
+    is_list_unit BOOLEAN,
+    is_dish_unit BOOLEAN,
+    is_weight    BOOLEAN,
+    is_volume    BOOLEAN,
+    CONSTRAINT pk_units PRIMARY KEY (unit_id)
+);
+
+CREATE SEQUENCE public.unit_sequence
+    START WITH 1000
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE CACHE 1;
+
+
+CREATE TABLE factors
+(
+    factor_id BIGINT NOT NULL,
+    factor    DOUBLE PRECISION,
+    to_unit   BIGINT,
+    from_unit BIGINT,
+    CONSTRAINT pk_factors PRIMARY KEY (factor_id)
+);
+
+ALTER TABLE factors
+    ADD CONSTRAINT FK_FACTORS_ON_FROM_UNIT FOREIGN KEY (from_unit) REFERENCES units (unit_id);
+
+ALTER TABLE factors
+    ADD CONSTRAINT FK_FACTORS_ON_TO_UNIT FOREIGN KEY (to_unit) REFERENCES units (unit_id);
+
+CREATE SEQUENCE public.factor_sequence
+    START WITH 1000
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE CACHE 1;

@@ -2,21 +2,47 @@ package com.meg.listshop.conversion.data.entity;
 
 
 import com.meg.listshop.conversion.data.pojo.UnitType;
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "units")
+@GenericGenerator(
+        name = "unit_sequence",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {@org.hibernate.annotations.Parameter(
+                name = "sequence_name",
+                value = "unit_sequence"),
+                @org.hibernate.annotations.Parameter(
+                        name = "initial_value",
+                        value = "1000"),
+                @org.hibernate.annotations.Parameter(
+                        name = "increment_size",
+                        value = "1")}
+)
 public class UnitEntity {
 
+    @Id
+    @Column(name = "UNIT_ID")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private UnitType type;
 
+    @Column(name = "IS_LIQUID")
     private boolean isLiquid;
 
+    @Column(name = "IS_LIST_UNIT")
     private boolean isListUnit;
 
+    @Column(name = "IS_DISH_UNIT")
     private boolean isDishUnit;
 
+    @Column(name = "IS_WEIGHT")
     private boolean isWeight;
 
+    @Column(name = "IS_VOLUME")
     private boolean isVolume;
 
     public Long getId() {
@@ -73,5 +99,18 @@ public class UnitEntity {
 
     public void setVolume(boolean volume) {
         isVolume = volume;
+    }
+
+    @Override
+    public String toString() {
+        return "UnitEntity{" +
+                "id=" + id +
+                ", type=" + type +
+                ", isLiquid=" + isLiquid +
+                ", isListUnit=" + isListUnit +
+                ", isDishUnit=" + isDishUnit +
+                ", isWeight=" + isWeight +
+                ", isVolume=" + isVolume +
+                '}';
     }
 }
