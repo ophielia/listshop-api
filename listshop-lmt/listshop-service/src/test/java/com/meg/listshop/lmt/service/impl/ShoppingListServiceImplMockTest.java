@@ -932,6 +932,13 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         TagEntity tag4 = ServiceTestUtils.buildTag(4L, "fourth tag", TagType.Ingredient);
         TagEntity tag5 = ServiceTestUtils.buildTag(5L, "fifth tag", TagType.Ingredient);
         TagEntity tag6 = ServiceTestUtils.buildTag(6L, "outlier tag", TagType.NonEdible);
+        // put tags into items
+        DishItemEntity item1 = ServiceTestUtils.buildDishItemFromTag(11L, tag1);
+        DishItemEntity item2 = ServiceTestUtils.buildDishItemFromTag(22L, tag1);
+        DishItemEntity item3 = ServiceTestUtils.buildDishItemFromTag(33L, tag1);
+        DishItemEntity item4 = ServiceTestUtils.buildDishItemFromTag(44L, tag1);
+        DishItemEntity item5 = ServiceTestUtils.buildDishItemFromTag(55L, tag1);
+        DishItemEntity item6 = ServiceTestUtils.buildDishItemFromTag(66L, tag1);
 
         Long dishId1 = 1212L;
         Long dishId2 = 2323L;
@@ -952,10 +959,10 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                 .thenReturn(Optional.of(shoppingList));
         Mockito.when(tagService.getReplacedTagsFromIds(any(Set.class)))
                 .thenReturn(new ArrayList<Long>());
-        Mockito.when(tagService.getTagsForDish(userId, dish1.getId()))
-                .thenReturn(Arrays.asList(tag1, tag2, tag3, tag4));
-        Mockito.when(tagService.getTagsForDish(userId, dish2.getId()))
-                .thenReturn(Arrays.asList(tag6, tag5, tag4, tag3));
+        Mockito.when(tagService.getItemsForDish(userId, dish1.getId()))
+                .thenReturn(Arrays.asList(item1, item2, item3, item4));
+        Mockito.when(tagService.getItemsForDish(userId, dish2.getId()))
+                .thenReturn(Arrays.asList(item6, item5, item4, item3));
         Mockito.doNothing().when(dishService).updateLastAddedForDish(dishId1);
         Mockito.doNothing().when(dishService).updateLastAddedForDish(dishId2);
 

@@ -5,6 +5,7 @@ import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.AutoTagSubject;
 import com.meg.listshop.lmt.data.pojos.Instruction;
@@ -88,8 +89,8 @@ public class TagProcessorImplTest {
 
         // test dish -dish tag 1 - Israeli Couscous
         DishEntity dishEntity = dishService.getDishForUserById(USER_3_NAME, TestConstants.DISH_1_ID);
-        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, TestConstants.DISH_1_ID);
-        Set<Long> tagIds = tags.stream().map(TagEntity::getId).collect(Collectors.toSet());
+        List<DishItemEntity> items = tagService.getItemsForDish(USER_3_NAME, TestConstants.DISH_1_ID);
+        Set<Long> tagIds = items.stream().map(DishItemEntity::getTag).map(TagEntity::getId).collect(Collectors.toSet());
         AutoTagSubject subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);
         Long assignedId = tagProcessor.processTagForInstruction(vegetarian, subject);
@@ -102,8 +103,8 @@ public class TagProcessorImplTest {
         // test meaty dish - should be 346 found, and 199 not found
         // 28 porcupines
         dishEntity = dishService.getDishForUserById(USER_3_NAME, 28L);
-        tags = tagService.getTagsForDish(USER_3_NAME, 28L);
-        tagIds = tags.stream().map(TagEntity::getId).collect(Collectors.toSet());
+        items = tagService.getItemsForDish(USER_3_NAME, 28L);
+        tagIds = items.stream().map(DishItemEntity::getTag).map(TagEntity::getId).collect(Collectors.toSet());
         subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);
         assignedId = tagProcessor.processTagForInstruction(meat, subject);
@@ -115,8 +116,8 @@ public class TagProcessorImplTest {
 
         // 47 chicken cassolet - should be tagged meat
         dishEntity = dishService.getDishForUserById(USER_3_NAME, 47L);
-        tags = tagService.getTagsForDish(USER_3_NAME, 47L);
-        tagIds = tags.stream().map(TagEntity::getId).collect(Collectors.toSet());
+        items = tagService.getItemsForDish(USER_3_NAME, 47L);
+        tagIds = items.stream().map(DishItemEntity::getTag).map(TagEntity::getId).collect(Collectors.toSet());
         subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);
         assignedId = tagProcessor.processTagForInstruction(meat, subject);
@@ -127,8 +128,8 @@ public class TagProcessorImplTest {
 
         // test dish - 25 - Ham and Potato Soup - should be tagged meat
         dishEntity = dishService.getDishForUserById(USER_3_NAME, 25L);
-        tags = tagService.getTagsForDish(USER_3_NAME, 25L);
-        tagIds = tags.stream().map(TagEntity::getId).collect(Collectors.toSet());
+        items = tagService.getItemsForDish(USER_3_NAME, 25L);
+        tagIds = items.stream().map(DishItemEntity::getTag).map(TagEntity::getId).collect(Collectors.toSet());
         subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);
         assignedId = tagProcessor.processTagForInstruction(meat, subject);
@@ -164,8 +165,8 @@ public class TagProcessorImplTest {
 
         // test dish -dish tag 1 - Israeli Couscous
         DishEntity dishEntity = dishService.getDishForUserById(USER_3_NAME, TestConstants.DISH_1_ID);
-        List<TagEntity> tags = tagService.getTagsForDish(USER_3_NAME, TestConstants.DISH_1_ID);
-        Set<Long> tagIds = tags.stream().map(TagEntity::getId).collect(Collectors.toSet());
+        List<DishItemEntity> tags = tagService.getItemsForDish(USER_3_NAME, TestConstants.DISH_1_ID);
+        Set<Long> tagIds = tags.stream().map(DishItemEntity::getTag).map(TagEntity::getId).collect(Collectors.toSet());
         AutoTagSubject subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);
         Long assignedId = tagProcessor.processTagForInstruction(meat, subject);

@@ -14,7 +14,7 @@ public interface DishRepository extends JpaRepository<DishEntity, Long> {
 
     List<DishEntity> findByUserId(Long userid);
 
-    @EntityGraph("dish-entity-graph")
+    @EntityGraph("filledDish")
     @Query("select d FROM DishEntity d where d.userId = ?1 and d.dish_id in (?2)")
     List<DishEntity> findByDishIdsForUser(Long userId, List<Long> dishIds);
 
@@ -26,11 +26,11 @@ public interface DishRepository extends JpaRepository<DishEntity, Long> {
     @Query("select d FROM DishEntity d where (d.autoTagStatus < ?1 OR d.autoTagStatus is null)")
     List<DishEntity> findDishesToAutotag(Long statusFlag, Pageable pageable);
 
-    @EntityGraph("dish-entity-graph")
+    @EntityGraph("filledDish")
     @Query("select d FROM DishEntity d where d.userId = ?1 and lower(trim(d.dishName)) like ?2 ")
     List<DishEntity> findByUserIdAndDishNameLike(Long userid, String name);
 
-    @EntityGraph("dish-entity-graph")
+    @EntityGraph("filledDish")
     @Query("select d FROM DishEntity d where d.userId = ?1 and lower(trim(d.dishName)) = ?2 ")
     List<DishEntity> findByUserIdAndDishName(Long userid, String name);
 

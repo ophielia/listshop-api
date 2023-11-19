@@ -8,6 +8,7 @@ import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.ICountResult;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
+import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.*;
@@ -52,6 +53,8 @@ class TagServiceImplMockTest {
     private TagStructureService tagStructureService;
     @MockBean
     private UserService userService;
+    @MockBean
+    private DishItemRepository dishItemRepository;
 
     @MockBean
     TagInfoCustomRepository tagInfoCustomRepository;
@@ -77,7 +80,7 @@ class TagServiceImplMockTest {
     void setUp() {
         this.tagService = new TagServiceImpl(
                 tagStatisticService, dishService, tagStructureService, tagReplaceService,
-                tagRepository, tagInfoCustomRepository, dishSearchService
+                tagRepository, tagInfoCustomRepository, dishSearchService, dishItemRepository
         );
     }
 

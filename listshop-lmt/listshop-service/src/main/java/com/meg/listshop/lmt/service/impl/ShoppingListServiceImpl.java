@@ -797,7 +797,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // make collector
         ListItemCollector collector = createListItemCollector(listId, shoppingList.getItems());
 
-        List<TagEntity> tagsToRemove = tagService.getTagsForDish(userId, dishId);
+        List<DishItemEntity> itemsToRemove = tagService.getItemsForDish(userId, dishId);
+        List<TagEntity> tagsToRemove = itemsToRemove.stream().map(DishItemEntity::getTag).collect(Collectors.toList());
 
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withDishId(dishId)
@@ -1001,7 +1002,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             logger.error("No dish found for null dishId");
             throw new ShoppingListException("No dish found for null dishId.");
         }
-        List<TagEntity> tagsForDish = tagService.getTagsForDish(userId, dishId).stream()
+
+        List<DishItemEntity> itemsToRemove = tagService.getItemsForDish(userId, dishId);
+
+        List<TagEntity> tagsForDish = itemsToRemove.stream()
+                .map(DishItemEntity::getTag)
                 .filter(t -> t.getTagType().equals(TagType.Ingredient) || t.getTagType().equals(TagType.NonEdible))
                 .collect(Collectors.toList());
         if (tagsForDish.isEmpty()) {

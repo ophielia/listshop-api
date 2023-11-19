@@ -22,13 +22,6 @@ import java.util.List;
                         name = "increment_size",
                         value = "1")}
 )
-@NamedEntityGraph(
-        name = "dish-entity-graph",
-        attributeNodes = {
-                @NamedAttributeNode("tags")
-        }
-)
-
 @NamedEntityGraphs({
         @NamedEntityGraph(
                 name = "filledDish",
@@ -166,5 +159,10 @@ public class DishEntity {
 
     public void setReference(String reference) {
         this.reference = reference;
+    }
+
+    public void removeItems(List<DishItemEntity> dishItemsToRemove) {
+        items.removeAll(dishItemsToRemove);
+        dishItemsToRemove.forEach(d -> d.setDish(null));
     }
 }

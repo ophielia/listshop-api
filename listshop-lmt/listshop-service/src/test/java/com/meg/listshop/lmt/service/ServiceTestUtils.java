@@ -22,6 +22,12 @@ public class ServiceTestUtils {
         return tagEntity;
     }
 
+    public static DishItemEntity buildDishItemFromTag(Long id, TagEntity tag) {
+        DishItemEntity itemEntity = new DishItemEntity(id);
+        itemEntity.setTag(tag);
+        return itemEntity;
+    }
+
     public static  SlotEntity buildDishSlot(MealPlanEntity mealplan, DishEntity dish) {
         SlotEntity slot = new SlotEntity();
         slot.setDish(dish);

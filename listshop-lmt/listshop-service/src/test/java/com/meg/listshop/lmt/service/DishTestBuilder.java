@@ -5,10 +5,12 @@ import com.meg.listshop.lmt.api.model.Dish;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DishTestBuilder {
     private final DishEntity dish;
@@ -60,7 +62,15 @@ public class DishTestBuilder {
     }
 
     public Dish buildModel() {
-        dish.setTags(tags);
+
+        List<DishItemEntity> items = tags.stream()
+                .map(t -> {
+                    DishItemEntity item = new DishItemEntity();
+                    item.setTag(t);
+                    return item;
+                })
+                .collect(Collectors.toList());
+        dish.setItems(items);
         return ModelMapper.toModel(dish, true);
     }
 

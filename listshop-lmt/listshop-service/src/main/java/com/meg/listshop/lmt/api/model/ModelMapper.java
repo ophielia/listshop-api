@@ -432,6 +432,25 @@ public class ModelMapper {
                 .toDelete(tagEntity.isToDelete());
     }
 
+    public static Tag itemToTagModel(DishItemEntity itemEntity) {
+        if (itemEntity == null) {
+            return null;
+        }
+
+        return new Tag(itemEntity.getTag().getId())
+                .name(itemEntity.getTag().getName())
+                .description(itemEntity.getTag().getDescription())
+                .userId(String.valueOf(itemEntity.getTag().getUserId()))
+                .tagType(itemEntity.getTag().getTagType().name())
+                .power(itemEntity.getTag().getPower())
+                .isGroup(itemEntity.getTag().getIsGroup())
+                // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
+                .assignSelect(!itemEntity.getTag().getIsGroup())
+                .searchSelect(itemEntity.getTag().getIsGroup())
+                .parentId(String.valueOf(itemEntity.getTag().getParentId()))
+                .toDelete(itemEntity.getTag().isToDelete());
+    }
+
     public static Tag toShortModel(TagEntity tagEntity) {
         if (tagEntity == null) {
             return null;

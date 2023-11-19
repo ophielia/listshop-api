@@ -181,8 +181,8 @@ public class DishRestController implements DishRestControllerApi {
         String message = String.format("retrieving dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
         List<TagResource> tagList = tagService
-                .getTagsForDish(userDetails.getId(), dishId)
-                .stream().map(ModelMapper::toModel)
+                .getItemsForDish(userDetails.getId(), dishId)
+                .stream().map(ModelMapper::itemToTagModel)
                 .map(TagResource::new)
                 .collect(Collectors.toList());
         tagList.forEach(tr -> tr.fillLinks(request, tr));

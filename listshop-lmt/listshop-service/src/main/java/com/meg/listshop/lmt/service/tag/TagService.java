@@ -4,6 +4,7 @@ import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
 import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -28,15 +29,15 @@ public interface TagService {
 
     TagEntity createTag(Long parentId, TagEntity newTag, Long userId) throws BadParameterException;
 
-    List<TagEntity> getTagsForDish(String username, Long dishId);
+    List<DishItemEntity> getItemsForDish(String username, Long dishId);
 
-    List<TagEntity> getTagsForDish(Long userId, Long dishId);
-
-    List<TagEntity> getTagsForDish(String username, Long dishId, List<TagType> tagtypes);
+    List<DishItemEntity> getItemsForDish(Long userId, Long dishId);
 
     void assignTagToParent(Long tagId, Long parentId);
 
     void assignChildrenToParent(Long parentId, List<Long> childrenIds);
+
+    List<DishItemEntity> getItemsForDish(String username, Long dishId, List<TagType> tagtypes);
 
     List<TagEntity> getTagsForDish(Long userId, Long dishId, List<TagType> tagtypes);
 

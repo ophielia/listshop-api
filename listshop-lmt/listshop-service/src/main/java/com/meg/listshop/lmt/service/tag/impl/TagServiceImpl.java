@@ -17,6 +17,7 @@ import com.meg.listshop.lmt.data.pojos.ICountResult;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
+import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.DishSearchCriteria;
@@ -53,6 +54,7 @@ public class TagServiceImpl implements TagService {
     private final ListTagStatisticService tagStatisticService;
     private final TagReplaceService tagReplaceService;
     private final TagRepository tagRepository;
+    private final DishItemRepository dishItemRepository;
     private final TagStructureService tagStructureService;
     private final DishSearchService dishSearchService;
     private final TagInfoCustomRepository tagInfoCustomRepository;
@@ -72,7 +74,9 @@ public class TagServiceImpl implements TagService {
                           @Lazy TagReplaceService tagReplaceService,
                           TagRepository tagRepository,
                           TagInfoCustomRepository tagInfoCustomRepository,
-                          DishSearchService dishSearchService) {
+                          DishSearchService dishSearchService,
+                          DishItemRepository dishItemRepository
+    ) {
         this.dishService = dishService;
         this.tagStatisticService = tagStatisticService;
         this.tagReplaceService = tagReplaceService;
@@ -80,6 +84,7 @@ public class TagServiceImpl implements TagService {
         this.tagStructureService = tagStructureService;
         this.dishSearchService = dishSearchService;
         this.tagInfoCustomRepository = tagInfoCustomRepository;
+        this.dishItemRepository = dishItemRepository;
 
     }
 
@@ -360,26 +365,28 @@ public class TagServiceImpl implements TagService {
         addTagToDish(dish, tag.get());
     }
 
+
     @Override
-    public List<TagEntity> getTagsForDish(String username, Long dishId) {
-        return getTagsForDish(username, dishId, null);
+    public List<DishItemEntity> getItemsForDish(String username, Long dishId) {
+        return getItemsForDish(username, dishId, null);
+    }
+
+
+    @Override
+    public List<DishItemEntity> getItemsForDish(Long userId, Long dishId) {
+        return getItemsForDish(userId, dishId, null);
     }
 
     @Override
-    public List<TagEntity> getTagsForDish(Long userId, Long dishId) {
-        return getTagsForDish(userId, dishId, null);
-    }
-
-    @Override
-    public List<TagEntity> getTagsForDish(String username, Long dishId, List<TagType> tagtypes) {
-        List<TagEntity> results = new ArrayList<>();
+    public List<DishItemEntity> getItemsForDish(String username, Long dishId, List<TagType> tagtypes) {
+        List<DishItemEntity> results = new ArrayList<>();
         DishEntity dish = dishService.getDishForUserById(username, dishId);
 
         if (dish == null) {
             return results;
         }
 
-        return getTagsForDish(dish, tagtypes);
+        return getItemsForDish(dish, tagtypes);
     }
 
     @Override
@@ -392,6 +399,17 @@ public class TagServiceImpl implements TagService {
         }
 
         return getTagsForDish(dish, tagtypes);
+    }
+
+    public List<DishItemEntity> getItemsForDish(Long userId, Long dishId, List<TagType> tagtypes) {
+        List<DishItemEntity> results = new ArrayList<>();
+        DishEntity dish = dishService.getDishForUserById(userId, dishId);
+
+        if (dish == null) {
+            return results;
+        }
+
+        return getItemsForDish(dish, tagtypes);
     }
 
 
@@ -468,6 +486,7 @@ public class TagServiceImpl implements TagService {
             DishItemEntity item = new DishItemEntity();
             item.setDish(dish);
             item.setTag(addTag);
+            dishItemRepository.save(item);
             dishItems.add(item);
         }
 
@@ -499,19 +518,21 @@ public class TagServiceImpl implements TagService {
 
         // filter tag to be deleted from dish
         List<DishItemEntity> dishItems = dish.getItems();
-        List<DishItemEntity> dishItemsCulled = dishItems.stream()
-                .filter(t -> !(validatedRemovals.contains(t.getTag().getId())))
+        List<DishItemEntity> dishItemsToRemove = dishItems.stream()
+                .filter(t -> (validatedRemovals.contains(t.getTag().getId())))
                 .collect(Collectors.toList());
 
-        // if nothing is validated - we return
-        if (dishItemsCulled.isEmpty()) {
+        // if nothing to remove, return
+        if (dishItemsToRemove.isEmpty()) {
             return 0;
         }
 
         // add tags to dish
-        dish.setItems(dishItemsCulled);
+        dish.removeItems(dishItemsToRemove);
+        dishItemRepository.deleteAll(dishItemsToRemove);
+
         dishService.save(dish, false);
-        return dishItemsCulled.size();
+        return dishItemsToRemove.size();
     }
 
     public void assignDefaultRatingsToDish(Long userId, Long dishId) {
@@ -545,6 +566,8 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void replaceTagInDishes(Long userId, Long fromTagId, Long toTagId) {
+        // MM dish items needs help
+
         List<DishEntity> dishes;
         TagEntity toTag = getTagById(toTagId);
 
@@ -724,7 +747,16 @@ public class TagServiceImpl implements TagService {
 
     private List<DishItemEntity> removeRelatedItems(List<DishItemEntity> dishItems, TagEntity tag) {
         // get sibling tags for dish
-        List<TagEntity> siblings = tagStructureService.getSiblingTags(tag);
+        List<Long> siblings = tagStructureService.getSiblingTags(tag).stream()
+                .map(TagEntity::getId)
+                .collect(Collectors.toList());
+
+        List<DishItemEntity> itemsToRemove = dishItems.stream()
+                .filter(t -> siblings.contains(t.getTag().getId()))
+                .collect(Collectors.toList());
+
+        dishItemRepository.deleteAll(itemsToRemove);
+
         return dishItems.stream()
                 .filter(t -> !siblings.contains(t.getTag().getId()))
                 .collect(Collectors.toList());
@@ -752,6 +784,7 @@ public class TagServiceImpl implements TagService {
         DishItemEntity newItem = new DishItemEntity();
         newItem.setDish(dish);
         newItem.setTag(tag);
+        dishItemRepository.save(newItem);
         dishItems.add(newItem);
 
         // if rating tag, remove related tags
@@ -767,18 +800,34 @@ public class TagServiceImpl implements TagService {
 
 
     private List<TagEntity> getTagsForDish(DishEntity dish, List<TagType> tagtypes) {
-        return filterTagsByTagType(dish.getTags(), tagtypes);
+        return new ArrayList<>();//filterTagsByTagType(dish.getItems(), tagtypes);
     }
 
-    private List<TagEntity> filterTagsByTagType(List<TagEntity> tagList, List<TagType> tagtypes) {
+    private List<DishItemEntity> getItemsForDish(DishEntity dish, List<TagType> tagtypes) {
+        return filterItemsByTagType(dish.getItems(), tagtypes);
+    }
+
+    private List<DishItemEntity> filterTagsByTagType(List<DishItemEntity> dishItems, List<TagType> tagtypes) {
         if (tagtypes == null) {
-            return tagList;
+            return dishItems;
         }
-        if (tagList == null) {
+        if (dishItems == null) {
             return new ArrayList<>();
         }
-        return tagList.stream()
-                .filter(t -> tagtypes.contains(t.getTagType()))
+        return dishItems.stream()
+                .filter(t -> tagtypes.contains(t.getTag().getTagType()))
+                .collect(Collectors.toList());
+    }
+
+    private List<DishItemEntity> filterItemsByTagType(List<DishItemEntity> dishItems, List<TagType> tagtypes) {
+        if (tagtypes == null) {
+            return dishItems;
+        }
+        if (dishItems == null) {
+            return new ArrayList<>();
+        }
+        return dishItems.stream()
+                .filter(t -> tagtypes.contains(t.getTag().getTagType()))
                 .collect(Collectors.toList());
     }
 
