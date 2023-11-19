@@ -304,7 +304,7 @@
 
     <modules>
         <module>postoffice</module>
-        <module>conversion</module>
+        <module>listshop-conversion</module>
         <module>listshop-common</module>
         <module>listshop-api</module>
         <module>listshop-lmt</module>

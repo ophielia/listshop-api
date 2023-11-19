@@ -7,13 +7,10 @@ import com.meg.listshop.lmt.data.entity.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class ServiceTestUtils {
-
-    public static TagEntity buildTag(String tagname,  TagType tagtype) {
-        return buildTag(99L,tagname, tagtype);
-    }
 
     public static TagEntity buildTag(Long id,String tagname,  TagType tagtype) {
         TagEntity tagEntity = new TagEntity(id);
@@ -40,7 +37,7 @@ public class ServiceTestUtils {
         DishEntity dish = new DishEntity();
         dish.setUserId(userId);
         dish.setDishName(dishName);
-        dish.setTags(tags);
+        dish.setItems(tags.stream().map(t -> buildDishItemFromTag(t.getId(), t)).collect(Collectors.toList()));
         return dish;
     }
 

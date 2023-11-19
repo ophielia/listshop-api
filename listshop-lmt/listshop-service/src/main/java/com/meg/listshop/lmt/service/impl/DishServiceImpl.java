@@ -18,7 +18,6 @@ import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
 import com.meg.listshop.lmt.service.tag.TagService;
-import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,6 @@ public class DishServiceImpl implements DishService {
 
     private final TagService tagService;
 
-    private final TagStructureService tagStructureService;
 
     private static final Logger logger = LoggerFactory.getLogger(DishServiceImpl.class);
 
@@ -58,15 +56,13 @@ public class DishServiceImpl implements DishService {
             DishSearchService dishSearchService,
             UserRepository userRepository,
             @Lazy AutoTagService autoTagService,
-            TagService tagService,
-            TagStructureService tagStructureService
+            TagService tagService
     ) {
         this.dishRepository = dishRepository;
         this.dishSearchService = dishSearchService;
         this.userRepository = userRepository;
         this.autoTagService = autoTagService;
         this.tagService = tagService;
-        this.tagStructureService = tagStructureService;
     }
 
     @Override

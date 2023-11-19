@@ -737,14 +737,6 @@ public class TagServiceImpl implements TagService {
     }
 
 
-    private List<TagEntity> removeRelatedTags(List<TagEntity> dishTags, TagEntity tag) {
-        // get sibling tags for dish
-        List<TagEntity> siblings = tagStructureService.getSiblingTags(tag);
-        return dishTags.stream()
-                .filter(t -> !siblings.contains(t))
-                .collect(Collectors.toList());
-    }
-
     private List<DishItemEntity> removeRelatedItems(List<DishItemEntity> dishItems, TagEntity tag) {
         // get sibling tags for dish
         List<Long> siblings = tagStructureService.getSiblingTags(tag).stream()
@@ -805,18 +797,6 @@ public class TagServiceImpl implements TagService {
 
     private List<DishItemEntity> getItemsForDish(DishEntity dish, List<TagType> tagtypes) {
         return filterItemsByTagType(dish.getItems(), tagtypes);
-    }
-
-    private List<DishItemEntity> filterTagsByTagType(List<DishItemEntity> dishItems, List<TagType> tagtypes) {
-        if (tagtypes == null) {
-            return dishItems;
-        }
-        if (dishItems == null) {
-            return new ArrayList<>();
-        }
-        return dishItems.stream()
-                .filter(t -> tagtypes.contains(t.getTag().getTagType()))
-                .collect(Collectors.toList());
     }
 
     private List<DishItemEntity> filterItemsByTagType(List<DishItemEntity> dishItems, List<TagType> tagtypes) {

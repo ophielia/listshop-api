@@ -54,12 +54,6 @@ public class DishEntity {
 
     private String reference;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "DISH_TAGS",
-            joinColumns = @JoinColumn(name = "DISH_ID"),
-            inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
-    private List<TagEntity> tags = new ArrayList<>();
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "dish")
     private List<DishItemEntity> items = new ArrayList<>();
     private Date lastAdded;
@@ -99,14 +93,6 @@ public class DishEntity {
 
     public void setDishName(String dishName) {
         this.dishName = dishName;
-    }
-
-    public List<TagEntity> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<TagEntity> tags) {
-        this.tags = tags;
     }
 
     public List<DishItemEntity> getItems() {

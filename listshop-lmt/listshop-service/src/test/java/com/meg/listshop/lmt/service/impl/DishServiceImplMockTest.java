@@ -52,8 +52,8 @@ public class DishServiceImplMockTest {
                 dishSearchService,
                 userRepository,
                 autoTagService,
-                tagService,
-                tagStructureService);
+                tagService
+        );
     }
 
 

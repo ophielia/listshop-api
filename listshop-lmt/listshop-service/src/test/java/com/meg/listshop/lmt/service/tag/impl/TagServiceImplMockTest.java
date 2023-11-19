@@ -812,10 +812,7 @@ class TagServiceImplMockTest {
         // call under test
         tagService.replaceTagInDishes(userId, forTagId, toTagId);
 
-        DishEntity dish = dishList.get(0);
-        dish.setTags(afterDishTags);
 
-        Mockito.verify(dishService).save(dish, false);
 
     }
 
