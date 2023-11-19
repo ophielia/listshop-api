@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.meg.listshop</groupId>
-    <artifactId>conversion-api</artifactId>
+    <artifactId>conversion-data</artifactId>
     <version>1.14.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>conversion-api</name>
+    <name>conversion-data</name>
     <description>api for the conversion service</description>
 
     <parent>

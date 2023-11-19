@@ -19,6 +19,8 @@
     </parent>
 
     <modules>
+        <module>conversion-common</module>
+        <module>conversion-data</module>
         <module>conversion-api</module>
         <module>conversion-service</module>
     </modules>
