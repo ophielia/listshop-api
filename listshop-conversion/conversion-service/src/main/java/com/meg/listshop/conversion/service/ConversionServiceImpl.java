@@ -9,17 +9,21 @@ import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.handlers.ConversionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@Service
 public class ConversionServiceImpl implements ConversionService {
     private static final Logger LOG = LoggerFactory.getLogger(ConversionServiceImpl.class);
 
     HashMap<HandlerChainKey, HandlerChain> chainMap = new HashMap<>();
     private final List<ConversionHandler> handlerList;
 
+    @Autowired
     public ConversionServiceImpl(List<ConversionHandler> handlerList) {
         this.handlerList = handlerList;
     }

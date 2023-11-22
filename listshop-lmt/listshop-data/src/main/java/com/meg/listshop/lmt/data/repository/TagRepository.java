@@ -2,7 +2,6 @@ package com.meg.listshop.lmt.data.repository;
 
 
 import com.meg.listshop.lmt.api.model.TagType;
-import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.ICountResult;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,10 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTagRepository {
-
-
-
-    List<TagEntity> findTagsByDishes(DishEntity dish);
 
     List<TagEntity> findTagsByTagTypeAndTagTypeDefault(TagType tagType, boolean isDefault);
 
@@ -39,12 +34,6 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
 
     @Query(value = "select distinct tag_id from dish_items where dish_id = ?1", nativeQuery = true)
     Set<Long> getTagIdsForDish(Long dishId);
-
-    @Query("select distinct t FROM TagEntity t , DishEntity d " +
-            "where d member of t.dishes and d.dish_id = ?1")
-    List<TagEntity> findTagsByDishId(Long dishId);
-
-
 
     @Query(value = "    select t.* " +
             "    from tag t " +

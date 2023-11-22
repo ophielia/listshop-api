@@ -1,4 +1,4 @@
-package com.meg.listshop.conversion.data.repository;
+package com.meg.listshop.conversion.service.factors;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 

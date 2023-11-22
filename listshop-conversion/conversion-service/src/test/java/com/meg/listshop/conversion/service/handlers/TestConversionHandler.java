@@ -1,7 +1,7 @@
 package com.meg.listshop.conversion.service.handlers;
 
-import com.meg.listshop.conversion.data.repository.ConversionFactorSource;
 import com.meg.listshop.conversion.service.ConversionSpec;
+import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
 
 public class TestConversionHandler extends AbstractConversionHandler {
 

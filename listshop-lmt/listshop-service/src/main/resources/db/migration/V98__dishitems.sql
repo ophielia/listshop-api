@@ -19,6 +19,7 @@ CREATE TABLE units
 (
     unit_id      BIGINT NOT NULL,
     type         VARCHAR(255),
+    name VARCHAR(255),
     is_liquid    BOOLEAN,
     is_list_unit BOOLEAN,
     is_dish_unit BOOLEAN,

@@ -596,8 +596,6 @@ class TagServiceImplMockTest {
 
         Mockito.when(dishService.getDishForUserById(userId, dishId))
                 .thenReturn(testDish);
-        Mockito.when(tagRepository.findTagsByDishes(testDish))
-                .thenReturn(dishTags);
 
         // call under test
         tagService.removeTagsFromDish(userId, dishId, tagIds);
@@ -755,8 +753,6 @@ class TagServiceImplMockTest {
                 .thenReturn(dish);
         Mockito.when(tagRepository.getTagsForIdList(tagIdSet))
                 .thenReturn(tagList);
-        Mockito.when(tagRepository.findTagsByDishes(dish))
-                .thenReturn(new ArrayList<>());
         Mockito.when(dishService.getDishForUserById(userId, dishId))
                 .thenReturn(dish);
 
@@ -806,8 +802,6 @@ class TagServiceImplMockTest {
                 .thenReturn(Optional.of(toTag));
         Mockito.when(dishSearchService.findDishes(any(DishSearchCriteria.class)))
                 .thenReturn(dishList);
-        Mockito.when(tagRepository.findTagsByDishes(dishList.get(0)))
-                .thenReturn(dishTags);
 
         // call under test
         tagService.replaceTagInDishes(userId, forTagId, toTagId);

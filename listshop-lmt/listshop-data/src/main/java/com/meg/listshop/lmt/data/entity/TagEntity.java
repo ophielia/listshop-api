@@ -50,9 +50,6 @@ public class TagEntity {
     private Boolean tagTypeDefault;
 
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
-    private List<DishEntity> dishes = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<ListLayoutCategoryEntity> categories = new ArrayList<>();
 
     @Column(name = "is_group")
@@ -122,14 +119,6 @@ public class TagEntity {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public List<DishEntity> getDishes() {
-        return dishes;
-    }
-
-    public void setDishes(List<DishEntity> dishes) {
-        this.dishes = dishes;
     }
 
     public Long getParentId() {
@@ -288,7 +277,6 @@ public class TagEntity {
                 ", description='" + description + '\'' +
                 ", tagType=" + tagType +
                 ", tagTypeDefault=" + tagTypeDefault +
-                ", dishes=" + dishes +
                 ", categories=" + categories +
                 ", isVerified=" + isVerified +
                 ", power=" + power +

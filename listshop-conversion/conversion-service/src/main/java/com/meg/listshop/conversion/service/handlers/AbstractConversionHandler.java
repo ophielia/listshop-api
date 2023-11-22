@@ -3,10 +3,10 @@ package com.meg.listshop.conversion.service.handlers;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.data.repository.ConversionFactorSource;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
+import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +17,9 @@ import java.util.List;
 public abstract class AbstractConversionHandler implements ConversionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractConversionHandler.class);
 
-    private final ConversionSpec source;
-    private final ConversionSpec target;
-    private final ConversionFactorSource conversionSource;
+    private ConversionSpec source;
+    private ConversionSpec target;
+    private ConversionFactorSource conversionSource;
 
     public AbstractConversionHandler(ConversionSpec source, ConversionSpec target, ConversionFactorSource conversionSource) {
         this.source = source;
@@ -27,6 +27,9 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         this.conversionSource = conversionSource;
     }
 
+    public AbstractConversionHandler() {
+
+    }
     public boolean convertsTo(ConversionSpec spec) {
         return target.equals(spec) || source.equals(spec);
     }
@@ -102,6 +105,18 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
     protected ConversionSpec getTarget() {
         return target;
+    }
+
+    public void setSource(ConversionSpec source) {
+        this.source = source;
+    }
+
+    public void setTarget(ConversionSpec target) {
+        this.target = target;
+    }
+
+    public void setConversionSource(ConversionFactorSource conversionSource) {
+        this.conversionSource = conversionSource;
     }
 }
 

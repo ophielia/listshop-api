@@ -42,6 +42,14 @@ public class ConversionSpec {
         return new ConversionSpec(null, oppositeType(unitSource.getType()), flavorsForUnit(unitSource));
     }
 
+    public static ConversionSpec basicSpec(UnitType type, UnitFlavor... flavors) {
+        Set<UnitFlavor> flavorSet = new HashSet<>();
+        for (UnitFlavor flavor : flavors) {
+            flavorSet.add(flavor);
+        }
+        return new ConversionSpec(null, type, flavorSet);
+    }
+
     public static ConversionSpec fromContextAndSource(ConversionContext context, UnitEntity source) {
         return new ConversionSpec(null, context.getUnitType(), flavorsForContextAndSource(context, source));
     }

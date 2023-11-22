@@ -30,6 +30,9 @@ public class UnitEntity {
     @Enumerated(EnumType.STRING)
     private UnitType type;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "IS_LIQUID")
     private boolean isLiquid;
 
@@ -101,10 +104,19 @@ public class UnitEntity {
         isVolume = volume;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "UnitEntity{" +
                 "id=" + id +
+                ", name=" + name +
                 ", type=" + type +
                 ", isLiquid=" + isLiquid +
                 ", isListUnit=" + isListUnit +

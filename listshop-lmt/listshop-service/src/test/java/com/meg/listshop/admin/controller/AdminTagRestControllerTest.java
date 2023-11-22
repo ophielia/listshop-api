@@ -114,7 +114,6 @@ public class AdminTagRestControllerTest {
         String updateDescription = "updated:" + (toUpdate.getDescription() == null ? "" : toUpdate.getDescription());
         toUpdate.setName(updateName);
         toUpdate.setDescription(updateDescription);
-        toUpdate.setDishes(new ArrayList<>());
         toUpdate.setCategories(new ArrayList<>());
         String tagJson = json(toUpdate);
 
@@ -154,7 +153,6 @@ public class AdminTagRestControllerTest {
         String updateDescription = "updated:" + (toUpdate.getDescription() == null ? "" : toUpdate.getDescription());
         toUpdate.setName(updateName);
         toUpdate.setDescription(updateDescription);
-        toUpdate.setDishes(new ArrayList<>());
 
         this.mockMvc.perform(put(url).with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful());

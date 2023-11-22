@@ -2,6 +2,7 @@ package com.meg.listshop.conversion.data.repository;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
 import com.meg.listshop.conversion.service.tools.ConversionFactorSourceBuilder;
 import com.meg.listshop.conversion.tools.ConversionTestTools;
 import org.junit.jupiter.api.BeforeEach;
