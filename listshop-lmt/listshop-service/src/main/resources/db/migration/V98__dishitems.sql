@@ -20,11 +20,11 @@ CREATE TABLE units
     unit_id      BIGINT NOT NULL,
     type         VARCHAR(255),
     name VARCHAR(255),
-    is_liquid    BOOLEAN,
-    is_list_unit BOOLEAN,
-    is_dish_unit BOOLEAN,
-    is_weight    BOOLEAN,
-    is_volume    BOOLEAN,
+    is_liquid    BOOLEAN not null default false,
+    is_list_unit BOOLEAN not null default false,
+    is_dish_unit BOOLEAN not null default false,
+    is_weight    BOOLEAN not null default false,
+    is_volume    BOOLEAN not null default false,
     CONSTRAINT pk_units PRIMARY KEY (unit_id)
 );
 

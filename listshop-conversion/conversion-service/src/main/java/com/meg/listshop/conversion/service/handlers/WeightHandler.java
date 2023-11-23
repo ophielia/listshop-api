@@ -21,7 +21,7 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public abstract class WeightHandler extends AbstractConversionHandler {
+public class WeightHandler extends AbstractConversionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(WeightHandler.class);
 
 

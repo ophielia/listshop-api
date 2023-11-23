@@ -16,6 +16,7 @@ import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
+import com.meg.listshop.conversion.tools.RoundingUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RunWith(SpringRunner.class)
@@ -50,7 +52,8 @@ public class ConversionTest {
         ConvertibleAmount amount = new SimpleAmount(1, gramUnitOpt.get());
         ConvertibleAmount converted = conversionService.convert(amount, ozUnitOpt.get());
         assertNotNull(converted);
-        assertEquals(0.5, converted.getQuantity());
+        assertEquals(0.035, RoundingUtils.roundToThousenths(converted.getQuantity()));
+        assertEquals(1009L, converted.getUnit().getId());
 
     }
 }

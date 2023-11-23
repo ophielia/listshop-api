@@ -36,6 +36,39 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.meg.listshop</groupId>
+            <artifactId>listshop-data</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.meg.listshop</groupId>
+            <artifactId>listshop-data</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.meg.listshop</groupId>
+            <artifactId>conversion-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.meg.listshop</groupId>
+            <artifactId>conversion-data</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.meg.listshop</groupId>
+            <artifactId>conversion-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.meg.listshop</groupId>
+            <artifactId>conversion-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
@@ -195,18 +228,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.meg.listshop</groupId>
-            <artifactId>listshop-data</artifactId>
-            <version>1.14.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.meg.listshop</groupId>
-            <artifactId>conversion-api</artifactId>
-            <version>1.14.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
+
 
     </dependencies>
 

@@ -2,25 +2,11 @@ package com.meg.listshop.conversion.data.entity;
 
 
 import com.meg.listshop.conversion.data.pojo.UnitType;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "units")
-@GenericGenerator(
-        name = "unit_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "unit_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "initial_value",
-                        value = "1000"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 public class UnitEntity {
 
     @Id

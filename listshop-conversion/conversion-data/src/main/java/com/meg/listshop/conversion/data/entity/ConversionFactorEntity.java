@@ -2,10 +2,7 @@ package com.meg.listshop.conversion.data.entity;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "factors")
@@ -29,10 +26,13 @@ public class ConversionFactorEntity implements ConversionFactor {
 
     private Double factor;
 
-    @Column(name = "TO_UNIT")
+
+    @ManyToOne
+    @JoinColumn(name = "toUnit")
     private UnitEntity toUnit;
 
-    @Column(name = "FROM_UNIT")
+    @OneToOne
+    @JoinColumn(name = "fromUnit")
     private UnitEntity fromUnit;
 
     public ConversionFactorEntity() {
@@ -46,7 +46,6 @@ public class ConversionFactorEntity implements ConversionFactor {
         this.factorId = factorId;
     }
 
-    @Override
     public Double getFactor() {
         return factor;
     }
@@ -55,7 +54,6 @@ public class ConversionFactorEntity implements ConversionFactor {
         this.factor = factor;
     }
 
-    @Override
     public UnitEntity getToUnit() {
         return toUnit;
     }
@@ -64,7 +62,6 @@ public class ConversionFactorEntity implements ConversionFactor {
         this.toUnit = toUnit;
     }
 
-    @Override
     public UnitEntity getFromUnit() {
         return fromUnit;
     }

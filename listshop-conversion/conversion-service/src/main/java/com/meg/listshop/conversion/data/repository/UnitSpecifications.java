@@ -17,7 +17,7 @@ public class UnitSpecifications {
             Join<ConversionFactorEntity, UnitEntity> fromUnit = root.join("fromUnit");
             ArrayList<Predicate> predicates = new ArrayList<>();
 
-            predicates.add(criteriaBuilder.equal(fromUnit.<String>get("type"), spec.getUnitType().toString()));
+            predicates.add(criteriaBuilder.equal(fromUnit.<String>get("type"), spec.getUnitType()));
 
             for (UnitFlavor flavor : spec.getFlavors()) {
                 switch (flavor) {
@@ -47,7 +47,7 @@ public class UnitSpecifications {
             Join<ConversionFactorEntity, UnitEntity> fromUnit = root.join("toUnit");
             ArrayList<Predicate> predicates = new ArrayList<>();
 
-            predicates.add(criteriaBuilder.equal(fromUnit.<String>get("type"), spec.getUnitType().toString()));
+            predicates.add(criteriaBuilder.equal(fromUnit.<String>get("type"), spec.getUnitType()));
 
             for (UnitFlavor flavor : spec.getFlavors()) {
                 switch (flavor) {

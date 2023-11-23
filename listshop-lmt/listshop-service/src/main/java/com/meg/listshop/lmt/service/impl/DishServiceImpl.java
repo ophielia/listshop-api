@@ -10,6 +10,7 @@ package com.meg.listshop.lmt.service.impl;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.common.StringTools;
+import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import com.meg.listshop.lmt.data.entity.DishEntity;
@@ -46,6 +47,7 @@ public class DishServiceImpl implements DishService {
     private final AutoTagService autoTagService;
 
     private final TagService tagService;
+    private final ConversionService conversionService;
 
 
     private static final Logger logger = LoggerFactory.getLogger(DishServiceImpl.class);
@@ -56,13 +58,15 @@ public class DishServiceImpl implements DishService {
             DishSearchService dishSearchService,
             UserRepository userRepository,
             @Lazy AutoTagService autoTagService,
-            TagService tagService
+            TagService tagService,
+            ConversionService conversionService
     ) {
         this.dishRepository = dishRepository;
         this.dishSearchService = dishSearchService;
         this.userRepository = userRepository;
         this.autoTagService = autoTagService;
         this.tagService = tagService;
+        this.conversionService = conversionService;
     }
 
     @Override
