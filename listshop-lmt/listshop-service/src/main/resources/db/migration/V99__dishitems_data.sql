@@ -5,157 +5,81 @@ from dish_tags;
 
 
 
-insert into units (unit_id, name, type)
-values (1000, 'cup', 'Imperial');
-insert into units (unit_id, name, type)
-values (1001, 'tablespoon', 'Hybrid');
-insert into units (unit_id, name, type)
-values (1002, 'teaspoon', 'Hybrid');
-insert into units (unit_id, name, type)
-values (1003, 'liter', 'Metric');
-insert into units (unit_id, name, type)
-values (1004, 'milliliter', 'Metric');
-insert into units (unit_id, name, type)
-values (1005, 'gallon', 'Imperial');
-insert into units (unit_id, name, type)
-values (1006, 'pint', 'Imperial');
-insert into units (unit_id, name, type)
-values (1007, 'fl oz', 'Imperial');
-insert into units (unit_id, name, type)
-values (1008, 'lb', 'Imperial');
-insert into units (unit_id, name, type)
-values (1009, 'oz', 'Imperial');
-insert into units (unit_id, name, type)
-values (1010, 'quart', 'Imperial');
-insert into units (unit_id, name, type)
-values (1011, 'unit', 'Unit');
-insert into units (unit_id, name, type)
-values (1012, 'quart', 'Imperial');
-insert into units (unit_id, name, type)
-values (1013, 'gram', 'Metric');
-insert into units (unit_id, name, type)
-values (1014, 'kilogram', 'Metric');
-insert into units (unit_id, name, type)
-values (1015, 'centiliter', 'Metric');
+insert into units (unit_id, type, name, is_liquid, is_list_unit, is_dish_unit, is_weight, is_volume)
+values (1001, 'Hybrid', 'tablespoon', false, false, true, false, false),
+       (1002, 'Hybrid', 'teaspoon', false, false, true, false, false),
+       (1009, 'Imperial', 'oz', false, false, false, true, false),
+       (1008, 'Imperial', 'lb', false, false, false, true, false),
+       (1006, 'Imperial', 'pint', true, false, true, false, true),
+       (1005, 'Imperial', 'gallon', true, false, false, false, true),
+       (1007, 'Imperial', 'fl oz', true, false, true, false, true),
+       (1010, 'Imperial', 'quart', true, true, true, false, true),
+       (1000, 'Imperial', 'cup', false, false, true, false, true),
+       (1016, 'Metric', 'milligram', false, true, true, true, false),
+       (1013, 'Metric', 'gram', false, false, true, true, false),
+       (1014, 'Metric', 'kilogram', false, true, true, true, false),
+       (1004, 'Metric', 'milliliter', false, false, true, false, true),
+       (1003, 'Metric', 'liter', true, true, true, false, true),
+       (1015, 'Metric', 'centiliter', false, false, true, false, true),
+       (1011, 'Unit', 'unit', false, false, false, false, false);
 
 
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 28.35 as factor
-from units f,
-     units t
-where lower(f.name) = 'oz'
-  and lower(t.name) = 'gram';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 35.2733686067019 as factor
-from units f,
-     units t
-where lower(f.name) = 'kilogram'
-  and lower(t.name) = 'oz';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.0352733686067019 as factor
-from units f,
-     units t
-where lower(f.name) = 'gram'
-  and lower(t.name) = 'oz';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 2.20462262 as factor
-from units f,
-     units t
-where lower(f.name) = 'kilogram'
-  and lower(t.name) = 'lb';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 4 as factor
-from units f,
-     units t
-where lower(f.name) = 'quart'
-  and lower(t.name) = 'gallon';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 8 as factor
-from units f,
-     units t
-where lower(f.name) = 'pint'
-  and lower(t.name) = 'gallon';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 16 as factor
-from units f,
-     units t
-where lower(f.name) = 'cup'
-  and lower(t.name) = 'gallon';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 128 as factor
-from units f,
-     units t
-where lower(f.name) = 'fl oz'
-  and lower(t.name) = 'gallon';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 3.8 as factor
-from units f,
-     units t
-where lower(f.name) = 'liter'
-  and lower(t.name) = 'gallon';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 2 as factor
-from units f,
-     units t
-where lower(f.name) = 'pint'
-  and lower(t.name) = 'quart';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 4 as factor
-from units f,
-     units t
-where lower(f.name) = 'cup'
-  and lower(t.name) = 'quart';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 32 as factor
-from units f,
-     units t
-where lower(f.name) = 'fl oz'
-  and lower(t.name) = 'quart';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.95 as factor
-from units f,
-     units t
-where lower(f.name) = 'liter'
-  and lower(t.name) = 'quart';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 2 as factor
-from units f,
-     units t
-where lower(f.name) = 'cup'
-  and lower(t.name) = 'pint';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 16 as factor
-from units f,
-     units t
-where lower(f.name) = 'fl oz'
-  and lower(t.name) = 'pint';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.475 as factor
-from units f,
-     units t
-where lower(f.name) = 'liter'
-  and lower(t.name) = 'pint';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 8 as factor
-from units f,
-     units t
-where lower(f.name) = 'fl oz'
-  and lower(t.name) = 'cup';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.24 as factor
-from units f,
-     units t
-where lower(f.name) = 'liter'
-  and lower(t.name) = 'cup';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.001 as factor
-from units f,
-     units t
-where lower(f.name) = 'liter'
-  and lower(t.name) = 'milliliter';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.01 as factor
-from units f,
-     units t
-where lower(f.name) = 'liter'
-  and lower(t.name) = 'centiliter';
+insert into factors (factor_id, factor, to_unit, from_unit)
+values (1073, 28.35, 1013, 1009),
+       (1074, 35.2733686067019, 1009, 1014),
+       (1075, 0.0352733686067019, 1009, 1013),
+       (1076, 2.20462262, 1008, 1014),
+       (1077, 4, 1005, 1010),
+       (1078, 8, 1005, 1006),
+       (1079, 16, 1005, 1000),
+       (1080, 128, 1005, 1007),
+       (1081, 3.8, 1005, 1003),
+       (1082, 2, 1010, 1006),
+       (1083, 4, 1010, 1000),
+       (1084, 32, 1010, 1007),
+       (1085, 0.95, 1010, 1003),
+       (1086, 2, 1006, 1000),
+       (1087, 16, 1006, 1007),
+       (1088, 0.475, 1006, 1003),
+       (1089, 8, 1000, 1007),
+       (1090, 0.24, 1000, 1003),
+       (1091, 0.001, 1004, 1003),
+       (1092, 0.01, 1015, 1003),
+       (1093, 3800, 1005, 1004),
+       (1094, 950, 1010, 1004),
+       (1095, 475, 1006, 1004),
+       (1096, 240, 1000, 1004),
+       (1097, 1000, 1014, 1013),
+       (1098, 35.2733686067019, 1009, 1014),
+       (1099, 1.05708245243129, 1010, 1003),
+       (1100, 0.264200792602378, 1005, 1003),
+       (1101, 16, 1005, 1000),
+       (1102, 2, 1006, 1000),
+       (1103, 4, 1010, 1000),
+       (1104, 8, 1000, 1007),
+       (1105, 128, 1005, 1007),
+       (1106, 16, 1006, 1007),
+       (1107, 32, 1010, 1007),
+       (1108, 1000, 1014, 1013),
+       (1109, 0.0022, 1008, 1013),
+       (1110, 0.0352733686067019, 1009, 1013),
+       (1111, 0.0353, 1009, 1013),
+       (1112, 2.20462262, 1008, 1014),
+       (1113, 35.2733686067019, 1009, 1014),
+       (1114, 0.01, 1015, 1003),
+       (1115, 0.24, 1000, 1003),
+       (1116, 3.8, 1005, 1003),
+       (1117, 0.264200792602378, 1005, 1003),
+       (1118, 0.001, 1004, 1003),
+       (1119, 0.475, 1006, 1003),
+       (1120, 0.8798, 1010, 1003),
+       (1121, 240, 1000, 1004),
+       (1122, 3800, 1005, 1004),
+       (1123, 475, 1006, 1004),
+       (1124, 950, 1010, 1004),
+       (1125, 28.35, 1013, 1009),
+       (1126, 8, 1005, 1006),
+       (1127, 2, 1010, 1006),
+       (1128, 4, 1005, 1010),
+       (1129, 0.0000022, 1008, 1016),
+       (1130, 0.00003527, 1009, 1016);
