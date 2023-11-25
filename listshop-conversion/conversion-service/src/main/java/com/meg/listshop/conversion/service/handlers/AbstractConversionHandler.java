@@ -63,7 +63,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
             throw new ConversionFactorException(message);
         }
 
-        ConversionFactor factor = findBestFactor(factors);
+        ConversionFactor factor = findBestFactor(factors, toConvert.getQuantity());
 
         double newQuantity = toConvert.getQuantity() * factor.getFactor();
         UnitEntity newUnit = factor.getToUnit();
@@ -83,14 +83,14 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     }
 
 
-    private ConversionFactor findBestFactor(List<ConversionFactor> factors) {
+    private ConversionFactor findBestFactor(List<ConversionFactor> factors, double quantity) {
         if (factors.size() == 1) {
             return factors.get(0);
         }
 
         Comparator<ConversionFactor> comparator = (f1, f2) -> {
-            Double f1ToOne = Math.abs(f1.getFactor() - 1);
-            Double f2ToOne = Math.abs(f2.getFactor() - 1);
+            Double f1ToOne = Math.abs(0 - (f1.getFactor() * quantity));
+            Double f2ToOne = Math.abs(0 - (f2.getFactor() * quantity));
             return f1ToOne.compareTo(f2ToOne);
         };
 

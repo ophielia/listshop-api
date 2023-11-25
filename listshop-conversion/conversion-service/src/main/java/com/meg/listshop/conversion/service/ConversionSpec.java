@@ -5,6 +5,7 @@ import com.meg.listshop.conversion.data.pojo.ConversionContext;
 import com.meg.listshop.conversion.data.pojo.ConversionContextType;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.conversion.tools.ConversionTools;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -25,7 +26,7 @@ public class ConversionSpec {
     }
 
     public static ConversionSpec fromExactUnit(UnitEntity unitSource) {
-        return new ConversionSpec(unitSource.getId(), unitSource.getType(), flavorsForUnit(unitSource));
+        return new ConversionSpec(unitSource.getId(), unitSource.getType(), ConversionTools.flavorsForUnit(unitSource));
     }
 
     private static UnitType oppositeType(UnitType unitType) {
@@ -39,7 +40,7 @@ public class ConversionSpec {
     }
 
     public static ConversionSpec convertedFromUnit(UnitEntity unitSource) {
-        return new ConversionSpec(null, oppositeType(unitSource.getType()), flavorsForUnit(unitSource));
+        return new ConversionSpec(null, oppositeType(unitSource.getType()), ConversionTools.flavorsForUnit(unitSource));
     }
 
     public static ConversionSpec basicSpec(UnitType type, UnitFlavor... flavors) {
@@ -54,25 +55,7 @@ public class ConversionSpec {
         return new ConversionSpec(null, context.getUnitType(), flavorsForContextAndSource(context, source));
     }
 
-    private static Set<UnitFlavor> flavorsForUnit(UnitEntity unit) {
-        Set<UnitFlavor> flavors = new HashSet<>();
-        if (unit.isVolume()) {
-            flavors.add(UnitFlavor.Volume);
-        }
-        if (unit.isWeight()) {
-            flavors.add(UnitFlavor.Weight);
-        }
-        if (unit.isLiquid()) {
-            flavors.add(UnitFlavor.Liquid);
-        }
-        if (unit.isListUnit()) {
-            flavors.add(UnitFlavor.ListUnit);
-        }
-        if (unit.isDishUnit()) {
-            flavors.add(UnitFlavor.DishUnit);
-        }
-        return flavors;
-    }
+
 
     private static Set<UnitFlavor> flavorsForContextAndSource(ConversionContext context, UnitEntity source) {
         ConversionContextType conversionContextType = context.getContextType();
@@ -94,6 +77,10 @@ public class ConversionSpec {
             flavors.add(UnitFlavor.Volume);
         }
         return flavors;
+    }
+
+    public static ConversionSpec basicSpec(Long unitId, UnitType type, Set<UnitFlavor> flavorSet) {
+        return new ConversionSpec(unitId, type, flavorSet);
     }
 
     public boolean matches(UnitEntity unit) {

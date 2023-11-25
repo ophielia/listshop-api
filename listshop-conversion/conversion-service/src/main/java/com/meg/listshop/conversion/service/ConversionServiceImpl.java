@@ -3,10 +3,12 @@ package com.meg.listshop.conversion.service;
 
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionContext;
+import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.handlers.ConversionHandler;
+import com.meg.listshop.conversion.tools.ConversionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ConversionServiceImpl implements ConversionService {
@@ -64,8 +68,8 @@ public class ConversionServiceImpl implements ConversionService {
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, UnitEntity targetUnit) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for unit [{}], amount [{}]", targetUnit, amount);
-        ConversionSpec source = ConversionSpec.fromExactUnit(amount.getUnit());
-        ConversionSpec target = ConversionSpec.fromExactUnit(targetUnit);
+        ConversionSpec source = createConversionSpec(amount.getUnit(), true);
+        ConversionSpec target = createConversionSpec(targetUnit, true);
 
         if (checkTargetEqualsSource(source, target)) {
             LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
@@ -77,6 +81,17 @@ public class ConversionServiceImpl implements ConversionService {
 
         // return converted amount
         return chain.process(amount, target);
+    }
+
+    private ConversionSpec createConversionSpec(UnitEntity unit, boolean ignoreDestinationFlavors) {
+        Set<UnitFlavor> specFlavors = ConversionTools.flavorsForUnit(unit);
+        if (ignoreDestinationFlavors) {
+            specFlavors = specFlavors.stream()
+                    .filter(f -> f != UnitFlavor.ListUnit)
+                    .filter(f -> f != UnitFlavor.DishUnit)
+                    .collect(Collectors.toSet());
+        }
+        return ConversionSpec.basicSpec(unit.getId(), unit.getType(), specFlavors);
     }
 
     private HandlerChain getOrCreateChain(ConversionSpec source, ConversionSpec target) throws ConversionPathException {
