@@ -30,13 +30,14 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     public AbstractConversionHandler() {
 
     }
+
     public boolean convertsTo(ConversionSpec spec) {
         return target.equals(spec) || source.equals(spec);
     }
 
     public boolean handles(ConversionSpec sourceSpec, ConversionSpec targetSpec) {
-        return (source.containedIn(sourceSpec) && target.containedIn(targetSpec)) ||
-                (target.containedIn(sourceSpec) && source.containedIn(targetSpec));
+        return (source.equals(sourceSpec) && target.equals(targetSpec)) ||
+                (target.equals(sourceSpec) && source.equals(targetSpec));
     }
 
     public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException {
@@ -89,8 +90,8 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         }
 
         Comparator<ConversionFactor> comparator = (f1, f2) -> {
-            Double f1ToOne = Math.abs(0 - (f1.getFactor() * quantity));
-            Double f2ToOne = Math.abs(0 - (f2.getFactor() * quantity));
+            Double f1ToOne = Math.abs(1 - (f1.getFactor() * quantity));
+            Double f2ToOne = Math.abs(1 - (f2.getFactor() * quantity));
             return f1ToOne.compareTo(f2ToOne);
         };
 

@@ -1,10 +1,7 @@
 package com.meg.listshop.conversion.service;
 
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionContext;
-import com.meg.listshop.conversion.data.pojo.ConversionContextType;
-import com.meg.listshop.conversion.data.pojo.UnitFlavor;
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.tools.ConversionTools;
 
 import java.util.HashSet;
@@ -16,17 +13,19 @@ public class ConversionSpec {
     private final Long unitId;
 
     private final UnitType unitType;
+    private final UnitSubtype unitSubtype;
 
     private final Set<UnitFlavor> flavors;
 
-    private ConversionSpec(Long unitId, UnitType unitType, Set<UnitFlavor> flavors) {
+    private ConversionSpec(Long unitId, UnitType unitType, UnitSubtype subtype, Set<UnitFlavor> flavors) {
         this.unitId = unitId;
         this.unitType = unitType;
         this.flavors = flavors;
+        this.unitSubtype = subtype;
     }
 
     public static ConversionSpec fromExactUnit(UnitEntity unitSource) {
-        return new ConversionSpec(unitSource.getId(), unitSource.getType(), ConversionTools.flavorsForUnit(unitSource));
+        return new ConversionSpec(unitSource.getId(), unitSource.getType(), unitSource.getSubtype(), ConversionTools.flavorsForUnit(unitSource));
     }
 
     private static UnitType oppositeType(UnitType unitType) {
@@ -40,21 +39,20 @@ public class ConversionSpec {
     }
 
     public static ConversionSpec convertedFromUnit(UnitEntity unitSource) {
-        return new ConversionSpec(null, oppositeType(unitSource.getType()), ConversionTools.flavorsForUnit(unitSource));
+        return new ConversionSpec(null, oppositeType(unitSource.getType()), unitSource.getSubtype(), ConversionTools.flavorsForUnit(unitSource));
     }
 
-    public static ConversionSpec basicSpec(UnitType type, UnitFlavor... flavors) {
+    public static ConversionSpec basicSpec(UnitType type, UnitSubtype subtype, UnitFlavor... flavors) {
         Set<UnitFlavor> flavorSet = new HashSet<>();
         for (UnitFlavor flavor : flavors) {
             flavorSet.add(flavor);
         }
-        return new ConversionSpec(null, type, flavorSet);
+        return new ConversionSpec(null, type, subtype, flavorSet);
     }
 
     public static ConversionSpec fromContextAndSource(ConversionContext context, UnitEntity source) {
-        return new ConversionSpec(null, context.getUnitType(), flavorsForContextAndSource(context, source));
+        return new ConversionSpec(null, context.getUnitType(), context.getUnitSubtype(), flavorsForContextAndSource(context, source));
     }
-
 
 
     private static Set<UnitFlavor> flavorsForContextAndSource(ConversionContext context, UnitEntity source) {
@@ -79,8 +77,8 @@ public class ConversionSpec {
         return flavors;
     }
 
-    public static ConversionSpec basicSpec(Long unitId, UnitType type, Set<UnitFlavor> flavorSet) {
-        return new ConversionSpec(unitId, type, flavorSet);
+    public static ConversionSpec basicSpec(Long unitId, UnitType type, UnitSubtype subtype, Set<UnitFlavor> flavorSet) {
+        return new ConversionSpec(unitId, type, subtype, flavorSet);
     }
 
     public boolean matches(UnitEntity unit) {
@@ -106,12 +104,12 @@ public class ConversionSpec {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ConversionSpec that = (ConversionSpec) o;
-        return unitType == that.unitType && Objects.equals(flavors, that.flavors);
+        return unitType == that.unitType && unitSubtype == that.unitSubtype && Objects.equals(flavors, that.flavors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(unitType, flavors);
+        return Objects.hash(unitType, unitSubtype, flavors);
     }
 
     @Override
@@ -119,13 +117,9 @@ public class ConversionSpec {
         return "ConversionSpec{" +
                 "unitId=" + unitId +
                 ", unitType=" + unitType +
+                ", unitSubtype=" + unitSubtype/**/ +
                 ", flavors=" + flavors +
                 '}';
     }
 
-    public boolean containedIn(ConversionSpec toCheck) {
-        // do all flavors in this object exit in toCheck
-        return unitType.equals(toCheck.getUnitType()) && toCheck.getFlavors().containsAll(flavors);
-
-    }
 }

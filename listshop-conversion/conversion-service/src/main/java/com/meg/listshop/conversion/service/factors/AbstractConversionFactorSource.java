@@ -14,6 +14,7 @@ public abstract class AbstractConversionFactorSource implements ConversionFactor
     private List<ConversionFactor> factors;
 
     private boolean oneWay;
+
     public AbstractConversionFactorSource(List<ConversionFactor> factors) {
         this.factors = factors;
     }

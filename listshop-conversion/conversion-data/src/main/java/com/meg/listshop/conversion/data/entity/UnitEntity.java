@@ -1,6 +1,7 @@
 package com.meg.listshop.conversion.data.entity;
 
 
+import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 
 import javax.persistence.*;
@@ -15,6 +16,9 @@ public class UnitEntity {
 
     @Enumerated(EnumType.STRING)
     private UnitType type;
+
+    @Enumerated(EnumType.STRING)
+    private UnitSubtype subtype;
 
     @Column(name = "name")
     private String name;
@@ -96,6 +100,15 @@ public class UnitEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+
+    public UnitSubtype getSubtype() {
+        return subtype;
+    }
+
+    public void setSubtype(UnitSubtype subtype) {
+        this.subtype = subtype;
     }
 
     @Override

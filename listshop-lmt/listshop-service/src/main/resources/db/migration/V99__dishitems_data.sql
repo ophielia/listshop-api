@@ -5,24 +5,23 @@ from dish_tags;
 
 
 
-insert into units (unit_id, type, name, is_liquid, is_list_unit, is_dish_unit, is_weight, is_volume)
-values (1001, 'Hybrid', 'tablespoon', false, false, true, false, false),
-       (1002, 'Hybrid', 'teaspoon', false, false, true, false, false),
-       (1009, 'Imperial', 'oz', false, false, false, true, false),
-       (1008, 'Imperial', 'lb', false, false, false, true, false),
-       (1006, 'Imperial', 'pint', true, false, true, false, true),
-       (1005, 'Imperial', 'gallon', true, false, false, false, true),
-       (1007, 'Imperial', 'fl oz', true, false, true, false, true),
-       (1010, 'Imperial', 'quart', true, true, true, false, true),
-       (1000, 'Imperial', 'cup', false, false, true, false, true),
-       (1016, 'Metric', 'milligram', false, true, true, true, false),
-       (1013, 'Metric', 'gram', false, false, true, true, false),
-       (1014, 'Metric', 'kilogram', false, true, true, true, false),
-       (1004, 'Metric', 'milliliter', false, false, true, false, true),
-       (1003, 'Metric', 'liter', true, true, true, false, true),
-       (1015, 'Metric', 'centiliter', false, false, true, false, true),
-       (1011, 'Unit', 'unit', false, false, false, false, false);
-
+insert into public.units (unit_id, type, name, is_liquid, is_list_unit, is_dish_unit, is_weight, is_volume)
+values  (1011, 'Unit', 'unit', false, false, false, false, false),
+        (1013, 'Metric', 'gram', false, false, true, true, false),
+        (1014, 'Metric', 'kilogram', false, true, true, true, false),
+        (1009, 'Imperial', 'oz', false, false, false, true, false),
+        (1008, 'Imperial', 'lb', false, false, false, true, false),
+        (1005, 'Imperial', 'gallon', false, false, false, false, true),
+        (1002, 'Hybrid', 'teaspoon', false, false, true, false, false),
+        (1001, 'Hybrid', 'tablespoon', false, false, true, false, false),
+        (1010, 'Imperial', 'quart', false, true, true, false, true),
+        (1007, 'Imperial', 'fl oz', false, false, true, false, true),
+        (1000, 'Imperial', 'cup', false, false, true, false, true),
+        (1004, 'Metric', 'milliliter', false, false, true, false, true),
+        (1003, 'Metric', 'liter', false, true, true, false, true),
+        (1006, 'Imperial', 'pint', false, false, true, false, true),
+        (1015, 'Metric', 'centiliter', false, false, true, false, true),
+        (1016, 'Metric', 'milligram', false, true, true, true, false);
 
 insert into factors (factor_id, factor, to_unit, from_unit)
 values (1220, 16, 1005, 1000),

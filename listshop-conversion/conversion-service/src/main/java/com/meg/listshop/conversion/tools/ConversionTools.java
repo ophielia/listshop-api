@@ -10,15 +10,7 @@ public class ConversionTools {
 
     public static Set<UnitFlavor> flavorsForUnit(UnitEntity unit) {
         Set<UnitFlavor> flavors = new HashSet<>();
-        if (unit.isVolume()) {
-            flavors.add(UnitFlavor.Volume);
-        }
-        if (unit.isWeight()) {
-            flavors.add(UnitFlavor.Weight);
-        }
-        if (unit.isLiquid()) {
-            flavors.add(UnitFlavor.Liquid);
-        }
+
         if (unit.isListUnit()) {
             flavors.add(UnitFlavor.ListUnit);
         }

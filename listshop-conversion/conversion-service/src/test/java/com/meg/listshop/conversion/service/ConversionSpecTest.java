@@ -1,10 +1,7 @@
 package com.meg.listshop.conversion.service;
 
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionContext;
-import com.meg.listshop.conversion.data.pojo.ConversionContextType;
-import com.meg.listshop.conversion.data.pojo.UnitFlavor;
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.conversion.data.pojo.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -22,7 +19,7 @@ class ConversionSpecTest {
         ConversionSpec spec = ConversionSpec.fromExactUnit(unit);
         assertEquals(1L, spec.getUnitId(), "id should be filled and equal 1");
         assertEquals(UnitType.Imperial, spec.getUnitType(), "type should be Imperial");
-        assertEquals(expectedFlavors, spec.getFlavors(), "flavors should only Weight and Weight only");
+        assertEquals(0, spec.getFlavors().size(), "no flavors here - weight is in subtype");
 
         unit = makeMetricUnit(1L, true);
         expectedFlavors = new HashSet<UnitFlavor>();
@@ -30,7 +27,7 @@ class ConversionSpecTest {
         spec = ConversionSpec.fromExactUnit(unit);
         assertEquals(1L, spec.getUnitId(), "id should be filled and equal 1");
         assertEquals(UnitType.Metric, spec.getUnitType(), "type should be Metric");
-        assertEquals(expectedFlavors, spec.getFlavors(), "flavors should only Volume and Volume only");
+        assertEquals(0, spec.getFlavors().size(), "no flavors here - weight is in subtype");
     }
 
     @Test
@@ -41,7 +38,7 @@ class ConversionSpecTest {
         ConversionSpec spec = ConversionSpec.convertedFromUnit(unit);
         assertNull(spec.getUnitId(), "id should be empty");
         assertEquals(UnitType.Metric, spec.getUnitType(), "type should be Metric");
-        assertEquals(expectedFlavors, spec.getFlavors(), "flavors should only Weight and Weight only");
+        assertEquals(0, spec.getFlavors().size(), "no flavors - weight is in subtype");
 
     }
 
@@ -49,7 +46,7 @@ class ConversionSpecTest {
     void testFromContextAndSource() {
         // make imperial weight, for list context
         UnitEntity sourceUnit = makeImperialUnit(1L, false);
-        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.Metric);
+        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.Metric, UnitSubtype.Weight);
         Set<UnitFlavor> expectedFlavors = createFlavors(false, true, false, true, false);
         ConversionSpec result = ConversionSpec.fromContextAndSource(context, sourceUnit);
 

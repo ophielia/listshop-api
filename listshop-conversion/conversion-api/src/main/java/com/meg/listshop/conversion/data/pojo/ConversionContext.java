@@ -4,10 +4,12 @@ public class ConversionContext {
     private ConversionContextType contextType;
 
     private UnitType unitType;
+    private UnitSubtype unitSubtype;
 
-    public ConversionContext(ConversionContextType contextType, UnitType unitType) {
+    public ConversionContext(ConversionContextType contextType, UnitType unitType, UnitSubtype subtype) {
         this.contextType = contextType;
         this.unitType = unitType;
+        this.unitSubtype = subtype;
     }
 
     public ConversionContextType getContextType() {
@@ -17,6 +19,10 @@ public class ConversionContext {
 
     public UnitType getUnitType() {
         return unitType;
+    }
+
+    public UnitSubtype getUnitSubtype() {
+        return unitSubtype;
     }
 
     @Override

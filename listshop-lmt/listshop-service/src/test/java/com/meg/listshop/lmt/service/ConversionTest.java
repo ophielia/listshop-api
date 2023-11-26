@@ -10,12 +10,15 @@ package com.meg.listshop.lmt.service;
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.pojo.ConversionContext;
+import com.meg.listshop.conversion.data.pojo.ConversionContextType;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConversionService;
+import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.tools.RoundingUtils;
 import org.junit.ClassRule;
@@ -127,11 +130,8 @@ public class ConversionTest {
 
     @Test
     public void testSingleHandlerVolumeType() throws ConversionPathException, ConversionFactorException {
-        Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
         Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
-        Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
         Optional<UnitEntity> cupsOpt = unitRepository.findById(cupsId);
-        Optional<UnitEntity> quartOpt = unitRepository.findById(quartId);
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
 
         ConvertibleAmount amount = new SimpleAmount(20.0, litersOpt.get());
@@ -151,6 +151,40 @@ public class ConversionTest {
         assertNotNull(converted);
         assertEquals(0.71, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(literId, converted.getUnit().getId());
+    }
+
+    @Test
+    public void testSimpleMetricListContext() throws ConversionPathException, ConversionFactorException {
+        Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
+        Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
+        Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
+        Optional<UnitEntity> cupsOpt = unitRepository.findById(cupsId);
+        Optional<UnitEntity> quartOpt = unitRepository.findById(quartId);
+        Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
+
+        ConvertibleAmount amount = new SimpleAmount(3, quartOpt.get());
+        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.Metric);
+        ConvertibleAmount converted = conversionService.convert(amount, context);
+        assertNotNull(converted);
+        assertEquals(4.399, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(gallonId, converted.getUnit().getId());
+
+    }
+
+    public void nextTest() {
+    /*
+        amount = new SimpleAmount(50, centiliterOpt.get());
+        converted = conversionService.convert(amount, UnitType.Imperial);
+        assertNotNull(converted);
+        assertEquals(0.440, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(quartId, converted.getUnit().getId());
+
+        amount = new SimpleAmount(3.0, cupsOpt.get());
+        converted = conversionService.convert(amount, UnitType.Metric);
+        assertNotNull(converted);
+        assertEquals(0.71, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(literId, converted.getUnit().getId());
+     */
     }
 
     @Test

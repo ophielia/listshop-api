@@ -2,7 +2,7 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
-import com.meg.listshop.conversion.data.pojo.UnitFlavor;
+import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.service.ConversionSpec;
@@ -29,9 +29,9 @@ public class WeightHandler extends AbstractConversionHandler {
     public WeightHandler(ConversionFactorRepository factorRepository) {
         super();
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.Metric, UnitFlavor.Weight);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.Metric, UnitSubtype.Weight);
         // make target
-        ConversionSpec target = ConversionSpec.basicSpec(UnitType.Imperial, UnitFlavor.Weight);
+        ConversionSpec target = ConversionSpec.basicSpec(UnitType.Imperial, UnitSubtype.Weight);
 
         // initialize conversionSource
         List<ConversionFactorEntity> factors = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));

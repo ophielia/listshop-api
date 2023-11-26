@@ -2,6 +2,7 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
+import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
@@ -21,17 +22,17 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public class VolumeHandler extends AbstractConversionHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(VolumeHandler.class);
+public class MetricLWeightForListHandler extends AbstractOneWayConversionHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(MetricLWeightForListHandler.class);
 
 
     @Autowired
-    public VolumeHandler(ConversionFactorRepository factorRepository) {
+    public MetricLWeightForListHandler(ConversionFactorRepository factorRepository) {
         super();
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.Metric, UnitSubtype.Volume);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.Metric, UnitSubtype.Weight);
         // make target
-        ConversionSpec target = ConversionSpec.basicSpec(UnitType.Imperial, UnitSubtype.Volume);
+        ConversionSpec target = ConversionSpec.basicSpec(UnitType.Metric, UnitSubtype.Weight, UnitFlavor.ListUnit);
 
         // initialize conversionSource
         List<ConversionFactorEntity> factors = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));

@@ -30,29 +30,29 @@ public class ConversionServiceTest {
 
     @BeforeEach
     void setUp() {
-        metricGrams = ConversionTestTools.makeMetricUnit(1L, false);
-        imperialOunces = ConversionTestTools.makeImperialUnit(2L, false);
-        imperialMadeUpCloser = ConversionTestTools.makeImperialUnit(5L, false);
-        imperialQuart = ConversionTestTools.makeImperialUnit(3L, UnitFlavor.Volume, UnitFlavor.ListUnit);
-        imperialCups = ConversionTestTools.makeImperialUnit(6L, UnitFlavor.Volume);
-        metricLiter = ConversionTestTools.makeMetricUnit(4L, true);
+        metricGrams = ConversionTestTools.makeMetricUnit(1L, UnitSubtype.Weight);
+        imperialOunces = ConversionTestTools.makeImperialUnit(2L, UnitSubtype.Weight);
+        imperialMadeUpCloser = ConversionTestTools.makeImperialUnit(5L, UnitSubtype.Weight);
+        imperialQuart = ConversionTestTools.makeImperialUnit(3L, UnitSubtype.Volume);
+        imperialCups = ConversionTestTools.makeImperialUnit(6L, UnitSubtype.Volume);
+        metricLiter = ConversionTestTools.makeMetricUnit(4L, UnitSubtype.Volume);
 
         ConversionHandler metricToMetricWeight = new ConversionHandlerBuilder()
                 .withFactor(metricGrams, imperialOunces, 0.5)
                 .withFactor(metricGrams, imperialMadeUpCloser, 0.9)
-                .withFromSpec(UnitType.Metric, UnitFlavor.Weight)
-                .withToSpec(UnitType.Imperial, UnitFlavor.Weight)
+                .withFromSpec(UnitType.Metric, UnitSubtype.Weight)
+                .withToSpec(UnitType.Imperial, UnitSubtype.Weight)
                 .build();
         ConversionHandler metricToMetricVolume = new ConversionHandlerBuilder()
                 .withFactor(metricLiter, imperialQuart, 0.6)
-                .withFromSpec(UnitType.Metric, UnitFlavor.Volume)
-                .withToSpec(UnitType.Imperial, UnitFlavor.Volume)
+                .withFromSpec(UnitType.Metric, UnitSubtype.Volume)
+                .withToSpec(UnitType.Imperial, UnitSubtype.Volume)
                 .build();
         ConversionHandler imperialListDestination = new ConversionHandlerBuilder()
                 .withFactor(imperialOunces, imperialQuart, 0.7)
                 .withFactor(imperialCups, imperialQuart, 4)
-                .withFromSpec(UnitType.Imperial, UnitFlavor.Volume)
-                .withToSpec(UnitType.Imperial, UnitFlavor.Volume, UnitFlavor.ListUnit)
+                .withFromSpec(UnitType.Imperial, UnitSubtype.Volume)
+                .withToSpec(UnitType.Imperial, UnitSubtype.Volume, UnitFlavor.ListUnit)
                 .withOneWay()
                 .build();
         List<ConversionHandler> handlers = Arrays.asList(metricToMetricVolume, metricToMetricWeight, imperialListDestination);
@@ -104,7 +104,7 @@ public class ConversionServiceTest {
     @Test
     public void testConvertByContext() throws ConversionPathException, ConversionFactorException {
         // context - convert imperial volume to list unit (cups to quart)
-        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.Imperial);
+        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.Imperial, UnitSubtype.Volume);
         ConvertibleAmount amount = new SimpleAmount(1, imperialCups);
         ConvertibleAmount converted = service.convert(amount, context);
         assertNotNull(converted);

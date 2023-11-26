@@ -10,6 +10,9 @@ public abstract class AbstractOneWayConversionHandler extends AbstractConversion
         super(source, target, conversionSource);
     }
 
+    public AbstractOneWayConversionHandler() {
+    }
+
     public boolean convertsTo(ConversionSpec spec) {
         return getTarget().equals(spec);
     }

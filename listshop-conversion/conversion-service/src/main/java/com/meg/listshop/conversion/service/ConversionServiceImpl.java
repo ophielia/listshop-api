@@ -53,7 +53,7 @@ public class ConversionServiceImpl implements ConversionService {
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for context [{}], amount [{}]", context, amount);
-        ConversionSpec source = ConversionSpec.fromExactUnit(amount.getUnit());
+        ConversionSpec source = createConversionSpec(amount.getUnit(), true);
         ConversionSpec target = ConversionSpec.fromContextAndSource(context, amount.getUnit());
 
 
@@ -91,7 +91,7 @@ public class ConversionServiceImpl implements ConversionService {
                     .filter(f -> f != UnitFlavor.DishUnit)
                     .collect(Collectors.toSet());
         }
-        return ConversionSpec.basicSpec(unit.getId(), unit.getType(), specFlavors);
+        return ConversionSpec.basicSpec(unit.getId(), unit.getType(), unit.getSubtype(), specFlavors);
     }
 
     private HandlerChain getOrCreateChain(ConversionSpec source, ConversionSpec target) throws ConversionPathException {

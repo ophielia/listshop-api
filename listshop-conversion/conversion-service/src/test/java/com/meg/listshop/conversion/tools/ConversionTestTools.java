@@ -2,6 +2,7 @@ package com.meg.listshop.conversion.tools;
 
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
+import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 
 public class ConversionTestTools {
@@ -17,9 +18,10 @@ public class ConversionTestTools {
         return unit;
     }
 
-    public static UnitEntity makeUnit(Long id, UnitType type, UnitFlavor... flavors) {
+    public static UnitEntity makeUnit(Long id, UnitType type, UnitSubtype subtype, UnitFlavor... flavors) {
         UnitEntity unit = new UnitEntity();
         unit.setType(type);
+        unit.setSubtype(subtype);
         unit.setId(id);
         for (UnitFlavor flavor : flavors) {
             switch (flavor) {
@@ -44,9 +46,10 @@ public class ConversionTestTools {
         return unit;
     }
 
-    public static UnitEntity makeImperialUnit(Long id, UnitFlavor... flavors) {
+    public static UnitEntity makeImperialUnit(Long id, UnitSubtype subtype, UnitFlavor... flavors) {
         UnitEntity unit = new UnitEntity();
         unit.setType(UnitType.Imperial);
+        unit.setSubtype(subtype);
         unit.setId(id);
         for (UnitFlavor flavor : flavors) {
             switch (flavor) {
@@ -71,9 +74,10 @@ public class ConversionTestTools {
         return unit;
     }
 
-    public static UnitEntity makeMetricUnit(Long id, UnitFlavor... flavors) {
+    public static UnitEntity makeMetricUnit(Long id, UnitSubtype subtype, UnitFlavor... flavors) {
         UnitEntity unit = new UnitEntity();
         unit.setType(UnitType.Metric);
+        unit.setSubtype(subtype);
         unit.setId(id);
         for (UnitFlavor flavor : flavors) {
             switch (flavor) {

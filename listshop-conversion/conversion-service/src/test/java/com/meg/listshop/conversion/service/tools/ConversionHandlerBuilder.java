@@ -4,6 +4,7 @@ import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
+import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.TestConversionFactorSource;
 import com.meg.listshop.conversion.service.ConversionSpec;
@@ -46,14 +47,14 @@ public class ConversionHandlerBuilder {
         return this;
     }
 
-    public ConversionHandlerBuilder withFromSpec(UnitType unitType, UnitFlavor... unitFlavors) {
-        UnitEntity unit = ConversionTestTools.makeUnit(null, unitType, unitFlavors);
+    public ConversionHandlerBuilder withFromSpec(UnitType unitType, UnitSubtype subtype, UnitFlavor... unitFlavors) {
+        UnitEntity unit = ConversionTestTools.makeUnit(null, unitType, subtype, unitFlavors);
         this.fromSpec = ConversionSpec.fromExactUnit(unit);
         return this;
     }
 
-    public ConversionHandlerBuilder withToSpec(UnitType unitType, UnitFlavor... unitFlavors) {
-        UnitEntity unit = ConversionTestTools.makeUnit(null, unitType, unitFlavors);
+    public ConversionHandlerBuilder withToSpec(UnitType unitType, UnitSubtype subtype, UnitFlavor... unitFlavors) {
+        UnitEntity unit = ConversionTestTools.makeUnit(null, unitType, subtype, unitFlavors);
         this.toSpec = ConversionSpec.fromExactUnit(unit);
         return this;
     }
