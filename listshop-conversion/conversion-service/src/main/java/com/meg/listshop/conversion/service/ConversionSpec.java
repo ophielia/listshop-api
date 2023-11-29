@@ -4,6 +4,7 @@ import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.tools.ConversionTools;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -29,11 +30,10 @@ public class ConversionSpec {
     }
 
     private static UnitType oppositeType(UnitType unitType) {
-        switch (unitType) {
-            case Imperial:
-                return UnitType.Metric;
-            case Metric:
-                return UnitType.Imperial;
+        if (Objects.requireNonNull(unitType) == UnitType.US) {
+            return UnitType.Metric;
+        } else if (unitType == UnitType.Metric) {
+            return UnitType.US;
         }
         return unitType;
     }
@@ -42,11 +42,12 @@ public class ConversionSpec {
         return new ConversionSpec(null, oppositeType(unitSource.getType()), unitSource.getSubtype(), ConversionTools.flavorsForUnit(unitSource));
     }
 
+    public static ConversionSpec opposingSpec(ConversionSpec sourceSpec) {
+        return new ConversionSpec(null, oppositeType(sourceSpec.getUnitType()), sourceSpec.getUnitSubtype(), sourceSpec.getFlavors());
+    }
+
     public static ConversionSpec basicSpec(UnitType type, UnitSubtype subtype, UnitFlavor... flavors) {
-        Set<UnitFlavor> flavorSet = new HashSet<>();
-        for (UnitFlavor flavor : flavors) {
-            flavorSet.add(flavor);
-        }
+        Set<UnitFlavor> flavorSet = new HashSet<>(Arrays.asList(flavors));
         return new ConversionSpec(null, type, subtype, flavorSet);
     }
 
@@ -59,13 +60,10 @@ public class ConversionSpec {
         ConversionContextType conversionContextType = context.getContextType();
         Set<UnitFlavor> flavors = new HashSet<>();
 
-        switch (conversionContextType) {
-            case Dish:
-                flavors.add(UnitFlavor.DishUnit);
-                break;
-            case List:
-                flavors.add(UnitFlavor.ListUnit);
-
+        if (Objects.requireNonNull(conversionContextType) == ConversionContextType.Dish) {
+            flavors.add(UnitFlavor.DishUnit);
+        } else if (conversionContextType == ConversionContextType.List) {
+            flavors.add(UnitFlavor.ListUnit);
         }
         if (source.isLiquid()) {
             flavors.add(UnitFlavor.Liquid);
@@ -82,8 +80,11 @@ public class ConversionSpec {
     }
 
     public boolean matches(UnitEntity unit) {
-        ConversionSpec toCheck = ConversionSpec.fromExactUnit(unit);
-        return this.equals(toCheck);
+        if (unit.getType() != getUnitType() ||
+                unit.getSubtype() != getUnitSubtype()) {
+            return false;
+        }
+        return ConversionTools.flavorsForUnit(unit).containsAll(getFlavors());
     }
 
     public UnitType getUnitType() {
@@ -97,6 +98,10 @@ public class ConversionSpec {
 
     public Set<UnitFlavor> getFlavors() {
         return flavors;
+    }
+
+    public UnitSubtype getUnitSubtype() {
+        return unitSubtype;
     }
 
     @Override

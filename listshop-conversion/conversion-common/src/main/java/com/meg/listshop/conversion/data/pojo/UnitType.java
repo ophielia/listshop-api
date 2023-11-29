@@ -1,7 +1,7 @@
 package com.meg.listshop.conversion.data.pojo;
 
 public enum UnitType {
-    Imperial,
+    US,
     Metric,
     Special,
     Hybrid,

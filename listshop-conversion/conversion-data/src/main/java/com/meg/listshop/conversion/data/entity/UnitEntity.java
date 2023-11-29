@@ -115,11 +115,12 @@ public class UnitEntity {
     public String toString() {
         return "UnitEntity{" +
                 "id=" + id +
-                ", name=" + name +
+                ", name='" + name + '\'' +
                 ", type=" + type +
-                ", isLiquid=" + isLiquid +
+                ", subtype=" + subtype +
                 ", isListUnit=" + isListUnit +
                 ", isDishUnit=" + isDishUnit +
+                ", isLiquid=" + isLiquid +
                 ", isWeight=" + isWeight +
                 ", isVolume=" + isVolume +
                 '}';

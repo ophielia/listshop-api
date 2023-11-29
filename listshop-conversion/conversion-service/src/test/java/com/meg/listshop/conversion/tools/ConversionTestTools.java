@@ -8,7 +8,7 @@ import com.meg.listshop.conversion.data.pojo.UnitType;
 public class ConversionTestTools {
     public static UnitEntity makeImperialUnit(Long id, boolean isVolume) {
         UnitEntity unit = new UnitEntity();
-        unit.setType(UnitType.Imperial);
+        unit.setType(UnitType.US);
         unit.setId(id);
         if (isVolume) {
             unit.setVolume(true);
@@ -48,7 +48,7 @@ public class ConversionTestTools {
 
     public static UnitEntity makeImperialUnit(Long id, UnitSubtype subtype, UnitFlavor... flavors) {
         UnitEntity unit = new UnitEntity();
-        unit.setType(UnitType.Imperial);
+        unit.setType(UnitType.US);
         unit.setSubtype(subtype);
         unit.setId(id);
         for (UnitFlavor flavor : flavors) {

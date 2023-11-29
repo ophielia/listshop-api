@@ -12,4 +12,6 @@ public interface ConversionHandler {
     boolean handles(ConversionSpec fromUnit, ConversionSpec toUnit);
 
     ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException;
+
+    ConversionSpec getSource();
 }

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ConversionHandlerTest {
+class ConversionHandlerTest {
 
     ConversionHandler conversionHandler;
 
@@ -24,30 +24,30 @@ public class ConversionHandlerTest {
     void setUp() {
         // make conversion source
         conversionHandler = new ConversionHandlerBuilder()
-                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.Weight),
-                        ConversionTestTools.makeMetricUnit(2L, UnitSubtype.Weight),
+                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.WEIGHT),
+                        ConversionTestTools.makeMetricUnit(2L, UnitSubtype.WEIGHT),
                         0.5)
-                .withFactor(ConversionTestTools.makeImperialUnit(3L, UnitSubtype.Weight),
-                        ConversionTestTools.makeMetricUnit(4L, UnitSubtype.Weight),
+                .withFactor(ConversionTestTools.makeImperialUnit(3L, UnitSubtype.WEIGHT),
+                        ConversionTestTools.makeMetricUnit(4L, UnitSubtype.WEIGHT),
                         0.25)
-                .withFactor(ConversionTestTools.makeImperialUnit(5L, UnitSubtype.Weight),
-                        ConversionTestTools.makeMetricUnit(6L, UnitSubtype.Weight),
+                .withFactor(ConversionTestTools.makeImperialUnit(5L, UnitSubtype.WEIGHT),
+                        ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .9)
-                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.Weight),
-                        ConversionTestTools.makeMetricUnit(6L, UnitSubtype.Weight),
+                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.WEIGHT),
+                        ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .5)
-                .withFromSpec(UnitType.Imperial, UnitSubtype.Weight)
-                .withToSpec(UnitType.Metric, UnitSubtype.Weight)
+                .withFromSpec(UnitType.US, UnitSubtype.WEIGHT)
+                .withToSpec(UnitType.Metric, UnitSubtype.WEIGHT)
                 .build();
 
     }
 
     @Test
-    public void testHandles() {
+    void testHandles() {
         // test basic - imperial to metric weight
-        ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.Imperial).withUnitSubtype(UnitSubtype.Weight).build();
-        ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.Metric).withUnitSubtype(UnitSubtype.Weight).build();
-        ConversionSpec notHandledSpec = new ConversionSpecBuilder().withUnitType(UnitType.Metric).withUnitSubtype(UnitSubtype.Weight).withFlavor(UnitFlavor.ListUnit).build();
+        ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
+        ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.Metric).withUnitSubtype(UnitSubtype.WEIGHT).build();
+        ConversionSpec notHandledSpec = new ConversionSpecBuilder().withUnitType(UnitType.Metric).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
         assertTrue(conversionHandler.handles(fromSpec, toSpec));
         assertTrue(conversionHandler.handles(toSpec, fromSpec));
         assertFalse(conversionHandler.handles(toSpec, notHandledSpec));
@@ -55,63 +55,63 @@ public class ConversionHandlerTest {
     }
 
     @Test
-    public void testFlavorHandles() {
+    void testFlavorHandles() {
         ConversionHandler flavorHandler = new ConversionHandlerBuilder()
-                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.Weight),
-                        ConversionTestTools.makeMetricUnit(2L, UnitSubtype.Weight),
+                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.WEIGHT),
+                        ConversionTestTools.makeMetricUnit(2L, UnitSubtype.WEIGHT),
                         0.5)
-                .withFactor(ConversionTestTools.makeImperialUnit(3L, UnitSubtype.Weight),
-                        ConversionTestTools.makeMetricUnit(4L, UnitSubtype.Weight),
+                .withFactor(ConversionTestTools.makeImperialUnit(3L, UnitSubtype.WEIGHT),
+                        ConversionTestTools.makeMetricUnit(4L, UnitSubtype.WEIGHT),
                         0.25)
-                .withFactor(ConversionTestTools.makeImperialUnit(5L, UnitSubtype.Weight),
-                        ConversionTestTools.makeMetricUnit(6L, UnitSubtype.Weight),
+                .withFactor(ConversionTestTools.makeImperialUnit(5L, UnitSubtype.WEIGHT),
+                        ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .9)
-                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.Weight),
-                        ConversionTestTools.makeMetricUnit(6L, UnitSubtype.Weight),
+                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.WEIGHT),
+                        ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .5)
-                .withFromSpec(UnitType.Imperial, UnitSubtype.Weight)
-                .withToSpec(UnitType.Imperial, UnitSubtype.Weight, UnitFlavor.ListUnit)
+                .withFromSpec(UnitType.US, UnitSubtype.WEIGHT)
+                .withToSpec(UnitType.US, UnitSubtype.WEIGHT, UnitFlavor.ListUnit)
                 .withOneWay()
                 .build();
 
         // test basic - imperial to metric weight
-        ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.Imperial).withUnitSubtype(UnitSubtype.Weight).build();
-        ConversionSpec flavorSpec = new ConversionSpecBuilder().withUnitType(UnitType.Imperial).withUnitSubtype(UnitSubtype.Weight).withFlavor(UnitFlavor.ListUnit).build();
+        ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
+        ConversionSpec flavorSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
         assertTrue(flavorHandler.handles(fromSpec, flavorSpec));
 
     }
 
     @Test
-    public void testFlavorHandles_DoesntHandle() {
+    void testFlavorHandles_DoesntHandle() {
         ConversionHandler flavorHandler = new ConversionHandlerBuilder()
-                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.Weight),
-                        ConversionTestTools.makeMetricUnit(2L, UnitSubtype.Weight),
+                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.WEIGHT),
+                        ConversionTestTools.makeMetricUnit(2L, UnitSubtype.WEIGHT),
                         0.5)
-                .withFactor(ConversionTestTools.makeImperialUnit(3L, UnitSubtype.Weight),
-                        ConversionTestTools.makeMetricUnit(4L, UnitSubtype.Weight),
+                .withFactor(ConversionTestTools.makeImperialUnit(3L, UnitSubtype.WEIGHT),
+                        ConversionTestTools.makeMetricUnit(4L, UnitSubtype.WEIGHT),
                         0.25)
-                .withFactor(ConversionTestTools.makeImperialUnit(5L, UnitSubtype.Weight),
-                        ConversionTestTools.makeMetricUnit(6L, UnitSubtype.Weight),
+                .withFactor(ConversionTestTools.makeImperialUnit(5L, UnitSubtype.WEIGHT),
+                        ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .9)
-                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.Weight),
-                        ConversionTestTools.makeMetricUnit(6L, UnitSubtype.Weight),
+                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.WEIGHT),
+                        ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .5)
-                .withFromSpec(UnitType.Imperial, UnitSubtype.Weight)
-                .withToSpec(UnitType.Imperial, UnitSubtype.Weight)
+                .withFromSpec(UnitType.US, UnitSubtype.WEIGHT)
+                .withToSpec(UnitType.US, UnitSubtype.WEIGHT)
                 .build();
 
         // test basic - imperial to metric weight
-        ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.Imperial).withUnitSubtype(UnitSubtype.Weight).build();
-        ConversionSpec flavorSpec = new ConversionSpecBuilder().withUnitType(UnitType.Imperial).withUnitSubtype(UnitSubtype.Weight).withFlavor(UnitFlavor.ListUnit).build();
+        ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
+        ConversionSpec flavorSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
         assertFalse(flavorHandler.handles(fromSpec, flavorSpec));
 
     }
 
     @Test
     void testConvertsTo() {
-        ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.Imperial).withUnitSubtype(UnitSubtype.Weight).build();
-        ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.Metric).withUnitSubtype(UnitSubtype.Weight).build();
-        ConversionSpec notHandledSpec = new ConversionSpecBuilder().withUnitType(UnitType.Metric).withUnitSubtype(UnitSubtype.Volume).build();
+        ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
+        ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.Metric).withUnitSubtype(UnitSubtype.WEIGHT).build();
+        ConversionSpec notHandledSpec = new ConversionSpecBuilder().withUnitType(UnitType.Metric).withUnitSubtype(UnitSubtype.VOLUME).build();
 
         assertTrue(conversionHandler.convertsTo(fromSpec));
         assertTrue(conversionHandler.convertsTo(toSpec));
@@ -120,25 +120,25 @@ public class ConversionHandlerTest {
 
     @Test
     void testConvert() throws ConversionFactorException {
-        UnitEntity startUnit = ConversionTestTools.makeMetricUnit(null, UnitSubtype.Weight);
+        UnitEntity startUnit = ConversionTestTools.makeMetricUnit(null, UnitSubtype.WEIGHT);
         startUnit.setId(6L);
         ConvertibleAmount startAmount = new SimpleAmount(1D, startUnit);
-        ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.Imperial).withFlavor(UnitFlavor.Weight).build();
+        ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withFlavor(UnitFlavor.Weight).build();
 
         ConvertibleAmount result = conversionHandler.convert(startAmount, toSpec);
         assertNotNull(result);
         assertEquals(1.11, ConversionTestTools.roundToHundredths(result.getQuantity()));
         assertEquals(5L, result.getUnit().getId());
-        assertEquals(UnitType.Imperial, result.getUnit().getType());
+        assertEquals(UnitType.US, result.getUnit().getType());
 
         ConversionSpec exactSpec = new ConversionSpecBuilder()
                 .withUnitId(1L)
-                .withUnitType(UnitType.Imperial).withFlavor(UnitFlavor.Weight).build();
+                .withUnitType(UnitType.US).withFlavor(UnitFlavor.Weight).build();
 
         ConvertibleAmount exactResult = conversionHandler.convert(startAmount, exactSpec);
         assertNotNull(exactResult);
         assertEquals(2D, ConversionTestTools.roundToHundredths(exactResult.getQuantity()));
         assertEquals(1L, exactResult.getUnit().getId());
-        assertEquals(UnitType.Imperial, exactResult.getUnit().getType());
+        assertEquals(UnitType.US, exactResult.getUnit().getType());
     }
 }

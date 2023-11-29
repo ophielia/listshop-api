@@ -10,15 +10,11 @@ package com.meg.listshop.lmt.service;
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionContext;
-import com.meg.listshop.conversion.data.pojo.ConversionContextType;
-import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConversionService;
-import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.tools.RoundingUtils;
 import org.junit.ClassRule;
@@ -48,6 +44,7 @@ public class ConversionTest {
     private static final Long gallonId = 1005L;
     private static final Long literId = 1003L;
     private static final Long quartId = 1010L;
+    private static final Long pintId = 1006L;
     private static final Long cupsId = 1000L;
     private static final Long centileterId = 1015L;
     private static final Long milliliterId = 1004L;
@@ -112,13 +109,13 @@ public class ConversionTest {
         ConvertibleAmount amount = new SimpleAmount(20.0, litersOpt.get());
         ConvertibleAmount converted = conversionService.convert(amount, gallonsOpt.get());
         assertNotNull(converted);
-        assertEquals(4.399, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(5.283, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         amount = new SimpleAmount(50, centiliterOpt.get());
         converted = conversionService.convert(amount, quartOpt.get());
         assertNotNull(converted);
-        assertEquals(0.440, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(0.528, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(quartId, converted.getUnit().getId());
 
         amount = new SimpleAmount(3.0, cupsOpt.get());
@@ -135,16 +132,17 @@ public class ConversionTest {
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
 
         ConvertibleAmount amount = new SimpleAmount(20.0, litersOpt.get());
-        ConvertibleAmount converted = conversionService.convert(amount, UnitType.Imperial);
+        ConvertibleAmount converted = conversionService.convert(amount, UnitType.US);
         assertNotNull(converted);
-        assertEquals(4.399, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(5.283, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         amount = new SimpleAmount(50, centiliterOpt.get());
-        converted = conversionService.convert(amount, UnitType.Imperial);
+        converted = conversionService.convert(amount, UnitType.US);
         assertNotNull(converted);
-        assertEquals(0.440, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(quartId, converted.getUnit().getId());
+        assertEquals(1.057, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(pintId, converted.getUnit().getId());
+
 
         amount = new SimpleAmount(3.0, cupsOpt.get());
         converted = conversionService.convert(amount, UnitType.Metric);
@@ -160,14 +158,63 @@ public class ConversionTest {
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
         Optional<UnitEntity> cupsOpt = unitRepository.findById(cupsId);
         Optional<UnitEntity> quartOpt = unitRepository.findById(quartId);
+        Optional<UnitEntity> pintOpt = unitRepository.findById(pintId);
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
 
         ConvertibleAmount amount = new SimpleAmount(3, quartOpt.get());
-        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.Metric);
-        ConvertibleAmount converted = conversionService.convert(amount, context);
+        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.Metric, UnitSubtype.VOLUME);
+        ConvertibleAmount converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
-        assertEquals(4.399, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(gallonId, converted.getUnit().getId());
+        assertEquals(2.839, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(literId, converted.getUnit().getId());
+
+        amount = new SimpleAmount(0.021133764, pintOpt.get());
+        converted = conversionService.convert(amount, UnitType.Metric);
+        assertNotNull(converted);
+        // confirm that we have this pint fraction translated to 1 centiliter
+        assertEquals(1.000, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(centileterId, converted.getUnit().getId());
+
+        // now, converting the same pint fraction in a list context should not result in a conversion to centiliter.
+        // It should be milliliters - since that's the closest unit to this quantity permitted in a list
+        amount = new SimpleAmount(0.021133764, pintOpt.get());
+        converted = conversionService.convert(amount, listContext);
+        assertNotNull(converted);
+        assertEquals(milliliterId, converted.getUnit().getId());
+        assertEquals(10.000, RoundingUtils.roundToThousandths(converted.getQuantity()));
+    }
+
+    @Test
+    public void testSimpleImperialListContext() throws ConversionPathException, ConversionFactorException {
+        Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
+        Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
+        Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
+        Optional<UnitEntity> cupsOpt = unitRepository.findById(cupsId);
+        Optional<UnitEntity> quartOpt = unitRepository.findById(quartId);
+        Optional<UnitEntity> pintOpt = unitRepository.findById(pintId);
+        Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
+
+        ConvertibleAmount amount = new SimpleAmount(473.17, milliliterOpt.get());
+        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US, UnitSubtype.VOLUME);
+        ConvertibleAmount converted = conversionService.convert(amount, listContext);
+        assertNotNull(converted);
+        assertEquals(0.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(quartId, converted.getUnit().getId());
+
+        amount = new SimpleAmount(23.6588, centiliterOpt.get());
+        converted = conversionService.convert(amount, UnitType.US);
+        assertNotNull(converted);
+        // confirm that we have this centiliter converted to 1 cup
+        assertEquals(1.000, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(cupsId, converted.getUnit().getId());
+
+        // now, converting the same amount in a list context should not result in a conversion to cups.
+        // It should be quarts - since that's the closest unit to this quantity permitted in a list
+        amount = new SimpleAmount(23.6588, centiliterOpt.get());
+        converted = conversionService.convert(amount, listContext);
+        assertNotNull(converted);
+        assertEquals(quartId, converted.getUnit().getId());
+        assertEquals(0.25, RoundingUtils.roundToThousandths(converted.getQuantity()));
 
     }
 
@@ -196,8 +243,14 @@ public class ConversionTest {
         Optional<UnitEntity> quartOpt = unitRepository.findById(quartId);
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
 
+        ConvertibleAmount amount = new SimpleAmount(50, centiliterOpt.get());
+        ConvertibleAmount converted = conversionService.convert(amount, UnitType.US);
+        assertNotNull(converted);
+        assertEquals(1.057, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(pintId, converted.getUnit().getId());
 
         assertEquals(1, 1);
+
     }
 
 }

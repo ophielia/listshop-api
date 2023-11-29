@@ -2,6 +2,7 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
+import com.meg.listshop.conversion.data.pojo.ConversionSortType;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
@@ -22,17 +23,17 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public class MetricLWeightForListHandler extends AbstractOneWayConversionHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(MetricLWeightForListHandler.class);
+public class MetricWeightForListHandler extends AbstractOneWayConversionHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(MetricWeightForListHandler.class);
 
 
     @Autowired
-    public MetricLWeightForListHandler(ConversionFactorRepository factorRepository) {
+    public MetricWeightForListHandler(ConversionFactorRepository factorRepository) {
         super();
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.Metric, UnitSubtype.Weight);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.Metric, UnitSubtype.WEIGHT);
         // make target
-        ConversionSpec target = ConversionSpec.basicSpec(UnitType.Metric, UnitSubtype.Weight, UnitFlavor.ListUnit);
+        ConversionSpec target = ConversionSpec.basicSpec(UnitType.Metric, UnitSubtype.WEIGHT, UnitFlavor.ListUnit);
 
         // initialize conversionSource
         List<ConversionFactorEntity> factors = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));
@@ -42,6 +43,7 @@ public class MetricLWeightForListHandler extends AbstractOneWayConversionHandler
         setSource(source);
         setTarget(target);
         setConversionSource(conversionSource);
+        setSortType(ConversionSortType.RANGE);
     }
 
 }

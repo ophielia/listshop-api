@@ -19,6 +19,7 @@ CREATE TABLE units
 (
     unit_id      BIGINT NOT NULL,
     type         VARCHAR(255),
+    subtype VARCHAR(255),
     name VARCHAR(255),
     is_liquid    BOOLEAN not null default false,
     is_list_unit BOOLEAN not null default false,

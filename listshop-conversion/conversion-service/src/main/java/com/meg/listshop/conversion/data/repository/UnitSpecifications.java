@@ -9,8 +9,13 @@ import org.springframework.data.jpa.domain.Specification;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class UnitSpecifications {
+
+    private UnitSpecifications() {
+        // to hide public constructor
+    }
 
     public static Specification<ConversionFactorEntity> matchingFromWithSpec(ConversionSpec spec) {
         return (root, query, criteriaBuilder) -> {
@@ -18,23 +23,15 @@ public class UnitSpecifications {
             ArrayList<Predicate> predicates = new ArrayList<>();
 
             predicates.add(criteriaBuilder.equal(fromUnit.<String>get("type"), spec.getUnitType()));
+            predicates.add(criteriaBuilder.equal(fromUnit.<String>get("subtype"), spec.getUnitSubtype()));
 
             for (UnitFlavor flavor : spec.getFlavors()) {
-                switch (flavor) {
-                    case Weight:
-                        predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isWeight"), true));
-                        continue;
-                    case Volume:
-                        predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isVolume"), true));
-                        continue;
-                    case DishUnit:
-                        predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isDishUnit"), true));
-                        continue;
-                    case ListUnit:
-                        predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isListUnit"), true));
-                        continue;
-                    case Liquid:
-                        predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isLiquid"), true));
+                if (Objects.requireNonNull(flavor) == UnitFlavor.DishUnit) {
+                    predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isDishUnit"), true));
+                } else if (flavor == UnitFlavor.ListUnit) {
+                    predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isListUnit"), true));
+                } else if (flavor == UnitFlavor.Liquid) {
+                    predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isLiquid"), true));
                 }
             }
 
@@ -48,15 +45,10 @@ public class UnitSpecifications {
             ArrayList<Predicate> predicates = new ArrayList<>();
 
             predicates.add(criteriaBuilder.equal(fromUnit.<String>get("type"), spec.getUnitType()));
+            predicates.add(criteriaBuilder.equal(fromUnit.<String>get("subtype"), spec.getUnitSubtype()));
 
             for (UnitFlavor flavor : spec.getFlavors()) {
                 switch (flavor) {
-                    case Weight:
-                        predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isWeight"), true));
-                        continue;
-                    case Volume:
-                        predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isVolume"), true));
-                        continue;
                     case DishUnit:
                         predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isDishUnit"), true));
                         continue;

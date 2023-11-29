@@ -18,7 +18,7 @@ class ConversionSpecTest {
         expectedFlavors.add(UnitFlavor.Weight);
         ConversionSpec spec = ConversionSpec.fromExactUnit(unit);
         assertEquals(1L, spec.getUnitId(), "id should be filled and equal 1");
-        assertEquals(UnitType.Imperial, spec.getUnitType(), "type should be Imperial");
+        assertEquals(UnitType.US, spec.getUnitType(), "type should be Imperial");
         assertEquals(0, spec.getFlavors().size(), "no flavors here - weight is in subtype");
 
         unit = makeMetricUnit(1L, true);
@@ -46,7 +46,7 @@ class ConversionSpecTest {
     void testFromContextAndSource() {
         // make imperial weight, for list context
         UnitEntity sourceUnit = makeImperialUnit(1L, false);
-        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.Metric, UnitSubtype.Weight);
+        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.Metric, UnitSubtype.WEIGHT);
         Set<UnitFlavor> expectedFlavors = createFlavors(false, true, false, true, false);
         ConversionSpec result = ConversionSpec.fromContextAndSource(context, sourceUnit);
 
@@ -73,7 +73,7 @@ class ConversionSpecTest {
 
     private UnitEntity makeImperialUnit(Long id, boolean isVolume) {
         UnitEntity unit = new UnitEntity();
-        unit.setType(UnitType.Imperial);
+        unit.setType(UnitType.US);
         unit.setId(id);
         if (isVolume) {
             unit.setVolume(true);

@@ -2,6 +2,7 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.pojo.ConversionSortType;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.service.ConversionSpec;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class AbstractConversionHandler implements ConversionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractConversionHandler.class);
@@ -21,13 +23,15 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     private ConversionSpec target;
     private ConversionFactorSource conversionSource;
 
-    public AbstractConversionHandler(ConversionSpec source, ConversionSpec target, ConversionFactorSource conversionSource) {
+    private ConversionSortType sortType = ConversionSortType.NEAREST_UNIT;
+
+    protected AbstractConversionHandler(ConversionSpec source, ConversionSpec target, ConversionFactorSource conversionSource) {
         this.source = source;
         this.target = target;
         this.conversionSource = conversionSource;
     }
 
-    public AbstractConversionHandler() {
+    protected AbstractConversionHandler() {
 
     }
 
@@ -64,12 +68,70 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
             throw new ConversionFactorException(message);
         }
 
-        ConversionFactor factor = findBestFactor(factors, toConvert.getQuantity());
+        // convert all factors, making list
+        List<ConvertibleAmount> convertedList = factors.stream()
+                .map(f -> {
+                    double newQuantity = toConvert.getQuantity() * f.getFactor();
+                    UnitEntity newUnit = f.getToUnit();
 
-        double newQuantity = toConvert.getQuantity() * factor.getFactor();
-        UnitEntity newUnit = factor.getToUnit();
+                    return new SimpleAmount(newQuantity, newUnit);
+                }).collect(Collectors.toList());
 
-        return new SimpleAmount(newQuantity, newUnit, toConvert);
+        // sort for best result, according to sort type
+        ConvertibleAmount bestResult = sortForBestResult(convertedList);
+        // return best result
+
+
+        return new SimpleAmount(bestResult.getQuantity(), bestResult.getUnit(), toConvert);
+    }
+
+    private ConvertibleAmount sortForBestResult(List<ConvertibleAmount> convertedList) {
+        if (convertedList.size() == 1) {
+            return convertedList.get(0);
+        }
+        switch (sortType) {
+            case NEAREST_UNIT:
+                return sortForNearestUnit(convertedList);
+            case RANGE:
+                return sortForRange(convertedList);
+            default:
+                return sortForNearestUnit(convertedList);
+        }
+
+    }
+
+    private ConvertibleAmount sortForNearestUnit(List<ConvertibleAmount> convertedList) {
+        Comparator<ConvertibleAmount> comparator = (f1, f2) -> {
+            Double f1ToOne = Math.abs(1 - (f1.getQuantity()));
+            Double f2ToOne = Math.abs(1 - (f2.getQuantity()));
+            return f1ToOne.compareTo(f2ToOne);
+        };
+
+        convertedList.sort(comparator);
+        return convertedList.get(0);
+    }
+
+    private ConvertibleAmount sortForRange(List<ConvertibleAmount> convertedList) {
+        Comparator<ConvertibleAmount> compareByQuantity = Comparator.comparing(ConvertibleAmount::getQuantity);
+        convertedList.sort(compareByQuantity);
+
+        ConvertibleAmount best = convertedList.stream()
+                .filter(a -> a.getQuantity() >= 0.5 && a.getQuantity() <= 500.0)
+                .findFirst().orElse(null);
+
+        if (best != null) {
+            return best;
+        }
+
+        best = convertedList.stream()
+                .filter(a -> a.getQuantity() >= 0.125 && a.getQuantity() <= 800.0)
+                .findFirst().orElse(null);
+
+        if (best != null) {
+            return best;
+        }
+
+        return sortForNearestUnit(convertedList);
     }
 
     private boolean doesntRequireConversion(ConvertibleAmount toConvert, ConversionSpec targetSpec) {
@@ -80,27 +142,11 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         if (targetSpec.getUnitId() != null) {
             return targetSpec.getUnitId().equals(toConvert.getUnit().getId());
         }
-        return false;
+        return true;
     }
 
 
-    private ConversionFactor findBestFactor(List<ConversionFactor> factors, double quantity) {
-        if (factors.size() == 1) {
-            return factors.get(0);
-        }
-
-        Comparator<ConversionFactor> comparator = (f1, f2) -> {
-            Double f1ToOne = Math.abs(1 - (f1.getFactor() * quantity));
-            Double f2ToOne = Math.abs(1 - (f2.getFactor() * quantity));
-            return f1ToOne.compareTo(f2ToOne);
-        };
-
-        factors.sort(comparator);
-        return factors.get(0);
-
-    }
-
-    protected ConversionSpec getSource() {
+    public ConversionSpec getSource() {
         return source;
     }
 
@@ -118,6 +164,10 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
     public void setConversionSource(ConversionFactorSource conversionSource) {
         this.conversionSource = conversionSource;
+    }
+
+    public void setSortType(ConversionSortType sortType) {
+        this.sortType = sortType;
     }
 }
 

@@ -35,8 +35,8 @@ public class ConversionServiceImpl implements ConversionService {
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, UnitType domain) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for domain [{}], amount [{}]", domain, amount);
-        ConversionSpec source = ConversionSpec.fromExactUnit(amount.getUnit());
-        ConversionSpec target = ConversionSpec.convertedFromUnit(amount.getUnit());
+        ConversionSpec source = createConversionSpec(amount.getUnit(), true);
+        ConversionSpec target = ConversionSpec.opposingSpec(source);
 
         if (checkTargetEqualsSource(source, target)) {
             LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
@@ -152,14 +152,14 @@ public class ConversionServiceImpl implements ConversionService {
         // look for step matches
         for (ConversionHandler handler : handlerList) {
             if (handler.convertsTo(target)) {
-                List<ConversionHandler> foundList = assembleHandlerList(source, target, handlers, iteration + 1);
-                if (foundList != null) {
+                List<ConversionHandler> foundList = assembleHandlerList(source, handler.getSource(), handlers, iteration + 1);
+                if (foundList != null || !foundList.isEmpty()) {
                     foundList.add(handler);
                     return foundList;
                 }
             }
         }
-        return null;
+        return new ArrayList<>();
     }
 
     private ConversionHandler findHandlerMatch(ConversionSpec source, ConversionSpec target) {
