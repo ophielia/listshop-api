@@ -33,6 +33,7 @@ delete
 from dish
 where dish_id in (66500, 66501);
 
+delete from dish_items where dish_id in (66500, 66501);
 
 -- delete new user and single list
 delete
