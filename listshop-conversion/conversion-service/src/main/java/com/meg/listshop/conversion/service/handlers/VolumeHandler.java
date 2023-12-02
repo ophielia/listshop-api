@@ -29,7 +29,7 @@ public class VolumeHandler extends AbstractConversionHandler {
     public VolumeHandler(ConversionFactorRepository factorRepository) {
         super();
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.Metric, UnitSubtype.VOLUME);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.VOLUME);
         // make target
         ConversionSpec target = ConversionSpec.basicSpec(UnitType.US, UnitSubtype.VOLUME);
 

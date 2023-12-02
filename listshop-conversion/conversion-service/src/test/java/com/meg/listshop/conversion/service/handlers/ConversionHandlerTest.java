@@ -37,7 +37,7 @@ class ConversionHandlerTest {
                         ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .5)
                 .withFromSpec(UnitType.US, UnitSubtype.WEIGHT)
-                .withToSpec(UnitType.Metric, UnitSubtype.WEIGHT)
+                .withToSpec(UnitType.METRIC, UnitSubtype.WEIGHT)
                 .build();
 
     }
@@ -46,8 +46,8 @@ class ConversionHandlerTest {
     void testHandles() {
         // test basic - imperial to metric weight
         ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
-        ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.Metric).withUnitSubtype(UnitSubtype.WEIGHT).build();
-        ConversionSpec notHandledSpec = new ConversionSpecBuilder().withUnitType(UnitType.Metric).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
+        ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.METRIC).withUnitSubtype(UnitSubtype.WEIGHT).build();
+        ConversionSpec notHandledSpec = new ConversionSpecBuilder().withUnitType(UnitType.METRIC).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
         assertTrue(conversionHandler.handles(fromSpec, toSpec));
         assertTrue(conversionHandler.handles(toSpec, fromSpec));
         assertFalse(conversionHandler.handles(toSpec, notHandledSpec));
@@ -110,8 +110,8 @@ class ConversionHandlerTest {
     @Test
     void testConvertsTo() {
         ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
-        ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.Metric).withUnitSubtype(UnitSubtype.WEIGHT).build();
-        ConversionSpec notHandledSpec = new ConversionSpecBuilder().withUnitType(UnitType.Metric).withUnitSubtype(UnitSubtype.VOLUME).build();
+        ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.METRIC).withUnitSubtype(UnitSubtype.WEIGHT).build();
+        ConversionSpec notHandledSpec = new ConversionSpecBuilder().withUnitType(UnitType.METRIC).withUnitSubtype(UnitSubtype.VOLUME).build();
 
         assertTrue(conversionHandler.convertsTo(fromSpec));
         assertTrue(conversionHandler.convertsTo(toSpec));

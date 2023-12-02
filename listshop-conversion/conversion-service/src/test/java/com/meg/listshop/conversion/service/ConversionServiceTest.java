@@ -40,12 +40,12 @@ class ConversionServiceTest {
         ConversionHandler metricToMetricWeight = new ConversionHandlerBuilder()
                 .withFactor(metricGrams, imperialOunces, 0.5)
                 .withFactor(metricGrams, imperialMadeUpCloser, 0.9)
-                .withFromSpec(UnitType.Metric, UnitSubtype.WEIGHT)
+                .withFromSpec(UnitType.METRIC, UnitSubtype.WEIGHT)
                 .withToSpec(UnitType.US, UnitSubtype.WEIGHT)
                 .build();
         ConversionHandler metricToMetricVolume = new ConversionHandlerBuilder()
                 .withFactor(metricLiter, imperialQuart, 0.6)
-                .withFromSpec(UnitType.Metric, UnitSubtype.VOLUME)
+                .withFromSpec(UnitType.METRIC, UnitSubtype.VOLUME)
                 .withToSpec(UnitType.US, UnitSubtype.VOLUME)
                 .build();
         ConversionHandler imperialListDestination = new ConversionHandlerBuilder()
@@ -84,7 +84,7 @@ class ConversionServiceTest {
     void testConvertByType() throws ConversionPathException, ConversionFactorException {
         // unittype - convert imperial volume to metric volume (say, liter to quart)
         ConvertibleAmount amount = new SimpleAmount(1, imperialQuart);
-        ConvertibleAmount converted = service.convert(amount, UnitType.Metric);
+        ConvertibleAmount converted = service.convert(amount, UnitType.METRIC);
         assertNotNull(converted);
         assertEquals(1.67, ConversionTestTools.roundToHundredths(converted.getQuantity()));
 

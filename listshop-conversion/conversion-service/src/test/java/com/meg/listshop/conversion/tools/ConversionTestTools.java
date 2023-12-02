@@ -76,7 +76,7 @@ public class ConversionTestTools {
 
     public static UnitEntity makeMetricUnit(Long id, UnitSubtype subtype, UnitFlavor... flavors) {
         UnitEntity unit = new UnitEntity();
-        unit.setType(UnitType.Metric);
+        unit.setType(UnitType.METRIC);
         unit.setSubtype(subtype);
         unit.setId(id);
         for (UnitFlavor flavor : flavors) {
@@ -104,7 +104,7 @@ public class ConversionTestTools {
 
     public static UnitEntity makeMetricUnit(Long id, boolean isVolume) {
         UnitEntity unit = new UnitEntity();
-        unit.setType(UnitType.Metric);
+        unit.setType(UnitType.METRIC);
         unit.setId(id);
         if (isVolume) {
             unit.setVolume(true);

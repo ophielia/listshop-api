@@ -23,17 +23,17 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public class MetricVolumeForListHandler extends AbstractOneWayConversionHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(MetricVolumeForListHandler.class);
+public class MetricVolumeForDishHandler extends AbstractOneWayConversionHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(MetricVolumeForDishHandler.class);
 
 
     @Autowired
-    public MetricVolumeForListHandler(ConversionFactorRepository factorRepository) {
+    public MetricVolumeForDishHandler(ConversionFactorRepository factorRepository) {
         super();
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.VOLUME);
         // make target
-        ConversionSpec target = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.VOLUME, UnitFlavor.ListUnit);
+        ConversionSpec target = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.VOLUME, UnitFlavor.DishUnit);
 
         // initialize conversionSource
         List<ConversionFactorEntity> factorEntities = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));
@@ -48,7 +48,6 @@ public class MetricVolumeForListHandler extends AbstractOneWayConversionHandler 
         setSortType(ConversionSortType.RANGE);
         setDoesScaling(true);
     }
-
 
 }
 

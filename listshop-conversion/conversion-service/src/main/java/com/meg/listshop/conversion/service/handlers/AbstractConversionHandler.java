@@ -1,19 +1,23 @@
 package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
+import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionSortType;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
+import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
+import com.meg.listshop.conversion.tools.ConversionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class AbstractConversionHandler implements ConversionHandler {
@@ -22,6 +26,8 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     private ConversionSpec source;
     private ConversionSpec target;
     private ConversionFactorSource conversionSource;
+
+    private boolean doesScaling = false;
 
     private ConversionSortType sortType = ConversionSortType.NEAREST_UNIT;
 
@@ -135,6 +141,9 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     }
 
     private boolean doesntRequireConversion(ConvertibleAmount toConvert, ConversionSpec targetSpec) {
+        if (doesScaling) {
+            return false;
+        }
         boolean specMatches = targetSpec.matches(toConvert.getUnit());
         if (!specMatches) {
             return false;
@@ -145,6 +154,14 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         return true;
     }
 
+    protected List<ConversionFactor> selfScalingFactors(List<ConversionFactor> factors, UnitFlavor flavor) {
+        Set<ConversionFactor> destinationFactors = factors.stream()
+                .map(ConversionFactor::getToUnit)
+                .filter(u -> ConversionTools.hasFlavor(u, flavor))
+                .map(SimpleConversionFactor::passThroughFactor)
+                .collect(Collectors.toSet());
+        return new ArrayList<>(destinationFactors);
+    }
 
     public ConversionSpec getSource() {
         return source;
@@ -168,6 +185,10 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
     public void setSortType(ConversionSortType sortType) {
         this.sortType = sortType;
+    }
+
+    public void setDoesScaling(boolean doesScaling) {
+        this.doesScaling = doesScaling;
     }
 }
 

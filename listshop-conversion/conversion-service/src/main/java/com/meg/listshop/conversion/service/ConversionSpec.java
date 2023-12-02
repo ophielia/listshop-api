@@ -31,8 +31,8 @@ public class ConversionSpec {
 
     private static UnitType oppositeType(UnitType unitType) {
         if (Objects.requireNonNull(unitType) == UnitType.US) {
-            return UnitType.Metric;
-        } else if (unitType == UnitType.Metric) {
+            return UnitType.METRIC;
+        } else if (unitType == UnitType.METRIC) {
             return UnitType.US;
         }
         return unitType;

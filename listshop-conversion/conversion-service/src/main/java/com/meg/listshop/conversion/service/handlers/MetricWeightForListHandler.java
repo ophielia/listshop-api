@@ -31,19 +31,22 @@ public class MetricWeightForListHandler extends AbstractOneWayConversionHandler 
     public MetricWeightForListHandler(ConversionFactorRepository factorRepository) {
         super();
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.Metric, UnitSubtype.WEIGHT);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.WEIGHT);
         // make target
-        ConversionSpec target = ConversionSpec.basicSpec(UnitType.Metric, UnitSubtype.WEIGHT, UnitFlavor.ListUnit);
+        ConversionSpec target = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.WEIGHT, UnitFlavor.ListUnit);
 
         // initialize conversionSource
-        List<ConversionFactorEntity> factors = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));
-        ConversionFactorSource conversionSource = new SimpleConversionFactorSource(factors.stream().map(f -> (ConversionFactor) f).collect(Collectors.toList()));
+        List<ConversionFactorEntity> factorEntities = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));
+        List<ConversionFactor> factors = factorEntities.stream().map(f -> (ConversionFactor) f).collect(Collectors.toList());
+        factors.addAll(selfScalingFactors(factors, UnitFlavor.ListUnit));
+        ConversionFactorSource conversionSource = new SimpleConversionFactorSource(factors, true);
 
         // initialize in abstract
         setSource(source);
         setTarget(target);
         setConversionSource(conversionSource);
         setSortType(ConversionSortType.RANGE);
+        setDoesScaling(true);
     }
 
 }

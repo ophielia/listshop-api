@@ -792,7 +792,9 @@ public class TagServiceImpl implements TagService {
 
 
     private List<TagEntity> getTagsForDish(DishEntity dish, List<TagType> tagtypes) {
-        return new ArrayList<>();//filterTagsByTagType(dish.getItems(), tagtypes);
+        return filterItemsByTagType(dish.getItems(), tagtypes).stream()
+                .map(DishItemEntity::getTag)
+                .collect(Collectors.toList());
     }
 
     private List<DishItemEntity> getItemsForDish(DishEntity dish, List<TagType> tagtypes) {

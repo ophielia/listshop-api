@@ -27,11 +27,11 @@ public class ConversionFactorEntity implements ConversionFactor {
     private Double factor;
 
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "toUnit")
     private UnitEntity toUnit;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fromUnit")
     private UnitEntity fromUnit;
 

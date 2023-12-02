@@ -36,14 +36,17 @@ public class UsVolumeForListHandler extends AbstractOneWayConversionHandler {
         ConversionSpec target = ConversionSpec.basicSpec(UnitType.US, UnitSubtype.VOLUME, UnitFlavor.ListUnit);
 
         // initialize conversionSource
-        List<ConversionFactorEntity> factors = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));
-        ConversionFactorSource conversionSource = new SimpleConversionFactorSource(factors.stream().map(f -> (ConversionFactor) f).collect(Collectors.toList()));
+        List<ConversionFactorEntity> factorEntities = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));
+        List<ConversionFactor> factors = factorEntities.stream().map(f -> (ConversionFactor) f).collect(Collectors.toList());
+        factors.addAll(selfScalingFactors(factors, UnitFlavor.ListUnit));
+        ConversionFactorSource conversionSource = new SimpleConversionFactorSource(factors, true);
 
         // initialize in abstract
         setSource(source);
         setTarget(target);
         setConversionSource(conversionSource);
         setSortType(ConversionSortType.RANGE);
+        setDoesScaling(true);
     }
 
 }

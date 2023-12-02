@@ -29,7 +29,7 @@ public class WeightHandler extends AbstractConversionHandler {
     public WeightHandler(ConversionFactorRepository factorRepository) {
         super();
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.Metric, UnitSubtype.WEIGHT);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.WEIGHT);
         // make target
         ConversionSpec target = ConversionSpec.basicSpec(UnitType.US, UnitSubtype.WEIGHT);
 

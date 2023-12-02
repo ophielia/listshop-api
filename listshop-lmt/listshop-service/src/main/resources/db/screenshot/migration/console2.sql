@@ -1,3 +1,6 @@
+delete
+from factors;
+
 insert into factors (factor_id, from_unit, to_unit, factor)
 select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.0625 as factor
 from units f,
@@ -29,12 +32,6 @@ from units f,
 where lower(f.name) = 'fl oz'
   and lower(t.name) = 'gallon';
 insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 29.57 as factor
-from units f,
-     units t
-where lower(f.name) = 'fl oz'
-  and lower(t.name) = 'grams';
-insert into factors (factor_id, from_unit, to_unit, factor)
 select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.0625 as factor
 from units f,
      units t
@@ -65,12 +62,6 @@ from units f,
 where lower(f.name) = 'gram'
   and lower(t.name) = 'oz';
 insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.0353 as factor
-from units f,
-     units t
-where lower(f.name) = 'gram'
-  and lower(t.name) = 'oz';
-insert into factors (factor_id, from_unit, to_unit, factor)
 select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 2.20462262 as factor
 from units f,
      units t
@@ -83,7 +74,7 @@ from units f,
 where lower(f.name) = 'kilogram'
   and lower(t.name) = 'oz';
 insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.01 as factor
+select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 100 as factor
 from units f,
      units t
 where lower(f.name) = 'liter'
@@ -101,7 +92,7 @@ from units f,
 where lower(f.name) = 'liter'
   and lower(t.name) = 'gallon';
 insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.001 as factor
+select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 1000 as factor
 from units f,
      units t
 where lower(f.name) = 'liter'
@@ -142,12 +133,6 @@ from units f,
      units t
 where lower(f.name) = 'milliliter'
   and lower(t.name) = 'quart';
-insert into factors (factor_id, from_unit, to_unit, factor)
-select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 28.35 as factor
-from units f,
-     units t
-where lower(f.name) = 'oz'
-  and lower(t.name) = 'gram';
 insert into factors (factor_id, from_unit, to_unit, factor)
 select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.125 as factor
 from units f,
@@ -226,6 +211,18 @@ from units f,
      units t
 where lower(f.name) = 'centiliter'
   and lower(t.name) = 'milliliter';
+insert into factors (factor_id, from_unit, to_unit, factor)
+select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.0625 as factor
+from units f,
+     units t
+where lower(f.name) = 'oz'
+  and lower(t.name) = 'lb';
+insert into factors (factor_id, from_unit, to_unit, factor)
+select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 16 as factor
+from units f,
+     units t
+where lower(f.name) = 'lb'
+  and lower(t.name) = 'oz';
 
 select *
 from factors;

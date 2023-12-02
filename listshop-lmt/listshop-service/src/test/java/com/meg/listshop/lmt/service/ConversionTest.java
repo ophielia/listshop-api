@@ -48,6 +48,7 @@ public class ConversionTest {
     private static final Long cupsId = 1000L;
     private static final Long centileterId = 1015L;
     private static final Long milliliterId = 1004L;
+    private static final Long flOzId = 1007L;
     @Autowired
     ConversionService conversionService;
 
@@ -145,14 +146,14 @@ public class ConversionTest {
 
 
         amount = new SimpleAmount(3.0, cupsOpt.get());
-        converted = conversionService.convert(amount, UnitType.Metric);
+        converted = conversionService.convert(amount, UnitType.METRIC);
         assertNotNull(converted);
         assertEquals(0.71, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(literId, converted.getUnit().getId());
     }
 
     @Test
-    public void testSimpleMetricListContext() throws ConversionPathException, ConversionFactorException {
+    public void testSimpleMetricVolumeListContext() throws ConversionPathException, ConversionFactorException {
         Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
         Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
@@ -162,14 +163,14 @@ public class ConversionTest {
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
 
         ConvertibleAmount amount = new SimpleAmount(3, quartOpt.get());
-        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.Metric, UnitSubtype.VOLUME);
+        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.METRIC, UnitSubtype.VOLUME);
         ConvertibleAmount converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(2.839, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(literId, converted.getUnit().getId());
 
         amount = new SimpleAmount(0.021133764, pintOpt.get());
-        converted = conversionService.convert(amount, UnitType.Metric);
+        converted = conversionService.convert(amount, UnitType.METRIC);
         assertNotNull(converted);
         // confirm that we have this pint fraction translated to 1 centiliter
         assertEquals(1.000, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -185,7 +186,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSimpleImperialListContext() throws ConversionPathException, ConversionFactorException {
+    public void testSimpleUsVolumeListContext() throws ConversionPathException, ConversionFactorException {
         Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
         Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
@@ -196,6 +197,7 @@ public class ConversionTest {
 
         ConvertibleAmount amount = new SimpleAmount(473.17, milliliterOpt.get());
         ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US, UnitSubtype.VOLUME);
+        /**/
         ConvertibleAmount converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(0.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -218,38 +220,29 @@ public class ConversionTest {
 
     }
 
-    public void nextTest() {
-    /*
-        amount = new SimpleAmount(50, centiliterOpt.get());
-        converted = conversionService.convert(amount, UnitType.Imperial);
-        assertNotNull(converted);
-        assertEquals(0.440, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(quartId, converted.getUnit().getId());
-
-        amount = new SimpleAmount(3.0, cupsOpt.get());
-        converted = conversionService.convert(amount, UnitType.Metric);
-        assertNotNull(converted);
-        assertEquals(0.71, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(literId, converted.getUnit().getId());
-     */
-    }
-
     @Test
-    public void homeForTroubledTests() throws ConversionPathException, ConversionFactorException {
-        Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
-        Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
-        Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
-        Optional<UnitEntity> cupsOpt = unitRepository.findById(cupsId);
-        Optional<UnitEntity> quartOpt = unitRepository.findById(quartId);
+    public void testSimpleUsWeightListContext() throws ConversionPathException, ConversionFactorException {
+        Optional<UnitEntity> poundOpt = unitRepository.findById(lbId);
+        Optional<UnitEntity> gramOpt = unitRepository.findById(gId);
+        Optional<UnitEntity> ounceOpt = unitRepository.findById(ounceId);
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
 
-        ConvertibleAmount amount = new SimpleAmount(50, centiliterOpt.get());
-        ConvertibleAmount converted = conversionService.convert(amount, UnitType.US);
-        assertNotNull(converted);
-        assertEquals(1.057, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(pintId, converted.getUnit().getId());
 
-        assertEquals(1, 1);
+        // 113.398093 gm = 4 ounces => ounce destination
+        ConvertibleAmount amount = new SimpleAmount(113.398093, gramOpt.get());
+        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US, UnitSubtype.WEIGHT);
+        ConvertibleAmount converted = conversionService.convert(amount, listContext);
+        assertNotNull(converted);
+        assertEquals(ounceId, converted.getUnit().getId());
+        assertEquals(3.992, RoundingUtils.roundToThousandths(converted.getQuantity()));
+
+        // 15 Ounce = 425.242847 Gram  => pound destination
+        amount = new SimpleAmount(425.242847, gramOpt.get());
+        listContext = new ConversionContext(ConversionContextType.List, UnitType.US, UnitSubtype.WEIGHT);
+        converted = conversionService.convert(amount, listContext);
+        assertNotNull(converted);
+        assertEquals(0.936, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(lbId, converted.getUnit().getId());
 
     }
 

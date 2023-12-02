@@ -19,4 +19,15 @@ public class ConversionTools {
         }
         return flavors;
     }
+
+    public static boolean hasFlavor(UnitEntity unit, UnitFlavor flavor) {
+        switch (flavor) {
+            case ListUnit:
+                return unit.isListUnit();
+            case DishUnit:
+                return unit.isDishUnit();
+            default:
+                return false;
+        }
+    }
 }

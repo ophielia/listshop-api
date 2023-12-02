@@ -197,14 +197,14 @@ insert into dish (auto_tag_status, description, dish_name, last_added, user_id, 
 values (null, null, 'dish1', null, 500, 66501);
 --dish 1 - tags 502 and 510
 insert into dish_items (dish_item_id, dish_id, tag_id)
-values (66500, 1);
+values (nextval('dish_item_sequence'), 66500, 1);
 insert into dish_items (dish_item_id, dish_id, tag_id)
-values (66500, 436);
+values (nextval('dish_item_sequence'), 66500, 436);
 -- dish 2 - tags 502 and 503
 insert into dish_items (dish_item_id, dish_id, tag_id)
-values (66501, 1);
+values (nextval('dish_item_sequence'), 66501, 1);
 insert into dish_items (dish_item_id, dish_id, tag_id)
-values (66501, 12);
+values (nextval('dish_item_sequence'), 66501, 12);
 
 insert into meal_plan (created, meal_plan_type, name, user_id, meal_plan_id)
 values (now(), 'Manual', 'meal plan 5', 500, 65505);

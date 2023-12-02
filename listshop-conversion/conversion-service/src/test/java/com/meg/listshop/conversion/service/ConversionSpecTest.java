@@ -26,7 +26,7 @@ class ConversionSpecTest {
         expectedFlavors.add(UnitFlavor.Volume);
         spec = ConversionSpec.fromExactUnit(unit);
         assertEquals(1L, spec.getUnitId(), "id should be filled and equal 1");
-        assertEquals(UnitType.Metric, spec.getUnitType(), "type should be Metric");
+        assertEquals(UnitType.METRIC, spec.getUnitType(), "type should be Metric");
         assertEquals(0, spec.getFlavors().size(), "no flavors here - weight is in subtype");
     }
 
@@ -37,7 +37,7 @@ class ConversionSpecTest {
         expectedFlavors.add(UnitFlavor.Weight);
         ConversionSpec spec = ConversionSpec.convertedFromUnit(unit);
         assertNull(spec.getUnitId(), "id should be empty");
-        assertEquals(UnitType.Metric, spec.getUnitType(), "type should be Metric");
+        assertEquals(UnitType.METRIC, spec.getUnitType(), "type should be Metric");
         assertEquals(0, spec.getFlavors().size(), "no flavors - weight is in subtype");
 
     }
@@ -46,11 +46,11 @@ class ConversionSpecTest {
     void testFromContextAndSource() {
         // make imperial weight, for list context
         UnitEntity sourceUnit = makeImperialUnit(1L, false);
-        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.Metric, UnitSubtype.WEIGHT);
+        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.METRIC, UnitSubtype.WEIGHT);
         Set<UnitFlavor> expectedFlavors = createFlavors(false, true, false, true, false);
         ConversionSpec result = ConversionSpec.fromContextAndSource(context, sourceUnit);
 
-        assertEquals(UnitType.Metric, result.getUnitType(), "should be metric");
+        assertEquals(UnitType.METRIC, result.getUnitType(), "should be metric");
         assertEquals(expectedFlavors, result.getFlavors(), "flavors should include weight and list");
 
 
@@ -85,7 +85,7 @@ class ConversionSpecTest {
 
     private UnitEntity makeMetricUnit(Long id, boolean isVolume) {
         UnitEntity unit = new UnitEntity();
-        unit.setType(UnitType.Metric);
+        unit.setType(UnitType.METRIC);
         unit.setId(id);
         if (isVolume) {
             unit.setVolume(true);
