@@ -458,8 +458,8 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
 
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
-        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.ofNullable(null));
-        Mockito.when(shoppingListRepository.findById(listId)).thenReturn(Optional.ofNullable(null));
+        Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.empty());
+        Mockito.when(shoppingListRepository.findById(listId)).thenReturn(Optional.empty());
 
         // test call
         shoppingListService.deleteAllItemsFromList(userId, listId);
@@ -631,7 +631,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
 
 
         Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
-        Mockito.when(shoppingListRepository.findByUserIdAndIsStarterListTrue(userId)).thenReturn(Arrays.asList(shoppingList));
+        Mockito.when(shoppingListRepository.findByUserIdAndIsStarterListTrue(userId)).thenReturn(List.of(shoppingList));
 
 
         // test call
@@ -683,7 +683,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
     // removeListItemsFromList
 
     @Test
-    public void testCreateList_duplicateName() throws ShoppingListException, IllegalAccessException {
+    public void testCreateList_duplicateName() throws ShoppingListException {
         Long userId = 99L;
         String userName = "userName";
         String listName = "ShoppingList";
@@ -934,11 +934,11 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         TagEntity tag6 = ServiceTestUtils.buildTag(6L, "outlier tag", TagType.NonEdible);
         // put tags into items
         DishItemEntity item1 = ServiceTestUtils.buildDishItemFromTag(11L, tag1);
-        DishItemEntity item2 = ServiceTestUtils.buildDishItemFromTag(22L, tag1);
-        DishItemEntity item3 = ServiceTestUtils.buildDishItemFromTag(33L, tag1);
-        DishItemEntity item4 = ServiceTestUtils.buildDishItemFromTag(44L, tag1);
-        DishItemEntity item5 = ServiceTestUtils.buildDishItemFromTag(55L, tag1);
-        DishItemEntity item6 = ServiceTestUtils.buildDishItemFromTag(66L, tag1);
+        DishItemEntity item2 = ServiceTestUtils.buildDishItemFromTag(22L, tag2);
+        DishItemEntity item3 = ServiceTestUtils.buildDishItemFromTag(33L, tag3);
+        DishItemEntity item4 = ServiceTestUtils.buildDishItemFromTag(44L, tag4);
+        DishItemEntity item5 = ServiceTestUtils.buildDishItemFromTag(55L, tag5);
+        DishItemEntity item6 = ServiceTestUtils.buildDishItemFromTag(66L, tag6);
 
         Long dishId1 = 1212L;
         Long dishId2 = 2323L;
@@ -1073,7 +1073,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Assert.assertNotNull(resultMap.get(8L).getRemovedOn());
 
         Long tagId = items.get(0).getTag().getId();
-        Assert.assertEquals(Long.valueOf(3L), Long.valueOf(tagId));
+        Assert.assertEquals(Long.valueOf(3L), tagId);
 
     }
 
@@ -1141,7 +1141,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Assert.assertNotNull(resultMap.get(8L).getRemovedOn());
 
         Long tagId = items.get(0).getTag().getId();
-        Assert.assertEquals(Long.valueOf(3L), Long.valueOf(tagId));
+        Assert.assertEquals(Long.valueOf(3L), tagId);
 
     }
 
@@ -1306,7 +1306,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
                 .thenReturn(sourceList.getItems());
         Mockito.when(itemRepository.findByListIdAAndRemovedOnIsNull(destinationListId))
                 .thenReturn(destinationList.getItems());
-        Mockito.when(tagService.getDictionaryForIds(new HashSet(operationTagIds)))
+        Mockito.when(tagService.getDictionaryForIds(new HashSet<>(operationTagIds)))
                 .thenReturn(tagDictionary);
 
         itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
@@ -1407,7 +1407,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Mockito.when(itemRepository.findByListId(sourceListId))
                 .thenReturn(sourceList.getItems());
 
-        Mockito.when(tagService.getDictionaryForIds(new HashSet(operationTagIds)))
+        Mockito.when(tagService.getDictionaryForIds(new HashSet<>(operationTagIds)))
                 .thenReturn(tagDictionary);
 
         itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
