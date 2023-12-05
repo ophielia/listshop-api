@@ -14,6 +14,11 @@ public class MergeRequest {
     @JsonProperty("last_changed")
     private Date lastChanged;
 
+    @JsonProperty("last_offline_change")
+    private Date lastOfflineChange;
+
+    @JsonProperty("last_synced")
+    private Date lastSynced;
     @JsonProperty("layout_id")
     private Long layoutId;
 
@@ -65,5 +70,21 @@ public class MergeRequest {
 
     public void setCheckTagConflict(boolean checkTagConflict) {
         this.checkTagConflict = checkTagConflict;
+    }
+
+    public Date getLastOfflineChange() {
+        return lastOfflineChange;
+    }
+
+    public void setLastOfflineChange(Date lastOfflineChange) {
+        this.lastOfflineChange = lastOfflineChange;
+    }
+
+    public Date getLastSynced() {
+        return lastSynced;
+    }
+
+    public void setLastSynced(Date lastSynced) {
+        this.lastSynced = lastSynced;
     }
 }

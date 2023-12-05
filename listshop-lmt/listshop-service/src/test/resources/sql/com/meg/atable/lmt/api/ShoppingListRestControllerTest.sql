@@ -259,6 +259,51 @@ values (110000, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, n
        (110013, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110000, null, 318, 1, null, '109', null, null,
         null);
 
+-- test for skipping merge
+-- new test for merge list - list 10000
+insert into list (list_id, created_on, user_id, list_types, list_layout_id, last_update, meal_plan_id, is_starter_list,
+                  name)
+values (110099, '2022-04-16 05:32:38.898000 +00:00', 20, null, 5, '2022-04-16 07:32:39.660000', null, false,
+        'Shopping List');
+
+insert into list_item (item_id, added_on, crossed_off, free_text, source, list_id, list_category, tag_id, used_count,
+                       category_id, dish_sources, list_sources, removed_on, updated_on)
+values (91110000, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 256, 1, null, '109', null, null,
+        null),
+       (91110014, '2022-04-16 03:32:39.605000 +00:00', null, null, null, 110099, null, 32, 1, null, '112', null, null,
+        null),
+       (91110015, '2022-04-16 03:32:39.606000 +00:00', null, null, null, 110099, null, 33, 1, null, '112', null, null,
+        null),
+       (91110016, '2022-04-16 03:32:39.606000 +00:00', null, null, null, 110099, null, 34, 1, null, '112', null, null,
+        null),
+       (91110001, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 41, 1, null, '109', null, null,
+        null),
+       (91110002, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 460, 1, null, '109', null, null,
+        null),
+       (91110003, '2022-04-16 03:32:39.319000 +00:00', null, null, null, 110099, null, 13, 1, null, '109', null, null,
+        null),
+       (91110004, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 15, 1, null, '109', null, null,
+        now()),
+       (91110005, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 16, 1, null, '109', null, null,
+        null),
+       (91110006, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 81, 2, null, '112;109', null, null,
+        '2022-04-20 03:32:39.607000 +00:00'),
+       (91110007, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 19, 1, null, '109', null, null,
+        null),
+       (91110008, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 212, 1, null, '109', null, null,
+        null),
+       (91110009, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 21, 1, null, '109', null, null,
+        null),
+       (91110010, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 437, 1, null, '109', null, null,
+        null),
+       (91110011, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 217, 1, null, '109', null, null,
+        null),
+       (91110012, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 443, 1, null, '109', null, null,
+        null),
+       (91110013, '2022-04-16 03:32:39.320000 +00:00', null, null, null, 110099, null, 318, 1, null, '109', null, null,
+        null);
+
+
 -- test for merge conflicts
 -- insert two tags with user and standard name the same
 INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,

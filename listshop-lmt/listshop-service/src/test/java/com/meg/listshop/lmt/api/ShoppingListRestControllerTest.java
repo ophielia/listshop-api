@@ -97,6 +97,9 @@ public class ShoppingListRestControllerTest {
     @Value("classpath:/data/shoppingListRestControllerTest_mergeList.json")
     Resource resourceFile;
 
+    @Value("classpath:/data/shoppingListRestControllerTest_noMergeList.json")
+    Resource resourceFileNoMerge;
+
     @Value("classpath:/data/shoppingListRestControllerTest_mergeListStale.json")
     Resource resourceFileStale;
 
@@ -626,6 +629,36 @@ public class ShoppingListRestControllerTest {
         Assert.assertEquals("5 crossed off items", 5, crossedOffMap.keySet().size());
         Assert.assertTrue("33 should be crossed off", crossedOffMap.containsKey("19"));
         Assert.assertTrue("16 should be crossed off", crossedOffMap.containsKey("34"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testMergeList_SkipMerge() throws Exception {
+        String testMergeList = StreamUtils.copyToString(resourceFileNoMerge.getInputStream(), Charset.forName("utf8"));
+
+        Long listId = 110099L;
+
+        String url = "/shoppinglist/shared";
+        MvcResult result = mockMvc.perform(put(url)
+                        .with(user(meUserDetails))
+                        .contentType(contentType)
+                        .content(testMergeList))
+                .andReturn();
+                //.andExpect(status().isOk());
+
+        // now, retrieve the list
+        ShoppingList source = retrieveList(meUserDetails, listId);
+        Map<String, ShoppingListItem> crossedOffItems = source.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .filter(c -> c.getCrossedOff() != null)
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(crossedOffItems);
+
+        // check result
+        // the merged list had crossed off items. The db list didn't have any crossed off items
+        // the merged list had an offline change date older than the last sync, so no merge should have been done
+        // we cann check this by ensuring that no items are crossed off
+        Assert.assertEquals("should have 0 items", 0, crossedOffItems.keySet().size());
     }
 
     @Test

@@ -661,6 +661,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             throw new ObjectNotFoundException(String.format("List to merge [%s] not found for user [%s]", listToMergeId, userId));
         }
 
+        if (!requiresMerge(mergeRequest)) {
+            // this list doesn't need to be merged
+            logger.info("Skipping merge for list [{}].", listToMergeId);
+            return new MergeResult();
+        }
+
+        logger.info("Offline changes found, proceeding with merge for list [{}].", listToMergeId);
         // create MergeCollector from list
         MergeItemCollector mergeCollector = new MergeItemCollector(list.getId(), list.getItems(), list.getLastUpdate());
         checkReplaceTagsInCollector(mergeCollector);
@@ -685,6 +692,19 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         logger.info("Merge complete for list [{}}].", list.getId());
         return new MergeResult();
+    }
+
+    private boolean requiresMerge(MergeRequest mergeRequest) {
+        // for older clients which aren't sending info - we keep the old behavior, which is to always merge
+        if (mergeRequest.getLastOfflineChange() == null && mergeRequest.getLastSynced() == null) {
+            return true;
+        }
+        if (mergeRequest.getLastOfflineChange() == null) {
+            return false;
+        }
+            // last offline change more recent than last synced - we need to merge the offline changes
+        return (mergeRequest.getLastSynced() != null &&
+                mergeRequest.getLastOfflineChange().after(mergeRequest.getLastSynced()));
     }
 
     @Override
