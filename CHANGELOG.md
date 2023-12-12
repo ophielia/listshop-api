@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.15.0]  - December 2023
+### Added
+- Start of new conversion system - weight conversions
+
+### Changed
+- Dish tags now saved in new table, dish_items
+- Server only merges if offline changes more recent than last sync
+- Project rearrangement into more modules
+
+
 ## [1.14.0]  - November 2023
 
 ### Added
