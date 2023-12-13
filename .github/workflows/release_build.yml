@@ -30,15 +30,23 @@ jobs:
         with:
           ref: master
 
+      - name: Increment Version of Project
+        run:  mvn versions:set -DnewVersion=${GITHUB_REF##*/} -DgenerateBackupPoms=false
+
+      - name: Git Version Push
+        run: |
+          git config --global user.name "Listshop Bot"
+          git config --global user.email "dev@listshop.com"
+          git add .
+          git commit -m "bumping to release version ${GITHUB_REF##*/}"
+          git push origin master  
+
 
       - name: Build - helmfiles and docker image
         run: mvn clean install -DskipTests -Phelm
 
-      - name: Helm Package - command
-        run: echo  "helm package listshop-service/target/helm/listshop-api --version "${GITHUB_REF##*/}+$(git rev-parse --short "$GITHUB_SHA")" -d ."
-
       - name: Helm Package 
-        run: helm package listshop-service/target/helm/listshop-api --version "${GITHUB_REF##*/}+$(git rev-parse --short "$GITHUB_SHA")" -d .
+        run: helm package listshop-lmt/listshop-service/target/helm/listshop-api --version "${GITHUB_REF##*/}+$(git rev-parse --short "$GITHUB_SHA")" -d .
 
       - name: Ensure Fresh Docker Login - logging out
         run: docker logout
