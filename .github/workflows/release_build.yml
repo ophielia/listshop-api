@@ -30,16 +30,7 @@ jobs:
         with:
           ref: master
 
-      - name: Increment Version of Project
-        run:  mvn versions:set -DnewVersion=${GITHUB_REF##*/} -DgenerateBackupPoms=false
 
-      - name: Git Version Push
-        run: |
-          git config --global user.name "Listshop Bot"
-          git config --global user.email "dev@listshop.com"
-          git add .
-          git commit -m "bumping to release version ${GITHUB_REF##*/}"
-          git push origin master  
 
 
       - name: Build - helmfiles and docker image
