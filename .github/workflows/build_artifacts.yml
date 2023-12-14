@@ -39,10 +39,10 @@ jobs:
         run: mvn clean install -DskipTests -Phelm
 
       - name: Helm Package - command
-        run: echo  "helm package listshop-lmt/listshop-service/target/helm/listshop-api --version "${{inputs.containerVersion}}+$(git rev-parse --short "$GITHUB_SHA")" -d ."
+        run: echo  "helm package listshop-lmt/listshop-service/target/helm/listshop-api --version "${{inputs.buildVersion}}+$(git rev-parse --short "$GITHUB_SHA")" -d ."
 
       - name: Helm Package
-        run: helm package listshop-lmt/listshop-service/target/helm/listshop-api --version "${{inputs.containerVersion}}+$(git rev-parse --short "$GITHUB_SHA")" -d .
+        run: helm package listshop-lmt/listshop-service/target/helm/listshop-api --version "${{inputs.buildVersion}}+$(git rev-parse --short "$GITHUB_SHA")" -d .
 
       - name: Ensure Fresh Docker Login - logging out
         run: docker logout
