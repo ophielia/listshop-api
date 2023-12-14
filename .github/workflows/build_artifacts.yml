@@ -51,7 +51,7 @@ jobs:
         run: docker login --username=${{ secrets.DOCKER_HUB_USERNAME }} --password=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Now, Push to Docker
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/listshop-server:${{inputs.buildVersion}}}
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/listshop-server:${{inputs.buildVersion}}
 
       - name: Helm Repository Checkout
         uses: actions/checkout@v2
