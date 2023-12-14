@@ -49,7 +49,7 @@ jobs:
         run: echo  "helm package listshop-lmt/listshop-service/target/helm/listshop-api --version "${GITHUB_REF##*/}+$(git rev-parse --short "$GITHUB_SHA")" -d ."
 
       - name: Helm Package
-        run: helm package listshop-service/target/helm/listshop-api --version "${GITHUB_REF##*/}+$(git rev-parse --short "$GITHUB_SHA")" -d .
+        run: helm package listshop-lmt/listshop-service/target/helm/listshop-api --version "${GITHUB_REF##*/}+$(git rev-parse --short "$GITHUB_SHA")" -d .
 
       - name: Ensure Fresh Docker Login - logging out
         run: docker logout
