@@ -69,7 +69,7 @@ jobs:
         run: |
           git config --global user.email "dev@listshop.com"
           git config --global user.name "Listshop Bot"
-          CHART_PACKAGE_NAME="listshop-api-${GITHUB_REF##*/}+$(git rev-parse --short "$GITHUB_SHA").tgz"
+          CHART_PACKAGE_NAME="listshop-api-${{inputs.buildVersion}}+$(git rev-parse --short "$GITHUB_SHA").tgz"
           cp $CHART_PACKAGE_NAME helm-chart-repository/$CHART_REPOSITORY_NAME
           cd helm-chart-repository
           ls
