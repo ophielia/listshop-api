@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       buildVersion:
-        description: 'form of: listshop-api-x.xx.xx'
+        description: 'form of: x.xx.xx, no prefix'
         required: true
 
 jobs:
