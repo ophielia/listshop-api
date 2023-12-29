@@ -7,6 +7,7 @@ import com.meg.listshop.conversion.data.pojo.ConversionSortType;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
+import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
@@ -22,6 +23,8 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractConversionHandler implements ConversionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractConversionHandler.class);
+    private static final double DEFAULT_MIN_RANGE = 0.5;
+    private static final double DEFAULT_MAX_RANGE = 500;
 
     private ConversionSpec source;
     private ConversionSpec target;
@@ -31,6 +34,8 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
     private ConversionSortType sortType = ConversionSortType.NEAREST_UNIT;
 
+    private double firstPassMinRange = DEFAULT_MIN_RANGE;
+    private double firstPassMaxRange = DEFAULT_MAX_RANGE;
     protected AbstractConversionHandler(ConversionSpec source, ConversionSpec target, ConversionFactorSource conversionSource) {
         this.source = source;
         this.target = target;
@@ -50,7 +55,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
                 (target.equals(sourceSpec) && source.equals(targetSpec));
     }
 
-    public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException {
+    public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException, ExceedsAllowedScaleException {
         if (doesntRequireConversion(toConvert, targetSpec)) {
             LOG.debug("No conversion required for spec: [{}], amount [{}].", targetSpec, toConvert);
             return toConvert;
@@ -85,10 +90,16 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
         // sort for best result, according to sort type
         ConvertibleAmount bestResult = sortForBestResult(convertedList);
+
+        // for hybrids - some amounts may scale right out of the hybrid range
+        checkBestResult(bestResult, targetSpec);
+
         // return best result
-
-
         return new SimpleAmount(bestResult.getQuantity(), bestResult.getUnit(), toConvert);
+    }
+
+    public void checkBestResult(ConvertibleAmount bestResult, ConversionSpec targetSpec) throws ExceedsAllowedScaleException {
+        // default implementation does nothing
     }
 
     private ConvertibleAmount sortForBestResult(List<ConvertibleAmount> convertedList) {
@@ -122,7 +133,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         convertedList.sort(compareByQuantity);
 
         ConvertibleAmount best = convertedList.stream()
-                .filter(a -> a.getQuantity() >= 0.5 && a.getQuantity() <= 500.0)
+                .filter(a -> a.getQuantity() >= firstPassMinRange && a.getQuantity() <= firstPassMaxRange)
                 .findFirst().orElse(null);
 
         if (best != null) {
@@ -189,6 +200,14 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
     public void setDoesScaling(boolean doesScaling) {
         this.doesScaling = doesScaling;
+    }
+
+    public void setFirstPassMinRange(double firstPassMinRange) {
+        this.firstPassMinRange = firstPassMinRange;
+    }
+
+    public void setFirstPassMaxRange(double firstPassMaxRange) {
+        this.firstPassMaxRange = firstPassMaxRange;
     }
 }
 

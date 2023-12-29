@@ -1,6 +1,7 @@
 package com.meg.listshop.conversion.service;
 
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
+import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.handlers.ConversionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,7 @@ public class HandlerChain {
         this.handler = handler;
     }
 
-    public ConvertibleAmount process(ConvertibleAmount toConvert, ConversionSpec target) throws ConversionFactorException {
+    public ConvertibleAmount process(ConvertibleAmount toConvert, ConversionSpec target) throws ConversionFactorException , ExceedsAllowedScaleException {
         LOG.debug("Starting chain conversion from: [{}], to: [{}], handler: [{}]", toConvert.getUnit(), target, handler);
         ConvertibleAmount converted = handler.convert(toConvert, target);
         if (nextLink == null) {

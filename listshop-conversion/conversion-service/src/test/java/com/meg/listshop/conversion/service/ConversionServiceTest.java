@@ -4,6 +4,7 @@ import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
+import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.handlers.ConversionHandler;
 import com.meg.listshop.conversion.service.tools.ConversionHandlerBuilder;
 import com.meg.listshop.conversion.tools.ConversionTestTools;
@@ -19,11 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ConversionServiceTest {
 
     UnitEntity metricGrams;
-    UnitEntity imperialOunces;
-    UnitEntity imperialQuart;
-    UnitEntity imperialCups;
+    UnitEntity usOunces;
+    UnitEntity usQuart;
+    UnitEntity usCups;
+    UnitEntity hybridTeaspoon;
+    UnitEntity hybridTablespoon;
     UnitEntity metricLiter;
-    UnitEntity imperialMadeUpCloser;
+    UnitEntity usMadeUpCloser;
 
     ConversionService service;
 
@@ -31,26 +34,28 @@ class ConversionServiceTest {
     @BeforeEach
     void setUp() {
         metricGrams = ConversionTestTools.makeMetricUnit(1L, UnitSubtype.WEIGHT);
-        imperialOunces = ConversionTestTools.makeImperialUnit(2L, UnitSubtype.WEIGHT);
-        imperialMadeUpCloser = ConversionTestTools.makeImperialUnit(5L, UnitSubtype.WEIGHT);
-        imperialQuart = ConversionTestTools.makeImperialUnit(3L, UnitSubtype.VOLUME);
-        imperialCups = ConversionTestTools.makeImperialUnit(6L, UnitSubtype.VOLUME);
+        usOunces = ConversionTestTools.makeUSUnit(2L, UnitSubtype.WEIGHT);
+        usMadeUpCloser = ConversionTestTools.makeUSUnit(5L, UnitSubtype.WEIGHT);
+        usQuart = ConversionTestTools.makeUSUnit(3L, UnitSubtype.VOLUME);
+        usCups = ConversionTestTools.makeUSUnit(6L, UnitSubtype.VOLUME);
+        hybridTeaspoon = ConversionTestTools.makeHybridUnit(7L, UnitSubtype.NONE);
+        hybridTablespoon = ConversionTestTools.makeHybridUnit(8L, UnitSubtype.NONE);
         metricLiter = ConversionTestTools.makeMetricUnit(4L, UnitSubtype.VOLUME);
 
         ConversionHandler metricToMetricWeight = new ConversionHandlerBuilder()
-                .withFactor(metricGrams, imperialOunces, 0.5)
-                .withFactor(metricGrams, imperialMadeUpCloser, 0.9)
+                .withFactor(metricGrams, usOunces, 0.5)
+                .withFactor(metricGrams, usMadeUpCloser, 0.9)
                 .withFromSpec(UnitType.METRIC, UnitSubtype.WEIGHT)
                 .withToSpec(UnitType.US, UnitSubtype.WEIGHT)
                 .build();
         ConversionHandler metricToMetricVolume = new ConversionHandlerBuilder()
-                .withFactor(metricLiter, imperialQuart, 0.6)
+                .withFactor(metricLiter, usQuart, 0.6)
                 .withFromSpec(UnitType.METRIC, UnitSubtype.VOLUME)
                 .withToSpec(UnitType.US, UnitSubtype.VOLUME)
                 .build();
         ConversionHandler imperialListDestination = new ConversionHandlerBuilder()
-                .withFactor(imperialOunces, imperialQuart, 0.7)
-                .withFactor(imperialCups, imperialQuart, 4)
+                .withFactor(usOunces, usQuart, 0.7)
+                .withFactor(usCups, usQuart, 4)
                 .withFromSpec(UnitType.US, UnitSubtype.VOLUME)
                 .withToSpec(UnitType.US, UnitSubtype.VOLUME, UnitFlavor.ListUnit)
                 .withOneWay()
@@ -60,19 +65,19 @@ class ConversionServiceTest {
     }
 
     @Test
-    void testConvertExactUnit() throws ConversionPathException, ConversionFactorException {
+    void testConvertExactUnit() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         // exact - convert metric grams to imperial ounces
         ConvertibleAmount amount = new SimpleAmount(1, metricGrams);
-        ConvertibleAmount converted = service.convert(amount, imperialOunces);
+        ConvertibleAmount converted = service.convert(amount, usOunces);
         assertNotNull(converted);
         assertEquals(0.5, converted.getQuantity());
 
         ConvertibleAmount largeAmount = new SimpleAmount(100, metricGrams);
-        ConvertibleAmount largeConverted = service.convert(largeAmount, imperialOunces);
+        ConvertibleAmount largeConverted = service.convert(largeAmount, usOunces);
         assertNotNull(largeConverted);
         assertEquals(50, largeConverted.getQuantity());
 
-        ConvertibleAmount oppositeAmount = new SimpleAmount(1, imperialOunces);
+        ConvertibleAmount oppositeAmount = new SimpleAmount(1, usOunces);
         ConvertibleAmount oppositeConverted = service.convert(oppositeAmount, metricGrams);
         assertNotNull(oppositeConverted);
         assertEquals(2, oppositeConverted.getQuantity());
@@ -81,9 +86,9 @@ class ConversionServiceTest {
     }
 
     @Test
-    void testConvertByType() throws ConversionPathException, ConversionFactorException {
+    void testConvertByType() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         // unittype - convert imperial volume to metric volume (say, liter to quart)
-        ConvertibleAmount amount = new SimpleAmount(1, imperialQuart);
+        ConvertibleAmount amount = new SimpleAmount(1, usQuart);
         ConvertibleAmount converted = service.convert(amount, UnitType.METRIC);
         assertNotNull(converted);
         assertEquals(1.67, ConversionTestTools.roundToHundredths(converted.getQuantity()));
@@ -102,10 +107,10 @@ class ConversionServiceTest {
     }
 
     @Test
-    void testConvertByContext() throws ConversionPathException, ConversionFactorException {
+    void testConvertByContext() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         // context - convert imperial volume to list unit (cups to quart)
         ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.US, UnitSubtype.VOLUME);
-        ConvertibleAmount amount = new SimpleAmount(1, imperialCups);
+        ConvertibleAmount amount = new SimpleAmount(1, usCups);
         ConvertibleAmount converted = service.convert(amount, context);
         assertNotNull(converted);
         assertEquals(4, ConversionTestTools.roundToHundredths(converted.getQuantity()));

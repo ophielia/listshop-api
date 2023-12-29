@@ -7,6 +7,7 @@ import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
+import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.handlers.ConversionHandler;
 import com.meg.listshop.conversion.tools.ConversionTools;
 import org.slf4j.Logger;
@@ -33,9 +34,9 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     @Override
-    public ConvertibleAmount convert(ConvertibleAmount amount, UnitType domain) throws ConversionPathException, ConversionFactorException {
+    public ConvertibleAmount convert(ConvertibleAmount amount, UnitType domain) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         LOG.debug("Beginning convert for domain [{}], amount [{}]", domain, amount);
-        ConversionSpec source = createConversionSpec(amount.getUnit(), true);
+        ConversionSpec source = createConversionSpec(amount.getUnit());
         ConversionSpec target = ConversionSpec.opposingSpec(source);
 
         if (checkTargetEqualsSource(source, target)) {
@@ -43,39 +44,45 @@ public class ConversionServiceImpl implements ConversionService {
             return amount;
         }
 
-        // find or create handler chain for source / target
-        HandlerChain chain = getOrCreateChain(source, target);
+        return doConvert(amount, source, target);
 
-        // return converted amount
-        return chain.process(amount, target);
     }
 
     @Override
-    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
+    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         LOG.debug("Beginning convert for context [{}], amount [{}]", context, amount);
-        ConversionSpec source = createConversionSpec(amount.getUnit(), true);
-        ConversionSpec target = ConversionSpec.fromContextAndSource(context, amount.getUnit());
+        ConversionSpec source = createConversionSpec(amount.getUnit());
+        ConversionSpec target = ConversionSpec.fromContextAndSource(context, amount.getUnit(),true );
 
+        try {
+            return doConvert(amount,source, target);
+        } catch (ExceedsAllowedScaleException e) {
+            // the scale was incorrect for this conversion
+            // this happens with hybrids - for example - 16 tablespoons
+            // which convert to a cup, which isn't a hybrid unit
+            LOG.info("Scaled out of hybrid unit for source [{}]", amount.getUnit());
+        }
 
-        // find or create handler chain for source / target
-        HandlerChain chain = getOrCreateChain(source, target);
-
-        // return converted amount
-        return chain.process(amount, target);
-
+        // create alternate target
+        ConversionSpec alternateTarget = ConversionSpec.fromContextAndSource(context, amount.getUnit(),false );
+        return doConvert(amount, source, alternateTarget);
     }
 
     @Override
-    public ConvertibleAmount convert(ConvertibleAmount amount, UnitEntity targetUnit) throws ConversionPathException, ConversionFactorException {
+    public ConvertibleAmount convert(ConvertibleAmount amount, UnitEntity targetUnit) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         LOG.debug("Beginning convert for unit [{}], amount [{}]", targetUnit, amount);
-        ConversionSpec source = createConversionSpec(amount.getUnit(), true);
-        ConversionSpec target = createConversionSpec(targetUnit, true);
+        ConversionSpec source = createConversionSpec(amount.getUnit());
+        ConversionSpec target = createConversionSpec(targetUnit);
 
         if (checkTargetEqualsSource(source, target)) {
             LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
             return amount;
         }
 
+        return doConvert(amount,source,target);
+    }
+
+    private ConvertibleAmount doConvert(ConvertibleAmount amount, ConversionSpec source, ConversionSpec target) throws ConversionFactorException, ExceedsAllowedScaleException, ConversionPathException {
         // find or create handler chain for source / target
         HandlerChain chain = getOrCreateChain(source, target);
 
@@ -83,14 +90,14 @@ public class ConversionServiceImpl implements ConversionService {
         return chain.process(amount, target);
     }
 
-    private ConversionSpec createConversionSpec(UnitEntity unit, boolean ignoreDestinationFlavors) {
+    private ConversionSpec createConversionSpec(UnitEntity unit) {
         Set<UnitFlavor> specFlavors = ConversionTools.flavorsForUnit(unit);
-        if (ignoreDestinationFlavors) {
-            specFlavors = specFlavors.stream()
+
+        specFlavors = specFlavors.stream()
                     .filter(f -> f != UnitFlavor.ListUnit)
                     .filter(f -> f != UnitFlavor.DishUnit)
                     .collect(Collectors.toSet());
-        }
+
         return ConversionSpec.basicSpec(unit.getId(), unit.getType(), unit.getSubtype(), specFlavors);
     }
 
@@ -113,7 +120,7 @@ public class ConversionServiceImpl implements ConversionService {
         List<ConversionHandler> handlers = assembleHandlerList(sourceSpec, targetSpec, new ArrayList<>(), 0);
 
         // convert list into handler chain
-        if (handlers == null || handlers.isEmpty()) {
+        if ( handlers.isEmpty()) {
             String message = String.format("No handler chain can be assembled for source: %s target: %s", sourceSpec, targetSpec);
             LOG.warn(message);
             throw new ConversionPathException(message);
@@ -153,7 +160,7 @@ public class ConversionServiceImpl implements ConversionService {
         for (ConversionHandler handler : handlerList) {
             if (handler.convertsTo(target)) {
                 List<ConversionHandler> foundList = assembleHandlerList(source, handler.getSource(), handlers, iteration + 1);
-                if (foundList != null || !foundList.isEmpty()) {
+                if ( !foundList.isEmpty()) {
                     foundList.add(handler);
                     return foundList;
                 }

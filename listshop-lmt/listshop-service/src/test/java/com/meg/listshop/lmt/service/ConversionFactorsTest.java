@@ -14,6 +14,7 @@ import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
+import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.tools.RoundingUtils;
@@ -60,7 +61,7 @@ public class ConversionFactorsTest {
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Test
-    public void unitTestsMetricScaling() throws ConversionPathException, ConversionFactorException {
+    public void unitTestsMetricScaling() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
@@ -123,7 +124,7 @@ public class ConversionFactorsTest {
     }
 
     @Test
-    public void unitTestsMetricConversion() throws ConversionPathException, ConversionFactorException {
+    public void unitTestsMetricConversion() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
         Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
@@ -228,7 +229,7 @@ public class ConversionFactorsTest {
     }
 
     @Test
-    public void unitTestsUsScaling() throws ConversionPathException, ConversionFactorException {
+    public void unitTestsUsScaling() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
         Optional<UnitEntity> ounceOpt = unitRepository.findById(ounceId);
         Optional<UnitEntity> pintOpt = unitRepository.findById(pintId);

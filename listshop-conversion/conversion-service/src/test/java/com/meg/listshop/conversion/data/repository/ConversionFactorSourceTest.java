@@ -21,11 +21,11 @@ public class ConversionFactorSourceTest {
         // load imperial unit, weight, id 1
         UnitEntity unit1 = ConversionTestTools.makeMetricUnit(1L, false);
         // load metric unit, weight, id 2
-        UnitEntity unit2 = ConversionTestTools.makeImperialUnit(2L, false);
+        UnitEntity unit2 = ConversionTestTools.makeUSUnit(2L, false);
         // load metric unit, weight, id 3
         UnitEntity unit3 = ConversionTestTools.makeMetricUnit(3L, false);
         // load imperial unit, volume, id 3
-        UnitEntity unit4 = ConversionTestTools.makeImperialUnit(4L, true);
+        UnitEntity unit4 = ConversionTestTools.makeUSUnit(4L, true);
         // load metric unit, volume, id 5
         UnitEntity unit5 = ConversionTestTools.makeMetricUnit(5L, true);
 

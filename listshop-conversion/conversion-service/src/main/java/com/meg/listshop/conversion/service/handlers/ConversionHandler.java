@@ -1,6 +1,7 @@
 package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
+import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 
@@ -11,7 +12,7 @@ public interface ConversionHandler {
 
     boolean handles(ConversionSpec fromUnit, ConversionSpec toUnit);
 
-    ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException;
+    ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException, ExceedsAllowedScaleException;
 
     ConversionSpec getSource();
 }

@@ -51,8 +51,19 @@ public class ConversionSpec {
         return new ConversionSpec(null, type, subtype, flavorSet);
     }
 
-    public static ConversionSpec fromContextAndSource(ConversionContext context, UnitEntity source) {
-        return new ConversionSpec(null, context.getUnitType(), context.getUnitSubtype(), flavorsForContextAndSource(context, source));
+    public static ConversionSpec fromContextAndSource(ConversionContext context, UnitEntity source, boolean allowHybrid) {
+         UnitType specUnitType = context.getUnitType();
+         UnitSubtype specUnitSubtype = context.getUnitSubtype();
+
+         // hybrids unit types are handled differently.
+        // for the DishUnit, they aren't converted, but they are scaled
+        if (allowHybrid &&
+                source.getType().equals(UnitType.HYBRID) &&
+                context.getContextType().equals(ConversionContextType.Dish)) {
+            specUnitType = UnitType.HYBRID;
+            specUnitSubtype = UnitSubtype.NONE;
+        }
+        return new ConversionSpec(null, specUnitType, specUnitSubtype, flavorsForContextAndSource(context, source));
     }
 
 

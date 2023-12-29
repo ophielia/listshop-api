@@ -13,7 +13,7 @@ class ConversionSpecTest {
 
     @Test
     void testFromExactUnit() {
-        UnitEntity unit = makeImperialUnit(1L, false);
+        UnitEntity unit = makeUSUnit(1L, false);
         Set<UnitFlavor> expectedFlavors = new HashSet();
         expectedFlavors.add(UnitFlavor.Weight);
         ConversionSpec spec = ConversionSpec.fromExactUnit(unit);
@@ -32,7 +32,7 @@ class ConversionSpecTest {
 
     @Test
     void testOppositeType() {
-        UnitEntity unit = makeImperialUnit(1L, false);
+        UnitEntity unit = makeUSUnit(1L, false);
         Set<UnitFlavor> expectedFlavors = new HashSet();
         expectedFlavors.add(UnitFlavor.Weight);
         ConversionSpec spec = ConversionSpec.convertedFromUnit(unit);
@@ -45,14 +45,36 @@ class ConversionSpecTest {
     @Test
     void testFromContextAndSource() {
         // make imperial weight, for list context
-        UnitEntity sourceUnit = makeImperialUnit(1L, false);
+        UnitEntity sourceUnit = makeUSUnit(1L, false);
         ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.METRIC, UnitSubtype.WEIGHT);
         Set<UnitFlavor> expectedFlavors = createFlavors(false, true, false, true, false);
-        ConversionSpec result = ConversionSpec.fromContextAndSource(context, sourceUnit);
+        ConversionSpec result = ConversionSpec.fromContextAndSource(context, sourceUnit,false );
 
         assertEquals(UnitType.METRIC, result.getUnitType(), "should be metric");
         assertEquals(expectedFlavors, result.getFlavors(), "flavors should include weight and list");
+    }
 
+    @Test
+    void testFromContextAndSourceHybrid() {
+        // make imperial weight, for list context
+        UnitEntity sourceUnit = makeHybridUnit(1L);
+        ConversionContext context = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC, UnitSubtype.WEIGHT);
+        Set<UnitFlavor> expectedFlavors = createFlavors(false, false, false, false, true);
+
+        // call with allowHybrid = true
+        ConversionSpec result = ConversionSpec.fromContextAndSource(context, sourceUnit,true );
+
+        // conversion context dish and hybrid unit should result
+        // in a ConversionSpec with a type of hybrid, and a subtype of none.
+        assertEquals(UnitType.HYBRID, result.getUnitType(), "should be hybrid");
+        assertEquals(expectedFlavors, result.getFlavors(), "flavors should include dish");
+
+        // call with allowHybrid = false
+         result = ConversionSpec.fromContextAndSource(context, sourceUnit,false );
+
+        // we're supressing the hybrid so the result should be metric
+        assertEquals(UnitType.METRIC, result.getUnitType(), "should be metric");
+        assertEquals(expectedFlavors, result.getFlavors(), "flavors should include dish");
 
     }
 
@@ -63,7 +85,7 @@ class ConversionSpecTest {
         ConversionSpec specExact = ConversionSpec.fromExactUnit(exactUnit);
         // make unit - imperial, and then change to metric,
         // creating a spec with metric, weight flavor
-        UnitEntity noExactUnit = makeImperialUnit(2L, false);
+        UnitEntity noExactUnit = makeUSUnit(2L, false);
         ConversionSpec notExactSpec = ConversionSpec.convertedFromUnit(noExactUnit);
 
         assertNotNull(specExact.getUnitId());
@@ -71,15 +93,23 @@ class ConversionSpecTest {
         assertEquals(specExact, notExactSpec, "Even though specExact has unit id, they should be considered equal");
     }
 
-    private UnitEntity makeImperialUnit(Long id, boolean isVolume) {
+    private UnitEntity makeUSUnit(Long id, boolean isVolume) {
         UnitEntity unit = new UnitEntity();
         unit.setType(UnitType.US);
         unit.setId(id);
         if (isVolume) {
-            unit.setVolume(true);
+            unit.setSubtype(UnitSubtype.VOLUME);
         } else {
-            unit.setWeight(true);
+            unit.setSubtype(UnitSubtype.WEIGHT);
         }
+        return unit;
+    }
+
+    private UnitEntity makeHybridUnit(Long id) {
+        UnitEntity unit = new UnitEntity();
+        unit.setType(UnitType.HYBRID);
+        unit.setSubtype(UnitSubtype.NONE);
+        unit.setId(id);
         return unit;
     }
 
@@ -88,9 +118,9 @@ class ConversionSpecTest {
         unit.setType(UnitType.METRIC);
         unit.setId(id);
         if (isVolume) {
-            unit.setVolume(true);
+            unit.setSubtype(UnitSubtype.VOLUME);
         } else {
-            unit.setWeight(true);
+            unit.setSubtype(UnitSubtype.WEIGHT);
         }
         return unit;
     }

@@ -14,6 +14,7 @@ import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
+import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.tools.RoundingUtils;
@@ -60,7 +61,7 @@ public class ConversionTest {
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Test
-    public void blowUpTest() throws ConversionPathException, ConversionFactorException {
+    public void blowUpTest() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         Optional<UnitEntity> gramUnitOpt = unitRepository.findById(1013L);
         Optional<UnitEntity> ozUnitOpt = unitRepository.findById(1009L);
         ConvertibleAmount amount = new SimpleAmount(1, gramUnitOpt.get());
@@ -72,7 +73,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSingleHandlerWeightExact() throws ConversionPathException, ConversionFactorException {
+    public void testSingleHandlerWeightExact() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         Optional<UnitEntity> ounceUnitOpt = unitRepository.findById(ounceId);
         Optional<UnitEntity> kgUnitOpt = unitRepository.findById(kgId);
         ConvertibleAmount amount = new SimpleAmount(20.0, ounceUnitOpt.get());
@@ -99,7 +100,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSingleHandlerVolumeExact() throws ConversionPathException, ConversionFactorException {
+    public void testSingleHandlerVolumeExact() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
         Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
@@ -127,7 +128,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSingleHandlerVolumeType() throws ConversionPathException, ConversionFactorException {
+    public void testSingleHandlerVolumeType() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
         Optional<UnitEntity> cupsOpt = unitRepository.findById(cupsId);
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
@@ -153,7 +154,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSimpleMetricVolumeListContext() throws ConversionPathException, ConversionFactorException {
+    public void testSimpleMetricVolumeListContext() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
         Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
@@ -186,7 +187,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSimpleUsVolumeListContext() throws ConversionPathException, ConversionFactorException {
+    public void testSimpleUsVolumeListContext() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
         Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
@@ -221,7 +222,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSimpleUsWeightListContext() throws ConversionPathException, ConversionFactorException {
+    public void testSimpleUsWeightListContext() throws ConversionPathException, ConversionFactorException , ExceedsAllowedScaleException{
         Optional<UnitEntity> poundOpt = unitRepository.findById(lbId);
         Optional<UnitEntity> gramOpt = unitRepository.findById(gId);
         Optional<UnitEntity> ounceOpt = unitRepository.findById(ounceId);

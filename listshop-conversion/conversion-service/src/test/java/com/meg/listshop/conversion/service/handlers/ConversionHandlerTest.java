@@ -6,6 +6,7 @@ import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
+import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.tools.ConversionHandlerBuilder;
@@ -24,16 +25,16 @@ class ConversionHandlerTest {
     void setUp() {
         // make conversion source
         conversionHandler = new ConversionHandlerBuilder()
-                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.WEIGHT),
+                .withFactor(ConversionTestTools.makeUSUnit(1L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(2L, UnitSubtype.WEIGHT),
                         0.5)
-                .withFactor(ConversionTestTools.makeImperialUnit(3L, UnitSubtype.WEIGHT),
+                .withFactor(ConversionTestTools.makeUSUnit(3L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(4L, UnitSubtype.WEIGHT),
                         0.25)
-                .withFactor(ConversionTestTools.makeImperialUnit(5L, UnitSubtype.WEIGHT),
+                .withFactor(ConversionTestTools.makeUSUnit(5L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .9)
-                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.WEIGHT),
+                .withFactor(ConversionTestTools.makeUSUnit(1L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .5)
                 .withFromSpec(UnitType.US, UnitSubtype.WEIGHT)
@@ -57,16 +58,16 @@ class ConversionHandlerTest {
     @Test
     void testFlavorHandles() {
         ConversionHandler flavorHandler = new ConversionHandlerBuilder()
-                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.WEIGHT),
+                .withFactor(ConversionTestTools.makeUSUnit(1L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(2L, UnitSubtype.WEIGHT),
                         0.5)
-                .withFactor(ConversionTestTools.makeImperialUnit(3L, UnitSubtype.WEIGHT),
+                .withFactor(ConversionTestTools.makeUSUnit(3L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(4L, UnitSubtype.WEIGHT),
                         0.25)
-                .withFactor(ConversionTestTools.makeImperialUnit(5L, UnitSubtype.WEIGHT),
+                .withFactor(ConversionTestTools.makeUSUnit(5L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .9)
-                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.WEIGHT),
+                .withFactor(ConversionTestTools.makeUSUnit(1L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .5)
                 .withFromSpec(UnitType.US, UnitSubtype.WEIGHT)
@@ -84,16 +85,16 @@ class ConversionHandlerTest {
     @Test
     void testFlavorHandles_DoesntHandle() {
         ConversionHandler flavorHandler = new ConversionHandlerBuilder()
-                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.WEIGHT),
+                .withFactor(ConversionTestTools.makeUSUnit(1L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(2L, UnitSubtype.WEIGHT),
                         0.5)
-                .withFactor(ConversionTestTools.makeImperialUnit(3L, UnitSubtype.WEIGHT),
+                .withFactor(ConversionTestTools.makeUSUnit(3L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(4L, UnitSubtype.WEIGHT),
                         0.25)
-                .withFactor(ConversionTestTools.makeImperialUnit(5L, UnitSubtype.WEIGHT),
+                .withFactor(ConversionTestTools.makeUSUnit(5L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .9)
-                .withFactor(ConversionTestTools.makeImperialUnit(1L, UnitSubtype.WEIGHT),
+                .withFactor(ConversionTestTools.makeUSUnit(1L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(6L, UnitSubtype.WEIGHT),
                         .5)
                 .withFromSpec(UnitType.US, UnitSubtype.WEIGHT)
@@ -119,7 +120,7 @@ class ConversionHandlerTest {
     }
 
     @Test
-    void testConvert() throws ConversionFactorException {
+    void testConvert() throws ConversionFactorException, ExceedsAllowedScaleException {
         UnitEntity startUnit = ConversionTestTools.makeMetricUnit(null, UnitSubtype.WEIGHT);
         startUnit.setId(6L);
         ConvertibleAmount startAmount = new SimpleAmount(1D, startUnit);
