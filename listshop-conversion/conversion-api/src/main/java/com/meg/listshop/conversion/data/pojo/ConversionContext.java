@@ -12,6 +12,10 @@ public class ConversionContext {
         this.unitSubtype = subtype;
     }
 
+    public ConversionContext(ConversionContextType contextType, UnitType unitType) {
+        this(contextType, unitType, null);
+    }
+
     public ConversionContextType getContextType() {
         return contextType;
     }
@@ -30,6 +34,7 @@ public class ConversionContext {
         return "ConversionContext{" +
                 "contextType=" + contextType +
                 ", unitType=" + unitType +
+                ", unitSubtype=" + unitSubtype +
                 '}';
     }
 }

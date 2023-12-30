@@ -2,9 +2,7 @@ package com.meg.listshop.conversion.service;
 
 
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionContext;
-import com.meg.listshop.conversion.data.pojo.UnitFlavor;
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
@@ -51,6 +49,9 @@ public class ConversionServiceImpl implements ConversionService {
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         LOG.debug("Beginning convert for context [{}], amount [{}]", context, amount);
+
+        // determine subtype based on context and amount
+
         ConversionSpec source = createConversionSpec(amount.getUnit());
         ConversionSpec target = ConversionSpec.fromContextAndSource(context, amount.getUnit(),true );
 
@@ -67,6 +68,8 @@ public class ConversionServiceImpl implements ConversionService {
         ConversionSpec alternateTarget = ConversionSpec.fromContextAndSource(context, amount.getUnit(),false );
         return doConvert(amount, source, alternateTarget);
     }
+
+
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, UnitEntity targetUnit) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
