@@ -47,8 +47,8 @@ class ConversionServiceMockTest {
         ConvertibleAmount resultingAmount = new SimpleAmount(2, hybridTablespoon);
         ConversionContext requestedContext = new ConversionContext(ConversionContextType.Dish, UnitType.US, UnitSubtype.VOLUME);
         ConversionSpec sourceSpec = ConversionSpec.basicSpec(hybridTeaspoon.getId(), UnitType.HYBRID, UnitSubtype.NONE, Collections.emptySet());
-        ConversionSpec hybridSpec = ConversionSpec.fromContextAndSource(requestedContext, amount.getUnit(), true);
-        ConversionSpec retrySpec = ConversionSpec.fromContextAndSource(requestedContext, amount.getUnit(), true);
+        ConversionSpec hybridSpec = ConversionSpec.fromContext(requestedContext, amount.getUnit());
+        ConversionSpec retrySpec = ConversionSpec.fromContext(requestedContext, amount.getUnit());
 
         when(handlerOne.handles(sourceSpec, hybridSpec)).thenReturn(true);
         when(handlerTwo.handles(sourceSpec, hybridSpec)).thenReturn(false);

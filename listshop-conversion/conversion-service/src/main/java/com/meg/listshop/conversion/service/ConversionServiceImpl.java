@@ -50,10 +50,8 @@ public class ConversionServiceImpl implements ConversionService {
     public ConvertibleAmount convert(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         LOG.debug("Beginning convert for context [{}], amount [{}]", context, amount);
 
-        // determine subtype based on context and amount
-
         ConversionSpec source = createConversionSpec(amount.getUnit());
-        ConversionSpec target = ConversionSpec.fromContextAndSource(context, amount.getUnit(),true );
+        ConversionSpec target = ConversionSpec.fromContext(context, amount.getUnit());
 
         try {
             return doConvert(amount,source, target);
@@ -65,7 +63,7 @@ public class ConversionServiceImpl implements ConversionService {
         }
 
         // create alternate target
-        ConversionSpec alternateTarget = ConversionSpec.fromContextAndSource(context, amount.getUnit(),false );
+        ConversionSpec alternateTarget = ConversionSpec.retryFromContext(context, amount.getUnit());
         return doConvert(amount, source, alternateTarget);
     }
 

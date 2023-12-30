@@ -1,0 +1,63 @@
+-- reinsert units and factors
+
+delete from factors;
+delete from units;
+
+insert into  units (unit_id, type, subtype, name, is_liquid, is_list_unit, is_dish_unit, is_weight, is_volume)
+values  (1000, 'US', 'VOLUME', 'cup', false, false, true, false, false),
+        (1001, 'HYBRID', 'NONE', 'tablespoon', false, false, true, false, false),
+        (1002, 'HYBRID', 'NONE', 'teaspoon', false, false, true, false, false),
+        (1003, 'METRIC', 'VOLUME', 'liter', true, true, true, false, false),
+        (1004, 'METRIC', 'VOLUME', 'milliliter', true, true, true, false, false),
+        (1005, 'US', 'VOLUME', 'gallon', true, true, false, false, false),
+        (1006, 'US', 'VOLUME', 'pint', true, false, true, false, false),
+        (1007, 'US', 'VOLUME', 'fl oz', true, true, false, false, false),
+        (1008, 'US', 'WEIGHT', 'lb', false, true, true, false, false),
+        (1009, 'US', 'WEIGHT', 'oz', false, true, true, false, false),
+        (1010, 'US', 'VOLUME', 'quart', true, true, true, false, false),
+        (1011, 'UNIT', 'NONE', 'unit', false, true, true, false, false),
+        (1013, 'METRIC', 'WEIGHT', 'gram', false, true, true, false, false),
+        (1014, 'METRIC', 'WEIGHT', 'kilogram', false, true, true, false, false),
+        (1015, 'METRIC', 'VOLUME', 'centiliter', true, false, true, false, false),
+        (1016, 'METRIC', 'WEIGHT', 'milligram', false, true, true, false, false),
+        (1017, 'US', 'VOLUME', 'cup (fluid)', true, false, true, false, false);
+
+insert into factors (factor_id, factor, to_unit, from_unit)
+values  (1075, 0.0625, 1005, 1017),
+        (1076, 0.5, 1006, 1017),
+        (1077, 0.25, 1010, 1017),
+        (1078, 0.125, 1017, 1007),
+        (1079, 0.0078125, 1005, 1007),
+        (1080, 0.0625, 1006, 1007),
+        (1081, 0.03125, 1010, 1007),
+        (1082, 0.001, 1014, 1013),
+        (1083, 0.0022, 1008, 1013),
+        (1084, 0.0352733686067019, 1009, 1013),
+        (1085, 2.20462262, 1008, 1014),
+        (1086, 35.2733686067019, 1009, 1014),
+        (1087, 100, 1015, 1003),
+        (1088, 4.22675, 1017, 1003),
+        (1089, 0.26417, 1005, 1003),
+        (1090, 1000, 1004, 1003),
+        (1091, 2.1133764, 1006, 1003),
+        (1092, 1.05668821, 1010, 1003),
+        (1093, 0.00422675, 1017, 1004),
+        (1094, 0.00026417, 1005, 1004),
+        (1095, 0.0021133764, 1006, 1004),
+        (1096, 0.0010566882, 1010, 1004),
+        (1097, 0.125, 1005, 1006),
+        (1098, 0.5, 1010, 1006),
+        (1099, 0.25, 1005, 1010),
+        (1100, 0.0000022, 1008, 1016),
+        (1101, 0.00003527, 1009, 1016),
+        (1102, 0.0105668821, 1010, 1015),
+        (1103, 0.0422675, 1017, 1015),
+        (1104, 0.0026417205124156, 1005, 1015),
+        (1105, 0.021133764, 1006, 1015),
+        (1106, 0.001, 1003, 1004),
+        (1107, 0.1, 1015, 1004),
+        (1108, 0.01, 1003, 1015),
+        (1109, 10, 1004, 1015),
+        (1110, 0.0625, 1008, 1009),
+        (1111, 16, 1009, 1008);
+

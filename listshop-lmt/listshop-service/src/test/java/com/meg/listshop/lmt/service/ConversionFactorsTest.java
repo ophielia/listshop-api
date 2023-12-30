@@ -45,7 +45,7 @@ public class ConversionFactorsTest {
     private static final Long literId = 1003L;
     private static final Long quartId = 1010L;
     private static final Long pintId = 1006L;
-    private static final Long cupsId = 1000L;
+    private static final Long cupsId = 1017L;
     private static final Long centileterId = 1015L;
     private static final Long milliliterId = 1004L;
     private static final Long flOzId = 1007L;

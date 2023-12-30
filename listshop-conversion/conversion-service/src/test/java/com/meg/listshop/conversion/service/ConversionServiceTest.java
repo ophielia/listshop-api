@@ -38,6 +38,7 @@ class ConversionServiceTest {
         usMadeUpCloser = ConversionTestTools.makeUSUnit(5L, UnitSubtype.WEIGHT);
         usQuart = ConversionTestTools.makeUSUnit(3L, UnitSubtype.VOLUME);
         usCups = ConversionTestTools.makeUSUnit(6L, UnitSubtype.VOLUME);
+        usCups.setLiquid(true);
         hybridTeaspoon = ConversionTestTools.makeHybridUnit(7L, UnitSubtype.NONE);
         hybridTablespoon = ConversionTestTools.makeHybridUnit(8L, UnitSubtype.NONE);
         metricLiter = ConversionTestTools.makeMetricUnit(4L, UnitSubtype.VOLUME);

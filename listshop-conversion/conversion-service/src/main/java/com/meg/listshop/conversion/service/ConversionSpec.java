@@ -51,21 +51,48 @@ public class ConversionSpec {
         return new ConversionSpec(null, type, subtype, flavorSet);
     }
 
-    public static ConversionSpec fromContextAndSource(ConversionContext context, UnitEntity source, boolean allowHybrid) {
-         UnitType specUnitType = context.getUnitType();
-         UnitSubtype specUnitSubtype = context.getUnitSubtype();
 
-         // hybrids unit types are handled differently.
-        // for the DishUnit, they aren't converted, but they are scaled
-        if (allowHybrid &&
-                source.getType().equals(UnitType.HYBRID) &&
+    public static ConversionSpec fromContext(ConversionContext context, UnitEntity source) {
+        UnitType specUnitType = context.getUnitType();
+        UnitSubtype specUnitSubtype = null;
+
+        if (source.getType().equals(UnitType.SPECIAL)) {
+            specUnitSubtype = UnitSubtype.NONE;
+        } else if (context.getContextType().equals(ConversionContextType.List) &&
+                source.isLiquid()) {
+            specUnitSubtype = UnitSubtype.VOLUME;
+        } else if (context.getContextType().equals(ConversionContextType.List) &&
+                !source.isLiquid()) {
+            specUnitSubtype = UnitSubtype.WEIGHT;
+        } else if (source.getType().equals(UnitType.HYBRID) &&
                 context.getContextType().equals(ConversionContextType.Dish)) {
             specUnitType = UnitType.HYBRID;
             specUnitSubtype = UnitSubtype.NONE;
+        } else {
+            specUnitSubtype = source.getSubtype();
         }
+
         return new ConversionSpec(null, specUnitType, specUnitSubtype, flavorsForContextAndSource(context, source));
     }
 
+    public static ConversionSpec retryFromContext(ConversionContext context, UnitEntity source) {
+        UnitType specUnitType = context.getUnitType();
+        UnitSubtype specUnitSubtype = null;
+
+        if (source.getType().equals(UnitType.SPECIAL)) {
+            specUnitSubtype = UnitSubtype.NONE;
+        } else if (context.getContextType().equals(ConversionContextType.List) &&
+                source.isLiquid()) {
+            specUnitSubtype = UnitSubtype.VOLUME;
+        } else if (context.getContextType().equals(ConversionContextType.List) &&
+                !source.isLiquid()) {
+            specUnitSubtype = UnitSubtype.WEIGHT;
+        } else {
+            specUnitSubtype = source.getSubtype();
+        }
+
+        return new ConversionSpec(null, specUnitType, specUnitSubtype, flavorsForContextAndSource(context, source));
+    }
 
     private static Set<UnitFlavor> flavorsForContextAndSource(ConversionContext context, UnitEntity source) {
         ConversionContextType conversionContextType = context.getContextType();
@@ -76,13 +103,7 @@ public class ConversionSpec {
         } else if (conversionContextType == ConversionContextType.List) {
             flavors.add(UnitFlavor.ListUnit);
         }
-        if (source.isLiquid()) {
-            flavors.add(UnitFlavor.Liquid);
-        } else if (source.isWeight()) {
-            flavors.add(UnitFlavor.Weight);
-        } else if (source.isVolume()) {
-            flavors.add(UnitFlavor.Volume);
-        }
+
         return flavors;
     }
 
