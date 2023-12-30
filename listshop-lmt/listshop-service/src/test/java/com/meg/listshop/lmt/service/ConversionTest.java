@@ -49,7 +49,7 @@ public class ConversionTest {
     private static final Long cupsId = 1000L;
     private static final Long centileterId = 1015L;
     private static final Long milliliterId = 1004L;
-    private static final Long flOzId = 1007L;
+
     @Autowired
     ConversionService conversionService;
 
@@ -155,13 +155,8 @@ public class ConversionTest {
 
     @Test
     public void testSimpleMetricVolumeListContext() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
-        Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
-        Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
-        Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
-        Optional<UnitEntity> cupsOpt = unitRepository.findById(cupsId);
         Optional<UnitEntity> quartOpt = unitRepository.findById(quartId);
         Optional<UnitEntity> pintOpt = unitRepository.findById(pintId);
-        Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
 
         ConvertibleAmount amount = new SimpleAmount(3, quartOpt.get());
         ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.METRIC, UnitSubtype.VOLUME);
@@ -188,17 +183,12 @@ public class ConversionTest {
 
     @Test
     public void testSimpleUsVolumeListContext() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
-        Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
-        Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
-        Optional<UnitEntity> cupsOpt = unitRepository.findById(cupsId);
-        Optional<UnitEntity> quartOpt = unitRepository.findById(quartId);
-        Optional<UnitEntity> pintOpt = unitRepository.findById(pintId);
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
 
         ConvertibleAmount amount = new SimpleAmount(473.17, milliliterOpt.get());
         ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US, UnitSubtype.VOLUME);
-        /**/
+
         ConvertibleAmount converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(0.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -223,11 +213,7 @@ public class ConversionTest {
 
     @Test
     public void testSimpleUsWeightListContext() throws ConversionPathException, ConversionFactorException , ExceedsAllowedScaleException{
-        Optional<UnitEntity> poundOpt = unitRepository.findById(lbId);
         Optional<UnitEntity> gramOpt = unitRepository.findById(gId);
-        Optional<UnitEntity> ounceOpt = unitRepository.findById(ounceId);
-        Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
-
 
         // 113.398093 gm = 4 ounces => ounce destination
         ConvertibleAmount amount = new SimpleAmount(113.398093, gramOpt.get());

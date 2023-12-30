@@ -166,12 +166,12 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     }
 
     protected List<ConversionFactor> selfScalingFactors(List<ConversionFactor> factors, UnitFlavor flavor) {
-        Set<ConversionFactor> destinationFactors = factors.stream()
+        return factors.stream()
                 .map(ConversionFactor::getToUnit)
                 .filter(u -> ConversionTools.hasFlavor(u, flavor))
                 .map(SimpleConversionFactor::passThroughFactor)
-                .collect(Collectors.toSet());
-        return new ArrayList<>(destinationFactors);
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public ConversionSpec getSource() {

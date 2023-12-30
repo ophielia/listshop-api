@@ -14,7 +14,7 @@ class ConversionSpecTest {
     @Test
     void testFromExactUnit() {
         UnitEntity unit = makeUSUnit(1L, false);
-        Set<UnitFlavor> expectedFlavors = new HashSet();
+        Set<UnitFlavor> expectedFlavors = new HashSet<>();
         expectedFlavors.add(UnitFlavor.Weight);
         ConversionSpec spec = ConversionSpec.fromExactUnit(unit);
         assertEquals(1L, spec.getUnitId(), "id should be filled and equal 1");
@@ -22,7 +22,7 @@ class ConversionSpecTest {
         assertEquals(0, spec.getFlavors().size(), "no flavors here - weight is in subtype");
 
         unit = makeMetricUnit(1L, true);
-        expectedFlavors = new HashSet<UnitFlavor>();
+        expectedFlavors = new HashSet<>();
         expectedFlavors.add(UnitFlavor.Volume);
         spec = ConversionSpec.fromExactUnit(unit);
         assertEquals(1L, spec.getUnitId(), "id should be filled and equal 1");
@@ -33,7 +33,7 @@ class ConversionSpecTest {
     @Test
     void testOppositeType() {
         UnitEntity unit = makeUSUnit(1L, false);
-        Set<UnitFlavor> expectedFlavors = new HashSet();
+        Set<UnitFlavor> expectedFlavors = new HashSet<>();
         expectedFlavors.add(UnitFlavor.Weight);
         ConversionSpec spec = ConversionSpec.convertedFromUnit(unit);
         assertNull(spec.getUnitId(), "id should be empty");
@@ -129,7 +129,7 @@ class ConversionSpecTest {
                                           boolean isLiquid, boolean isList,
                                           boolean isDish
     ) {
-        Set<UnitFlavor> expectedFlavors = new HashSet();
+        Set<UnitFlavor> expectedFlavors = new HashSet<>();
         if (isVolume) {
             expectedFlavors.add(UnitFlavor.Volume);
         }
@@ -148,17 +148,5 @@ class ConversionSpecTest {
         return expectedFlavors;
 
     }
-
-    private void addFlavorsToUnit(UnitEntity unit, boolean isVolume, boolean isWeight,
-                                  boolean isLiquid, boolean isList,
-                                  boolean isDish
-    ) {
-        unit.setVolume(isVolume);
-        unit.setWeight(isWeight);
-        unit.setLiquid(isLiquid);
-        unit.setListUnit(isList);
-        unit.setDishUnit(isDish);
-    }
-
 
 }

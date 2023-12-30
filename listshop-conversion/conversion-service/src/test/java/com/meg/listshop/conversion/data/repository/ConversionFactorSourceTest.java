@@ -43,16 +43,16 @@ public class ConversionFactorSourceTest {
     void testGetFactors() {
         List<ConversionFactor> resultList = sourceToTest.getFactors(1L);
         assertEquals(2, resultList.size(), "two factors should be returned");
-        assertTrue(resultList.stream()
+        assertEquals(1.4,resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)
-                .sum() == 1.4, () -> "Sum should be 1.4");
+                .sum() ,  "Sum should be 1.4");
 
         resultList = sourceToTest.getFactors(4L);
         assertEquals(2, resultList.size(), "two factors should be returned");
         double sum = resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)
                 .sum();
-        assertEquals(5.11D, ConversionTestTools.roundToHundredths(sum), () -> "Sum should be 5.11");
+        assertEquals(5.11D, ConversionTestTools.roundToHundredths(sum),  "Sum should be 5.11");
     }
 
     @Test

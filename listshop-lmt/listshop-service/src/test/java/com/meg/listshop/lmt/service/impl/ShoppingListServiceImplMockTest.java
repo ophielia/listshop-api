@@ -73,21 +73,6 @@ public class ShoppingListServiceImplMockTest {
                 listTagStatisticService);
     }
 
-/*  test notes
-
-shoppingListService.categorizeList(result);
-shoppingListService.changeListLayout(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID, TestConstants.LIST_LAYOUT_3_ID);
-shoppingListService.deleteList(userAccount.getEmail(), TestConstants.LIST_3_ID);
-shoppingListService.fillSources(shoppingListEntity);
-
-
-
-shoppingListService.getChangedItemsForMostRecentList(TestConstants.USER_3_NAME, date, 5L);
-shoppingListService.getListsByUsername(TestConstants.USER_1_NAME);
-shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, 83L);
-
- */
-
     @Test
     public void testGetListById() {
         Long userId = 99L;
@@ -200,7 +185,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
     @Test
     public void testDeleteList() {
         Long userId = 99L;
-        String userName = "userName";
         UserEntity user = new UserEntity();
         user.setId(userId);
 

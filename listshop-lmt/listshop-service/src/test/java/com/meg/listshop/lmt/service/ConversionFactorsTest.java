@@ -37,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ConversionFactorsTest {
 
     private static final Long ounceId = 1009L;
-    private static final Long mgId = 1016L;
     private static final Long gId = 1013L;
     private static final Long kgId = 1014L;
     private static final Long lbId = 1008L;
@@ -78,7 +77,7 @@ public class ConversionFactorsTest {
         assertNotNull(converted);
         assertEquals(0.688, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(kgId, converted.getUnit().getId());
-        ;
+
 //        .15 Liter = 15 Centiliter
         amount = new SimpleAmount(0.15, litersOpt.get());
         converted = conversionService.convert(amount, dishContextVolume);

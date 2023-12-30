@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.meg.listshop.conversion.data.repository.UnitSpecifications.matchingFromWithSpec;
-import static com.meg.listshop.conversion.data.repository.UnitSpecifications.matchingToWithSpec;
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
