@@ -1500,7 +1500,7 @@ public class ShoppingListServiceImplMockTest {
         Assert.assertNotNull(collectorCapture);
         Assert.assertNotNull(collectorCapture.getValue());
         MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
-        Assert.assertEquals(Long.valueOf(9999L), Long.valueOf(capturedToVerify.getListId()));
+        Assert.assertEquals(Long.valueOf(9999L), capturedToVerify.getListId());
         Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
 
         Assert.assertEquals(7, itemMap.keySet().size());
@@ -1573,7 +1573,7 @@ public class ShoppingListServiceImplMockTest {
         Assert.assertNotNull(collectorCapture);
         Assert.assertNotNull(collectorCapture.getValue());
         MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
-        Assert.assertEquals(Long.valueOf(9999L), Long.valueOf(capturedToVerify.getListId()));
+        Assert.assertEquals(Long.valueOf(9999L), capturedToVerify.getListId());
         Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
 
         Assert.assertEquals(4, itemMap.keySet().size());
@@ -1636,7 +1636,7 @@ public class ShoppingListServiceImplMockTest {
         Assert.assertNotNull(collectorCapture);
         Assert.assertNotNull(collectorCapture.getValue());
         MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
-        Assert.assertEquals(Long.valueOf(9999L), Long.valueOf(capturedToVerify.getListId()));
+        Assert.assertEquals(Long.valueOf(9999L), capturedToVerify.getListId());
         Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
 
         Assert.assertEquals(4, itemMap.keySet().size());
