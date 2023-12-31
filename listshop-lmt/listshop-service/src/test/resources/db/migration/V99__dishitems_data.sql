@@ -3,7 +3,7 @@
 delete from factors;
 delete from units;
 
-insert into  units (unit_id, type, subtype, name, is_liquid, is_list_unit, is_dish_unit, is_weight, is_volume)
+insert into units (unit_id, type, subtype, name, is_liquid, is_list_unit, is_dish_unit, is_weight, is_volume)
 values  (1000, 'US', 'VOLUME', 'cup', false, false, true, false, false),
         (1001, 'HYBRID', 'NONE', 'tablespoon', false, false, true, false, false),
         (1002, 'HYBRID', 'NONE', 'teaspoon', false, false, true, false, false),
@@ -20,9 +20,13 @@ values  (1000, 'US', 'VOLUME', 'cup', false, false, true, false, false),
         (1014, 'METRIC', 'WEIGHT', 'kilogram', false, true, true, false, false),
         (1015, 'METRIC', 'VOLUME', 'centiliter', true, false, true, false, false),
         (1016, 'METRIC', 'WEIGHT', 'milligram', false, true, true, false, false),
-        (1017, 'US', 'VOLUME', 'cup (fluid)', true, false, true, false, false);
+        (1017, 'US', 'VOLUME', 'cup (fluid)', true, false, true, false, false),
+        (1018, 'HYBRID', 'NONE', 'teaspoon', false, false, true, false, false),
+        (1019, 'HYBRID', 'NONE', 'teaspoon (fluid)', true, false, true, false, false),
+        (1020, 'HYBRID', 'NONE', 'tablespoon', false, false, true, false, false),
+        (1021, 'HYBRID', 'NONE', 'tablespoon (fluid)', true, false, true, false, false);
 
-insert into factors (factor_id, factor, to_unit, from_unit)
+insert into public.factors (factor_id, factor, to_unit, from_unit)
 values  (1075, 0.0625, 1005, 1017),
         (1076, 0.5, 1006, 1017),
         (1077, 0.25, 1010, 1017),
@@ -59,5 +63,30 @@ values  (1075, 0.0625, 1005, 1017),
         (1108, 0.01, 1003, 1015),
         (1109, 10, 1004, 1015),
         (1110, 0.0625, 1008, 1009),
-        (1111, 16, 1009, 1008);
-
+        (1111, 16, 1009, 1008),
+        (1112, 0.3333333333, 1021, 1019),
+        (1113, 0.33333333333, 1001, 1002),
+        (1114, 0.33333333333, 1020, 1002),
+        (1115, 0.33333333333, 1001, 1018),
+        (1116, 0.33333333333, 1020, 1018),
+        (1117, 0.020833333333, 1000, 1002),
+        (1118, 0.020833333333, 1000, 1018),
+        (1119, 0.020833333333, 1017, 1019),
+        (1120, 0.020833333333, 1000, 1002),
+        (1121, 0.020833333333, 1000, 1018),
+        (1122, 0.0625, 1000, 1001),
+        (1123, 0.0625, 1000, 1020),
+        (1124, 0.0625, 1017, 1021),
+        (1125, 3, 1002, 1001),
+        (1126, 3, 1018, 1001),
+        (1127, 3, 1002, 1020),
+        (1128, 3, 1018, 1020),
+        (1129, 3, 1019, 1021),
+        (1130, 0.00390625, 1005, 1021),
+        (1131, 0.03125, 1006, 1021),
+        (1132, 0.5, 1007, 1021),
+        (1133, 0.015625, 1010, 1021),
+        (1134, 0.00130208333, 1005, 1019),
+        (1135, 0.0104166666666, 1006, 1019),
+        (1136, 0.1666666666, 1007, 1019),
+        (1137, 0.00520833333333, 1010, 1019);

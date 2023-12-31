@@ -2,8 +2,6 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionSortType;
-import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
@@ -23,30 +21,26 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public class MetricWeightForDishHandler extends AbstractOneWayConversionHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(MetricWeightForDishHandler.class);
+public class HybridVolumeHandler extends AbstractConversionHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(HybridVolumeHandler.class);
 
 
     @Autowired
-    public MetricWeightForDishHandler(ConversionFactorRepository factorRepository) {
+    public HybridVolumeHandler(ConversionFactorRepository factorRepository) {
         super();
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.WEIGHT);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.HYBRID, UnitSubtype.NONE);
         // make target
-        ConversionSpec target = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.WEIGHT, UnitFlavor.DishUnit);
+        ConversionSpec target = ConversionSpec.basicSpec(UnitType.US, UnitSubtype.VOLUME);
 
         // initialize conversionSource
-        List<ConversionFactorEntity> factorEntities = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));
-        List<ConversionFactor> factors = factorEntities.stream().map(f -> (ConversionFactor) f).collect(Collectors.toList());
-        factors.addAll(selfScalingFactors(factors, UnitFlavor.DishUnit));
-        ConversionFactorSource conversionSource = new SimpleConversionFactorSource(factors, true);
+        List<ConversionFactorEntity> factors = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));
+        ConversionFactorSource conversionSource = new SimpleConversionFactorSource(factors.stream().map(f -> (ConversionFactor) f).collect(Collectors.toList()));
 
         // initialize in abstract
         setSource(source);
         setTarget(target);
         setConversionSource(conversionSource);
-        setSortType(ConversionSortType.RANGE);
-        setDoesScaling(true);
     }
 
 }

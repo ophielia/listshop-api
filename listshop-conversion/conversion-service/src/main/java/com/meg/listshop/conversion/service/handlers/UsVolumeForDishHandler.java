@@ -38,7 +38,7 @@ public class UsVolumeForDishHandler extends AbstractOneWayConversionHandler {
         // initialize conversionSource
         List<ConversionFactorEntity> factorEntities = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));
         List<ConversionFactor> factors = factorEntities.stream().map(f -> (ConversionFactor) f).collect(Collectors.toList());
-        factors.addAll(selfScalingFactors(factors, UnitFlavor.ListUnit));
+        factors.addAll(selfScalingFactors(factors, UnitFlavor.DishUnit));
         ConversionFactorSource conversionSource = new SimpleConversionFactorSource(factors, true);
 
         // initialize in abstract

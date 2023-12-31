@@ -229,7 +229,6 @@ public class ConversionFactorsTest {
 
     @Test
     public void unitTestsUsScaling() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
-        Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
         Optional<UnitEntity> ounceOpt = unitRepository.findById(ounceId);
         Optional<UnitEntity> pintOpt = unitRepository.findById(pintId);
         Optional<UnitEntity> cupsOpt = unitRepository.findById(cupsId);

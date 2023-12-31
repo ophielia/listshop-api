@@ -106,15 +106,24 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         if (convertedList.size() == 1) {
             return convertedList.get(0);
         }
-        switch (sortType) {
-            case NEAREST_UNIT:
-                return sortForNearestUnit(convertedList);
-            case RANGE:
-                return sortForRange(convertedList);
-            default:
-                return sortForNearestUnit(convertedList);
-        }
+        // sort for nearest unit first, then weed for range if required
+        Comparator<ConvertibleAmount> comparator = (f1, f2) -> {
+            Double f1ToOne = Math.abs(1 - (f1.getQuantity()));
+            Double f2ToOne = Math.abs(1 - (f2.getQuantity()));
+            return f1ToOne.compareTo(f2ToOne);
+        };
 
+        convertedList.sort(comparator);
+        ConvertibleAmount nearestUnitResult = convertedList.get(0);
+        if (sortType.equals(ConversionSortType.RANGE)) {
+            ConvertibleAmount best = convertedList.stream()
+                    .filter(a -> a.getQuantity() >= firstPassMinRange && a.getQuantity() <= firstPassMaxRange)
+                    .findFirst().orElse(null);
+            if (best!=null) {
+                return best;
+            }
+        }
+        return nearestUnitResult;
     }
 
     private ConvertibleAmount sortForNearestUnit(List<ConvertibleAmount> convertedList) {
@@ -125,7 +134,15 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         };
 
         convertedList.sort(comparator);
-        return convertedList.get(0);
+        ConvertibleAmount nearestUnitResult = convertedList.get(0);
+
+        ConvertibleAmount best = convertedList.stream()
+                .filter(a -> a.getQuantity() >= firstPassMinRange && a.getQuantity() <= firstPassMaxRange)
+                .findFirst().orElse(null);
+        if (best!=null) {
+            return best;
+        }
+        return nearestUnitResult;
     }
 
     private ConvertibleAmount sortForRange(List<ConvertibleAmount> convertedList) {

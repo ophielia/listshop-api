@@ -20,6 +20,7 @@ import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.tools.RoundingUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +30,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RunWith(SpringRunner.class)
@@ -49,6 +51,10 @@ public class ConversionTest {
     private static final Long cupsId = 1017L;
     private static final Long centileterId = 1015L;
     private static final Long milliliterId = 1004L;
+    private static final Long teaspoonId = 1002L;
+    private static final Long tablespoonId = 1001L;
+
+    private static final Long flTablespoonId = 1021L;
 
     @Autowired
     ConversionService conversionService;
@@ -180,6 +186,70 @@ public class ConversionTest {
         assertEquals(milliliterId, converted.getUnit().getId());
         assertEquals(10.000, RoundingUtils.roundToThousandths(converted.getQuantity()));
     }
+
+    @Test
+    public void testHybridDishContext() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
+        Optional<UnitEntity> teaspoonOpt = unitRepository.findById(teaspoonId);
+
+        ConvertibleAmount amount = new SimpleAmount(3, teaspoonOpt.get());
+        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC, UnitSubtype.VOLUME);
+        ConvertibleAmount converted = conversionService.convert(amount, listContext);
+        assertNotNull(converted);
+        assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(tablespoonId, converted.getUnit().getId());
+
+    }
+
+    @Test
+    public void testHybridDishContextSolid_SizesOut() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
+        Optional<UnitEntity> teaspoonOpt = unitRepository.findById(teaspoonId);
+
+
+        ConvertibleAmount amount = new SimpleAmount(48, teaspoonOpt.get());
+        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC, UnitSubtype.VOLUME);
+
+        // Note - once we can convert volume to weight, we won't have an exception here
+        Assertions.assertThrows(ConversionPathException.class, () -> {
+         conversionService.convert(amount, listContext);
+        });
+
+    }
+
+    @Test
+    public void testHybridDishContextLiquid_SizesOut() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
+        Optional<UnitEntity> tablespoonOpt  = unitRepository.findById(flTablespoonId);
+
+        ConvertibleAmount amount = new SimpleAmount(48, tablespoonOpt.get());
+        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.US, UnitSubtype.VOLUME);
+
+        ConvertibleAmount converted = conversionService.convert(amount, listContext);
+        assertNotNull(converted);
+        assertEquals(0.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(quartId, converted.getUnit().getId());
+
+        amount = new SimpleAmount(16, tablespoonOpt.get());
+
+        converted = conversionService.convert(amount, listContext);
+        assertNotNull(converted);
+        assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(cupsId, converted.getUnit().getId());
+
+    }
+
+    @Test
+    public void testTEMPHybridDishContextLiquid_SizesOut() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
+        Optional<UnitEntity> tablespoonOpt  = unitRepository.findById(flTablespoonId);
+
+        ConvertibleAmount amount = new SimpleAmount(16, tablespoonOpt.get());
+        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.US, UnitSubtype.VOLUME);
+
+        ConvertibleAmount converted = conversionService.convert(amount, listContext);
+        assertNotNull(converted);
+        assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(cupsId, converted.getUnit().getId());
+
+    }
+
 
     @Test
     public void testSimpleUsVolumeListContext() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {

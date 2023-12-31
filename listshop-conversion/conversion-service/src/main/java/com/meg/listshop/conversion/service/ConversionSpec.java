@@ -58,16 +58,16 @@ public class ConversionSpec {
 
         if (source.getType().equals(UnitType.SPECIAL)) {
             specUnitSubtype = UnitSubtype.NONE;
+        } else if (source.getType().equals(UnitType.HYBRID) &&
+                context.getContextType().equals(ConversionContextType.Dish)) {
+            specUnitType = UnitType.HYBRID;
+            specUnitSubtype = UnitSubtype.NONE;
         } else if (context.getContextType().equals(ConversionContextType.List) &&
                 source.isLiquid()) {
             specUnitSubtype = UnitSubtype.VOLUME;
         } else if (context.getContextType().equals(ConversionContextType.List) &&
                 !source.isLiquid()) {
             specUnitSubtype = UnitSubtype.WEIGHT;
-        } else if (source.getType().equals(UnitType.HYBRID) &&
-                context.getContextType().equals(ConversionContextType.Dish)) {
-            specUnitType = UnitType.HYBRID;
-            specUnitSubtype = UnitSubtype.NONE;
         } else {
             specUnitSubtype = source.getSubtype();
         }
@@ -81,6 +81,14 @@ public class ConversionSpec {
 
         if (source.getType().equals(UnitType.SPECIAL)) {
             specUnitSubtype = UnitSubtype.NONE;
+        }  else if (source.getType().equals(UnitType.HYBRID) &&
+                context.getContextType().equals(ConversionContextType.Dish) &&
+                source.isLiquid()) {
+            specUnitSubtype = UnitSubtype.VOLUME;
+        }  else if (source.getType().equals(UnitType.HYBRID) &&
+                context.getContextType().equals(ConversionContextType.Dish) &&
+                !source.isLiquid()) {
+            specUnitSubtype = UnitSubtype.WEIGHT;
         } else if (context.getContextType().equals(ConversionContextType.List) &&
                 source.isLiquid()) {
             specUnitSubtype = UnitSubtype.VOLUME;
