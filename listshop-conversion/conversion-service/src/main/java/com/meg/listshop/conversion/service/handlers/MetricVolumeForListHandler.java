@@ -29,6 +29,7 @@ public class MetricVolumeForListHandler extends AbstractOneWayConversionHandler 
     @Autowired
     public MetricVolumeForListHandler(ConversionFactorRepository factorRepository) {
         super();
+        LOG.info("initializing MetricVolumeForListHandler");
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.VOLUME);
         // make target

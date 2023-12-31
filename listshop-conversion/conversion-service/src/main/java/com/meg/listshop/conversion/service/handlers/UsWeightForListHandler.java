@@ -29,6 +29,7 @@ public class UsWeightForListHandler extends AbstractOneWayConversionHandler {
     @Autowired
     public UsWeightForListHandler(ConversionFactorRepository factorRepository) {
         super();
+        LOG.info("initializing UsWeightForListHandler");
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.US, UnitSubtype.WEIGHT);
         // make target

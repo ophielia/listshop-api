@@ -28,6 +28,7 @@ public class HybridVolumeHandler extends AbstractConversionHandler {
     @Autowired
     public HybridVolumeHandler(ConversionFactorRepository factorRepository) {
         super();
+        LOG.info("initializing HybridVolumeHandler");
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.HYBRID, UnitSubtype.NONE);
         // make target

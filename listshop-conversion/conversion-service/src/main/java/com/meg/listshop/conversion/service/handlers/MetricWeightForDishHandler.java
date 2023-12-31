@@ -29,6 +29,7 @@ public class MetricWeightForDishHandler extends AbstractOneWayConversionHandler 
     @Autowired
     public MetricWeightForDishHandler(ConversionFactorRepository factorRepository) {
         super();
+        LOG.info("initializing MetricWeightForDishHandler");
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.WEIGHT);
         // make target

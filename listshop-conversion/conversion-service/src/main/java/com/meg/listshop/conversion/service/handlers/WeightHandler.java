@@ -28,6 +28,7 @@ public class WeightHandler extends AbstractConversionHandler {
     @Autowired
     public WeightHandler(ConversionFactorRepository factorRepository) {
         super();
+        LOG.info("initializing WeightHandler");
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.WEIGHT);
         // make target

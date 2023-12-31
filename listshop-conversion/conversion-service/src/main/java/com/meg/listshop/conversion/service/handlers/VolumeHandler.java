@@ -28,6 +28,7 @@ public class VolumeHandler extends AbstractConversionHandler {
     @Autowired
     public VolumeHandler(ConversionFactorRepository factorRepository) {
         super();
+        LOG.info("initializing VolumeHandler");
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.VOLUME);
         // make target

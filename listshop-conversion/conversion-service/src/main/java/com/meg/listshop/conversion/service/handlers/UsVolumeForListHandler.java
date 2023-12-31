@@ -29,6 +29,7 @@ public class UsVolumeForListHandler extends AbstractOneWayConversionHandler {
     @Autowired
     public UsVolumeForListHandler(ConversionFactorRepository factorRepository) {
         super();
+        LOG.info("initializing UsVolumeForListHandler");
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.US, UnitSubtype.VOLUME);
         // make target

@@ -29,6 +29,7 @@ public class MetricVolumeForDishHandler extends AbstractOneWayConversionHandler 
     @Autowired
     public MetricVolumeForDishHandler(ConversionFactorRepository factorRepository) {
         super();
+        LOG.info("initializing MetricVolumeForDishHandler");
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.VOLUME);
         // make target

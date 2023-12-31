@@ -29,6 +29,7 @@ public class UsVolumeForDishHandler extends AbstractOneWayConversionHandler {
     @Autowired
     public UsVolumeForDishHandler(ConversionFactorRepository factorRepository) {
         super();
+        LOG.info("initializing UsVolumeForDishHandler");
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.US, UnitSubtype.VOLUME);
         // make target

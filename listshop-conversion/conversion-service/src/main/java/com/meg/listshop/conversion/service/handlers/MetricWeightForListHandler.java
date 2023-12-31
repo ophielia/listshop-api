@@ -29,6 +29,7 @@ public class MetricWeightForListHandler extends AbstractOneWayConversionHandler 
     @Autowired
     public MetricWeightForListHandler(ConversionFactorRepository factorRepository) {
         super();
+        LOG.info("initializing MetricWeightForListHandler");
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.WEIGHT);
         // make target
