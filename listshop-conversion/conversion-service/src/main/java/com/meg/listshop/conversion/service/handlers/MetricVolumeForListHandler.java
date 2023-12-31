@@ -2,7 +2,6 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionSortType;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
@@ -45,7 +44,7 @@ public class MetricVolumeForListHandler extends AbstractOneWayConversionHandler 
         setSource(source);
         setTarget(target);
         setConversionSource(conversionSource);
-        setSortType(ConversionSortType.RANGE);
+        setRestrictRange();
         setDoesScaling(true);
     }
 

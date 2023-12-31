@@ -3,7 +3,6 @@ package com.meg.listshop.conversion.service.handlers;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionSortType;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class AbstractConversionHandler implements ConversionHandler {
@@ -32,10 +30,10 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
     private boolean doesScaling = false;
 
-    private ConversionSortType sortType = ConversionSortType.NEAREST_UNIT;
+    private double minRange = DEFAULT_MIN_RANGE;
+    private double maxRange = DEFAULT_MAX_RANGE;
+    private boolean restrictRange;
 
-    private double firstPassMinRange = DEFAULT_MIN_RANGE;
-    private double firstPassMaxRange = DEFAULT_MAX_RANGE;
     protected AbstractConversionHandler(ConversionSpec source, ConversionSpec target, ConversionFactorSource conversionSource) {
         this.source = source;
         this.target = target;
@@ -115,57 +113,15 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
         convertedList.sort(comparator);
         ConvertibleAmount nearestUnitResult = convertedList.get(0);
-        if (sortType.equals(ConversionSortType.RANGE)) {
+        if (restrictRange) {
             ConvertibleAmount best = convertedList.stream()
-                    .filter(a -> a.getQuantity() >= firstPassMinRange && a.getQuantity() <= firstPassMaxRange)
+                    .filter(a -> a.getQuantity() >= minRange && a.getQuantity() <= maxRange)
                     .findFirst().orElse(null);
             if (best!=null) {
                 return best;
             }
         }
         return nearestUnitResult;
-    }
-
-    private ConvertibleAmount sortForNearestUnit(List<ConvertibleAmount> convertedList) {
-        Comparator<ConvertibleAmount> comparator = (f1, f2) -> {
-            Double f1ToOne = Math.abs(1 - (f1.getQuantity()));
-            Double f2ToOne = Math.abs(1 - (f2.getQuantity()));
-            return f1ToOne.compareTo(f2ToOne);
-        };
-
-        convertedList.sort(comparator);
-        ConvertibleAmount nearestUnitResult = convertedList.get(0);
-
-        ConvertibleAmount best = convertedList.stream()
-                .filter(a -> a.getQuantity() >= firstPassMinRange && a.getQuantity() <= firstPassMaxRange)
-                .findFirst().orElse(null);
-        if (best!=null) {
-            return best;
-        }
-        return nearestUnitResult;
-    }
-
-    private ConvertibleAmount sortForRange(List<ConvertibleAmount> convertedList) {
-        Comparator<ConvertibleAmount> compareByQuantity = Comparator.comparing(ConvertibleAmount::getQuantity);
-        convertedList.sort(compareByQuantity);
-
-        ConvertibleAmount best = convertedList.stream()
-                .filter(a -> a.getQuantity() >= firstPassMinRange && a.getQuantity() <= firstPassMaxRange)
-                .findFirst().orElse(null);
-
-        if (best != null) {
-            return best;
-        }
-
-        best = convertedList.stream()
-                .filter(a -> a.getQuantity() >= 0.125 && a.getQuantity() <= 800.0)
-                .findFirst().orElse(null);
-
-        if (best != null) {
-            return best;
-        }
-
-        return sortForNearestUnit(convertedList);
     }
 
     private boolean doesntRequireConversion(ConvertibleAmount toConvert, ConversionSpec targetSpec) {
@@ -211,20 +167,20 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         this.conversionSource = conversionSource;
     }
 
-    public void setSortType(ConversionSortType sortType) {
-        this.sortType = sortType;
+    public void setRestrictRange() {
+        this.restrictRange = true;
     }
 
     public void setDoesScaling(boolean doesScaling) {
         this.doesScaling = doesScaling;
     }
 
-    public void setFirstPassMinRange(double firstPassMinRange) {
-        this.firstPassMinRange = firstPassMinRange;
+    public void setMinRange(double minRange) {
+        this.minRange = minRange;
     }
 
-    public void setFirstPassMaxRange(double firstPassMaxRange) {
-        this.firstPassMaxRange = firstPassMaxRange;
+    public void setMaxRange(double maxRange) {
+        this.maxRange = maxRange;
     }
 }
 
