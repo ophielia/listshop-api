@@ -10,7 +10,10 @@ package com.meg.listshop.lmt.service;
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.*;
+import com.meg.listshop.conversion.data.pojo.ConversionContext;
+import com.meg.listshop.conversion.data.pojo.ConversionContextType;
+import com.meg.listshop.conversion.data.pojo.SimpleAmount;
+import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
@@ -30,7 +33,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RunWith(SpringRunner.class)
@@ -201,7 +203,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testHybridDishContextSolid_SizesOut() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
+    public void testHybridDishContextSolid_SizesOut()  {
         Optional<UnitEntity> teaspoonOpt = unitRepository.findById(teaspoonId);
 
 
@@ -209,9 +211,7 @@ public class ConversionTest {
         ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC);
 
         // Note - once we can convert volume to weight, we won't have an exception here
-        Assertions.assertThrows(ConversionPathException.class, () -> {
-         conversionService.convert(amount, listContext);
-        });
+        Assertions.assertThrows(ConversionPathException.class, () -> conversionService.convert(amount, listContext));
 
     }
 

@@ -235,11 +235,9 @@ public class ConversionFactorsTest {
         Optional<UnitEntity> quartOpt = unitRepository.findById(quartId);
         Optional<UnitEntity> flOzOpt = unitRepository.findById(flOzId);
         Optional<UnitEntity> poundOpt = unitRepository.findById(lbId);
-        Optional<UnitEntity> kilogOpt = unitRepository.findById(kgId);
 
         ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US);
         ConversionContext listContextVolume = new ConversionContext(ConversionContextType.List, UnitType.US);
-        ConversionContext dishContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
         ConversionContext dishContextVolume = new ConversionContext(ConversionContextType.Dish, UnitType.US);
 
 

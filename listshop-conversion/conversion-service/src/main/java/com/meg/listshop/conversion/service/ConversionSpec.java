@@ -54,7 +54,7 @@ public class ConversionSpec {
 
     public static ConversionSpec fromContext(ConversionContext context, UnitEntity source) {
         UnitType specUnitType = context.getUnitType();
-        UnitSubtype specUnitSubtype = null;
+        UnitSubtype specUnitSubtype;
 
         if (source.getType().equals(UnitType.SPECIAL)) {
             specUnitSubtype = UnitSubtype.NONE;
@@ -77,7 +77,7 @@ public class ConversionSpec {
 
     public static ConversionSpec retryFromContext(ConversionContext context, UnitEntity source) {
         UnitType specUnitType = context.getUnitType();
-        UnitSubtype specUnitSubtype = null;
+        UnitSubtype specUnitSubtype;
 
         if (source.getType().equals(UnitType.SPECIAL)) {
             specUnitSubtype = UnitSubtype.NONE;

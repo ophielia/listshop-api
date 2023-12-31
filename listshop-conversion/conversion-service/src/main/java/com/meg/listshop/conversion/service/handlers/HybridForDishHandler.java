@@ -49,6 +49,7 @@ public class HybridForDishHandler extends AbstractOneWayConversionHandler {
         setDoesScaling(true);
     }
 
+    @Override
     public void checkBestResult(ConvertibleAmount bestResult, ConversionSpec targetSpec) throws ExceedsAllowedScaleException {
         // we check if the scaled value resulted in a unit which is not a hybrid unit.
         // if this is true, we throw a ExceedsAllowedScaleException
