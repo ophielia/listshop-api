@@ -110,7 +110,7 @@ class ConversionServiceTest {
     @Test
     void testConvertByContext() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         // context - convert imperial volume to list unit (cups to quart)
-        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.US, UnitSubtype.VOLUME);
+        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.US);
         ConvertibleAmount amount = new SimpleAmount(1, usCups);
         ConvertibleAmount converted = service.convert(amount, context);
         assertNotNull(converted);

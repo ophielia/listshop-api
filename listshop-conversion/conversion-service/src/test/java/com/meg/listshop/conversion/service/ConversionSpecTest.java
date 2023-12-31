@@ -46,7 +46,7 @@ class ConversionSpecTest {
     void testFromContextAndSource() {
         // make imperial weight, for list context
         UnitEntity sourceUnit = makeUSUnit(1L, false);
-        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.METRIC, UnitSubtype.WEIGHT);
+        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.METRIC);
         Set<UnitFlavor> expectedFlavors = createFlavors(false, false, false, true, false);
         ConversionSpec result = ConversionSpec.fromContext(context, sourceUnit);
 
@@ -58,7 +58,7 @@ class ConversionSpecTest {
     void testFromContextAndSourceHybrid() {
         // make imperial weight, for list context
         UnitEntity sourceUnit = makeHybridUnit(1L);
-        ConversionContext context = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC, UnitSubtype.WEIGHT);
+        ConversionContext context = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC);
         Set<UnitFlavor> expectedFlavors = createFlavors(false, false, false, false, true);
 
         // call with allowHybrid = true

@@ -142,19 +142,4 @@ class ConversionHandlerTest {
         assertEquals(1L, exactResult.getUnit().getId());
         assertEquals(UnitType.US, exactResult.getUnit().getType());
     }
-
-    //MM BOOKMARK
-    // need better scale sorting - nearest_unit, and _then_ apply scale, not
-    // one or the other.
-    // make a unit test for that here
-    // test case 0.2 pounds => 3.2 ounces
-    // will need to test the oneway handler
-/*0 = {ConversionFactorEntity@18832} "ConversionFactorEntity{factorId=1111, factor=16.0, toUnit=UnitEntity{id=1009, name='oz', type=US, subtype=WEIGHT, isListUnit=true, isDishUnit=true, isLiquid=false, isWeight=false, isVolume=false}, fromUnit=UnitEntity{id=1008, name='lb', type=US, subtype=WEIGHT, isListUnit=true, isDishUnit=true, isLiquid=false, isWeight=false, isVolume=false}}"
-            1 = {SimpleConversionFactor@18833}*/
-    /*
-    factor = {Double@18835} 1.0
-toUnit = {UnitEntity@18836} "UnitEntity{id=1008, name='lb', type=US, subtype=WEIGHT, isListUnit=true, isDishUnit=true, isLiquid=false, isWeight=false, isVolume=false}"
-fromUnit = {UnitEntity@18836} "UnitEntity{id=1008, name='lb', type=US, subtype=WEIGHT, isListUnit=true, isDishUnit=true, isLiquid=false, isWeight=false, isVolume=false}"
-     */
-
 }

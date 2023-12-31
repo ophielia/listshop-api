@@ -45,7 +45,7 @@ class ConversionServiceMockTest {
     void testConvertHybrid() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         ConvertibleAmount amount = new SimpleAmount(1, hybridTeaspoon);
         ConvertibleAmount resultingAmount = new SimpleAmount(2, hybridTablespoon);
-        ConversionContext requestedContext = new ConversionContext(ConversionContextType.Dish, UnitType.US, UnitSubtype.VOLUME);
+        ConversionContext requestedContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
         ConversionSpec sourceSpec = ConversionSpec.basicSpec(hybridTeaspoon.getId(), UnitType.HYBRID, UnitSubtype.NONE, Collections.emptySet());
         ConversionSpec hybridSpec = ConversionSpec.fromContext(requestedContext, amount.getUnit());
         ConversionSpec retrySpec = ConversionSpec.fromContext(requestedContext, amount.getUnit());

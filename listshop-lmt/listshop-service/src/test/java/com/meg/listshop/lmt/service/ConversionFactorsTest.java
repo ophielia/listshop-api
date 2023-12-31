@@ -66,9 +66,9 @@ public class ConversionFactorsTest {
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
         Optional<UnitEntity> gramOpt = unitRepository.findById(gId);
 
-        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.METRIC, UnitSubtype.WEIGHT);
-        ConversionContext listContextVolume = new ConversionContext(ConversionContextType.List, UnitType.METRIC, UnitSubtype.VOLUME);
-        ConversionContext dishContextVolume = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC, UnitSubtype.VOLUME);
+        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.METRIC);
+        ConversionContext listContextVolume = new ConversionContext(ConversionContextType.List, UnitType.METRIC);
+        ConversionContext dishContextVolume = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC);
 
 
 //        688 Gram = 0.688 Kilogram
@@ -237,10 +237,10 @@ public class ConversionFactorsTest {
         Optional<UnitEntity> poundOpt = unitRepository.findById(lbId);
         Optional<UnitEntity> kilogOpt = unitRepository.findById(kgId);
 
-        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US, UnitSubtype.WEIGHT);
-        ConversionContext listContextVolume = new ConversionContext(ConversionContextType.List, UnitType.US, UnitSubtype.VOLUME);
-        ConversionContext dishContext = new ConversionContext(ConversionContextType.Dish, UnitType.US, UnitSubtype.WEIGHT);
-        ConversionContext dishContextVolume = new ConversionContext(ConversionContextType.Dish, UnitType.US, UnitSubtype.VOLUME);
+        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US);
+        ConversionContext listContextVolume = new ConversionContext(ConversionContextType.List, UnitType.US);
+        ConversionContext dishContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
+        ConversionContext dishContextVolume = new ConversionContext(ConversionContextType.Dish, UnitType.US);
 
 
         //        688 Gram = 0.688 Kilogram

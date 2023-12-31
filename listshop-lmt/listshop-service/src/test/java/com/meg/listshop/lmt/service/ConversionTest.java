@@ -165,7 +165,7 @@ public class ConversionTest {
         Optional<UnitEntity> pintOpt = unitRepository.findById(pintId);
 
         ConvertibleAmount amount = new SimpleAmount(3, quartOpt.get());
-        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.METRIC, UnitSubtype.VOLUME);
+        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.METRIC);
         ConvertibleAmount converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(2.839, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -192,7 +192,7 @@ public class ConversionTest {
         Optional<UnitEntity> teaspoonOpt = unitRepository.findById(teaspoonId);
 
         ConvertibleAmount amount = new SimpleAmount(3, teaspoonOpt.get());
-        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC, UnitSubtype.VOLUME);
+        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC);
         ConvertibleAmount converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -206,7 +206,7 @@ public class ConversionTest {
 
 
         ConvertibleAmount amount = new SimpleAmount(48, teaspoonOpt.get());
-        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC, UnitSubtype.VOLUME);
+        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC);
 
         // Note - once we can convert volume to weight, we won't have an exception here
         Assertions.assertThrows(ConversionPathException.class, () -> {
@@ -220,7 +220,7 @@ public class ConversionTest {
         Optional<UnitEntity> tablespoonOpt  = unitRepository.findById(flTablespoonId);
 
         ConvertibleAmount amount = new SimpleAmount(48, tablespoonOpt.get());
-        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.US, UnitSubtype.VOLUME);
+        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
 
         ConvertibleAmount converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
@@ -241,7 +241,7 @@ public class ConversionTest {
         Optional<UnitEntity> tablespoonOpt  = unitRepository.findById(flTablespoonId);
 
         ConvertibleAmount amount = new SimpleAmount(16, tablespoonOpt.get());
-        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.US, UnitSubtype.VOLUME);
+        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
 
         ConvertibleAmount converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
@@ -257,7 +257,7 @@ public class ConversionTest {
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
 
         ConvertibleAmount amount = new SimpleAmount(473.17, milliliterOpt.get());
-        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US, UnitSubtype.VOLUME);
+        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US);
 
         ConvertibleAmount converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
@@ -287,7 +287,7 @@ public class ConversionTest {
 
         // 113.398093 gm = 4 ounces => ounce destination
         ConvertibleAmount amount = new SimpleAmount(113.398093, gramOpt.get());
-        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US, UnitSubtype.WEIGHT);
+        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US);
         ConvertibleAmount converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(ounceId, converted.getUnit().getId());
@@ -295,7 +295,7 @@ public class ConversionTest {
 
         // 15 Ounce = 425.242847 Gram  => pound destination
         amount = new SimpleAmount(425.242847, gramOpt.get());
-        listContext = new ConversionContext(ConversionContextType.List, UnitType.US, UnitSubtype.WEIGHT);
+        listContext = new ConversionContext(ConversionContextType.List, UnitType.US);
         converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(0.936, RoundingUtils.roundToThousandths(converted.getQuantity()));
