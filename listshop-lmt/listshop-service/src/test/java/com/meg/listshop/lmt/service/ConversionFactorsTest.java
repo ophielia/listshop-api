@@ -10,7 +10,10 @@ package com.meg.listshop.lmt.service;
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.*;
+import com.meg.listshop.conversion.data.pojo.ConversionContext;
+import com.meg.listshop.conversion.data.pojo.ConversionContextType;
+import com.meg.listshop.conversion.data.pojo.SimpleAmount;
+import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
@@ -25,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -65,10 +66,10 @@ public class ConversionFactorsTest {
 
     @Test
     public void unitTestsMetricScaling() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
-        Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
-        Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
-        Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
-        Optional<UnitEntity> gramOpt = unitRepository.findById(gId);
+        UnitEntity litersOpt = unitRepository.findById(literId).orElse(null);
+        UnitEntity milliliterOpt = unitRepository.findById(milliliterId).orElse(null);
+        UnitEntity centiliterOpt = unitRepository.findById(centileterId).orElse(null);
+        UnitEntity gramOpt = unitRepository.findById(gId).orElse(null);
 
         ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.METRIC);
         ConversionContext listContextVolume = new ConversionContext(ConversionContextType.List, UnitType.METRIC);
@@ -76,49 +77,49 @@ public class ConversionFactorsTest {
 
 
 //        688 Gram = 0.688 Kilogram
-        ConvertibleAmount amount = new SimpleAmount(688, gramOpt.get());
+        ConvertibleAmount amount = new SimpleAmount(688, gramOpt);
         ConvertibleAmount converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(0.688, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(kgId, converted.getUnit().getId());
 
 //        .15 Liter = 15 Centiliter
-        amount = new SimpleAmount(0.15, litersOpt.get());
+        amount = new SimpleAmount(0.15, litersOpt);
         converted = conversionService.convert(amount, dishContextVolume);
         assertNotNull(converted);
         assertEquals(15.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(centileterId, converted.getUnit().getId());
 
 //        2.345 Liter = 2345 Milliliter
-        amount = new SimpleAmount(.2345, litersOpt.get());
+        amount = new SimpleAmount(.2345, litersOpt);
         converted = conversionService.convert(amount, listContextVolume);
         assertNotNull(converted);
         assertEquals(234.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(milliliterId, converted.getUnit().getId());
 
         //        900 Milliliter = 0.9 Liter
-        amount = new SimpleAmount(900, milliliterOpt.get());
+        amount = new SimpleAmount(900, milliliterOpt);
         converted = conversionService.convert(amount, listContextVolume);
         assertNotNull(converted);
         assertEquals(literId, converted.getUnit().getId());
         assertEquals(0.9, RoundingUtils.roundToThousandths(converted.getQuantity()));
 
         //        600 Milliliter = 60 Centiliter
-        amount = new SimpleAmount(300, milliliterOpt.get());
+        amount = new SimpleAmount(300, milliliterOpt);
         converted = conversionService.convert(amount, dishContextVolume);
         assertNotNull(converted);
         assertEquals(30.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(centileterId, converted.getUnit().getId());
 
         //        50 Centiliter = 0.5 Liter
-        amount = new SimpleAmount(50.0, centiliterOpt.get());
+        amount = new SimpleAmount(50.0, centiliterOpt);
         converted = conversionService.convert(amount, listContextVolume);
         assertNotNull(converted);
         assertEquals(0.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(literId, converted.getUnit().getId());
 
         //        0.25 Centiliter = 2.5 Milliliter
-        amount = new SimpleAmount(0.25, centiliterOpt.get());
+        amount = new SimpleAmount(0.25, centiliterOpt);
         converted = conversionService.convert(amount, listContextVolume);
         assertNotNull(converted);
         assertEquals(2.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -128,104 +129,104 @@ public class ConversionFactorsTest {
 
     @Test
     public void unitTestsMetricConversion() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
-        Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
-        Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
-        Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
-        Optional<UnitEntity> cupsOpt = unitRepository.findById(cupsId);
-        Optional<UnitEntity> quartOpt = unitRepository.findById(quartId);
-        Optional<UnitEntity> pintOpt = unitRepository.findById(pintId);
-        Optional<UnitEntity> ounceOpt = unitRepository.findById(ounceId);
-        Optional<UnitEntity> poundOpt = unitRepository.findById(lbId);
-        Optional<UnitEntity> gramOpt = unitRepository.findById(gId);
-        Optional<UnitEntity> kilogOpt = unitRepository.findById(kgId);
+        UnitEntity gallonsOpt = unitRepository.findById(gallonId).orElse(null);
+        UnitEntity litersOpt = unitRepository.findById(literId).orElse(null);
+        UnitEntity milliliterOpt = unitRepository.findById(milliliterId).orElse(null);
+        UnitEntity cupsOpt = unitRepository.findById(cupsId).orElse(null);
+        UnitEntity quartOpt = unitRepository.findById(quartId).orElse(null);
+        UnitEntity pintOpt = unitRepository.findById(pintId).orElse(null);
+        UnitEntity ounceOpt = unitRepository.findById(ounceId).orElse(null);
+        UnitEntity poundOpt = unitRepository.findById(lbId).orElse(null);
+        UnitEntity gramOpt = unitRepository.findById(gId).orElse(null);
+        UnitEntity kilogOpt = unitRepository.findById(kgId).orElse(null);
 
         //        75 Gram = 0.1653467 Pound
-        ConvertibleAmount amount = new SimpleAmount(75, gramOpt.get());
-        ConvertibleAmount converted = conversionService.convert(amount, poundOpt.get());
+        ConvertibleAmount amount = new SimpleAmount(75, gramOpt);
+        ConvertibleAmount converted = conversionService.convert(amount, poundOpt);
         assertNotNull(converted);
         assertEquals(0.165, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(lbId, converted.getUnit().getId());
-        ConvertibleAmount andback = conversionService.convert(converted, gramOpt.get());
+        ConvertibleAmount andback = conversionService.convert(converted, gramOpt);
         assertEquals(75.0, RoundingUtils.roundToThousandths(andback.getQuantity()));
         assertEquals(gId, andback.getUnit().getId());
 
 //        3456 gram = 121.9068125 ounce
-        amount = new SimpleAmount(3456, gramOpt.get());
-        converted = conversionService.convert(amount, ounceOpt.get());
+        amount = new SimpleAmount(3456, gramOpt);
+        converted = conversionService.convert(amount, ounceOpt);
         assertNotNull(converted);
         assertEquals(121.905, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(ounceId, converted.getUnit().getId());
-        andback = conversionService.convert(converted, gramOpt.get());
+        andback = conversionService.convert(converted, gramOpt);
         assertEquals(3456.0, RoundingUtils.roundToThousandths(andback.getQuantity()));
         assertEquals(gId, andback.getUnit().getId());
 
 //        10 Kilogram = 22.0462262 Pound
-        amount = new SimpleAmount(10, kilogOpt.get());
-        converted = conversionService.convert(amount, poundOpt.get());
+        amount = new SimpleAmount(10, kilogOpt);
+        converted = conversionService.convert(amount, poundOpt);
         assertNotNull(converted);
         assertEquals(22.046, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(lbId, converted.getUnit().getId());
-        andback = conversionService.convert(converted, kilogOpt.get());
+        andback = conversionService.convert(converted, kilogOpt);
         assertEquals(10.0, RoundingUtils.roundToThousandths(andback.getQuantity()));
         assertEquals(kgId, andback.getUnit().getId());
 
 //        750 Gram = 26.4554715 Ounce
-        amount = new SimpleAmount(750, gramOpt.get());
-        converted = conversionService.convert(amount, ounceOpt.get());
+        amount = new SimpleAmount(750, gramOpt);
+        converted = conversionService.convert(amount, ounceOpt);
         assertNotNull(converted);
         assertEquals(26.455, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(ounceId, converted.getUnit().getId());
-        andback = conversionService.convert(converted, gramOpt.get());
+        andback = conversionService.convert(converted, gramOpt);
         assertEquals(750.0, RoundingUtils.roundToThousandths(andback.getQuantity()));
         assertEquals(gId, andback.getUnit().getId());
 
 //        0.75 Liter = 3.17006463 US cup
-        amount = new SimpleAmount(0.75, litersOpt.get());
-        converted = conversionService.convert(amount, cupsOpt.get());
+        amount = new SimpleAmount(0.75, litersOpt);
+        converted = conversionService.convert(amount, cupsOpt);
         assertNotNull(converted);
         assertEquals(3.17, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(cupsId, converted.getUnit().getId());
-        andback = conversionService.convert(converted, litersOpt.get());
+        andback = conversionService.convert(converted, litersOpt);
         assertEquals(0.75, RoundingUtils.roundToThousandths(andback.getQuantity()));
         assertEquals(literId, andback.getUnit().getId());
 
 //        10 Liter = 2.64172052 US gallon
-        amount = new SimpleAmount(10, litersOpt.get());
-        converted = conversionService.convert(amount, gallonsOpt.get());
+        amount = new SimpleAmount(10, litersOpt);
+        converted = conversionService.convert(amount, gallonsOpt);
         assertNotNull(converted);
         assertEquals(2.642, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
-        andback = conversionService.convert(converted, litersOpt.get());
+        andback = conversionService.convert(converted, litersOpt);
         assertEquals(10.0, RoundingUtils.roundToThousandths(andback.getQuantity()));
         assertEquals(literId, andback.getUnit().getId());
 
 //        2 Liter = 4.22675284 US pint
-        amount = new SimpleAmount(2, litersOpt.get());
-        converted = conversionService.convert(amount, pintOpt.get());
+        amount = new SimpleAmount(2, litersOpt);
+        converted = conversionService.convert(amount, pintOpt);
         assertNotNull(converted);
         assertEquals(4.227, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(pintId, converted.getUnit().getId());
-        andback = conversionService.convert(converted, litersOpt.get());
+        andback = conversionService.convert(converted, litersOpt);
         assertEquals(2.0, RoundingUtils.roundToThousandths(andback.getQuantity()));
         assertEquals(literId, andback.getUnit().getId());
 
 //        2.5 Liter = 2.64172052 US quart
-        amount = new SimpleAmount(2.5, litersOpt.get());
-        converted = conversionService.convert(amount, quartOpt.get());
+        amount = new SimpleAmount(2.5, litersOpt);
+        converted = conversionService.convert(amount, quartOpt);
         assertNotNull(converted);
         assertEquals(2.642, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(quartId, converted.getUnit().getId());
-        andback = conversionService.convert(converted, litersOpt.get());
+        andback = conversionService.convert(converted, litersOpt);
         assertEquals(2.5, RoundingUtils.roundToThousandths(andback.getQuantity()));
         assertEquals(literId, andback.getUnit().getId());
 
 //        600 Milliliter = 2.5360517 US cup
-        amount = new SimpleAmount(600, milliliterOpt.get());
-        converted = conversionService.convert(amount, cupsOpt.get());
+        amount = new SimpleAmount(600, milliliterOpt);
+        converted = conversionService.convert(amount, cupsOpt);
         assertNotNull(converted);
         assertEquals(2.536, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(cupsId, converted.getUnit().getId());
-        andback = conversionService.convert(converted, milliliterOpt.get());
+        andback = conversionService.convert(converted, milliliterOpt);
         assertEquals(600.0, RoundingUtils.roundToThousandths(andback.getQuantity()));
         assertEquals(milliliterId, andback.getUnit().getId());
 
@@ -233,12 +234,12 @@ public class ConversionFactorsTest {
 
     @Test
     public void unitTestsUsScaling() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
-        Optional<UnitEntity> ounceOpt = unitRepository.findById(ounceId);
-        Optional<UnitEntity> pintOpt = unitRepository.findById(pintId);
-        Optional<UnitEntity> cupsOpt = unitRepository.findById(cupsId);
-        Optional<UnitEntity> quartOpt = unitRepository.findById(quartId);
-        Optional<UnitEntity> flOzOpt = unitRepository.findById(flOzId);
-        Optional<UnitEntity> poundOpt = unitRepository.findById(lbId);
+        UnitEntity ounceOpt = unitRepository.findById(ounceId).orElse(null);
+        UnitEntity pintOpt = unitRepository.findById(pintId).orElse(null);
+        UnitEntity cupsOpt = unitRepository.findById(cupsId).orElse(null);
+        UnitEntity quartOpt = unitRepository.findById(quartId).orElse(null);
+        UnitEntity flOzOpt = unitRepository.findById(flOzId).orElse(null);
+        UnitEntity poundOpt = unitRepository.findById(lbId).orElse(null);
 
         ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US);
         ConversionContext listContextVolume = new ConversionContext(ConversionContextType.List, UnitType.US);
@@ -248,84 +249,84 @@ public class ConversionFactorsTest {
         //        688 Gram = 0.688 Kilogram
 
 // 6 US cup = 0.375 US gallon
-        ConvertibleAmount amount = new SimpleAmount(12.0, cupsOpt.get());
+        ConvertibleAmount amount = new SimpleAmount(12.0, cupsOpt);
         ConvertibleAmount converted = conversionService.convert(amount, listContextVolume);
         assertNotNull(converted);
         assertEquals(0.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         // 68 US ounce = 0.53125 US gallon
-        amount = new SimpleAmount(68.0, flOzOpt.get());
+        amount = new SimpleAmount(68.0, flOzOpt);
         converted = conversionService.convert(amount, listContextVolume);
         assertNotNull(converted);
         assertEquals(0.531, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         // 35 US pint = 4.375 US gallon
-        amount = new SimpleAmount(35.0, pintOpt.get());
+        amount = new SimpleAmount(35.0, pintOpt);
         converted = conversionService.convert(amount, listContextVolume);
         assertNotNull(converted);
         assertEquals(4.375, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         // 15 US quart = 3.75 US gallon
-        amount = new SimpleAmount(15.0, quartOpt.get());
+        amount = new SimpleAmount(15.0, quartOpt);
         converted = conversionService.convert(amount, listContextVolume);
         assertNotNull(converted);
         assertEquals(3.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         // 7 fluid ounce (US) = 0.875 cup (US)
-        amount = new SimpleAmount(7.0, flOzOpt.get());
+        amount = new SimpleAmount(7.0, flOzOpt);
         converted = conversionService.convert(amount, dishContextVolume);
         assertNotNull(converted);
         assertEquals(0.875, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(cupsId, converted.getUnit().getId());
 
         // 0.2 Pound = 3.2 Ounce
-        amount = new SimpleAmount(0.2, poundOpt.get());
+        amount = new SimpleAmount(0.2, poundOpt);
         converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(3.2, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(ounceId, converted.getUnit().getId());
 
         // 4 US cup = 1 US quart
-        amount = new SimpleAmount(4, cupsOpt.get());
+        amount = new SimpleAmount(4, cupsOpt);
         converted = conversionService.convert(amount, listContextVolume);
         assertNotNull(converted);
         //assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
         //assertEquals(quartId, converted.getUnit().getId());
 
         // 36 US ounce = 2.25 US lb
-        amount = new SimpleAmount(36.00, ounceOpt.get());
+        amount = new SimpleAmount(36.00, ounceOpt);
         converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(2.25, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(lbId, converted.getUnit().getId());
 
         // 38 US ounce = 1.1875 US quart
-        amount = new SimpleAmount(38.00, flOzOpt.get());
+        amount = new SimpleAmount(38.00, flOzOpt);
         converted = conversionService.convert(amount, listContextVolume);
         assertNotNull(converted);
         assertEquals(1.188, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(quartId, converted.getUnit().getId());
 
         // 6 US cup = 1.5 US quart
-        amount = new SimpleAmount(6.0, cupsOpt.get());
+        amount = new SimpleAmount(6.0, cupsOpt);
         converted = conversionService.convert(amount, listContextVolume);
         assertNotNull(converted);
         assertEquals(1.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(quartId, converted.getUnit().getId());
 
         // 1 US pint = .5 US quart
-        amount = new SimpleAmount(1.00, pintOpt.get());
+        amount = new SimpleAmount(1.00, pintOpt);
         converted = conversionService.convert(amount, listContextVolume);
         assertNotNull(converted);
         assertEquals(.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(quartId, converted.getUnit().getId());
 
         // 28 Ounce = 1.75 Pound
-        amount = new SimpleAmount(28, ounceOpt.get());
+        amount = new SimpleAmount(28, ounceOpt);
         converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(1.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -334,8 +335,8 @@ public class ConversionFactorsTest {
 
     @Test
     public void unitHybridScaling() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
-        Optional<UnitEntity> flTspOpt = unitRepository.findById(flTeaspoonId);
-        Optional<UnitEntity> tablespoonOpt = unitRepository.findById(tbId);
+        UnitEntity flTspOpt = unitRepository.findById(flTeaspoonId).orElse(null);
+        UnitEntity tablespoonOpt = unitRepository.findById(tbId).orElse(null);
 
         ConversionContext dishConversionContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
 
@@ -343,14 +344,14 @@ public class ConversionFactorsTest {
         // 4 tablespoons = 12 teaspoons
 
         // 3 teaspoons = 1 tablespoon - fluid
-        ConvertibleAmount amount = new SimpleAmount(3.0, flTspOpt.get());
+        ConvertibleAmount amount = new SimpleAmount(3.0, flTspOpt);
         ConvertibleAmount converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(1.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(flTablespoonId, converted.getUnit().getId());
 
         // 1/3 tablespoon = 1 teaspoons
-        amount = new SimpleAmount(0.3334, tablespoonOpt.get());
+        amount = new SimpleAmount(0.3334, tablespoonOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(1.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -359,34 +360,34 @@ public class ConversionFactorsTest {
 
     @Test
     public void unitHybridVolumeUSScaling() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
-        Optional<UnitEntity> flTspOpt = unitRepository.findById(flTeaspoonId);
-        Optional<UnitEntity> flTbOpt = unitRepository.findById(flTablespoonId);
+        UnitEntity flTspOpt = unitRepository.findById(flTeaspoonId).orElse(null);
+        UnitEntity flTbOpt = unitRepository.findById(flTablespoonId).orElse(null);
 
         ConversionContext dishConversionContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
 
         //  24 teaspoons = 0.5 cup
-        ConvertibleAmount amount = new SimpleAmount(24.0, flTspOpt.get());
+        ConvertibleAmount amount = new SimpleAmount(24.0, flTspOpt);
         ConvertibleAmount converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(0.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(cupsId, converted.getUnit().getId());
 
         // 6 teaspoons = 1 ounce
-        amount = new SimpleAmount(18.0, flTspOpt.get());
+        amount = new SimpleAmount(18.0, flTspOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(3.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(flOzId, converted.getUnit().getId());
 
         // 16 tablespoons = 1 cup
-        amount = new SimpleAmount(16.0, flTbOpt.get());
+        amount = new SimpleAmount(16.0, flTbOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(1.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(cupsId, converted.getUnit().getId());
 
         // 48 tablespoons = 0.75 quart
-        amount = new SimpleAmount(48, flTbOpt.get());
+        amount = new SimpleAmount(48, flTbOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(0.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -394,35 +395,35 @@ public class ConversionFactorsTest {
 
 
         // 256 tablespoons = 1 gallon
-        amount = new SimpleAmount(256, flTbOpt.get());
+        amount = new SimpleAmount(256, flTbOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         // 24 T = 0.75 pint
-        amount = new SimpleAmount(24, flTbOpt.get());
+        amount = new SimpleAmount(24, flTbOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(0.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(pintId, converted.getUnit().getId());
 
         // 4 tablespoons = 2 oz
-        amount = new SimpleAmount(4, flTbOpt.get());
+        amount = new SimpleAmount(4, flTbOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(2, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(flOzId, converted.getUnit().getId());
 
         //  576 teaspoons = 0.75 gallon
-        amount = new SimpleAmount(576, flTspOpt.get());
+        amount = new SimpleAmount(576, flTspOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(0.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         // 96 teaspoons = 1 pint
-        amount = new SimpleAmount(96, flTspOpt.get());
+        amount = new SimpleAmount(96, flTspOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(1.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -431,41 +432,41 @@ public class ConversionFactorsTest {
     }
     @Test
     public void unitHybridVolumeMetricScaling() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
-        Optional<UnitEntity> flTspOpt = unitRepository.findById(flTeaspoonId);
-        Optional<UnitEntity> flTbOpt = unitRepository.findById(flTablespoonId);
+        UnitEntity flTspOpt = unitRepository.findById(flTeaspoonId).orElse(null);
+        UnitEntity flTbOpt = unitRepository.findById(flTablespoonId).orElse(null);
 
         ConversionContext dishConversionContext = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC);
 
          // teaspoon to centiliter  5.914 Centiliter = 12 US teaspoon
-        ConvertibleAmount amount = new SimpleAmount(12, flTspOpt.get());
+        ConvertibleAmount amount = new SimpleAmount(12, flTspOpt);
         ConvertibleAmount converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(5.915, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(centileterId, converted.getUnit().getId());
 
          // teaspoon to liter  .5963 liters = 121 US teaspoon
-        amount = new SimpleAmount(121, flTspOpt.get());
+        amount = new SimpleAmount(121, flTspOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(0.596, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(literId, converted.getUnit().getId());
 
         // teaspoon to centiliter 14.787 Centiliter = 30.0 US teaspoon
-        amount = new SimpleAmount(30.0, flTspOpt.get());
+        amount = new SimpleAmount(30.0, flTspOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(14.787, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(centileterId, converted.getUnit().getId());
 
          // tablespoon to liter   0.6 Liter = 40.5768272 US tablespoon
-        amount = new SimpleAmount(40.577, flTbOpt.get());
+        amount = new SimpleAmount(40.577, flTbOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(0.6, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(literId, converted.getUnit().getId());
 
          // tablespoon to centiliter  3 Centiliter = 2 US tablespoon
-        amount = new SimpleAmount(10.0, flTbOpt.get());
+        amount = new SimpleAmount(10.0, flTbOpt);
         converted = conversionService.convert(amount, dishConversionContext);
         assertNotNull(converted);
         assertEquals(14.787, RoundingUtils.roundToThousandths(converted.getQuantity()));
