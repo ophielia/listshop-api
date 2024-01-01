@@ -15,13 +15,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class AbstractConversionHandler implements ConversionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractConversionHandler.class);
-    private static final double DEFAULT_MIN_RANGE = 0.5;
+    private static final double DEFAULT_MIN_RANGE = 0.4990;
     private static final double DEFAULT_MAX_RANGE = 500;
 
     private ConversionSpec source;
@@ -100,7 +101,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         // default implementation does nothing
     }
 
-    private ConvertibleAmount sortForBestResult(List<ConvertibleAmount> convertedList) {
+    public ConvertibleAmount sortForBestResult(List<ConvertibleAmount> convertedList) {
         if (convertedList.size() == 1) {
             return convertedList.get(0);
         }
@@ -141,14 +142,18 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     protected List<ConversionFactor> selfScalingFactors(List<ConversionFactor> factors, UnitFlavor flavor) {
         return factors.stream()
                 .map(ConversionFactor::getToUnit)
+                .distinct()
                 .filter(u -> ConversionTools.hasFlavor(u, flavor))
                 .map(SimpleConversionFactor::passThroughFactor)
-                .distinct()
                 .collect(Collectors.toList());
     }
 
     public ConversionSpec getSource() {
         return source;
+    }
+
+    public List<ConversionSpec> getAllSources() {
+        return Arrays.asList(getSource(), getTarget());
     }
 
     protected ConversionSpec getTarget() {

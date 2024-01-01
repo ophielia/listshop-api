@@ -144,6 +144,8 @@ public class ConversionServiceImpl implements ConversionService {
         return assembleHandlerChain(linkToBefore, handlers, i - 1);
     }
 
+
+
     private List<ConversionHandler> assembleHandlerList(ConversionSpec source, ConversionSpec target, List<ConversionHandler> handlers, int iteration) throws ConversionPathException {
         // look for direct match
         ConversionHandler directMatch = findHandlerMatch(source, target);
@@ -160,15 +162,23 @@ public class ConversionServiceImpl implements ConversionService {
         // look for step matches
         for (ConversionHandler handler : handlerList) {
             if (handler.convertsTo(target)) {
-                List<ConversionHandler> foundList = assembleHandlerList(source, handler.getSource(), handlers, iteration + 1);
-                if ( !foundList.isEmpty()) {
-                    foundList.add(handler);
-                    return foundList;
+                List<ConversionSpec> potentialTargets = handler.getAllSources().stream()
+                        .filter(pt -> !pt.equals(target)).collect(Collectors.toList());
+
+                for (ConversionSpec iterationTarget: potentialTargets) {
+                    List<ConversionHandler> foundList = assembleHandlerList(source,iterationTarget, handlers, iteration + 1);
+                    if ( !foundList.isEmpty()) {
+                        foundList.add(handler);
+                        return foundList;
+                    }
                 }
+
             }
         }
         return new ArrayList<>();
     }
+
+
 
     private ConversionHandler findHandlerMatch(ConversionSpec source, ConversionSpec target) {
         return handlerList.stream()

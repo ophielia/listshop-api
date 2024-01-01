@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,6 +61,33 @@ public class HybridForDishHandler extends AbstractOneWayConversionHandler {
             throw new ExceedsAllowedScaleException(message);
         }
     }
+
+    @Override
+    public ConvertibleAmount sortForBestResult(List<ConvertibleAmount> convertedList) {
+        // for hybrids, we want to return hybrid if possible, and otherwise
+        // the equivalant as a larger measure.
+
+        // <= 8 T. should return hybrid, and anything else non-hybrid
+
+        // because fluid ounces are so close to teaspoons and tablespoons in size, we
+        // can't count on the hybrids always being returned as the nearest element
+
+        // so - we'll check for max hybrid size
+        // if <= 8, we'll return that as the best amount
+        List<ConvertibleAmount> onlyHybrids = convertedList.stream()
+                .filter(ca ->ca.getUnit().getType().equals(UnitType.HYBRID))
+                .collect(Collectors.toList());
+        Double maxHybridQuantity = onlyHybrids.stream()
+                .max(Comparator.comparing(ConvertibleAmount::getQuantity))
+                .map(ConvertibleAmount::getQuantity)
+                .orElse(null);
+        if (maxHybridQuantity != null && maxHybridQuantity <= 8) {
+            return super.sortForBestResult(onlyHybrids);
+        }
+        // otherwise, we'll return the standard sort
+        return super.sortForBestResult(convertedList);
+    }
+
 
 }
 

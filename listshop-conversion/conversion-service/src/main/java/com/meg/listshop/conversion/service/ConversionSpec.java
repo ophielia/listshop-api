@@ -53,42 +53,50 @@ public class ConversionSpec {
 
 
     public static ConversionSpec fromContext(ConversionContext context, UnitEntity source) {
-        UnitType specUnitType = context.getUnitType();
-        UnitSubtype specUnitSubtype;
+        UnitType specUnitType = unitTypeForContext(context, source, true);
+        UnitSubtype specUnitSubtype = unitSubtypeForContext(context,source,true);
 
-        if (source.getType().equals(UnitType.SPECIAL)) {
-            specUnitSubtype = UnitSubtype.NONE;
-        } else if (source.getType().equals(UnitType.HYBRID) &&
-                context.getContextType().equals(ConversionContextType.Dish)) {
-            specUnitType = UnitType.HYBRID;
-            specUnitSubtype = UnitSubtype.NONE;
-        } else if (context.getContextType().equals(ConversionContextType.List) &&
-                source.isLiquid()) {
-            specUnitSubtype = UnitSubtype.VOLUME;
-        } else if (context.getContextType().equals(ConversionContextType.List) &&
-                !source.isLiquid()) {
-            specUnitSubtype = UnitSubtype.WEIGHT;
-        } else {
-            specUnitSubtype = source.getSubtype();
-        }
-
-        return new ConversionSpec(null, specUnitType, specUnitSubtype, flavorsForContextAndSource(context, source));
+        return new ConversionSpec(null, specUnitType, specUnitSubtype, flavorsForContext(context));
     }
 
     public static ConversionSpec retryFromContext(ConversionContext context, UnitEntity source) {
+        UnitType specUnitType = unitTypeForContext(context, source, false);
+        UnitSubtype specUnitSubtype = unitSubtypeForContext(context,source,false);
+
+        return new ConversionSpec(null, specUnitType, specUnitSubtype, flavorsForContext(context));
+    }
+
+    public static UnitType unitTypeForContext(ConversionContext context, UnitEntity source, boolean allowsHybrid) {
         UnitType specUnitType = context.getUnitType();
+
+        if (allowsHybrid &&
+                source.getType().equals(UnitType.HYBRID) &&
+                context.getContextType().equals(ConversionContextType.Dish)) {
+            specUnitType = UnitType.HYBRID;
+        }
+
+        return specUnitType;
+    }
+
+    public static UnitSubtype unitSubtypeForContext(ConversionContext context, UnitEntity source, boolean allowsHybrid) {
         UnitSubtype specUnitSubtype;
 
         if (source.getType().equals(UnitType.SPECIAL)) {
             specUnitSubtype = UnitSubtype.NONE;
-        }  else if (source.getType().equals(UnitType.HYBRID) &&
+        }  else if (!allowsHybrid &&
+                source.getType().equals(UnitType.HYBRID) &&
                 context.getContextType().equals(ConversionContextType.Dish) &&
                 source.isLiquid()) {
             specUnitSubtype = UnitSubtype.VOLUME;
-        }  else if (source.getType().equals(UnitType.HYBRID) &&
+        }  else if (!allowsHybrid &&
+                source.getType().equals(UnitType.HYBRID) &&
                 context.getContextType().equals(ConversionContextType.Dish) &&
                 !source.isLiquid()) {
             specUnitSubtype = UnitSubtype.WEIGHT;
+        } else if (allowsHybrid &&
+                source.getType().equals(UnitType.HYBRID) &&
+                context.getContextType().equals(ConversionContextType.Dish)) {
+            specUnitSubtype = UnitSubtype.NONE;
         } else if (context.getContextType().equals(ConversionContextType.List) &&
                 source.isLiquid()) {
             specUnitSubtype = UnitSubtype.VOLUME;
@@ -99,10 +107,11 @@ public class ConversionSpec {
             specUnitSubtype = source.getSubtype();
         }
 
-        return new ConversionSpec(null, specUnitType, specUnitSubtype, flavorsForContextAndSource(context, source));
+        return specUnitSubtype;
     }
 
-    private static Set<UnitFlavor> flavorsForContextAndSource(ConversionContext context, UnitEntity source) {
+
+    private static Set<UnitFlavor> flavorsForContext(ConversionContext context) {
         ConversionContextType conversionContextType = context.getContextType();
         Set<UnitFlavor> flavors = new HashSet<>();
 

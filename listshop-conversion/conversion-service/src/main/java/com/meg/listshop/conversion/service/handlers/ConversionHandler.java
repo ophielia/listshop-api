@@ -5,6 +5,8 @@ import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 
+import java.util.List;
+
 public interface ConversionHandler {
 
 
@@ -15,4 +17,5 @@ public interface ConversionHandler {
     ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException, ExceedsAllowedScaleException;
 
     ConversionSpec getSource();
+    List<ConversionSpec> getAllSources();
 }
