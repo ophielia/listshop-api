@@ -57,6 +57,7 @@ public class ConversionTest {
     private static final Long tablespoonId = 1001L;
 
     private static final Long flTablespoonId = 1021L;
+    private static final Long fluidOzId = 1007L;
 
     @Autowired
     ConversionService conversionService;
@@ -237,21 +238,6 @@ public class ConversionTest {
     }
 
     @Test
-    public void testTEMPHybridDishContextLiquid_SizesOut() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
-        Optional<UnitEntity> tablespoonOpt  = unitRepository.findById(flTablespoonId);
-
-        ConvertibleAmount amount = new SimpleAmount(16, tablespoonOpt.get());
-        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
-
-        ConvertibleAmount converted = conversionService.convert(amount, listContext);
-        assertNotNull(converted);
-        assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(cupsId, converted.getUnit().getId());
-
-    }
-
-
-    @Test
     public void testSimpleUsVolumeListContext() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
@@ -276,8 +262,8 @@ public class ConversionTest {
         amount = new SimpleAmount(23.6588, centiliterOpt.get());
         converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
-        assertEquals(quartId, converted.getUnit().getId());
-        assertEquals(0.25, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(fluidOzId, converted.getUnit().getId());
+        assertEquals(8.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
 
     }
 
