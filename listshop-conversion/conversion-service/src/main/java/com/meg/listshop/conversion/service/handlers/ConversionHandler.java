@@ -18,4 +18,7 @@ public interface ConversionHandler {
 
     ConversionSpec getSource();
     List<ConversionSpec> getAllSources();
+
+    ConversionSpec getTarget();
+
 }

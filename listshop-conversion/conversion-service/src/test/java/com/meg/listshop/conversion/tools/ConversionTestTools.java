@@ -1,5 +1,6 @@
 package com.meg.listshop.conversion.tools;
 
+import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
@@ -138,5 +139,13 @@ public class ConversionTestTools {
 
     public static double roundToHundredths(double value) {
         return Math.round(value * 100D) / 100D;
+    }
+
+    public static ConversionFactorEntity makeConversionFactorEntity(UnitEntity fromUnit, UnitEntity toUnit, double factor) {
+        ConversionFactorEntity entity = new ConversionFactorEntity();
+        entity.setFromUnit(fromUnit);
+        entity.setToUnit(toUnit);
+        entity.setFactor(factor);
+        return entity;
     }
 }

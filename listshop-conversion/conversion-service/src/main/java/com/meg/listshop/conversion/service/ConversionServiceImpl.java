@@ -2,7 +2,9 @@ package com.meg.listshop.conversion.service;
 
 
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.*;
+import com.meg.listshop.conversion.data.pojo.ConversionContext;
+import com.meg.listshop.conversion.data.pojo.UnitFlavor;
+import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
@@ -13,10 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +34,7 @@ public class ConversionServiceImpl implements ConversionService {
     public ConvertibleAmount convert(ConvertibleAmount amount, UnitType domain) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         LOG.debug("Beginning convert for domain [{}], amount [{}]", domain, amount);
         ConversionSpec source = createConversionSpec(amount.getUnit());
-        ConversionSpec target = ConversionSpec.opposingSpec(source);
+        ConversionSpec target = ConversionSpec.opposingSpec(source, domain);
 
         if (checkTargetEqualsSource(source, target)) {
             LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
@@ -110,15 +109,23 @@ public class ConversionServiceImpl implements ConversionService {
             return chainMap.get(conversionKey);
         }
 
+        for (ConversionHandler handler : handlerList) {
+            LOG.info("handler handles: [{}]", handler.getClass().getName());
+            LOG.info("...: source [{}]", handler.getAllSources());
+            LOG.info("...: target [{}]", handler.getTarget());
+
+        }
+
         HandlerChain newChain = createConversionChain(source, target);
         chainMap.put(conversionKey, newChain);
         return newChain;
     }
 
     private HandlerChain createConversionChain(ConversionSpec sourceSpec, ConversionSpec targetSpec) throws ConversionPathException {
-        LOG.trace("Creating chain for source: [{}], target [{}]", sourceSpec, targetSpec);
+        LOG.info("Creating chain for source: [{}], target [{}]", sourceSpec, targetSpec);
         // assemble handler chain list
-        List<ConversionHandler> handlers = assembleHandlerList(sourceSpec, targetSpec, new ArrayList<>(), 0);
+        Set<HandlerChainKey> checkedPairs = new HashSet<>();
+        List<ConversionHandler> handlers = assembleHandlerList(sourceSpec, targetSpec, new ArrayList<>(), 0, checkedPairs);
 
         // convert list into handler chain
         if ( handlers.isEmpty()) {
@@ -145,16 +152,17 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
 
-
-    private List<ConversionHandler> assembleHandlerList(ConversionSpec source, ConversionSpec target, List<ConversionHandler> handlers, int iteration) throws ConversionPathException {
+    private List<ConversionHandler> assembleHandlerList(ConversionSpec source, ConversionSpec target, List<ConversionHandler> handlers, int iteration, Set<HandlerChainKey> checkedPairs) throws ConversionPathException {
+        LOG.info(". iteration: [{}]", iteration);
+        LOG.info(".... checking source: [{}]", source);
+        LOG.info(".... checking target: [{}]", target);
         // look for direct match
         ConversionHandler directMatch = findHandlerMatch(source, target);
         if (directMatch != null) {
             handlers.add(0, directMatch);
             return handlers;
-        }
+        } else if (iteration > handlerList.size()) {
         // check for too many iterations
-        if (iteration > handlerList.size()) {
             String message = String.format("No handler chain can be assembled for fromUnit: %s toUnit: %s", source, target);
             throw new ConversionPathException(message);
         }
@@ -162,15 +170,24 @@ public class ConversionServiceImpl implements ConversionService {
         // look for step matches
         for (ConversionHandler handler : handlerList) {
             if (handler.convertsTo(target)) {
+                LOG.info(".... ... handlere: [{}]", handler.getClass().getName());
+                LOG.info(".... ... matches target: [{}]", target);
                 List<ConversionSpec> potentialTargets = handler.getAllSources().stream()
                         .filter(pt -> !pt.equals(target)).collect(Collectors.toList());
 
                 for (ConversionSpec iterationTarget: potentialTargets) {
-                    List<ConversionHandler> foundList = assembleHandlerList(source,iterationTarget, handlers, iteration + 1);
+                    if (checkedPairs.contains(new HandlerChainKey(source, target))) {
+                        LOG.info(".... ... ... skipping pair: [{}]", source);
+                        LOG.info(".... ... ... skipping pair: [{}]", target);
+                        continue;
+                    }
+                    checkedPairs.add(new HandlerChainKey(source, target));
+                    // skip if already checked
+                    List<ConversionHandler> foundList = assembleHandlerList(source, iterationTarget, handlers, iteration + 1, checkedPairs);
                     if ( !foundList.isEmpty()) {
                         foundList.add(handler);
                         return foundList;
-                    }
+                    }        // add pair to checkedPair
                 }
 
             }

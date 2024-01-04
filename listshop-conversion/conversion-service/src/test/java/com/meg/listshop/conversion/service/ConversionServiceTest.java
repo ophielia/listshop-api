@@ -39,8 +39,8 @@ class ConversionServiceTest {
         usQuart = ConversionTestTools.makeUSUnit(3L, UnitSubtype.VOLUME);
         usCups = ConversionTestTools.makeUSUnit(6L, UnitSubtype.VOLUME);
         usCups.setLiquid(true);
-        hybridTeaspoon = ConversionTestTools.makeHybridUnit(7L, UnitSubtype.NONE);
-        hybridTablespoon = ConversionTestTools.makeHybridUnit(8L, UnitSubtype.NONE);
+        hybridTeaspoon = ConversionTestTools.makeHybridUnit(7L, UnitSubtype.LIQUID);
+        hybridTablespoon = ConversionTestTools.makeHybridUnit(8L, UnitSubtype.LIQUID);
         metricLiter = ConversionTestTools.makeMetricUnit(4L, UnitSubtype.VOLUME);
 
         ConversionHandler metricToMetricWeight = new ConversionHandlerBuilder()

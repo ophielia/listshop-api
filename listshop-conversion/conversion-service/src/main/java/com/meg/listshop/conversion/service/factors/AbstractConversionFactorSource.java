@@ -11,21 +11,21 @@ import java.util.List;
 public abstract class AbstractConversionFactorSource implements ConversionFactorSource {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractConversionFactorSource.class);
-    private List<ConversionFactor> factors;
+    private final List<ConversionFactor> factors;
 
     private boolean oneWay;
 
-    public AbstractConversionFactorSource(List<ConversionFactor> factors) {
+    protected  AbstractConversionFactorSource(List<ConversionFactor> factors) {
         this.factors = factors;
     }
 
-    public AbstractConversionFactorSource(List<ConversionFactor> factors, boolean oneWay) {
+    protected AbstractConversionFactorSource(List<ConversionFactor> factors, boolean oneWay) {
         this.factors = factors;
         this.oneWay = oneWay;
     }
 
     @Override
-    public List<ConversionFactor> getFactors(Long unitId) {
+    public List<ConversionFactor> getFactors(Long unitId, Long tagId) {
         LOG.trace("... getting factors for unitId: [{}], oneWay: [{}]", unitId, oneWay);
         List<ConversionFactor> results = new ArrayList<>();
         // go through factors
@@ -54,8 +54,8 @@ public abstract class AbstractConversionFactorSource implements ConversionFactor
     }
 
     private boolean isExactMatch(ConversionFactor factor, Long fromUnitId, Long toUnitId) {
-        return ((factor.getFromUnit().getId().equals(fromUnitId) &&
-                factor.getToUnit().getId().equals(toUnitId))) ||
+        return (factor.getFromUnit().getId().equals(fromUnitId) &&
+                factor.getToUnit().getId().equals(toUnitId)) ||
                 (factor.getFromUnit().getId().equals(toUnitId) &&
                         factor.getToUnit().getId().equals(fromUnitId));
     }

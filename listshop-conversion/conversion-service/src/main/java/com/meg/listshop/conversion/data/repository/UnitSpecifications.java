@@ -55,8 +55,7 @@ public class UnitSpecifications {
                     case ListUnit:
                         predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isListUnit"), true));
                         continue;
-                    case Liquid:
-                        predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isLiquid"), true));
+                    default:
                 }
             }
 
@@ -64,5 +63,13 @@ public class UnitSpecifications {
         };
     }
 
+    public static Specification<ConversionFactorEntity> matchingFromTagId(Long tagId) {
+        return (root, query, criteriaBuilder) -> {
+            ArrayList<Predicate> predicates = new ArrayList<>();
 
+            predicates.add(criteriaBuilder.equal(root.<String>get("tagId"), tagId));
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
 }

@@ -69,7 +69,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
             }
         }
         if (factors.isEmpty()) {
-            factors.addAll(conversionSource.getFactors(toConvert.getUnit().getId()));
+            factors.addAll(conversionSource.getFactors(toConvert.getUnit().getId(), toConvert.getTagId() ));
         }
 
         if (factors.isEmpty()) {
@@ -152,11 +152,12 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         return source;
     }
 
+
     public List<ConversionSpec> getAllSources() {
         return Arrays.asList(getSource(), getTarget());
     }
 
-    protected ConversionSpec getTarget() {
+    public ConversionSpec getTarget() {
         return target;
     }
 

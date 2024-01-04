@@ -38,12 +38,36 @@ public class ConversionSpec {
         return unitType;
     }
 
+    private static UnitType oppositeType(UnitType unitType, UnitType defaultType) {
+        if (Objects.requireNonNull(unitType) == UnitType.US) {
+            return UnitType.METRIC;
+        } else if (unitType == UnitType.METRIC) {
+            return UnitType.US;
+        }
+            return defaultType;
+
+
+    }
+
     public static ConversionSpec convertedFromUnit(UnitEntity unitSource) {
         return new ConversionSpec(null, oppositeType(unitSource.getType()), unitSource.getSubtype(), ConversionTools.flavorsForUnit(unitSource));
     }
 
     public static ConversionSpec opposingSpec(ConversionSpec sourceSpec) {
         return new ConversionSpec(null, oppositeType(sourceSpec.getUnitType()), sourceSpec.getUnitSubtype(), sourceSpec.getFlavors());
+    }
+
+    public static ConversionSpec opposingSpec(ConversionSpec sourceSpec, UnitType defaultType) {
+        return new ConversionSpec(null, oppositeType(sourceSpec.getUnitType(), defaultType), oppositeSubtype(sourceSpec.getUnitSubtype()), sourceSpec.getFlavors());
+    }
+
+    private static UnitSubtype oppositeSubtype(UnitSubtype unitSubtype) {
+        if (unitSubtype.equals(UnitSubtype.LIQUID)) {
+            return UnitSubtype.VOLUME;
+        } else if (unitSubtype.equals(UnitSubtype.SOLID)) {
+            return UnitSubtype.WEIGHT;
+        }
+        return unitSubtype;
     }
 
     public static ConversionSpec basicSpec(UnitType type, UnitSubtype subtype, UnitFlavor... flavors) {
@@ -85,18 +109,18 @@ public class ConversionSpec {
             specUnitSubtype = UnitSubtype.NONE;
         }  else if (!allowsHybrid &&
                 source.getType().equals(UnitType.HYBRID) &&
+                context.getContextType().equals(ConversionContextType.Dish)) {
+            specUnitSubtype = UnitSubtype.VOLUME;
+        } else if (allowsHybrid &&
+                source.getType().equals(UnitType.HYBRID) &&
                 context.getContextType().equals(ConversionContextType.Dish) &&
                 source.isLiquid()) {
-            specUnitSubtype = UnitSubtype.VOLUME;
-        }  else if (!allowsHybrid &&
+            specUnitSubtype = UnitSubtype.LIQUID;
+        } else if (allowsHybrid &&
                 source.getType().equals(UnitType.HYBRID) &&
                 context.getContextType().equals(ConversionContextType.Dish) &&
                 !source.isLiquid()) {
-            specUnitSubtype = UnitSubtype.WEIGHT;
-        } else if (allowsHybrid &&
-                source.getType().equals(UnitType.HYBRID) &&
-                context.getContextType().equals(ConversionContextType.Dish)) {
-            specUnitSubtype = UnitSubtype.NONE;
+            specUnitSubtype = UnitSubtype.SOLID;
         } else if (context.getContextType().equals(ConversionContextType.List) &&
                 source.isLiquid()) {
             specUnitSubtype = UnitSubtype.VOLUME;

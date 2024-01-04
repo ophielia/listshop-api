@@ -21,16 +21,16 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public class HybridVolumeHandler extends AbstractConversionHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(HybridVolumeHandler.class);
+public class HybridLiquidToUSVolumeHandler extends AbstractConversionHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(HybridLiquidToUSVolumeHandler.class);
 
 
     @Autowired
-    public HybridVolumeHandler(ConversionFactorRepository factorRepository) {
+    public HybridLiquidToUSVolumeHandler(ConversionFactorRepository factorRepository) {
         super();
-        LOG.info("initializing HybridVolumeHandler");
+        LOG.info("initializing HybridLiquidToUSVolumeHandler");
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.HYBRID, UnitSubtype.NONE);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.HYBRID, UnitSubtype.LIQUID);
         // make target
         ConversionSpec target = ConversionSpec.basicSpec(UnitType.US, UnitSubtype.VOLUME);
 

@@ -24,17 +24,17 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public class HybridForDishHandler extends AbstractOneWayConversionHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(HybridForDishHandler.class);
+public class HybridSolidForDishHandler extends AbstractOneWayConversionHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(HybridSolidForDishHandler.class);
 
 
     @Autowired
-    public HybridForDishHandler(ConversionFactorRepository factorRepository) {
+    public HybridSolidForDishHandler(ConversionFactorRepository factorRepository) {
         super();
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.HYBRID, UnitSubtype.NONE);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.HYBRID, UnitSubtype.SOLID);
         // make target
-        ConversionSpec target = ConversionSpec.basicSpec(UnitType.HYBRID, UnitSubtype.NONE, UnitFlavor.DishUnit);
+        ConversionSpec target = ConversionSpec.basicSpec(UnitType.HYBRID, UnitSubtype.SOLID, UnitFlavor.DishUnit);
 
         // initialize conversionSource
         List<ConversionFactorEntity> factorEntities = factorRepository.findAll(where(matchingFromWithSpec(source)));

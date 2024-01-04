@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-public class ConversionFactorSourceTest {
+ class ConversionFactorSourceTest {
 
     ConversionFactorSource sourceToTest;
 
@@ -41,13 +40,13 @@ public class ConversionFactorSourceTest {
 
     @Test
     void testGetFactors() {
-        List<ConversionFactor> resultList = sourceToTest.getFactors(1L);
+        List<ConversionFactor> resultList = sourceToTest.getFactors(1L, null );
         assertEquals(2, resultList.size(), "two factors should be returned");
         assertEquals(1.4,resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)
                 .sum() ,  "Sum should be 1.4");
 
-        resultList = sourceToTest.getFactors(4L);
+        resultList = sourceToTest.getFactors(4L, null );
         assertEquals(2, resultList.size(), "two factors should be returned");
         double sum = resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)

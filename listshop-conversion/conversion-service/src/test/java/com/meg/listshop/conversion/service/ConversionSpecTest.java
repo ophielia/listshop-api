@@ -108,7 +108,7 @@ class ConversionSpecTest {
     private UnitEntity makeHybridUnit(Long id) {
         UnitEntity unit = new UnitEntity();
         unit.setType(UnitType.HYBRID);
-        unit.setSubtype(UnitSubtype.NONE);
+        unit.setSubtype(UnitSubtype.LIQUID);
         unit.setId(id);
         return unit;
     }

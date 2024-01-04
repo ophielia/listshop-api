@@ -34,8 +34,8 @@ class ConversionServiceMockTest {
 
     @BeforeEach
     void setUp() {
-        hybridTeaspoon = ConversionTestTools.makeHybridUnit(7L, UnitSubtype.NONE);
-        hybridTablespoon = ConversionTestTools.makeHybridUnit(8L, UnitSubtype.NONE);
+        hybridTeaspoon = ConversionTestTools.makeHybridUnit(7L, UnitSubtype.LIQUID);
+        hybridTablespoon = ConversionTestTools.makeHybridUnit(8L, UnitSubtype.LIQUID);
 
         List<ConversionHandler> handlers = Arrays.asList(handlerOne, handlerTwo);
         service = new ConversionServiceImpl(handlers);
@@ -46,7 +46,7 @@ class ConversionServiceMockTest {
         ConvertibleAmount amount = new SimpleAmount(1, hybridTeaspoon);
         ConvertibleAmount resultingAmount = new SimpleAmount(2, hybridTablespoon);
         ConversionContext requestedContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
-        ConversionSpec sourceSpec = ConversionSpec.basicSpec(hybridTeaspoon.getId(), UnitType.HYBRID, UnitSubtype.NONE, Collections.emptySet());
+        ConversionSpec sourceSpec = ConversionSpec.basicSpec(hybridTeaspoon.getId(), UnitType.HYBRID, UnitSubtype.LIQUID, Collections.emptySet());
         ConversionSpec hybridSpec = ConversionSpec.fromContext(requestedContext, amount.getUnit());
         ConversionSpec retrySpec = ConversionSpec.fromContext(requestedContext, amount.getUnit());
 
