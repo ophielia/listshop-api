@@ -53,10 +53,6 @@ public class ConversionSpec {
         return new ConversionSpec(null, oppositeType(unitSource.getType()), unitSource.getSubtype(), ConversionTools.flavorsForUnit(unitSource));
     }
 
-    public static ConversionSpec opposingSpec(ConversionSpec sourceSpec) {
-        return new ConversionSpec(null, oppositeType(sourceSpec.getUnitType()), sourceSpec.getUnitSubtype(), sourceSpec.getFlavors());
-    }
-
     public static ConversionSpec opposingSpec(ConversionSpec sourceSpec, UnitType defaultType) {
         return new ConversionSpec(null, oppositeType(sourceSpec.getUnitType(), defaultType), oppositeSubtype(sourceSpec.getUnitSubtype()), sourceSpec.getFlavors());
     }
