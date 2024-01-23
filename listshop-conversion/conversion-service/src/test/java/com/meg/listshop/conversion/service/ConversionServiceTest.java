@@ -5,13 +5,18 @@ import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
+import com.meg.listshop.conversion.service.handlers.ChainConversionHandler;
 import com.meg.listshop.conversion.service.handlers.ConversionHandler;
-import com.meg.listshop.conversion.service.tools.ConversionHandlerBuilder;
+import com.meg.listshop.conversion.service.handlers.ScalingHandler;
+import com.meg.listshop.conversion.service.tools.ChainConversionHandlerBuilder;
+import com.meg.listshop.conversion.service.tools.ScalingConversionHandlerBuilder;
+import com.meg.listshop.conversion.service.tools.StandardConversionHandlerBuilder;
 import com.meg.listshop.conversion.tools.ConversionTestTools;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,26 +48,31 @@ class ConversionServiceTest {
         hybridTablespoon = ConversionTestTools.makeHybridUnit(8L, UnitSubtype.LIQUID);
         metricLiter = ConversionTestTools.makeMetricUnit(4L, UnitSubtype.VOLUME);
 
-        ConversionHandler metricToMetricWeight = new ConversionHandlerBuilder()
+        ChainConversionHandler metricToUs = (ChainConversionHandler) new ChainConversionHandlerBuilder()
                 .withFactor(metricGrams, usOunces, 0.5)
                 .withFactor(metricGrams, usMadeUpCloser, 0.9)
-                .withFromSpec(UnitType.METRIC, UnitSubtype.WEIGHT)
-                .withToSpec(UnitType.US, UnitSubtype.WEIGHT)
+                .withFactor(metricLiter, usQuart, 0.6)
+                .withFromSpec(UnitType.METRIC, null)
+                .withToSpec(UnitType.US, null)
                 .build();
-        ConversionHandler metricToMetricVolume = new ConversionHandlerBuilder()
+
+        ScalingHandler listHandler =  new ScalingConversionHandlerBuilder()
+                .withFactor(usCups, usQuart, 0.25)
+                .withForScalar(ConversionContextType.List)
+                .withFromSpec(UnitType.METRIC, UnitSubtype.VOLUME)
+                .withToSpec(UnitType.US, UnitSubtype.VOLUME)
+                .withForScalar(ConversionContextType.List)
+                .build();
+        listHandler.setSkipNoConversionRequiredCheck(true);
+
+        ConversionHandler weightToVolume = new StandardConversionHandlerBuilder()
                 .withFactor(metricLiter, usQuart, 0.6)
                 .withFromSpec(UnitType.METRIC, UnitSubtype.VOLUME)
                 .withToSpec(UnitType.US, UnitSubtype.VOLUME)
                 .build();
-        ConversionHandler imperialListDestination = new ConversionHandlerBuilder()
-                .withFactor(usOunces, usQuart, 0.7)
-                .withFactor(usCups, usQuart, 4)
-                .withFromSpec(UnitType.US, UnitSubtype.VOLUME)
-                .withToSpec(UnitType.US, UnitSubtype.VOLUME, UnitFlavor.ListUnit)
-                .withOneWay()
-                .build();
-        List<ConversionHandler> handlers = Arrays.asList(metricToMetricVolume, metricToMetricWeight, imperialListDestination);
-        service = new ConversionServiceImpl(handlers);
+
+        List<ChainConversionHandler> handlers = Collections.singletonList( metricToUs);
+        service = new ConversionServiceImpl(handlers, Collections.singletonList(listHandler), weightToVolume);
     }
 
     @Test
@@ -111,10 +121,10 @@ class ConversionServiceTest {
     void testConvertByContext() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         // context - convert imperial volume to list unit (cups to quart)
         ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.US);
-        ConvertibleAmount amount = new SimpleAmount(1, usCups);
+        ConvertibleAmount amount = new SimpleAmount(4, usCups);
         ConvertibleAmount converted = service.convert(amount, context);
         assertNotNull(converted);
-        assertEquals(4, ConversionTestTools.roundToHundredths(converted.getQuantity()));
+        assertEquals(1, ConversionTestTools.roundToHundredths(converted.getQuantity()));
 
     }
 }

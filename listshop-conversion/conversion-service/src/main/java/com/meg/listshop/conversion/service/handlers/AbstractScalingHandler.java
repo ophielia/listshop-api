@@ -8,7 +8,6 @@ import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
-import com.meg.listshop.conversion.tools.ConversionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,21 +24,20 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
 
     private ConversionSpec source;
     private ConversionSpec target;
-    private ConversionFactorSource conversionSource;
 
     private double minRange = DEFAULT_MIN_RANGE;
     private double maxRange = DEFAULT_MAX_RANGE;
 
     protected AbstractScalingHandler(ConversionSpec source, ConversionSpec target, ConversionFactorSource conversionSource, ConversionContextType scalingType) {
-        this.source = source;
-        this.target = target;
-        this.conversionSource = conversionSource;
+        super(source, target, conversionSource);
+        this.scalerType = scalingType;
     }
 
     protected AbstractScalingHandler() {
 
     }
 
+    @Override
     public ConvertibleAmount sortForBestResult(List<ConvertibleAmount> convertedList) {
         if (convertedList.size() == 1) {
             return convertedList.get(0);
@@ -79,26 +77,32 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
                 .collect(Collectors.toList());
     }
 
+    @Override
     public ConversionSpec getSource() {
         return source;
     }
+
+    @Override
     public ConversionSpec getTarget() {
         return target;
     }
 
+    @Override
     public void setSource(ConversionSpec source) {
         this.source = source;
     }
 
+    @Override
     public void setTarget(ConversionSpec target) {
         this.target = target;
     }
 
-    public void setConversionSource(ConversionFactorSource conversionSource) {
-        this.conversionSource = conversionSource;
+    public ConversionContextType getScalerType() {
+        return scalerType;
     }
 
-
-
+    public void setScalerType(ConversionContextType scalerType) {
+        this.scalerType = scalerType;
+    }
 }
 

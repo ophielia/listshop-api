@@ -1,7 +1,6 @@
 package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
-import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
@@ -9,7 +8,6 @@ import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
-import com.meg.listshop.conversion.tools.ConversionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +22,8 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     private ConversionSpec source;
     private ConversionSpec target;
     private ConversionFactorSource conversionSource;
+
+    private boolean skipNoConversionRequiredCheck = false;
 
     private boolean doesScaling = false;
 
@@ -45,7 +45,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
 
     public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException, ExceedsAllowedScaleException {
-        if (doesntRequireConversion(toConvert, targetSpec)) {
+        if (!isSkipNoConversionRequiredCheck() && doesntRequireConversion(toConvert, targetSpec)) {
             LOG.debug("No conversion required for spec: [{}], amount [{}].", targetSpec, toConvert);
             return toConvert;
         }
@@ -59,7 +59,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
             }
         }
         if (factors.isEmpty()) {
-            factors.addAll(conversionSource.getFactors(toConvert.getUnit().getId(), toConvert.getTagId() ));
+            factors.addAll(this.conversionSource.getFactors(toConvert.getUnit().getId(), toConvert.getTagId()));
         }
 
         if (factors.isEmpty()) {
@@ -113,15 +113,6 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         return true;
     }
 
-    protected List<ConversionFactor> selfScalingFactors(List<ConversionFactor> factors) {
-        return factors.stream()
-                .map(ConversionFactor::getToUnit)
-                .distinct()
-                .filter(u -> ConversionTools.hasFlavor(u, flavor))
-                .map(SimpleConversionFactor::passThroughFactor)
-                .collect(Collectors.toList());
-    }
-
     public ConversionSpec getSource() {
         return source;
     }
@@ -142,6 +133,12 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         this.conversionSource = conversionSource;
     }
 
+    public boolean isSkipNoConversionRequiredCheck() {
+        return skipNoConversionRequiredCheck;
+    }
 
+    public void setSkipNoConversionRequiredCheck(boolean skipNoConversionRequiredCheck) {
+        this.skipNoConversionRequiredCheck = skipNoConversionRequiredCheck;
+    }
 }
 

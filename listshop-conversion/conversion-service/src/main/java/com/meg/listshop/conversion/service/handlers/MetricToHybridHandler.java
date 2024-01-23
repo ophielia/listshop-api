@@ -2,7 +2,6 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
-import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.service.ConversionSpec;
@@ -21,18 +20,18 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public class WeightHandler extends AbstractChainConversionHandler  {
-    private static final Logger LOG = LoggerFactory.getLogger(WeightHandler.class);
+public class MetricToHybridHandler extends AbstractChainConversionHandler  {
+    private static final Logger LOG = LoggerFactory.getLogger(MetricToHybridHandler.class);
 
 
     @Autowired
-    public WeightHandler(ConversionFactorRepository factorRepository) {
+    public MetricToHybridHandler(ConversionFactorRepository factorRepository) {
         super();
-        LOG.info("initializing WeightHandler");
+        LOG.info("initializing MetricToHybridHandler");
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.WEIGHT);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC,null);
         // make target
-        ConversionSpec target = ConversionSpec.basicSpec(UnitType.US, UnitSubtype.WEIGHT);
+        ConversionSpec target = ConversionSpec.basicSpec(UnitType.HYBRID, null);
 
         // initialize conversionSource
         List<ConversionFactorEntity> factors = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));

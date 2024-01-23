@@ -1,15 +1,17 @@
 package com.meg.listshop.conversion.service;
 
+import com.meg.listshop.conversion.data.pojo.UnitType;
+
 import java.util.Objects;
 
 public class HandlerChainKey {
 
-    private ConversionSpec target;
-    private ConversionSpec source;
+    private UnitType target;
+    private UnitType source;
 
     public HandlerChainKey(ConversionSpec source, ConversionSpec target) {
-        this.source = source;
-        this.target = target;
+        this.source = source.getUnitType();
+        this.target = target.getUnitType();
     }
 
     @Override

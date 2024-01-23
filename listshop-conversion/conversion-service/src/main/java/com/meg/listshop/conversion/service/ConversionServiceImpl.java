@@ -2,7 +2,10 @@ package com.meg.listshop.conversion.service;
 
 
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.*;
+import com.meg.listshop.conversion.data.pojo.ConversionContext;
+import com.meg.listshop.conversion.data.pojo.ConversionContextType;
+import com.meg.listshop.conversion.data.pojo.UnitSubtype;
+import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
@@ -21,7 +24,7 @@ import java.util.*;
 public class ConversionServiceImpl implements ConversionService {
     private static final Logger LOG = LoggerFactory.getLogger(ConversionServiceImpl.class);
 
-    HashMap<NewHandlerChainKey, NewHandlerChain> chainMap = new HashMap<>();
+    HashMap<HandlerChainKey, HandlerChain> chainMap = new HashMap<>();
     private final List<ChainConversionHandler> handlerList;
     private final List<ScalingHandler> scalerList;
 
@@ -30,7 +33,7 @@ public class ConversionServiceImpl implements ConversionService {
     @Autowired
     public ConversionServiceImpl(List<ChainConversionHandler> handlerList,
             List<ScalingHandler> scalerList,
-                                 @Qualifier("WeightVolumeHandler") ConversionHandler weightVolumeHandler) {
+            @Qualifier("WeightVolumeHandler") ConversionHandler weightVolumeHandler) {
         this.handlerList = handlerList;
         this.scalerList = scalerList;
         this.weightVolumeHandler = weightVolumeHandler;
@@ -47,25 +50,20 @@ public class ConversionServiceImpl implements ConversionService {
             return amount;
         }
 
-        return interiorConvertTwo(amount,target);
+        return doConversion(amount,target);
     }
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         LOG.debug("Beginning convert for context [{}], amount [{}]", context, amount);
-        ConversionSpec source = createConversionSpec(amount.getUnit());
-
         // get weight/volume target for context
-        UnitSubtype targetSubtype = context.getContextType().equals(ConversionContextType.List) ? UnitSubtype.WEIGHT:
+        UnitSubtype targetSubtype = context.getContextType().equals(ConversionContextType.List) &&
+                !amount.getUnit().isLiquid() ?
+                UnitSubtype.WEIGHT:
                 UnitSubtype.VOLUME;
-        ConversionSpec conversionSpec = ConversionSpec.basicSpec(context.getUnitType(), targetSubtype);
+        ConversionSpec conversionSpec = ConversionSpec.specForContext(context.getUnitType(), targetSubtype, context.getContextType());
 
-        if (checkTargetEqualsSource(source, conversionSpec)) {
-            LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, conversionSpec);
-            return amount;
-        }
-
-        return interiorConvertTwo(amount, conversionSpec);
+        return doConversion(amount, conversionSpec);
     }
 
     @Override
@@ -79,10 +77,10 @@ public class ConversionServiceImpl implements ConversionService {
             return amount;
         }
 
-        return interiorConvertTwo(amount, target);
+        return doConversion(amount, target);
     }
 
-    private ConvertibleAmount interiorConvertTwo(ConvertibleAmount amount,ConversionSpec conversionSpec) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
+    private ConvertibleAmount doConversion(ConvertibleAmount amount, ConversionSpec conversionSpec) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         ConvertibleAmount result = amount;
 
         // if conversion necessary, convert between weight and volume
@@ -107,7 +105,7 @@ public class ConversionServiceImpl implements ConversionService {
         //       two way handlers
         //       all units - volume / weight, etc.
         if (!result.getUnit().getType().equals(conversionSpec.getUnitType())) {
-            result = convertDomain(result, conversionSpec.getUnitType());
+            result = convertDomain(result, conversionSpec.getUnitType(),conversionSpec.getUnitId() );
         }
         // continuing with result - scaling
         //  ScalingHandler
@@ -133,10 +131,10 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
 
-    private ConvertibleAmount convertDomain(ConvertibleAmount amount, UnitType domainType) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
+    private ConvertibleAmount convertDomain(ConvertibleAmount amount, UnitType domainType, Long unitId) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         LOG.debug("Beginning convert for domain [{}], amount [{}]", domainType, amount);
         ConversionSpec source = createConversionSpec(amount.getUnit());
-        ConversionSpec target = ConversionSpec.basicSpec(domainType, null);
+        ConversionSpec target = ConversionSpec.basicSpec(unitId,domainType, null, new HashSet<>());
 
         if (source.getUnitType().equals(domainType)) {
             LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
@@ -165,19 +163,13 @@ public class ConversionServiceImpl implements ConversionService {
             return false;
         }
 
-        if (subtypes.contains(UnitSubtype.SOLID) &&
-              subtypes.contains(UnitSubtype.VOLUME)) {
-            return true;
-        }
-
-        return false;
+        return (subtypes.contains(UnitSubtype.SOLID) &&
+              subtypes.contains(UnitSubtype.VOLUME));
     }
-
-
 
     private ConvertibleAmount doDomainConversion(ConvertibleAmount amount, ConversionSpec source, ConversionSpec target) throws ConversionFactorException, ExceedsAllowedScaleException, ConversionPathException {
         // find or create handler chain for source / target
-        NewHandlerChain chain = getOrCreateChain(source, target);
+        HandlerChain chain = getOrCreateChain(source, target);
 
         // return converted amount
         return chain.process(amount, target);
@@ -187,20 +179,20 @@ public class ConversionServiceImpl implements ConversionService {
         return ConversionSpec.basicSpec(unit.getId(), unit.getType(), unit.getSubtype(), new HashSet<>());
     }
 
-    private NewHandlerChain getOrCreateChain(ConversionSpec source, ConversionSpec target) throws ConversionPathException {
-        NewHandlerChainKey conversionKey = new NewHandlerChainKey(source, target);
+    private HandlerChain getOrCreateChain(ConversionSpec source, ConversionSpec target) throws ConversionPathException {
+        HandlerChainKey conversionKey = new HandlerChainKey(source, target);
 
         if (chainMap.containsKey(conversionKey)) {
             LOG.trace("Found existing chain for key: [{}]", conversionKey);
             return chainMap.get(conversionKey);
         }
 
-        NewHandlerChain newChain = createConversionChain(source, target);
+        HandlerChain newChain = createConversionChain(source, target);
         chainMap.put(conversionKey, newChain);
         return newChain;
     }
 
-    private NewHandlerChain createConversionChain(ConversionSpec sourceSpec, ConversionSpec targetSpec) throws ConversionPathException {
+    private HandlerChain createConversionChain(ConversionSpec sourceSpec, ConversionSpec targetSpec) throws ConversionPathException {
         LOG.info("Creating chain for source: [{}], target [{}]", sourceSpec, targetSpec);
         // assemble handler chain list
         List<ChainConversionHandler> handlers = assembleHandlerList(sourceSpec, targetSpec, new ArrayList<>(), 0);
@@ -211,20 +203,20 @@ public class ConversionServiceImpl implements ConversionService {
             LOG.warn(message);
             throw new ConversionPathException(message);
         } else if (handlers.size() == 1) {
-            return new NewHandlerChain(handlers.get(0));
+            return new HandlerChain(handlers.get(0));
         }
 
         // we have more than one handler - we'll make a handler chain
-        return assembleHandlerChain(new NewHandlerChain(handlers.get(handlers.size() - 1)),
+        return assembleHandlerChain(new HandlerChain(handlers.get(handlers.size() - 1)),
                 handlers,
                 handlers.size() - 2);
     }
 
-    private NewHandlerChain assembleHandlerChain(NewHandlerChain handlerChain, List<ChainConversionHandler> handlers, int i) {
+    private HandlerChain assembleHandlerChain(HandlerChain handlerChain, List<ChainConversionHandler> handlers, int i) {
         if (i < 0) {
             return handlerChain;
         }
-        NewHandlerChain linkToBefore = new NewHandlerChain(handlers.get(i));
+        HandlerChain linkToBefore = new HandlerChain(handlers.get(i));
         linkToBefore.setNextLink(handlerChain);
         return assembleHandlerChain(linkToBefore, handlers, i - 1);
     }
@@ -260,7 +252,7 @@ public class ConversionServiceImpl implements ConversionService {
 
     private ChainConversionHandler findHandlerMatch(ConversionSpec source, ConversionSpec target) {
         return handlerList.stream()
-                .filter(h -> h.handlesDomain(source, target))
+                .filter(h -> h.handlesDomain(source.getUnitType(), target.getUnitType()))
                 .findFirst().orElse(null);
     }
 

@@ -1,27 +1,12 @@
 package com.meg.listshop.conversion.service.handlers;
 
-import com.meg.listshop.conversion.data.entity.ConversionFactor;
-import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
-import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitType;
-import com.meg.listshop.conversion.exceptions.ConversionFactorException;
-import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
-import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
-import com.meg.listshop.conversion.tools.ConversionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public abstract class AbstractChainConversionHandler extends AbstractConversionHandler {
+public abstract class AbstractChainConversionHandler extends AbstractConversionHandler implements ChainConversionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractChainConversionHandler.class);
 
     private ConversionSpec source;
@@ -54,9 +39,11 @@ public abstract class AbstractChainConversionHandler extends AbstractConversionH
     private boolean domainTypeMatches(UnitType source, ConversionSpec compareSpec) {
         return (source.equals(compareSpec.getUnitType()));
     }
+    @Override
     public ConversionSpec getSource() {
         return source;
     }
+    @Override
     public ConversionSpec getTarget() {
         return target;
     }
@@ -64,12 +51,16 @@ public abstract class AbstractChainConversionHandler extends AbstractConversionH
     public ConversionFactorSource getConversionSource() {
         return conversionSource;
     }
+
+    @Override
     public void setSource(ConversionSpec source) {
         this.source = source;
     }
+    @Override
     public void setTarget(ConversionSpec target) {
         this.target = target;
     }
+    @Override
     public void setConversionSource(ConversionFactorSource conversionSource) {
         this.conversionSource = conversionSource;
     }

@@ -6,8 +6,6 @@ import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 
-import java.util.List;
-
 public interface ChainConversionHandler extends ConversionHandler {
 
 
@@ -16,13 +14,12 @@ public interface ChainConversionHandler extends ConversionHandler {
     boolean convertsTo(UnitType domain);
 
     boolean handles(ConversionSpec fromUnit, ConversionSpec toUnit);
-    boolean handlesDomain(ConversionSpec fromUnit, ConversionSpec toUnit);
+
+    boolean handlesDomain(UnitType sourceDomain, UnitType targetDomain);
 
     ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException, ExceedsAllowedScaleException;
 
     ConversionSpec getSource();
-    List<ConversionSpec> getAllSources();
-
     ConversionSpec getTarget();
 
 }

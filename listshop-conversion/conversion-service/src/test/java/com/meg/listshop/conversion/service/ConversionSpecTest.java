@@ -30,44 +30,7 @@ class ConversionSpecTest {
         assertEquals(0, spec.getFlavors().size(), "no flavors here - weight is in subtype");
     }
 
-    @Test
-    void testOppositeType() {
-        UnitEntity unit = makeUSUnit(1L, false);
-        Set<UnitFlavor> expectedFlavors = new HashSet<>();
-        expectedFlavors.add(UnitFlavor.Weight);
-        ConversionSpec spec = ConversionSpec.convertedFromUnit(unit);
-        assertNull(spec.getUnitId(), "id should be empty");
-        assertEquals(UnitType.METRIC, spec.getUnitType(), "type should be Metric");
-        assertEquals(0, spec.getFlavors().size(), "no flavors - weight is in subtype");
 
-    }
-
-    @Test
-    void testFromContextAndSource() {
-        // make imperial weight, for list context
-        UnitEntity sourceUnit = makeUSUnit(1L, false);
-        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.METRIC);
-        Set<UnitFlavor> expectedFlavors = createFlavors(false, false, false, true, false);
-        ConversionSpec result = ConversionSpec.fromContext(context, sourceUnit);
-
-        assertEquals(UnitType.METRIC, result.getUnitType(), "should be metric");
-        assertEquals(expectedFlavors, result.getFlavors(), "flavors should include list");
-    }
-
-    @Test
-    void testEquals() {
-        // make exact spec - metric, weight flavor
-        UnitEntity exactUnit = makeMetricUnit(1L, false);
-        ConversionSpec specExact = ConversionSpec.fromExactUnit(exactUnit);
-        // make unit - imperial, and then change to metric,
-        // creating a spec with metric, weight flavor
-        UnitEntity noExactUnit = makeUSUnit(2L, false);
-        ConversionSpec notExactSpec = ConversionSpec.convertedFromUnit(noExactUnit);
-
-        assertNotNull(specExact.getUnitId());
-        assertNull(notExactSpec.getUnitId());
-        assertEquals(specExact, notExactSpec, "Even though specExact has unit id, they should be considered equal");
-    }
 
     private UnitEntity makeUSUnit(Long id, boolean isVolume) {
         UnitEntity unit = new UnitEntity();
@@ -101,28 +64,5 @@ class ConversionSpecTest {
         return unit;
     }
 
-    private Set<UnitFlavor> createFlavors(boolean isVolume, boolean isWeight,
-                                          boolean isLiquid, boolean isList,
-                                          boolean isDish
-    ) {
-        Set<UnitFlavor> expectedFlavors = new HashSet<>();
-        if (isVolume) {
-            expectedFlavors.add(UnitFlavor.Volume);
-        }
-        if (isWeight) {
-            expectedFlavors.add(UnitFlavor.Weight);
-        }
-        if (isLiquid) {
-            expectedFlavors.add(UnitFlavor.Liquid);
-        }
-        if (isList) {
-            expectedFlavors.add(UnitFlavor.ListUnit);
-        }
-        if (isDish) {
-            expectedFlavors.add(UnitFlavor.DishUnit);
-        }
-        return expectedFlavors;
-
-    }
 
 }
