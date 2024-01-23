@@ -1,6 +1,6 @@
 alter table factors add column tag_id BIGINT;
 
-
+alter table units add column is_multidomain BOOL;
 
 
 

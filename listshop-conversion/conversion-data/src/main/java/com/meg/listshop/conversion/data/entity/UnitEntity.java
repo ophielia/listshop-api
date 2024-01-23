@@ -38,6 +38,9 @@ public class UnitEntity {
     @Column(name = "IS_VOLUME")
     private boolean isVolume;
 
+    @Column(name = "IS_MULTIDOMAIN")
+    private boolean isMultiDomain;
+
     public Long getId() {
         return id;
     }
@@ -111,6 +114,14 @@ public class UnitEntity {
         this.subtype = subtype;
     }
 
+    public boolean isMultiDomain() {
+        return isMultiDomain;
+    }
+
+    public void setMultiDomain(boolean multiDomain) {
+        isMultiDomain = multiDomain;
+    }
+
     @Override
     public String toString() {
         return "UnitEntity{" +
@@ -123,6 +134,7 @@ public class UnitEntity {
                 ", isLiquid=" + isLiquid +
                 ", isWeight=" + isWeight +
                 ", isVolume=" + isVolume +
+                ", isMultiDomain=" + isMultiDomain +
                 '}';
     }
 }

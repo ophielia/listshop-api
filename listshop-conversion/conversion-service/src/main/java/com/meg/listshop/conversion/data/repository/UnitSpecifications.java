@@ -23,7 +23,10 @@ public class UnitSpecifications {
             ArrayList<Predicate> predicates = new ArrayList<>();
 
             predicates.add(criteriaBuilder.equal(fromUnit.<String>get("type"), spec.getUnitType()));
-            predicates.add(criteriaBuilder.equal(fromUnit.<String>get("subtype"), spec.getUnitSubtype()));
+            if (spec.getUnitSubtype() != null) {
+                predicates.add(criteriaBuilder.equal(fromUnit.<String>get("subtype"), spec.getUnitSubtype()));
+            }
+
 
             for (UnitFlavor flavor : spec.getFlavors()) {
                 if (Objects.requireNonNull(flavor) == UnitFlavor.DishUnit) {
@@ -45,7 +48,9 @@ public class UnitSpecifications {
             ArrayList<Predicate> predicates = new ArrayList<>();
 
             predicates.add(criteriaBuilder.equal(fromUnit.<String>get("type"), spec.getUnitType()));
+            if (spec.getUnitSubtype() != null) {
             predicates.add(criteriaBuilder.equal(fromUnit.<String>get("subtype"), spec.getUnitSubtype()));
+            }
 
             for (UnitFlavor flavor : spec.getFlavors()) {
                 switch (flavor) {

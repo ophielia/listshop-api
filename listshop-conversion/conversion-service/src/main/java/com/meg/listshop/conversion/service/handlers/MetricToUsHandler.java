@@ -21,18 +21,18 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public class WeightHandler extends AbstractChainConversionHandler  {
-    private static final Logger LOG = LoggerFactory.getLogger(WeightHandler.class);
+public class MetricToUsHandler extends AbstractChainConversionHandler  {
+    private static final Logger LOG = LoggerFactory.getLogger(MetricToUsHandler.class);
 
 
     @Autowired
-    public WeightHandler(ConversionFactorRepository factorRepository) {
+    public MetricToUsHandler(ConversionFactorRepository factorRepository) {
         super();
-        LOG.info("initializing WeightHandler");
+        LOG.info("initializing MetricToUsHandler");
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.WEIGHT);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC,null);
         // make target
-        ConversionSpec target = ConversionSpec.basicSpec(UnitType.US, UnitSubtype.WEIGHT);
+        ConversionSpec target = ConversionSpec.basicSpec(UnitType.US, null);
 
         // initialize conversionSource
         List<ConversionFactorEntity> factors = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));

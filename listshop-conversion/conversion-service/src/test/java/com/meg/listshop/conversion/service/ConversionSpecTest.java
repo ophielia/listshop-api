@@ -55,30 +55,6 @@ class ConversionSpecTest {
     }
 
     @Test
-    void testFromContextAndSourceHybrid() {
-        // make imperial weight, for list context
-        UnitEntity sourceUnit = makeHybridUnit(1L);
-        ConversionContext context = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC);
-        Set<UnitFlavor> expectedFlavors = createFlavors(false, false, false, false, true);
-
-        // call with allowHybrid = true
-        ConversionSpec result = ConversionSpec.fromContext(context, sourceUnit);
-
-        // conversion context dish and hybrid unit should result
-        // in a ConversionSpec with a type of hybrid, and a subtype of none.
-        assertEquals(UnitType.HYBRID, result.getUnitType(), "should be hybrid");
-        assertEquals(expectedFlavors, result.getFlavors(), "flavors should include dish");
-
-        // call with allowHybrid = false
-         result = ConversionSpec.retryFromContext(context, sourceUnit);
-
-        // we're supressing the hybrid so the result should be metric
-        assertEquals(UnitType.METRIC, result.getUnitType(), "should be metric");
-        assertEquals(expectedFlavors, result.getFlavors(), "flavors should include dish");
-
-    }
-
-    @Test
     void testEquals() {
         // make exact spec - metric, weight flavor
         UnitEntity exactUnit = makeMetricUnit(1L, false);

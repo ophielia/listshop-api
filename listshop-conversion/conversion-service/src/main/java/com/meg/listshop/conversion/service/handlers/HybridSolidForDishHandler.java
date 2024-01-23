@@ -39,7 +39,7 @@ public class HybridSolidForDishHandler extends AbstractOneWayConversionHandler {
         // initialize conversionSource
         List<ConversionFactorEntity> factorEntities = factorRepository.findAll(where(matchingFromWithSpec(source)));
         List<ConversionFactor> factors = factorEntities.stream().map(f -> (ConversionFactor) f).collect(Collectors.toList());
-        factors.addAll(selfScalingFactors(factors, UnitFlavor.DishUnit));
+        factors.addAll(selfScalingFactors(factors));
         ConversionFactorSource conversionSource = new SimpleConversionFactorSource(factors, true);
 
         // initialize in abstract
@@ -50,7 +50,6 @@ public class HybridSolidForDishHandler extends AbstractOneWayConversionHandler {
         setDoesScaling(true);
     }
 
-    @Override
     public void checkBestResult(ConvertibleAmount bestResult, ConversionSpec targetSpec) throws ExceedsAllowedScaleException {
         // we check if the scaled value resulted in a unit which is not a hybrid unit.
         // if this is true, we throw a ExceedsAllowedScaleException

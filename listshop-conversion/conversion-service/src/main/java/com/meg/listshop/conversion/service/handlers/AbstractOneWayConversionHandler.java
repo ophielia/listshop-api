@@ -6,6 +6,7 @@ import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated
 public abstract class AbstractOneWayConversionHandler extends AbstractConversionHandler {
 
 

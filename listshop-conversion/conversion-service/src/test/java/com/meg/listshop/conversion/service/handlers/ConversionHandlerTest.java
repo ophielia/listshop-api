@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ConversionHandlerTest {
 
-    ConversionHandler conversionHandler;
+    ChainConversionHandler conversionHandler;
 
     @BeforeEach
     void setUp() {
@@ -49,9 +49,9 @@ class ConversionHandlerTest {
         ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
         ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.METRIC).withUnitSubtype(UnitSubtype.WEIGHT).build();
         ConversionSpec notHandledSpec = new ConversionSpecBuilder().withUnitType(UnitType.METRIC).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
-        assertTrue(conversionHandler.handles(fromSpec, toSpec));
-        assertTrue(conversionHandler.handles(toSpec, fromSpec));
-        assertFalse(conversionHandler.handles(toSpec, notHandledSpec));
+        assertTrue(conversionHandler.handlesDomain(fromSpec, toSpec));
+        assertTrue(conversionHandler.handlesDomain(toSpec, fromSpec));
+        assertFalse(conversionHandler.handlesDomain(toSpec, notHandledSpec));
 
     }
 
@@ -78,7 +78,7 @@ class ConversionHandlerTest {
         // test basic - imperial to metric weight
         ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
         ConversionSpec flavorSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
-        assertTrue(flavorHandler.handles(fromSpec, flavorSpec));
+        assertTrue(flavorHandler.handlesDomain(fromSpec, flavorSpec));
 
     }
 
@@ -104,7 +104,7 @@ class ConversionHandlerTest {
         // test basic - imperial to metric weight
         ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
         ConversionSpec flavorSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
-        assertFalse(flavorHandler.handles(fromSpec, flavorSpec));
+        assertFalse(flavorHandler.handlesDomain(fromSpec, flavorSpec));
 
     }
 

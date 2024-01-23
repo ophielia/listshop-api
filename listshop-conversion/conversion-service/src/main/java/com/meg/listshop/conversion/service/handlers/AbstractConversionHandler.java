@@ -4,7 +4,6 @@ import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
@@ -15,25 +14,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class AbstractConversionHandler implements ConversionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractConversionHandler.class);
-    private static final double DEFAULT_MIN_RANGE = 0.4990;
-    private static final double DEFAULT_MAX_RANGE = 500;
 
     private ConversionSpec source;
     private ConversionSpec target;
     private ConversionFactorSource conversionSource;
 
     private boolean doesScaling = false;
-
-    private double minRange = DEFAULT_MIN_RANGE;
-    private double maxRange = DEFAULT_MAX_RANGE;
-    private boolean restrictRange;
 
     protected AbstractConversionHandler(ConversionSpec source, ConversionSpec target, ConversionFactorSource conversionSource) {
         this.source = source;
@@ -45,14 +37,12 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
     }
 
-    public boolean convertsTo(ConversionSpec spec) {
-        return target.equals(spec) || source.equals(spec);
-    }
-
     public boolean handles(ConversionSpec sourceSpec, ConversionSpec targetSpec) {
         return (source.equals(sourceSpec) && target.equals(targetSpec)) ||
                 (target.equals(sourceSpec) && source.equals(targetSpec));
     }
+
+
 
     public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException, ExceedsAllowedScaleException {
         if (doesntRequireConversion(toConvert, targetSpec)) {
@@ -90,15 +80,8 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         // sort for best result, according to sort type
         ConvertibleAmount bestResult = sortForBestResult(convertedList);
 
-        // for hybrids - some amounts may scale right out of the hybrid range
-        checkBestResult(bestResult, targetSpec);
-
         // return best result
         return new SimpleAmount(bestResult.getQuantity(), bestResult.getUnit(), toConvert);
-    }
-
-    public void checkBestResult(ConvertibleAmount bestResult, ConversionSpec targetSpec) throws ExceedsAllowedScaleException {
-        // default implementation does nothing
     }
 
     public ConvertibleAmount sortForBestResult(List<ConvertibleAmount> convertedList) {
@@ -113,16 +96,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         };
 
         convertedList.sort(comparator);
-        ConvertibleAmount nearestUnitResult = convertedList.get(0);
-        if (restrictRange) {
-            ConvertibleAmount best = convertedList.stream()
-                    .filter(a -> a.getQuantity() >= minRange && a.getQuantity() <= maxRange)
-                    .findFirst().orElse(null);
-            if (best!=null) {
-                return best;
-            }
-        }
-        return nearestUnitResult;
+        return convertedList.get(0);
     }
 
     private boolean doesntRequireConversion(ConvertibleAmount toConvert, ConversionSpec targetSpec) {
@@ -139,7 +113,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         return true;
     }
 
-    protected List<ConversionFactor> selfScalingFactors(List<ConversionFactor> factors, UnitFlavor flavor) {
+    protected List<ConversionFactor> selfScalingFactors(List<ConversionFactor> factors) {
         return factors.stream()
                 .map(ConversionFactor::getToUnit)
                 .distinct()
@@ -150,11 +124,6 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
     public ConversionSpec getSource() {
         return source;
-    }
-
-
-    public List<ConversionSpec> getAllSources() {
-        return Arrays.asList(getSource(), getTarget());
     }
 
     public ConversionSpec getTarget() {
@@ -173,20 +142,6 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         this.conversionSource = conversionSource;
     }
 
-    public void setRestrictRange() {
-        this.restrictRange = true;
-    }
 
-    public void setDoesScaling(boolean doesScaling) {
-        this.doesScaling = doesScaling;
-    }
-
-    public void setMinRange(double minRange) {
-        this.minRange = minRange;
-    }
-
-    public void setMaxRange(double maxRange) {
-        this.maxRange = maxRange;
-    }
 }
 
