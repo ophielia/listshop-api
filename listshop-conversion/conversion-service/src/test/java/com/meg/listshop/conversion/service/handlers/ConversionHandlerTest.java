@@ -9,6 +9,7 @@ import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
+import com.meg.listshop.conversion.service.tools.ChainConversionHandlerBuilder;
 import com.meg.listshop.conversion.service.tools.ConversionHandlerBuilder;
 import com.meg.listshop.conversion.service.tools.ConversionSpecBuilder;
 import com.meg.listshop.conversion.tools.ConversionTestTools;
@@ -24,7 +25,7 @@ class ConversionHandlerTest {
     @BeforeEach
     void setUp() {
         // make conversion source
-        conversionHandler = new ConversionHandlerBuilder()
+        conversionHandler = (ChainConversionHandler) new ChainConversionHandlerBuilder()
                 .withFactor(ConversionTestTools.makeUSUnit(1L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(2L, UnitSubtype.WEIGHT),
                         0.5)
@@ -49,15 +50,15 @@ class ConversionHandlerTest {
         ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
         ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.METRIC).withUnitSubtype(UnitSubtype.WEIGHT).build();
         ConversionSpec notHandledSpec = new ConversionSpecBuilder().withUnitType(UnitType.METRIC).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
-        assertTrue(conversionHandler.handlesDomain(fromSpec, toSpec));
-        assertTrue(conversionHandler.handlesDomain(toSpec, fromSpec));
-        assertFalse(conversionHandler.handlesDomain(toSpec, notHandledSpec));
+        assertTrue(conversionHandler.handlesDomain(fromSpec.getUnitType(), toSpec.getUnitType()));
+        assertTrue(conversionHandler.handlesDomain(toSpec.getUnitType(), fromSpec.getUnitType()));
+        assertFalse(conversionHandler.handlesDomain(toSpec.getUnitType(), notHandledSpec.getUnitType()));
 
     }
 
     @Test
     void testFlavorHandles() {
-        ConversionHandler flavorHandler = new ConversionHandlerBuilder()
+        ChainConversionHandler flavorHandler = (ChainConversionHandler) new ChainConversionHandlerBuilder()
                 .withFactor(ConversionTestTools.makeUSUnit(1L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(2L, UnitSubtype.WEIGHT),
                         0.5)
@@ -78,13 +79,13 @@ class ConversionHandlerTest {
         // test basic - imperial to metric weight
         ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
         ConversionSpec flavorSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
-        assertTrue(flavorHandler.handlesDomain(fromSpec, flavorSpec));
+        assertTrue(flavorHandler.handlesDomain(fromSpec.getUnitType(), flavorSpec.getUnitType()));
 
     }
 
     @Test
-    void testFlavorHandles_DoesntHandle() {
-        ConversionHandler flavorHandler = new ConversionHandlerBuilder()
+    void testDomainHandles_DoesntHandle() {
+        ChainConversionHandler flavorHandler = (ChainConversionHandler) new ChainConversionHandlerBuilder()
                 .withFactor(ConversionTestTools.makeUSUnit(1L, UnitSubtype.WEIGHT),
                         ConversionTestTools.makeMetricUnit(2L, UnitSubtype.WEIGHT),
                         0.5)
@@ -103,8 +104,8 @@ class ConversionHandlerTest {
 
         // test basic - imperial to metric weight
         ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
-        ConversionSpec flavorSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
-        assertFalse(flavorHandler.handlesDomain(fromSpec, flavorSpec));
+        ConversionSpec flavorSpec = new ConversionSpecBuilder().withUnitType(UnitType.UNIT).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
+        assertFalse(flavorHandler.handlesDomain(fromSpec.getUnitType(), flavorSpec.getUnitType()));
 
     }
 
@@ -142,4 +143,7 @@ class ConversionHandlerTest {
         assertEquals(1L, exactResult.getUnit().getId());
         assertEquals(UnitType.US, exactResult.getUnit().getType());
     }
+
+
+
 }
