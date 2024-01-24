@@ -51,6 +51,7 @@ public class ListHandler extends AbstractScalingHandler {
         // initialize in abstract
         setConversionSource(conversionSource);
         setScalerType(ConversionContextType.List);
+        setSkipNoConversionRequiredCheck(true);
     }
 
 }

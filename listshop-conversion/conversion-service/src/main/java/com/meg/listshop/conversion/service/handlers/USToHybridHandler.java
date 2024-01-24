@@ -20,18 +20,18 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public class MetricToHybridHandler extends AbstractChainConversionHandler  {
-    private static final Logger LOG = LoggerFactory.getLogger(MetricToHybridHandler.class);
+public class USToHybridHandler extends AbstractChainConversionHandler  {
+    private static final Logger LOG = LoggerFactory.getLogger(USToHybridHandler.class);
 
 
     @Autowired
-    public MetricToHybridHandler(ConversionFactorRepository factorRepository) {
+    public USToHybridHandler(ConversionFactorRepository factorRepository) {
         super();
-        LOG.info("initializing MetricToHybridHandler");
+        LOG.info("initializing USToHybridHandler");
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC,null);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.HYBRID,null);
         // make target
-        ConversionSpec target = ConversionSpec.basicSpec(UnitType.HYBRID, null);
+        ConversionSpec target = ConversionSpec.basicSpec(UnitType.US, null);
 
         // initialize conversionSource
         List<ConversionFactorEntity> factors = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));

@@ -51,6 +51,7 @@ public class DishHandler extends AbstractScalingHandler {
         // initialize in abstract
         setConversionSource(conversionSource);
         setScalerType(ConversionContextType.Dish);
+        setSkipNoConversionRequiredCheck(true);
     }
 
 }

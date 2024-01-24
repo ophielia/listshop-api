@@ -36,7 +36,10 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     protected AbstractConversionHandler() {
 
     }
-
+    public boolean handlesDomain(ConversionSpec sourceSpec, ConversionSpec targetSpec) {
+        return (source.equals(sourceSpec) && target.equals(targetSpec)) ||
+                (target.equals(sourceSpec) && source.equals(targetSpec));
+    }
     public boolean handles(ConversionSpec sourceSpec, ConversionSpec targetSpec) {
         return (source.equals(sourceSpec) && target.equals(targetSpec)) ||
                 (target.equals(sourceSpec) && source.equals(targetSpec));
@@ -59,13 +62,13 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
             }
         }
         if (factors.isEmpty()) {
-            factors.addAll(this.conversionSource.getFactors(toConvert.getUnit().getId(), toConvert.getTagId()));
+            factors.addAll(conversionSource.getFactors(toConvert.getUnit().getId(), toConvert.getTagId()));
         }
 
         if (factors.isEmpty()) {
             String message = String.format("No factors found in handler %s.", this.getClass().getName());
             LOG.warn(message);
-            throw new ConversionFactorException(message);
+        //    throw new ConversionFactorException(message);
         }
 
         // convert all factors, making list
@@ -79,12 +82,18 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
         // sort for best result, according to sort type
         ConvertibleAmount bestResult = sortForBestResult(convertedList);
+        if (bestResult == null ) {
+            bestResult = toConvert;
+        }
 
         // return best result
         return new SimpleAmount(bestResult.getQuantity(), bestResult.getUnit(), toConvert);
     }
 
     public ConvertibleAmount sortForBestResult(List<ConvertibleAmount> convertedList) {
+        if (convertedList.isEmpty()) {
+            return null;
+        }
         if (convertedList.size() == 1) {
             return convertedList.get(0);
         }

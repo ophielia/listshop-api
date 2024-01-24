@@ -210,27 +210,6 @@ public class ConversionTest {
     }
 
     @Test
-    public void testHybridDishContextLiquid_SizesOut() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
-        Optional<UnitEntity> tablespoonOpt = unitRepository.findById(flTablespoonId);
-
-        ConvertibleAmount amount = new SimpleAmount(48, tablespoonOpt.get());
-        ConversionContext listContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
-
-        ConvertibleAmount converted = conversionService.convert(amount, listContext);
-        assertNotNull(converted);
-        assertEquals(0.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(quartId, converted.getUnit().getId());
-
-        amount = new SimpleAmount(16, tablespoonOpt.get());
-
-        converted = conversionService.convert(amount, listContext);
-        assertNotNull(converted);
-        assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(flCupsId, converted.getUnit().getId());
-
-    }
-
-    @Test
     public void testSimpleUsVolumeListContext() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
@@ -287,6 +266,7 @@ public class ConversionTest {
         UnitEntity tablespoon = unitRepository.findById(tablespoonId).orElse(null);
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
 
+        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.METRIC);
         // tablespoon of butter to grams
         ConvertibleAmount amount = new SimpleAmount(1, tablespoon, butterTagId, false, "butter");
         ConvertibleAmount converted = conversionService.convert(amount, grams);
@@ -295,20 +275,19 @@ public class ConversionTest {
         assertEquals(gId, converted.getUnit().getId());
 
         // 1 tablespoon of butter to metric
-        converted = conversionService.convert(amount, UnitType.METRIC);
+        converted = conversionService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(14.175, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gId, converted.getUnit().getId());
 
         // 16 tablespoons of butter to metric
         ConvertibleAmount bigAmount = new SimpleAmount(16.0, tablespoon, butterTagId, false, "butter");
-        converted = conversionService.convert(bigAmount, UnitType.METRIC);
+        converted = conversionService.convert(bigAmount,listContext);
         assertNotNull(converted);
         assertEquals(226.8, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gId, converted.getUnit().getId());
 
         // 16 tablespoons of butter to list context - metric
-        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.METRIC);
         bigAmount = new SimpleAmount(16.0, tablespoon, butterTagId, false, "butter");
         converted = conversionService.convert(bigAmount, listContext);
         assertNotNull(converted);

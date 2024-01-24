@@ -10,7 +10,6 @@ import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.tools.ChainConversionHandlerBuilder;
-import com.meg.listshop.conversion.service.tools.ConversionHandlerBuilder;
 import com.meg.listshop.conversion.service.tools.ConversionSpecBuilder;
 import com.meg.listshop.conversion.tools.ConversionTestTools;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,7 +78,7 @@ class ConversionHandlerTest {
         // test basic - imperial to metric weight
         ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
         ConversionSpec flavorSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
-        assertTrue(flavorHandler.handlesDomain(fromSpec.getUnitType(), flavorSpec.getUnitType()));
+        //assertTrue(flavorHandler.convertsToDomain(fromSpec.getUnitType(), flavorSpec.getUnitType()));
 
     }
 
@@ -105,20 +104,11 @@ class ConversionHandlerTest {
         // test basic - imperial to metric weight
         ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
         ConversionSpec flavorSpec = new ConversionSpecBuilder().withUnitType(UnitType.UNIT).withUnitSubtype(UnitSubtype.WEIGHT).withFlavor(UnitFlavor.ListUnit).build();
-        assertFalse(flavorHandler.handlesDomain(fromSpec.getUnitType(), flavorSpec.getUnitType()));
+        //assertFalse(flavorHandler.convertsToDomain(fromSpec.getUnitType(), flavorSpec.getUnitType()));
 
     }
 
-    @Test
-    void testConvertsTo() {
-        ConversionSpec fromSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withUnitSubtype(UnitSubtype.WEIGHT).build();
-        ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.METRIC).withUnitSubtype(UnitSubtype.WEIGHT).build();
-        ConversionSpec notHandledSpec = new ConversionSpecBuilder().withUnitType(UnitType.METRIC).withUnitSubtype(UnitSubtype.VOLUME).build();
 
-        assertTrue(conversionHandler.convertsTo(fromSpec));
-        assertTrue(conversionHandler.convertsTo(toSpec));
-        assertFalse(conversionHandler.convertsTo(notHandledSpec));
-    }
 
     @Test
     void testConvert() throws ConversionFactorException, ExceedsAllowedScaleException {

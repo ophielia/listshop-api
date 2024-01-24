@@ -57,13 +57,30 @@ public class ConversionServiceImpl implements ConversionService {
     public ConvertibleAmount convert(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
         LOG.debug("Beginning convert for context [{}], amount [{}]", context, amount);
         // get weight/volume target for context
-        UnitSubtype targetSubtype = context.getContextType().equals(ConversionContextType.List) &&
-                !amount.getUnit().isLiquid() ?
-                UnitSubtype.WEIGHT:
-                UnitSubtype.VOLUME;
+        UnitSubtype targetSubtype = determineSubtypeFromContext(amount, context);
         ConversionSpec conversionSpec = ConversionSpec.specForContext(context.getUnitType(), targetSubtype, context.getContextType());
 
         return doConversion(amount, conversionSpec);
+    }
+
+    private UnitSubtype determineSubtypeFromContext(ConvertibleAmount toConvert, ConversionContext context) {
+        // context dish, toConvert hybrid - return subtype of toConvert
+        if (context.getContextType().equals(ConversionContextType.Dish) &&
+        toConvert.getUnit().getType().equals(UnitType.HYBRID)) {
+            return toConvert.getUnit().getSubtype();
+        }
+        if (context.getContextType().equals(ConversionContextType.Dish)) {
+        // context dish, default is volume
+            return UnitSubtype.VOLUME;
+        }
+        // context list, is liquid - return volume
+        if (        context.getContextType().equals(ConversionContextType.List) &&
+                toConvert.getUnit().isLiquid()) {
+            return UnitSubtype.VOLUME;
+        }
+        // context list, default is weight
+        return UnitSubtype.WEIGHT;
+
     }
 
     @Override
@@ -104,7 +121,8 @@ public class ConversionServiceImpl implements ConversionService {
         //       one handler for each domain (to metric) metric <=> us, metric <=> imperial
         //       two way handlers
         //       all units - volume / weight, etc.
-        if (!result.getUnit().getType().equals(conversionSpec.getUnitType())) {
+        //if (!result.getUnit().getType().equals(UnitType.HYBRID) && !result.getUnit().getType().equals(conversionSpec.getUnitType())) {
+        if ( !result.getUnit().getType().equals(conversionSpec.getUnitType())) {
             result = convertDomain(result, conversionSpec.getUnitType(),conversionSpec.getUnitId() );
         }
         // continuing with result - scaling
@@ -163,8 +181,7 @@ public class ConversionServiceImpl implements ConversionService {
             return false;
         }
 
-        return (subtypes.contains(UnitSubtype.SOLID) &&
-              subtypes.contains(UnitSubtype.VOLUME));
+        return subtypes.contains(UnitSubtype.SOLID);
     }
 
     private ConvertibleAmount doDomainConversion(ConvertibleAmount amount, ConversionSpec source, ConversionSpec target) throws ConversionFactorException, ExceedsAllowedScaleException, ConversionPathException {
@@ -229,15 +246,15 @@ public class ConversionServiceImpl implements ConversionService {
             return handlers;
         }
         // check for too many iterations
-        if (iteration > handlerList.size()) {
+        if (iteration >10) {
             String message = String.format("No handler chain can be assembled for fromUnit: %s toUnit: %s", source, target);
             throw new ConversionPathException(message);
         }
 
         // look for step matches
         for (ChainConversionHandler handler : handlerList) {
-            if (handler.convertsTo(target)) {
-                List<ChainConversionHandler> foundList = assembleHandlerList(source, handler.getSource(), handlers, iteration + 1);
+            if (handler.convertsToDomain(target.getUnitType())) {
+                List<ChainConversionHandler> foundList = assembleHandlerList(source, handler.getOppositeSource(target.getUnitType()), handlers, iteration + 1);
                     if ( !foundList.isEmpty()) {
                         foundList.add(handler);
                         return foundList;

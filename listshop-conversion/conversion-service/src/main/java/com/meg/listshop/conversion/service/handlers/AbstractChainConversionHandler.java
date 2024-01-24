@@ -11,33 +11,28 @@ public abstract class AbstractChainConversionHandler extends AbstractConversionH
 
     private ConversionSpec source;
     private ConversionSpec target;
-    private ConversionFactorSource conversionSource;
 
 
     protected AbstractChainConversionHandler(ConversionSpec source, ConversionSpec target, ConversionFactorSource conversionSource) {
         super(source,target, conversionSource);
         this.source = source;
         this.target = target;
-        this.conversionSource = conversionSource;
     }
     protected AbstractChainConversionHandler() {
 
     }
 
-    public boolean convertsTo(ConversionSpec spec) {
-        return target.equals(spec) || source.equals(spec);
-    }
-    public boolean convertsTo(UnitType domain) {
-        return target.getUnitType().equals(domain) || source.getUnitType().equals(domain);
-    }
 
+    public boolean convertsToDomain( UnitType targetDomain) {
+        return (domainTypeMatches(targetDomain,source) || domainTypeMatches(targetDomain,target) );
+    }
     public boolean handlesDomain(UnitType sourceDomain, UnitType targetDomain) {
         return (domainTypeMatches(sourceDomain,source) && domainTypeMatches(targetDomain,target) ) ||
                 (domainTypeMatches(sourceDomain,target) && domainTypeMatches(targetDomain,source) ) ;
     }
 
     private boolean domainTypeMatches(UnitType source, ConversionSpec compareSpec) {
-        return (source.equals(compareSpec.getUnitType()));
+        return source.equals(compareSpec.getUnitType());
     }
     @Override
     public ConversionSpec getSource() {
@@ -48,9 +43,6 @@ public abstract class AbstractChainConversionHandler extends AbstractConversionH
         return target;
     }
 
-    public ConversionFactorSource getConversionSource() {
-        return conversionSource;
-    }
 
     @Override
     public void setSource(ConversionSpec source) {
@@ -60,9 +52,12 @@ public abstract class AbstractChainConversionHandler extends AbstractConversionH
     public void setTarget(ConversionSpec target) {
         this.target = target;
     }
-    @Override
-    public void setConversionSource(ConversionFactorSource conversionSource) {
-        this.conversionSource = conversionSource;
+
+    public ConversionSpec getOppositeSource(UnitType unitType) {
+        if (unitType == getSource().getUnitType()) {
+            return getTarget();
+        }
+        return getSource();
     }
 
 }
