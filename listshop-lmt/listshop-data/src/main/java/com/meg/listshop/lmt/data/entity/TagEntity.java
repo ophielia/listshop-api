@@ -55,6 +55,7 @@ public class TagEntity {
     @Column(name = "is_group")
     private boolean isGroup;
 
+    @Deprecated
     private Boolean isVerified;
 
     private Double power;
@@ -67,6 +68,9 @@ public class TagEntity {
     private Date updatedOn;
     private Date categoryUpdatedOn;
     private Date removedOn;
+
+    @Column(name = "internal_status")
+    private Long internalStatus;
 
     @Transient
     private List<Long> childrenIds;
@@ -217,6 +221,14 @@ public class TagEntity {
         this.categories = categories;
     }
 
+    public Long getInternalStatus() {
+        return internalStatus;
+    }
+
+    public void setInternalStatus(Long internalStatus) {
+        this.internalStatus = internalStatus;
+    }
+
     public TagEntity copy() {
         var copy = new TagEntity();
         copy.setName(getName());
@@ -225,6 +237,7 @@ public class TagEntity {
         copy.setPower(getPower());
         copy.setReplacementTagId(getReplacementTagId());
         copy.setToDelete(isToDelete());
+        copy.setInternalStatus(getInternalStatus());
         return copy;
     }
 
@@ -282,6 +295,7 @@ public class TagEntity {
                 ", power=" + power +
                 ", childrenIds=" + childrenIds +
                 ", parentId=" + parentId +
+                ", internalStatus=" + internalStatus +
                 '}';
     }
 
