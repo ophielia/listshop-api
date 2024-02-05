@@ -45,5 +45,7 @@ public interface UserService {
 
     UserEntity getUserByListId(Long listId);
 
+    List<UserEntity> getUsersWithTags();
+
     AdminUserDetailsEntity getAdminUserById(Long userId);
 }

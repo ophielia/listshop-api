@@ -9,8 +9,7 @@ create table foods
     marker      varchar(255)
 );
 
-alter table foods
-    owner to postgres;
+--alter table foods    owner to postgres;
 
 create table food_conversions
 (
@@ -22,8 +21,7 @@ create table food_conversions
     unit_id     bigint
 );
 
-alter table food_conversions
-    owner to postgres;
+--alter table food_conversions  owner to postgres;
 
 create table food_categories
 (
@@ -32,8 +30,7 @@ create table food_categories
     name          varchar(512)
 );
 
-alter table food_categories
-    owner to postgres;
+--alter table food_categories    owner to postgres;
 
 alter table tag add column internal_status bigint;
 
