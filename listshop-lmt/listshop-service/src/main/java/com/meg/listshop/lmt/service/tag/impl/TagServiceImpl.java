@@ -238,7 +238,7 @@ public class TagServiceImpl implements TagService {
     }
 
     public List<TagInfoDTO> getTagInfoList(TagSearchCriteria criteria){
-        return null;
+        return tagInfoCustomRepository.findTagInfoByCriteria(criteria);
     }
 
 

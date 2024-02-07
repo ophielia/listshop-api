@@ -89,3 +89,9 @@ values  (1336, 0.0625, 1005, 1017),
         (1395, 0.33814203, 1007, 1015);
 
 insert into factors (factor_id, from_unit, to_unit, factor) select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 1000 as factor from units f,units t where lower(f.name) = 'kilogram' and lower(t.name) = 'gram';
+
+
+update tag t
+set is_group = true
+from test.public.tag_relation tr
+where tr.parent_tag_id = t.tag_id;

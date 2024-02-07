@@ -20,13 +20,13 @@ public interface AdminTagRestControllerApi {
 
 
     @GetMapping(value = "/category/list")
-    public ResponseEntity<TagListResource> getCategoryTags();
+     ResponseEntity<TagListResource> getCategoryTags();
 
     @PostMapping(value = "/search")
-    public ResponseEntity<TagListResource> findTags(@RequestBody PostSearchTags searchTags);
+     ResponseEntity<TagListResource> findTags(@RequestBody PostSearchTags searchTags);
 
     @GetMapping(value = "/standard/list")
-    public ResponseEntity<TagListResource> getStandardTagList(@RequestParam(value = "filter", required = false) String filter);
+     ResponseEntity<TagListResource> getStandardTagList(@RequestParam(value = "filter", required = false) String filter);
 
     @GetMapping(value = "/user/{userId}/list")
     ResponseEntity<TagListResource> getUserTagList(@PathVariable("userId") Long userId,

@@ -58,6 +58,14 @@ public class PostSearchTags {
         this.excludeStatuses = excludeStatuses;
     }
 
+    public List<String> getTagTypes() {
+        return tagTypes;
+    }
+
+    public void setTagTypes(List<String> tagTypes) {
+        this.tagTypes = tagTypes;
+    }
+
     @Override
     public String toString() {
         return "PostSearchTags{" +

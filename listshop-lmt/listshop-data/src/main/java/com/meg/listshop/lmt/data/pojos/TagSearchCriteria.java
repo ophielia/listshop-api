@@ -25,8 +25,12 @@ public class TagSearchCriteria {
         this.userId = userId;
         this.tagTypes = tagTypes;
         this.excludedStatuses = excludedStatuses;
-        this.includedStatuses = includedStatuses;
+        if (includedStatuses != null) {
+            this.includedStatuses = includedStatuses;
+        }
+        if (groupIncludeType != null) {
         this.groupIncludeType = groupIncludeType;
+        }
     }
 
     public TagSearchCriteria() {

@@ -123,7 +123,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
     public ResponseEntity<TagListResource> findTags(@RequestBody PostSearchTags searchTags) {
         //@PostMapping(value = "/search")
-TagSearchCriteria criteria = translateUserRequest(searchTags);
+        TagSearchCriteria criteria = translateUserRequest(searchTags);
         List<TagInfoDTO> infoTags = tagService.getTagInfoList(criteria);
         List<TagResource> resourceList = infoTags.stream()
                 .map(ModelMapper::toModel)
@@ -131,7 +131,6 @@ TagSearchCriteria criteria = translateUserRequest(searchTags);
                 .collect(Collectors.toList());
         var returnValue = new TagListResource(resourceList);
         System.out.println("returnValue: " + returnValue);
-        System.out.println("returnValue: ");
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
@@ -140,26 +139,58 @@ TagSearchCriteria criteria = translateUserRequest(searchTags);
         List<TagInternalStatus> excluded = stringsToTagInternalStatus(searchTags.getExcludeStatuses());
         Long userId = searchTags.getUserId();
         IncludeType groupIncludeType = stringToIncludeType(searchTags.getGroupIncludeType());
-        TagType tagType = stringToTagType(searchTags.getTagType());
+        List<TagType> tagTypes = toTagTypes(searchTags.getTagTypes());
 
-        TagSearchCriteria searchCriteria = new TagSearchCriteria(userId,
-                Collections.singletonList(tagType),
+        return  new TagSearchCriteria(userId,
+                tagTypes,
                 excluded,
                 included,
                 groupIncludeType);
-        return null;
     }
 
-    private TagType stringToTagType(String tagType) {
-        return null;
+    private List<TagType> toTagTypes(List<String> tagTypes) {
+        if (tagTypes == null) {
+            return new ArrayList<>();
+        }
+        return tagTypes.stream()
+                .map(TagType::valueOf)
+                .collect(Collectors.toList());
     }
 
     private IncludeType stringToIncludeType(String groupIncludeType) {
-        return IncludeType.IGNORE;
+        if (groupIncludeType == null) {
+            return IncludeType.IGNORE;
+        }
+        return IncludeType.valueOf(groupIncludeType);
     }
 
     private List<TagInternalStatus> stringsToTagInternalStatus(List<String> includeStatuses) {
-        return new ArrayList<>();
+        if (includeStatuses == null) {
+            return null;
+        }
+        return includeStatuses.stream()
+                .map(this::stringToInternalStatus)
+                .collect(Collectors.toList());
+    }
+
+    private TagInternalStatus stringToInternalStatus(String raw) {
+        if (raw == null) {
+            return null;
+        }
+        switch (raw) {
+            case "CHECKED":
+            return TagInternalStatus.CHECKED;
+            case "LIQUID_ASSIGNED":
+            return TagInternalStatus.LIQUID_ASSIGNED;
+            case "FOOD_ASSIGNED":
+            return TagInternalStatus.FOOD_ASSIGNED;
+            case "FOOD_VERIFIED":
+            return TagInternalStatus.FOOD_VERIFIED;
+            case "CATEGORY_ASSIGNED":
+            return TagInternalStatus.CATEGORY_ASSIGNED;
+
+        }
+        return null;
     }
 
 
