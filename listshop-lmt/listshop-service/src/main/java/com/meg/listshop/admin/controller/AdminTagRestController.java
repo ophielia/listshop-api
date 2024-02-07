@@ -1,11 +1,14 @@
 package com.meg.listshop.admin.controller;
 
+import com.meg.listshop.admin.model.PostSearchTags;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
+import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -16,9 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -80,9 +81,10 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
     public ResponseEntity<TagListResource> getStandardTagList(@RequestParam(value = "filter", required = false) String filter) {
+        //MM will need to revisit tag filter type here
         TagFilterType tagFilterTypeFilter = filter != null ? TagFilterType.valueOf(filter) : TagFilterType.All;
-        TagSearchCriteria criteria = new TagSearchCriteria()
-                .tagFilterType(tagFilterTypeFilter);
+        TagSearchCriteria criteria = new TagSearchCriteria();
+                //.tagFilterType(tagFilterTypeFilter);
 
         List<TagEntity> tagList = tagService.getTagList(criteria);
 
@@ -91,10 +93,11 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
     public ResponseEntity<TagListResource> getUserTagList(@PathVariable("userId") Long userId,
                                                           @RequestParam(value = "filter", required = false) String filter) {
+        //MM will need to revisit tag filter type here
         TagFilterType tagFilterTypeFilter = filter != null ? TagFilterType.valueOf(filter) : TagFilterType.All;
-        TagSearchCriteria criteria = new TagSearchCriteria()
-                .userId(userId)
-                .tagFilterType(tagFilterTypeFilter);
+        TagSearchCriteria criteria = new TagSearchCriteria();
+               // .userId(userId)
+               // .tagFilterType(tagFilterTypeFilter);
 
         List<TagEntity> tagList = tagService.getTagList(criteria);
 
@@ -110,6 +113,55 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         var returnValue = new TagListResource(resourceList);
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
+
+
+    public ResponseEntity<TagListResource> getCategoryTags() {
+//    @GetMapping(value = "/category/list")
+        return null;
+    }
+
+
+    public ResponseEntity<TagListResource> findTags(@RequestBody PostSearchTags searchTags) {
+        //@PostMapping(value = "/search")
+TagSearchCriteria criteria = translateUserRequest(searchTags);
+        List<TagInfoDTO> infoTags = tagService.getTagInfoList(criteria);
+        List<TagResource> resourceList = infoTags.stream()
+                .map(ModelMapper::toModel)
+                .map(TagResource::new)
+                .collect(Collectors.toList());
+        var returnValue = new TagListResource(resourceList);
+        System.out.println("returnValue: " + returnValue);
+        System.out.println("returnValue: ");
+        return new ResponseEntity<>(returnValue, HttpStatus.OK);
+    }
+
+    private TagSearchCriteria translateUserRequest(PostSearchTags searchTags) {
+        List<TagInternalStatus> included = stringsToTagInternalStatus(searchTags.getIncludeStatuses());
+        List<TagInternalStatus> excluded = stringsToTagInternalStatus(searchTags.getExcludeStatuses());
+        Long userId = searchTags.getUserId();
+        IncludeType groupIncludeType = stringToIncludeType(searchTags.getGroupIncludeType());
+        TagType tagType = stringToTagType(searchTags.getTagType());
+
+        TagSearchCriteria searchCriteria = new TagSearchCriteria(userId,
+                Collections.singletonList(tagType),
+                excluded,
+                included,
+                groupIncludeType);
+        return null;
+    }
+
+    private TagType stringToTagType(String tagType) {
+        return null;
+    }
+
+    private IncludeType stringToIncludeType(String groupIncludeType) {
+        return IncludeType.IGNORE;
+    }
+
+    private List<TagInternalStatus> stringsToTagInternalStatus(List<String> includeStatuses) {
+        return new ArrayList<>();
+    }
+
 
     public ResponseEntity<TagListResource> getUserTagListForGrid(@PathVariable("userId") Long userId) {
         UserEntity user = userService.getUserById(userId);

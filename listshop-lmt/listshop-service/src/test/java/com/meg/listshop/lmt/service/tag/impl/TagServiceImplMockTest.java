@@ -836,7 +836,7 @@ class TagServiceImplMockTest {
 
     private TagInfoDTO buildTagInfoDTO(Long tagId, String tagName,
                                        Double power, Long parentId) {
-        return new TagInfoDTO(tagId, tagName, "", power, 0L, TagType.Rating.name(), false, parentId, false);
+        return new TagInfoDTO(tagId, tagName, "", power, 0L, TagType.Rating, false, parentId, false);
 
     }
 

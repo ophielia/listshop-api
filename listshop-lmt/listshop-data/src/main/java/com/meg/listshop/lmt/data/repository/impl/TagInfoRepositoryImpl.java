@@ -112,7 +112,7 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
             Boolean toDelete = rs.getBoolean("to_delete");
 
             return new TagInfoDTO(
-                    id, name, description, power, userId, tagType, isGroup, parentId, toDelete
+                    id, name, description, power, userId, TagType.valueOf(tagType), isGroup, parentId, toDelete
             );
         }
     }

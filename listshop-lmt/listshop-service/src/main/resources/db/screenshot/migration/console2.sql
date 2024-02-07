@@ -84,3 +84,32 @@ insert into factors (factor_id, from_unit, to_unit, factor) select nextval('fact
 insert into factors (factor_id, from_unit, to_unit, factor) select nextval('factor_sequence') as newid, f.unit_id, t.unit_id, 0.33814203 as factor from units f,units t where lower(f.name) = 'centiliter' and lower(t.name) = 'fl oz';
 
 select * from factors;
+
+
+
+select tagrelatio0_.child_tag_id as col_0_0_,
+       tagentity1_.name          as col_1_0_,
+       tagentity1_.description   as col_2_0_,
+       tagentity1_.power         as col_3_0_,
+       tagentity1_.user_id       as col_4_0_
+from tag_relation tagrelatio0_
+         cross join tag tagentity1_
+where tagrelatio0_.child_tag_id = tagentity1_.tag_id;
+
+
+select tagrelatio0_.child_tag_id  as col_0_0_,
+       tagentity1_.name           as col_1_0_,
+       tagentity1_.description    as col_2_0_,
+       tagentity1_.power          as col_3_0_,
+       tagentity1_.user_id        as col_4_0_,
+       tagentity1_.tag_type       as col_5_0_,
+       tagentity1_.is_group       as col_6_0_,
+       tagrelatio0_.parent_tag_id as col_7_0_,
+       tagentity1_.to_delete      as col_8_0_
+from tag_relation tagrelatio0_
+         cross join tag tagentity1_
+where tagrelatio0_.child_tag_id = tagentity1_.tag_id
+  and tagentity1_.user_id=?
+  and tagentity1_.is_group=?
+  and (tagentity1_.tag_type in (?, ?))
+  and tagentity1_.to_delete = false

@@ -1,5 +1,6 @@
 package com.meg.listshop.admin.controller;
 
+import com.meg.listshop.admin.model.PostSearchTags;
 import com.meg.listshop.lmt.api.model.Tag;
 import com.meg.listshop.lmt.api.model.TagListResource;
 import com.meg.listshop.lmt.api.model.TagOperationPut;
@@ -17,6 +18,12 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/admin/tag")
 public interface AdminTagRestControllerApi {
 
+
+    @GetMapping(value = "/category/list")
+    public ResponseEntity<TagListResource> getCategoryTags();
+
+    @PostMapping(value = "/search")
+    public ResponseEntity<TagListResource> findTags(@RequestBody PostSearchTags searchTags);
 
     @GetMapping(value = "/standard/list")
     public ResponseEntity<TagListResource> getStandardTagList(@RequestParam(value = "filter", required = false) String filter);

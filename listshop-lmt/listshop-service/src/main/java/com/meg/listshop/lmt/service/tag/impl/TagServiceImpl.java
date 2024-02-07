@@ -237,6 +237,11 @@ public class TagServiceImpl implements TagService {
         return tagInfoCustomRepository.retrieveTagInfoByUser(userId, tagTypes);
     }
 
+    public List<TagInfoDTO> getTagInfoList(TagSearchCriteria criteria){
+        return null;
+    }
+
+
     public List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys) {
         return tagRepository.getStandardUserDuplicates(userId, tagKeys);
     }

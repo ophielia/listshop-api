@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.tag;
 
+import com.meg.listshop.admin.model.PostSearchTags;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
@@ -71,6 +72,8 @@ public interface TagService {
 
 
     List<TagInfoDTO> getTagInfoList(Long userId, List<TagType> tagTypes);
+
+    List<TagInfoDTO> getTagInfoList(TagSearchCriteria criteria);
 
     List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys);
 

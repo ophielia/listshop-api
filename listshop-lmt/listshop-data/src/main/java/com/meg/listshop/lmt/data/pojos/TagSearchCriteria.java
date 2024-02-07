@@ -3,6 +3,7 @@ package com.meg.listshop.lmt.data.pojos;
 import com.meg.listshop.lmt.api.model.TagFilterType;
 import com.meg.listshop.lmt.api.model.TagType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,10 +15,18 @@ public class TagSearchCriteria {
     private List<TagType> tagTypes;
     private TagFilterType tagFilterType;
 
-    public TagSearchCriteria(Long userId, List<TagType> tagTypes, TagFilterType tagFilterType) {
+    private List<TagInternalStatus> excludedStatuses = new ArrayList<>();
+    private List<TagInternalStatus> includedStatuses = new ArrayList<>();
+
+    private IncludeType groupIncludeType;
+
+
+    public TagSearchCriteria(Long userId, List<TagType> tagTypes, List<TagInternalStatus> excludedStatuses, List<TagInternalStatus> includedStatuses, IncludeType groupIncludeType) {
         this.userId = userId;
         this.tagTypes = tagTypes;
-        this.tagFilterType = tagFilterType;
+        this.excludedStatuses = excludedStatuses;
+        this.includedStatuses = includedStatuses;
+        this.groupIncludeType = groupIncludeType;
     }
 
     public TagSearchCriteria() {
@@ -27,26 +36,47 @@ public class TagSearchCriteria {
         return userId;
     }
 
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public List<TagType> getTagTypes() {
         return tagTypes;
+    }
+
+    public void setTagTypes(List<TagType> tagTypes) {
+        this.tagTypes = tagTypes;
     }
 
     public TagFilterType getTagFilterType() {
         return tagFilterType;
     }
 
-    public TagSearchCriteria userId(Long userId) {
-        this.userId = userId;
-        return this;
-    }
-
-    public TagSearchCriteria tagTypes(List<TagType> tagTypes) {
-        this.tagTypes = tagTypes;
-        return this;
-    }
-
-    public TagSearchCriteria tagFilterType(TagFilterType tagFilterType) {
+    public void setTagFilterType(TagFilterType tagFilterType) {
         this.tagFilterType = tagFilterType;
-        return this;
+    }
+
+    public List<TagInternalStatus> getExcludedStatuses() {
+        return excludedStatuses;
+    }
+
+    public void setExcludedStatuses(List<TagInternalStatus> excludedStatuses) {
+        this.excludedStatuses = excludedStatuses;
+    }
+
+    public List<TagInternalStatus> getIncludedStatuses() {
+        return includedStatuses;
+    }
+
+    public void setIncludedStatuses(List<TagInternalStatus> includedStatuses) {
+        this.includedStatuses = includedStatuses;
+    }
+
+    public IncludeType getGroupIncludeType() {
+        return groupIncludeType;
+    }
+
+    public void setGroupIncludeType(IncludeType groupIncludeType) {
+        this.groupIncludeType = groupIncludeType;
     }
 }
