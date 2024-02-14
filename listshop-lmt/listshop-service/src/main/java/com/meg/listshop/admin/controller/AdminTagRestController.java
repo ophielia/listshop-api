@@ -137,24 +137,24 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     private TagSearchCriteria translateUserRequest(PostSearchTags searchTags) {
         List<TagInternalStatus> included = stringsToTagInternalStatus(searchTags.getIncludeStatuses());
         List<TagInternalStatus> excluded = stringsToTagInternalStatus(searchTags.getExcludeStatuses());
-        Long userId = searchTags.getUserId();
+        Long userId = searchTags.getUserId() != null ? Long.valueOf(searchTags.getUserId()) : null;
         IncludeType groupIncludeType = stringToIncludeType(searchTags.getGroupIncludeType());
         List<TagType> tagTypes = toTagTypes(searchTags.getTagTypes());
-
+        String textFragment = searchTags.getTextFragment() == null || searchTags.getTextFragment().isEmpty() ?
+                null : searchTags.getTextFragment();
         return  new TagSearchCriteria(userId,
+                textFragment,
                 tagTypes,
                 excluded,
                 included,
                 groupIncludeType);
     }
 
-    private List<TagType> toTagTypes(List<String> tagTypes) {
+    private List<TagType> toTagTypes(List<TagType> tagTypes) {
         if (tagTypes == null) {
             return new ArrayList<>();
         }
-        return tagTypes.stream()
-                .map(TagType::valueOf)
-                .collect(Collectors.toList());
+       return tagTypes;
     }
 
     private IncludeType stringToIncludeType(String groupIncludeType) {

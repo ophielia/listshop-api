@@ -12,6 +12,8 @@ import java.util.List;
 public class TagSearchCriteria {
 
     private Long userId;
+
+    private String textFragment;
     private List<TagType> tagTypes;
     private TagFilterType tagFilterType;
 
@@ -21,8 +23,9 @@ public class TagSearchCriteria {
     private IncludeType groupIncludeType;
 
 
-    public TagSearchCriteria(Long userId, List<TagType> tagTypes, List<TagInternalStatus> excludedStatuses, List<TagInternalStatus> includedStatuses, IncludeType groupIncludeType) {
+    public TagSearchCriteria(Long userId, String textFragment,List<TagType> tagTypes, List<TagInternalStatus> excludedStatuses, List<TagInternalStatus> includedStatuses, IncludeType groupIncludeType) {
         this.userId = userId;
+        this.textFragment = textFragment;
         this.tagTypes = tagTypes;
         this.excludedStatuses = excludedStatuses;
         if (includedStatuses != null) {
@@ -82,5 +85,13 @@ public class TagSearchCriteria {
 
     public void setGroupIncludeType(IncludeType groupIncludeType) {
         this.groupIncludeType = groupIncludeType;
+    }
+
+    public String getTextFragment() {
+        return textFragment;
+    }
+
+    public void setTextFragment(String textFragment) {
+        this.textFragment = textFragment;
     }
 }

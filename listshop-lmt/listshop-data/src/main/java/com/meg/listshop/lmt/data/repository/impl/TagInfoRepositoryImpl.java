@@ -137,6 +137,14 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
             }
 
         }
+
+    // tag name
+    String tagNameParameter = null;
+    ParameterExpression<String> tagNameSelect = cb.parameter(String.class);
+    if (criteria.getTextFragment() != null && !criteria.getTextFragment().isEmpty()) {
+        predicates.add(cb.like(cb.lower(tagRelationRoot.get("child").get("name")), tagNameSelect));
+        tagNameParameter = "%" + criteria.getTextFragment().toLowerCase().trim() + "%";
+    }
         // group type
         ParameterExpression<Boolean> parameterGroupInclude = cb.parameter(Boolean.class);
         Boolean groupFilterParameter = null;
@@ -162,6 +170,10 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
         // userId
         if (userIdParameter != null) {
             typedQuery.setParameter(userSearchSelect, userIdParameter);
+        }
+        // tagname
+        if (tagNameParameter != null) {
+            typedQuery.setParameter(tagNameSelect, tagNameParameter);
         }
         // groups
         if (groupFilterParameter != null) {

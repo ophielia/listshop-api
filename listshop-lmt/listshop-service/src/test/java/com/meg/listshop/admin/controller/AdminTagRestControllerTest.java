@@ -279,7 +279,7 @@ public class AdminTagRestControllerTest {
     @Test
     public void getTagInfoListUser() throws Exception {
         PostSearchTags postSearchTags = new PostSearchTags();
-        postSearchTags.setUserId(0L);  // should return the default tags only, with userId = 0
+        postSearchTags.setUserId("0");  // should return the default tags only, with userId = 0
 
         String payload = json(postSearchTags);
         String url = "/admin/tag/search";
@@ -313,7 +313,7 @@ public class AdminTagRestControllerTest {
         Assert.assertNull(notFoundSomeGreenThing);
 
         // now test userId - 101010
-        postSearchTags.setUserId(101010L);
+        postSearchTags.setUserId("101010");
 
          payload = json(postSearchTags);
          url = "/admin/tag/search";

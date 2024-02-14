@@ -1,13 +1,18 @@
 package com.meg.listshop.admin.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meg.listshop.lmt.api.model.TagType;
 
 import java.util.List;
 
 public class PostSearchTags {
 
     @JsonProperty("user_id")
-    private Long userId;
+    private String userId;
+
+    @JsonProperty("text_fragment")
+    private String textFragment;
+
 
     @JsonProperty("group_include")
     private String groupIncludeType;
@@ -19,18 +24,17 @@ public class PostSearchTags {
     private List<String> excludeStatuses;
 
     @JsonProperty("tag_types")
-    private List<String> tagTypes;
-    private String tagType;
+    private List<TagType> tagTypes;
 
 
     public PostSearchTags() {
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -58,30 +62,32 @@ public class PostSearchTags {
         this.excludeStatuses = excludeStatuses;
     }
 
-    public List<String> getTagTypes() {
+    public List<TagType> getTagTypes() {
         return tagTypes;
     }
 
-    public void setTagTypes(List<String> tagTypes) {
+    public void setTagTypes(List<TagType> tagTypes) {
         this.tagTypes = tagTypes;
+    }
+
+    public String getTextFragment() {
+        return textFragment;
+    }
+
+    public void setTextFragment(String textFragment) {
+        this.textFragment = textFragment;
     }
 
     @Override
     public String toString() {
         return "PostSearchTags{" +
                 "userId=" + userId +
-                ", tagType=" + tagType +
+                ", textFragment=" + textFragment +
                 ", groupIncludeType='" + groupIncludeType + '\'' +
                 ", includeStatuses=" + includeStatuses +
                 ", excludeStatuses=" + excludeStatuses +
                 '}';
     }
 
-    public String getTagType() {
-        return tagType;
-    }
 
-    public void setTagType(String tagType) {
-        this.tagType = tagType;
-    }
 }
