@@ -609,7 +609,9 @@ public class ModelMapper {
 
         tagEntity.setName(tag.getName().trim());
         tagEntity.setDescription(tag.getDescription());
-        tagEntity.setTagType(TagType.valueOf(tag.getTagType()));
+        if (tag.getTagType() != null) {
+            tagEntity.setTagType(TagType.valueOf(tag.getTagType()));
+        }
         tagEntity.setIsGroup(tag.getIsGroup());
         tagEntity.setPower(tag.getPower());
 

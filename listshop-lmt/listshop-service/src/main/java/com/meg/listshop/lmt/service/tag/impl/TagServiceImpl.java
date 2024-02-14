@@ -618,7 +618,17 @@ public class TagServiceImpl implements TagService {
     }
 
     public void assignTagsToUser(Long userId, List<Long> tagIds) {
-        tagRepository.assignTagsToUser(userId, tagIds);
+        List<Long> tagsToUpdate = tagIds.stream()
+                        .filter(t -> !usedByOtherUsers(userId, t))
+                                .collect(Collectors.toList());
+
+        tagRepository.assignTagsToUser(userId, tagsToUpdate);
+    }
+    private boolean usedByOtherUsers(Long userId, Long tagId) {
+        if (tagRepository.findUsersWithTagInDish(userId, tagId) > 0) {
+            return true;
+        };
+        return tagRepository.findUsersWithTagInList(userId, tagId) > 0;
     }
 
     public void setTagsAsVerified(List<Long> tagIds) {
@@ -626,12 +636,12 @@ public class TagServiceImpl implements TagService {
     }
 
     public void createStandardTagsFromUserTags(List<Long> tagIds) {
-        Set<Long> copySet = new HashSet<>(tagIds);
+        Set<Long> copySet = determineTagsEligibleForStandard(tagIds);
         // get tags to copy
         List<TagEntity> tagsToCopy = tagRepository.getTagsForIdList(copySet);
         // get standard parents for tags
         Map<Long, TagEntity> parentsForTags = getStandardParentsForTags(copySet);
-        // get standard parents for tags
+        // get standard categories for tags
         Map<Long, Long> categoriesForTags = getStandardCategoriesForTags(copySet);
         // get default tag parent
         Map<TagType, TagEntity> defaultTagParentsByType = getDefaultTagParentsByType();
@@ -664,6 +674,14 @@ public class TagServiceImpl implements TagService {
 
         tagRepository.saveAll(addedTags);
 
+    }
+
+    private Set<Long> determineTagsEligibleForStandard(List<Long> tagIds) {
+        List<Long> alreadyExisting =  tagRepository.findDuplicateStandardTags(tagIds );
+        Set<Long> eligible = tagIds.stream()
+                .filter(t -> !alreadyExisting.contains(t))
+                .collect(Collectors.toSet());
+        return eligible;
     }
 
 
