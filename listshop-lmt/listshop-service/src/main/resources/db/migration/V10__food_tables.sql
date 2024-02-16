@@ -46,8 +46,7 @@ CREATE SEQUENCE public.food_category_mapping_seq
     CACHE 1;
 
 
-ALTER TABLE public.authority_id_seq
-    OWNER TO postgres;
+--ALTER TABLE public.food_category_mapping_seq OWNER TO postgres;
 
 grant all on food_category_mapping to bank;
 

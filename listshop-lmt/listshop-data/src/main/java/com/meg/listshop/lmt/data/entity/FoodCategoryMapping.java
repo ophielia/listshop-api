@@ -23,14 +23,16 @@ import java.util.Objects;
 public class FoodCategoryMapping {
 
     @Id
-    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="tag_relation_sequence")
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="food_category_mapping_seq")
     @Column(name = "food_category_mapping_id")
     Long id;
 
-    @OneToOne
-    private FoodCategory category;
 
     @OneToOne
+    @JoinColumn(name="category_id")
+    private FoodCategory category;
+    @OneToOne
+    @JoinColumn(name="tag_id")
     private TagEntity tag;
 
     public FoodCategoryMapping() {
