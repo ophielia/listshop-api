@@ -8,3 +8,6 @@ alter table tag add column is_liquid bool;
 alter table tag add column food_id bigint;
 
 alter table factors add column tag_id BIGINT;
+
+-- reset sequence for factors to start from 1000
+SELECT setval('factor_sequence', 999, true);

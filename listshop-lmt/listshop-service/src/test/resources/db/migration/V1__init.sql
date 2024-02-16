@@ -34,7 +34,7 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
-
+create role bank password 'dummypassword';
 
 --CREATE ROLE postgres WITH
 --    LOGIN  encrypted password 'postgres'

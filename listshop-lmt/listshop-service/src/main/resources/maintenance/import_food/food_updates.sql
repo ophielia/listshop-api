@@ -1,21 +1,12 @@
-with conversions as (
-select distinct f.food_id from foods f join food_conversions c using (fdc_id))
-update foods f
-set has_factor = true
-from conversions cc
-where cc.food_id = f.food_id;
+CREATE SEQUENCE public.temp_conversion_seq
+    START WITH 1000
+              INCREMENT BY 1
+              NO MINVALUE
+              NO MAXVALUE
+              CACHE 1;
 
-;
-update foods set has_factor = false where has_factor is null;
-select * from foods;
+update food_conversions set conversion_id = nextval('temp_conversion_seq');
 
-select count(*) from foods;
+drop sequence temp_conversion_seq;
 
-select distinct unit_name from food_conversions;
-
-select * from units where name in ('cup', 'tablespoon', 'teaspoon')
-
-
-select * from food_conversions where unit_id is not null;
-
-select * from foods where food_id = 21376;
+select * from food_conversions;
