@@ -1,4 +1,3 @@
-alter table factors add column tag_id BIGINT;
 
 create table foods
 (
@@ -9,7 +8,7 @@ create table foods
     marker      varchar(255)
 );
 
---alter table foods    owner to postgres;
+grant all on foods to bank;
 
 create table food_conversions
 (
@@ -21,7 +20,6 @@ create table food_conversions
     unit_id     bigint
 );
 
---alter table food_conversions  owner to postgres;
 
 create table food_categories
 (
@@ -30,9 +28,15 @@ create table food_categories
     name          varchar(512)
 );
 
---alter table food_categories    owner to postgres;
+grant all on food_categories to bank;
 
-alter table tag add column internal_status bigint;
+create table food_category_mapping
+(
+    category_id   bigint,
+    tag_id       bigint
+);
+
+grant all on food_category_mapping to bank;
 
 
--- alter table factors drop column tag_id
+
