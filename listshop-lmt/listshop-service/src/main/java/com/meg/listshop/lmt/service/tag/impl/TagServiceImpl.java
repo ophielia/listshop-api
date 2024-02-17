@@ -10,9 +10,7 @@ import com.meg.listshop.lmt.api.model.DishRatingInfo;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
 import com.meg.listshop.lmt.api.model.TagType;
-import com.meg.listshop.lmt.data.entity.DishEntity;
-import com.meg.listshop.lmt.data.entity.DishItemEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.ICountResult;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -24,10 +22,8 @@ import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.ListTagStatisticService;
-import com.meg.listshop.lmt.service.tag.TagChangeListener;
-import com.meg.listshop.lmt.service.tag.TagReplaceService;
-import com.meg.listshop.lmt.service.tag.TagService;
-import com.meg.listshop.lmt.service.tag.TagStructureService;
+import com.meg.listshop.lmt.service.food.FoodService;
+import com.meg.listshop.lmt.service.tag.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -58,6 +54,7 @@ public class TagServiceImpl implements TagService {
     private final TagStructureService tagStructureService;
     private final DishSearchService dishSearchService;
     private final TagInfoCustomRepository tagInfoCustomRepository;
+    private final FoodService foodService;
 
 
     @Value("${shopping.list.properties.default_list_layout_id:5}")
@@ -75,7 +72,8 @@ public class TagServiceImpl implements TagService {
                           TagRepository tagRepository,
                           TagInfoCustomRepository tagInfoCustomRepository,
                           DishSearchService dishSearchService,
-                          DishItemRepository dishItemRepository
+                          DishItemRepository dishItemRepository,
+                          FoodService foodService
     ) {
         this.dishService = dishService;
         this.tagStatisticService = tagStatisticService;
@@ -85,6 +83,7 @@ public class TagServiceImpl implements TagService {
         this.dishSearchService = dishSearchService;
         this.tagInfoCustomRepository = tagInfoCustomRepository;
         this.dishItemRepository = dishItemRepository;
+        this.foodService = foodService;
 
     }
 
@@ -546,6 +545,44 @@ public class TagServiceImpl implements TagService {
 
         // add the tags to the dish
         addTagsToDish(userId, dishId, defaultTagIds, false);
+    }
+
+    public List<FoodEntity> getSuggestedFoods(Long tagId) {
+        // get tag
+        TagEntity tag = getTagById(tagId);
+        if (tag == null) {
+            return new ArrayList<>();
+        }
+
+        // first find applicable food category for tag
+        List<FoodEntity> suggestions = new ArrayList<>();
+        FoodCategoryEntity categoryMatch = findClosestFoodCategory(tag);
+        if (categoryMatch != null) {
+            suggestions.addAll(foodService.foodMatches(tag.getName(), categoryMatch));
+        }
+        // then add any text matches, from any category
+        List<FoodEntity> otherMatches = foodService.foodMatches(tag.getName());
+        if (categoryMatch != null) {
+            suggestions.addAll(otherMatches.stream()
+                    .filter(f -> !f.getCategoryId().equals(categoryMatch.getCategoryId()))
+                    .collect(Collectors.toList()));
+        } else {
+            suggestions.addAll(otherMatches);
+        }
+        return suggestions;
+    }
+
+    private FoodCategoryEntity findClosestFoodCategory(TagEntity tag) {
+        List<Long> tagSearchIds = new ArrayList<>();
+        tagSearchIds.add(tag.getId());
+        tagSearchIds.addAll(tagStructureService.getAscendantTags(tag).stream()
+                .map(TagEntity::getId)
+                .collect(Collectors.toList()));
+
+        TagSearchCriteria searchCriteria = new TagSearchCriteria();
+        searchCriteria.setTagIds(tagSearchIds);
+        List<TagInfoDTO> allTagInfo = tagInfoCustomRepository.findTagInfoByCriteria(searchCriteria);
+        return foodService.getCategoryMatchForTag(tag.getId() , allTagInfo);
     }
 
     private Set<Long> determineValidTagsToRemove(Long dishId, Set<Long> tagIds) {

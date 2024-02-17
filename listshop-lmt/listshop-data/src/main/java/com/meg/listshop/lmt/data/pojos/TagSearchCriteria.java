@@ -21,6 +21,7 @@ public class TagSearchCriteria {
     private List<TagInternalStatus> includedStatuses = new ArrayList<>();
 
     private IncludeType groupIncludeType;
+    private List<Long> tagIds = new ArrayList<>();
 
 
     public TagSearchCriteria(Long userId, String textFragment,List<TagType> tagTypes, List<TagInternalStatus> excludedStatuses, List<TagInternalStatus> includedStatuses, IncludeType groupIncludeType) {
@@ -93,5 +94,15 @@ public class TagSearchCriteria {
 
     public void setTextFragment(String textFragment) {
         this.textFragment = textFragment;
+    }
+
+    public void setTagIds(List<Long> tagIds) {
+        if (tagIds != null) {
+            this.tagIds = tagIds;
+        }
+    }
+
+    public List<Long> getTagIds() {
+        return tagIds;
     }
 }

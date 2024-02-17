@@ -1,6 +1,7 @@
 package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.admin.model.PostSearchTags;
+import com.meg.listshop.lmt.api.model.FoodSuggestion;
 import com.meg.listshop.lmt.api.model.Tag;
 import com.meg.listshop.lmt.api.model.TagListResource;
 import com.meg.listshop.lmt.api.model.TagOperationPut;
@@ -9,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -21,6 +23,9 @@ public interface AdminTagRestControllerApi {
 
     @GetMapping(value = "/category/list")
      ResponseEntity<TagListResource> getCategoryTags();
+
+    @GetMapping(value = "/{tag_id}/food/suggestions")
+    ResponseEntity<List<FoodSuggestion>> getFoodSuggestionsForTag(@PathVariable("tagId") Long tagId);
 
     @PostMapping(value = "/search")
      ResponseEntity<TagListResource> findTags(@RequestBody PostSearchTags searchTags);

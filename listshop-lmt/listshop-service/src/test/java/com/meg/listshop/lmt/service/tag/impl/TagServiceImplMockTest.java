@@ -6,6 +6,7 @@ import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
+import com.meg.listshop.lmt.data.entity.FoodEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.ICountResult;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -13,6 +14,7 @@ import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.*;
+import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.TagReplaceService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -63,6 +65,9 @@ class TagServiceImplMockTest {
     @MockBean
     LayoutService listLayoutService;
 
+    @MockBean
+    FoodService foodService;
+
     private static class CountResult implements ICountResult {
         int countResult;
 
@@ -81,7 +86,8 @@ class TagServiceImplMockTest {
     void setUp() {
         this.tagService = new TagServiceImpl(
                 tagStatisticService, dishService, tagStructureService, tagReplaceService,
-                tagRepository, tagInfoCustomRepository, dishSearchService, dishItemRepository
+                tagRepository, tagInfoCustomRepository, dishSearchService, dishItemRepository,
+                foodService
         );
     }
 
@@ -833,6 +839,35 @@ class TagServiceImplMockTest {
         Assertions.assertNotNull(result);
         Assertions.assertEquals(replacementTagId, result.getId());
     }
+
+    @Test
+    void testGetSuggestedFoods() {
+        //MM Start Here!!
+
+        // public List<FoodEntity> getSuggestedFoods(Long tagId) {
+        Long tagId = 99L;
+        Long replacementTagId = 100L;
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+        tag.setToDelete(true);
+        tag.setReplacementTagId(replacementTagId);
+        TagEntity replaceTag = new TagEntity();
+        replaceTag.setId(replacementTagId);
+
+        Mockito.when(tagRepository.findById(tagId))
+                .thenReturn(Optional.of(tag));
+
+        Mockito.when(tagRepository.findById(replacementTagId))
+                .thenReturn(Optional.of(replaceTag));
+
+        // call to be tested
+        List<FoodEntity> result = tagService.getSuggestedFoods(tagId);
+
+        Assertions.assertNotNull(result);
+       // Assertions.assertEquals(replacementTagId, result.getId());
+    }
+
+
 
     private TagInfoDTO buildTagInfoDTO(Long tagId, String tagName,
                                        Double power, Long parentId) {

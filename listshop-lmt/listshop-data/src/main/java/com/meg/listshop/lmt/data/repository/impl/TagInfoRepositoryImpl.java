@@ -103,20 +103,15 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<TagInfoDTO> cq = cb.createQuery(TagInfoDTO.class);
         Root<TagRelationEntity> tagRelationRoot = cq.from(TagRelationEntity.class);
-        //Join<TagRelationEntity, TagRelationEntity> childJoin = tagEntityRoot.join("tag_id");
-        //Join<TagRelationEntity, TagEntity> parentTag = childJoin.join("parent");
 
-        //public TagInfoDTO(Long tagId, String name, String description, Double power, Long userId, String tagType, boolean isGroup, Long parentId, boolean toDelete) {
         cq.select(cb.construct(
                 TagInfoDTO.class,
                 tagRelationRoot.get("child").get("tag_id"),
                 tagRelationRoot.get("child").get("name"),
                 tagRelationRoot.get("child").get("description"),
                 tagRelationRoot.get("child").get("power"),
-                tagRelationRoot.get("child").get("userId")
-                ,
-                tagRelationRoot.get("child").get("tagType")
-                ,
+                tagRelationRoot.get("child").get("userId"),
+                tagRelationRoot.get("child").get("tagType"),
                 tagRelationRoot.get("child").get("isGroup"),
                 tagRelationRoot.get("parent").get("tag_id"),
                 tagRelationRoot.get("child").get("toDelete")
@@ -144,6 +139,10 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
     if (criteria.getTextFragment() != null && !criteria.getTextFragment().isEmpty()) {
         predicates.add(cb.like(cb.lower(tagRelationRoot.get("child").get("name")), tagNameSelect));
         tagNameParameter = "%" + criteria.getTextFragment().toLowerCase().trim() + "%";
+    }
+    // tag ids
+    if (criteria.getTagIds() != null && !criteria.getTagIds().isEmpty()) {
+        predicates.add(tagRelationRoot.get("child").get("id").in(criteria.getTagIds()));
     }
         // group type
         ParameterExpression<Boolean> parameterGroupInclude = cb.parameter(Boolean.class);

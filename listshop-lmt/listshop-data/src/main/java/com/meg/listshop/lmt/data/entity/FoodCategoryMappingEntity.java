@@ -20,7 +20,7 @@ import java.util.Objects;
                         name = "increment_size",
                         value="1")}
 )
-public class FoodCategoryMapping {
+public class FoodCategoryMappingEntity {
 
     @Id
     @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="food_category_mapping_seq")
@@ -30,12 +30,12 @@ public class FoodCategoryMapping {
 
     @OneToOne
     @JoinColumn(name="category_id")
-    private FoodCategory category;
+    private FoodCategoryEntity category;
     @OneToOne
     @JoinColumn(name="tag_id")
     private TagEntity tag;
 
-    public FoodCategoryMapping() {
+    public FoodCategoryMappingEntity() {
         // no-arg constructor necessary
     }
 
@@ -47,11 +47,11 @@ public class FoodCategoryMapping {
         this.id = id;
     }
 
-    public FoodCategory getCategory() {
+    public FoodCategoryEntity getCategory() {
         return category;
     }
 
-    public void setCategory(FoodCategory category) {
+    public void setCategory(FoodCategoryEntity category) {
         this.category = category;
     }
 
@@ -67,7 +67,7 @@ public class FoodCategoryMapping {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FoodCategoryMapping that = (FoodCategoryMapping) o;
+        FoodCategoryMappingEntity that = (FoodCategoryMappingEntity) o;
         return Objects.equals(id, that.id) && Objects.equals(category, that.category) && Objects.equals(tag, that.tag);
     }
 

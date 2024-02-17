@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "food_conversions")
-public class FoodConversions {
+public class FoodConversionEntity {
 
     @Id
     @Column(name = "conversion_id")
@@ -32,7 +32,7 @@ public class FoodConversions {
     @Column(name = "unit_id")
     private Long unitId;
 
-    public FoodConversions() {
+    public FoodConversionEntity() {
     }
 
     public Long getConversionId() {
@@ -95,7 +95,7 @@ public class FoodConversions {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FoodConversions that = (FoodConversions) o;
+        FoodConversionEntity that = (FoodConversionEntity) o;
         return Double.compare(amount, that.amount) == 0 && Double.compare(gramWeight, that.gramWeight) == 0 && Objects.equals(conversionId, that.conversionId) && Objects.equals(foodId, that.foodId) && Objects.equals(fdcId, that.fdcId) && Objects.equals(unitName, that.unitName) && Objects.equals(unitId, that.unitId);
     }
 

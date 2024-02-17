@@ -5,6 +5,7 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.data.entity.FoodEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -115,6 +116,14 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
 
+    public ResponseEntity<List<FoodSuggestion>> getFoodSuggestionsForTag(@PathVariable("tagId") Long tagId) {
+        //@GetMapping(value = "/{tag_id}/food/suggestions")
+        List<FoodEntity> suggestedFoods = tagService.getSuggestedFoods(tagId);
+
+
+        return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
+    }
+
     public ResponseEntity<TagListResource> getCategoryTags() {
 //    @GetMapping(value = "/category/list")
         return null;
@@ -130,7 +139,6 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
                 .map(TagResource::new)
                 .collect(Collectors.toList());
         var returnValue = new TagListResource(resourceList);
-        System.out.println("returnValue: " + returnValue);
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
@@ -166,7 +174,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
     private List<TagInternalStatus> stringsToTagInternalStatus(List<String> includeStatuses) {
         if (includeStatuses == null) {
-            return null;
+            return new ArrayList<>();
         }
         return includeStatuses.stream()
                 .map(this::stringToInternalStatus)
@@ -205,8 +213,6 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
                 .map(TagResource::new)
                 .collect(Collectors.toList());
         var returnValue = new TagListResource(resourceList);
-        System.out.println("returnValue: " + returnValue);
-        System.out.println("returnValue: ");
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
