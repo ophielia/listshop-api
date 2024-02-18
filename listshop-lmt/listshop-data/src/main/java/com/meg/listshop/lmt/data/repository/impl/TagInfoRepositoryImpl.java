@@ -142,7 +142,7 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
     }
     // tag ids
     if (criteria.getTagIds() != null && !criteria.getTagIds().isEmpty()) {
-        predicates.add(tagRelationRoot.get("child").get("id").in(criteria.getTagIds()));
+        predicates.add(tagRelationRoot.get("child").get("tag_id").in(criteria.getTagIds()));
     }
         // group type
         ParameterExpression<Boolean> parameterGroupInclude = cb.parameter(Boolean.class);

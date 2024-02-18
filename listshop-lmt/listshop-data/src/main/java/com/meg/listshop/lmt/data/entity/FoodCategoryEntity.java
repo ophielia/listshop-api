@@ -19,13 +19,14 @@ public class FoodCategoryEntity {
     private String name;
 
     public FoodCategoryEntity() {
+        // empty constructor for jpa
     }
 
-    public Long getCategoryId() {
+    public Long getId() {
         return categoryId;
     }
 
-    public void setCategoryId(Long categoryId) {
+    public void setId(Long categoryId) {
         this.categoryId = categoryId;
     }
 

@@ -6,6 +6,7 @@ package com.meg.listshop.lmt.service.food.impl;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.FoodCategoryMappingRepository;
+import com.meg.listshop.lmt.data.repository.FoodCategoryRepository;
 import com.meg.listshop.lmt.data.repository.FoodRepository;
 import com.meg.listshop.lmt.service.food.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +25,15 @@ public class FoodServiceImpl implements FoodService {
 
     FoodCategoryMappingRepository foodCategoryMappingRepo;
     FoodRepository foodRepository;
-
+    private final FoodCategoryRepository foodCategoryRepository;
 
 
     @Autowired
-    public FoodServiceImpl(FoodCategoryMappingRepository foodCategoryMappingRepo, FoodRepository foodRepository) {
+    public FoodServiceImpl(FoodCategoryMappingRepository foodCategoryMappingRepo, FoodRepository foodRepository,
+                           FoodCategoryRepository foodCategoryRepository) {
         this.foodCategoryMappingRepo = foodCategoryMappingRepo;
         this.foodRepository = foodRepository;
+        this.foodCategoryRepository = foodCategoryRepository;
     }
 
     @Override
@@ -41,11 +44,10 @@ public class FoodServiceImpl implements FoodService {
 
         // get mapping entities for tag ids
         List<Long> tagIds = new ArrayList<>(tagsToParents.keySet());
-        List<FoodCategoryMappingEntity> mappingEntities = foodCategoryMappingRepo.findMappingsByTagIds(tagIds);
+        List<FoodCategoryMappingEntity> mappingEntities =  foodCategoryMappingRepo.findFoodCategoryMappingEntityByTagIdIn(tagIds);
         Map<Long, FoodCategoryMappingEntity> mappingLookup = new HashMap<>();
-        mappingEntities.stream()
-                .forEach( v -> {
-                    Long id = v.getTag().getId();
+        mappingEntities.forEach( v -> {
+                    Long id = v.getTagId();
                     mappingLookup.put(id, v);
                 });
 
@@ -54,7 +56,7 @@ public class FoodServiceImpl implements FoodService {
         if (foundMapping == null) {
             return null;
         }
-        return foundMapping.getCategory();
+        return foodCategoryRepository.findById(foundMapping.getCategoryId()).orElse(null);
     }
 
     @Override
@@ -65,7 +67,7 @@ public class FoodServiceImpl implements FoodService {
         // prepare searchTerm
         String searchTerm = name.trim().toLowerCase();
         if (categoryMatch != null) {
-            Long categoryId = categoryMatch.getCategoryId();
+            Long categoryId = categoryMatch.getId();
             return foodRepository.findFoodEntitiesByNameContainsIgnoreCaseAndCategoryId(searchTerm,categoryId);
         }
         return  foodRepository.findFoodEntitiesByNameContainsIgnoreCase(searchTerm);

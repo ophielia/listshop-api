@@ -226,12 +226,6 @@ public class TagServiceImpl implements TagService {
         return dbTag;
     }
 
-    @Override
-    public List<TagEntity> getTagList(TagSearchCriteria criteria) {
-        return tagRepository.findTagsByCriteria(criteria);
-
-    }
-
     public List<TagInfoDTO> getTagInfoList(Long userId, List<TagType> tagTypes) {
         return tagInfoCustomRepository.retrieveTagInfoByUser(userId, tagTypes);
     }
@@ -555,21 +549,25 @@ public class TagServiceImpl implements TagService {
         }
 
         // first find applicable food category for tag
-        List<FoodEntity> suggestions = new ArrayList<>();
+        List<FoodEntity> suggestions;
+        List<FoodEntity> preferredList = new ArrayList<>();
+        List<FoodEntity> otherList = new ArrayList<>();
         FoodCategoryEntity categoryMatch = findClosestFoodCategory(tag);
+            suggestions = foodService.foodMatches(tag.getName());
         if (categoryMatch != null) {
-            suggestions.addAll(foodService.foodMatches(tag.getName(), categoryMatch));
-        }
-        // then add any text matches, from any category
-        List<FoodEntity> otherMatches = foodService.foodMatches(tag.getName());
-        if (categoryMatch != null) {
-            suggestions.addAll(otherMatches.stream()
-                    .filter(f -> !f.getCategoryId().equals(categoryMatch.getCategoryId()))
-                    .collect(Collectors.toList()));
+            suggestions.stream().forEach( f -> {
+                if (f.getCategoryId().equals(categoryMatch.getId())) {
+                    preferredList.add(f);
+                } else {
+                    otherList.add(f);
+                }
+            });
+            preferredList.addAll(otherList);
         } else {
-            suggestions.addAll(otherMatches);
+            preferredList.addAll(suggestions);
         }
-        return suggestions;
+
+        return preferredList;
     }
 
     private FoodCategoryEntity findClosestFoodCategory(TagEntity tag) {
@@ -664,7 +662,7 @@ public class TagServiceImpl implements TagService {
     private boolean usedByOtherUsers(Long userId, Long tagId) {
         if (tagRepository.findUsersWithTagInDish(userId, tagId) > 0) {
             return true;
-        };
+        }
         return tagRepository.findUsersWithTagInList(userId, tagId) > 0;
     }
 
@@ -715,10 +713,9 @@ public class TagServiceImpl implements TagService {
 
     private Set<Long> determineTagsEligibleForStandard(List<Long> tagIds) {
         List<Long> alreadyExisting =  tagRepository.findDuplicateStandardTags(tagIds );
-        Set<Long> eligible = tagIds.stream()
+        return tagIds.stream()
                 .filter(t -> !alreadyExisting.contains(t))
                 .collect(Collectors.toSet());
-        return eligible;
     }
 
 

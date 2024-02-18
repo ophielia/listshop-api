@@ -129,3 +129,6 @@ from tag_relation tagrelatio0_
 where tagrelatio0_.child_tag_id = tagentity1_.tag_id
   and tagentity1_.is_group=?
   and tagentity1_.to_delete = false
+
+
+select foodcatego0_.food_category_mapping_id as food_cat1_9_, foodcatego0_.category_id as category2_9_, foodcatego0_.tag_id as tag_id3_9_ from food_category_mapping foodcatego0_ where foodcatego0_.tag_id=33

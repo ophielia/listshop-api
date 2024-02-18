@@ -54,6 +54,18 @@ public class ModelMapper {
         return new Dish();
     }
 
+    public static Food toModel(FoodEntity foodEntity) {
+        if (foodEntity == null) {
+            return new Food();
+        }
+        Food suggestion = new Food();
+        suggestion.setName(foodEntity.getName());
+        suggestion.setId(String.valueOf(foodEntity.getFoodId()));
+        suggestion.setCategoryId(String.valueOf(foodEntity.getCategoryId()));
+        return suggestion;
+
+    }
+
     public static User toModel(UserEntity userEntity, String token) {
         if (userEntity != null) {
             String[] roles = toRoleListModel(userEntity.getAuthorities());
@@ -265,7 +277,7 @@ public class ModelMapper {
         for (ListLayoutCategoryEntity cat : categories) {
             ListLayoutCategory llc = new ListLayoutCategory(cat.getId());
             llc.setName(cat.getName());
-            llc.setDefault(cat.getDefault() != null ? cat.getDefault() : false);
+            llc.setDefault(cat.getDefault() != null &&  cat.getDefault());
             llc.setTags(toShortModel(cat.getTags()));
             llc.setDisplayOrder(cat.getDisplayOrder());
             categoryList.add(llc);
@@ -369,7 +381,6 @@ public class ModelMapper {
     }
 
     private static List<Tag> toModelItemsAsTags(List<DishItemEntity> itemEntities) {
-        List<DishItemEntity> items = new ArrayList<>();
         if (itemEntities == null) {
             return new ArrayList<Tag>();
         }

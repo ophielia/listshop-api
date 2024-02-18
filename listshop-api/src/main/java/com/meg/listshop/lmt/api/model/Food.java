@@ -2,31 +2,28 @@ package com.meg.listshop.lmt.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by margaretmartin on 29/10/2017.
  */
-public class FoodSuggestion {
+public class Food {
 
-    @JsonProperty("foodId")
+    @JsonProperty("id")
     private String foodId;
 
-    @JsonProperty("categoryId")
+    @JsonProperty("category_id")
     private String categoryId;
 
     private String name;
 
-    public FoodSuggestion() {
+    public Food() {
         // for jackson - it likes the empty constructors
     }
 
-    public String getFoodId() {
+    public String getId() {
         return foodId;
     }
 
-    public void setFoodId(String foodId) {
+    public void setId(String foodId) {
         this.foodId = foodId;
     }
 

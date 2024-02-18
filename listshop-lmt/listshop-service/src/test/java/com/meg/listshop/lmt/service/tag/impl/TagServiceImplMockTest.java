@@ -4,12 +4,10 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.model.*;
-import com.meg.listshop.lmt.data.entity.DishEntity;
-import com.meg.listshop.lmt.data.entity.DishItemEntity;
-import com.meg.listshop.lmt.data.entity.FoodEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.ICountResult;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
+import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
@@ -811,9 +809,6 @@ class TagServiceImplMockTest {
 
         // call under test
         tagService.replaceTagInDishes(userId, forTagId, toTagId);
-
-
-
     }
 
     @Test
@@ -842,37 +837,92 @@ class TagServiceImplMockTest {
 
     @Test
     void testGetSuggestedFoods() {
-        //MM Start Here!!
-
-        // public List<FoodEntity> getSuggestedFoods(Long tagId) {
-        Long tagId = 99L;
+        Long tagId = 1L;
+        Long categoryId = 99L;
+        Long otherCategoryId = 999L;
         Long replacementTagId = 100L;
         TagEntity tag = new TagEntity();
         tag.setId(tagId);
-        tag.setToDelete(true);
+        tag.setName("tag1");
         tag.setReplacementTagId(replacementTagId);
+
+        List<TagEntity> ascendantTags = new ArrayList<>();
+        ascendantTags.add(buildTagEntity(2L, "tag2"));
+        ascendantTags.add(buildTagEntity(3L, "tag3"));
+        ascendantTags.add(buildTagEntity(4L, "tag4"));
+
+        TagSearchCriteria searchCriteria = new TagSearchCriteria();
+        searchCriteria.setTagIds(ascendantTags.stream().map(TagEntity::getId).collect(Collectors.toList()));
+
+        List<TagInfoDTO> tagInfoList = new ArrayList<>();
+        tagInfoList.add(buildTagInfoDTO(1L, "tag1", 0d, 2L));
+        tagInfoList.add(buildTagInfoDTO(2L, "tag2", 0d, 3L));
+        tagInfoList.add(buildTagInfoDTO(3L, "tag3", 0d, 4L));
+        tagInfoList.add(buildTagInfoDTO(4L, "tag4", 0d, null));
+
+        FoodCategoryEntity foundCategory = new FoodCategoryEntity();
+        foundCategory.setId(categoryId);
+
+
+        List<FoodEntity> categoryFoods = new ArrayList<>();
+        categoryFoods.add(buildFood(1L,"food1", otherCategoryId));
+        categoryFoods.add(buildFood(2L,"food2", otherCategoryId));
+        categoryFoods.add(buildFood(33L,"food33", otherCategoryId));
+        categoryFoods.add(buildFood(44L,"food44", categoryId));
+        categoryFoods.add(buildFood(55L,"food55", categoryId));
+
         TagEntity replaceTag = new TagEntity();
         replaceTag.setId(replacementTagId);
 
         Mockito.when(tagRepository.findById(tagId))
                 .thenReturn(Optional.of(tag));
 
-        Mockito.when(tagRepository.findById(replacementTagId))
-                .thenReturn(Optional.of(replaceTag));
+        Mockito.when(tagStructureService.getAscendantTags(tag))
+                        .thenReturn(ascendantTags);
+
+        Mockito.when(tagInfoCustomRepository.findTagInfoByCriteria(any(TagSearchCriteria.class)))
+                        .thenReturn(tagInfoList);
+
+        Mockito.when(foodService.getCategoryMatchForTag(tagId, tagInfoList))
+                .thenReturn(foundCategory);
+
+        Mockito.when(foodService.foodMatches("tag1"))
+                .thenReturn(categoryFoods);
 
         // call to be tested
         List<FoodEntity> result = tagService.getSuggestedFoods(tagId);
 
         Assertions.assertNotNull(result);
-       // Assertions.assertEquals(replacementTagId, result.getId());
+        Assertions.assertEquals(5, result.size(), "expect 5 results");
+        for (int i = 0; i < 2; i++) {
+            Assertions.assertEquals(categoryId,result.get(i).getCategoryId(),"first 2 should be the right category id");
+        }
+        for (int i = 2; i < 5; i++) {
+            Assertions.assertEquals(otherCategoryId,result.get(i).getCategoryId(),"first 2 should be the right category id");
+        }
     }
 
+    private FoodEntity buildFood(Long foodId, String foodName, Long categoryId) {
+        FoodEntity food = new FoodEntity();
+        food.setFoodId(foodId);
+        food.setName(foodName);
+        food.setCategoryId(categoryId);
+        return food;
+    }
 
 
     private TagInfoDTO buildTagInfoDTO(Long tagId, String tagName,
                                        Double power, Long parentId) {
         return new TagInfoDTO(tagId, tagName, "", power, 0L, TagType.Rating, false, parentId, false);
 
+    }
+
+    private TagEntity buildTagEntity(Long tagId, String tagName) {
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+        tag.setName(tagName);
+
+return tag;
     }
 
 }
