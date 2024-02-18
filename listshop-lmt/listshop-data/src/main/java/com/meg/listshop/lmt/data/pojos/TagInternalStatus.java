@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.data.pojos;
 
 public enum TagInternalStatus {
 
+    EMPTY(3),
     CHECKED(3),
     LIQUID_ASSIGNED(5),
     FOOD_ASSIGNED(7),
