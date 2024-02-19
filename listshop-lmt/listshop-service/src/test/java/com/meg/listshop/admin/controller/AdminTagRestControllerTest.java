@@ -165,6 +165,15 @@ Assert.assertNotNull(afterList);
     }
 
     @Test
+    @WithMockUser
+    public void assignFoodToTag() throws Exception {
+        MvcResult result = this.mockMvc.perform(post("/admin/tag/888999/food/9000")
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+    }
+
+    @Test
     public void addChildren() throws Exception {
         String url = "/admin/tag/" + TestConstants.PARENT_TAG_ID_1 + "/children?tagIds=" + TestConstants.TAG_MEAT + "," + TestConstants.TAG_CARROTS + "," + TestConstants.TAG_CROCKPOT;
 

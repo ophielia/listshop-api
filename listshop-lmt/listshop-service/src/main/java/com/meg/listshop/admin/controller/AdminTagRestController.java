@@ -8,6 +8,7 @@ import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
+import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.slf4j.Logger;
@@ -36,13 +37,16 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
     private final TagService tagService;
     private final TagStructureService tagStructureService;
+    private final FoodService foodService;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminTagRestController.class);
 
     @Autowired
-    AdminTagRestController(TagService tagService, TagStructureService tagStructureService) {
+    AdminTagRestController(TagService tagService, TagStructureService tagStructureService,
+                           FoodService foodService) {
         this.tagStructureService = tagStructureService;
         this.tagService = tagService;
+        this.foodService = foodService;
     }
 
 
@@ -80,7 +84,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     public ResponseEntity<FoodListResource> getFoodSuggestionsForTag(@PathVariable("tagId") Long tagId) {
         //@GetMapping(value = "/{tag_id}/food/suggestions")
 
-        List<FoodResource> resourceList = tagService.getSuggestedFoods(tagId).stream()
+        List<FoodResource> resourceList = foodService.getSuggestedFoods(tagId).stream()
                 .map(ModelMapper::toModel)
                 .map(FoodResource::new)
                 .collect(Collectors.toList());
@@ -89,6 +93,14 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
+
+    public ResponseEntity<FoodListResource> addFoodSuggestionsForTag(@PathVariable("tagId") Long tagId,
+                                                                     @PathVariable("foodId") Long foodId) {
+
+        foodService.addOrUpdateFoodForTag(tagId, foodId);
+
+        return ResponseEntity.noContent().build();
+    }
 
 
     public ResponseEntity<TagListResource> findTags(@RequestBody PostSearchTags searchTags) {

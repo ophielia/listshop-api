@@ -72,6 +72,12 @@ public class TagEntity {
     @Column(name = "internal_status")
     private Long internalStatus;
 
+    @Column(name = "is_liquid")
+    private Boolean isLiquid;
+
+    @Column(name = "food_id")
+    private Long foodId;
+
     @Transient
     private List<Long> childrenIds;
 
@@ -229,6 +235,22 @@ public class TagEntity {
         this.internalStatus = internalStatus;
     }
 
+    public Boolean getIsLiquid() {
+        return isLiquid;
+    }
+
+    public void setIsLiquid(Boolean liquid) {
+        isLiquid = liquid;
+    }
+
+    public Long getFoodId() {
+        return foodId;
+    }
+
+    public void setFoodId(Long foodId) {
+        this.foodId = foodId;
+    }
+
     public TagEntity copy() {
         var copy = new TagEntity();
         copy.setName(getName());
@@ -238,6 +260,8 @@ public class TagEntity {
         copy.setReplacementTagId(getReplacementTagId());
         copy.setToDelete(isToDelete());
         copy.setInternalStatus(getInternalStatus());
+        copy.setFoodId(getFoodId());
+        copy.setIsLiquid(getIsLiquid());
         return copy;
     }
 
@@ -286,17 +310,25 @@ public class TagEntity {
     public String toString() {
         return "TagEntity{" +
                 "tag_id=" + tag_id +
+                ", userId=" + userId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", tagType=" + tagType +
                 ", tagTypeDefault=" + tagTypeDefault +
                 ", categories=" + categories +
-                ", isVerified=" + isVerified +
+                ", isGroup=" + isGroup +
                 ", power=" + power +
-                ", childrenIds=" + childrenIds +
-                ", parentId=" + parentId +
+                ", toDelete=" + toDelete +
+                ", replacementTagId=" + replacementTagId +
+                ", createdOn=" + createdOn +
+                ", updatedOn=" + updatedOn +
+                ", categoryUpdatedOn=" + categoryUpdatedOn +
+                ", removedOn=" + removedOn +
                 ", internalStatus=" + internalStatus +
+                ", isLiquid=" + isLiquid +
+                ", foodId=" + foodId +
                 '}';
     }
+
 
 }

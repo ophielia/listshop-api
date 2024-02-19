@@ -53,5 +53,8 @@ insert into foods (food_id,name, category_id) values
 
 insert into food_category_mapping (food_category_mapping_id,category_id, tag_id) values (1,3,8881019);
 
+insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id) values
+    (99000, 9000, 900, 1.0, '', 150.0, 1000)  ;
+
 
 

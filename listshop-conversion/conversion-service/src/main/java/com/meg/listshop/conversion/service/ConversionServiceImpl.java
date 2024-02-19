@@ -23,7 +23,6 @@ import java.util.*;
 @Service
 public class ConversionServiceImpl implements ConversionService {
     private static final Logger LOG = LoggerFactory.getLogger(ConversionServiceImpl.class);
-
     HashMap<HandlerChainKey, HandlerChain> chainMap = new HashMap<>();
     private final List<ChainConversionHandler> handlerList;
     private final List<ScalingHandler> scalerList;
@@ -33,7 +32,7 @@ public class ConversionServiceImpl implements ConversionService {
     @Autowired
     public ConversionServiceImpl(List<ChainConversionHandler> handlerList,
             List<ScalingHandler> scalerList,
-            @Qualifier("WeightVolumeHandler") ConversionHandler weightVolumeHandler) {
+                                 @Qualifier("weightVolumeHandler") ConversionHandler weightVolumeHandler) {
         this.handlerList = handlerList;
         this.scalerList = scalerList;
         this.weightVolumeHandler = weightVolumeHandler;
@@ -121,7 +120,6 @@ public class ConversionServiceImpl implements ConversionService {
         //       one handler for each domain (to metric) metric <=> us, metric <=> imperial
         //       two way handlers
         //       all units - volume / weight, etc.
-        //if (!result.getUnit().getType().equals(UnitType.HYBRID) && !result.getUnit().getType().equals(conversionSpec.getUnitType())) {
         if ( !result.getUnit().getType().equals(conversionSpec.getUnitType())) {
             result = convertDomain(result, conversionSpec.getUnitType(),conversionSpec.getUnitId() );
         }

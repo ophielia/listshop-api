@@ -5,7 +5,6 @@ import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
-import com.meg.listshop.lmt.data.entity.FoodEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -85,5 +84,5 @@ public interface TagService {
 
     void assignDefaultRatingsToDish(Long userId, Long dishId);
 
-    List<FoodEntity> getSuggestedFoods(Long tagId);
+
 }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-@Qualifier("WeightVolumeHandler")
+@Qualifier("weightVolumeHandler")
 public class WeightVolumeHandler extends AbstractConversionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(WeightVolumeHandler.class);
 

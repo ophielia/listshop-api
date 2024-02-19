@@ -13,6 +13,8 @@ public interface FoodService {
 
     FoodCategoryEntity getCategoryMatchForTag(Long tagId, List<TagInfoDTO> ascendantTags);
 
-    List<FoodEntity> foodMatches(String name, FoodCategoryEntity categoryMatch);
-    List<FoodEntity> foodMatches(String name);
+
+    List<FoodEntity> getSuggestedFoods(Long tagId);
+
+    void addOrUpdateFoodForTag(Long tagId, Long foodId);
 }
