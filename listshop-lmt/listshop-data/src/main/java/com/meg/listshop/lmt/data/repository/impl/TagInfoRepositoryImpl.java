@@ -5,7 +5,7 @@ import com.meg.listshop.lmt.data.entity.TagRelationEntity;
 import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
-import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
+import com.meg.listshop.lmt.data.repository.CustomTagInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
+public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
 
     NamedParameterJdbcTemplate jdbcTemplate;
 

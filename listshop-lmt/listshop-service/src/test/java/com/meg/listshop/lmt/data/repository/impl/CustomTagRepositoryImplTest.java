@@ -4,7 +4,7 @@ import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
-import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
+import com.meg.listshop.lmt.data.repository.CustomTagInfoRepository;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class CustomTagRepositoryImplTest {
 
 
     @Autowired
-    private TagInfoCustomRepository repository;
+    private CustomTagInfoRepository repository;
     @Test
     void findTagInfoByCriteria() {
         TagSearchCriteria criteria = new TagSearchCriteria();

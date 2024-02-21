@@ -1,10 +1,7 @@
 package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.admin.model.PostSearchTags;
-import com.meg.listshop.lmt.api.model.FoodListResource;
-import com.meg.listshop.lmt.api.model.Tag;
-import com.meg.listshop.lmt.api.model.TagListResource;
-import com.meg.listshop.lmt.api.model.TagOperationPut;
+import com.meg.listshop.lmt.api.model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +20,10 @@ public interface AdminTagRestControllerApi {
     ResponseEntity<FoodListResource> getFoodSuggestionsForTag(@PathVariable("tagId") Long tagId);
 
     @PostMapping(value = "/{tagId}/food/{foodId}")
-    ResponseEntity<FoodListResource> addFoodSuggestionsForTag(@PathVariable("tagId") Long tagId,@PathVariable("foodId") Long foodId);
+    ResponseEntity<Object> addFoodSuggestionsForTag(@PathVariable("tagId") Long tagId,@PathVariable("foodId") Long foodId);
 
+    @GetMapping(value = "/food/categories")
+    ResponseEntity<CategoryMappingListResource> getFoodCategoryMappings();
 
 
     @PostMapping(value = "/search")

@@ -43,6 +43,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -171,6 +172,28 @@ Assert.assertNotNull(afterList);
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetFoodCategoryMappings() throws Exception {
+        //    @GetMapping(value = "/food/categories")
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/food/categories")
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        Assertions.assertNotNull(result);
+                ObjectMapper mapper = new ObjectMapper();
+        CategoryMappingListResource embeddedList = mapper.readValue(result.getResponse().getContentAsString(), CategoryMappingListResource.class);
+        List<FoodCategoryMappingResource> mappingList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getMappingResourceList() : new ArrayList<FoodCategoryMappingResource>();
+        Assertions.assertNotNull(mappingList);
+        FoodCategoryMapping withCategory = mappingList.stream()
+                .filter(r -> r.getFoodCategoryMapping().getTagId().equals("8881019"))
+                .map(FoodCategoryMappingResource::getFoodCategoryMapping)
+                .findFirst().orElse(null);
+        Assertions.assertNotNull(withCategory);
+        Assertions.assertEquals(withCategory.getFoodCategoryId(),"3");
     }
 
     @Test

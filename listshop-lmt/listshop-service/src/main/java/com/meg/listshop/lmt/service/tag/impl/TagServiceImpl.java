@@ -18,7 +18,7 @@ import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
-import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
+import com.meg.listshop.lmt.data.repository.CustomTagInfoRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
@@ -57,7 +57,7 @@ public class TagServiceImpl implements TagService {
     private final DishItemRepository dishItemRepository;
     private final TagStructureService tagStructureService;
     private final DishSearchService dishSearchService;
-    private final TagInfoCustomRepository tagInfoCustomRepository;
+    private final CustomTagInfoRepository tagInfoCustomRepository;
 
 
     @Value("${shopping.list.properties.default_list_layout_id:5}")
@@ -73,7 +73,7 @@ public class TagServiceImpl implements TagService {
                           TagStructureService tagStructureService,
                           @Lazy TagReplaceService tagReplaceService,
                           TagRepository tagRepository,
-                          TagInfoCustomRepository tagInfoCustomRepository,
+                          CustomTagInfoRepository tagInfoCustomRepository,
                           DishSearchService dishSearchService,
                           DishItemRepository dishItemRepository
     ) {

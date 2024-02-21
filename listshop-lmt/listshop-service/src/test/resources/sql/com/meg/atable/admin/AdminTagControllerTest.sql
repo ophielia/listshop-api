@@ -22,9 +22,9 @@ VALUES (101010, 888888, NULL, 'some black thing', 'Ingredient', NULL, NULL, NULL
 insert into tag (tag_id, description, name, tag_type,  created_on, is_group)  VALUES
     (888999, 'description', 'butterlike', 'Ingredient' , now(), false) ;
 insert into tag (tag_id, description, name, tag_type,  created_on, is_group)  VALUES
-    (8881009, 'description', 'Mr. Butter', 'Ingredient' , now(), false) ;
+    (8881009, 'description', 'Mr. Butter', 'Ingredient' , now(), true) ;
 insert into tag (tag_id, description, name, tag_type,  created_on, is_group)  VALUES
-    (8881019, 'description', 'Grandpa Butter', 'Ingredient' , now(), false) ;
+    (8881019, 'description', 'Grandpa Butter', 'Ingredient' , now(), true) ;
 
 insert into tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES
     (888999, 888999, 8881009);

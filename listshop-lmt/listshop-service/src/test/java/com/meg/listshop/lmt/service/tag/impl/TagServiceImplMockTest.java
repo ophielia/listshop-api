@@ -10,10 +10,9 @@ import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.ICountResult;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
-import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
+import com.meg.listshop.lmt.data.repository.CustomTagInfoRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.*;
-import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.TagReplaceService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -59,7 +58,7 @@ class TagServiceImplMockTest {
     private DishItemRepository dishItemRepository;
 
     @MockBean
-    TagInfoCustomRepository tagInfoCustomRepository;
+    CustomTagInfoRepository tagInfoCustomRepository;
 
     @MockBean
     LayoutService listLayoutService;

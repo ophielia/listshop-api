@@ -15,6 +15,7 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 
@@ -506,11 +507,23 @@ public class ModelMapper {
                 .userId(statistic.getUserId());
     }
 
+    public static FoodCategoryMapping toModel(FoodMappingDTO foodMappingDTO) {
+        FoodCategoryMapping mapping = new FoodCategoryMapping();
+        mapping.setFoodCategoryId(String.valueOf(foodMappingDTO.getCategoryId()));
+        mapping.setFoodCategoryName(foodMappingDTO.getCategoryName());
+        mapping.setTagId(String.valueOf(foodMappingDTO.getTagId()));
+        mapping.setTagName(foodMappingDTO.getTagName());
+
+        return mapping;
+    }
+
     private static Slot toModel(SlotEntity slotEntity) {
         return new Slot(slotEntity.getMealPlanSlotId())
                 .mealPlanId(slotEntity.getMealPlan().getId())
                 .dish(toModel(slotEntity.getDish(), false));
     }
+
+
 
     private static List<Slot> slotsToModel(List<SlotEntity> slots) {
         List<Slot> slotList = new ArrayList<>();
@@ -711,4 +724,6 @@ public class ModelMapper {
         entity.setValue(property.getValue());
         return entity;
     }
+
+
 }

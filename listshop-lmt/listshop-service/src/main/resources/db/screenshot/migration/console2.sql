@@ -132,3 +132,9 @@ where tagrelatio0_.child_tag_id = tagentity1_.tag_id
 
 
 select foodcatego0_.food_category_mapping_id as food_cat1_9_, foodcatego0_.category_id as category2_9_, foodcatego0_.tag_id as tag_id3_9_ from food_category_mapping foodcatego0_ where foodcatego0_.tag_id=33
+
+
+select t.tag_id, t.name, m.category_id, c.name from tag t
+    left outer join food_category_mapping m on m.tag_id = t.tag_id
+    left outer join food_categories c on c.category_id = m.category_id
+where is_group = true;

@@ -6,6 +6,7 @@ package com.meg.listshop.lmt.service.food.impl;
 import com.meg.listshop.conversion.service.ConversionFactorService;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
 import com.meg.listshop.lmt.data.repository.FoodCategoryMappingRepository;
@@ -147,6 +148,10 @@ public class FoodServiceImpl implements FoodService {
         for (FoodConversionEntity conversion : foodFactors) {
             conversionFactorService.addFactorForTag(tagId,conversion.getAmount(), conversion.getUnitId(), conversion.getGramWeight());
         }
+    }
+
+    public List<FoodMappingDTO> getFoodCategoryMappings() {
+        return foodCategoryMappingRepo.retrieveAllFoodMappingDTOs();
     }
     private FoodCategoryMappingEntity findCategoryInHierarchy(Long tagId, Map<Long, TagInfoDTO> tagsToParents, Map<Long, FoodCategoryMappingEntity> mappingLookup) {
         // if mapping exists for tagId, return it
