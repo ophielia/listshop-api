@@ -10,13 +10,13 @@ public enum TagInternalStatus {
 
     CATEGORY_ASSIGNED(13);
 
-    private int value;
+    private final long value;
 
-    TagInternalStatus (int value) {
+    TagInternalStatus(long value) {
         this.value = value;
     }
 
-    public int value() {
+    public long value() {
         return value;
     }
 }

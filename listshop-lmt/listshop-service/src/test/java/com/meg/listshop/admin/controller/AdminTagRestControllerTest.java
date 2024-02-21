@@ -17,6 +17,7 @@ import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.IncludeType;
+import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
@@ -224,6 +225,21 @@ Assert.assertNotNull(afterList);
                 .andExpect(status().is2xxSuccessful());
 
 
+    }
+
+    @Test
+    public void testAssignFoodCategoryToTag() throws Exception {
+        Long testTagId = 9991019L;
+        long testCategoryId = 3L;
+        String url = "/admin/tag/" + testTagId + "/food/category/" + testCategoryId;
+
+        this.mockMvc.perform(post(url)
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful());
+
+        TagEntity tagResult = tagRepository.findById(testTagId).orElse(null);
+        Assert.assertNotNull(tagResult);
+        Assert.assertEquals(tagResult.getInternalStatus(), (Long) TagInternalStatus.CATEGORY_ASSIGNED.value());
     }
 
     @Test

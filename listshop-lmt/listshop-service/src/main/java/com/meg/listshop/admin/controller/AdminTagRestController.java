@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -94,8 +95,8 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
 
-    public ResponseEntity<Object> addFoodSuggestionsForTag(@PathVariable("tagId") Long tagId,
-                                                                     @PathVariable("foodId") Long foodId) {
+    public ResponseEntity<Object> assignFoodToTag(@PathVariable("tagId") Long tagId,
+                                                  @PathVariable("foodId") Long foodId) {
 
         foodService.addOrUpdateFoodForTag(tagId, foodId, true);
 
@@ -112,6 +113,14 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
         var returnValue = new CategoryMappingListResource(resourceList);
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Object> assignFoodCategory(Long tagId, Long categoryId) {
+        //@PostMapping(value = "/{tagId}/food/category/{categoryId}")
+        foodService.addOrCategoryToTag(tagId, categoryId);
+
+        return ResponseEntity.noContent().build();
     }
 
 

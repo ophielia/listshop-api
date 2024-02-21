@@ -9,5 +9,7 @@ public interface FoodCategoryMappingRepository extends JpaRepository<FoodCategor
 
      List<FoodCategoryMappingEntity> findFoodCategoryMappingEntityByTagIdIn( List<Long> tagIds) ;
 
+     FoodCategoryMappingEntity findFoodCategoryMappingEntityByTagId( Long tagId) ;
+
 
 }

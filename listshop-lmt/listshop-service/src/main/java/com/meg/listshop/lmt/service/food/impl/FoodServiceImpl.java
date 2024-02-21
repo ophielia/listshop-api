@@ -110,7 +110,7 @@ public class FoodServiceImpl implements FoodService {
         FoodCategoryEntity categoryMatch = findClosestFoodCategory(tag);
         suggestions = foodMatches(tag.getName());
         if (categoryMatch != null) {
-            suggestions.stream().forEach( f -> {
+            suggestions.forEach(f -> {
                 if (f.getCategoryId().equals(categoryMatch.getId())) {
                     preferredList.add(f);
                 } else {
@@ -158,6 +158,26 @@ public class FoodServiceImpl implements FoodService {
     public List<FoodMappingDTO> getFoodCategoryMappings() {
         return foodCategoryMappingRepo.retrieveAllFoodMappingDTOs();
     }
+
+    @Override
+    public void addOrCategoryToTag(Long tagId, Long categoryId) {
+        // get tag
+        TagEntity tag = tagService.getTagById(tagId);
+        if (tag == null) {
+            final String msg = String.format("No tag found by id tagId [%s]", tagId);
+            throw new ObjectNotFoundException(msg);
+        }
+        // get category mapping for tag or create a new one
+        FoodCategoryMappingEntity mappingEntity = foodCategoryMappingRepo.findFoodCategoryMappingEntityByTagId(tagId);
+        if (mappingEntity == null) {
+            mappingEntity = new FoodCategoryMappingEntity();
+        }
+        // save the category id in the mapping
+        mappingEntity.setCategoryId(categoryId);
+        // update the internal status of the tag
+        tag.setInternalStatus(TagInternalStatus.CATEGORY_ASSIGNED);
+    }
+
     private FoodCategoryMappingEntity findCategoryInHierarchy(Long tagId, Map<Long, TagInfoDTO> tagsToParents, Map<Long, FoodCategoryMappingEntity> mappingLookup) {
         // if mapping exists for tagId, return it
         if (mappingLookup.containsKey(tagId)) {

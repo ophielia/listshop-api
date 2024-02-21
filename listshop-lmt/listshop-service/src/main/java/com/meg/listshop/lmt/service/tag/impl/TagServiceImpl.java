@@ -13,12 +13,9 @@ import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.pojos.ICountResult;
-import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
-import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
-import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
-import com.meg.listshop.lmt.data.repository.DishItemRepository;
+import com.meg.listshop.lmt.data.pojos.*;
 import com.meg.listshop.lmt.data.repository.CustomTagInfoRepository;
+import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
@@ -662,7 +659,7 @@ public class TagServiceImpl implements TagService {
             tagStructureService.assignTagToParent(newTag, parentTag);
 
             // set original to isVerified = true
-            tagToCopy.setVerified(true);
+            tagToCopy.setInternalStatus(TagInternalStatus.CHECKED);
 
             addedTags.add(newTag);
 
@@ -719,7 +716,7 @@ public class TagServiceImpl implements TagService {
 
     private TagEntity copyTagIntoNewTag(TagEntity tagToCopy) {
         TagEntity newTag = new TagEntity();
-        newTag.setVerified(true);
+        newTag.setInternalStatus(TagInternalStatus.CHECKED);
         newTag.setUserId(null);
         newTag.setTagType(tagToCopy.getTagType());
         newTag.setName(tagToCopy.getName());

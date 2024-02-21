@@ -172,14 +172,6 @@ public class TagEntity {
         isGroup = group;
     }
 
-    public Boolean getVerified() {
-        return isVerified;
-    }
-
-    public void setVerified(Boolean verified) {
-        isVerified = verified;
-    }
-
     public Double getPower() {
         return power;
     }
@@ -237,7 +229,7 @@ public class TagEntity {
     }
 
     public void setInternalStatus(TagInternalStatus status) {
-        int newStatus = status.value();
+        long newStatus = status.value();
         if (this.internalStatus % newStatus == 0) {
             return;
         }

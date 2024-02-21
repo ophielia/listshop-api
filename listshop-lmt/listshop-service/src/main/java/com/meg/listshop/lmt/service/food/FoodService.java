@@ -20,4 +20,6 @@ public interface FoodService {
     void addOrUpdateFoodForTag(Long tagId, Long foodId, boolean fromAdmin);
 
     List<FoodMappingDTO> getFoodCategoryMappings();
+
+    void addOrCategoryToTag(Long tagId, Long categoryId);
 }
