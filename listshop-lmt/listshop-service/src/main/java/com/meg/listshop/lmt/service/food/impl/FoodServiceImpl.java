@@ -8,6 +8,7 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
+import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
 import com.meg.listshop.lmt.data.repository.FoodCategoryMappingRepository;
 import com.meg.listshop.lmt.data.repository.FoodCategoryRepository;
@@ -124,7 +125,7 @@ public class FoodServiceImpl implements FoodService {
         return preferredList;
     }
 
-    public void addOrUpdateFoodForTag(Long tagId, Long foodId) {
+    public void addOrUpdateFoodForTag(Long tagId, Long foodId, boolean fromAdmin) {
         // get tag
         TagEntity tag = tagService.getTagById(tagId);
         if (tag == null) {
@@ -142,8 +143,12 @@ public class FoodServiceImpl implements FoodService {
         // update tag to add food
             conversionFactorService.deleteFactorsForTag(tagId);
         }
+        // update tag
         tag.setFoodId(foodId);
-
+        tag.setInternalStatus(TagInternalStatus.FOOD_ASSIGNED);
+        if (fromAdmin) {
+            tag.setInternalStatus(TagInternalStatus.FOOD_VERIFIED);
+        }
         // create conversion factor
         for (FoodConversionEntity conversion : foodFactors) {
             conversionFactorService.addFactorForTag(tagId,conversion.getAmount(), conversion.getUnitId(), conversion.getGramWeight());

@@ -15,4 +15,8 @@ public enum TagInternalStatus {
     TagInternalStatus (int value) {
         this.value = value;
     }
+
+    public int value() {
+        return value;
+    }
 }

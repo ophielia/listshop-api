@@ -223,7 +223,7 @@ class FoodServiceImplMockTest {
         Mockito.doNothing().when(conversionFactorService).addFactorForTag(tagId, conversionAmount, conversionUnit, conversionGramWeight);
 
         // call under test
-        foodService.addOrUpdateFoodForTag(tagId, foodId);
+        foodService.addOrUpdateFoodForTag(tagId, foodId, true);
 
         Mockito.verify(conversionFactorService).addFactorForTag(tagId,conversionAmount, conversionUnit, conversionGramWeight);
     }
@@ -252,7 +252,7 @@ class FoodServiceImplMockTest {
         Mockito.doNothing().when(conversionFactorService).addFactorForTag(tagId, conversionAmount, conversionUnit, conversionGramWeight);
 
         // call under test
-        foodService.addOrUpdateFoodForTag(tagId, foodId);
+        foodService.addOrUpdateFoodForTag(tagId, foodId, true);
 
         Mockito.verify(conversionFactorService).addFactorForTag(tagId,conversionAmount, conversionUnit, conversionGramWeight);
         Mockito.verify(conversionFactorService).deleteFactorsForTag(tagId);

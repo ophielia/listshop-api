@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -233,6 +234,14 @@ public class TagEntity {
 
     public void setInternalStatus(Long internalStatus) {
         this.internalStatus = internalStatus;
+    }
+
+    public void setInternalStatus(TagInternalStatus status) {
+        int newStatus = status.value();
+        if (this.internalStatus % newStatus == 0) {
+            return;
+        }
+        this.internalStatus = this.internalStatus * newStatus;
     }
 
     public Boolean getIsLiquid() {

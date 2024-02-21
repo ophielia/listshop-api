@@ -1,13 +1,10 @@
 package com.meg.listshop.lmt.service.food;
 
-import com.meg.listshop.lmt.api.model.FoodCategoryMapping;
 import com.meg.listshop.lmt.data.entity.FoodCategoryEntity;
-import com.meg.listshop.lmt.data.entity.FoodCategoryMappingEntity;
 import com.meg.listshop.lmt.data.entity.FoodEntity;
 import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,7 +17,7 @@ public interface FoodService {
 
     List<FoodEntity> getSuggestedFoods(Long tagId);
 
-    void addOrUpdateFoodForTag(Long tagId, Long foodId);
+    void addOrUpdateFoodForTag(Long tagId, Long foodId, boolean fromAdmin);
 
     List<FoodMappingDTO> getFoodCategoryMappings();
 }

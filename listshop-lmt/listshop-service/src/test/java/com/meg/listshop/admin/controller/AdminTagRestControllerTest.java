@@ -17,9 +17,7 @@ import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.IncludeType;
-import com.meg.listshop.lmt.data.repository.TagRelationRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.LayoutService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,10 +42,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -77,16 +72,12 @@ public class AdminTagRestControllerTest {
     @Autowired
     private
     ObjectMapper objectMapper;
-    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
+    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype());
 
     private MockMvc mockMvc;
     @Autowired
     private TagRepository tagRepository;
-    @Autowired
-    private LayoutService listLayoutService;
-    @Autowired
-    private TagRelationRepository tagRelationRepository;
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -172,6 +163,7 @@ Assert.assertNotNull(afterList);
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
+        Assertions.assertNotNull(result);
     }
 
     @Test
@@ -186,14 +178,14 @@ Assert.assertNotNull(afterList);
         Assertions.assertNotNull(result);
                 ObjectMapper mapper = new ObjectMapper();
         CategoryMappingListResource embeddedList = mapper.readValue(result.getResponse().getContentAsString(), CategoryMappingListResource.class);
-        List<FoodCategoryMappingResource> mappingList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getMappingResourceList() : new ArrayList<FoodCategoryMappingResource>();
+        List<FoodCategoryMappingResource> mappingList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getMappingResourceList() : new ArrayList<>();
         Assertions.assertNotNull(mappingList);
         FoodCategoryMapping withCategory = mappingList.stream()
-                .filter(r -> r.getFoodCategoryMapping().getTagId().equals("8881019"))
                 .map(FoodCategoryMappingResource::getFoodCategoryMapping)
+                .filter(foodCategoryMapping -> foodCategoryMapping.getTagId().equals("8881019"))
                 .findFirst().orElse(null);
         Assertions.assertNotNull(withCategory);
-        Assertions.assertEquals(withCategory.getFoodCategoryId(),"3");
+        Assertions.assertEquals("3", withCategory.getFoodCategoryId());
     }
 
     @Test
