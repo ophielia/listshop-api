@@ -2,6 +2,8 @@ package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.admin.model.PostSearchTags;
 import com.meg.listshop.auth.service.impl.JwtUser;
+import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
+import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.IncludeType;
@@ -19,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -39,15 +40,18 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     private final TagService tagService;
     private final TagStructureService tagStructureService;
     private final FoodService foodService;
+    private final ConversionService conversionService;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminTagRestController.class);
 
     @Autowired
     AdminTagRestController(TagService tagService, TagStructureService tagStructureService,
-                           FoodService foodService) {
+                           FoodService foodService,
+                           ConversionService conversionService) {
         this.tagStructureService = tagStructureService;
         this.tagService = tagService;
         this.foodService = foodService;
+        this.conversionService = conversionService;
     }
 
 
@@ -127,6 +131,9 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     public ResponseEntity<AdminTagFullInfoResource> getFullTagInfo(@PathVariable("tagId") Long tagId) {
         AdminTagFullInfo tagInfo = tagService.getFullTagInfo(tagId);
         foodService.fillFoodInformation(tagInfo);
+        List<ConversionSampleDTO> conversionSamples = conversionService.conversionSamplesForTag(tagId);
+        ConversionGrid grid = ModelMapper.toConversionGrid(conversionSamples);
+        tagInfo.setConversionGrid(grid);
         AdminTagFullInfoResource resource = new AdminTagFullInfoResource(tagInfo);
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }

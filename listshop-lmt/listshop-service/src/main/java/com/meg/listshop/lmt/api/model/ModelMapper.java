@@ -14,6 +14,7 @@ import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.common.FlatStringUtils;
+import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -37,6 +38,23 @@ public class ModelMapper {
         throw new IllegalAccessError("Utility class");
     }
 
+    public static ConversionGrid toConversionGrid(List<ConversionSampleDTO> conversionSamples) {
+        List<ConversionSample> samples = conversionSamples.stream()
+                .map(ModelMapper::toModel)
+                .collect(Collectors.toList());
+        ConversionGrid grid = new ConversionGrid();
+        grid.setSamples(samples);
+        return grid;
+    }
+
+    private static ConversionSample toModel(ConversionSampleDTO conversionSampleDTO) {
+        ConversionSample sample = new ConversionSample();
+        sample.setFromAmount(String.valueOf(conversionSampleDTO.getFromAmount()));
+        sample.setToAmount(String.valueOf(conversionSampleDTO.getToAmount()));
+        sample.setToUnit(conversionSampleDTO.getToAmount().getUnit().getName());
+        sample.setFromUnit(conversionSampleDTO.getFromAmount().getTagName());
+        return sample;
+    }
 
     public static Dish toModel(DishEntity dishEntity, boolean includeTags) {
         if (dishEntity != null) {
@@ -724,6 +742,7 @@ public class ModelMapper {
         entity.setValue(property.getValue());
         return entity;
     }
+
 
 
 }

@@ -1,6 +1,6 @@
 package com.meg.listshop.lmt.service.food.impl;
 
-import com.meg.listshop.conversion.service.ConversionFactorService;
+import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -50,7 +50,7 @@ class FoodServiceImplMockTest {
     FoodConversionRepository foodConversionRepository;
 
     @MockBean
-    ConversionFactorService conversionFactorService ;
+    ConversionService conversionFactorService ;
 
     List<FoodCategoryMappingEntity> allMappedCategories;
     List<FoodCategoryEntity> allCategories;

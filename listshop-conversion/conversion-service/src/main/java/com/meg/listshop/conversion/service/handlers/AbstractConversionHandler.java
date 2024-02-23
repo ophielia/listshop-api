@@ -4,7 +4,6 @@ import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
-import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
@@ -46,8 +45,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     }
 
 
-
-    public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException, ExceedsAllowedScaleException {
+    public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException {
         if (!isSkipNoConversionRequiredCheck() && doesntRequireConversion(toConvert, targetSpec)) {
             LOG.debug("No conversion required for spec: [{}], amount [{}].", targetSpec, toConvert);
             return toConvert;

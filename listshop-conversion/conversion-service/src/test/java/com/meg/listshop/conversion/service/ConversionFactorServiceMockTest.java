@@ -23,7 +23,7 @@ import java.util.Optional;
 @ActiveProfiles("test")
 class ConversionFactorServiceMockTest {
 
-    private ConversionFactorServiceImpl conversionFactorService;
+    private ConversionServiceImpl conversionFactorService;
 
     @MockBean
     private ConversionFactorRepository conversionFactorRepository;
@@ -31,9 +31,12 @@ class ConversionFactorServiceMockTest {
     @MockBean
     private UnitRepository unitRepository;
 
+    @MockBean
+    private ConverterService converterService;
+
     @BeforeEach
     void setUp() {
-        conversionFactorService = new ConversionFactorServiceImpl(conversionFactorRepository, unitRepository);
+        conversionFactorService = new ConversionServiceImpl(conversionFactorRepository, unitRepository, converterService);
 
     }
 

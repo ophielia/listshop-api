@@ -3,7 +3,7 @@
  */
 package com.meg.listshop.lmt.service.food.impl;
 
-import com.meg.listshop.conversion.service.ConversionFactorService;
+import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.data.entity.*;
@@ -41,7 +41,7 @@ public class FoodServiceImpl implements FoodService {
     private final TagService tagService;
 
     private final TagStructureService tagStructureService;
-    private final ConversionFactorService conversionFactorService;
+    private final ConversionService conversionFactorService;
 
 
     @Autowired
@@ -50,7 +50,7 @@ public class FoodServiceImpl implements FoodService {
                            TagService tagService,
                            TagStructureService tagStructureService,
                            FoodConversionRepository foodConversionRepository,
-                           ConversionFactorService conversionService) {
+                           ConversionService conversionService) {
         this.foodCategoryMappingRepo = foodCategoryMappingRepo;
         this.foodRepository = foodRepository;
         this.foodCategoryRepository = foodCategoryRepository;

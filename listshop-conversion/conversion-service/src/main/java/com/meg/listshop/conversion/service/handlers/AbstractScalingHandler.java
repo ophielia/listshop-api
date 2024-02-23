@@ -4,7 +4,6 @@ import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.pojo.ConversionContextType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
-import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
@@ -64,7 +63,7 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
         return listOrDish.equals(scalerType);
     }
 
-    public ConvertibleAmount scale(ConvertibleAmount amount) throws ConversionFactorException, ExceedsAllowedScaleException {
+    public ConvertibleAmount scale(ConvertibleAmount amount) throws ConversionFactorException {
         ConversionSpec targetSpec = ConversionSpec.basicSpec(amount.getUnit().getType(),
                 amount.getUnit().getSubtype());
         return convert(amount, targetSpec);
