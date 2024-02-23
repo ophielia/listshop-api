@@ -169,6 +169,25 @@ Assert.assertNotNull(afterList);
 
     @Test
     @WithMockUser
+    public void assignLiquidToTag() throws Exception {
+        this.mockMvc.perform(post("/admin/tag/888999/liquid/true")
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/888999/fullinfo")
+                .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        Assertions.assertNotNull(result);
+        ObjectMapper mapper = new ObjectMapper();
+        AdminTagFullInfoResource resultObject = mapper.readValue(result.getResponse().getContentAsString(), AdminTagFullInfoResource.class);
+        Assertions.assertNotNull(resultObject);
+        Assertions.assertTrue(resultObject.getTag().getLiquid());
+    }
+
+    @Test
+    @WithMockUser
     public void testGetFoodCategoryMappings() throws Exception {
         //    @GetMapping(value = "/food/categories")
         MvcResult result = this.mockMvc.perform(get("/admin/tag/food/categories")

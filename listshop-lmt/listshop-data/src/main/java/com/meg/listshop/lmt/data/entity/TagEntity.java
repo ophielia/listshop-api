@@ -231,6 +231,9 @@ public class TagEntity {
 
     public void setInternalStatus(TagInternalStatus status) {
         long newStatus = status.value();
+        if (this.internalStatus == null) {
+            this.internalStatus = 1L;
+        }
         if (this.internalStatus % newStatus == 0) {
             return;
         }
@@ -335,19 +338,26 @@ public class TagEntity {
 
     public AdminTagFullInfo toAdminFullInfo() {
         AdminTagFullInfo fullInfo = new AdminTagFullInfo( );
-        fullInfo.setTagId(String.valueOf(getId()));
+        fullInfo.setTagId(nullOrValueAsString(getId()));
         fullInfo.setName(getName());
-        fullInfo.setUserId(String.valueOf(getUserId()));
-        fullInfo.setParentId(String.valueOf(getParentId()));
+        fullInfo.setUserId(nullOrValueAsString(getUserId()));
+        fullInfo.setParentId(nullOrValueAsString(getParentId()));
         fullInfo.setParentName(getName());
         fullInfo.setDescription(getDescription());
         fullInfo.setTagType(getTagType().name());
         fullInfo.setGroup(getIsGroup());
         fullInfo.setPower(getPower());
         fullInfo.setToDelete(isToDelete());
-        fullInfo.setFoodId(String.valueOf(getFoodId()));
+        fullInfo.setFoodId(nullOrValueAsString(getFoodId()));
         fullInfo.setLiquid(getIsLiquid());
 
         return fullInfo;
+    }
+
+    private String nullOrValueAsString(Long longId) {
+        if (longId == null) {
+            return null;
+        }
+        return String.valueOf(longId);
     }
 }

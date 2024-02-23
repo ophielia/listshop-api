@@ -156,6 +156,17 @@ public class FoodServiceImpl implements FoodService {
         }
     }
 
+    public void addOrUpdateLiquidPropertyForTag(Long tagId, Boolean isLiquid) {
+        // get tag
+        TagEntity tag = tagService.getTagById(tagId);
+        if (tag == null) {
+            final String msg = String.format("No tag found by id tagId [%s]", tagId);
+            throw new ObjectNotFoundException(msg);
+        }
+        tag.setIsLiquid(isLiquid);
+        tag.setInternalStatus(TagInternalStatus.LIQUID_ASSIGNED);
+    }
+
     public List<FoodMappingDTO> getFoodCategoryMappings() {
         return foodCategoryMappingRepo.retrieveAllFoodMappingDTOs();
     }

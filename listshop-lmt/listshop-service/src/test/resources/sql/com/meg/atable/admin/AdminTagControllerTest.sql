@@ -50,18 +50,18 @@ insert into food_categories (category_id, category_code, name) values
 insert into food_categories (category_id, category_code, name) values
     (18, '18L', 'things that come from we dont know where');
 
-insert into foods (food_id,name, category_id) values
-    (9000,'butterlike substance, stick', 3);
-insert into foods (food_id,name, category_id) values
-    (9001,'butterlike substance, pat', 3);
-insert into foods (food_id,name, category_id) values
-    (9002,'some kind of butterlike substance, unspecified', 13);
-insert into foods (food_id,name, category_id) values
-    (9003,'sticky stuff', 13);
-insert into foods (food_id,name, category_id) values
-    (9004,'butterlike spread', 18);
-insert into foods (food_id,name, category_id) values
-    (9005,'cant call it cheese', 18);
+insert into foods (food_id,name, category_id, has_factor) values
+    (9000,'butterlike substance, stick', 3, true);
+insert into foods (food_id,name, category_id, has_factor) values
+    (9001,'butterlike substance, pat', 3,true);
+insert into foods (food_id,name, category_id, has_factor) values
+    (9002,'some kind of butterlike substance, unspecified', 13,true);
+insert into foods (food_id,name, category_id, has_factor) values
+    (9003,'sticky stuff', 13,true);
+insert into foods (food_id,name, category_id, has_factor) values
+    (9004,'butterlike spread', 18,true);
+insert into foods (food_id,name, category_id, has_factor) values
+    (9005,'cant call it cheese', 18,true);
 
 insert into food_category_mapping (food_category_mapping_id,category_id, tag_id) values (1,3,8881019);
 
