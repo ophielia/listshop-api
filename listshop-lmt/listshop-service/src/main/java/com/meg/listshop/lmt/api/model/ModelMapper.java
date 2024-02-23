@@ -49,10 +49,10 @@ public class ModelMapper {
 
     private static ConversionSample toModel(ConversionSampleDTO conversionSampleDTO) {
         ConversionSample sample = new ConversionSample();
-        sample.setFromAmount(String.valueOf(conversionSampleDTO.getFromAmount()));
-        sample.setToAmount(String.valueOf(conversionSampleDTO.getToAmount()));
+        sample.setFromAmount(String.valueOf(conversionSampleDTO.getFromAmount().getQuantity()));
+        sample.setToAmount(String.valueOf(conversionSampleDTO.getToAmount().getQuantity()));
         sample.setToUnit(conversionSampleDTO.getToAmount().getUnit().getName());
-        sample.setFromUnit(conversionSampleDTO.getFromAmount().getTagName());
+        sample.setFromUnit(conversionSampleDTO.getFromAmount().getUnit().getName());
         return sample;
     }
 

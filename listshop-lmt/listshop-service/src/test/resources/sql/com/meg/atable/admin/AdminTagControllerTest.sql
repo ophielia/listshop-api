@@ -27,8 +27,8 @@ insert into tag (tag_id, description, name, tag_type,  created_on, is_group)  VA
     (8881019, 'description', 'Grandpa Butter', 'Ingredient' , now(), true) ;
 insert into tag (tag_id, description, name, tag_type,  created_on, is_group)  VALUES
     (9991019, 'description', 'Grandma Cream', 'Ingredient' , now(), true) ;
-insert into tag (tag_id, description, name, tag_type,  created_on, is_group)  VALUES
-    (9991029, 'description', 'one molecule from plastic', 'Ingredient' , now(), false) ;
+insert into tag (tag_id, description, name, tag_type,  created_on, is_group, internal_status)  VALUES
+    (9991029, 'description', 'one molecule from plastic', 'Ingredient' , now(), false, 65) ;
 insert into tag (tag_id, description, name, tag_type,  created_on, is_group)  VALUES
     (9991039, 'description', 'Processed Food', 'Ingredient' , now(), true) ;
 
@@ -45,9 +45,9 @@ insert into tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES
 
 insert into food_categories (category_id, category_code, name) values
     (3, '3L', 'things that come from a cow');
-insert into test.public.food_categories (category_id, category_code, name) values
+insert into food_categories (category_id, category_code, name) values
     (13, '13L', 'things that come from a laboratory');
-insert into test.public.food_categories (category_id, category_code, name) values
+insert into food_categories (category_id, category_code, name) values
     (18, '18L', 'things that come from we dont know where');
 
 insert into foods (food_id,name, category_id) values
@@ -69,6 +69,9 @@ insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name,
     (99000, 9000, 900, 1.0, '', 150.0, 1000)  ;
 insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id) values
     (99001, 9005, 901, 1.0, '', 150.0, 1000)  ;
+
+insert into factors (factor_id, factor, to_unit, from_unit, tag_id) VALUES
+     (1234567, 1.5, 1013, 1000, 9991029);
 
 update tag set food_id = 9005 where tag_id = 9991029;
 update tag set is_liquid = false where tag_id = 9991029;

@@ -131,7 +131,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     public ResponseEntity<AdminTagFullInfoResource> getFullTagInfo(@PathVariable("tagId") Long tagId) {
         AdminTagFullInfo tagInfo = tagService.getFullTagInfo(tagId);
         foodService.fillFoodInformation(tagInfo);
-        List<ConversionSampleDTO> conversionSamples = conversionService.conversionSamplesForTag(tagId);
+        List<ConversionSampleDTO> conversionSamples = conversionService.conversionSamplesForTag(tagId, tagInfo.getLiquid());
         ConversionGrid grid = ModelMapper.toConversionGrid(conversionSamples);
         tagInfo.setConversionGrid(grid);
         AdminTagFullInfoResource resource = new AdminTagFullInfoResource(tagInfo);
@@ -277,7 +277,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
             return new ArrayList<>();
         }
         String[] ids = commaSeparatedIds.split(",");
-        if (ids == null || ids.length == 0) {
+        if ( ids.length == 0) {
             return new ArrayList<>();
         }
         return Arrays.stream(ids).map(Long::valueOf).collect(Collectors.toList());

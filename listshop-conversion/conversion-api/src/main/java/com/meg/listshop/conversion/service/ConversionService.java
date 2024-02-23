@@ -10,5 +10,5 @@ public interface ConversionService {
 
     void addFactorForTag(Long tagId, double amount, Long unitId, double gramWeight);
 
-    List<ConversionSampleDTO> conversionSamplesForTag(Long tagId);
+    List<ConversionSampleDTO> conversionSamplesForTag(Long tagId, boolean isLiquid);
 }

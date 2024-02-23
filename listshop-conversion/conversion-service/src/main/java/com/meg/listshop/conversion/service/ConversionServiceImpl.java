@@ -5,6 +5,7 @@ import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
+import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.data.repository.UnitRepository;
@@ -66,26 +67,28 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     @Override
-    public List<ConversionSampleDTO> conversionSamplesForTag(Long tagId) {
+    public List<ConversionSampleDTO> conversionSamplesForTag(Long tagId, boolean isLiquid) {
         List<ConversionSampleDTO> result = new ArrayList<>();
-        if (tagId == null) {
+        if (tagId == null || isLiquid) {
             return result;
         }
 
         // find hybrid units
-        List<UnitEntity> hybridUnits = unitRepository.findByType(UnitType.HYBRID);
+        List<UnitEntity> hybridUnits = unitRepository.findUnitEntitiesByTypeAndSubtypeIsNot(UnitType.HYBRID, UnitSubtype.LIQUID);
 
+        UnitEntity gramUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
         // convert each hybrid unit, and add to result
         for (UnitEntity unit : hybridUnits) {
-            SimpleAmount from = new SimpleAmount(1.0, unit);
+            SimpleAmount from = new SimpleAmount(1.0, unit, tagId, isLiquid, "");
 
             ConvertibleAmount to = null;
             try {
-                to = converterService.convert(from, UnitType.METRIC);
+                to = converterService.convert(from, gramUnit);
+                result.add(new ConversionSampleDTO(from, to));
             } catch (ConversionPathException | ConversionFactorException g) {
                 LOG.error("Exception [{}]thrown during conversion, but continuing to next conversion.", g);
             }
-            result.add(new ConversionSampleDTO(from, to));
+
         }
         // return results
         return result;

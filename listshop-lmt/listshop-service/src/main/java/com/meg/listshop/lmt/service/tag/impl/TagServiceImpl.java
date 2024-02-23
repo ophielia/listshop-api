@@ -554,7 +554,9 @@ public class TagServiceImpl implements TagService {
         TagEntity parent = tagStructureService.getParentTag(tag);
         if (parent != null) {
             fullInfo.setParentName(parent.getName());
+            fullInfo.setParentId(String.valueOf(parent.getId()));
         }
+
 
         // construct status display
         Long internalStatus = tag.getInternalStatus();
