@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.food;
 
+import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.data.entity.FoodCategoryEntity;
 import com.meg.listshop.lmt.data.entity.FoodEntity;
 import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
@@ -22,4 +23,6 @@ public interface FoodService {
     List<FoodMappingDTO> getFoodCategoryMappings();
 
     void addOrCategoryToTag(Long tagId, Long categoryId);
+
+    void fillFoodInformation(AdminTagFullInfo tagInfo);
 }

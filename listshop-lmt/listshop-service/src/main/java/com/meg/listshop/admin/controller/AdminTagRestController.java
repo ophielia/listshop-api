@@ -123,6 +123,14 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
+    @Override
+    public ResponseEntity<AdminTagFullInfoResource> getFullTagInfo(@PathVariable("tagId") Long tagId) {
+        AdminTagFullInfo tagInfo = tagService.getFullTagInfo(tagId);
+        foodService.fillFoodInformation(tagInfo);
+        AdminTagFullInfoResource resource = new AdminTagFullInfoResource(tagInfo);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
+    }
+
 
     public ResponseEntity<TagListResource> findTags(@RequestBody PostSearchTags searchTags) {
         //@PostMapping(value = "/search")

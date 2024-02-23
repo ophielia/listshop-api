@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.data.entity;
 
+import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import org.hibernate.annotations.GenericGenerator;
@@ -332,4 +333,21 @@ public class TagEntity {
     }
 
 
+    public AdminTagFullInfo toAdminFullInfo() {
+        AdminTagFullInfo fullInfo = new AdminTagFullInfo( );
+        fullInfo.setTagId(String.valueOf(getId()));
+        fullInfo.setName(getName());
+        fullInfo.setUserId(String.valueOf(getUserId()));
+        fullInfo.setParentId(String.valueOf(getParentId()));
+        fullInfo.setParentName(getName());
+        fullInfo.setDescription(getDescription());
+        fullInfo.setTagType(getTagType().name());
+        fullInfo.setGroup(getIsGroup());
+        fullInfo.setPower(getPower());
+        fullInfo.setToDelete(isToDelete());
+        fullInfo.setFoodId(String.valueOf(getFoodId()));
+        fullInfo.setLiquid(getIsLiquid());
+
+        return fullInfo;
+    }
 }

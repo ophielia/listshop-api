@@ -190,6 +190,21 @@ Assert.assertNotNull(afterList);
     }
 
     @Test
+    @WithMockUser
+    public void testGetFullTagInfo() throws Exception {
+        Long tagId = 9991029L;
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        Assertions.assertNotNull(result);
+        ObjectMapper mapper = new ObjectMapper();
+        AdminTagFullInfoResource resultObject = mapper.readValue(result.getResponse().getContentAsString(), AdminTagFullInfoResource.class);
+        Assertions.assertNotNull(resultObject);
+    }
+
+    @Test
     public void addChildren() throws Exception {
         String url = "/admin/tag/" + TestConstants.PARENT_TAG_ID_1 + "/children?tagIds=" + TestConstants.TAG_MEAT + "," + TestConstants.TAG_CARROTS + "," + TestConstants.TAG_CROCKPOT;
 

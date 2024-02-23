@@ -27,6 +27,10 @@ insert into tag (tag_id, description, name, tag_type,  created_on, is_group)  VA
     (8881019, 'description', 'Grandpa Butter', 'Ingredient' , now(), true) ;
 insert into tag (tag_id, description, name, tag_type,  created_on, is_group)  VALUES
     (9991019, 'description', 'Grandma Cream', 'Ingredient' , now(), true) ;
+insert into tag (tag_id, description, name, tag_type,  created_on, is_group)  VALUES
+    (9991029, 'description', 'one molecule from plastic', 'Ingredient' , now(), false) ;
+insert into tag (tag_id, description, name, tag_type,  created_on, is_group)  VALUES
+    (9991039, 'description', 'Processed Food', 'Ingredient' , now(), true) ;
 
 insert into tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES
     (888999, 888999, 8881009);
@@ -34,6 +38,10 @@ insert into tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES
     (8881000, 8881009, 8881019);
 insert into tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES
     (8881001, 8881019, null);
+insert into tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES
+    (8881002, 9991039, null);
+insert into tag_relation (tag_relation_id, child_tag_id, parent_tag_id) VALUES
+    (8881003,9991029 , 9991039);
 
 insert into food_categories (category_id, category_code, name) values
     (3, '3L', 'things that come from a cow');
@@ -52,11 +60,17 @@ insert into foods (food_id,name, category_id) values
     (9003,'sticky stuff', 13);
 insert into foods (food_id,name, category_id) values
     (9004,'butterlike spread', 18);
+insert into foods (food_id,name, category_id) values
+    (9005,'cant call it cheese', 18);
 
 insert into food_category_mapping (food_category_mapping_id,category_id, tag_id) values (1,3,8881019);
 
 insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id) values
     (99000, 9000, 900, 1.0, '', 150.0, 1000)  ;
+insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id) values
+    (99001, 9005, 901, 1.0, '', 150.0, 1000)  ;
 
+update tag set food_id = 9005 where tag_id = 9991029;
+update tag set is_liquid = false where tag_id = 9991029;
 
 

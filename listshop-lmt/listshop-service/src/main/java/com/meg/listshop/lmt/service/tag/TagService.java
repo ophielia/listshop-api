@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.service.tag;
 
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
 import com.meg.listshop.lmt.api.model.TagType;
@@ -54,6 +55,8 @@ public interface TagService {
     Map<Long, TagEntity> getDictionaryForIds(Set<Long> tagIds);
 
     TagEntity updateTag(Long tagId, TagEntity toUpdate);
+
+    AdminTagFullInfo getFullTagInfo(Long tagId);
 
     void replaceTagInDishes(Long userId, Long fromTagId, Long toTagId);
 

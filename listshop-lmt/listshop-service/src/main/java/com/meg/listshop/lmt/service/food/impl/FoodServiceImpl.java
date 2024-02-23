@@ -5,6 +5,7 @@ package com.meg.listshop.lmt.service.food.impl;
 
 import com.meg.listshop.conversion.service.ConversionFactorService;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -89,7 +90,7 @@ public class FoodServiceImpl implements FoodService {
         }
         // prepare searchTerm
         String searchTerm = name.trim().toLowerCase();
-        return  foodRepository.findFoodEntitiesByNameContainsIgnoreCase(searchTerm);
+        return  foodRepository.findFoodEntitiesByNameContainsIgnoreCaseAndHasFactorTrue(searchTerm);
 
     }
 
@@ -176,6 +177,26 @@ public class FoodServiceImpl implements FoodService {
         mappingEntity.setCategoryId(categoryId);
         // update the internal status of the tag
         tag.setInternalStatus(TagInternalStatus.CATEGORY_ASSIGNED);
+    }
+
+    @Override
+    public void fillFoodInformation(AdminTagFullInfo tagInfo) {
+        if (tagInfo == null || tagInfo.getFoodId() == null) {
+            return;
+        }
+        String stringFoodId = tagInfo.getFoodId();
+        Long foodId = Long.valueOf(stringFoodId);
+        FoodEntity food = getFoodById(foodId);
+        if (food != null) {
+            tagInfo.setFoodName(food.getName());
+        }
+    }
+
+    private FoodEntity getFoodById(Long foodId) {
+        if (foodId == null) {
+            return null;
+        }
+        return foodRepository.findById(foodId).orElse(null);
     }
 
     private FoodCategoryMappingEntity findCategoryInHierarchy(Long tagId, Map<Long, TagInfoDTO> tagsToParents, Map<Long, FoodCategoryMappingEntity> mappingLookup) {

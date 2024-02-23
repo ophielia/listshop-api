@@ -183,7 +183,7 @@ class FoodServiceImplMockTest {
 
         Mockito.when(foodCategoryRepository.findById(categoryId))
                 .thenReturn(Optional.of(foundCategory));
-        Mockito.when(foodRepository.findFoodEntitiesByNameContainsIgnoreCase(tag.getName().toLowerCase()))
+        Mockito.when(foodRepository.findFoodEntitiesByNameContainsIgnoreCaseAndHasFactorTrue(tag.getName().toLowerCase()))
                 .thenReturn(categoryFoods);
 
 

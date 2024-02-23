@@ -6,10 +6,7 @@ package com.meg.listshop.lmt.service.tag.impl;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.model.DishRatingInfo;
-import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
-import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
-import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -55,7 +52,6 @@ public class TagServiceImpl implements TagService {
     private final TagStructureService tagStructureService;
     private final DishSearchService dishSearchService;
     private final CustomTagInfoRepository tagInfoCustomRepository;
-
 
     @Value("${shopping.list.properties.default_list_layout_id:5}")
     private Long defaultLayoutId;
@@ -262,6 +258,7 @@ public class TagServiceImpl implements TagService {
         newTag.setToDelete(false);
         newTag.setCreatedOn(new Date());
         newTag.setUserId(tagUserId);
+        newTag.setInternalStatus(TagInternalStatus.EMPTY.value());
         TagEntity saved = tagRepository.save(newTag);
 
         tagStructureService.createRelation(parentTag, saved);
@@ -539,6 +536,47 @@ public class TagServiceImpl implements TagService {
         addTagsToDish(userId, dishId, defaultTagIds, false);
     }
 
+    @Override
+    public AdminTagFullInfo getFullTagInfo(Long tagId) {
+        if (tagId == null) {
+            throw new ObjectNotFoundException("Can't find null tag id in getFullTagInfo");
+        }
+        TagEntity tag = getTagById(tagId);
+
+        if (tag == null) {
+            String message = String.format("Can't find tag for tagId[%s] in getFullTagInfo", tagId);
+            throw new ObjectNotFoundException(message);
+        }
+
+        AdminTagFullInfo fullInfo = tag.toAdminFullInfo();
+
+        // pull parent tag to fill in parent name
+        TagEntity parent = tagStructureService.getParentTag(tag);
+        if (parent != null) {
+            fullInfo.setParentName(parent.getName());
+        }
+
+        // construct status display
+        Long internalStatus = tag.getInternalStatus();
+        List<String> statuses = new ArrayList<>();
+        if (tagHasStatus(internalStatus,TagInternalStatus.CHECKED)) {statuses.add(TagInternalStatus.CHECKED.toString());}
+        if (tagHasStatus(internalStatus,TagInternalStatus.LIQUID_ASSIGNED)) {statuses.add(TagInternalStatus.LIQUID_ASSIGNED.toString());}
+        if (tagHasStatus(internalStatus,TagInternalStatus.FOOD_ASSIGNED)) {statuses.add(TagInternalStatus.FOOD_ASSIGNED.toString());}
+        if (tagHasStatus(internalStatus,TagInternalStatus.FOOD_VERIFIED)) {statuses.add(TagInternalStatus.FOOD_VERIFIED.toString());}
+        if (tagHasStatus(internalStatus,TagInternalStatus.CATEGORY_ASSIGNED)) {statuses.add(TagInternalStatus.CATEGORY_ASSIGNED.toString());}
+
+        String status = "empty";
+        if (!statuses.isEmpty()) {
+            String list = String.join(",",statuses);
+            status = "status: " + list;
+        }
+        fullInfo.setStatusDisplay(status);
+        return fullInfo;
+    }
+
+    private boolean tagHasStatus(Long status, TagInternalStatus tagInternalStatus) {
+        return status % tagInternalStatus.value() == 0;
+    }
 
 
 

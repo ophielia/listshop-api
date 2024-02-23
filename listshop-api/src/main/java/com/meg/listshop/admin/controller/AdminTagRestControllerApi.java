@@ -28,6 +28,9 @@ public interface AdminTagRestControllerApi {
     @PostMapping(value = "/{tagId}/food/category/{categoryId}")
     ResponseEntity<Object> assignFoodCategory(@PathVariable("tagId") Long tagId, @PathVariable("categoryId") Long categoryId);
 
+    @GetMapping(value = "/{tagId}/fullinfo")
+    ResponseEntity<AdminTagFullInfoResource> getFullTagInfo(@PathVariable("tagId") Long tagId);
+
     @PostMapping(value = "/search")
      ResponseEntity<TagListResource> findTags(@RequestBody PostSearchTags searchTags);
 
