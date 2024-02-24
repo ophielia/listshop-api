@@ -16,11 +16,10 @@ public class PostSearchTags {
 
     @JsonProperty("group_include")
     private String groupIncludeType;
-    @JsonProperty("include_statuses")
-
+    @JsonProperty("included_statuses")
     private List<String> includeStatuses;
 
-    @JsonProperty("exclude_statuses")
+    @JsonProperty("excluded_statuses")
     private List<String> excludeStatuses;
 
     @JsonProperty("tag_types")
