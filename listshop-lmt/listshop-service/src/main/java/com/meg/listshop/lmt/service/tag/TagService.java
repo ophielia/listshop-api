@@ -87,5 +87,6 @@ public interface TagService {
 
     void assignDefaultRatingsToDish(Long userId, Long dishId);
 
-
+    void addOrUpdateLiquidPropertyForTag(Long tagId, Boolean isLiquid);
+    void addOrUpdateLiquidPropertyForTagList(List<Long> tagIds, Boolean isLiquid);
 }

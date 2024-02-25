@@ -12,6 +12,8 @@ public class TagOperationPut {
     private String tagOperationType;
     @JsonProperty(value = "user_id")
     private String userId;
+    @JsonProperty(value = "is_liquid")
+    private Boolean isLiquid;
 
     public TagOperationPut() {
     }
@@ -38,5 +40,13 @@ public class TagOperationPut {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public Boolean getIsLiquid() {
+        return isLiquid;
+    }
+
+    public void setIsLiquid(Boolean isLiquid) {
+        this.isLiquid = isLiquid;
     }
 }

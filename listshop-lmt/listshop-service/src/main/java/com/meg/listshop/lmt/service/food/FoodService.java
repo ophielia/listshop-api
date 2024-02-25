@@ -19,7 +19,7 @@ public interface FoodService {
     List<FoodEntity> getSuggestedFoods(Long tagId);
 
     void addOrUpdateFoodForTag(Long tagId, Long foodId, boolean fromAdmin);
-    void addOrUpdateLiquidPropertyForTag(Long tagId, Boolean isLiquid);
+
 
     List<FoodMappingDTO> getFoodCategoryMappings();
 

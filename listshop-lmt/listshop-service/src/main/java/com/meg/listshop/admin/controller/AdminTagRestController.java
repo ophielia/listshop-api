@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -81,6 +80,10 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
                 break;
             case CopyToStandard:
                 tagService.createStandardTagsFromUserTags(tagIds);
+                break;
+            case SetLiquid:
+                Boolean isLiquid = input.getIsLiquid();
+                tagService.addOrUpdateLiquidPropertyForTagList(tagIds, isLiquid);
 
         }
         return ResponseEntity.ok().build();
@@ -110,7 +113,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
 
     public ResponseEntity<Object> assignLiquidProperty(@PathVariable("tagId") Long tagId, @PathVariable("isLiquid") Boolean foodId) {
-        foodService.addOrUpdateLiquidPropertyForTag(tagId,  true);
+        tagService.addOrUpdateLiquidPropertyForTag(tagId,  true);
 
         return ResponseEntity.noContent().build();
     }

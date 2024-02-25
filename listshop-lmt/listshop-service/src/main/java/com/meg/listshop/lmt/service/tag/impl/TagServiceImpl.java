@@ -714,6 +714,33 @@ public class TagServiceImpl implements TagService {
 
     }
 
+    public void addOrUpdateLiquidPropertyForTagList(List<Long> tagIds, Boolean isLiquid) {
+        if (isLiquid == null) {
+            return;
+        }
+        // get tags to set
+        List<TagEntity> tags = tagRepository.getTagsForIdList(new HashSet<>(tagIds));
+        for ( TagEntity tag : tags) {
+            addOrUpdateLiquidPropertyForTag(tag, isLiquid);
+        }
+    }
+
+    public void addOrUpdateLiquidPropertyForTag(Long tagId, Boolean isLiquid) {
+        // get tag
+        TagEntity tag = getTagById(tagId);
+        if (tag == null) {
+            final String msg = String.format("No tag found by id tagId [%s]", tagId);
+            throw new ObjectNotFoundException(msg);
+        }
+        addOrUpdateLiquidPropertyForTag(tag, isLiquid);
+    }
+
+    private void addOrUpdateLiquidPropertyForTag(TagEntity tag, Boolean isLiquid) {
+        // get tag
+        tag.setIsLiquid(isLiquid);
+        tag.setInternalStatus(TagInternalStatus.LIQUID_ASSIGNED);
+    }
+
     private Set<Long> determineTagsEligibleForStandard(List<Long> tagIds) {
         List<Long> alreadyExisting =  tagRepository.findDuplicateStandardTags(tagIds );
         return tagIds.stream()
