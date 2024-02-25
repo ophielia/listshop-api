@@ -67,9 +67,9 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     @Override
-    public List<ConversionSampleDTO> conversionSamplesForTag(Long tagId, boolean isLiquid) {
+    public List<ConversionSampleDTO> conversionSamplesForTag(Long tagId, Boolean isLiquid) {
         List<ConversionSampleDTO> result = new ArrayList<>();
-        if (tagId == null || isLiquid) {
+        if (tagId == null || (isLiquid != null && isLiquid)) {
             return result;
         }
 

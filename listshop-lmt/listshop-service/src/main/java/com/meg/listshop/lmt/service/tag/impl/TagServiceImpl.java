@@ -569,8 +569,7 @@ public class TagServiceImpl implements TagService {
 
         String status = "empty";
         if (!statuses.isEmpty()) {
-            String list = String.join(",",statuses);
-            status = "status: " + list;
+            status = String.join(",",statuses);
         }
         fullInfo.setStatusDisplay(status);
         return fullInfo;
