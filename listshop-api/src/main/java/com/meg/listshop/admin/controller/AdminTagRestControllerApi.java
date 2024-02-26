@@ -25,8 +25,11 @@ public interface AdminTagRestControllerApi {
     @PostMapping(value = "/{tagId}/liquid/{isLiquid}")
     ResponseEntity<Object> assignLiquidProperty(@PathVariable("tagId") Long tagId, @PathVariable("isLiquid") Boolean foodId);
 
-    @GetMapping(value = "/food/categories")
+    @GetMapping(value = "/food/category/mappings")
     ResponseEntity<CategoryMappingListResource> getFoodCategoryMappings();
+
+    @GetMapping(value = "/food/category")
+    ResponseEntity<FoodCategoryListResource> getFoodCategories();
 
     @PostMapping(value = "/{tagId}/food/category/{categoryId}")
     ResponseEntity<Object> assignFoodCategory(@PathVariable("tagId") Long tagId, @PathVariable("categoryId") Long categoryId);

@@ -667,9 +667,7 @@ public class TagServiceImpl implements TagService {
 
     public void setTagsAsVerified(List<Long> tagIds) {
         List<TagEntity> allTags = tagRepository.findAllById(tagIds);
-        allTags.forEach(t -> {
-            t.setInternalStatus(TagInternalStatus.CHECKED);
-        });
+        allTags.forEach(t -> t.setInternalStatus(TagInternalStatus.CHECKED));
     }
 
     public void createStandardTagsFromUserTags(List<Long> tagIds) {

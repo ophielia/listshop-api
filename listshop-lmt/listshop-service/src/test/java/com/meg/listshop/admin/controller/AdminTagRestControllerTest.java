@@ -190,7 +190,7 @@ Assert.assertNotNull(afterList);
     @WithMockUser
     public void testGetFoodCategoryMappings() throws Exception {
         //    @GetMapping(value = "/food/categories")
-        MvcResult result = this.mockMvc.perform(get("/admin/tag/food/categories")
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/food/category/mappings")
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();

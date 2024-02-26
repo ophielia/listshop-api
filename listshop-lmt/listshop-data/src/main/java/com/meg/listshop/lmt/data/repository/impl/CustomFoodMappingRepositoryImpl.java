@@ -26,7 +26,8 @@ public class CustomFoodMappingRepositoryImpl implements CustomFoodMappingReposit
             "    m.category_id, c.name as category_name from tag t\n" +
             "    left outer join food_category_mapping m on m.tag_id = t.tag_id\n" +
             "    left outer join food_categories c on c.category_id = m.category_id\n" +
-            "where is_group = true";
+            "where is_group = true and t.tag_type = 'Ingredient'" +
+            " order by lower(t.name)";
     NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired

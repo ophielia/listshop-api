@@ -194,6 +194,11 @@ public class FoodServiceImpl implements FoodService {
         }
     }
 
+    @Override
+    public List<FoodCategoryEntity> getFoodCategories() {
+        return foodCategoryRepository.findAll();
+    }
+
     private FoodEntity getFoodById(Long foodId) {
         if (foodId == null) {
             return null;

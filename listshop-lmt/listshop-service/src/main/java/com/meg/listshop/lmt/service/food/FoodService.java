@@ -6,6 +6,7 @@ import com.meg.listshop.lmt.data.entity.FoodEntity;
 import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -26,4 +27,6 @@ public interface FoodService {
     void addOrCategoryToTag(Long tagId, Long categoryId);
 
     void fillFoodInformation(AdminTagFullInfo tagInfo);
+
+    List<FoodCategoryEntity> getFoodCategories();
 }

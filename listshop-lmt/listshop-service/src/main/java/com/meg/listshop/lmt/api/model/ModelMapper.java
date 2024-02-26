@@ -744,5 +744,10 @@ public class ModelMapper {
     }
 
 
-
+    public static FoodCategory toModel(FoodCategoryEntity foodCategoryEntity) {
+        FoodCategory foodCategory = new FoodCategory();
+        foodCategory.setCategoryName(foodCategoryEntity.getName());
+        foodCategory.setCategoryId(String.valueOf(foodCategoryEntity.getId()));
+        return foodCategory;
+    }
 }
