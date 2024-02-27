@@ -4,6 +4,6 @@ public enum TagOperationType {
     AssignToUser,
     CopyToStandard,
     MarkAsReviewed,
-
-    SetLiquid
+    SetLiquid,
+    AssignFoodCategory
 }

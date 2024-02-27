@@ -20,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -85,16 +84,22 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
             case SetLiquid:
                 Boolean isLiquid = input.getIsLiquid();
                 tagService.addOrUpdateLiquidPropertyForTagList(tagIds, isLiquid);
-
+                break;
+            case AssignFoodCategory:
+                String toAssignString = input.getAssignId();
+                Long foodCategoryToAssign = Long.valueOf(toAssignString);
+                foodService.addOrUpdateFoodCategories(tagIds, foodCategoryToAssign);
+                break;
         }
         return ResponseEntity.ok().build();
     }
 
 
-    public ResponseEntity<FoodListResource> getFoodSuggestionsForTag(@PathVariable("tagId") Long tagId) {
+    public ResponseEntity<FoodListResource> getFoodSuggestionsForTag(@PathVariable("tagId") Long tagId,
+                                                                     @RequestParam(value = "searchTerm", required = false) String searchTerm) {
         //@GetMapping(value = "/{tag_id}/food/suggestions")
 
-        List<FoodResource> resourceList = foodService.getSuggestedFoods(tagId).stream()
+        List<FoodResource> resourceList = foodService.getSuggestedFoods(tagId, searchTerm).stream()
                 .map(ModelMapper::toModel)
                 .map(FoodResource::new)
                 .collect(Collectors.toList());
@@ -114,7 +119,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
 
     public ResponseEntity<Object> assignLiquidProperty(@PathVariable("tagId") Long tagId, @PathVariable("isLiquid") Boolean foodId) {
-        tagService.addOrUpdateLiquidPropertyForTag(tagId,  true);
+        tagService.addOrUpdateLiquidPropertyForTag(tagId, true);
 
         return ResponseEntity.noContent().build();
     }
@@ -133,7 +138,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
 
     public ResponseEntity<FoodCategoryListResource> getFoodCategories() {
-    // @GetMapping(value = "/food/category")
+        // @GetMapping(value = "/food/category")
         List<FoodCategoryResource> resourceList = foodService.getFoodCategories().stream()
                 .map(ModelMapper::toModel)
                 .map(FoodCategoryResource::new)
@@ -145,7 +150,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     @Override
     public ResponseEntity<Object> assignFoodCategory(Long tagId, Long categoryId) {
         //@PostMapping(value = "/{tagId}/food/category/{categoryId}")
-        foodService.addOrCategoryToTag(tagId, categoryId);
+        foodService.addOrUpdateFoodCategory(tagId, categoryId);
 
         return ResponseEntity.noContent().build();
     }
@@ -184,7 +189,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         List<TagType> tagTypes = toTagTypes(searchTags.getTagTypes());
         String textFragment = searchTags.getTextFragment() == null || searchTags.getTextFragment().isEmpty() ?
                 null : searchTags.getTextFragment();
-        return  new TagSearchCriteria(userId,
+        return new TagSearchCriteria(userId,
                 textFragment,
                 tagTypes,
                 excluded,
@@ -196,7 +201,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         if (tagTypes == null) {
             return new ArrayList<>();
         }
-       return tagTypes;
+        return tagTypes;
     }
 
     private IncludeType stringToIncludeType(String groupIncludeType) {
@@ -302,7 +307,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
             return new ArrayList<>();
         }
         String[] ids = commaSeparatedIds.split(",");
-        if ( ids.length == 0) {
+        if (ids.length == 0) {
             return new ArrayList<>();
         }
         return Arrays.stream(ids).map(Long::valueOf).collect(Collectors.toList());

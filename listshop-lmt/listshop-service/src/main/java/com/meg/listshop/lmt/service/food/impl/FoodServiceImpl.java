@@ -64,16 +64,16 @@ public class FoodServiceImpl implements FoodService {
     public FoodCategoryEntity getCategoryMatchForTag(Long tagId, List<TagInfoDTO> tagInfoDTOS) {
         // make reference hash of ascendant tags
         Map<Long, TagInfoDTO> tagsToParents = tagInfoDTOS.stream()
-                .collect(Collectors.toMap( TagInfoDTO::getTagId, Function.identity()));
+                .collect(Collectors.toMap(TagInfoDTO::getTagId, Function.identity()));
 
         // get mapping entities for tag ids
         List<Long> tagIds = new ArrayList<>(tagsToParents.keySet());
-        List<FoodCategoryMappingEntity> mappingEntities =  foodCategoryMappingRepo.findFoodCategoryMappingEntityByTagIdIn(tagIds);
+        List<FoodCategoryMappingEntity> mappingEntities = foodCategoryMappingRepo.findFoodCategoryMappingEntityByTagIdIn(tagIds);
         Map<Long, FoodCategoryMappingEntity> mappingLookup = new HashMap<>();
-        mappingEntities.forEach( v -> {
-                    Long id = v.getTagId();
-                    mappingLookup.put(id, v);
-                });
+        mappingEntities.forEach(v -> {
+            Long id = v.getTagId();
+            mappingLookup.put(id, v);
+        });
 
         // find first tag in hierarchy with a category
         FoodCategoryMappingEntity foundMapping = findCategoryInHierarchy(tagId, tagsToParents, mappingLookup);
@@ -90,14 +90,12 @@ public class FoodServiceImpl implements FoodService {
         }
         // prepare searchTerm
         String searchTerm = name.trim().toLowerCase();
-        return  foodRepository.findFoodEntitiesByNameContainsIgnoreCaseAndHasFactorTrue(searchTerm);
+        return foodRepository.findFoodEntitiesByNameContainsIgnoreCaseAndHasFactorTrue(searchTerm);
 
     }
 
 
-
-
-    public List<FoodEntity> getSuggestedFoods(Long tagId) {
+    public List<FoodEntity> getSuggestedFoods(Long tagId, String alternateSearchTerm) {
         // get tag
         TagEntity tag = tagService.getTagById(tagId);
         if (tag == null) {
@@ -109,7 +107,11 @@ public class FoodServiceImpl implements FoodService {
         List<FoodEntity> preferredList = new ArrayList<>();
         List<FoodEntity> otherList = new ArrayList<>();
         FoodCategoryEntity categoryMatch = findClosestFoodCategory(tag);
-        suggestions = foodMatches(tag.getName());
+        String foodSearchTerm = tag.getName();
+        if (alternateSearchTerm != null) {
+            foodSearchTerm = alternateSearchTerm;
+        }
+        suggestions = foodMatches(foodSearchTerm);
         if (categoryMatch != null) {
             suggestions.forEach(f -> {
                 if (f.getCategoryId().equals(categoryMatch.getId())) {
@@ -141,7 +143,7 @@ public class FoodServiceImpl implements FoodService {
         }
         // check if tag has food assigned
         if (tag.getFoodId() != null) {
-        // update tag to add food
+            // update tag to add food
             conversionFactorService.deleteFactorsForTag(tagId);
         }
         // update tag
@@ -152,33 +154,13 @@ public class FoodServiceImpl implements FoodService {
         }
         // create conversion factor
         for (FoodConversionEntity conversion : foodFactors) {
-            conversionFactorService.addFactorForTag(tagId,conversion.getAmount(), conversion.getUnitId(), conversion.getGramWeight());
+            conversionFactorService.addFactorForTag(tagId, conversion.getAmount(), conversion.getUnitId(), conversion.getGramWeight());
         }
     }
-
 
 
     public List<FoodMappingDTO> getFoodCategoryMappings() {
         return foodCategoryMappingRepo.retrieveAllFoodMappingDTOs();
-    }
-
-    @Override
-    public void addOrCategoryToTag(Long tagId, Long categoryId) {
-        // get tag
-        TagEntity tag = tagService.getTagById(tagId);
-        if (tag == null) {
-            final String msg = String.format("No tag found by id tagId [%s]", tagId);
-            throw new ObjectNotFoundException(msg);
-        }
-        // get category mapping for tag or create a new one
-        FoodCategoryMappingEntity mappingEntity = foodCategoryMappingRepo.findFoodCategoryMappingEntityByTagId(tagId);
-        if (mappingEntity == null) {
-            mappingEntity = new FoodCategoryMappingEntity();
-        }
-        // save the category id in the mapping
-        mappingEntity.setCategoryId(categoryId);
-        // update the internal status of the tag
-        tag.setInternalStatus(TagInternalStatus.CATEGORY_ASSIGNED);
     }
 
     @Override
@@ -199,6 +181,40 @@ public class FoodServiceImpl implements FoodService {
         return foodCategoryRepository.findAll();
     }
 
+    @Override
+    public void addOrUpdateFoodCategories(List<Long> tagIds, Long foodCategoryToAssign) {
+        List<TagEntity> tags = tagService.getTagsForIdList(tagIds);
+        for (TagEntity tag : tags) {
+            addOrUpdateFoodCategory(tag, foodCategoryToAssign);
+        }
+    }
+
+    @Override
+    public void addOrUpdateFoodCategory(Long tagId, Long categoryId) {
+        // get tag
+        TagEntity tag = tagService.getTagById(tagId);
+        addOrUpdateFoodCategory(tag, categoryId);
+    }
+
+    private void addOrUpdateFoodCategory(TagEntity tag, Long categoryId) {
+        if (tag == null) {
+            final String msg = "Null tag in addOrUpdateFoodCategory";
+            throw new ObjectNotFoundException(msg);
+        }
+        // get category mapping for tag or create a new one
+        FoodCategoryMappingEntity mappingEntity = foodCategoryMappingRepo.findFoodCategoryMappingEntityByTagId(tag.getId());
+        if (mappingEntity == null) {
+            mappingEntity = new FoodCategoryMappingEntity();
+        }
+        // save the category id in the mapping
+        mappingEntity.setCategoryId(categoryId);
+        mappingEntity.setTagId(tag.getId());
+        foodCategoryMappingRepo.save(mappingEntity);
+        // update the internal status of the tag
+        tag.setInternalStatus(TagInternalStatus.CATEGORY_ASSIGNED);
+    }
+
+
     private FoodEntity getFoodById(Long foodId) {
         if (foodId == null) {
             return null;
@@ -216,8 +232,8 @@ public class FoodServiceImpl implements FoodService {
         if (tag.getParentId() == null) {
             return null;
         }
-            // check for parent
-            return findCategoryInHierarchy(tag.getParentId(),tagsToParents,mappingLookup);
+        // check for parent
+        return findCategoryInHierarchy(tag.getParentId(), tagsToParents, mappingLookup);
 
     }
 
@@ -231,6 +247,6 @@ public class FoodServiceImpl implements FoodService {
         TagSearchCriteria searchCriteria = new TagSearchCriteria();
         searchCriteria.setTagIds(tagSearchIds);
         List<TagInfoDTO> allTagInfo = tagService.getTagInfoList(searchCriteria);
-        return getCategoryMatchForTag(tag.getId() , allTagInfo);
+        return getCategoryMatchForTag(tag.getId(), allTagInfo);
     }
 }

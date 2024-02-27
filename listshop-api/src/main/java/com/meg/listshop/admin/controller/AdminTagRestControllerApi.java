@@ -17,7 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 public interface AdminTagRestControllerApi {
 
     @GetMapping(value = "/{tagId}/food/suggestions")
-    ResponseEntity<FoodListResource> getFoodSuggestionsForTag(@PathVariable("tagId") Long tagId);
+    ResponseEntity<FoodListResource> getFoodSuggestionsForTag(@PathVariable("tagId") Long tagId,
+                                                              @RequestParam(value = "searchTerm", required = false) String searchTerm);
 
     @PostMapping(value = "/{tagId}/food/{foodId}")
     ResponseEntity<Object> assignFoodToTag(@PathVariable("tagId") Long tagId, @PathVariable("foodId") Long foodId);
@@ -35,10 +36,10 @@ public interface AdminTagRestControllerApi {
     ResponseEntity<Object> assignFoodCategory(@PathVariable("tagId") Long tagId, @PathVariable("categoryId") Long categoryId);
 
     @GetMapping(value = "/{tagId}/fullinfo")
-    ResponseEntity<AdminTagFullInfoResource> getFullTagInfo(@PathVariable("tagId") Long tagId) ;
+    ResponseEntity<AdminTagFullInfoResource> getFullTagInfo(@PathVariable("tagId") Long tagId);
 
     @PostMapping(value = "/search")
-     ResponseEntity<TagListResource> findTags(@RequestBody PostSearchTags searchTags);
+    ResponseEntity<TagListResource> findTags(@RequestBody PostSearchTags searchTags);
 
 
     @DeleteMapping(value = "/delete/{tagId}")

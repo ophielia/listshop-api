@@ -1,20 +1,8 @@
-select tagrelatio0_.child_tag_id  as col_0_0_,
-       tagentity1_.name           as col_1_0_,
-       tagentity1_.description    as col_2_0_,
-       tagentity1_.power          as col_3_0_,
-       tagentity1_.user_id        as col_4_0_,
-       tagentity1_.tag_type       as col_5_0_,
-       tagentity1_.is_group       as col_6_0_,
-       tagrelatio0_.parent_tag_id as col_7_0_,
-       tagentity1_.to_delete      as col_8_0_
-from tag_relation tagrelatio0_
-         cross join tag tagentity1_
-where tagrelatio0_.child_tag_id = tagentity1_.tag_id
-  and tagentity1_.is_group=?
-  and (tagentity1_.tag_type in (?))
-  and mod(tagentity1_.internal_status, ?) = 0
-  and mod(tagentity1_.internal_status, ?) <> 0
-  and tagentity1_.to_delete = false
+select foodcatego0_.category_id   as category1_8_,
+       foodcatego0_.category_code as category2_8_,
+       foodcatego0_.name          as name3_8_
+from food_categories foodcatego0_
+
 
 
 delete from factors;

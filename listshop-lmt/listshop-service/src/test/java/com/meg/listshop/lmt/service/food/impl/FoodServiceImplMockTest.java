@@ -50,7 +50,7 @@ class FoodServiceImplMockTest {
     FoodConversionRepository foodConversionRepository;
 
     @MockBean
-    ConversionService conversionFactorService ;
+    ConversionService conversionFactorService;
 
     List<FoodCategoryMappingEntity> allMappedCategories;
     List<FoodCategoryEntity> allCategories;
@@ -62,7 +62,7 @@ class FoodServiceImplMockTest {
         this.foodService = new FoodServiceImpl(
                 foodCategoryMappingRepo, foodRepository, foodCategoryRepository,
                 tagService, tagStructureService,
-                 foodConversionRepository, conversionFactorService
+                foodConversionRepository, conversionFactorService
         );
         allSearchTags = new ArrayList<>();
         allSearchTags.add(buildTagInfoDTO(1L, "searchTag1", 2L));
@@ -94,7 +94,7 @@ class FoodServiceImplMockTest {
 
         FoodCategoryEntity result = foodService.getCategoryMatchForTag(tagId, allSearchTags);
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(22L,result.getId(), "category should be 22" );
+        Assertions.assertEquals(22L, result.getId(), "category should be 22");
 
     }
 
@@ -106,12 +106,12 @@ class FoodServiceImplMockTest {
         List<Long> tagIds = allSearchTags.stream().map(TagInfoDTO::getTagId).collect(Collectors.toList());
 
         List<FoodCategoryMappingEntity> onlyTop = allMappedCategories.stream().filter(m -> m.getTagId().equals(4L))
-                        .collect(Collectors.toList());
+                .collect(Collectors.toList());
         Mockito.when(foodCategoryMappingRepo.findFoodCategoryMappingEntityByTagIdIn(tagIds)).thenReturn(onlyTop);
         Mockito.when(foodCategoryRepository.findById(categoryId)).thenReturn(Optional.of(expectedCategory));
         FoodCategoryEntity result = foodService.getCategoryMatchForTag(tagId, allSearchTags);
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(44L,result.getId(), "category should be 44" );
+        Assertions.assertEquals(44L, result.getId(), "category should be 44");
     }
 
     @Test
@@ -145,21 +145,21 @@ class FoodServiceImplMockTest {
         searchCriteria.setTagIds(ascendantTags.stream().map(TagEntity::getId).collect(Collectors.toList()));
 
         List<TagInfoDTO> tagInfoList = new ArrayList<>();
-        tagInfoList.add(buildTagInfoDTO(1L, "tag1",  2L));
-        tagInfoList.add(buildTagInfoDTO(2L, "tag2",  3L));
-        tagInfoList.add(buildTagInfoDTO(3L, "tag3",  4L));
-        tagInfoList.add(buildTagInfoDTO(4L, "tag4",  null));
+        tagInfoList.add(buildTagInfoDTO(1L, "tag1", 2L));
+        tagInfoList.add(buildTagInfoDTO(2L, "tag2", 3L));
+        tagInfoList.add(buildTagInfoDTO(3L, "tag3", 4L));
+        tagInfoList.add(buildTagInfoDTO(4L, "tag4", null));
 
         FoodCategoryEntity foundCategory = new FoodCategoryEntity();
         foundCategory.setId(categoryId);
 
 
         List<FoodEntity> categoryFoods = new ArrayList<>();
-        categoryFoods.add(buildFood(1L,"food1", otherCategoryId));
-        categoryFoods.add(buildFood(2L,"food2", otherCategoryId));
-        categoryFoods.add(buildFood(33L,"food33", otherCategoryId));
-        categoryFoods.add(buildFood(44L,"food44", categoryId));
-        categoryFoods.add(buildFood(55L,"food55", categoryId));
+        categoryFoods.add(buildFood(1L, "food1", otherCategoryId));
+        categoryFoods.add(buildFood(2L, "food2", otherCategoryId));
+        categoryFoods.add(buildFood(33L, "food33", otherCategoryId));
+        categoryFoods.add(buildFood(44L, "food44", categoryId));
+        categoryFoods.add(buildFood(55L, "food55", categoryId));
 
         TagEntity replaceTag = new TagEntity();
         replaceTag.setId(replacementTagId);
@@ -176,7 +176,7 @@ class FoodServiceImplMockTest {
         Mockito.when(foodCategoryMappingRepo.findFoodCategoryMappingEntityByTagIdIn(any(List.class)))
                 .thenReturn(allMappedCategories);
 
-        List<FoodCategoryMappingEntity> partialMappings = Collections.singletonList(buildMapping(4L,categoryId));
+        List<FoodCategoryMappingEntity> partialMappings = Collections.singletonList(buildMapping(4L, categoryId));
         Mockito.when(foodCategoryMappingRepo.findFoodCategoryMappingEntityByTagIdIn(any(List.class)))
                 .thenReturn(partialMappings);
 
@@ -187,17 +187,16 @@ class FoodServiceImplMockTest {
                 .thenReturn(categoryFoods);
 
 
-
         // call to be tested
-        List<FoodEntity> result = foodService.getSuggestedFoods(tagId);
+        List<FoodEntity> result = foodService.getSuggestedFoods(tagId, null);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(5, result.size(), "expect 5 results");
         for (int i = 0; i < 2; i++) {
-            Assertions.assertEquals(categoryId,result.get(i).getCategoryId(),"first 2 should be the right category id");
+            Assertions.assertEquals(categoryId, result.get(i).getCategoryId(), "first 2 should be the right category id");
         }
         for (int i = 2; i < 5; i++) {
-            Assertions.assertEquals(otherCategoryId,result.get(i).getCategoryId(),"first 2 should be the right category id");
+            Assertions.assertEquals(otherCategoryId, result.get(i).getCategoryId(), "first 2 should be the right category id");
         }
     }
 
@@ -225,7 +224,7 @@ class FoodServiceImplMockTest {
         // call under test
         foodService.addOrUpdateFoodForTag(tagId, foodId, true);
 
-        Mockito.verify(conversionFactorService).addFactorForTag(tagId,conversionAmount, conversionUnit, conversionGramWeight);
+        Mockito.verify(conversionFactorService).addFactorForTag(tagId, conversionAmount, conversionUnit, conversionGramWeight);
     }
 
 
@@ -254,7 +253,7 @@ class FoodServiceImplMockTest {
         // call under test
         foodService.addOrUpdateFoodForTag(tagId, foodId, true);
 
-        Mockito.verify(conversionFactorService).addFactorForTag(tagId,conversionAmount, conversionUnit, conversionGramWeight);
+        Mockito.verify(conversionFactorService).addFactorForTag(tagId, conversionAmount, conversionUnit, conversionGramWeight);
         Mockito.verify(conversionFactorService).deleteFactorsForTag(tagId);
     }
 
