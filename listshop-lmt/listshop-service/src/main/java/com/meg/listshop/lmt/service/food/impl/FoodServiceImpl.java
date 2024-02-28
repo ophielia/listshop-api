@@ -89,8 +89,8 @@ public class FoodServiceImpl implements FoodService {
             return new ArrayList<>();
         }
         // prepare searchTerm
-        String searchTerm = name.trim().toLowerCase();
-        return foodRepository.findFoodEntitiesByNameContainsIgnoreCaseAndHasFactorTrue(searchTerm);
+        String searchTerm = "%" + name.trim().toLowerCase() + "%";
+        return foodRepository.findFoodMatches(searchTerm);
 
     }
 
@@ -200,6 +200,9 @@ public class FoodServiceImpl implements FoodService {
         if (tag == null) {
             final String msg = "Null tag in addOrUpdateFoodCategory";
             throw new ObjectNotFoundException(msg);
+        }
+        if (!tag.getIsGroup()) {
+            return;
         }
         // get category mapping for tag or create a new one
         FoodCategoryMappingEntity mappingEntity = foodCategoryMappingRepo.findFoodCategoryMappingEntityByTagId(tag.getId());
