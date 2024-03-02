@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -94,6 +95,11 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
                 Long foodCategoryToAssign = Long.valueOf(toAssignString);
                 foodService.addOrUpdateFoodCategories(tagIds, foodCategoryToAssign);
                 break;
+            case AssignFood:
+                toAssignString = input.getAssignId();
+                Long foodIdToAssign = Long.valueOf(toAssignString);
+                foodService.addOrUpdateFoodForTags(tagIds, foodIdToAssign);
+                break;
         }
         return ResponseEntity.ok().build();
     }
@@ -104,6 +110,20 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         //@GetMapping(value = "/{tag_id}/food/suggestions")
 
         List<FoodEntity> foodEntities = foodService.getSuggestedFoods(tagId, searchTerm);
+        Map<Long,List<FoodConversionEntity>> conversionFactors = foodService.getFoodFactors(foodEntities);
+        List<FoodResource> resourceList = new ArrayList<>();
+        for (FoodEntity foodEntity: foodEntities) {
+            List<FoodConversionEntity> factors = conversionFactors.get(foodEntity.getFoodId());
+            Food food = ModelMapper.toModel(foodEntity,factors);
+            resourceList.add(new FoodResource(food));
+        }
+
+        var returnValue = new FoodListResource(resourceList);
+        return new ResponseEntity<>(returnValue, HttpStatus.OK);
+    }
+
+    public ResponseEntity<FoodListResource> getFoodSuggestionsForTerm(@RequestParam(value = "searchTerm", required = true) String searchTerm) {
+        List<FoodEntity> foodEntities = foodService.getSuggestedFoods( searchTerm);
         Map<Long,List<FoodConversionEntity>> conversionFactors = foodService.getFoodFactors(foodEntities);
         List<FoodResource> resourceList = new ArrayList<>();
         for (FoodEntity foodEntity: foodEntities) {

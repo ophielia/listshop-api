@@ -5,5 +5,6 @@ public enum TagOperationType {
     CopyToStandard,
     MarkAsReviewed,
     SetLiquid,
-    AssignFoodCategory
+    AssignFoodCategory,
+    AssignFood
 }

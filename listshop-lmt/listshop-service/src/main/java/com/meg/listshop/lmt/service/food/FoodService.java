@@ -20,6 +20,8 @@ public interface FoodService {
 
     List<FoodEntity> getSuggestedFoods(Long tagId, String alternateSearchTerm);
 
+    List<FoodEntity> getSuggestedFoods(String alternateSearchTerm);
+
     void addOrUpdateFoodForTag(Long tagId, Long foodId, boolean fromAdmin);
 
 
@@ -34,4 +36,6 @@ public interface FoodService {
     void addOrUpdateFoodCategories(List<Long> tagIds, Long foodCategoryToAssign);
 
     Map<Long, List<FoodConversionEntity>> getFoodFactors(List<FoodEntity> foodEntities);
+
+    void addOrUpdateFoodForTags(List<Long> tagIds, Long foodIdToAssign);
 }

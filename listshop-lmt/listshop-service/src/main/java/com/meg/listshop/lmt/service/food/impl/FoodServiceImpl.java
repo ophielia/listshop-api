@@ -128,35 +128,16 @@ public class FoodServiceImpl implements FoodService {
         return preferredList;
     }
 
-    public void addOrUpdateFoodForTag(Long tagId, Long foodId, boolean fromAdmin) {
-        // get tag
-        TagEntity tag = tagService.getTagById(tagId);
-        if (tag == null) {
-            final String msg = String.format("No tag found by id tagId [%s]", tagId);
-            throw new ObjectNotFoundException(msg);
+    public List<FoodEntity> getSuggestedFoods(String searchTerm) {
+        if (searchTerm == null) {
+            return new ArrayList<>();
         }
-        // get food portion
-        List<FoodConversionEntity> foodFactors = foodConversionRepository.findAllByFoodId(foodId);
-        if (foodFactors == null || foodFactors.isEmpty()) {
-            final String msg = String.format("No conversions found for foodId [%s]", foodId);
-            throw new ObjectNotFoundException(msg);
-        }
-        // check if tag has food assigned
-        if (tag.getFoodId() != null) {
-            // update tag to add food
-            conversionFactorService.deleteFactorsForTag(tagId);
-        }
-        // update tag
-        tag.setFoodId(foodId);
-        tag.setInternalStatus(TagInternalStatus.FOOD_ASSIGNED);
-        if (fromAdmin) {
-            tag.setInternalStatus(TagInternalStatus.FOOD_VERIFIED);
-        }
-        // create conversion factor
-        for (FoodConversionEntity conversion : foodFactors) {
-            conversionFactorService.addFactorForTag(tagId, conversion.getAmount(), conversion.getUnitId(), conversion.getGramWeight());
-        }
+
+        // first find applicable food category for tag
+        return foodMatches(searchTerm);
     }
+
+
 
 
     public List<FoodMappingDTO> getFoodCategoryMappings() {
@@ -188,6 +169,47 @@ public class FoodServiceImpl implements FoodService {
             addOrUpdateFoodCategory(tag, foodCategoryToAssign);
         }
     }
+    @Override
+    public void addOrUpdateFoodForTags(List<Long> tagIds, Long foodId) {
+        List<TagEntity> tags = tagService.getTagsForIdList(tagIds);
+        for (TagEntity tag : tags) {
+            addOrUpdateFoodForTag(tag, foodId, true);
+        }
+    }
+
+    public void addOrUpdateFoodForTag(Long tagId, Long foodId, boolean fromAdmin) {
+        // get tag
+        TagEntity tag = tagService.getTagById(tagId);
+        if (tag == null) {
+            final String msg = String.format("No tag found by id tagId [%s]", tagId);
+            throw new ObjectNotFoundException(msg);
+        }
+        addOrUpdateFoodForTag(tag, foodId, fromAdmin);
+    }
+
+    private void addOrUpdateFoodForTag(TagEntity tag, Long foodId, boolean fromAdmin) {
+        // get food portion
+        List<FoodConversionEntity> foodFactors = foodConversionRepository.findAllByFoodId(foodId);
+        if (foodFactors == null || foodFactors.isEmpty()) {
+            final String msg = String.format("No conversions found for foodId [%s]", foodId);
+            throw new ObjectNotFoundException(msg);
+        }
+        // check if tag has food assigned
+        if (tag.getFoodId() != null) {
+            // update tag to add food
+            conversionFactorService.deleteFactorsForTag(tag.getId());
+        }
+        // update tag
+        tag.setFoodId(foodId);
+        tag.setInternalStatus(TagInternalStatus.FOOD_ASSIGNED);
+        if (fromAdmin) {
+            tag.setInternalStatus(TagInternalStatus.FOOD_VERIFIED);
+        }
+        // create conversion factor
+        for (FoodConversionEntity conversion : foodFactors) {
+            conversionFactorService.addFactorForTag(tag.getId(), conversion.getAmount(), conversion.getUnitId(), conversion.getGramWeight());
+        }
+    }
 
     @Override
     public Map<Long, List<FoodConversionEntity>> getFoodFactors(List<FoodEntity> foodEntities) {
@@ -197,9 +219,7 @@ public class FoodServiceImpl implements FoodService {
         Map<Long, List<FoodConversionEntity>> mappedFactors = new HashMap<>();
         for (FoodConversionEntity factor : conversionEntities) {
             Long foodId = factor.getFoodId();
-            if (!mappedFactors.containsKey(foodId)) {
-                mappedFactors.put(foodId, new ArrayList<FoodConversionEntity>());
-            }
+            mappedFactors.putIfAbsent(foodId, new ArrayList<>());
             mappedFactors.get(foodId).add(factor);
         }
 

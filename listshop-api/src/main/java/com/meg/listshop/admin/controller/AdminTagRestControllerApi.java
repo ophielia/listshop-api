@@ -20,6 +20,9 @@ public interface AdminTagRestControllerApi {
     ResponseEntity<FoodListResource> getFoodSuggestionsForTag(@PathVariable("tagId") Long tagId,
                                                               @RequestParam(value = "searchTerm", required = false) String searchTerm);
 
+    @GetMapping(value = "/food/suggestions")
+    ResponseEntity<FoodListResource> getFoodSuggestionsForTerm(@RequestParam(value = "searchTerm", required = true) String searchTerm);
+
     @PostMapping(value = "/{tagId}/food/{foodId}")
     ResponseEntity<Object> assignFoodToTag(@PathVariable("tagId") Long tagId, @PathVariable("foodId") Long foodId);
 
