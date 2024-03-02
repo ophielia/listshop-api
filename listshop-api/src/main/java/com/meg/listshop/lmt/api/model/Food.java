@@ -15,6 +15,9 @@ public class Food {
 
     private String name;
 
+    @JsonProperty("conversion_grid")
+    private ConversionGrid grid;
+
     public Food() {
         // for jackson - it likes the empty constructors
     }
@@ -41,5 +44,13 @@ public class Food {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public ConversionGrid getGrid() {
+        return grid;
+    }
+
+    public void setGrid(ConversionGrid grid) {
+        this.grid = grid;
     }
 }

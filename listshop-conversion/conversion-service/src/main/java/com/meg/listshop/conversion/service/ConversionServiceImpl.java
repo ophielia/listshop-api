@@ -1,6 +1,7 @@
 package com.meg.listshop.conversion.service;
 
 
+import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
@@ -11,6 +12,7 @@ import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
+import com.meg.listshop.conversion.tools.RoundingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,16 +56,35 @@ public class ConversionServiceImpl implements ConversionService {
             conversionGramWeight = factor * gramWeight;
         }
 
+        ConversionFactorEntity toUpdate = getExistingFactorForTag(tagId);
+        if (toUpdate == null) {
+            toUpdate = new ConversionFactorEntity();
+        }
+
         // get from unit
         UnitEntity fromUnit = unitRepository.findById(unitId).orElse(null);
         UnitEntity toUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
 
-        ConversionFactorEntity newFactor = new ConversionFactorEntity();
-        newFactor.setTagId(tagId);
-        newFactor.setFromUnit(fromUnit);
-        newFactor.setToUnit(toUnit);
-        newFactor.setFactor(conversionGramWeight);
-        conversionFactorRepository.save(newFactor);
+
+        toUpdate.setTagId(tagId);
+        toUpdate.setFromUnit(fromUnit);
+        toUpdate.setToUnit(toUnit);
+        toUpdate.setFactor(conversionGramWeight);
+        conversionFactorRepository.save(toUpdate);
+    }
+
+    private ConversionFactorEntity getExistingFactorForTag(Long tagId) {
+        List<ConversionFactorEntity> existing = conversionFactorRepository.findAllByTagIdIs(tagId);
+        if (existing.size() == 1) {
+            return existing.get(0);
+        } else if (existing.isEmpty()) {
+            return null;
+        }
+        // we have more than one factor.  We'll return the first, and delete the rest
+        ConversionFactorEntity toReturn = existing.remove(0);
+        conversionFactorRepository.deleteAll(existing);
+        return toReturn;
+
     }
 
     @Override
@@ -84,7 +105,9 @@ public class ConversionServiceImpl implements ConversionService {
             ConvertibleAmount to = null;
             try {
                 to = converterService.convert(from, gramUnit);
-                result.add(new ConversionSampleDTO(from, to));
+                // rounded "to amount"
+                SimpleAmount roundedTo = new SimpleAmount(RoundingUtils.roundToHundredths(to.getQuantity()),to.getUnit());
+                result.add(new ConversionSampleDTO(from, roundedTo));
             } catch (ConversionPathException | ConversionFactorException g) {
                 LOG.error("Exception [{}]thrown during conversion, but continuing to next conversion.", g);
             }

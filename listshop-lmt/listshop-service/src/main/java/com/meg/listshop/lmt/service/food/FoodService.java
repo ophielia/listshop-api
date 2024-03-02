@@ -2,11 +2,13 @@ package com.meg.listshop.lmt.service.food;
 
 import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.data.entity.FoodCategoryEntity;
+import com.meg.listshop.lmt.data.entity.FoodConversionEntity;
 import com.meg.listshop.lmt.data.entity.FoodEntity;
 import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -30,4 +32,6 @@ public interface FoodService {
     List<FoodCategoryEntity> getFoodCategories();
 
     void addOrUpdateFoodCategories(List<Long> tagIds, Long foodCategoryToAssign);
+
+    Map<Long, List<FoodConversionEntity>> getFoodFactors(List<FoodEntity> foodEntities);
 }

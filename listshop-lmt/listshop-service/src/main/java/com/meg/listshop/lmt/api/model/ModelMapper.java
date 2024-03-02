@@ -14,6 +14,7 @@ import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.common.FlatStringUtils;
+import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
@@ -38,6 +39,14 @@ public class ModelMapper {
         throw new IllegalAccessError("Utility class");
     }
 
+    public static ConversionGrid toConversionGridFromFactors(List<FoodConversionEntity> conversionFactors) {
+        List<ConversionSample> samples = conversionFactors.stream()
+                .map(ModelMapper::toModel)
+                .collect(Collectors.toList());
+        ConversionGrid grid = new ConversionGrid();
+        grid.setSamples(samples);
+        return grid;
+    }
     public static ConversionGrid toConversionGrid(List<ConversionSampleDTO> conversionSamples) {
         List<ConversionSample> samples = conversionSamples.stream()
                 .map(ModelMapper::toModel)
@@ -47,6 +56,14 @@ public class ModelMapper {
         return grid;
     }
 
+    private static ConversionSample toModel(FoodConversionEntity factorEntity) {
+        ConversionSample sample = new ConversionSample();
+        sample.setFromUnit(String.valueOf(factorEntity.getUnitName()));
+        sample.setFromAmount("1");
+        sample.setToAmount(String.valueOf(factorEntity.getGramWeight()));
+        sample.setToUnit("grams");
+        return sample;
+    }
     private static ConversionSample toModel(ConversionSampleDTO conversionSampleDTO) {
         ConversionSample sample = new ConversionSample();
         sample.setFromAmount(String.valueOf(conversionSampleDTO.getFromAmount().getQuantity()));
@@ -81,6 +98,20 @@ public class ModelMapper {
         suggestion.setName(foodEntity.getName());
         suggestion.setId(String.valueOf(foodEntity.getFoodId()));
         suggestion.setCategoryId(String.valueOf(foodEntity.getCategoryId()));
+        return suggestion;
+
+    }
+
+    public static Food toModel(FoodEntity foodEntity, List<FoodConversionEntity> factors) {
+        ConversionGrid grid = toConversionGridFromFactors(factors);
+        if (foodEntity == null) {
+            return new Food();
+        }
+        Food suggestion = new Food();
+        suggestion.setName(foodEntity.getName());
+        suggestion.setId(String.valueOf(foodEntity.getFoodId()));
+        suggestion.setCategoryId(String.valueOf(foodEntity.getCategoryId()));
+        suggestion.setGrid(grid);
         return suggestion;
 
     }

@@ -5,6 +5,8 @@ import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.data.entity.FoodConversionEntity;
+import com.meg.listshop.lmt.data.entity.FoodEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -16,6 +18,7 @@ import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.InfoProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -99,10 +103,14 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
                                                                      @RequestParam(value = "searchTerm", required = false) String searchTerm) {
         //@GetMapping(value = "/{tag_id}/food/suggestions")
 
-        List<FoodResource> resourceList = foodService.getSuggestedFoods(tagId, searchTerm).stream()
-                .map(ModelMapper::toModel)
-                .map(FoodResource::new)
-                .collect(Collectors.toList());
+        List<FoodEntity> foodEntities = foodService.getSuggestedFoods(tagId, searchTerm);
+        Map<Long,List<FoodConversionEntity>> conversionFactors = foodService.getFoodFactors(foodEntities);
+        List<FoodResource> resourceList = new ArrayList<>();
+        for (FoodEntity foodEntity: foodEntities) {
+            List<FoodConversionEntity> factors = conversionFactors.get(foodEntity.getFoodId());
+            Food food = ModelMapper.toModel(foodEntity,factors);
+            resourceList.add(new FoodResource(food));
+        }
 
         var returnValue = new FoodListResource(resourceList);
         return new ResponseEntity<>(returnValue, HttpStatus.OK);

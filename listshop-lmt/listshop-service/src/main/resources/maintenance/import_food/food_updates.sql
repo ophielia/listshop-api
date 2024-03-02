@@ -11,4 +11,4 @@ drop sequence temp_conversion_seq;
 
 select * from food_conversions c join foods f on f.food_id = c.food_id;
 
-select * from foods;
+select * from food_categories

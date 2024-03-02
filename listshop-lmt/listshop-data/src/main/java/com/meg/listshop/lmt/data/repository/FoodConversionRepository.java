@@ -9,4 +9,6 @@ public interface FoodConversionRepository extends JpaRepository<FoodConversionEn
 
 
     List<FoodConversionEntity> findAllByFoodId(Long foodId);
+
+    List<FoodConversionEntity> findAllByFoodIdIn(List<Long> foodId);
 }
