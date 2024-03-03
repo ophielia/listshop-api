@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.16.0]  - March 2024
+### Added
+- Lots of endpoints for the admin extranet, tag management
+- new tables for fda food data
+- new weight to volume handler
+
+### Changed
+- some of the conversion logic, especially around hybrids
+
 ## [1.15.0]  - December 2023
 
 ### Added
