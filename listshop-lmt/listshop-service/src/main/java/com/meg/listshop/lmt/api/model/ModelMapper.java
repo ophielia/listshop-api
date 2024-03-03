@@ -40,6 +40,9 @@ public class ModelMapper {
     }
 
     public static ConversionGrid toConversionGridFromFactors(List<FoodConversionEntity> conversionFactors) {
+        if (conversionFactors == null) {
+            return null;
+        }
         List<ConversionSample> samples = conversionFactors.stream()
                 .map(ModelMapper::toModel)
                 .collect(Collectors.toList());
