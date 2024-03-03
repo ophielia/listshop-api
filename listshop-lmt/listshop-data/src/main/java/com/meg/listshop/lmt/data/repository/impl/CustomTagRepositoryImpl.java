@@ -3,8 +3,8 @@ package com.meg.listshop.lmt.data.repository.impl;
 import com.meg.listshop.lmt.api.model.TagFilterType;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
-import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
+import com.meg.listshop.lmt.data.entity.TagRelationEntity;
+import com.meg.listshop.lmt.data.pojos.*;
 import com.meg.listshop.lmt.data.repository.CustomTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -56,69 +56,12 @@ public class CustomTagRepositoryImpl implements CustomTagRepository {
         this.em = em;
     }
 
-    public List<TagEntity> findTagsByCriteria(TagSearchCriteria criteria) {
-        if (criteria == null) {
-            criteria = new TagSearchCriteria();
+    private Integer calculateMagicNumberForStatuses(List<TagInternalStatus> includedStatuses) {
+        Long magicNumber = 1L;
+        for (TagInternalStatus status : includedStatuses) {
+            magicNumber *= status.value();
         }
-
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<TagEntity> cq = cb.createQuery(TagEntity.class);
-
-        Root<TagEntity> tagEntityRoot = cq.from(TagEntity.class);
-        List<Predicate> predicates = new ArrayList<>();
-
-        TagFilterType tagFilterType = criteria.getTagFilterType() != null ? criteria.getTagFilterType() : TagFilterType.All;
-        ParameterExpression<Boolean> parameterGroupInclude = cb.parameter(Boolean.class);
-        ParameterExpression<Boolean> verifiedInclude = cb.parameter(Boolean.class);
-        Boolean groupFilterParameter = null;
-        Boolean verifiedFilterParamter = null;
-        if (tagFilterType == TagFilterType.NoGroups ||
-                tagFilterType == TagFilterType.GroupsOnly) {
-            predicates.add(cb.equal(tagEntityRoot.get("isGroup"), parameterGroupInclude));
-            groupFilterParameter = tagFilterType != TagFilterType.NoGroups;
-        }
-        if (tagFilterType == TagFilterType.ToReview) {
-            predicates.add(cb.isNotNull(tagEntityRoot.get("userId")));
-            predicates.add(cb.or(cb.equal(tagEntityRoot.get("isVerified"), verifiedInclude),
-                    cb.isNull(tagEntityRoot.get("isVerified"))));
-            verifiedFilterParamter = false;
-        }
-
-        Long userIdParameter = null;
-        ParameterExpression<Long> userSearchSelect = cb.parameter(Long.class);
-        if (criteria.getUserId() != null) {
-            predicates.add(cb.equal(tagEntityRoot.get("userId"), userSearchSelect));
-            userIdParameter = criteria.getUserId();
-        } else if (tagFilterType != TagFilterType.ToReview) {
-            predicates.add(cb.isNull(tagEntityRoot.get("userId")));
-        }
-
-        List<TagType> tagTypeParameter = null;
-        ParameterExpression<Collection> paramTagTypes = cb.parameter(Collection.class);
-        if (criteria.getTagTypes() != null && !criteria.getTagTypes().isEmpty()) {
-            predicates.add(tagEntityRoot.get("tagType").in(paramTagTypes));
-            tagTypeParameter = criteria.getTagTypes();
-        }
-        predicates.add(cb.isFalse(tagEntityRoot.get("toDelete")));
-
-        cq.where(predicates.toArray(new Predicate[0]));
-
-        TypedQuery<TagEntity> typedQuery = em.createQuery(cq);
-
-        if (groupFilterParameter != null) {
-            typedQuery.setParameter(parameterGroupInclude, groupFilterParameter);
-        }
-        if (verifiedFilterParamter != null) {
-            typedQuery.setParameter(verifiedInclude, verifiedFilterParamter);
-        }
-        if (userIdParameter != null) {
-            typedQuery.setParameter(userSearchSelect, userIdParameter);
-        }
-        if (tagTypeParameter != null) {
-            typedQuery.setParameter(paramTagTypes, tagTypeParameter);
-        }
-
-        return typedQuery.getResultList();
+        return magicNumber.intValue();
     }
 
     @Override

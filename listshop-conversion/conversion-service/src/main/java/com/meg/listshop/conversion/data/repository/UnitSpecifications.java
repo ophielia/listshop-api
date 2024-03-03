@@ -23,7 +23,10 @@ public class UnitSpecifications {
             ArrayList<Predicate> predicates = new ArrayList<>();
 
             predicates.add(criteriaBuilder.equal(fromUnit.<String>get("type"), spec.getUnitType()));
-            predicates.add(criteriaBuilder.equal(fromUnit.<String>get("subtype"), spec.getUnitSubtype()));
+            if (spec.getUnitSubtype() != null) {
+                predicates.add(criteriaBuilder.equal(fromUnit.<String>get("subtype"), spec.getUnitSubtype()));
+            }
+
 
             for (UnitFlavor flavor : spec.getFlavors()) {
                 if (Objects.requireNonNull(flavor) == UnitFlavor.DishUnit) {
@@ -45,7 +48,9 @@ public class UnitSpecifications {
             ArrayList<Predicate> predicates = new ArrayList<>();
 
             predicates.add(criteriaBuilder.equal(fromUnit.<String>get("type"), spec.getUnitType()));
+            if (spec.getUnitSubtype() != null) {
             predicates.add(criteriaBuilder.equal(fromUnit.<String>get("subtype"), spec.getUnitSubtype()));
+            }
 
             for (UnitFlavor flavor : spec.getFlavors()) {
                 switch (flavor) {
@@ -55,8 +60,7 @@ public class UnitSpecifications {
                     case ListUnit:
                         predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isListUnit"), true));
                         continue;
-                    case Liquid:
-                        predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isLiquid"), true));
+                    default:
                 }
             }
 
@@ -64,5 +68,13 @@ public class UnitSpecifications {
         };
     }
 
+    public static Specification<ConversionFactorEntity> matchingFromTagId(Long tagId) {
+        return (root, query, criteriaBuilder) -> {
+            ArrayList<Predicate> predicates = new ArrayList<>();
 
+            predicates.add(criteriaBuilder.equal(root.<String>get("tagId"), tagId));
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
 }

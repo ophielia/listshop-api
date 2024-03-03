@@ -86,6 +86,17 @@ public class AdminUserRestController implements AdminUserRestControllerApi {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+    @Override
+    public ResponseEntity<AdminUserListResource> getAllUsersWithTags()  {
+        logger.debug("Retrieving all users");
+
+        List<UserEntity> users = userService.getUsersWithTags();
+        AdminUserListResource result = new AdminUserListResource(users.stream()
+                .map(ModelMapper::toAdminModel)
+                .collect(Collectors.toList()));
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
     @Override
     public ResponseEntity<AdminUser> getUser(@PathVariable Long userId) throws ObjectNotFoundException, BadParameterException {

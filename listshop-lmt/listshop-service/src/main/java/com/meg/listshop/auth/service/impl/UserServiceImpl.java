@@ -252,6 +252,10 @@ public class UserServiceImpl implements UserService {
     public UserEntity getUserByListId(Long listId) {
         return userRepository.findByListId(listId);
     }
+        @Override
+        public List<UserEntity> getUsersWithTags() {
+            return userRepository.findUsersWithTags();
+        }
 
     @Override
     public AdminUserDetailsEntity getAdminUserById(Long userId) {

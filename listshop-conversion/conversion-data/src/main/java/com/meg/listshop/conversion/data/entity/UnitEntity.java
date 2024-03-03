@@ -111,6 +111,7 @@ public class UnitEntity {
         this.subtype = subtype;
     }
 
+
     @Override
     public String toString() {
         return "UnitEntity{" +

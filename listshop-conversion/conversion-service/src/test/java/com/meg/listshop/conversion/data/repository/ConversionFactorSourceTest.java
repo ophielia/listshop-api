@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-public class ConversionFactorSourceTest {
+ class ConversionFactorSourceTest {
 
     ConversionFactorSource sourceToTest;
 
@@ -21,11 +20,11 @@ public class ConversionFactorSourceTest {
         // load imperial unit, weight, id 1
         UnitEntity unit1 = ConversionTestTools.makeMetricUnit(1L, false);
         // load metric unit, weight, id 2
-        UnitEntity unit2 = ConversionTestTools.makeImperialUnit(2L, false);
+        UnitEntity unit2 = ConversionTestTools.makeUSUnit(2L, false);
         // load metric unit, weight, id 3
         UnitEntity unit3 = ConversionTestTools.makeMetricUnit(3L, false);
         // load imperial unit, volume, id 3
-        UnitEntity unit4 = ConversionTestTools.makeImperialUnit(4L, true);
+        UnitEntity unit4 = ConversionTestTools.makeUSUnit(4L, true);
         // load metric unit, volume, id 5
         UnitEntity unit5 = ConversionTestTools.makeMetricUnit(5L, true);
 
@@ -41,18 +40,18 @@ public class ConversionFactorSourceTest {
 
     @Test
     void testGetFactors() {
-        List<ConversionFactor> resultList = sourceToTest.getFactors(1L);
+        List<ConversionFactor> resultList = sourceToTest.getFactors(1L, null );
         assertEquals(2, resultList.size(), "two factors should be returned");
-        assertTrue(resultList.stream()
+        assertEquals(1.4,resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)
-                .sum() == 1.4, () -> "Sum should be 1.4");
+                .sum() ,  "Sum should be 1.4");
 
-        resultList = sourceToTest.getFactors(4L);
+        resultList = sourceToTest.getFactors(4L, null );
         assertEquals(2, resultList.size(), "two factors should be returned");
         double sum = resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)
                 .sum();
-        assertEquals(5.11D, ConversionTestTools.roundToHundredths(sum), () -> "Sum should be 5.11");
+        assertEquals(5.11D, ConversionTestTools.roundToHundredths(sum),  "Sum should be 5.11");
     }
 
     @Test

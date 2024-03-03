@@ -44,6 +44,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -589,7 +590,7 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testMergeList() throws Exception {
-        String testMergeList = StreamUtils.copyToString(resourceFile.getInputStream(), Charset.forName("utf8"));
+        String testMergeList = StreamUtils.copyToString(resourceFile.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 110000L;
 
@@ -634,7 +635,7 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testMergeList_SkipMerge() throws Exception {
-        String testMergeList = StreamUtils.copyToString(resourceFileNoMerge.getInputStream(), Charset.forName("utf8"));
+        String testMergeList = StreamUtils.copyToString(resourceFileNoMerge.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 110099L;
 
@@ -664,7 +665,7 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testMergeList_Stale() throws Exception {
-        String testMergeList = StreamUtils.copyToString(resourceFileStale.getInputStream(), Charset.forName("utf8"));
+        String testMergeList = StreamUtils.copyToString(resourceFileStale.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 11000001L;
 
@@ -708,7 +709,7 @@ public class ShoppingListRestControllerTest {
     @WithMockUser
     public void testMergeList_Empty() throws Exception {
         //// load statistics into file
-        String testMergeList = StreamUtils.copyToString(resourceFileEmpty.getInputStream(), Charset.forName("utf8"));
+        String testMergeList = StreamUtils.copyToString(resourceFileEmpty.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 130000L;
 
@@ -734,7 +735,7 @@ public class ShoppingListRestControllerTest {
     @Test
     @WithMockUser
     public void testMergeList_TagConflict() throws Exception {
-        String testMergeList = StreamUtils.copyToString(mergeConflictFileSource.getInputStream(), Charset.forName("utf8"));
+        String testMergeList = StreamUtils.copyToString(mergeConflictFileSource.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 120000L;
 
@@ -869,7 +870,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertNotNull(sourceResultMap);
         Assert.assertEquals(2, sourceResultMap.keySet().size());
         // 500 shouldn't be there
-        Assert.assertFalse(sourceResultMap.keySet().contains("500"));
+        Assert.assertFalse(sourceResultMap.containsKey("500"));
         // check destination list
         ShoppingList destination = retrieveList(meUserDetails, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
@@ -967,7 +968,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertNotNull(sourceResultMap);
         Assert.assertEquals(2, sourceResultMap.keySet().size());
         // 500 shouldn't be there
-        Assert.assertFalse(sourceResultMap.keySet().contains(500L));
+        Assert.assertFalse(sourceResultMap.containsKey(500L));
         // check destination list
         ShoppingList destination = retrieveList(meUserDetails, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
@@ -1025,7 +1026,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertNotNull(allSourceResultMap);
         Assert.assertEquals(2, allSourceResultMap.keySet().size());
         // 505 shouldn't be there
-        Assert.assertFalse(allSourceResultMap.keySet().contains("505"));
+        Assert.assertFalse(allSourceResultMap.containsKey("505"));
 
         // check destination list
         ShoppingList destination = retrieveList(meUserDetails, destinationListId);
@@ -1077,7 +1078,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertNotNull(sourceResultMap);
         Assert.assertEquals(2, sourceResultMap.keySet().size());
         // 500 shouldn't be there
-        Assert.assertFalse(sourceResultMap.keySet().contains(500L));
+        Assert.assertFalse(sourceResultMap.containsKey(500L));
 
     }
 
@@ -1120,7 +1121,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertNotNull(sourceResultMap);
         // check that none of the crossed off ids are in the map
         for (String crossedOffId : crossedOffIds) {
-            Assert.assertFalse("crossed off ids shouldn't be in the list", sourceResultMap.keySet().contains(crossedOffId));
+            Assert.assertFalse("crossed off ids shouldn't be in the list", sourceResultMap.containsKey(crossedOffId));
         }
 
     }

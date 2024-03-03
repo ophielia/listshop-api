@@ -23,4 +23,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, CustomU
     UserEntity findByListId(@Param("listId") Long listId);
 
     List<UserEntity> findByEmailContainingIgnoreCase(String toLowerCase);
+
+    @Query(value = "select distinct u.* from users u join tag t using (user_id)", nativeQuery = true)
+    List<UserEntity> findUsersWithTags();
 }

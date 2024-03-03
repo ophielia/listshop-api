@@ -9,8 +9,6 @@ import java.util.Set;
 
 public interface CustomTagRepository {
 
-    public List<TagEntity> findTagsByCriteria(TagSearchCriteria criteria);
-
     Long findRatingTagIdForStep(Long ratingId, Integer step);
 
     List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys);

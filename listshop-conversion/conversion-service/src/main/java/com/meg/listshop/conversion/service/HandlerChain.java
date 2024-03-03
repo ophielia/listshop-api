@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 public class HandlerChain {
 
     private static final Logger LOG = LoggerFactory.getLogger(HandlerChain.class);
-    private ConversionHandler handler;
+    private final ConversionHandler handler;
 
     private HandlerChain nextLink;
 

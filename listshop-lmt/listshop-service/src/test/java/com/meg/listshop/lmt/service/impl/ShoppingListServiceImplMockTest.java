@@ -73,21 +73,6 @@ public class ShoppingListServiceImplMockTest {
                 listTagStatisticService);
     }
 
-/*  test notes
-
-shoppingListService.categorizeList(result);
-shoppingListService.changeListLayout(TestConstants.USER_1_NAME, TestConstants.LIST_1_ID, TestConstants.LIST_LAYOUT_3_ID);
-shoppingListService.deleteList(userAccount.getEmail(), TestConstants.LIST_3_ID);
-shoppingListService.fillSources(shoppingListEntity);
-
-
-
-shoppingListService.getChangedItemsForMostRecentList(TestConstants.USER_3_NAME, date, 5L);
-shoppingListService.getListsByUsername(TestConstants.USER_1_NAME);
-shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.LIST_2_ID, 83L);
-
- */
-
     @Test
     public void testGetListById() {
         Long userId = 99L;
@@ -200,7 +185,6 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
     @Test
     public void testDeleteList() {
         Long userId = 99L;
-        String userName = "userName";
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -1516,7 +1500,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Assert.assertNotNull(collectorCapture);
         Assert.assertNotNull(collectorCapture.getValue());
         MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
-        Assert.assertEquals(Long.valueOf(9999L), Long.valueOf(capturedToVerify.getListId()));
+        Assert.assertEquals(Long.valueOf(9999L), capturedToVerify.getListId());
         Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
 
         Assert.assertEquals(7, itemMap.keySet().size());
@@ -1589,7 +1573,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Assert.assertNotNull(collectorCapture);
         Assert.assertNotNull(collectorCapture.getValue());
         MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
-        Assert.assertEquals(Long.valueOf(9999L), Long.valueOf(capturedToVerify.getListId()));
+        Assert.assertEquals(Long.valueOf(9999L), capturedToVerify.getListId());
         Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
 
         Assert.assertEquals(4, itemMap.keySet().size());
@@ -1652,7 +1636,7 @@ shoppingListService.removeDishFromList(TestConstants.USER_3_NAME, TestConstants.
         Assert.assertNotNull(collectorCapture);
         Assert.assertNotNull(collectorCapture.getValue());
         MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
-        Assert.assertEquals(Long.valueOf(9999L), Long.valueOf(capturedToVerify.getListId()));
+        Assert.assertEquals(Long.valueOf(9999L), capturedToVerify.getListId());
         Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
 
         Assert.assertEquals(4, itemMap.keySet().size());

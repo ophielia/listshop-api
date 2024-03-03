@@ -1,5 +1,7 @@
 package com.meg.listshop.lmt.data.pojos;
 
+import com.meg.listshop.lmt.api.model.TagType;
+
 public class TagInfoDTO {
 
     private Long tag_id;
@@ -19,13 +21,15 @@ public class TagInfoDTO {
     private Long parentId;
     private boolean toDelete;
 
-    public TagInfoDTO(Long tagId, String name, String description, Double power, Long userId, String tagType, boolean isGroup, Long parentId, boolean toDelete) {
+    public TagInfoDTO(Long tagId, String name, String description,
+                      Double power, Long userId, TagType tagType,
+                      boolean isGroup, Long parentId, boolean toDelete) {
         this.tag_id = tagId;
         this.name = name;
         this.description = description;
         this.power = power;
         this.userId = userId;
-        this.tagType = tagType;
+        this.tagType = tagType.name();
         this.isGroup = isGroup;
         this.parentId = parentId;
         this.toDelete = toDelete;

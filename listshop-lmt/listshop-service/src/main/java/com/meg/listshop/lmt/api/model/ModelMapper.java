@@ -14,7 +14,10 @@ import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.common.FlatStringUtils;
+import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
+import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 
@@ -36,6 +39,42 @@ public class ModelMapper {
         throw new IllegalAccessError("Utility class");
     }
 
+    public static ConversionGrid toConversionGridFromFactors(List<FoodConversionEntity> conversionFactors) {
+        if (conversionFactors == null) {
+            return null;
+        }
+        List<ConversionSample> samples = conversionFactors.stream()
+                .map(ModelMapper::toModel)
+                .collect(Collectors.toList());
+        ConversionGrid grid = new ConversionGrid();
+        grid.setSamples(samples);
+        return grid;
+    }
+    public static ConversionGrid toConversionGrid(List<ConversionSampleDTO> conversionSamples) {
+        List<ConversionSample> samples = conversionSamples.stream()
+                .map(ModelMapper::toModel)
+                .collect(Collectors.toList());
+        ConversionGrid grid = new ConversionGrid();
+        grid.setSamples(samples);
+        return grid;
+    }
+
+    private static ConversionSample toModel(FoodConversionEntity factorEntity) {
+        ConversionSample sample = new ConversionSample();
+        sample.setFromUnit(String.valueOf(factorEntity.getUnitName()));
+        sample.setFromAmount("1");
+        sample.setToAmount(String.valueOf(factorEntity.getGramWeight()));
+        sample.setToUnit("grams");
+        return sample;
+    }
+    private static ConversionSample toModel(ConversionSampleDTO conversionSampleDTO) {
+        ConversionSample sample = new ConversionSample();
+        sample.setFromAmount(String.valueOf(conversionSampleDTO.getFromAmount().getQuantity()));
+        sample.setToAmount(String.valueOf(conversionSampleDTO.getToAmount().getQuantity()));
+        sample.setToUnit(conversionSampleDTO.getToAmount().getUnit().getName());
+        sample.setFromUnit(conversionSampleDTO.getFromAmount().getUnit().getName());
+        return sample;
+    }
 
     public static Dish toModel(DishEntity dishEntity, boolean includeTags) {
         if (dishEntity != null) {
@@ -52,6 +91,32 @@ public class ModelMapper {
                     .userId(dishEntity.getUserId());
         }
         return new Dish();
+    }
+
+    public static Food toModel(FoodEntity foodEntity) {
+        if (foodEntity == null) {
+            return new Food();
+        }
+        Food suggestion = new Food();
+        suggestion.setName(foodEntity.getName());
+        suggestion.setId(String.valueOf(foodEntity.getFoodId()));
+        suggestion.setCategoryId(String.valueOf(foodEntity.getCategoryId()));
+        return suggestion;
+
+    }
+
+    public static Food toModel(FoodEntity foodEntity, List<FoodConversionEntity> factors) {
+        ConversionGrid grid = toConversionGridFromFactors(factors);
+        if (foodEntity == null) {
+            return new Food();
+        }
+        Food suggestion = new Food();
+        suggestion.setName(foodEntity.getName());
+        suggestion.setId(String.valueOf(foodEntity.getFoodId()));
+        suggestion.setCategoryId(String.valueOf(foodEntity.getCategoryId()));
+        suggestion.setGrid(grid);
+        return suggestion;
+
     }
 
     public static User toModel(UserEntity userEntity, String token) {
@@ -265,7 +330,7 @@ public class ModelMapper {
         for (ListLayoutCategoryEntity cat : categories) {
             ListLayoutCategory llc = new ListLayoutCategory(cat.getId());
             llc.setName(cat.getName());
-            llc.setDefault(cat.getDefault() != null ? cat.getDefault() : false);
+            llc.setDefault(cat.getDefault() != null &&  cat.getDefault());
             llc.setTags(toShortModel(cat.getTags()));
             llc.setDisplayOrder(cat.getDisplayOrder());
             categoryList.add(llc);
@@ -369,7 +434,6 @@ public class ModelMapper {
     }
 
     private static List<Tag> toModelItemsAsTags(List<DishItemEntity> itemEntities) {
-        List<DishItemEntity> items = new ArrayList<>();
         if (itemEntities == null) {
             return new ArrayList<Tag>();
         }
@@ -495,11 +559,23 @@ public class ModelMapper {
                 .userId(statistic.getUserId());
     }
 
+    public static FoodCategoryMapping toModel(FoodMappingDTO foodMappingDTO) {
+        FoodCategoryMapping mapping = new FoodCategoryMapping();
+        mapping.setFoodCategoryId(String.valueOf(foodMappingDTO.getCategoryId()));
+        mapping.setFoodCategoryName(foodMappingDTO.getCategoryName());
+        mapping.setTagId(String.valueOf(foodMappingDTO.getTagId()));
+        mapping.setTagName(foodMappingDTO.getTagName());
+
+        return mapping;
+    }
+
     private static Slot toModel(SlotEntity slotEntity) {
         return new Slot(slotEntity.getMealPlanSlotId())
                 .mealPlanId(slotEntity.getMealPlan().getId())
                 .dish(toModel(slotEntity.getDish(), false));
     }
+
+
 
     private static List<Slot> slotsToModel(List<SlotEntity> slots) {
         List<Slot> slotList = new ArrayList<>();
@@ -609,7 +685,9 @@ public class ModelMapper {
 
         tagEntity.setName(tag.getName().trim());
         tagEntity.setDescription(tag.getDescription());
-        tagEntity.setTagType(TagType.valueOf(tag.getTagType()));
+        if (tag.getTagType() != null) {
+            tagEntity.setTagType(TagType.valueOf(tag.getTagType()));
+        }
         tagEntity.setIsGroup(tag.getIsGroup());
         tagEntity.setPower(tag.getPower());
 
@@ -697,5 +775,13 @@ public class ModelMapper {
         entity.setKey(property.getKey());
         entity.setValue(property.getValue());
         return entity;
+    }
+
+
+    public static FoodCategory toModel(FoodCategoryEntity foodCategoryEntity) {
+        FoodCategory foodCategory = new FoodCategory();
+        foodCategory.setCategoryName(foodCategoryEntity.getName());
+        foodCategory.setCategoryId(String.valueOf(foodCategoryEntity.getId()));
+        return foodCategory;
     }
 }

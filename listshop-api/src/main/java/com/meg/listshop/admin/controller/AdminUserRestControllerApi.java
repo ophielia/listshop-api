@@ -23,6 +23,9 @@ public interface AdminUserRestControllerApi {
     @PostMapping(produces = "application/json")
     ResponseEntity<AdminUserListResource> searchUsers(@RequestBody PostSearchUsers input) throws BadParameterException;
 
+    @GetMapping(value = "/tags", produces = "application/json")
+    ResponseEntity<AdminUserListResource> getAllUsersWithTags() ;
+
     @GetMapping(value = "/{userId}", produces = "application/json")
     ResponseEntity<AdminUser> getUser(@PathVariable Long userId) throws ObjectNotFoundException, BadParameterException;
 

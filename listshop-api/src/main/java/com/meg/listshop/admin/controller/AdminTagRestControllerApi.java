@@ -1,8 +1,7 @@
 package com.meg.listshop.admin.controller;
 
-import com.meg.listshop.lmt.api.model.Tag;
-import com.meg.listshop.lmt.api.model.TagListResource;
-import com.meg.listshop.lmt.api.model.TagOperationPut;
+import com.meg.listshop.admin.model.PostSearchTags;
+import com.meg.listshop.lmt.api.model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -17,31 +16,46 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/admin/tag")
 public interface AdminTagRestControllerApi {
 
+    @GetMapping(value = "/{tagId}/food/suggestions")
+    ResponseEntity<FoodListResource> getFoodSuggestionsForTag(@PathVariable("tagId") Long tagId,
+                                                              @RequestParam(value = "searchTerm", required = false) String searchTerm);
 
-    @GetMapping(value = "/standard/list")
-    public ResponseEntity<TagListResource> getStandardTagList(@RequestParam(value = "filter", required = false) String filter);
+    @GetMapping(value = "/food/suggestions")
+    ResponseEntity<FoodListResource> getFoodSuggestionsForTerm(@RequestParam(value = "searchTerm", required = true) String searchTerm);
 
-    @GetMapping(value = "/user/{userId}/list")
-    ResponseEntity<TagListResource> getUserTagList(@PathVariable("userId") Long userId,
-                                                   @RequestParam(value = "filter", required = false) String filter);
+    @PostMapping(value = "/{tagId}/food/{foodId}")
+    ResponseEntity<Object> assignFoodToTag(@PathVariable("tagId") Long tagId, @PathVariable("foodId") Long foodId);
 
-    @GetMapping(value = "/standard/grid")
-    ResponseEntity<TagListResource> getStandardTagListForGrid(HttpServletRequest request);
+    @PostMapping(value = "/{tagId}/liquid/{isLiquid}")
+    ResponseEntity<Object> assignLiquidProperty(@PathVariable("tagId") Long tagId, @PathVariable("isLiquid") Boolean foodId);
 
-    @GetMapping(value = "/user/{userId}/grid")
-    ResponseEntity<TagListResource> getUserTagListForGrid(@PathVariable("userId") Long userId);
+    @GetMapping(value = "/food/category/mappings")
+    ResponseEntity<CategoryMappingListResource> getFoodCategoryMappings();
+
+    @GetMapping(value = "/food/category")
+    ResponseEntity<FoodCategoryListResource> getFoodCategories();
+
+    @PostMapping(value = "/{tagId}/food/category/{categoryId}")
+    ResponseEntity<Object> assignFoodCategory(@PathVariable("tagId") Long tagId, @PathVariable("categoryId") Long categoryId);
+
+    @GetMapping(value = "/{tagId}/fullinfo")
+    ResponseEntity<AdminTagFullInfoResource> getFullTagInfo(@PathVariable("tagId") Long tagId);
+
+    @PostMapping(value = "/search")
+    ResponseEntity<TagListResource> findTags(@RequestBody PostSearchTags searchTags);
+
 
     @DeleteMapping(value = "/delete/{tagId}")
-    ResponseEntity<Object> saveTagForDelete(@PathVariable("tagId") Long tagId, @RequestParam(value = "replacementTagId", required = true) Long replacementTagId);
+    ResponseEntity<Object> saveTagForDelete(@PathVariable("tagId") Long tagId, @RequestParam(value = "replacementTagId") Long replacementTagId);
 
     @PostMapping(value = "{tagId}/children", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds", required = false) String filter);
 
     @PutMapping(value = "{parentId}/child/{childId}", produces = "application/json")
-    ResponseEntity assignChildToParent(@PathVariable("parentId") Long parentId, @PathVariable("childId") Long childId);
+    ResponseEntity<Object> assignChildToParent(@PathVariable("parentId") Long parentId, @PathVariable("childId") Long childId);
 
     @PutMapping(value = "/base/{tagId}", produces = "application/json")
-    ResponseEntity assignChildToBaseTag(@PathVariable("tagId") Long tagId);
+    ResponseEntity<Object> assignChildToBaseTag(@PathVariable("tagId") Long tagId);
 
     @PutMapping(value = "/{tagId}", consumes = "application/json")
     ResponseEntity<Object> updateTag(@PathVariable Long tagId, @RequestBody Tag input);
@@ -50,7 +64,7 @@ public interface AdminTagRestControllerApi {
     ResponseEntity<Object> performOperation(@RequestBody TagOperationPut input);
 
     @PutMapping(value = "/{fromTagId}/dish/{toTagId}", produces = "application/json")
-    ResponseEntity replaceTagsInDishes(HttpServletRequest request, Authentication authentication, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId);
+    ResponseEntity<Object> replaceTagsInDishes(HttpServletRequest request, Authentication authentication, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId);
 
 
 }

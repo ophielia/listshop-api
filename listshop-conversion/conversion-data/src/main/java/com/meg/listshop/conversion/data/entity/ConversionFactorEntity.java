@@ -21,11 +21,11 @@ import javax.persistence.*;
 )
 public class ConversionFactorEntity implements ConversionFactor {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "factor_sequence")
     @Column(name = "FACTOR_ID")
     private Long factorId;
 
     private Double factor;
-
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "toUnit")
@@ -35,7 +35,11 @@ public class ConversionFactorEntity implements ConversionFactor {
     @JoinColumn(name = "fromUnit")
     private UnitEntity fromUnit;
 
+    @Column(name = "TAG_ID")
+    private Long tagId;
+
     public ConversionFactorEntity() {
+        // empty constructor for jpa
     }
 
     public Long getFactorId() {
@@ -70,6 +74,14 @@ public class ConversionFactorEntity implements ConversionFactor {
         this.fromUnit = fromUnit;
     }
 
+    public Long getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
+    }
+
     @Override
     public String toString() {
         return "ConversionFactorEntity{" +
@@ -77,6 +89,7 @@ public class ConversionFactorEntity implements ConversionFactor {
                 ", factor=" + factor +
                 ", toUnit=" + toUnit +
                 ", fromUnit=" + fromUnit +
+                ", tagId=" + tagId +
                 '}';
     }
 }

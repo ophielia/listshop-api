@@ -1,17 +1,14 @@
 package com.meg.listshop.conversion.service;
 
-import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionContext;
-import com.meg.listshop.conversion.data.pojo.UnitType;
-import com.meg.listshop.conversion.exceptions.ConversionFactorException;
-import com.meg.listshop.conversion.exceptions.ConversionPathException;
+import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
+
+import java.util.List;
 
 public interface ConversionService {
 
+    void deleteFactorsForTag(Long tagId);
 
-    ConvertibleAmount convert(ConvertibleAmount amount, UnitType domain) throws ConversionPathException, ConversionFactorException;
+    void addFactorForTag(Long tagId, double amount, Long unitId, double gramWeight);
 
-    ConvertibleAmount convert(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException;
-
-    ConvertibleAmount convert(ConvertibleAmount amount, UnitEntity unit) throws ConversionPathException, ConversionFactorException;
+    List<ConversionSampleDTO> conversionSamplesForTag(Long tagId, Boolean isLiquid);
 }

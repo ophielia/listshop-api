@@ -12,8 +12,14 @@ public class TagOperationPut {
     private String tagOperationType;
     @JsonProperty(value = "user_id")
     private String userId;
+    @JsonProperty(value = "is_liquid")
+    private Boolean isLiquid;
+
+    @JsonProperty(value = "assign_id")
+    private String assignId;
 
     public TagOperationPut() {
+        // no-impl for jackson
     }
 
     public List<Long> getTagIds() {
@@ -38,5 +44,25 @@ public class TagOperationPut {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public Boolean getIsLiquid() {
+        return isLiquid;
+    }
+
+    public void setIsLiquid(Boolean isLiquid) {
+        this.isLiquid = isLiquid;
+    }
+
+    public void setLiquid(Boolean liquid) {
+        isLiquid = liquid;
+    }
+
+    public String getAssignId() {
+        return assignId;
+    }
+
+    public void setAssignId(String assignId) {
+        this.assignId = assignId;
     }
 }

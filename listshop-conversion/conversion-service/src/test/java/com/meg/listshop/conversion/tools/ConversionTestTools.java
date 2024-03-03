@@ -1,12 +1,13 @@
 package com.meg.listshop.conversion.tools;
 
+import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 
 public class ConversionTestTools {
-    public static UnitEntity makeImperialUnit(Long id, boolean isVolume) {
+    public static UnitEntity makeUSUnit(Long id, boolean isVolume) {
         UnitEntity unit = new UnitEntity();
         unit.setType(UnitType.US);
         unit.setId(id);
@@ -46,7 +47,7 @@ public class ConversionTestTools {
         return unit;
     }
 
-    public static UnitEntity makeImperialUnit(Long id, UnitSubtype subtype, UnitFlavor... flavors) {
+    public static UnitEntity makeUSUnit(Long id, UnitSubtype subtype, UnitFlavor... flavors) {
         UnitEntity unit = new UnitEntity();
         unit.setType(UnitType.US);
         unit.setSubtype(subtype);
@@ -59,6 +60,28 @@ public class ConversionTestTools {
                 case Volume:
                     unit.setVolume(true);
                     break;
+                case DishUnit:
+                    unit.setDishUnit(true);
+                    break;
+                case Liquid:
+                    unit.setLiquid(true);
+                    break;
+                case ListUnit:
+                    unit.setListUnit(true);
+            }
+
+
+        }
+        return unit;
+    }
+
+    public static UnitEntity makeHybridUnit(Long id, UnitSubtype subtype, UnitFlavor... flavors) {
+        UnitEntity unit = new UnitEntity();
+        unit.setType(UnitType.HYBRID);
+        unit.setSubtype(subtype);
+        unit.setId(id);
+        for (UnitFlavor flavor : flavors) {
+            switch (flavor) {
                 case DishUnit:
                     unit.setDishUnit(true);
                     break;
@@ -117,4 +140,5 @@ public class ConversionTestTools {
     public static double roundToHundredths(double value) {
         return Math.round(value * 100D) / 100D;
     }
+
 }

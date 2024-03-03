@@ -16,67 +16,38 @@ public class ConversionSpec {
     private final UnitType unitType;
     private final UnitSubtype unitSubtype;
 
+    private final ConversionContextType contextType;
+
     private final Set<UnitFlavor> flavors;
 
-    private ConversionSpec(Long unitId, UnitType unitType, UnitSubtype subtype, Set<UnitFlavor> flavors) {
+    private ConversionSpec(Long unitId, UnitType unitType, UnitSubtype subtype, ConversionContextType contextType, Set<UnitFlavor> flavors) {
         this.unitId = unitId;
         this.unitType = unitType;
         this.flavors = flavors;
         this.unitSubtype = subtype;
+        this.contextType = contextType;
+    }
+
+    public static ConversionSpec specForDomain(UnitEntity unitSource, UnitType domain) {
+        return new ConversionSpec(null, domain, unitSource.getSubtype(),null,new HashSet<>());
     }
 
     public static ConversionSpec fromExactUnit(UnitEntity unitSource) {
-        return new ConversionSpec(unitSource.getId(), unitSource.getType(), unitSource.getSubtype(), ConversionTools.flavorsForUnit(unitSource));
+        return new ConversionSpec(unitSource.getId(), unitSource.getType(), unitSource.getSubtype(),null, ConversionTools.flavorsForUnit(unitSource));
     }
 
-    private static UnitType oppositeType(UnitType unitType) {
-        if (Objects.requireNonNull(unitType) == UnitType.US) {
-            return UnitType.METRIC;
-        } else if (unitType == UnitType.METRIC) {
-            return UnitType.US;
-        }
-        return unitType;
-    }
-
-    public static ConversionSpec convertedFromUnit(UnitEntity unitSource) {
-        return new ConversionSpec(null, oppositeType(unitSource.getType()), unitSource.getSubtype(), ConversionTools.flavorsForUnit(unitSource));
-    }
-
-    public static ConversionSpec opposingSpec(ConversionSpec sourceSpec) {
-        return new ConversionSpec(null, oppositeType(sourceSpec.getUnitType()), sourceSpec.getUnitSubtype(), sourceSpec.getFlavors());
-    }
 
     public static ConversionSpec basicSpec(UnitType type, UnitSubtype subtype, UnitFlavor... flavors) {
         Set<UnitFlavor> flavorSet = new HashSet<>(Arrays.asList(flavors));
-        return new ConversionSpec(null, type, subtype, flavorSet);
-    }
-
-    public static ConversionSpec fromContextAndSource(ConversionContext context, UnitEntity source) {
-        return new ConversionSpec(null, context.getUnitType(), context.getUnitSubtype(), flavorsForContextAndSource(context, source));
-    }
-
-
-    private static Set<UnitFlavor> flavorsForContextAndSource(ConversionContext context, UnitEntity source) {
-        ConversionContextType conversionContextType = context.getContextType();
-        Set<UnitFlavor> flavors = new HashSet<>();
-
-        if (Objects.requireNonNull(conversionContextType) == ConversionContextType.Dish) {
-            flavors.add(UnitFlavor.DishUnit);
-        } else if (conversionContextType == ConversionContextType.List) {
-            flavors.add(UnitFlavor.ListUnit);
-        }
-        if (source.isLiquid()) {
-            flavors.add(UnitFlavor.Liquid);
-        } else if (source.isWeight()) {
-            flavors.add(UnitFlavor.Weight);
-        } else if (source.isVolume()) {
-            flavors.add(UnitFlavor.Volume);
-        }
-        return flavors;
+        return new ConversionSpec(null, type, subtype,null, flavorSet);
     }
 
     public static ConversionSpec basicSpec(Long unitId, UnitType type, UnitSubtype subtype, Set<UnitFlavor> flavorSet) {
-        return new ConversionSpec(unitId, type, subtype, flavorSet);
+        return new ConversionSpec(unitId, type, subtype, null,flavorSet);
+    }
+
+    public static ConversionSpec specForContext(UnitType type, UnitSubtype subtype, ConversionContextType contextType) {
+        return new ConversionSpec(null, type, subtype, contextType, new HashSet<>());
     }
 
     public boolean matches(UnitEntity unit) {
@@ -104,6 +75,10 @@ public class ConversionSpec {
         return unitSubtype;
     }
 
+    public ConversionContextType getContextType() {
+        return contextType;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -123,6 +98,7 @@ public class ConversionSpec {
                 "unitId=" + unitId +
                 ", unitType=" + unitType +
                 ", unitSubtype=" + unitSubtype/**/ +
+                ", contextType=" + contextType +
                 ", flavors=" + flavors +
                 '}';
     }

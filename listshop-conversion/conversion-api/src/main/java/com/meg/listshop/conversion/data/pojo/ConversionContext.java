@@ -1,15 +1,13 @@
 package com.meg.listshop.conversion.data.pojo;
 
 public class ConversionContext {
-    private ConversionContextType contextType;
+    private final ConversionContextType contextType;
 
-    private UnitType unitType;
-    private UnitSubtype unitSubtype;
+    private final UnitType unitType;
 
-    public ConversionContext(ConversionContextType contextType, UnitType unitType, UnitSubtype subtype) {
+    public ConversionContext(ConversionContextType contextType, UnitType unitType) {
         this.contextType = contextType;
         this.unitType = unitType;
-        this.unitSubtype = subtype;
     }
 
     public ConversionContextType getContextType() {
@@ -19,10 +17,6 @@ public class ConversionContext {
 
     public UnitType getUnitType() {
         return unitType;
-    }
-
-    public UnitSubtype getUnitSubtype() {
-        return unitSubtype;
     }
 
     @Override

@@ -5,12 +5,12 @@ package com.meg.listshop.lmt.api.model;
  */
 public enum TagFilterType {
 
-    All("All"),
-    GroupsOnly("groups"),
-    NoGroups("excludeGroups"),
+    All("All"),  // will be handled differently - two pulls - structure and tags
+    GroupsOnly("groups"), // will be handled with group include type
+    NoGroups("excludeGroups"), // will be handled with group include type
 
-    ToReview("review"),
-    ParentTags("ParentTags");
+    ToReview("review"), // will be handled with internal status
+    ParentTags("ParentTags");  // dont know what this does ?=??  actually, no usages found in api or in extranet
 
     private final String display;
 

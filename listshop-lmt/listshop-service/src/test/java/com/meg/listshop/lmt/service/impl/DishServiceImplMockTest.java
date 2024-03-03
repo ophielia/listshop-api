@@ -1,7 +1,7 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.repository.UserRepository;
-import com.meg.listshop.conversion.service.ConversionService;
+import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.repository.DishRepository;
 import com.meg.listshop.lmt.service.DishSearchService;
@@ -45,7 +45,7 @@ public class DishServiceImplMockTest {
     @MockBean
     private DishSearchService dishSearchService;
     @MockBean
-    private ConversionService conversionService;
+    private ConverterService converterService;
 
     @Before
     public void setUp() {
@@ -55,7 +55,7 @@ public class DishServiceImplMockTest {
                 userRepository,
                 autoTagService,
                 tagService,
-                conversionService
+                converterService
         );
     }
 

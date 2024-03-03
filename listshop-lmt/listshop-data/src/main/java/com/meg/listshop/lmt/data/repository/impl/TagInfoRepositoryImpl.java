@@ -1,25 +1,35 @@
 package com.meg.listshop.lmt.data.repository.impl;
 
 import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.data.entity.TagRelationEntity;
+import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
-import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
+import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
+import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
+import com.meg.listshop.lmt.data.repository.CustomTagInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
+public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
 
     NamedParameterJdbcTemplate jdbcTemplate;
 
+    EntityManager em;
     private static final String TAG_INFO_PREFIX = "with test as (select tag_id, is_group, power, tr.parent_tag_id, name, tag_type, user_id, " +
             "case when user_id is not null then tag_id end as user_tag_id, case when user_id is null then tag_id end as standard_tag_id," +
             " case when user_id is not null then parent_tag_id end as user_parent_id, " +
@@ -52,8 +62,10 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
 
     @Autowired
     public TagInfoRepositoryImpl(
-            DataSource dataSource) {
+            DataSource dataSource,
+            EntityManager em) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.em = em;
     }
 
     @Override
@@ -83,6 +95,118 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
 
     }
 
+    @Override
+    public List<TagInfoDTO> findTagInfoByCriteria(TagSearchCriteria criteria) {
+        if (criteria == null) {
+            criteria = new TagSearchCriteria();
+        }
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<TagInfoDTO> cq = cb.createQuery(TagInfoDTO.class);
+        Root<TagRelationEntity> tagRelationRoot = cq.from(TagRelationEntity.class);
+
+        cq.select(cb.construct(
+                TagInfoDTO.class,
+                tagRelationRoot.get("child").get("tag_id"),
+                tagRelationRoot.get("child").get("name"),
+                tagRelationRoot.get("child").get("description"),
+                tagRelationRoot.get("child").get("power"),
+                tagRelationRoot.get("child").get("userId"),
+                tagRelationRoot.get("child").get("tagType"),
+                tagRelationRoot.get("child").get("isGroup"),
+                tagRelationRoot.get("parent").get("tag_id"),
+                tagRelationRoot.get("child").get("toDelete")
+        ));
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        // userId
+        Long userIdParameter = null;
+        ParameterExpression<Long> userSearchSelect = cb.parameter(Long.class);
+        if (criteria.getUserId() != null) {
+            if (criteria.getUserId().equals(0L)) {
+                // 0 is considered default, which is null in the db
+                predicates.add(cb.isNull(tagRelationRoot.get("child").get("userId")));
+            } else {
+                predicates.add(cb.equal(tagRelationRoot.get("child").get("userId"), userSearchSelect));
+                userIdParameter = criteria.getUserId();
+            }
+
+        }
+
+        // tag name
+        String tagNameParameter = null;
+        ParameterExpression<String> tagNameSelect = cb.parameter(String.class);
+        if (criteria.getTextFragment() != null && !criteria.getTextFragment().isEmpty()) {
+            predicates.add(cb.like(cb.lower(tagRelationRoot.get("child").get("name")), tagNameSelect));
+            tagNameParameter = "%" + criteria.getTextFragment().toLowerCase().trim() + "%";
+        }
+        // tag ids
+        if (criteria.getTagIds() != null && !criteria.getTagIds().isEmpty()) {
+            predicates.add(tagRelationRoot.get("child").get("tag_id").in(criteria.getTagIds()));
+        }
+        // group type
+        ParameterExpression<Boolean> parameterGroupInclude = cb.parameter(Boolean.class);
+        Boolean groupFilterParameter = null;
+        if (criteria.getGroupIncludeType() != null &&
+                criteria.getGroupIncludeType() != IncludeType.IGNORE) {
+            predicates.add(cb.equal(tagRelationRoot.get("child").get("isGroup"), parameterGroupInclude));
+            groupFilterParameter = criteria.getGroupIncludeType() != IncludeType.EXCLUDE;
+        }
+
+        // tag type
+        List<TagType> tagTypeParameter = null;
+        ParameterExpression<Collection> paramTagTypes = cb.parameter(Collection.class);
+        if (criteria.getTagTypes() != null && !criteria.getTagTypes().isEmpty()) {
+            predicates.add(tagRelationRoot.get("child").get("tagType").in(paramTagTypes));
+            tagTypeParameter = criteria.getTagTypes();
+        }
+        ParameterExpression<Integer> tagIncludeSelect = cb.parameter(Integer.class);
+        Integer tagIncludeParameter = null;
+        if (!criteria.getIncludedStatuses().isEmpty()) {
+            tagIncludeParameter = calculateMagicNumberForStatuses(criteria.getIncludedStatuses());
+            predicates.add(cb.equal(cb.mod(tagRelationRoot.get("child").get("internalStatus"),tagIncludeSelect), 0));
+        }
+
+        ParameterExpression<Integer> tagExcludeSelect = cb.parameter(Integer.class);
+        Integer tagExcludeParameter = null;
+        if (!criteria.getExcludedStatuses().isEmpty()) {
+            tagExcludeParameter = calculateMagicNumberForStatuses(criteria.getExcludedStatuses());
+            predicates.add(cb.notEqual(cb.mod(tagRelationRoot.get("child").get("internalStatus"),tagExcludeSelect), 0));
+        }
+
+
+        // no deleted tags
+        predicates.add(cb.isFalse(tagRelationRoot.get("child").get("toDelete")));
+
+        cq.where(predicates.toArray(new Predicate[0]));
+
+        TypedQuery<TagInfoDTO> typedQuery = em.createQuery(cq);
+
+        // userId
+        if (userIdParameter != null) {
+            typedQuery.setParameter(userSearchSelect, userIdParameter);
+        }
+        // tagname
+        if (tagNameParameter != null) {
+            typedQuery.setParameter(tagNameSelect, tagNameParameter);
+        }
+        // groups
+        if (groupFilterParameter != null) {
+            typedQuery.setParameter(parameterGroupInclude, groupFilterParameter);
+        }
+        if (tagTypeParameter != null) {
+            typedQuery.setParameter(paramTagTypes, tagTypeParameter);
+        }
+        if (tagIncludeParameter != null) {
+            typedQuery.setParameter(tagIncludeSelect,tagIncludeParameter);
+        }
+        if (tagExcludeParameter != null) {
+            typedQuery.setParameter(tagExcludeSelect,tagExcludeParameter);
+        }
+        return typedQuery.getResultList();
+    }
+
     public List<TagInfoDTO> retrieveRatingInfoForDish(Long dishId) {
         if (dishId == null) {
             throw new IllegalStateException("can't get rating id for empty dish id");
@@ -98,6 +222,13 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
 
     }
 
+    private Integer calculateMagicNumberForStatuses(List<TagInternalStatus> includedStatuses) {
+        Long magicNumber = 1L;
+        for (TagInternalStatus status : includedStatuses) {
+            magicNumber *= status.value();
+        }
+        return magicNumber.intValue();
+    }
     private static final class TagInfoMapper implements RowMapper<TagInfoDTO> {
 
         public TagInfoDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -112,7 +243,7 @@ public class TagInfoRepositoryImpl implements TagInfoCustomRepository {
             Boolean toDelete = rs.getBoolean("to_delete");
 
             return new TagInfoDTO(
-                    id, name, description, power, userId, tagType, isGroup, parentId, toDelete
+                    id, name, description, power, userId, TagType.valueOf(tagType), isGroup, parentId, toDelete
             );
         }
     }

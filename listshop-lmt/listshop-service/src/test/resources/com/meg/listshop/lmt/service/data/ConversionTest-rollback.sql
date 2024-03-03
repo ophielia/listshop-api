@@ -1,0 +1,1 @@
+delete from factors where tag_id is not null;
