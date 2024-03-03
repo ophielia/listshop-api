@@ -1,7 +1,7 @@
 package com.meg.listshop.lmt.service.tag;
 
-import com.meg.listshop.admin.model.PostSearchTags;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
 import com.meg.listshop.lmt.api.model.TagType;
@@ -56,6 +56,8 @@ public interface TagService {
 
     TagEntity updateTag(Long tagId, TagEntity toUpdate);
 
+    AdminTagFullInfo getFullTagInfo(Long tagId);
+
     void replaceTagInDishes(Long userId, Long fromTagId, Long toTagId);
 
     void addTagChangeListener(TagChangeListener tagChangeListener);
@@ -77,8 +79,6 @@ public interface TagService {
 
     List<LongTagIdPairDTO> getStandardUserDuplicates(Long userId, Set<Long> tagKeys);
 
-    List<TagEntity> getTagList(TagSearchCriteria criteria);
-
     void assignTagsToUser(Long userId, List<Long> tagIds);
 
     void setTagsAsVerified(List<Long> tagIds);
@@ -86,4 +86,9 @@ public interface TagService {
     void createStandardTagsFromUserTags(List<Long> tagIds);
 
     void assignDefaultRatingsToDish(Long userId, Long dishId);
+
+    void addOrUpdateLiquidPropertyForTag(Long tagId, Boolean isLiquid);
+    void addOrUpdateLiquidPropertyForTagList(List<Long> tagIds, Boolean isLiquid);
+
+    List<TagEntity> getTagsForIdList(List<Long> tagIds);
 }

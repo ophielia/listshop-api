@@ -6,7 +6,6 @@ import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
-import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.tools.ChainConversionHandlerBuilder;
@@ -111,7 +110,7 @@ class ConversionHandlerTest {
 
 
     @Test
-    void testConvert() throws ConversionFactorException, ExceedsAllowedScaleException {
+    void testConvert() throws ConversionFactorException {
         UnitEntity startUnit = ConversionTestTools.makeMetricUnit(null, UnitSubtype.WEIGHT);
         startUnit.setId(6L);
         ConvertibleAmount startAmount = new SimpleAmount(1D, startUnit);

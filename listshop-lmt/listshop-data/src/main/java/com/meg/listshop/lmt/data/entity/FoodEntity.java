@@ -22,14 +22,17 @@ public class FoodEntity {
     @Column(name = "category_id")
     private Long categoryId;
 
+    @Column(name = "has_factor")
+    private Boolean hasFactor;
     public FoodEntity() {
     }
 
-    public FoodEntity(Long foodId, Long fdcId, String name, Long categoryId) {
+    public FoodEntity(Long foodId, Long fdcId, String name, Long categoryId, Boolean hasFactor) {
         this.foodId = foodId;
         this.fdcId = fdcId;
         this.name = name;
         this.categoryId = categoryId;
+        this.hasFactor = hasFactor;
     }
 
     public Long getFoodId() {
@@ -62,6 +65,14 @@ public class FoodEntity {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public Boolean getHasFactor() {
+        return hasFactor;
+    }
+
+    public void setHasFactor(Boolean hasFactor) {
+        this.hasFactor = hasFactor;
     }
 
     @Override

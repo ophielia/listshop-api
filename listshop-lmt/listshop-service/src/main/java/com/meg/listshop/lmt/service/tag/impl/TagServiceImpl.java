@@ -6,19 +6,13 @@ package com.meg.listshop.lmt.service.tag.impl;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.model.DishRatingInfo;
-import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
-import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
-import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.pojos.ICountResult;
-import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
-import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
-import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
+import com.meg.listshop.lmt.data.pojos.*;
+import com.meg.listshop.lmt.data.repository.CustomTagInfoRepository;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
-import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
@@ -57,8 +51,7 @@ public class TagServiceImpl implements TagService {
     private final DishItemRepository dishItemRepository;
     private final TagStructureService tagStructureService;
     private final DishSearchService dishSearchService;
-    private final TagInfoCustomRepository tagInfoCustomRepository;
-
+    private final CustomTagInfoRepository tagInfoCustomRepository;
 
     @Value("${shopping.list.properties.default_list_layout_id:5}")
     private Long defaultLayoutId;
@@ -73,7 +66,7 @@ public class TagServiceImpl implements TagService {
                           TagStructureService tagStructureService,
                           @Lazy TagReplaceService tagReplaceService,
                           TagRepository tagRepository,
-                          TagInfoCustomRepository tagInfoCustomRepository,
+                          CustomTagInfoRepository tagInfoCustomRepository,
                           DishSearchService dishSearchService,
                           DishItemRepository dishItemRepository
     ) {
@@ -227,12 +220,6 @@ public class TagServiceImpl implements TagService {
         return dbTag;
     }
 
-    @Override
-    public List<TagEntity> getTagList(TagSearchCriteria criteria) {
-        return tagRepository.findTagsByCriteria(criteria);
-
-    }
-
     public List<TagInfoDTO> getTagInfoList(Long userId, List<TagType> tagTypes) {
         return tagInfoCustomRepository.retrieveTagInfoByUser(userId, tagTypes);
     }
@@ -271,6 +258,7 @@ public class TagServiceImpl implements TagService {
         newTag.setToDelete(false);
         newTag.setCreatedOn(new Date());
         newTag.setUserId(tagUserId);
+        newTag.setInternalStatus(TagInternalStatus.EMPTY.value());
         TagEntity saved = tagRepository.save(newTag);
 
         tagStructureService.createRelation(parentTag, saved);
@@ -548,6 +536,52 @@ public class TagServiceImpl implements TagService {
         addTagsToDish(userId, dishId, defaultTagIds, false);
     }
 
+    @Override
+    public AdminTagFullInfo getFullTagInfo(Long tagId) {
+        if (tagId == null) {
+            throw new ObjectNotFoundException("Can't find null tag id in getFullTagInfo");
+        }
+        TagEntity tag = getTagById(tagId);
+
+        if (tag == null) {
+            String message = String.format("Can't find tag for tagId[%s] in getFullTagInfo", tagId);
+            throw new ObjectNotFoundException(message);
+        }
+
+        AdminTagFullInfo fullInfo = tag.toAdminFullInfo();
+
+        // pull parent tag to fill in parent name
+        TagEntity parent = tagStructureService.getParentTag(tag);
+        if (parent != null) {
+            fullInfo.setParentName(parent.getName());
+            fullInfo.setParentId(String.valueOf(parent.getId()));
+        }
+
+
+        // construct status display
+        Long internalStatus = tag.getInternalStatus();
+        List<String> statuses = new ArrayList<>();
+        if (tagHasStatus(internalStatus,TagInternalStatus.CHECKED)) {statuses.add(TagInternalStatus.CHECKED.toString());}
+        if (tagHasStatus(internalStatus,TagInternalStatus.LIQUID_ASSIGNED)) {statuses.add(TagInternalStatus.LIQUID_ASSIGNED.toString());}
+        if (tagHasStatus(internalStatus,TagInternalStatus.FOOD_ASSIGNED)) {statuses.add(TagInternalStatus.FOOD_ASSIGNED.toString());}
+        if (tagHasStatus(internalStatus,TagInternalStatus.FOOD_VERIFIED)) {statuses.add(TagInternalStatus.FOOD_VERIFIED.toString());}
+        if (tagHasStatus(internalStatus,TagInternalStatus.CATEGORY_ASSIGNED)) {statuses.add(TagInternalStatus.CATEGORY_ASSIGNED.toString());}
+
+        String status = "empty";
+        if (!statuses.isEmpty()) {
+            status = String.join(",",statuses);
+        }
+        fullInfo.setStatusDisplay(status);
+        return fullInfo;
+    }
+
+    private boolean tagHasStatus(Long status, TagInternalStatus tagInternalStatus) {
+        return status % tagInternalStatus.value() == 0;
+    }
+
+
+
+
     private Set<Long> determineValidTagsToRemove(Long dishId, Set<Long> tagIds) {
         List<ICountResult> remainingCounts = tagRepository.countRemainingDishTypeTags(dishId, tagIds);
         if (remainingCounts == null || remainingCounts.isEmpty()) {
@@ -627,12 +661,13 @@ public class TagServiceImpl implements TagService {
     private boolean usedByOtherUsers(Long userId, Long tagId) {
         if (tagRepository.findUsersWithTagInDish(userId, tagId) > 0) {
             return true;
-        };
+        }
         return tagRepository.findUsersWithTagInList(userId, tagId) > 0;
     }
 
     public void setTagsAsVerified(List<Long> tagIds) {
-        tagRepository.setTagsAsVerified(tagIds);
+        List<TagEntity> allTags = tagRepository.findAllById(tagIds);
+        allTags.forEach(t -> t.setInternalStatus(TagInternalStatus.CHECKED));
     }
 
     public void createStandardTagsFromUserTags(List<Long> tagIds) {
@@ -664,7 +699,7 @@ public class TagServiceImpl implements TagService {
             tagStructureService.assignTagToParent(newTag, parentTag);
 
             // set original to isVerified = true
-            tagToCopy.setVerified(true);
+            tagToCopy.setInternalStatus(TagInternalStatus.CHECKED);
 
             addedTags.add(newTag);
 
@@ -676,12 +711,42 @@ public class TagServiceImpl implements TagService {
 
     }
 
+    public void addOrUpdateLiquidPropertyForTagList(List<Long> tagIds, Boolean isLiquid) {
+        if (isLiquid == null) {
+            return;
+        }
+        // get tags to set
+        List<TagEntity> tags = tagRepository.getTagsForIdList(new HashSet<>(tagIds));
+        for ( TagEntity tag : tags) {
+            addOrUpdateLiquidPropertyForTag(tag, isLiquid);
+        }
+    }
+
+    public List<TagEntity> getTagsForIdList(List<Long> tagIds) {
+        return tagRepository.getTagsForIdList(new HashSet<>(tagIds));
+    }
+
+    public void addOrUpdateLiquidPropertyForTag(Long tagId, Boolean isLiquid) {
+        // get tag
+        TagEntity tag = getTagById(tagId);
+        if (tag == null) {
+            final String msg = String.format("No tag found by id tagId [%s]", tagId);
+            throw new ObjectNotFoundException(msg);
+        }
+        addOrUpdateLiquidPropertyForTag(tag, isLiquid);
+    }
+
+    private void addOrUpdateLiquidPropertyForTag(TagEntity tag, Boolean isLiquid) {
+        // get tag
+        tag.setIsLiquid(isLiquid);
+        tag.setInternalStatus(TagInternalStatus.LIQUID_ASSIGNED);
+    }
+
     private Set<Long> determineTagsEligibleForStandard(List<Long> tagIds) {
         List<Long> alreadyExisting =  tagRepository.findDuplicateStandardTags(tagIds );
-        Set<Long> eligible = tagIds.stream()
+        return tagIds.stream()
                 .filter(t -> !alreadyExisting.contains(t))
                 .collect(Collectors.toSet());
-        return eligible;
     }
 
 
@@ -722,7 +787,7 @@ public class TagServiceImpl implements TagService {
 
     private TagEntity copyTagIntoNewTag(TagEntity tagToCopy) {
         TagEntity newTag = new TagEntity();
-        newTag.setVerified(true);
+        newTag.setInternalStatus(TagInternalStatus.CHECKED);
         newTag.setUserId(null);
         newTag.setTagType(tagToCopy.getTagType());
         newTag.setName(tagToCopy.getName());

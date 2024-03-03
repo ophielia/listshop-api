@@ -14,25 +14,22 @@ import com.meg.listshop.Application;
 import com.meg.listshop.admin.model.PostSearchTags;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.lmt.api.model.TagListResource;
-import com.meg.listshop.lmt.api.model.TagResource;
+import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.IncludeType;
-import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
-import com.meg.listshop.lmt.data.repository.TagRelationRepository;
+import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.LayoutService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -45,6 +42,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -75,16 +73,12 @@ public class AdminTagRestControllerTest {
     @Autowired
     private
     ObjectMapper objectMapper;
-    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
+    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype());
 
     private MockMvc mockMvc;
     @Autowired
     private TagRepository tagRepository;
-    @Autowired
-    private LayoutService listLayoutService;
-    @Autowired
-    private TagRelationRepository tagRelationRepository;
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -105,8 +99,6 @@ public class AdminTagRestControllerTest {
                 null,
                 true,
                 null);
-
-
     }
 
     @Test
@@ -134,6 +126,101 @@ public class AdminTagRestControllerTest {
         this.mockMvc.perform(put("/admin/tag/" + TestConstants.TAG_CARROTS + "/dish/" + TestConstants.TAG_MEAT)
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @WithMockUser
+    public void findFoodSuggestions() throws Exception {
+        // @GetMapping(value = "/{tagId}/food/suggestions")
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/888999/food/suggestions" )
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        String jsonList = result.getResponse().getContentAsString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        FoodListResource afterList = objectMapper.readValue(jsonList,FoodListResource.class);
+Assert.assertNotNull(afterList);
+
+
+        long countForCategoryThree = afterList.getEmbeddedList().getFoodResourceList().stream()
+                .map(FoodResource::getFood)
+                .filter(f -> f.getCategoryId().equals("3"))
+                .count();
+        Assertions.assertEquals(2, countForCategoryThree, "expected two foods for category 3 found");
+
+        long countForContainsButter = afterList.getEmbeddedList().getFoodResourceList().stream()
+                .map(FoodResource::getFood)
+                .filter(f -> f.getName().contains("butterlike"))
+                .count();
+        Assertions.assertEquals(4, countForContainsButter, "expected all foods contains butter");
+
+    }
+
+    @Test
+    @WithMockUser
+    public void assignFoodToTag() throws Exception {
+        MvcResult result = this.mockMvc.perform(post("/admin/tag/888999/food/9000")
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        Assertions.assertNotNull(result);
+    }
+
+    @Test
+    @WithMockUser
+    public void assignLiquidToTag() throws Exception {
+        this.mockMvc.perform(post("/admin/tag/888999/liquid/true")
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/888999/fullinfo")
+                .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+        Assertions.assertNotNull(result);
+        ObjectMapper mapper = new ObjectMapper();
+        AdminTagFullInfoResource resultObject = mapper.readValue(result.getResponse().getContentAsString(), AdminTagFullInfoResource.class);
+        Assertions.assertNotNull(resultObject);
+        Assertions.assertTrue(resultObject.getTag().getLiquid());
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetFoodCategoryMappings() throws Exception {
+        //    @GetMapping(value = "/food/categories")
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/food/category/mappings")
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        Assertions.assertNotNull(result);
+                ObjectMapper mapper = new ObjectMapper();
+        CategoryMappingListResource embeddedList = mapper.readValue(result.getResponse().getContentAsString(), CategoryMappingListResource.class);
+        List<FoodCategoryMappingResource> mappingList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getMappingResourceList() : new ArrayList<>();
+        Assertions.assertNotNull(mappingList);
+        FoodCategoryMapping withCategory = mappingList.stream()
+                .map(FoodCategoryMappingResource::getFoodCategoryMapping)
+                .filter(foodCategoryMapping -> foodCategoryMapping.getTagId().equals("8881019"))
+                .findFirst().orElse(null);
+        Assertions.assertNotNull(withCategory);
+        Assertions.assertEquals("3", withCategory.getFoodCategoryId());
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetFullTagInfo() throws Exception {
+        Long tagId = 9991029L;
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        Assertions.assertNotNull(result);
+        ObjectMapper mapper = new ObjectMapper();
+        AdminTagFullInfoResource resultObject = mapper.readValue(result.getResponse().getContentAsString(), AdminTagFullInfoResource.class);
+        Assertions.assertNotNull(resultObject);
     }
 
     @Test
@@ -175,34 +262,18 @@ public class AdminTagRestControllerTest {
     }
 
     @Test
-    public void getUserTagListForGrid() throws Exception {
-        // this user has two custom tags, one in Animal Products(367), one in Produce(388)
-        Long userId = 101010L;
+    public void testAssignFoodCategoryToTag() throws Exception {
+        Long testTagId = 9991019L;
+        long testCategoryId = 3L;
+        String url = "/admin/tag/" + testTagId + "/food/category/" + testCategoryId;
 
-        String url = "/admin/tag/user/" + userId + "/grid";
-        MvcResult result = this.mockMvc.perform(get(url)
+        this.mockMvc.perform(post(url)
                         .with(user(userDetails)))
-                .andExpect(status().is2xxSuccessful())
-                //.andExpect(jsonPath("$._embedded.tagResourceList", Matchers.hasSize(478)))
-                .andReturn();
+                .andExpect(status().is2xxSuccessful());
 
-        Assert.assertNotNull(result);
-        String resultBody = result.getResponse().getContentAsString();
-        System.out.println("\n\n" + resultBody + "\n\n");
-        Assert.assertNotNull(resultBody);
-        TagListResource resultResource = deserializeTagListResource(resultBody);
-        Assert.assertNotNull(resultResource);
-
-// check that results contain custom tags "some green thing" and "some black thing"
-
-        Optional<TagResource> customGreen = resultResource.getEmbeddedList().getTagResourceList().stream()
-                .filter(t -> t.getTag().getName().equalsIgnoreCase("some green thing"))
-                .findFirst();
-        Optional<TagResource> customBlack = resultResource.getEmbeddedList().getTagResourceList().stream()
-                .filter(t -> t.getTag().getName().equalsIgnoreCase("some black thing"))
-                .findFirst();
-        Assert.assertTrue(customGreen.isPresent());
-        Assert.assertTrue(customBlack.isPresent());
+        TagEntity tagResult = tagRepository.findById(testTagId).orElse(null);
+        Assert.assertNotNull(tagResult);
+        Assert.assertEquals(tagResult.getInternalStatus(), (Long) TagInternalStatus.CATEGORY_ASSIGNED.value());
     }
 
     @Test

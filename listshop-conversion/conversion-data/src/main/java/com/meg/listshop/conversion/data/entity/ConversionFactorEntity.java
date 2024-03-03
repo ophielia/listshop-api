@@ -21,11 +21,11 @@ import javax.persistence.*;
 )
 public class ConversionFactorEntity implements ConversionFactor {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "factor_sequence")
     @Column(name = "FACTOR_ID")
     private Long factorId;
 
     private Double factor;
-
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "toUnit")

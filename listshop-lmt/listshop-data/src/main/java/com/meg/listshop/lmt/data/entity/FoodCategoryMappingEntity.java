@@ -20,24 +20,23 @@ import java.util.Objects;
                         name = "increment_size",
                         value="1")}
 )
-public class FoodCategoryMapping {
+public class FoodCategoryMappingEntity {
 
     @Id
-    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="food_category_mapping_seq")
+    @GeneratedValue
     @Column(name = "food_category_mapping_id")
     Long id;
 
 
-    @OneToOne
-    @JoinColumn(name="category_id")
-    private FoodCategory category;
-    @OneToOne
-    @JoinColumn(name="tag_id")
-    private TagEntity tag;
+    @Column(name="category_id")
+    private Long categoryId;
+    @Column(name="tag_id")
+    private Long tagId;
 
-    public FoodCategoryMapping() {
+    public FoodCategoryMappingEntity() {
         // no-arg constructor necessary
     }
+
 
     public Long getId() {
         return id;
@@ -47,41 +46,41 @@ public class FoodCategoryMapping {
         this.id = id;
     }
 
-    public FoodCategory getCategory() {
-        return category;
+    public Long getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(FoodCategory category) {
-        this.category = category;
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public TagEntity getTag() {
-        return tag;
+    public Long getTagId() {
+        return tagId;
     }
 
-    public void setTag(TagEntity tag) {
-        this.tag = tag;
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FoodCategoryMapping that = (FoodCategoryMapping) o;
-        return Objects.equals(id, that.id) && Objects.equals(category, that.category) && Objects.equals(tag, that.tag);
+        FoodCategoryMappingEntity that = (FoodCategoryMappingEntity) o;
+        return Objects.equals(id, that.id) && Objects.equals(categoryId, that.categoryId) && Objects.equals(tagId, that.tagId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, category, tag);
+        return Objects.hash(id, categoryId, tagId);
     }
 
     @Override
     public String toString() {
-        return "FoodCategoryMapping{" +
+        return "FoodCategoryMappingEntity{" +
                 "id=" + id +
-                ", category=" + category +
-                ", tag=" + tag +
+                ", categoryId=" + categoryId +
+                ", tagId=" + tagId +
                 '}';
     }
 }

@@ -1,6 +1,8 @@
 package com.meg.listshop.lmt.data.entity;
 
+import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -71,6 +73,12 @@ public class TagEntity {
 
     @Column(name = "internal_status")
     private Long internalStatus;
+
+    @Column(name = "is_liquid")
+    private Boolean isLiquid;
+
+    @Column(name = "food_id")
+    private Long foodId;
 
     @Transient
     private List<Long> childrenIds;
@@ -165,14 +173,6 @@ public class TagEntity {
         isGroup = group;
     }
 
-    public Boolean getVerified() {
-        return isVerified;
-    }
-
-    public void setVerified(Boolean verified) {
-        isVerified = verified;
-    }
-
     public Double getPower() {
         return power;
     }
@@ -229,6 +229,33 @@ public class TagEntity {
         this.internalStatus = internalStatus;
     }
 
+    public void setInternalStatus(TagInternalStatus status) {
+        long newStatus = status.value();
+        if (this.internalStatus == null) {
+            this.internalStatus = 1L;
+        }
+        if (this.internalStatus % newStatus == 0) {
+            return;
+        }
+        this.internalStatus = this.internalStatus * newStatus;
+    }
+
+    public Boolean getIsLiquid() {
+        return isLiquid;
+    }
+
+    public void setIsLiquid(Boolean liquid) {
+        isLiquid = liquid;
+    }
+
+    public Long getFoodId() {
+        return foodId;
+    }
+
+    public void setFoodId(Long foodId) {
+        this.foodId = foodId;
+    }
+
     public TagEntity copy() {
         var copy = new TagEntity();
         copy.setName(getName());
@@ -238,6 +265,8 @@ public class TagEntity {
         copy.setReplacementTagId(getReplacementTagId());
         copy.setToDelete(isToDelete());
         copy.setInternalStatus(getInternalStatus());
+        copy.setFoodId(getFoodId());
+        copy.setIsLiquid(getIsLiquid());
         return copy;
     }
 
@@ -286,17 +315,49 @@ public class TagEntity {
     public String toString() {
         return "TagEntity{" +
                 "tag_id=" + tag_id +
+                ", userId=" + userId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", tagType=" + tagType +
                 ", tagTypeDefault=" + tagTypeDefault +
                 ", categories=" + categories +
-                ", isVerified=" + isVerified +
+                ", isGroup=" + isGroup +
                 ", power=" + power +
-                ", childrenIds=" + childrenIds +
-                ", parentId=" + parentId +
+                ", toDelete=" + toDelete +
+                ", replacementTagId=" + replacementTagId +
+                ", createdOn=" + createdOn +
+                ", updatedOn=" + updatedOn +
+                ", categoryUpdatedOn=" + categoryUpdatedOn +
+                ", removedOn=" + removedOn +
                 ", internalStatus=" + internalStatus +
+                ", isLiquid=" + isLiquid +
+                ", foodId=" + foodId +
                 '}';
     }
 
+
+    public AdminTagFullInfo toAdminFullInfo() {
+        AdminTagFullInfo fullInfo = new AdminTagFullInfo( );
+        fullInfo.setTagId(nullOrValueAsString(getId()));
+        fullInfo.setName(getName());
+        fullInfo.setUserId(nullOrValueAsString(getUserId()));
+        fullInfo.setParentId(nullOrValueAsString(getParentId()));
+        fullInfo.setParentName(getName());
+        fullInfo.setDescription(getDescription());
+        fullInfo.setTagType(getTagType().name());
+        fullInfo.setGroup(getIsGroup());
+        fullInfo.setPower(getPower());
+        fullInfo.setToDelete(isToDelete());
+        fullInfo.setFoodId(nullOrValueAsString(getFoodId()));
+        fullInfo.setLiquid(getIsLiquid());
+
+        return fullInfo;
+    }
+
+    private String nullOrValueAsString(Long longId) {
+        if (longId == null) {
+            return null;
+        }
+        return String.valueOf(longId);
+    }
 }

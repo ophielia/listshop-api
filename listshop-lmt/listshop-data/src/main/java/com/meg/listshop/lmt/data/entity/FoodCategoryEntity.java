@@ -4,11 +4,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Objects;
 
 @Entity
 @Table(name = "food_categories")
-public class FoodCategory {
+public class FoodCategoryEntity {
 
     @Id
     @Column(name = "category_id")
@@ -19,14 +18,15 @@ public class FoodCategory {
 
     private String name;
 
-    public FoodCategory() {
+    public FoodCategoryEntity() {
+        // empty constructor for jpa
     }
 
-    public Long getCategoryId() {
+    public Long getId() {
         return categoryId;
     }
 
-    public void setCategoryId(Long categoryId) {
+    public void setId(Long categoryId) {
         this.categoryId = categoryId;
     }
 

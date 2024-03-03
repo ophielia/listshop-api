@@ -75,10 +75,6 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
     @Query("update TagEntity t set t.userId = :userId where t.userId is null and t.tag_id in (:tagIds)")
     void assignTagsToUser(@Param("userId") Long userId, @Param("tagIds") List<Long> tagIds);
 
-    @Modifying
-    @Query("update TagEntity t set t.isVerified = true where t.tag_id in (:tagIds)")
-    void setTagsAsVerified(@Param("tagIds") List<Long> tagIds);
-
     @Query(value = "select  t.tag_id, p.tag_id as parent_id from tag t " +
             "          join tag_relation r on r.child_tag_id = t.tag_id " +
             "          join tag p on p.tag_id = r.parent_tag_id " +

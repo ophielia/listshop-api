@@ -10,9 +10,10 @@ import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.ICountResult;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
-import com.meg.listshop.lmt.data.repository.TagInfoCustomRepository;
+import com.meg.listshop.lmt.data.repository.CustomTagInfoRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.*;
+import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.TagReplaceService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -58,10 +59,13 @@ class TagServiceImplMockTest {
     private DishItemRepository dishItemRepository;
 
     @MockBean
-    TagInfoCustomRepository tagInfoCustomRepository;
+    CustomTagInfoRepository tagInfoCustomRepository;
+    @MockBean
+    FoodService foodService;
 
     @MockBean
     LayoutService listLayoutService;
+
 
     private static class CountResult implements ICountResult {
         int countResult;
@@ -81,8 +85,7 @@ class TagServiceImplMockTest {
     void setUp() {
         this.tagService = new TagServiceImpl(
                 tagStatisticService, dishService, tagStructureService, tagReplaceService,
-                tagRepository, tagInfoCustomRepository, dishSearchService, dishItemRepository
-        );
+                tagRepository, tagInfoCustomRepository, dishSearchService, dishItemRepository);
     }
 
     @Test
@@ -805,9 +808,6 @@ class TagServiceImplMockTest {
 
         // call under test
         tagService.replaceTagInDishes(userId, forTagId, toTagId);
-
-
-
     }
 
     @Test
@@ -834,10 +834,16 @@ class TagServiceImplMockTest {
         Assertions.assertEquals(replacementTagId, result.getId());
     }
 
+
+
+
+
     private TagInfoDTO buildTagInfoDTO(Long tagId, String tagName,
                                        Double power, Long parentId) {
         return new TagInfoDTO(tagId, tagName, "", power, 0L, TagType.Rating, false, parentId, false);
 
     }
+
+
 
 }

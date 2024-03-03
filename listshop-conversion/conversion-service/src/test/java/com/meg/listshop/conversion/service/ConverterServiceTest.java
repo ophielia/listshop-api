@@ -4,7 +4,6 @@ import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
-import com.meg.listshop.conversion.exceptions.ExceedsAllowedScaleException;
 import com.meg.listshop.conversion.service.handlers.ChainConversionHandler;
 import com.meg.listshop.conversion.service.handlers.ConversionHandler;
 import com.meg.listshop.conversion.service.handlers.ScalingHandler;
@@ -15,14 +14,13 @@ import com.meg.listshop.conversion.tools.ConversionTestTools;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class ConversionServiceTest {
+class ConverterServiceTest {
 
     UnitEntity metricGrams;
     UnitEntity usOunces;
@@ -33,7 +31,7 @@ class ConversionServiceTest {
     UnitEntity metricLiter;
     UnitEntity usMadeUpCloser;
 
-    ConversionService service;
+    ConverterService service;
 
 
     @BeforeEach
@@ -72,11 +70,11 @@ class ConversionServiceTest {
                 .build();
 
         List<ChainConversionHandler> handlers = Collections.singletonList( metricToUs);
-        service = new ConversionServiceImpl(handlers, Collections.singletonList(listHandler), weightToVolume);
+        service = new ConverterServiceImpl(handlers, Collections.singletonList(listHandler), weightToVolume);
     }
 
     @Test
-    void testConvertExactUnit() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
+    void testConvertExactUnit() throws ConversionPathException, ConversionFactorException {
         // exact - convert metric grams to imperial ounces
         ConvertibleAmount amount = new SimpleAmount(1, metricGrams);
         ConvertibleAmount converted = service.convert(amount, usOunces);
@@ -97,7 +95,7 @@ class ConversionServiceTest {
     }
 
     @Test
-    void testConvertByType() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
+    void testConvertByType() throws ConversionPathException, ConversionFactorException {
         // unittype - convert imperial volume to metric volume (say, liter to quart)
         ConvertibleAmount amount = new SimpleAmount(1, usQuart);
         ConvertibleAmount converted = service.convert(amount, UnitType.METRIC);
@@ -118,7 +116,7 @@ class ConversionServiceTest {
     }
 
     @Test
-    void testConvertByContext() throws ConversionPathException, ConversionFactorException, ExceedsAllowedScaleException {
+    void testConvertByContext() throws ConversionPathException, ConversionFactorException {
         // context - convert imperial volume to list unit (cups to quart)
         ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.US);
         ConvertibleAmount amount = new SimpleAmount(4, usCups);

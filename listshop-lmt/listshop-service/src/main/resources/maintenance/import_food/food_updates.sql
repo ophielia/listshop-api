@@ -5,8 +5,10 @@ CREATE SEQUENCE public.temp_conversion_seq
               NO MAXVALUE
               CACHE 1;
 
-update food_conversions set conversion_id = nextval('temp_conversion_seq');
+update tmp_temp set conversion_id = nextval('temp_conversion_seq');
 
 drop sequence temp_conversion_seq;
 
-select * from food_conversions;
+select * from food_conversions c join foods f on f.food_id = c.food_id;
+
+select * from food_categories
