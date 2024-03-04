@@ -1,3 +1,12 @@
+-- fix ownership previously created tables
+ALTER TABLE factors OWNER TO postgres;
+grant all on factors to bankuser;
+
+ALTER TABLE dish_items OWNER TO postgres;
+grant all on dish_items to bankuser;
+
+ALTER TABLE units OWNER TO postgres;
+grant all on units to bankuser;
 
 create table foods
 (
@@ -8,7 +17,8 @@ create table foods
     marker      varchar(255),
         has_factor bool
 );
-grant all on foods to bank;
+ALTER TABLE foods OWNER TO postgres;
+grant all on foods to bankuser;
 
 create table food_conversions
 (
@@ -21,6 +31,8 @@ create table food_conversions
     unit_id     bigint
 );
 
+ALTER TABLE food_conversions OWNER TO postgres;
+grant all on food_conversions to bankuser;
 
 create table food_categories
 (
@@ -29,7 +41,8 @@ create table food_categories
     name          varchar(512)
 );
 
-grant all on food_categories to bank;
+ALTER TABLE food_categories OWNER TO postgres;
+grant all on food_categories to bankuser;
 
 create table food_category_mapping
 (
@@ -37,6 +50,9 @@ create table food_category_mapping
     category_id   bigint,
     tag_id       bigint
 );
+
+ALTER TABLE food_category_mapping OWNER TO postgres;
+grant all on food_category_mapping to bankuser;
 
 CREATE SEQUENCE public.food_category_mapping_seq
     START WITH 1000
@@ -46,9 +62,7 @@ CREATE SEQUENCE public.food_category_mapping_seq
     CACHE 1;
 
 
---ALTER TABLE public.food_category_mapping_seq OWNER TO postgres;
 
-grant all on food_category_mapping to bank;
 
 
 
