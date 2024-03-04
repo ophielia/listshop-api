@@ -34,18 +34,26 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
-create role bank password 'dummypassword';
 
---CREATE ROLE postgres WITH
---    LOGIN  encrypted password 'postgres'
---    SUPERUSER
---    INHERIT
---    NOCREATEDB
---    NOCREATEROLE
---    NOREPLICATION;
---
--- Name: authority; Type: TABLE; Schema: public; Owner: postgres
---
+
+do
+$body$
+    declare
+        num_users integer;
+    begin
+        SELECT count(*)
+        into num_users
+        FROM pg_user
+        WHERE usename = 'bank';
+
+        IF num_users = 0 THEN
+            create role bank password 'dummypassword';
+        END IF;
+    end
+$body$
+;
+
+
 
 CREATE TABLE public.authority
 (
