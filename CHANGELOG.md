@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.16.1]  - March 2024
+### Fixed
+- Flyway upgrade scripts
+
 ## [1.16.0]  - March 2024
 ### Added
 - Lots of endpoints for the admin extranet, tag management
