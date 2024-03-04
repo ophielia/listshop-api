@@ -34,24 +34,7 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
-
-
-do
-$body$
-    declare
-        num_users integer;
-    begin
-        SELECT count(*)
-        into num_users
-        FROM pg_user
-        WHERE usename = 'bank';
-
-        IF num_users = 0 THEN
-            create role bank password 'dummypassword';
-        END IF;
-    end
-$body$
-;
+create role bank password 'dummypassword';
 
 
 
