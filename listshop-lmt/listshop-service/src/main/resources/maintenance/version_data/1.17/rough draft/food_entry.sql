@@ -1,4 +1,4 @@
-insert into food_entry (entry_id, food_id, new_name, marker)
+insert into food_entry (entry_id, food_id, name, marker)
 values  (5000, 35818, 'Sauce, barbecue, BULL''S-EYE, original', null),
         (5099, 36428, 'Babyfood, vegetables, corn, creamed, junior', null),
         (5277, 36028, 'Bologna, turkey', null),
@@ -4908,3 +4908,7 @@ values  (5000, 35818, 'Sauce, barbecue, BULL''S-EYE, original', null),
         (9906, 34447, 'Fish, salmon, chum, canned, drained solids with bone', null),
         (9907, 34631, 'Margarine-like spread with yogurt, approximately 40% fat, tub, with salt', null),
         (9908, 36856, 'Carrots, frozen, cooked, boiled, drained, without salt', null);
+
+
+insert into markers
+select distinct marker from food_conversions where marker is not null;

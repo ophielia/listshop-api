@@ -1,19 +1,19 @@
-create table food_conversions
-(
-    conversion_id integer,
-    food_id       integer,
-    integral      varchar(256),
-    sub_amount    varchar(256),
-    info          varchar(256),
-    amount        double precision,
-    marker        varchar(255),
-    unit          varchar(256),
-    gram_weight   double precision,
-    unit_id       integer
-);
+--create table food_conversions
+--(
+--    conversion_id integer,
+--    food_id       integer,
+--    integral      varchar(256),
+--    sub_amount    varchar(256),
+--    info          varchar(256),
+--    amount        double precision,
+--    marker        varchar(255),
+--    unit          varchar(256),
+--    gram_weight   double precision,
+--    unit_id       integer
+--);
+--
 
-
-insert into public.food_conversions (conversion_id, food_id, integral, sub_amount, info, amount, marker, unit, gram_weight, unit_id)
+insert into food_conversions (conversion_id, food_id, integral, sub_amount, info, amount, marker, unit_name, gram_weight, unit_id)
 values  (14949, 35707, null, null, null, 1, null, 'cup', 180, 1000),
         (14950, 34219, null, null, '1" pieces', 1, null, 'cup', 132, 1000),
         (14951, 35380, null, null, null, 1, null, 'tablespoon', 17.5, 1001),

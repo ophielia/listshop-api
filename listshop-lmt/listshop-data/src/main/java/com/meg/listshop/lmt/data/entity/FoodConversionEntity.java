@@ -18,8 +18,7 @@ public class FoodConversionEntity {
     private Long foodId;
 
 
-    @Column(name = "fdc_id")
-    private Long fdcId;
+    private String marker;
 
     private double amount;
 
@@ -49,14 +48,6 @@ public class FoodConversionEntity {
 
     public void setFoodId(Long foodId) {
         this.foodId = foodId;
-    }
-
-    public Long getFdcId() {
-        return fdcId;
-    }
-
-    public void setFdcId(Long fdcId) {
-        this.fdcId = fdcId;
     }
 
     public double getAmount() {
@@ -91,25 +82,33 @@ public class FoodConversionEntity {
         this.unitId = unitId;
     }
 
+    public String getMarker() {
+        return marker;
+    }
+
+    public void setMarker(String marker) {
+        this.marker = marker;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FoodConversionEntity that = (FoodConversionEntity) o;
-        return Double.compare(amount, that.amount) == 0 && Double.compare(gramWeight, that.gramWeight) == 0 && Objects.equals(conversionId, that.conversionId) && Objects.equals(foodId, that.foodId) && Objects.equals(fdcId, that.fdcId) && Objects.equals(unitName, that.unitName) && Objects.equals(unitId, that.unitId);
+        return Double.compare(amount, that.amount) == 0 && Double.compare(gramWeight, that.gramWeight) == 0 && Objects.equals(conversionId, that.conversionId) && Objects.equals(foodId, that.foodId) && Objects.equals(marker, that.marker) && Objects.equals(unitId, that.unitId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(conversionId, foodId, fdcId, amount, unitName, gramWeight, unitId);
+        return Objects.hash(conversionId, foodId, marker, amount, gramWeight, unitId);
     }
 
     @Override
     public String toString() {
-        return "FoodConversions{" +
+        return "FoodConversionEntity{" +
                 "conversionId=" + conversionId +
                 ", foodId=" + foodId +
-                ", fdcId=" + fdcId +
+                ", marker='" + marker + '\'' +
                 ", amount=" + amount +
                 ", unitName='" + unitName + '\'' +
                 ", gramWeight=" + gramWeight +

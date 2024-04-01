@@ -1,14 +1,14 @@
-create table foods
-(
-    food_id     integer,
-    fdc_id      bigint,
-    name        text,
-    category_id integer,
-    integral    varchar(256),
-    has_factor  boolean
-);
+--create table foods
+--(
+--    food_id     integer,
+--    fdc_id      bigint,
+--    name        text,
+--    category_id integer,
+--    integral    varchar(256),
+--    has_factor  boolean
+--);
 
-insert into public.foods (food_id, fdc_id, name, category_id, integral, has_factor)
+insert into foods (food_id, fdc_id, name, category_id, integral, has_factor)
 values  (34420, 173021, 'Figs, raw', 9, null, true),
         (34473, 167753, 'Prune juice, canned', 9, null, true),
         (34632, 169725, 'Wheat, sprouted', 20, null, true),
