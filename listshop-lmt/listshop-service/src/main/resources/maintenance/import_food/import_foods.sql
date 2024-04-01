@@ -1,4 +1,4 @@
-insert into public.foods (food_id, fdc_id, name, category_id, marker)
+insert into foods (food_id, fdc_id, name, category_id, marker)
 values  (28874, 168866, 'Puddings, banana, dry mix, instant, with added oil', 19, null),
         (28153, 170533, 'Squash, summer, scallop, cooked, boiled, drained, with salt, mashed', 11, 'mashed'),
         (29947, 170138, 'Tomatoes, red, ripe, canned, packed in tomato juice, no salt added', 11, null),

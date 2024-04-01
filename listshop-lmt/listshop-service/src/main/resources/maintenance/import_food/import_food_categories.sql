@@ -1,4 +1,4 @@
-insert into public.food_categories (category_id, category_code, name)
+insert into food_categories (category_id, category_code, name)
 values  (1, '0100', 'Dairy and Egg Products'),
         (2, '0200', 'Spices and Herbs'),
         (3, '0300', 'Baby Foods'),
