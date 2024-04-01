@@ -4909,6 +4909,10 @@ values  (5000, 35818, 'Sauce, barbecue, BULL''S-EYE, original', null),
         (9907, 34631, 'Margarine-like spread with yogurt, approximately 40% fat, tub, with salt', null),
         (9908, 36856, 'Carrots, frozen, cooked, boiled, drained, without salt', null);
 
+update food_entry e
+    set category_id = f.category_id
+from foods f
+where f.food_id = e.food_id;
 
 insert into markers
 select distinct marker from food_conversions where marker is not null;

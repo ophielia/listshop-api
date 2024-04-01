@@ -17,6 +17,8 @@ public class FoodEntryEntity {
     @Column(name = "food_id")
     private Long foodId;
 
+    @Column(name = "category_id")
+    private Long categoryId;
 
     private String name;
     private String marker;
@@ -56,17 +58,25 @@ public class FoodEntryEntity {
         this.marker = marker;
     }
 
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FoodEntryEntity that = (FoodEntryEntity) o;
-        return Objects.equals(entryId, that.entryId) && Objects.equals(foodId, that.foodId) && Objects.equals(name, that.name) && Objects.equals(marker, that.marker);
+        return Objects.equals(entryId, that.entryId) && Objects.equals(foodId, that.foodId) && Objects.equals(categoryId, that.categoryId) && Objects.equals(marker, that.marker);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(entryId, foodId, name, marker);
+        return Objects.hash(entryId, foodId, categoryId, marker);
     }
 
     @Override
@@ -74,6 +84,7 @@ public class FoodEntryEntity {
         return "FoodEntryEntity{" +
                 "entryId=" + entryId +
                 ", foodId=" + foodId +
+                ", categoryId=" + categoryId +
                 ", name='" + name + '\'' +
                 ", marker='" + marker + '\'' +
                 '}';

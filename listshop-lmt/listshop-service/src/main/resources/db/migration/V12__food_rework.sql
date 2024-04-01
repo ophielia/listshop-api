@@ -14,6 +14,7 @@ create table food_entry
 (
  entry_id bigint,
  food_id bigint,
+ category_id bigint,
  name text,
  marker varchar(255)
 );

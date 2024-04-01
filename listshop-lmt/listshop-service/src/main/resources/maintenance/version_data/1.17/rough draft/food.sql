@@ -7,6 +7,10 @@
 --    integral    varchar(256),
 --    has_factor  boolean
 --);
+update tag set food_id = null where food_id is not null;
+delete from food_conversions where food_id > 0;
+delete from foods where food_id > 0;
+delete from food_entry where food_id > 0;
 
 insert into foods (food_id, fdc_id, name, category_id, integral, has_factor)
 values  (34420, 173021, 'Figs, raw', 9, null, true),
