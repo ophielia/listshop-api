@@ -17,6 +17,11 @@ create table food_entry
  marker varchar(255)
 );
 
+create table markers
+(
+    marker varchar(256)
+);
+
 
 
 update tag set internal_status = 1;
