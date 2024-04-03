@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface FoodEntryRepository extends JpaRepository<FoodEntryEntity, Long> {
 
-    @Query("select f from FoodEntryEntity f where lower(f.name) like lower(?1)")
+    @Query("select distinct f from FoodEntryEntity f where lower(f.name) like lower(?1)")
     List<FoodEntryEntity> findFoodMatches(String name);
 }

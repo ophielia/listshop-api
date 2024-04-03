@@ -1,4 +1,4 @@
-update tag set food_id = null where food_id is not null;
+update tag set conversion_id = null where conversion_id is not null;
 
 delete from factors where factors.factor_id > 0;
 delete from units where unit_id > 0;
@@ -129,3 +129,9 @@ insert into factors (factor_id, from_unit, to_unit, factor) select 73, f.unit_id
 insert into factors (factor_id, from_unit, to_unit, factor) select 74, f.unit_id, t.unit_id, 1.0 as factor from units f,units t where lower(f.name) = '#2.5 can' and lower(t.name) = 'large can';
 insert into factors (factor_id, from_unit, to_unit, factor) select 75, f.unit_id, t.unit_id, 1.0 as factor from units f,units t where lower(f.name) = '#3 can' and lower(t.name) = 'large can';
 insert into factors (factor_id, from_unit, to_unit, factor) select 76, f.unit_id, t.unit_id, 1.0 as factor from units f,units t where lower(f.name) = '29 oz can' and lower(t.name) = 'large can';
+
+
+update food_conversions c
+set unit_id = u.unit_id
+from units u
+where u.name = c.unit_name;

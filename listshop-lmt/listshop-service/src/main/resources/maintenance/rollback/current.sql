@@ -1,4 +1,4 @@
-
+alter table tag rename column conversion_id to food_id;
 
 alter table foods rename column integral to marker;
 

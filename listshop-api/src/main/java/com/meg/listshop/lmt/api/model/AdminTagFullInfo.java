@@ -35,8 +35,8 @@ public class AdminTagFullInfo {
     private String parentName;
     @JsonProperty("is_liquid")
     private Boolean isLiquid;
-    @JsonProperty("food_id")
-    private String foodId;
+    @JsonProperty("conversion_id")
+    private String conversionId;
 
     @JsonProperty("food_name")
     private String foodName;
@@ -145,12 +145,12 @@ public class AdminTagFullInfo {
         isLiquid = liquid;
     }
 
-    public String getFoodId() {
-        return foodId;
+    public String getConversionId() {
+        return conversionId;
     }
 
-    public void setFoodId(String foodId) {
-        this.foodId = foodId;
+    public void setConversionId(String conversionId) {
+        this.conversionId = conversionId;
     }
 
     public String getFoodName() {
@@ -184,7 +184,7 @@ public class AdminTagFullInfo {
                 ", toDelete=" + toDelete +
                 ", statusDisplay='" + statusDisplay + '\'' +
                 ", isLiquid=" + isLiquid +
-                ", foodId='" + foodId + '\'' +
+                ", foodId='" + conversionId + '\'' +
                 ", foodName='" + foodName + '\'' +
                 ", conversionGrid='" + conversionGrid + '\'' +
                 '}';

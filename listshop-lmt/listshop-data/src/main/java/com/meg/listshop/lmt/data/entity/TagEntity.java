@@ -77,8 +77,8 @@ public class TagEntity {
     @Column(name = "is_liquid")
     private Boolean isLiquid;
 
-    @Column(name = "food_id")
-    private Long foodId;
+    @Column(name = "conversion_id")
+    private Long conversionId;
 
     @Transient
     private List<Long> childrenIds;
@@ -248,12 +248,12 @@ public class TagEntity {
         isLiquid = liquid;
     }
 
-    public Long getFoodId() {
-        return foodId;
+    public Long getConversionId() {
+        return conversionId;
     }
 
-    public void setFoodId(Long foodId) {
-        this.foodId = foodId;
+    public void setConversionId(Long conversionId) {
+        this.conversionId = conversionId;
     }
 
     public TagEntity copy() {
@@ -265,7 +265,7 @@ public class TagEntity {
         copy.setReplacementTagId(getReplacementTagId());
         copy.setToDelete(isToDelete());
         copy.setInternalStatus(getInternalStatus());
-        copy.setFoodId(getFoodId());
+        copy.setConversionId(getConversionId());
         copy.setIsLiquid(getIsLiquid());
         return copy;
     }
@@ -331,7 +331,7 @@ public class TagEntity {
                 ", removedOn=" + removedOn +
                 ", internalStatus=" + internalStatus +
                 ", isLiquid=" + isLiquid +
-                ", foodId=" + foodId +
+                ", conversionId=" + conversionId +
                 '}';
     }
 
@@ -348,7 +348,7 @@ public class TagEntity {
         fullInfo.setGroup(getIsGroup());
         fullInfo.setPower(getPower());
         fullInfo.setToDelete(isToDelete());
-        fullInfo.setFoodId(nullOrValueAsString(getFoodId()));
+        fullInfo.setConversionId(nullOrValueAsString(getConversionId()));
         fullInfo.setLiquid(getIsLiquid());
 
         return fullInfo;

@@ -207,7 +207,7 @@ class FoodServiceImplMockTest {
         double conversionGramWeight = 150.0;
 
         TagEntity tagNoFood = new TagEntity(tagId);
-        tagNoFood.setFoodId(null);
+        tagNoFood.setConversionId(null);
 
         FoodConversionEntity conversionEntity = new FoodConversionEntity();
         conversionEntity.setAmount(conversionAmount);
@@ -235,7 +235,7 @@ class FoodServiceImplMockTest {
         double conversionGramWeight = 150.0;
 
         TagEntity tagNoFood = new TagEntity(tagId);
-        tagNoFood.setFoodId(1234L);
+        tagNoFood.setConversionId(1234L);
 
         FoodConversionEntity conversionEntity = new FoodConversionEntity();
         conversionEntity.setAmount(conversionAmount);

@@ -1,4 +1,5 @@
 
+alter table tag rename column food_id to conversion_id;
 
 alter table foods rename column marker to integral;
 
@@ -14,6 +15,7 @@ create table food_entry
 (
  entry_id bigint,
  food_id bigint,
+ fdc_id bigint,
  category_id bigint,
  name text,
  marker varchar(255)

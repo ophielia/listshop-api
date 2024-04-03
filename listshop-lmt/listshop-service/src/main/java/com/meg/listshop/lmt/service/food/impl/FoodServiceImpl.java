@@ -147,10 +147,10 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     public void fillFoodInformation(AdminTagFullInfo tagInfo) {
-        if (tagInfo == null || tagInfo.getFoodId() == null) {
+        if (tagInfo == null || tagInfo.getConversionId() == null) {
             return;
         }
-        String stringFoodId = tagInfo.getFoodId();
+        String stringFoodId = tagInfo.getConversionId();
         Long foodId = Long.valueOf(stringFoodId);
         FoodEntity food = getFoodById(foodId);
         if (food != null) {
@@ -196,12 +196,12 @@ public class FoodServiceImpl implements FoodService {
             throw new ObjectNotFoundException(msg);
         }
         // check if tag has food assigned
-        if (tag.getFoodId() != null) {
+        if (tag.getConversionId() != null) {
             // update tag to add food
             conversionFactorService.deleteFactorsForTag(tag.getId());
         }
         // update tag
-        tag.setFoodId(foodId);
+        tag.setConversionId(foodId);
         tag.setInternalStatus(TagInternalStatus.FOOD_ASSIGNED);
         if (fromAdmin) {
             tag.setInternalStatus(TagInternalStatus.FOOD_VERIFIED);

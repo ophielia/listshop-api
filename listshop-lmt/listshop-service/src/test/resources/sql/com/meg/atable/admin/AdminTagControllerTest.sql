@@ -63,30 +63,30 @@ insert into foods (food_id,name, category_id, has_factor) values
 insert into foods (food_id,name, category_id, has_factor) values
     (9005,'cant call it cheese', 18,true);
 
-insert into food_entry (entry_id,food_id,name, category_id) values
-    (900001,9000,'butterlike substance, stick', 3);
-insert into food_entry (entry_id,food_id,name, category_id) values
-    (900002,9001,'butterlike substance, pat', 3);
-insert into food_entry (entry_id,food_id,name, category_id) values
-    (900003,9002,'some kind of butterlike substance, unspecified', 13);
-insert into food_entry (entry_id,food_id,name, category_id) values
-    (900004,9003,'sticky stuff', 13);
-insert into food_entry (entry_id,food_id,name, category_id) values
-    (900005,9004,'butterlike spread', 18);
-insert into food_entry (entry_id,food_id,name, category_id) values
-    (900006,9005,'cant call it cheese', 18);
+insert into food_entry (entry_id,food_id,fdc_id,name, category_id) values
+    (900001,9000,1,'butterlike substance, stick', 3);
+insert into food_entry (entry_id,food_id,fdc_id,name, category_id) values
+    (900002,9001,1,'butterlike substance, pat', 3);
+insert into food_entry (entry_id,food_id,fdc_id,name, category_id) values
+    (900003,9002,2,'some kind of butterlike substance, unspecified', 13);
+insert into food_entry (entry_id,food_id,fdc_id,name, category_id) values
+    (900004,9003,2,'sticky stuff', 13);
+insert into food_entry (entry_id,food_id,fdc_id,name, category_id) values
+    (900005,9004,3,'butterlike spread', 18);
+insert into food_entry (entry_id,food_id,fdc_id,name, category_id) values
+    (900006,9005,3,'cant call it cheese', 18);
 
 insert into food_category_mapping (food_category_mapping_id,category_id, tag_id) values (1,3,8881019);
 
-insert into food_conversions (conversion_id, food_id,  amount, unit_name, gram_weight, unit_id) values
-    (99000, 9000,  1.0, '', 150.0, 1000)  ;
-insert into food_conversions (conversion_id, food_id,  amount, unit_name, gram_weight, unit_id) values
-    (99001, 9005,  1.0, '', 150.0, 1000)  ;
+insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id) values
+    (99000, 9000, 1, 1.0, '', 150.0, 1000)  ;
+insert into food_conversions (conversion_id, food_id,fdc_id,  amount, unit_name, gram_weight, unit_id) values
+    (99001, 9005, 3, 1.0, '', 150.0, 1000)  ;
 
 insert into factors (factor_id, factor, to_unit, from_unit, tag_id) VALUES
      (1234567, 1.5, 1013, 1000, 9991029);
 
-update tag set food_id = 9005 where tag_id = 9991029;
+update tag set conversion_id = 9005 where tag_id = 9991029;
 update tag set is_liquid = false where tag_id = 9991029;
 
 

@@ -6,7 +6,6 @@ import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.FoodConversionEntity;
-import com.meg.listshop.lmt.data.entity.FoodEntity;
 import com.meg.listshop.lmt.data.entity.FoodEntryEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.IncludeType;
@@ -19,12 +18,10 @@ import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.info.InfoProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -188,7 +185,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     public ResponseEntity<AdminTagFullInfoResource> getFullTagInfo(@PathVariable("tagId") Long tagId) {
         AdminTagFullInfo tagInfo = tagService.getFullTagInfo(tagId);
         foodService.fillFoodInformation(tagInfo);
-        if (tagInfo.getFoodId() != null) {
+        if (tagInfo.getConversionId() != null) {
             List<ConversionSampleDTO> conversionSamples = conversionService.conversionSamplesForTag(tagId, tagInfo.getLiquid());
             ConversionGrid grid = ModelMapper.toConversionGrid(conversionSamples);
             tagInfo.setConversionGrid(grid);
