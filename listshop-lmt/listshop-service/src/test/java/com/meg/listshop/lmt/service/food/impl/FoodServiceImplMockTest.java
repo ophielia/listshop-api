@@ -5,10 +5,7 @@ import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
-import com.meg.listshop.lmt.data.repository.FoodCategoryMappingRepository;
-import com.meg.listshop.lmt.data.repository.FoodCategoryRepository;
-import com.meg.listshop.lmt.data.repository.FoodConversionRepository;
-import com.meg.listshop.lmt.data.repository.FoodRepository;
+import com.meg.listshop.lmt.data.repository.*;
 import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -38,7 +35,8 @@ class FoodServiceImplMockTest {
     FoodCategoryMappingRepository foodCategoryMappingRepo;
     @MockBean
     FoodRepository foodRepository;
-
+    @MockBean
+    FoodEntryRepository foodEntryRepository;
     @MockBean
     FoodCategoryRepository foodCategoryRepository;
     @MockBean
@@ -60,7 +58,7 @@ class FoodServiceImplMockTest {
     @BeforeEach
     void setUp() {
         this.foodService = new FoodServiceImpl(
-                foodCategoryMappingRepo, foodRepository, foodCategoryRepository,
+                foodCategoryMappingRepo, foodRepository, foodEntryRepository,foodCategoryRepository,
                 tagService, tagStructureService,
                 foodConversionRepository, conversionFactorService
         );
@@ -154,7 +152,7 @@ class FoodServiceImplMockTest {
         foundCategory.setId(categoryId);
 
 
-        List<FoodEntity> categoryFoods = new ArrayList<>();
+        List<FoodEntryEntity> categoryFoods = new ArrayList<>();
         categoryFoods.add(buildFood(1L, "food1", otherCategoryId));
         categoryFoods.add(buildFood(2L, "food2", otherCategoryId));
         categoryFoods.add(buildFood(33L, "food33", otherCategoryId));
@@ -183,12 +181,12 @@ class FoodServiceImplMockTest {
 
         Mockito.when(foodCategoryRepository.findById(categoryId))
                 .thenReturn(Optional.of(foundCategory));
-        Mockito.when(foodRepository.findFoodMatches("%" + tag.getName().toLowerCase() + "%"))
+        Mockito.when(foodEntryRepository.findFoodMatches("%" + tag.getName().toLowerCase() + "%"))
                 .thenReturn(categoryFoods);
 
 
         // call to be tested
-        List<FoodEntity> result = foodService.getSuggestedFoods(tagId, null);
+        List<FoodEntryEntity> result = foodService.getSuggestedFoods(tagId, null);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(5, result.size(), "expect 5 results");
@@ -287,8 +285,8 @@ class FoodServiceImplMockTest {
 
     }
 
-    private FoodEntity buildFood(Long foodId, String foodName, Long categoryId) {
-        FoodEntity food = new FoodEntity();
+    private FoodEntryEntity buildFood(Long foodId, String foodName, Long categoryId) {
+        FoodEntryEntity food = new FoodEntryEntity();
         food.setFoodId(foodId);
         food.setName(foodName);
         food.setCategoryId(categoryId);

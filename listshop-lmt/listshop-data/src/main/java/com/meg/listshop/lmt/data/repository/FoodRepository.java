@@ -8,6 +8,4 @@ import java.util.List;
 
 public interface FoodRepository extends JpaRepository<FoodEntity, Long> {
 
-    @Query("select f from FoodEntity f where lower(f.name) like lower(?1) and f.hasFactor= true")
-    List<FoodEntity> findFoodMatches(String name);
 }

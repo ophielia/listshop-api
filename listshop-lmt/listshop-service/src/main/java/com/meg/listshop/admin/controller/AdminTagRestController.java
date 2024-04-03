@@ -7,6 +7,7 @@ import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.FoodConversionEntity;
 import com.meg.listshop.lmt.data.entity.FoodEntity;
+import com.meg.listshop.lmt.data.entity.FoodEntryEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -96,8 +97,8 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
                 foodService.addOrUpdateFoodCategories(tagIds, foodCategoryToAssign);
                 break;
             case AssignFood:
-                toAssignString = input.getAssignId();
-                Long foodIdToAssign = Long.valueOf(toAssignString);
+                String toAssignFoodString = input.getAssignId();
+                Long foodIdToAssign = Long.valueOf(toAssignFoodString);
                 foodService.addOrUpdateFoodForTags(tagIds, foodIdToAssign);
                 break;
         }
@@ -109,10 +110,10 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
                                                                      @RequestParam(value = "searchTerm", required = false) String searchTerm) {
         //@GetMapping(value = "/{tag_id}/food/suggestions")
 
-        List<FoodEntity> foodEntities = foodService.getSuggestedFoods(tagId, searchTerm);
+        List<FoodEntryEntity> foodEntities = foodService.getSuggestedFoods(tagId, searchTerm);
         Map<Long,List<FoodConversionEntity>> conversionFactors = foodService.getFoodFactors(foodEntities);
         List<FoodResource> resourceList = new ArrayList<>();
-        for (FoodEntity foodEntity: foodEntities) {
+        for (FoodEntryEntity foodEntity: foodEntities) {
             List<FoodConversionEntity> factors = conversionFactors.get(foodEntity.getFoodId());
             Food food = ModelMapper.toModel(foodEntity,factors);
             resourceList.add(new FoodResource(food));
@@ -123,10 +124,10 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
     public ResponseEntity<FoodListResource> getFoodSuggestionsForTerm(@RequestParam(value = "searchTerm", required = true) String searchTerm) {
-        List<FoodEntity> foodEntities = foodService.getSuggestedFoods( searchTerm);
+        List<FoodEntryEntity> foodEntities = foodService.getSuggestedFoods( searchTerm);
         Map<Long,List<FoodConversionEntity>> conversionFactors = foodService.getFoodFactors(foodEntities);
         List<FoodResource> resourceList = new ArrayList<>();
-        for (FoodEntity foodEntity: foodEntities) {
+        for (FoodEntryEntity foodEntity: foodEntities) {
             List<FoodConversionEntity> factors = conversionFactors.get(foodEntity.getFoodId());
             Food food = ModelMapper.toModel(foodEntity,factors);
             resourceList.add(new FoodResource(food));

@@ -4,6 +4,7 @@ import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.data.entity.FoodCategoryEntity;
 import com.meg.listshop.lmt.data.entity.FoodConversionEntity;
 import com.meg.listshop.lmt.data.entity.FoodEntity;
+import com.meg.listshop.lmt.data.entity.FoodEntryEntity;
 import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 
@@ -18,9 +19,9 @@ public interface FoodService {
     FoodCategoryEntity getCategoryMatchForTag(Long tagId, List<TagInfoDTO> ascendantTags);
 
 
-    List<FoodEntity> getSuggestedFoods(Long tagId, String alternateSearchTerm);
+    List<FoodEntryEntity> getSuggestedFoods(Long tagId, String alternateSearchTerm);
 
-    List<FoodEntity> getSuggestedFoods(String alternateSearchTerm);
+    List<FoodEntryEntity> getSuggestedFoods(String alternateSearchTerm);
 
     void addOrUpdateFoodForTag(Long tagId, Long foodId, boolean fromAdmin);
 
@@ -35,7 +36,7 @@ public interface FoodService {
 
     void addOrUpdateFoodCategories(List<Long> tagIds, Long foodCategoryToAssign);
 
-    Map<Long, List<FoodConversionEntity>> getFoodFactors(List<FoodEntity> foodEntities);
+    Map<Long, List<FoodConversionEntity>> getFoodFactors(List<FoodEntryEntity> foodEntities);
 
     void addOrUpdateFoodForTags(List<Long> tagIds, Long foodIdToAssign);
 }

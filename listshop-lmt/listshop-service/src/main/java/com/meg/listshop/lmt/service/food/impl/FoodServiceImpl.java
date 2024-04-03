@@ -11,10 +11,7 @@ import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
-import com.meg.listshop.lmt.data.repository.FoodCategoryMappingRepository;
-import com.meg.listshop.lmt.data.repository.FoodCategoryRepository;
-import com.meg.listshop.lmt.data.repository.FoodConversionRepository;
-import com.meg.listshop.lmt.data.repository.FoodRepository;
+import com.meg.listshop.lmt.data.repository.*;
 import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -34,6 +31,7 @@ public class FoodServiceImpl implements FoodService {
 
     FoodCategoryMappingRepository foodCategoryMappingRepo;
     FoodRepository foodRepository;
+    FoodEntryRepository foodEntryRepository;
     private final FoodCategoryRepository foodCategoryRepository;
 
     private final FoodConversionRepository foodConversionRepository;
@@ -45,13 +43,16 @@ public class FoodServiceImpl implements FoodService {
 
 
     @Autowired
-    public FoodServiceImpl(FoodCategoryMappingRepository foodCategoryMappingRepo, FoodRepository foodRepository,
+    public FoodServiceImpl(FoodCategoryMappingRepository foodCategoryMappingRepo,
+                           FoodRepository foodRepository,
+                           FoodEntryRepository foodEntryRepository,
                            FoodCategoryRepository foodCategoryRepository,
                            TagService tagService,
                            TagStructureService tagStructureService,
                            FoodConversionRepository foodConversionRepository,
                            ConversionService conversionService) {
         this.foodCategoryMappingRepo = foodCategoryMappingRepo;
+        this.foodEntryRepository = foodEntryRepository;
         this.foodRepository = foodRepository;
         this.foodCategoryRepository = foodCategoryRepository;
         this.tagService = tagService;
@@ -84,18 +85,18 @@ public class FoodServiceImpl implements FoodService {
     }
 
 
-    private List<FoodEntity> foodMatches(String name) {
+    private List<FoodEntryEntity> foodMatches(String name) {
         if (name == null) {
             return new ArrayList<>();
         }
         // prepare searchTerm
         String searchTerm = "%" + name.trim().toLowerCase() + "%";
-        return foodRepository.findFoodMatches(searchTerm);
+        return foodEntryRepository.findFoodMatches(searchTerm);
 
     }
 
 
-    public List<FoodEntity> getSuggestedFoods(Long tagId, String alternateSearchTerm) {
+    public List<FoodEntryEntity> getSuggestedFoods(Long tagId, String alternateSearchTerm) {
         // get tag
         TagEntity tag = tagService.getTagById(tagId);
         if (tag == null) {
@@ -103,9 +104,9 @@ public class FoodServiceImpl implements FoodService {
         }
 
         // first find applicable food category for tag
-        List<FoodEntity> suggestions;
-        List<FoodEntity> preferredList = new ArrayList<>();
-        List<FoodEntity> otherList = new ArrayList<>();
+        List<FoodEntryEntity> suggestions;
+        List<FoodEntryEntity> preferredList = new ArrayList<>();
+        List<FoodEntryEntity> otherList = new ArrayList<>();
         FoodCategoryEntity categoryMatch = findClosestFoodCategory(tag);
         String foodSearchTerm = tag.getName();
         if (alternateSearchTerm != null) {
@@ -128,7 +129,7 @@ public class FoodServiceImpl implements FoodService {
         return preferredList;
     }
 
-    public List<FoodEntity> getSuggestedFoods(String searchTerm) {
+    public List<FoodEntryEntity> getSuggestedFoods(String searchTerm) {
         if (searchTerm == null) {
             return new ArrayList<>();
         }
@@ -212,9 +213,9 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public Map<Long, List<FoodConversionEntity>> getFoodFactors(List<FoodEntity> foodEntities) {
-        List<Long> tagIds =   foodEntities.stream().map(FoodEntity::getFoodId).collect(Collectors.toList());
-        List<FoodConversionEntity> conversionEntities = foodConversionRepository.findAllByFoodIdIn(tagIds);
+    public Map<Long, List<FoodConversionEntity>> getFoodFactors(List<FoodEntryEntity> foodEntities) {
+        List<Long> foodIds =   foodEntities.stream().map(FoodEntryEntity::getFoodId).collect(Collectors.toList());
+        List<FoodConversionEntity> conversionEntities = foodConversionRepository.findAllByFoodIdIn(foodIds);
 
         Map<Long, List<FoodConversionEntity>> mappedFactors = new HashMap<>();
         for (FoodConversionEntity factor : conversionEntities) {

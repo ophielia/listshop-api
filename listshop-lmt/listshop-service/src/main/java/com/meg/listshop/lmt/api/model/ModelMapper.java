@@ -93,26 +93,26 @@ public class ModelMapper {
         return new Dish();
     }
 
-    public static Food toModel(FoodEntity foodEntity) {
+    public static Food toModel(FoodEntryEntity foodEntity) {
         if (foodEntity == null) {
             return new Food();
         }
         Food suggestion = new Food();
         suggestion.setName(foodEntity.getName());
-        suggestion.setId(String.valueOf(foodEntity.getFoodId()));
+        suggestion.setId(String.valueOf(foodEntity.getEntryId()));
         suggestion.setCategoryId(String.valueOf(foodEntity.getCategoryId()));
         return suggestion;
 
     }
 
-    public static Food toModel(FoodEntity foodEntity, List<FoodConversionEntity> factors) {
+    public static Food toModel(FoodEntryEntity foodEntity, List<FoodConversionEntity> factors) {
         ConversionGrid grid = toConversionGridFromFactors(factors);
         if (foodEntity == null) {
             return new Food();
         }
         Food suggestion = new Food();
         suggestion.setName(foodEntity.getName());
-        suggestion.setId(String.valueOf(foodEntity.getFoodId()));
+        suggestion.setId(String.valueOf(foodEntity.getEntryId()));
         suggestion.setCategoryId(String.valueOf(foodEntity.getCategoryId()));
         suggestion.setGrid(grid);
         return suggestion;
