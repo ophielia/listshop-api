@@ -11,15 +11,19 @@ import java.util.Objects;
 public class FoodConversionEntity {
 
     @Id
+    @Column(name = "food_conversion_id")
+    private Long id;
+
     @Column(name = "conversion_id")
     private Long conversionId;
 
     @Column(name = "food_id")
     private Long foodId;
 
-
     @Column(name = "fdc_id")
     private Long fdcId;
+
+    private String marker;
 
     private double amount;
 
@@ -33,6 +37,14 @@ public class FoodConversionEntity {
     private Long unitId;
 
     public FoodConversionEntity() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getConversionId() {
@@ -57,6 +69,14 @@ public class FoodConversionEntity {
 
     public void setFdcId(Long fdcId) {
         this.fdcId = fdcId;
+    }
+
+    public String getMarker() {
+        return marker;
+    }
+
+    public void setMarker(String marker) {
+        this.marker = marker;
     }
 
     public double getAmount() {
@@ -96,20 +116,22 @@ public class FoodConversionEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FoodConversionEntity that = (FoodConversionEntity) o;
-        return Double.compare(amount, that.amount) == 0 && Double.compare(gramWeight, that.gramWeight) == 0 && Objects.equals(conversionId, that.conversionId) && Objects.equals(foodId, that.foodId) && Objects.equals(fdcId, that.fdcId) && Objects.equals(unitName, that.unitName) && Objects.equals(unitId, that.unitId);
+        return Double.compare(amount, that.amount) == 0 && Double.compare(gramWeight, that.gramWeight) == 0 && Objects.equals(id, that.id) && Objects.equals(conversionId, that.conversionId) && Objects.equals(foodId, that.foodId) && Objects.equals(fdcId, that.fdcId) && Objects.equals(marker, that.marker) && Objects.equals(unitName, that.unitName) && Objects.equals(unitId, that.unitId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(conversionId, foodId, fdcId, amount, unitName, gramWeight, unitId);
+        return Objects.hash(id, conversionId, foodId, fdcId, marker, amount, unitName, gramWeight, unitId);
     }
 
     @Override
     public String toString() {
-        return "FoodConversions{" +
-                "conversionId=" + conversionId +
+        return "FoodConversionEntity{" +
+                "id=" + id +
+                ", conversionId=" + conversionId +
                 ", foodId=" + foodId +
                 ", fdcId=" + fdcId +
+                ", marker='" + marker + '\'' +
                 ", amount=" + amount +
                 ", unitName='" + unitName + '\'' +
                 ", gramWeight=" + gramWeight +
