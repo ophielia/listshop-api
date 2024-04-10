@@ -20,6 +20,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class ConversionServiceImpl implements ConversionService {
@@ -70,6 +73,36 @@ public class ConversionServiceImpl implements ConversionService {
         toUpdate.setToUnit(toUnit);
         toUpdate.setFactor(conversionGramWeight);
         conversionFactorRepository.save(toUpdate);
+    }
+
+    @Override
+    public void saveConversionFactors(Long conversionId, List<FoodFactor> foodFactors) {
+        // get gram unit
+        UnitEntity gramUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
+
+        Map<Long,ConversionFactorEntity> existing = conversionFactorRepository.findAllByConversionIdIs(conversionId).stream()
+                .collect(Collectors.toMap(ConversionFactorEntity::getReferenceId, Function.identity()));
+        List<FoodFactor> filteredFactors = foodFactors.stream()
+                .filter(f -> !existing.containsKey(f.getReferenceId()))
+                .collect(Collectors.toList());
+        for (FoodFactor foodFactor : filteredFactors) {
+            // massage amount and gramweight if amount is not 0
+            double conversionGramWeight = foodFactor.getGramWeight();
+            if (foodFactor.getAmount() != 1) {
+                double factor = 1.0 / foodFactor.getAmount();
+                conversionGramWeight = factor * foodFactor.getGramWeight();
+            }
+            UnitEntity fromUnit = unitRepository.findById(foodFactor.getFromUnitId()).orElse(null);
+            ConversionFactorEntity toAdd = new ConversionFactorEntity();
+            toAdd.setConversionId(conversionId);
+            toAdd.setFromUnit(fromUnit);
+            toAdd.setToUnit(gramUnit);
+            toAdd.setFactor(conversionGramWeight);
+            conversionFactorRepository.save(toAdd);
+
+    }
+
+
     }
 
     private ConversionFactorEntity getExistingFactorForTag(Long tagId) {

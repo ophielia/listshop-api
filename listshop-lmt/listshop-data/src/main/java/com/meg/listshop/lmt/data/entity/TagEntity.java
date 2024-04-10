@@ -80,6 +80,7 @@ public class TagEntity {
     @Column(name = "conversion_id")
     private Long conversionId;
 
+    private String marker;
     @Transient
     private List<Long> childrenIds;
 
@@ -227,6 +228,14 @@ public class TagEntity {
 
     public void setInternalStatus(Long internalStatus) {
         this.internalStatus = internalStatus;
+    }
+
+    public String getMarker() {
+        return marker;
+    }
+
+    public void setMarker(String marker) {
+        this.marker = marker;
     }
 
     public void setInternalStatus(TagInternalStatus status) {

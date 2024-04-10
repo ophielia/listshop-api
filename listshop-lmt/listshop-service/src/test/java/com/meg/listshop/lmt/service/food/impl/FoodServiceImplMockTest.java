@@ -1,6 +1,8 @@
 package com.meg.listshop.lmt.service.food.impl;
 
+import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.service.ConversionService;
+import com.meg.listshop.conversion.service.FoodFactor;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -202,34 +205,45 @@ class FoodServiceImplMockTest {
 
     @Test
     void testAddOrUpdateFoodForTag() {
+        //MM fix this test
         Long tagId = 99L;
         Long foodId = 999L;
+        Long conversionId = 9999L;
+        Long referenceId = 99999L;
         double conversionAmount = 3.0;
         Long conversionUnit = 3333L;
         double conversionGramWeight = 150.0;
 
         TagEntity tagNoFood = new TagEntity(tagId);
-        tagNoFood.setFoodId(null);
+        tagNoFood.setConversionId(null);
 
         FoodConversionEntity conversionEntity = new FoodConversionEntity();
         conversionEntity.setAmount(conversionAmount);
         conversionEntity.setUnitId(conversionUnit);
         conversionEntity.setGramWeight(conversionGramWeight);
+        conversionEntity.setId(referenceId);
+
+        FoodEntity foodEntity = new FoodEntity();
+        foodEntity.setFoodId(foodId);
+        foodEntity.setConversionId(conversionId);
 
         Mockito.when(tagService.getTagById(tagId)).thenReturn(tagNoFood);
-        Mockito.when(foodConversionRepository.findAllByFoodId(foodId))
+        Mockito.when(foodRepository.findById(foodId)).thenReturn(Optional.of(foodEntity));
+        Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
                 .thenReturn(Collections.singletonList(conversionEntity));
-        Mockito.doNothing().when(conversionFactorService).addFactorForTag(tagId, conversionAmount, conversionUnit, conversionGramWeight);
+        Mockito.doNothing().when(conversionFactorService).saveConversionFactors(conversionId,Collections.singletonList(conversionEntity));
 
         // call under test
         foodService.addOrUpdateFoodForTag(tagId, foodId, true);
 
-        Mockito.verify(conversionFactorService).addFactorForTag(tagId, conversionAmount, conversionUnit, conversionGramWeight);
+        Mockito.verify(conversionFactorService).saveConversionFactors(conversionId,Collections.singletonList(conversionEntity));
     }
 
 
     @Test
     void testAddOrUpdateFoodForTagExistingAssignment() {
+        //MM fix this test
+
         Long tagId = 99L;
         Long foodId = 999L;
         double conversionAmount = 3.0;
@@ -237,7 +251,7 @@ class FoodServiceImplMockTest {
         double conversionGramWeight = 150.0;
 
         TagEntity tagNoFood = new TagEntity(tagId);
-        tagNoFood.setFoodId(1234L);
+        tagNoFood.setConversionId(1234L);
 
         FoodConversionEntity conversionEntity = new FoodConversionEntity();
         conversionEntity.setAmount(conversionAmount);

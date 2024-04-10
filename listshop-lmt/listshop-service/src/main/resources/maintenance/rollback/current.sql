@@ -9,8 +9,10 @@ alter table food_conversions drop column sub_amount ;
 alter table food_conversions drop column info ;
 
 alter table tag rename column conversion_id to food_id ;
+alter table tag  drop column marker;;
 
 alter table factors rename column conversion_id to tag_id ;
+alter table factors drop column reference_id;
 
 select * from flyway_schema_history;
 

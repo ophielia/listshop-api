@@ -8,6 +8,8 @@ import java.util.List;
 public interface FoodConversionRepository extends JpaRepository<FoodConversionEntity, Long> {
 
 
+    List<FoodConversionEntity> findAllByConversionId(Long foodId);
+
     List<FoodConversionEntity> findAllByFoodId(Long foodId);
 
     List<FoodConversionEntity> findAllByFoodIdIn(List<Long> foodId);

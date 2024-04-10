@@ -1,5 +1,7 @@
 package com.meg.listshop.lmt.data.entity;
 
+import com.meg.listshop.conversion.service.FoodFactor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -8,7 +10,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "food_conversions")
-public class FoodConversionEntity {
+public class FoodConversionEntity implements FoodFactor {
 
     @Id
     @Column(name = "food_conversion_id")
@@ -95,6 +97,11 @@ public class FoodConversionEntity {
         this.unitName = unitName;
     }
 
+    @Override
+    public Long getReferenceId() {
+        return id;
+    }
+
     public double getGramWeight() {
         return gramWeight;
     }
@@ -103,7 +110,7 @@ public class FoodConversionEntity {
         this.gramWeight = gramWeight;
     }
 
-    public Long getUnitId() {
+    public Long getFromUnitId() {
         return unitId;
     }
 

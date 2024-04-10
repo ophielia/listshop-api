@@ -4,6 +4,7 @@
 package com.meg.listshop.lmt.service.food.impl;
 
 import com.meg.listshop.conversion.service.ConversionService;
+import com.meg.listshop.conversion.service.FoodFactor;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.data.entity.*;
@@ -188,26 +189,30 @@ public class FoodServiceImpl implements FoodService {
     }
 
     private void addOrUpdateFoodForTag(TagEntity tag, Long foodId, boolean fromAdmin) {
-        // get food portion
-        List<FoodConversionEntity> foodFactors = foodConversionRepository.findAllByFoodId(foodId);
+        // get food entity - for conversion_id and marker
+        FoodEntity food = foodRepository.findById(foodId).orElse(null);
+        if (food == null) {
+            throw new ObjectNotFoundException("No food found for food Id [" + foodId + "]");
+        }
+
+        // get food conversions for conversion_id
+        List<FoodFactor> foodFactors = foodConversionRepository.findAllByConversionId(food.getConversionId()).stream()
+                .map(f->(FoodFactor)f)
+                .collect(Collectors.toList());
         if (foodFactors == null || foodFactors.isEmpty()) {
             final String msg = String.format("No conversions found for foodId [%s]", foodId);
             throw new ObjectNotFoundException(msg);
         }
-        // check if tag has food assigned
-        if (tag.getConversionId() != null) {
-            // update tag to add food
-            conversionFactorService.deleteFactorsForTag(tag.getId());
-        }
+
+        // create  factors
+        conversionFactorService.saveConversionFactors(food.getConversionId(), foodFactors);
+
         // update tag
-        tag.setConversionId(foodId);
+        tag.setConversionId(food.getConversionId());
+        tag.setMarker(food.getMarker());
         tag.setInternalStatus(TagInternalStatus.FOOD_ASSIGNED);
         if (fromAdmin) {
             tag.setInternalStatus(TagInternalStatus.FOOD_VERIFIED);
-        }
-        // create conversion factor
-        for (FoodConversionEntity conversion : foodFactors) {
-            conversionFactorService.addFactorForTag(tag.getId(), conversion.getAmount(), conversion.getUnitId(), conversion.getGramWeight());
         }
     }
 

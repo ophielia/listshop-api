@@ -38,6 +38,9 @@ public class ConversionFactorEntity implements ConversionFactor {
     @Column(name = "CONVERSION_ID")
     private Long conversionId;
 
+    @Column(name = "reference_id")
+    private Long referenceId;
+
     public ConversionFactorEntity() {
         // empty constructor for jpa
     }
@@ -82,6 +85,14 @@ public class ConversionFactorEntity implements ConversionFactor {
         this.conversionId = tagId;
     }
 
+    public Long getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(Long referenceId) {
+        this.referenceId = referenceId;
+    }
+
     @Override
     public String toString() {
         return "ConversionFactorEntity{" +
@@ -89,7 +100,8 @@ public class ConversionFactorEntity implements ConversionFactor {
                 ", factor=" + factor +
                 ", toUnit=" + toUnit +
                 ", fromUnit=" + fromUnit +
-                ", tagId=" + conversionId +
+                ", conversionId=" + conversionId +
+                ", referenceId=" + referenceId +
                 '}';
     }
 }
