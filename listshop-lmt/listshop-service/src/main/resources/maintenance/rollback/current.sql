@@ -4,6 +4,7 @@ alter table foods drop column integral ;
 
 alter table food_conversions drop column food_conversion_id ;
 alter table food_conversions drop column integral ;
+alter table food_conversions drop column marker ;
 alter table food_conversions drop column sub_amount ;
 alter table food_conversions drop column info ;
 

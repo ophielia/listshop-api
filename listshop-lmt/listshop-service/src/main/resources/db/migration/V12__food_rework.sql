@@ -4,6 +4,7 @@ alter table foods add column integral varchar(256);
 
 alter table food_conversions add column food_conversion_id bigint;
 alter table food_conversions add column integral varchar(256);
+alter table food_conversions add column marker varchar(256);
 alter table food_conversions add column sub_amount varchar(256);
 alter table food_conversions add column info varchar(256);
 

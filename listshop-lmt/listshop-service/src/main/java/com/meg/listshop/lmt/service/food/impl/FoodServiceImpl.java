@@ -195,12 +195,12 @@ public class FoodServiceImpl implements FoodService {
             throw new ObjectNotFoundException(msg);
         }
         // check if tag has food assigned
-        if (tag.getFoodId() != null) {
+        if (tag.getConversionId() != null) {
             // update tag to add food
             conversionFactorService.deleteFactorsForTag(tag.getId());
         }
         // update tag
-        tag.setFoodId(foodId);
+        tag.setConversionId(foodId);
         tag.setInternalStatus(TagInternalStatus.FOOD_ASSIGNED);
         if (fromAdmin) {
             tag.setInternalStatus(TagInternalStatus.FOOD_VERIFIED);

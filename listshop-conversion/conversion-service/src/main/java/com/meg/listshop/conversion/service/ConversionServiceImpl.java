@@ -1,7 +1,6 @@
 package com.meg.listshop.conversion.service;
 
 
-import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
@@ -43,7 +42,7 @@ public class ConversionServiceImpl implements ConversionService {
 
     @Override
     public void deleteFactorsForTag(Long tagId) {
-        List<ConversionFactorEntity> entitiesToDelete = conversionFactorRepository.findAllByTagIdIs(tagId);
+        List<ConversionFactorEntity> entitiesToDelete = conversionFactorRepository.findAllByConversionIdIs(tagId);
         conversionFactorRepository.deleteAll(entitiesToDelete);
     }
 
@@ -66,7 +65,7 @@ public class ConversionServiceImpl implements ConversionService {
         UnitEntity toUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
 
 
-        toUpdate.setTagId(tagId);
+        toUpdate.setConversionId(tagId);
         toUpdate.setFromUnit(fromUnit);
         toUpdate.setToUnit(toUnit);
         toUpdate.setFactor(conversionGramWeight);
@@ -74,7 +73,7 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     private ConversionFactorEntity getExistingFactorForTag(Long tagId) {
-        List<ConversionFactorEntity> existing = conversionFactorRepository.findAllByTagIdIs(tagId);
+        List<ConversionFactorEntity> existing = conversionFactorRepository.findAllByConversionIdIs(tagId);
         if (existing.size() == 1) {
             return existing.get(0);
         } else if (existing.isEmpty()) {

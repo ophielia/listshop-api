@@ -37,7 +37,8 @@ public class AdminTagFullInfo {
     private Boolean isLiquid;
     @JsonProperty("food_id")
     private String foodId;
-
+    @JsonProperty("conversion_id")
+    private String conversionId;
     @JsonProperty("food_name")
     private String foodName;
     @JsonProperty("conversion_grid")
@@ -151,6 +152,14 @@ public class AdminTagFullInfo {
 
     public void setFoodId(String foodId) {
         this.foodId = foodId;
+    }
+
+    public String getConversionId() {
+        return conversionId;
+    }
+
+    public void setConversionId(String conversionId) {
+        this.conversionId = conversionId;
     }
 
     public String getFoodName() {

@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface ConversionFactorRepository extends JpaRepository<ConversionFactorEntity, Long>, JpaSpecificationExecutor<ConversionFactorEntity> {
 
-    List<ConversionFactorEntity> findAllByTagIdIs(Long tagId);
+    List<ConversionFactorEntity> findAllByConversionIdIs(Long tagId);
 }
