@@ -1,8 +1,6 @@
 package com.meg.listshop.lmt.service.food.impl;
 
-import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.service.ConversionService;
-import com.meg.listshop.conversion.service.FoodFactor;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -205,7 +203,6 @@ class FoodServiceImplMockTest {
 
     @Test
     void testAddOrUpdateFoodForTag() {
-        //MM fix this test
         Long tagId = 99L;
         Long foodId = 999L;
         Long conversionId = 9999L;
@@ -227,49 +224,73 @@ class FoodServiceImplMockTest {
         foodEntity.setFoodId(foodId);
         foodEntity.setConversionId(conversionId);
 
+        ArgumentCaptor<TagEntity> tagCaptor = ArgumentCaptor.forClass(TagEntity.class);
         Mockito.when(tagService.getTagById(tagId)).thenReturn(tagNoFood);
         Mockito.when(foodRepository.findById(foodId)).thenReturn(Optional.of(foodEntity));
         Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
                 .thenReturn(Collections.singletonList(conversionEntity));
-        Mockito.doNothing().when(conversionFactorService).saveConversionFactors(conversionId,Collections.singletonList(conversionEntity));
+        Mockito.doNothing().when(conversionFactorService).saveConversionFactors(conversionId, Collections.singletonList(conversionEntity));
+        Mockito.when(tagService.updateTag(Mockito.eq(tagId), tagCaptor.capture())).thenReturn(tagNoFood);
 
         // call under test
         foodService.addOrUpdateFoodForTag(tagId, foodId, true);
 
-        Mockito.verify(conversionFactorService).saveConversionFactors(conversionId,Collections.singletonList(conversionEntity));
+        Mockito.verify(conversionFactorService).saveConversionFactors(conversionId, Collections.singletonList(conversionEntity));
+
+        TagEntity saved = tagCaptor.getValue();
+        Assertions.assertNotNull(saved, "should have captured value");
+        Assertions.assertEquals(conversionId, saved.getConversionId(), "conversion id should match tag conversion id");
+        Assertions.assertEquals((saved.getInternalStatus() % 7) == 0, true, "should have correct internal status");
+        Assertions.assertNull(saved.getMarker(), "marker was not set");
     }
 
 
     @Test
-    void testAddOrUpdateFoodForTagExistingAssignment() {
-        //MM fix this test
-
+    void testAddOrUpdateFoodForTagWithMarker() {
         Long tagId = 99L;
         Long foodId = 999L;
+        Long conversionId = 9999L;
+        Long referenceId = 99999L;
+        String marker = "marker";
         double conversionAmount = 3.0;
         Long conversionUnit = 3333L;
         double conversionGramWeight = 150.0;
 
         TagEntity tagNoFood = new TagEntity(tagId);
-        tagNoFood.setConversionId(1234L);
+        tagNoFood.setConversionId(null);
 
         FoodConversionEntity conversionEntity = new FoodConversionEntity();
         conversionEntity.setAmount(conversionAmount);
         conversionEntity.setUnitId(conversionUnit);
         conversionEntity.setGramWeight(conversionGramWeight);
+        conversionEntity.setId(referenceId);
 
+        FoodEntity foodEntity = new FoodEntity();
+        foodEntity.setFoodId(foodId);
+        foodEntity.setConversionId(conversionId);
+        foodEntity.setMarker(marker);
+
+        ArgumentCaptor<TagEntity> tagCaptor = ArgumentCaptor.forClass(TagEntity.class);
         Mockito.when(tagService.getTagById(tagId)).thenReturn(tagNoFood);
-        Mockito.when(foodConversionRepository.findAllByFoodId(foodId))
+        Mockito.when(foodRepository.findById(foodId)).thenReturn(Optional.of(foodEntity));
+        Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
                 .thenReturn(Collections.singletonList(conversionEntity));
-        Mockito.doNothing().when(conversionFactorService).deleteFactorsForTag(tagId);
-        Mockito.doNothing().when(conversionFactorService).addFactorForTag(tagId, conversionAmount, conversionUnit, conversionGramWeight);
+        Mockito.doNothing().when(conversionFactorService).saveConversionFactors(conversionId, Collections.singletonList(conversionEntity));
+        Mockito.when(tagService.updateTag(Mockito.eq(tagId), tagCaptor.capture())).thenReturn(tagNoFood);
 
         // call under test
         foodService.addOrUpdateFoodForTag(tagId, foodId, true);
 
-        Mockito.verify(conversionFactorService).addFactorForTag(tagId, conversionAmount, conversionUnit, conversionGramWeight);
-        Mockito.verify(conversionFactorService).deleteFactorsForTag(tagId);
+        Mockito.verify(conversionFactorService).saveConversionFactors(conversionId, Collections.singletonList(conversionEntity));
+
+        TagEntity saved = tagCaptor.getValue();
+        Assertions.assertNotNull(saved, "should have captured value");
+        Assertions.assertEquals(conversionId, saved.getConversionId(), "conversion id should match tag conversion id");
+        Assertions.assertEquals(true,(saved.getInternalStatus() % 7) == 0,  "should have correct internal status");
+        Assertions.assertNotNull(saved.getMarker(), "marker was not set");
+        Assertions.assertEquals(marker, saved.getMarker(), "marker was not set");
     }
+
 
     private FoodCategoryMappingEntity buildMapping(Long tagId, Long categoryId) {
         FoodCategoryMappingEntity entity = new FoodCategoryMappingEntity();

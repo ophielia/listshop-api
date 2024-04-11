@@ -214,6 +214,7 @@ public class FoodServiceImpl implements FoodService {
         if (fromAdmin) {
             tag.setInternalStatus(TagInternalStatus.FOOD_VERIFIED);
         }
+        tagService.updateTag(tag.getId(), tag);
     }
 
     @Override

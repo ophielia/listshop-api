@@ -44,38 +44,6 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     @Override
-    public void deleteFactorsForTag(Long tagId) {
-        List<ConversionFactorEntity> entitiesToDelete = conversionFactorRepository.findAllByConversionIdIs(tagId);
-        conversionFactorRepository.deleteAll(entitiesToDelete);
-    }
-
-    @Override
-    public void addFactorForTag(Long tagId, double amount, Long unitId, double gramWeight) {
-        // massage amount and gramweight if amount is not 0
-        double conversionGramWeight = gramWeight;
-        if (amount != 1) {
-            double factor = 1.0 / amount;
-            conversionGramWeight = factor * gramWeight;
-        }
-
-        ConversionFactorEntity toUpdate = getExistingFactorForTag(tagId);
-        if (toUpdate == null) {
-            toUpdate = new ConversionFactorEntity();
-        }
-
-        // get from unit
-        UnitEntity fromUnit = unitRepository.findById(unitId).orElse(null);
-        UnitEntity toUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
-
-
-        toUpdate.setConversionId(tagId);
-        toUpdate.setFromUnit(fromUnit);
-        toUpdate.setToUnit(toUnit);
-        toUpdate.setFactor(conversionGramWeight);
-        conversionFactorRepository.save(toUpdate);
-    }
-
-    @Override
     public void saveConversionFactors(Long conversionId, List<FoodFactor> foodFactors) {
         // get gram unit
         UnitEntity gramUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
@@ -95,6 +63,7 @@ public class ConversionServiceImpl implements ConversionService {
             UnitEntity fromUnit = unitRepository.findById(foodFactor.getFromUnitId()).orElse(null);
             ConversionFactorEntity toAdd = new ConversionFactorEntity();
             toAdd.setConversionId(conversionId);
+            toAdd.setReferenceId(foodFactor.getReferenceId());
             toAdd.setFromUnit(fromUnit);
             toAdd.setToUnit(gramUnit);
             toAdd.setFactor(conversionGramWeight);
@@ -102,20 +71,6 @@ public class ConversionServiceImpl implements ConversionService {
 
     }
 
-
-    }
-
-    private ConversionFactorEntity getExistingFactorForTag(Long tagId) {
-        List<ConversionFactorEntity> existing = conversionFactorRepository.findAllByConversionIdIs(tagId);
-        if (existing.size() == 1) {
-            return existing.get(0);
-        } else if (existing.isEmpty()) {
-            return null;
-        }
-        // we have more than one factor.  We'll return the first, and delete the rest
-        ConversionFactorEntity toReturn = existing.remove(0);
-        conversionFactorRepository.deleteAll(existing);
-        return toReturn;
 
     }
 
@@ -141,7 +96,7 @@ public class ConversionServiceImpl implements ConversionService {
                 SimpleAmount roundedTo = new SimpleAmount(RoundingUtils.roundToHundredths(to.getQuantity()),to.getUnit());
                 result.add(new ConversionSampleDTO(from, roundedTo));
             } catch (ConversionPathException | ConversionFactorException g) {
-                LOG.error("Exception [{}]thrown during conversion, but continuing to next conversion.", g);
+                LOG.error("Exception [{}] thrown during conversion, but continuing to next conversion.",g.getClass(), g);
             }
 
         }

@@ -208,7 +208,15 @@ public class TagServiceImpl implements TagService {
         if (toUpdate.getReplacementTagId() != null) {
             dbTag.setReplacementTagId(toUpdate.getReplacementTagId());
         }
-
+        if (toUpdate.getInternalStatus() != null) {
+            dbTag.setInternalStatus(toUpdate.getInternalStatus());
+        }
+        if (toUpdate.getConversionId() != null) {
+            dbTag.setConversionId(toUpdate.getConversionId());
+        }
+        if (toUpdate.getMarker() != null) {
+            dbTag.setMarker(toUpdate.getMarker());
+        }
         dbTag.setUpdatedOn(new Date());
         dbTag = tagRepository.save(dbTag);
 
