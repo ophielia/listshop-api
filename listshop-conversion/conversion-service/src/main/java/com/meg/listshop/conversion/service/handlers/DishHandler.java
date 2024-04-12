@@ -2,7 +2,7 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionContextType;
+import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
@@ -50,7 +50,7 @@ public class DishHandler extends AbstractScalingHandler {
 
         // initialize in abstract
         setConversionSource(conversionSource);
-        setScalerType(ConversionContextType.Dish);
+        setScalerType(ConversionTargetType.Dish);
         setSkipNoConversionRequiredCheck(true);
     }
 

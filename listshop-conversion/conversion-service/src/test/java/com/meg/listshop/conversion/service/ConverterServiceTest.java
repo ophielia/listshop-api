@@ -56,10 +56,10 @@ class ConverterServiceTest {
 
         ScalingHandler listHandler =  new ScalingConversionHandlerBuilder()
                 .withFactor(usCups, usQuart, 0.25)
-                .withForScalar(ConversionContextType.List)
+                .withForScalar(ConversionTargetType.List)
                 .withFromSpec(UnitType.METRIC, UnitSubtype.VOLUME)
                 .withToSpec(UnitType.US, UnitSubtype.VOLUME)
-                .withForScalar(ConversionContextType.List)
+                .withForScalar(ConversionTargetType.List)
                 .build();
         listHandler.setSkipNoConversionRequiredCheck(true);
 
@@ -118,7 +118,7 @@ class ConverterServiceTest {
     @Test
     void testConvertByContext() throws ConversionPathException, ConversionFactorException {
         // context - convert imperial volume to list unit (cups to quart)
-        ConversionContext context = new ConversionContext(ConversionContextType.List, UnitType.US);
+        ConversionRequest context = new ConversionRequest(ConversionTargetType.List, UnitType.US);
         ConvertibleAmount amount = new SimpleAmount(4, usCups);
         ConvertibleAmount converted = service.convert(amount, context);
         assertNotNull(converted);

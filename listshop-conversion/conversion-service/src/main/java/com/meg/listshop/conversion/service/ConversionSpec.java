@@ -16,11 +16,11 @@ public class ConversionSpec {
     private final UnitType unitType;
     private final UnitSubtype unitSubtype;
 
-    private final ConversionContextType contextType;
+    private final ConversionTargetType contextType;
 
     private final Set<UnitFlavor> flavors;
 
-    private ConversionSpec(Long unitId, UnitType unitType, UnitSubtype subtype, ConversionContextType contextType, Set<UnitFlavor> flavors) {
+    private ConversionSpec(Long unitId, UnitType unitType, UnitSubtype subtype, ConversionTargetType contextType, Set<UnitFlavor> flavors) {
         this.unitId = unitId;
         this.unitType = unitType;
         this.flavors = flavors;
@@ -46,7 +46,7 @@ public class ConversionSpec {
         return new ConversionSpec(unitId, type, subtype, null,flavorSet);
     }
 
-    public static ConversionSpec specForContext(UnitType type, UnitSubtype subtype, ConversionContextType contextType) {
+    public static ConversionSpec specForContext(UnitType type, UnitSubtype subtype, ConversionTargetType contextType) {
         return new ConversionSpec(null, type, subtype, contextType, new HashSet<>());
     }
 
@@ -75,7 +75,7 @@ public class ConversionSpec {
         return unitSubtype;
     }
 
-    public ConversionContextType getContextType() {
+    public ConversionTargetType getContextType() {
         return contextType;
     }
 

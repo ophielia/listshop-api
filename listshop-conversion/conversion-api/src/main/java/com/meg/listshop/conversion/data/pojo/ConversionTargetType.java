@@ -1,6 +1,6 @@
 package com.meg.listshop.conversion.data.pojo;
 
-public enum ConversionContextType {
+public enum ConversionTargetType {
     Dish,
     List
 }

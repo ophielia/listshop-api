@@ -3,7 +3,7 @@ package com.meg.listshop.conversion.service.tools;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionContextType;
+import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
@@ -24,7 +24,7 @@ public  class ScalingConversionHandlerBuilder {
     ConversionSpec toSpec;
     ConversionFactorSource source;
 
-    ConversionContextType type;
+    ConversionTargetType type;
     boolean oneWay;
 
     public ScalingConversionHandlerBuilder() {
@@ -55,7 +55,7 @@ public  class ScalingConversionHandlerBuilder {
         return this;
     }
 
-    public ScalingConversionHandlerBuilder withForScalar(ConversionContextType conversionContextType) {
+    public ScalingConversionHandlerBuilder withForScalar(ConversionTargetType conversionContextType) {
         type = conversionContextType;
         return this;
     }

@@ -1,16 +1,16 @@
 package com.meg.listshop.conversion.data.pojo;
 
-public class ConversionContext {
-    private final ConversionContextType contextType;
+public class ConversionRequest {
+    private final ConversionTargetType contextType;
 
     private final UnitType unitType;
 
-    public ConversionContext(ConversionContextType contextType, UnitType unitType) {
+    public ConversionRequest(ConversionTargetType contextType, UnitType unitType) {
         this.contextType = contextType;
         this.unitType = unitType;
     }
 
-    public ConversionContextType getContextType() {
+    public ConversionTargetType getContextType() {
         return contextType;
     }
 

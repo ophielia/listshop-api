@@ -2,7 +2,7 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
-import com.meg.listshop.conversion.data.pojo.ConversionContextType;
+import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
@@ -19,7 +19,7 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
     private static final double DEFAULT_MIN_RANGE = 0.4990;
     private static final double DEFAULT_MAX_RANGE = 500;
 
-    private ConversionContextType scalerType;
+    private ConversionTargetType scalerType;
 
     private ConversionSpec source;
     private ConversionSpec target;
@@ -27,7 +27,7 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
     private double minRange = DEFAULT_MIN_RANGE;
     private double maxRange = DEFAULT_MAX_RANGE;
 
-    protected AbstractScalingHandler(ConversionSpec source, ConversionSpec target, ConversionFactorSource conversionSource, ConversionContextType scalingType) {
+    protected AbstractScalingHandler(ConversionSpec source, ConversionSpec target, ConversionFactorSource conversionSource, ConversionTargetType scalingType) {
         super(source, target, conversionSource);
         this.scalerType = scalingType;
     }
@@ -59,7 +59,7 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
         return nearestUnitResult;
     }
 
-    public boolean scalerFor(ConversionContextType listOrDish) {
+    public boolean scalerFor(ConversionTargetType listOrDish) {
         return listOrDish.equals(scalerType);
     }
 
@@ -96,11 +96,11 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
         this.target = target;
     }
 
-    public ConversionContextType getScalerType() {
+    public ConversionTargetType getScalerType() {
         return scalerType;
     }
 
-    public void setScalerType(ConversionContextType scalerType) {
+    public void setScalerType(ConversionTargetType scalerType) {
         this.scalerType = scalerType;
     }
 }

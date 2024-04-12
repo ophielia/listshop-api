@@ -10,8 +10,8 @@ package com.meg.listshop.lmt.service;
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionContext;
-import com.meg.listshop.conversion.data.pojo.ConversionContextType;
+import com.meg.listshop.conversion.data.pojo.ConversionRequest;
+import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.UnitRepository;
@@ -70,9 +70,9 @@ public class ConversionFactorsTest {
         UnitEntity centiliterOpt = unitRepository.findById(centileterId).orElse(null);
         UnitEntity gramOpt = unitRepository.findById(gId).orElse(null);
 
-        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.METRIC);
-        ConversionContext listContextVolume = new ConversionContext(ConversionContextType.List, UnitType.METRIC);
-        ConversionContext dishContextVolume = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        ConversionRequest listContextVolume = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        ConversionRequest dishContextVolume = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
 
 
 //        688 Gram = 0.688 Kilogram
@@ -240,9 +240,9 @@ public class ConversionFactorsTest {
         UnitEntity flOzOpt = unitRepository.findById(flOzId).orElse(null);
         UnitEntity poundOpt = unitRepository.findById(lbId).orElse(null);
 
-        ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.US);
-        ConversionContext listContextVolume = new ConversionContext(ConversionContextType.List, UnitType.US);
-        ConversionContext dishContextVolume = new ConversionContext(ConversionContextType.Dish, UnitType.US);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        ConversionRequest listContextVolume = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        ConversionRequest dishContextVolume = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
 
 
         //        688 Gram = 0.688 Kilogram
@@ -337,7 +337,7 @@ public class ConversionFactorsTest {
         UnitEntity flTspOpt = unitRepository.findById(flTeaspoonId).orElse(null);
         UnitEntity tablespoonOpt = unitRepository.findById(tbId).orElse(null);
 
-        ConversionContext dishConversionContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
+        ConversionRequest dishConversionContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
 
 
         // 4 tablespoons = 12 teaspoons
@@ -362,7 +362,7 @@ public class ConversionFactorsTest {
         UnitEntity flTspOpt = unitRepository.findById(flTeaspoonId).orElse(null);
         UnitEntity flTbOpt = unitRepository.findById(flTablespoonId).orElse(null);
 
-        ConversionContext dishConversionContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
+        ConversionRequest dishConversionContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
 
         //  24 teaspoons = 0.5 cup
         ConvertibleAmount amount = new SimpleAmount(24.0, flTspOpt);
@@ -434,7 +434,7 @@ public class ConversionFactorsTest {
         UnitEntity flTspOpt = unitRepository.findById(flTeaspoonId).orElse(null);
         UnitEntity flTbOpt = unitRepository.findById(flTablespoonId).orElse(null);
 
-        ConversionContext dishConversionContext = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC);
+        ConversionRequest dishConversionContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
 
          // teaspoon to centiliter  5.914 Centiliter = 12 US teaspoon
         ConvertibleAmount amount = new SimpleAmount(12, flTspOpt);

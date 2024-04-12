@@ -2,8 +2,8 @@ package com.meg.listshop.conversion.service;
 
 
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionContext;
-import com.meg.listshop.conversion.data.pojo.ConversionContextType;
+import com.meg.listshop.conversion.data.pojo.ConversionRequest;
+import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
@@ -52,7 +52,7 @@ public class ConverterServiceImpl implements ConverterService {
     }
 
     @Override
-    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
+    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest context) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for context [{}], amount [{}]", context, amount);
         // get weight/volume target for context
         UnitSubtype targetSubtype = determineSubtypeFromContext(amount, context);
@@ -61,18 +61,18 @@ public class ConverterServiceImpl implements ConverterService {
         return doConversion(amount, conversionSpec);
     }
 
-    private UnitSubtype determineSubtypeFromContext(ConvertibleAmount toConvert, ConversionContext context) {
+    private UnitSubtype determineSubtypeFromContext(ConvertibleAmount toConvert, ConversionRequest context) {
         // context dish, toConvert hybrid - return subtype of toConvert
-        if (context.getContextType().equals(ConversionContextType.Dish) &&
+        if (context.getContextType().equals(ConversionTargetType.Dish) &&
                 toConvert.getUnit().getType().equals(UnitType.HYBRID)) {
             return toConvert.getUnit().getSubtype();
         }
-        if (context.getContextType().equals(ConversionContextType.Dish)) {
+        if (context.getContextType().equals(ConversionTargetType.Dish)) {
             // context dish, default is volume
             return UnitSubtype.VOLUME;
         }
         // context list, is liquid - return volume
-        if (context.getContextType().equals(ConversionContextType.List) &&
+        if (context.getContextType().equals(ConversionTargetType.List) &&
                 toConvert.getUnit().isLiquid()) {
             return UnitSubtype.VOLUME;
         }
@@ -137,7 +137,7 @@ public class ConverterServiceImpl implements ConverterService {
 
     }
 
-    private ScalingHandler getScalerForContext(ConversionContextType listOrDish) {
+    private ScalingHandler getScalerForContext(ConversionTargetType listOrDish) {
         if (listOrDish == null) {
             return null;
         }

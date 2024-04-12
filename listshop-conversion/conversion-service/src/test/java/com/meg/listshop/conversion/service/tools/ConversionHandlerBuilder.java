@@ -3,16 +3,13 @@ package com.meg.listshop.conversion.service.tools;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionContextType;
+import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
-import com.meg.listshop.conversion.data.repository.TestConversionFactorSource;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
 import com.meg.listshop.conversion.service.handlers.ConversionHandler;
-import com.meg.listshop.conversion.service.handlers.TestChainConversionHandler;
-import com.meg.listshop.conversion.service.handlers.TestScalingHandler;
 import com.meg.listshop.conversion.tools.ConversionTestTools;
 
 import java.util.ArrayList;
@@ -26,7 +23,7 @@ public abstract class ConversionHandlerBuilder<T extends ConversionHandler> {
     ConversionSpec toSpec;
     ConversionFactorSource source;
 
-    ConversionContextType type;
+    ConversionTargetType type;
     boolean oneWay;
 
     public ConversionHandlerBuilder() {
@@ -62,7 +59,7 @@ public abstract class ConversionHandlerBuilder<T extends ConversionHandler> {
         return this;
     }
 
-    public ConversionHandlerBuilder withForScalar(ConversionContextType conversionContextType) {
+    public ConversionHandlerBuilder withForScalar(ConversionTargetType conversionContextType) {
         type = conversionContextType;
         return this;
     }
