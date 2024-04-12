@@ -88,7 +88,7 @@ public class ConversionServiceImpl implements ConversionService {
         UnitEntity gramUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
         // convert each hybrid unit, and add to result
         for (UnitEntity unit : hybridUnits) {
-            SimpleAmount from = new SimpleAmount(1.0, unit, conversionId, isLiquid, "");
+            SimpleAmount from = new SimpleAmount(1.0, unit, conversionId, isLiquid, null);
 
             ConvertibleAmount to = null;
             try {

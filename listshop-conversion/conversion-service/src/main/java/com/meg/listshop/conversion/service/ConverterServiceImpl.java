@@ -96,19 +96,18 @@ public class ConverterServiceImpl implements ConverterService {
     }
 
     private ConvertibleAmount doConversion(ConvertibleAmount amount, ConversionSpec conversionSpec) throws ConversionPathException, ConversionFactorException {
+        // need to come in here with a ConvertContext - unit available, (factors) , conversion context
         ConvertibleAmount result = amount;
 
-        // if conversion necessary, convert between weight and volume
-        if (requiresAndCanDoWeightVolumeConversion(amount, conversionSpec.getUnitSubtype())) {
-            //  WeightVolumeHandler
-            //      handle on weighttovolume handler
-            //      needs to go both ways
-            //      remove notion of hybrid - cups, (old hybrid) to metric
-            //      feeds into result amount
-
+        // if conversion necessary, convert for tag specific
+        // required if - volume < = > weight
+        //               tag specific available (conversion id not null)
+        if (requiresAndCanDoTagSpecificConversion(amount, conversionSpec.getUnitSubtype())) {
             // weight / volume requirement requires metric type
             result = preConvertForWeightVolume(result, conversionSpec.getUnitSubtype());
-            result = weightVolumeHandler.convert(result, conversionSpec);
+            result = weightVolumeHandler.convert(result, conversionSpec);  // include context here
+            // will return unit, if context is list (and unit is available)
+            // if final unit (maybe in context? otherwise if unit = 'unit') then return
         }
 
 
@@ -168,7 +167,7 @@ public class ConverterServiceImpl implements ConverterService {
         return amount;
     }
 
-    private boolean requiresAndCanDoWeightVolumeConversion(ConvertibleAmount amount, UnitSubtype targetSubtype) {
+    private boolean requiresAndCanDoTagSpecificConversion(ConvertibleAmount amount, UnitSubtype targetSubtype) {
         Set<UnitSubtype> subtypes = new HashSet<>();
         subtypes.add(amount.getUnit().getSubtype());
         subtypes.add(targetSubtype);

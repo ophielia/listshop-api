@@ -14,17 +14,16 @@ public class SimpleAmount implements ConvertibleAmount {
 
     private Boolean isLiquid;
 
-    private String tagName;
+    private String marker;
 
 
-    public SimpleAmount(double quantity, UnitEntity unit, Long tagId, Boolean isLiquid, String tagName) {
+    public SimpleAmount(double quantity, UnitEntity unit, Long tagId, Boolean isLiquid, String marker) {
         this.quantity = quantity;
         this.unit = unit;
         this.tagId = tagId;
         this.isLiquid = isLiquid;
-        this.tagName = tagName;
+        this.marker = this.marker;
     }
-
     public SimpleAmount(double quantity, UnitEntity unit) {
         this.quantity = quantity;
         this.unit = unit;
@@ -33,9 +32,8 @@ public class SimpleAmount implements ConvertibleAmount {
     public SimpleAmount(double newQuantity, UnitEntity newUnit, ConvertibleAmount toConvert) {
         this.quantity = newQuantity;
         this.unit = newUnit;
-        this.tagId = toConvert.getTagId();
+        this.tagId = toConvert.getConversionId();
         this.isLiquid = toConvert.getIsLiquid();
-        this.tagName = toConvert.getTagName();
     }
 
     @Override
@@ -49,7 +47,7 @@ public class SimpleAmount implements ConvertibleAmount {
     }
 
     @Override
-    public Long getTagId() {
+    public Long getConversionId() {
         return tagId;
     }
 
@@ -58,8 +56,13 @@ public class SimpleAmount implements ConvertibleAmount {
         return isLiquid;
     }
 
-    public String getTagName() {
-        return tagName;
+    @Override
+    public String getMarker() {
+        return marker;
+    }
+
+    public void setMarker(String marker) {
+        this.marker = marker;
     }
 
     @Override
@@ -69,7 +72,7 @@ public class SimpleAmount implements ConvertibleAmount {
                 ", unit=" + unit +
                 ", tagId=" + tagId +
                 ", isLiquid=" + isLiquid +
-                ", tagName=" + tagName +
+                ", marker=" + marker +
                 '}';
     }
 

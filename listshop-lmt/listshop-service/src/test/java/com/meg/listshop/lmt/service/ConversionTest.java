@@ -267,7 +267,7 @@ public class ConversionTest {
 
         ConversionContext listContext = new ConversionContext(ConversionContextType.List, UnitType.METRIC);
         // tablespoon of butter to grams
-        ConvertibleAmount amount = new SimpleAmount(1, tablespoon, butterTagId, false, "butter");
+        ConvertibleAmount amount = new SimpleAmount(1, tablespoon, butterTagId, false, null );
         ConvertibleAmount converted = converterService.convert(amount, grams);
         assertNotNull(converted);
         assertEquals(14.175, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -280,14 +280,14 @@ public class ConversionTest {
         assertEquals(gId, converted.getUnit().getId());
 
         // 16 tablespoons of butter to metric
-        ConvertibleAmount bigAmount = new SimpleAmount(16.0, tablespoon, butterTagId, false, "butter");
+        ConvertibleAmount bigAmount = new SimpleAmount(16.0, tablespoon, butterTagId, false, null );
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
         assertEquals(226.8, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gId, converted.getUnit().getId());
 
         // 16 tablespoons of butter to list context - metric
-        bigAmount = new SimpleAmount(16.0, tablespoon, butterTagId, false, "butter");
+        bigAmount = new SimpleAmount(16.0, tablespoon, butterTagId, false, null );
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
         assertEquals(226.8, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -295,7 +295,7 @@ public class ConversionTest {
 
         // 16 tablespoons of butter to dish context - metric
         listContext = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC);
-        bigAmount = new SimpleAmount(16.0, tablespoon, butterTagId, false, "butter");
+        bigAmount = new SimpleAmount(16.0, tablespoon, butterTagId, false, null );
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
         assertEquals(1.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -303,7 +303,7 @@ public class ConversionTest {
 
         // 8 tablespoons of butter to dish context - metric
         listContext = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC);
-        bigAmount = new SimpleAmount(8.0, tablespoon, butterTagId, false, "butter");
+        bigAmount = new SimpleAmount(8.0, tablespoon, butterTagId, false, null );
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
         assertEquals(0.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -311,7 +311,7 @@ public class ConversionTest {
 
         // 7 tablespoons of butter to dish context - metric
         listContext = new ConversionContext(ConversionContextType.Dish, UnitType.METRIC);
-        bigAmount = new SimpleAmount(7.0, tablespoon, butterTagId, false, "butter");
+        bigAmount = new SimpleAmount(7.0, tablespoon, butterTagId, false, null );
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
         assertEquals(7.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -319,7 +319,7 @@ public class ConversionTest {
 
         // 16 tablespoons of butter to list context - metric
         listContext = new ConversionContext(ConversionContextType.List, UnitType.US);
-        bigAmount = new SimpleAmount(16.0, tablespoon, butterTagId, false, "butter");
+        bigAmount = new SimpleAmount(16.0, tablespoon, butterTagId, false, null );
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
         assertEquals(7.983, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -328,7 +328,7 @@ public class ConversionTest {
 
         // 16 tablespoons of butter to context dish - us
         ConversionContext dishContext = new ConversionContext(ConversionContextType.Dish, UnitType.US);
-        bigAmount = new SimpleAmount(8.0, tablespoon, butterTagId, false, "butter");
+        bigAmount = new SimpleAmount(8.0, tablespoon, butterTagId, false, null );
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
         assertEquals(0.5, RoundingUtils.roundToThousandths(converted.getQuantity()));

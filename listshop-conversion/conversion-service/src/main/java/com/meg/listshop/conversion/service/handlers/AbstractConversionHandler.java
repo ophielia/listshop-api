@@ -60,7 +60,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
             }
         }
         if (factors.isEmpty()) {
-            factors.addAll(conversionSource.getFactors(toConvert.getUnit().getId(), toConvert.getTagId()));
+            factors.addAll(conversionSource.getFactors(toConvert.getUnit().getId(), toConvert.getConversionId()));
         }
 
         if (factors.isEmpty()) {

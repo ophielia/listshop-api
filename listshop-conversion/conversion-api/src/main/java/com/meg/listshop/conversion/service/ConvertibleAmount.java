@@ -8,9 +8,9 @@ public interface ConvertibleAmount {
 
     UnitEntity getUnit();
 
-    Long getTagId();
+    Long getConversionId();
 
-    String getTagName();
+    String getMarker();
 
     Boolean getIsLiquid();
 }
