@@ -39,7 +39,7 @@ public class MergeItemCollector extends AbstractItemCollector {
                 CollectedItem mergeItem = new CollectedItem(mergeListItemEntity);
                 // if merge item matches an item in the tagCollectedItems
                 //  check change
-                if (!serverItem.equalsWithWindow(2,mergeItem)) {  //MM parameterize this window second
+                if (!serverItem.equalsWithWindow(2,mergeItem)) {
                     //  if change merge
                     CollectedItem merged = mergeChangedItems(serverItem, mergeItem);
 

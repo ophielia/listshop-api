@@ -700,7 +700,6 @@ class LayoutServiceImplMockTest {
     }
 
     @Test
-        //MM also needs controller test
     void testAssignUserDefaultCategoriesToTag() {
         Long userId = 1001L;
         Long category1Id = 10011L;

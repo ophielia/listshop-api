@@ -811,7 +811,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public void removeDishFromList(Long userId, Long listId, Long dishId) {
         // get list
-        //MM make method which will fetch with items
         ShoppingListEntity shoppingList = getListForUserById(userId, listId);
 
         // make collector

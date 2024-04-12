@@ -128,7 +128,7 @@ public class TargetRestControllerTest {
 
     @Test
     @WithMockUser
-    @Ignore //MM ignore this test until we migrate to api
+    @Ignore
     public void testRetrieveTargets() throws Exception {
 
         mockMvc.perform(get("/target")
