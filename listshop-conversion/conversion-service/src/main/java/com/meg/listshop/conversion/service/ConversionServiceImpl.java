@@ -75,9 +75,10 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     @Override
-    public List<ConversionSampleDTO> conversionSamplesForTag(Long tagId, Boolean isLiquid) {
+    public List<ConversionSampleDTO> conversionSamplesForId(Long conversionId, Boolean isLiquid) {
+        //MM work to do here, after conversion changes
         List<ConversionSampleDTO> result = new ArrayList<>();
-        if (tagId == null || (isLiquid != null && isLiquid)) {
+        if (conversionId == null || (isLiquid != null && isLiquid)) {
             return result;
         }
 
@@ -87,7 +88,7 @@ public class ConversionServiceImpl implements ConversionService {
         UnitEntity gramUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
         // convert each hybrid unit, and add to result
         for (UnitEntity unit : hybridUnits) {
-            SimpleAmount from = new SimpleAmount(1.0, unit, tagId, isLiquid, "");
+            SimpleAmount from = new SimpleAmount(1.0, unit, conversionId, isLiquid, "");
 
             ConvertibleAmount to = null;
             try {

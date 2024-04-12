@@ -7,7 +7,7 @@ import java.util.List;
 public interface ConversionService {
 
 
-    List<ConversionSampleDTO> conversionSamplesForTag(Long tagId, Boolean isLiquid);
+    List<ConversionSampleDTO> conversionSamplesForId(Long tagId, Boolean isLiquid);
 
     void saveConversionFactors(Long conversionId, List<FoodFactor> foodFactors);
 }
