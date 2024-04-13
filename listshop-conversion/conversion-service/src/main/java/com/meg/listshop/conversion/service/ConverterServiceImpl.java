@@ -26,7 +26,7 @@ public class ConverterServiceImpl implements ConverterService {
     private final List<ChainConversionHandler> handlerList;
     private final List<ScalingHandler> scalerList;
 
-    private final ConversionHandler weightVolumeHandler;
+    private final ConversionHandler tagSpecificHandler;
 
     @Autowired
     public ConverterServiceImpl(List<ChainConversionHandler> handlerList,
@@ -34,7 +34,7 @@ public class ConverterServiceImpl implements ConverterService {
                                 @Qualifier("tagSpecificHandler") ConversionHandler weightVolumeHandler) {
         this.handlerList = handlerList;
         this.scalerList = scalerList;
-        this.weightVolumeHandler = weightVolumeHandler;
+        this.tagSpecificHandler = weightVolumeHandler;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class ConverterServiceImpl implements ConverterService {
         if (context.requiresAndCanDoTagSpecificConversion(amount)) {
             // weight / volume requirement requires metric type
             result = preConvertForWeightVolume(result, context);
-            result = weightVolumeHandler.convert(result, context);
+            result = tagSpecificHandler.convert(result, context);
         }
 
 

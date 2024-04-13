@@ -5,7 +5,7 @@ import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
-import com.meg.listshop.conversion.service.factors.WeightVolumeConversionSource;
+import com.meg.listshop.conversion.service.factors.TagSpecificConversionSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class TagSpecificHandler extends AbstractConversionHandler {
         // make target
         ConversionSpec target = ConversionSpec.basicSpec(UnitType.METRIC, UnitSubtype.WEIGHT);
 
-        ConversionFactorSource conversionSource = new WeightVolumeConversionSource(factorRepository);
+        ConversionFactorSource conversionSource = new TagSpecificConversionSource(factorRepository);
 
         // initialize in abstract
         setSource(source);

@@ -6,6 +6,7 @@ public class SimpleConversionFactor implements ConversionFactor {
     private UnitEntity toUnit;
 
     private UnitEntity fromUnit;
+    private String marker;
 
     public static ConversionFactor reverseFactor(ConversionFactor factor) {
         SimpleConversionFactor reversed = new SimpleConversionFactor();
@@ -64,5 +65,14 @@ public class SimpleConversionFactor implements ConversionFactor {
 
     public void setFromUnit(UnitEntity fromUnit) {
         this.fromUnit = fromUnit;
+    }
+
+    @Override
+    public String getMarker() {
+        return marker;
+    }
+
+    public void setMarker(String marker) {
+        this.marker = marker;
     }
 }

@@ -13,6 +13,9 @@ alter table tag add column marker varchar(256);
 
 alter table factors rename column tag_id to conversion_id;
 alter table factors add column reference_id bigint;
+alter table factors add column marker varchar(256);
+
+alter table units add column is_tag_specific bool;
 
 
 

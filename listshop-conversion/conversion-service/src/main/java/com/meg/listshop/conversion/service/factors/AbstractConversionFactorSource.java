@@ -2,6 +2,7 @@ package com.meg.listshop.conversion.service.factors;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
+import com.meg.listshop.conversion.service.ConvertibleAmount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,8 @@ public abstract class AbstractConversionFactorSource implements ConversionFactor
     }
 
     @Override
-    public List<ConversionFactor> getFactors(Long unitId, Long tagId) {
+    public List<ConversionFactor> getFactors(ConvertibleAmount convertibleAmount, Long conversionId) {
+        Long unitId = convertibleAmount.getUnit().getId();
         LOG.trace("... getting factors for unitId: [{}], oneWay: [{}]", unitId, oneWay);
         List<ConversionFactor> results = new ArrayList<>();
         // go through factors

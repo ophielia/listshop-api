@@ -38,6 +38,9 @@ public class UnitEntity {
     @Column(name = "IS_VOLUME")
     private boolean isVolume;
 
+    @Column(name = "IS_TAG_SPECIFIC")
+    private boolean isTagSpecific;
+
     public Long getId() {
         return id;
     }
@@ -111,6 +114,13 @@ public class UnitEntity {
         this.subtype = subtype;
     }
 
+    public boolean isTagSpecific() {
+        return isTagSpecific;
+    }
+
+    public void setTagSpecific(boolean tagSpecific) {
+        isTagSpecific = tagSpecific;
+    }
 
     @Override
     public String toString() {
@@ -124,6 +134,7 @@ public class UnitEntity {
                 ", isLiquid=" + isLiquid +
                 ", isWeight=" + isWeight +
                 ", isVolume=" + isVolume +
+                ", isTagSpecific=" + isTagSpecific +
                 '}';
     }
 }

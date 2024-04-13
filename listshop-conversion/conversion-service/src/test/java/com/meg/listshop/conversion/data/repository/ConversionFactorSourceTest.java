@@ -2,6 +2,8 @@ package com.meg.listshop.conversion.data.repository;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.pojo.SimpleAmount;
+import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
 import com.meg.listshop.conversion.service.tools.ConversionFactorSourceBuilder;
 import com.meg.listshop.conversion.tools.ConversionTestTools;
@@ -40,13 +42,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void testGetFactors() {
-        List<ConversionFactor> resultList = sourceToTest.getFactors(1L, null );
+        UnitEntity unit = new UnitEntity();
+        unit.setId(1L);
+        ConvertibleAmount amount = new SimpleAmount(1.0, unit,null,false, null);
+        List<ConversionFactor> resultList = sourceToTest.getFactors(amount, null );
         assertEquals(2, resultList.size(), "two factors should be returned");
         assertEquals(1.4,resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)
                 .sum() ,  "Sum should be 1.4");
 
-        resultList = sourceToTest.getFactors(4L, null );
+        unit.setId(4L);
+        amount = new SimpleAmount(1.0, unit,null,false, null);
+        resultList = sourceToTest.getFactors(amount, null );
         assertEquals(2, resultList.size(), "two factors should be returned");
         double sum = resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)

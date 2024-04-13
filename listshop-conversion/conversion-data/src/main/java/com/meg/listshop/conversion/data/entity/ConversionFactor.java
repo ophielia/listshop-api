@@ -6,4 +6,5 @@ public interface ConversionFactor {
     Double getFactor();
 
     UnitEntity getToUnit();
+    String getMarker();
 }
