@@ -16,17 +16,16 @@ public class HandlerChain {
         this.handler = handler;
     }
 
-    public ConvertibleAmount process(ConvertibleAmount toConvert, ConversionSpec target) throws ConversionFactorException {
-        LOG.debug("Starting chain conversion from: [{}], to: [{}], handler: [{}]", toConvert.getUnit(), target, handler);
-        ConvertibleAmount converted = handler.convert(toConvert, target);
+    public ConvertibleAmount process(ConvertibleAmount toConvert, ConversionContext context) throws ConversionFactorException {
+        LOG.debug("Starting chain conversion from: [{}], to: [{}], handler: [{}]", toConvert.getUnit(), context.getTargetUnitType(), handler);
+        ConvertibleAmount converted = handler.convert(toConvert, context);
         if (nextLink == null) {
             LOG.debug("End of chain, returning amount [{}]", converted);
             return converted;
         }
 
-        return nextLink.process(converted, target);
+        return nextLink.process(converted, context);
     }
-
     public void setNextLink(HandlerChain nextLink) {
         this.nextLink = nextLink;
     }

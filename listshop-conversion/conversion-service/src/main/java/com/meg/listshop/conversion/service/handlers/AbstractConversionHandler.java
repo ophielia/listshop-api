@@ -4,6 +4,7 @@ import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
+import com.meg.listshop.conversion.service.ConversionContext;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
@@ -45,29 +46,30 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     }
 
 
-    public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionSpec targetSpec) throws ConversionFactorException {
-        if (!isSkipNoConversionRequiredCheck() && doesntRequireConversion(toConvert, targetSpec)) {
-            LOG.debug("No conversion required for spec: [{}], amount [{}].", targetSpec, toConvert);
+    public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionContext context) throws ConversionFactorException {
+        if (!isSkipNoConversionRequiredCheck() && !doesScaling && context.doesntRequireConversion(toConvert)) {
+            LOG.debug("No conversion required for unitType: [{}], amount [{}].", context.getTargetUnitType(), toConvert);
             return toConvert;
         }
 
         List<ConversionFactor> factors = new ArrayList<>();
-        if (targetSpec.getUnitId() != null && toConvert.getUnit() != null && toConvert.getUnit().getId() != null) {
-            ConversionFactor exact = conversionSource.getFactor(toConvert.getUnit().getId(), targetSpec.getUnitId());
+        if (context.convertsToSpecificUnit(toConvert)) {
+            ConversionFactor exact = conversionSource.getFactor(toConvert.getUnit().getId(), context.getTargetUnitId());
             if (exact != null) {
-                LOG.trace("...exact match found for unitId: [{}], found [{}].", targetSpec.getUnitId(), exact.getToUnit().getId());
+                LOG.trace("...exact match found for unitId: [{}], found [{}].", context.getTargetUnitId(), exact.getToUnit().getId());
                 factors.add(exact);
             }
         }
         if (factors.isEmpty()) {
-            factors.addAll(conversionSource.getFactors(toConvert.getUnit().getId(), toConvert.getConversionId()));
+            factors.addAll(conversionSource.getFactors(toConvert.getUnit().getId(), context.getConversionId()));
         }
 
         if (factors.isEmpty()) {
             String message = String.format("No factors found in handler %s.", this.getClass().getName());
             LOG.warn(message);
-        //    throw new ConversionFactorException(message);
         }
+
+        context.conversionFactorsFound(factors);
 
         // convert all factors, making list
         List<ConvertibleAmount> convertedList = factors.stream()
@@ -104,20 +106,6 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
         convertedList.sort(comparator);
         return convertedList.get(0);
-    }
-
-    private boolean doesntRequireConversion(ConvertibleAmount toConvert, ConversionSpec targetSpec) {
-        if (doesScaling) {
-            return false;
-        }
-        boolean specMatches = targetSpec.matches(toConvert.getUnit());
-        if (!specMatches) {
-            return false;
-        }
-        if (targetSpec.getUnitId() != null) {
-            return targetSpec.getUnitId().equals(toConvert.getUnit().getId());
-        }
-        return true;
     }
 
     public ConversionSpec getSource() {

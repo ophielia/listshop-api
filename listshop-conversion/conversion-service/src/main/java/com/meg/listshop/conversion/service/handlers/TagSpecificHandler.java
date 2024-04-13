@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-@Qualifier("weightVolumeHandler")
-public class WeightVolumeHandler extends AbstractConversionHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(WeightVolumeHandler.class);
+@Qualifier("tagSpecificHandler")
+public class TagSpecificHandler extends AbstractConversionHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(TagSpecificHandler.class);
 
     @Autowired
-    public WeightVolumeHandler(ConversionFactorRepository factorRepository) {
+    public TagSpecificHandler(ConversionFactorRepository factorRepository) {
         super();
         LOG.info("initializing WeightVolumeHandler");
 

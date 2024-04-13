@@ -2,7 +2,6 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
-import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.service.ConversionSpec;
@@ -21,16 +20,16 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public class MetricToUsHandler extends AbstractChainConversionHandler  {
-    private static final Logger LOG = LoggerFactory.getLogger(MetricToUsHandler.class);
+public class USHybridHandler extends AbstractChainConversionHandler  {
+    private static final Logger LOG = LoggerFactory.getLogger(USHybridHandler.class);
 
 
     @Autowired
-    public MetricToUsHandler(ConversionFactorRepository factorRepository) {
+    public USHybridHandler(ConversionFactorRepository factorRepository) {
         super();
-        LOG.info("initializing MetricToUsHandler");
+        LOG.info("initializing USToHybridHandler");
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC,null);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.HYBRID,null);
         // make target
         ConversionSpec target = ConversionSpec.basicSpec(UnitType.US, null);
 

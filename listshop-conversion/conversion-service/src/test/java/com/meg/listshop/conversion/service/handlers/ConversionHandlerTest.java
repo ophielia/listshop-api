@@ -6,6 +6,7 @@ import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
+import com.meg.listshop.conversion.service.ConversionContext;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.tools.ChainConversionHandlerBuilder;
@@ -115,8 +116,8 @@ class ConversionHandlerTest {
         startUnit.setId(6L);
         ConvertibleAmount startAmount = new SimpleAmount(1D, startUnit);
         ConversionSpec toSpec = new ConversionSpecBuilder().withUnitType(UnitType.US).withFlavor(UnitFlavor.Weight).build();
-
-        ConvertibleAmount result = conversionHandler.convert(startAmount, toSpec);
+        ConversionContext context = new ConversionContext(startAmount, toSpec);
+        ConvertibleAmount result = conversionHandler.convert(startAmount, context);
         assertNotNull(result);
         assertEquals(1.11, ConversionTestTools.roundToHundredths(result.getQuantity()));
         assertEquals(5L, result.getUnit().getId());
@@ -125,8 +126,8 @@ class ConversionHandlerTest {
         ConversionSpec exactSpec = new ConversionSpecBuilder()
                 .withUnitId(1L)
                 .withUnitType(UnitType.US).withFlavor(UnitFlavor.Weight).build();
-
-        ConvertibleAmount exactResult = conversionHandler.convert(startAmount, exactSpec);
+        context = new ConversionContext(startAmount, exactSpec);
+        ConvertibleAmount exactResult = conversionHandler.convert(startAmount, context);
         assertNotNull(exactResult);
         assertEquals(2D, ConversionTestTools.roundToHundredths(exactResult.getQuantity()));
         assertEquals(1L, exactResult.getUnit().getId());

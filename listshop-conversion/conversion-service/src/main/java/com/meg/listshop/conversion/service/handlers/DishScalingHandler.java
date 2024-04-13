@@ -22,23 +22,23 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public class ListHandler extends AbstractScalingHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(ListHandler.class);
+public class DishScalingHandler extends AbstractScalingHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(DishScalingHandler.class);
 
 
     @Autowired
-    public ListHandler(ConversionFactorRepository factorRepository) {
+    public DishScalingHandler(ConversionFactorRepository factorRepository) {
         super();
         LOG.info("initializing MetricVolumeForDishHandler");
         // metric targets
         ConversionSpec metricSource = ConversionSpec.basicSpec(UnitType.METRIC, null);
-        ConversionSpec metricTarget = ConversionSpec.basicSpec(UnitType.METRIC, null, UnitFlavor.ListUnit);
+        ConversionSpec metricTarget = ConversionSpec.basicSpec(UnitType.METRIC, null, UnitFlavor.DishUnit);
         // us targets
         ConversionSpec usSource = ConversionSpec.basicSpec(UnitType.US, null);
-        ConversionSpec usTarget = ConversionSpec.basicSpec(UnitType.US, null, UnitFlavor.ListUnit);
+        ConversionSpec usTarget = ConversionSpec.basicSpec(UnitType.US, null, UnitFlavor.DishUnit);
         // hybrid targets
         ConversionSpec hybridSource = ConversionSpec.basicSpec(UnitType.HYBRID, null);
-        ConversionSpec hybridTarget = ConversionSpec.basicSpec(UnitType.HYBRID, null, UnitFlavor.ListUnit);
+        ConversionSpec hybridTarget = ConversionSpec.basicSpec(UnitType.HYBRID, null, UnitFlavor.DishUnit);
 
         // initialize conversionSource
         List<ConversionFactorEntity> factorEntities = factorRepository.findAll(where(matchingFromWithSpec(metricSource).and(matchingToWithSpec(metricTarget))));
@@ -50,7 +50,7 @@ public class ListHandler extends AbstractScalingHandler {
 
         // initialize in abstract
         setConversionSource(conversionSource);
-        setScalerType(ConversionTargetType.List);
+        setScalerType(ConversionTargetType.Dish);
         setSkipNoConversionRequiredCheck(true);
     }
 

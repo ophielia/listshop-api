@@ -4,6 +4,7 @@ import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
+import com.meg.listshop.conversion.service.ConversionContext;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
@@ -63,10 +64,11 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
         return listOrDish.equals(scalerType);
     }
 
-    public ConvertibleAmount scale(ConvertibleAmount amount) throws ConversionFactorException {
+    public ConvertibleAmount scale(ConvertibleAmount amount, ConversionContext context) throws ConversionFactorException {
+        //MM some attention needed here - do we need a context which will adapt for scale?
         ConversionSpec targetSpec = ConversionSpec.basicSpec(amount.getUnit().getType(),
                 amount.getUnit().getSubtype());
-        return convert(amount, targetSpec);
+        return convert(amount, context);
     }
     protected List<ConversionFactor> selfScalingFactors(List<ConversionFactor> factors) {
         return factors.stream()
