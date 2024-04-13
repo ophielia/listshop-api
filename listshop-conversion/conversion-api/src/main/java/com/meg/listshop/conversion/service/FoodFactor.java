@@ -9,4 +9,6 @@ public interface FoodFactor {
     double getAmount();
 
     Long getFromUnitId();
+
+    String getMarker();
 }

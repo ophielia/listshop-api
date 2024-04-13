@@ -3,26 +3,54 @@ delete from units;
 
 
 
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1000, 'cup', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1001, 'tablespoon', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1002, 'teaspoon', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1003, 'liter', 'METRIC', 'VOLUME',TRUE, TRUE,TRUE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1004, 'milliliter', 'METRIC', 'VOLUME',TRUE, TRUE,TRUE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1005, 'gallon', 'US', 'VOLUME',TRUE, TRUE,TRUE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1006, 'pint', 'US', 'VOLUME',FALSE, TRUE,TRUE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1007, 'fl oz', 'US', 'VOLUME',TRUE, TRUE,TRUE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1008, 'lb', 'US', 'WEIGHT',TRUE, TRUE,FALSE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1009, 'oz', 'US', 'WEIGHT',TRUE, TRUE,FALSE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1010, 'quart', 'US', 'VOLUME',TRUE, TRUE,TRUE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1011, 'unit', 'UNIT', 'NONE',TRUE, TRUE,FALSE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1013, 'gram', 'METRIC', 'WEIGHT',TRUE, TRUE,FALSE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1014, 'kilogram', 'METRIC', 'WEIGHT',TRUE, TRUE,FALSE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1015, 'centiliter', 'METRIC', 'VOLUME',FALSE, TRUE,TRUE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1016, 'milligram', 'METRIC', 'WEIGHT',TRUE, TRUE,FALSE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1017, 'cup (fluid)', 'US', 'VOLUME',FALSE, TRUE,TRUE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1019, 'teaspoon (fluid)', 'HYBRID', 'LIQUID',FALSE, TRUE,TRUE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid) values (1021, 'tablespoon (fluid)', 'HYBRID', 'LIQUID',FALSE, TRUE,TRUE);
-
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1000, 'cup', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1001, 'tablespoon', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1002, 'teaspoon', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1019, 'teaspoon (fluid)', 'HYBRID', 'LIQUID',FALSE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1021, 'tablespoon (fluid)', 'HYBRID', 'LIQUID',FALSE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1022, 'slice', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1023, 'stick', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1003, 'liter', 'METRIC', 'VOLUME',TRUE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1004, 'milliliter', 'METRIC', 'VOLUME',TRUE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1013, 'gram', 'METRIC', 'WEIGHT',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1014, 'kilogram', 'METRIC', 'WEIGHT',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1015, 'centiliter', 'METRIC', 'VOLUME',FALSE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1016, 'milligram', 'METRIC', 'WEIGHT',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1005, 'gallon', 'US', 'VOLUME',TRUE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1006, 'pint', 'US', 'VOLUME',FALSE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1007, 'fl oz', 'US', 'VOLUME',TRUE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1008, 'lb', 'US', 'WEIGHT',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1009, 'oz', 'US', 'WEIGHT',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1010, 'quart', 'US', 'VOLUME',TRUE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1017, 'cup (fluid)', 'US', 'VOLUME',FALSE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1011, 'unit', 'UNIT', 'NONE',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1024, 'gallon (UK)', 'UK', 'VOLUME',TRUE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1025, 'pint (UK)', 'UK', 'VOLUME',FALSE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1026, 'fl oz (UK)', 'UK', 'VOLUME',TRUE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1027, 'quart (UK)', 'UK', 'VOLUME',TRUE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1028, 'cup (fluid) (UK)', 'UK', 'VOLUME',FALSE, TRUE,TRUE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1029, 'can', 'HYBRID', 'VOLUME',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1030, 'large can', 'HYBRID', 'VOLUME',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1031, 'small can', 'HYBRID', 'VOLUME',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1032, '#2 can', 'US', 'VOLUME',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1033, '14.5 oz can', 'US', 'VOLUME',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1034, '#2.5 can', 'US', 'VOLUME',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1035, '#3 can', 'US', 'VOLUME',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1036, '29 oz can', 'US', 'VOLUME',TRUE, TRUE,FALSE,FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1037, 'bulb', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1038, 'ear', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1039, 'head', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1040, 'leaf', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1041, 'package', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1042, 'packet', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1043, 'pod', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1044, 'ring', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1045, 'sheet', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1046, 'spear', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1047, 'sprig', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1048, 'stalk', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1049, 'stick', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1050, 'wedge', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
 
 insert into public.factors (factor_id, factor, to_unit, from_unit, tag_id)
 values  (1, 0.0625, 1005, 1017, null),
