@@ -24,6 +24,15 @@ public class SimpleConversionFactor implements ConversionFactor {
         return reversed;
     }
 
+    public static ConversionFactor conversionFactor(UnitEntity fromUnit, UnitEntity toUnit, double factor, String marker) {
+        SimpleConversionFactor reversed = new SimpleConversionFactor();
+        reversed.setFactor(factor);
+        reversed.setToUnit(toUnit);
+        reversed.setFromUnit(fromUnit);
+        reversed.setMarker(marker);
+        return reversed;
+    }
+
     public static ConversionFactor passThroughFactor(ConversionFactor factor) {
         SimpleConversionFactor passThrough = new SimpleConversionFactor();
         passThrough.setFactor(1D);

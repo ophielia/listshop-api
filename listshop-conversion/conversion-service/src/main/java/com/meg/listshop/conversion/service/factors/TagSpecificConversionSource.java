@@ -42,8 +42,8 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
 
     }
 
-    @Override
-    public List<ConversionFactor> getFactors(ConvertibleAmount convertibleAmount, Long conversionId) {
+
+    public List<ConversionFactor> oldGetFactors(ConvertibleAmount convertibleAmount, Long conversionId) {
         Long unitId = convertibleAmount.getUnit().getId();
         LOG.trace("... getting factors from db for unitId: [{}]", unitId);
 
@@ -87,7 +87,8 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         }
         return new ArrayList<>();
     }
-    public List<ConversionFactor> newgetFactors(ConvertibleAmount convertibleAmount, Long conversionId) {
+    @Override
+    public List<ConversionFactor> getFactors(ConvertibleAmount convertibleAmount, Long conversionId) {
         Long unitId = convertibleAmount.getUnit().getId();
         LOG.trace("... getting factors from db for conversionId: [{}], unitId [{}]", conversionId, unitId);
 
@@ -122,6 +123,7 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
 
         // if we have an exact match, return it now
         ConversionFactorKey exactMatch = new ConversionFactorKey(unitId, convertibleAmount.getMarker());
+        ConversionFactorKey nullMarkerMatch = new ConversionFactorKey(unitId, null);
         if (resultMap.containsKey(exactMatch)) {
             return Collections.singletonList(resultMap.get(exactMatch));
         }
@@ -148,6 +150,11 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         // maybe we have an exact match now
         if (resultMap.containsKey(exactMatch)) {
             return Collections.singletonList(resultMap.get(exactMatch));
+        }
+
+        // or a unit match, where the marker is null
+        if (resultMap.containsKey(nullMarkerMatch)) {
+            return Collections.singletonList(resultMap.get(nullMarkerMatch));
         }
 
         // if not, check for unit match without marker

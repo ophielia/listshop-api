@@ -65,9 +65,6 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
     }
 
     public ConvertibleAmount scale(ConvertibleAmount amount, ConversionContext context) throws ConversionFactorException {
-        //MM some attention needed here - do we need a context which will adapt for scale?
-        ConversionSpec targetSpec = ConversionSpec.basicSpec(amount.getUnit().getType(),
-                amount.getUnit().getSubtype());
         return convert(amount, context);
     }
     protected List<ConversionFactor> selfScalingFactors(List<ConversionFactor> factors) {

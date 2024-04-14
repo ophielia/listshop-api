@@ -28,6 +28,8 @@ public class ConverterServiceImpl implements ConverterService {
 
     private final ConversionHandler tagSpecificHandler;
 
+
+
     @Autowired
     public ConverterServiceImpl(List<ChainConversionHandler> handlerList,
                                 List<ScalingHandler> scalerList,
@@ -56,7 +58,6 @@ public class ConverterServiceImpl implements ConverterService {
     public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest context) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for context [{}], amount [{}]", context, amount);
         //MM add unit not null check
-        // get weight/volume target for context
         UnitSubtype targetSubtype = determineSubtypeFromContext(amount, context);
         ConversionSpec conversionSpec = ConversionSpec.specForContext(context.getUnitType(), targetSubtype, context.getContextType());
 
@@ -148,6 +149,9 @@ public class ConverterServiceImpl implements ConverterService {
         //MM will need to handle TagSpecific scaler here - for units, and possibly, a stick of butter
         if (context.getTargetContextType() == null) {
             return null;
+        }
+        if (context.shouldScaleToUnit()) {
+            return scalerList.stream().filter(s -> s.scalerFor(context.getTargetContextType())).findFirst().orElse(null);
         }
         return scalerList.stream().filter(s -> s.scalerFor(context.getTargetContextType())).findFirst().orElse(null);
     }

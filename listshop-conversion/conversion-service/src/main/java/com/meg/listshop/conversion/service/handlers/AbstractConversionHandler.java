@@ -47,29 +47,11 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
 
     public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionContext context) throws ConversionFactorException {
-        if (!isSkipNoConversionRequiredCheck() && !doesScaling && context.doesntRequireConversion(toConvert)) {
+        List<ConversionFactor> factors = findFactors(toConvert,context);
+        if (factors == null || factors.isEmpty()) {
             LOG.debug("No conversion required for unitType: [{}], amount [{}].", context.getTargetUnitType(), toConvert);
             return toConvert;
         }
-
-        List<ConversionFactor> factors = new ArrayList<>();
-        if (context.convertsToSpecificUnit(toConvert)) {
-            ConversionFactor exact = conversionSource.getFactor(toConvert.getUnit().getId(), context.getTargetUnitId());
-            if (exact != null) {
-                LOG.trace("...exact match found for unitId: [{}], found [{}].", context.getTargetUnitId(), exact.getToUnit().getId());
-                factors.add(exact);
-            }
-        }
-        if (factors.isEmpty()) {
-            factors.addAll(conversionSource.getFactors(, toConvert.getUnit().getId(), context.getConversionId(), ));
-        }
-
-        if (factors.isEmpty()) {
-            String message = String.format("No factors found in handler %s.", this.getClass().getName());
-            LOG.warn(message);
-        }
-
-        context.conversionFactorsFound(factors);
 
         // convert all factors, making list
         List<ConvertibleAmount> convertedList = factors.stream()
@@ -88,6 +70,33 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
 
         // return best result
         return new SimpleAmount(bestResult.getQuantity(), bestResult.getUnit(), toConvert);
+    }
+
+    public List<ConversionFactor> findFactors(ConvertibleAmount toConvert , ConversionContext context) {
+        if (!isSkipNoConversionRequiredCheck() && !doesScaling && context.doesntRequireConversion(toConvert)) {
+            LOG.debug("No conversion required for unitType: [{}], amount [{}].", context.getTargetUnitType(), toConvert);
+            return null;
+        }
+
+        List<ConversionFactor> factors = new ArrayList<>();
+        if (context.convertsToSpecificUnit(toConvert)) {
+            ConversionFactor exact = conversionSource.getFactor(toConvert.getUnit().getId(), context.getTargetUnitId());
+            if (exact != null) {
+                LOG.trace("...exact match found for unitId: [{}], found [{}].", context.getTargetUnitId(), exact.getToUnit().getId());
+                factors.add(exact);
+            }
+        }
+        if (factors.isEmpty()) {
+            factors.addAll(conversionSource.getFactors( toConvert, context.getConversionId() ));
+        }
+
+        if (factors.isEmpty()) {
+            String message = String.format("No factors found in handler %s.", this.getClass().getName());
+            LOG.warn(message);
+        }
+
+        context.conversionFactorsFound(factors);
+        return factors;
     }
 
     public ConvertibleAmount sortForBestResult(List<ConvertibleAmount> convertedList) {

@@ -141,4 +141,11 @@ public class ConversionTestTools {
         return Math.round(value * 100D) / 100D;
     }
 
+    public static ConversionFactorEntity makeConversionFactorEntity(UnitEntity fromUnit, UnitEntity toUnit, double factor) {
+        ConversionFactorEntity entity = new ConversionFactorEntity();
+        entity.setFromUnit(fromUnit);
+        entity.setToUnit(toUnit);
+        entity.setFactor(factor);
+        return entity;
+    }
 }

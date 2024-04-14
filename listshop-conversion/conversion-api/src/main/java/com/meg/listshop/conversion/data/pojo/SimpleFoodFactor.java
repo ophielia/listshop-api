@@ -9,11 +9,18 @@ public class SimpleFoodFactor implements FoodFactor {
 
     private Long fromUnitId;
 
+    private String marker;
+
     public SimpleFoodFactor(Long referenceId, double gramWeight, double amount, Long fromUnitId) {
+         this( referenceId, gramWeight, amount, fromUnitId,null);
+    }
+
+    public SimpleFoodFactor(Long referenceId, double gramWeight, double amount, Long fromUnitId, String marker) {
         this.referenceId = referenceId;
         this.gramWeight = gramWeight;
         this.amount = amount;
         this.fromUnitId = fromUnitId;
+        this.marker = marker;
     }
 
     @Override
@@ -50,5 +57,14 @@ public class SimpleFoodFactor implements FoodFactor {
 
     public void setFromUnitId(Long fromUnitId) {
         this.fromUnitId = fromUnitId;
+    }
+
+    @Override
+    public String getMarker() {
+        return marker;
+    }
+
+    public void setMarker(String marker) {
+        this.marker = marker;
     }
 }

@@ -183,7 +183,7 @@ public class LayoutServiceImpl implements LayoutService {
             return;
         }
         // retrieve category for mappings
-        ListLayoutCategoryEntity givenCategory = categoryRepository.getById(categoryId);
+        ListLayoutCategoryEntity givenCategory = categoryRepository.findById(categoryId).orElse(null);
         if (givenCategory == null) {
             LOG.warn("Template category in addMappingsToLayout not found [{}][{}]", listLayout.getId(), categoryId);
             throw new ObjectNotFoundException(String.format("Template category in addMappingsToLayout not found [%s][%s]", listLayout.getId(), categoryId));

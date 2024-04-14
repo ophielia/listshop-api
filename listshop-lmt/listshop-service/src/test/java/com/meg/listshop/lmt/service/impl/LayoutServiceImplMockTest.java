@@ -141,7 +141,7 @@ class LayoutServiceImplMockTest {
         Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(null);
         Mockito.when(listLayoutRepository.save(layoutCaptor.capture())).thenReturn(newDefault);
         Mockito.when(listLayoutRepository.getTagsToDeleteFromLayout(anyLong(), anySet())).thenReturn(new ArrayList<>());
-        Mockito.when(categoryRepositoryRepository.getById(categoryTemplateId)).thenReturn(categoryTemplate);
+        Mockito.when(categoryRepositoryRepository.findById(categoryTemplateId)).thenReturn(Optional.of(categoryTemplate));
         Mockito.when(categoryRepositoryRepository.findByNameInLayout(categoryTemplateName, layoutId)).thenReturn(null);
         Mockito.when(categoryRepositoryRepository.save(categoryCaptor.capture())).thenReturn(newCategory);
         Mockito.when(tagRepository.getTagsForIdList(tagIdSet)).thenReturn(tagEntities);
@@ -202,7 +202,7 @@ class LayoutServiceImplMockTest {
         ArgumentCaptor<ListLayoutCategoryEntity> categoryCaptor = ArgumentCaptor.forClass(ListLayoutCategoryEntity.class);
         Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(existingDefault);
         Mockito.when(listLayoutRepository.getTagsToDeleteFromLayout(anyLong(), anySet())).thenReturn(new ArrayList<>());
-        Mockito.when(categoryRepositoryRepository.getById(categoryTemplateId)).thenReturn(categoryTemplate);
+        Mockito.when(categoryRepositoryRepository.findById(categoryTemplateId)).thenReturn(Optional.of(categoryTemplate));
         Mockito.when(categoryRepositoryRepository.findByNameInLayout(categoryTemplateName, layoutId)).thenReturn(null);
         Mockito.when(categoryRepositoryRepository.save(categoryCaptor.capture())).thenReturn(newCategory);
         Mockito.when(tagRepository.getTagsForIdList(tagIdSet)).thenReturn(tagEntities);
@@ -256,7 +256,7 @@ class LayoutServiceImplMockTest {
 
         Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(existingDefault);
         Mockito.when(listLayoutRepository.getTagsToDeleteFromLayout(anyLong(), anySet())).thenReturn(new ArrayList<>());
-        Mockito.when(categoryRepositoryRepository.getById(categoryTemplateId)).thenReturn(categoryTemplate);
+        Mockito.when(categoryRepositoryRepository.findById(categoryTemplateId)).thenReturn(Optional.of(categoryTemplate));
         Mockito.when(categoryRepositoryRepository.findByNameInLayout(categoryTemplateName, layoutId)).thenReturn(existingCategory);
         Mockito.when(tagRepository.getTagsForIdList(tagIdSet)).thenReturn(tagEntities);
 
@@ -310,7 +310,7 @@ class LayoutServiceImplMockTest {
 
         Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(existingLayout);
         Mockito.when(listLayoutRepository.getTagsToDeleteFromLayout(anyLong(), anySet())).thenReturn(mappedToOtherCategory);
-        Mockito.when(categoryRepositoryRepository.getById(categoryTemplateId)).thenReturn(categoryTemplate);
+        Mockito.when(categoryRepositoryRepository.findById(categoryTemplateId)).thenReturn(Optional.of(categoryTemplate));
         Mockito.when(categoryRepositoryRepository.findByNameInLayout(categoryTemplateName, layoutId)).thenReturn(existingCategory);
         Mockito.when(tagRepository.getTagsForIdList(tagIdSet)).thenReturn(tagEntities);
 
@@ -366,7 +366,7 @@ class LayoutServiceImplMockTest {
         ArgumentCaptor<ListLayoutCategoryEntity> categoryCaptor = ArgumentCaptor.forClass(ListLayoutCategoryEntity.class);
         Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(existingLayout);
         Mockito.when(listLayoutRepository.getTagsToDeleteFromLayout(anyLong(), anySet())).thenReturn(mappedToOtherCategory);
-        Mockito.when(categoryRepositoryRepository.getById(categoryTemplateId)).thenReturn(categoryTemplate);
+        Mockito.when(categoryRepositoryRepository.findById(categoryTemplateId)).thenReturn(Optional.of(categoryTemplate));
         Mockito.when(categoryRepositoryRepository.findByNameInLayout(categoryTemplateName, layoutId)).thenReturn(null);
         Mockito.when(categoryRepositoryRepository.save(categoryCaptor.capture())).thenReturn(newCategory);
         Mockito.when(tagRepository.getTagsForIdList(tagIdSet)).thenReturn(tagEntities);
@@ -416,7 +416,7 @@ class LayoutServiceImplMockTest {
 
         Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(existingLayout);
         Mockito.when(listLayoutRepository.getTagsToDeleteFromLayout(anyLong(), anySet())).thenReturn(new ArrayList<>());
-        Mockito.when(categoryRepositoryRepository.getById(categoryTemplateId)).thenReturn(categoryTemplate);
+        Mockito.when(categoryRepositoryRepository.findById(categoryTemplateId)).thenReturn(Optional.of(categoryTemplate));
         Mockito.when(categoryRepositoryRepository.findByNameInLayout(categoryTemplateName, layoutId)).thenReturn(existingCategory);
         Mockito.when(tagRepository.getTagsForIdList(tagIdSet)).thenReturn(new ArrayList<>());
 
@@ -460,7 +460,7 @@ class LayoutServiceImplMockTest {
         Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(null);
         Mockito.when(listLayoutRepository.save(layoutCaptor.capture())).thenReturn(newDefault);
         Mockito.when(listLayoutRepository.getTagsToDeleteFromLayout(anyLong(), anySet())).thenReturn(new ArrayList<>());
-        Mockito.when(categoryRepositoryRepository.getById(categoryTemplateId)).thenReturn(categoryTemplate);
+        Mockito.when(categoryRepositoryRepository.findById(categoryTemplateId)).thenReturn(Optional.of(categoryTemplate));
         Mockito.when(categoryRepositoryRepository.findByNameInLayout(categoryTemplateName, layoutId)).thenReturn(null);
         Mockito.when(categoryRepositoryRepository.save(categoryCaptor.capture())).thenReturn(newCategory);
         Mockito.when(tagRepository.getTagsForIdList(tagIdSet)).thenReturn(tagEntities);
@@ -524,7 +524,7 @@ class LayoutServiceImplMockTest {
         Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(null);
         Mockito.when(listLayoutRepository.save(layoutCaptor.capture())).thenReturn(newDefault);
         Mockito.when(listLayoutRepository.getTagsToDeleteFromLayout(anyLong(), anySet())).thenReturn(new ArrayList<>());
-        Mockito.when(categoryRepositoryRepository.getById(categoryTemplateId)).thenReturn(null);
+        Mockito.when(categoryRepositoryRepository.findById(categoryTemplateId)).thenReturn(null);
         Mockito.when(categoryRepositoryRepository.findByNameInLayout(categoryTemplateName, layoutId)).thenReturn(null);
         Mockito.when(categoryRepositoryRepository.save(categoryCaptor.capture())).thenReturn(newCategory);
         Mockito.when(tagRepository.getTagsForIdList(tagIdSet)).thenReturn(tagEntities);

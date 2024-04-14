@@ -5,9 +5,11 @@ import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ConversionContext {
 
@@ -15,7 +17,8 @@ public class ConversionContext {
     String marker;
     ConversionSpec targetSpec;
 
-    List<ConversionFactor> factors;
+    List<ConversionFactor> unitFactors = new ArrayList<>();
+
 
     public ConversionContext(ConvertibleAmount amount, ConversionSpec conversionSpec) {
         conversionId = amount.getConversionId();
@@ -36,7 +39,10 @@ public class ConversionContext {
     }
 
     public boolean requiresDomainConversion(ConvertibleAmount amount) {
-        //MM also check unit here - if it converts to unit, and context is list no domain conversion necessary
+        if (!unitFactors.isEmpty() && targetSpec.getContextType().equals(ConversionTargetType.List)) {
+            return false;
+        }
+
         return !amount.getUnit().getType().equals(targetSpec.getUnitType());
     }
 
@@ -73,11 +79,22 @@ public class ConversionContext {
 
     public void conversionFactorsFound(List<ConversionFactor> factors) {
         if (conversionId != null) {
-            this.factors = factors;
+            this.unitFactors = factors.stream()
+                    .filter(f -> f.getToUnit().getType().equals(UnitType.UNIT))
+                    .collect(Collectors.toList());
         }
     }
 
     public Long getConversionId() {
         return conversionId;
+    }
+
+    public List<ConversionFactor> getUnitConversionFactors() {
+        return unitFactors;
+    }
+
+    public boolean shouldScaleToUnit() {
+        // unit factors exits, and target is list
+        return unitFactors!=null && !unitFactors.isEmpty() && targetSpec.getContextType().equals(ConversionTargetType.List);
     }
 }

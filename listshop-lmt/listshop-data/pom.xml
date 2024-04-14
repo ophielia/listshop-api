@@ -31,6 +31,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.meg.listshop</groupId>
+            <artifactId>conversion-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.meg.postoffice</groupId>
             <artifactId>postoffice-service</artifactId>
             <version>${project.version}</version>
