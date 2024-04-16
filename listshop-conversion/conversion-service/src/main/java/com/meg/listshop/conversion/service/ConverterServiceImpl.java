@@ -11,6 +11,7 @@ import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.handlers.ChainConversionHandler;
 import com.meg.listshop.conversion.service.handlers.ConversionHandler;
 import com.meg.listshop.conversion.service.handlers.ScalingHandler;
+import com.meg.listshop.conversion.service.handlers.UnitScalingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,11 +148,11 @@ public class ConverterServiceImpl implements ConverterService {
 
     private ScalingHandler getScalerForContext(ConversionContext context) {
         //MM will need to handle TagSpecific scaler here - for units, and possibly, a stick of butter
-        if (context.getTargetContextType() == null) {
-            return null;
-        }
+
         if (context.shouldScaleToUnit()) {
-            return scalerList.stream().filter(s -> s.scalerFor(context.getTargetContextType())).findFirst().orElse(null);
+            return new UnitScalingHandler();
+        } else       if (context.getTargetContextType() == null) {
+            return null;
         }
         return scalerList.stream().filter(s -> s.scalerFor(context.getTargetContextType())).findFirst().orElse(null);
     }

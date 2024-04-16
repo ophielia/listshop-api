@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.meg.listshop.conversion.data.repository.UnitSpecifications.*;
@@ -42,64 +41,34 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
 
     }
 
+    public List<ConversionFactor> getAllPossibleFactors(ConvertibleAmount convertibleAmount, Long conversionId) {
+        LOG.trace("... getting all possiblefactors from db for conversionId: [{}], unitId [{}]", conversionId, convertibleAmount.getUnit().getId());
 
-    public List<ConversionFactor> oldGetFactors(ConvertibleAmount convertibleAmount, Long conversionId) {
-        Long unitId = convertibleAmount.getUnit().getId();
-        LOG.trace("... getting factors from db for unitId: [{}]", unitId);
-
-        // get factors from database for tag id
+        // get factors from database for conversion id
         List<ConversionFactor> tagFactors = factorRepository.findAll(where(matchingFromConversionId(conversionId))).stream()
-                .map(f->(ConversionFactor)f)
+                .map(f -> (ConversionFactor) f)
                 .collect(Collectors.toList());
 
         // if no factors found return empty list
-        if ( tagFactors.isEmpty()) {
+        if (tagFactors.isEmpty()) {
             return new ArrayList<>();
         }
-
-        // determine if this is inverted - going from grams to hybrid
-        boolean isInverted = metricInflationFactors.stream().anyMatch(f -> f.getFromUnit().getId().equals(unitId));
-        if (isInverted) {
-            tagFactors = reverseTagFactors(tagFactors);
-        }
-
-        // amplify database factors to all factors possible for HYBRIDS
-        // get base factor - which we'll use to inflate other factors
-        ConversionFactor baseFactor = tagFactors.get(0);
-
-        // create hashmap from tag factors
-        Map<Long, ConversionFactor> resultMap = tagFactors.stream()
-                .collect(Collectors.toMap( f -> f.getFromUnit().getId(), Function.identity() ));
-
-        // if we have a match, return it now
-        if (resultMap.containsKey(unitId)) {
-            return Collections.singletonList(resultMap.get(unitId));
-        }
-        // fill in any missing factors, by using the base factor to convert the missing factors
-         final List<ConversionFactorEntity> inflationFactors = getInflationFactors(isInverted);
-        inflationFactors.stream()
-                .filter( f -> f.getToUnit().getId().equals(baseFactor.getFromUnit().getId())) // get all conversions from base factor
-                .forEach( f -> resultMap.computeIfAbsent( f.getFromUnit().getId(), tc -> inflateFactorFromBase(baseFactor, f) ));
-
-        // if we have a match, return it
-        if (resultMap.containsKey(unitId)) {
-            return Collections.singletonList(resultMap.get(unitId));
-        }
-        return new ArrayList<>();
+        return tagFactors;
     }
+
+
     @Override
     public List<ConversionFactor> getFactors(ConvertibleAmount convertibleAmount, Long conversionId) {
         Long unitId = convertibleAmount.getUnit().getId();
         LOG.trace("... getting factors from db for conversionId: [{}], unitId [{}]", conversionId, unitId);
 
-
         // get factors from database for conversion id
         List<ConversionFactor> tagFactors = factorRepository.findAll(where(matchingFromConversionId(conversionId))).stream()
-                .map(f->(ConversionFactor)f)
+                .map(f -> (ConversionFactor) f)
                 .collect(Collectors.toList());
 
         // if no factors found return empty list
-        if ( tagFactors.isEmpty()) {
+        if (tagFactors.isEmpty()) {
             return new ArrayList<>();
         }
 
@@ -115,10 +84,10 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         // and check if generic hybrid is present (which would mean inflating makes sense)
         boolean genericHybridPresent = false;
         Map<ConversionFactorKey, ConversionFactor> resultMap = new HashMap<>();
-        for (ConversionFactor f: tagFactors) {
-            genericHybridPresent |=     !f.getFromUnit().isTagSpecific();
+        for (ConversionFactor f : tagFactors) {
+            genericHybridPresent |= !f.getFromUnit().isTagSpecific();
             ConversionFactorKey key = new ConversionFactorKey(f.getFromUnit().getId(), f.getMarker());
-            resultMap.put(key,f);
+            resultMap.put(key, f);
         }
 
         // if we have an exact match, return it now
@@ -141,9 +110,9 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
             for (ConversionFactor factor : tagFactors) {
                 if (!factor.getFromUnit().isTagSpecific()) {
                     inflationFactors.stream()
-                            .filter( f -> f.getToUnit().getId().equals(factor.getFromUnit().getId())) // get all conversions from base factor
-                            .forEach( f -> resultMap.computeIfAbsent( new ConversionFactorKey(f.getFromUnit().getId(),f.getMarker()),
-                                    tc -> inflateFactorFromBase(factor, f) ));
+                            .filter(f -> f.getToUnit().getId().equals(factor.getFromUnit().getId())) // get all conversions from base factor
+                            .forEach(f -> resultMap.computeIfAbsent(new ConversionFactorKey(f.getFromUnit().getId(), f.getMarker()),
+                                    tc -> inflateFactorFromBase(factor, f)));
                 }
             }
         }
@@ -165,7 +134,73 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         return new ArrayList<>();
     }
 
-    private List<ConversionFactor> getUnitMatches(Map<ConversionFactorKey,ConversionFactor> resultMap, Long unitId) {
+    public List<ConversionFactor> selectFactorsForConversion(ConvertibleAmount convertibleAmount, List<ConversionFactor> tagFactors) {
+        Long unitId = convertibleAmount.getUnit().getId();
+        LOG.trace("... selecting factors from list : [{}], unitId [{}]", tagFactors, unitId);
+
+        // determine if this is inverted - going from grams to hybrid
+        // needs work - this isn't working now inverted would be unitid (grams) = to unit
+        // - and they all have grams as the to unit
+        boolean isInverted = metricInflationFactors.stream().anyMatch(f -> f.getFromUnit().getId().equals(unitId));
+        if (isInverted) {
+            tagFactors = reverseTagFactors(tagFactors);
+        }
+
+        // create hashmap from tag factors
+        // and check if generic hybrid is present (which would mean inflating makes sense)
+        boolean genericHybridPresent = false;
+        Map<ConversionFactorKey, ConversionFactor> resultMap = new HashMap<>();
+        for (ConversionFactor f : tagFactors) {
+            genericHybridPresent |= !f.getFromUnit().isTagSpecific();
+            ConversionFactorKey key = new ConversionFactorKey(f.getFromUnit().getId(), f.getMarker());
+            resultMap.put(key, f);
+        }
+
+        // if we have an exact match, return it now
+        ConversionFactorKey exactMatch = new ConversionFactorKey(unitId, convertibleAmount.getMarker());
+        ConversionFactorKey nullMarkerMatch = new ConversionFactorKey(unitId, null);
+        if (resultMap.containsKey(exactMatch)) {
+            return Collections.singletonList(resultMap.get(exactMatch));
+        }
+
+        // check for unit match without marker
+        List<ConversionFactor> unitMatches = getUnitMatches(resultMap, unitId);
+        if (!unitMatches.isEmpty()) {
+            return unitMatches;
+        }
+
+        // amplify database factors to all factors possible for HYBRIDS
+        if (genericHybridPresent) {
+            final List<ConversionFactorEntity> inflationFactors = getInflationFactors(isInverted);
+            // go through tagFactors
+            for (ConversionFactor factor : tagFactors) {
+                if (!factor.getFromUnit().isTagSpecific()) {
+                    inflationFactors.stream()
+                            .filter(f -> f.getToUnit().getId().equals(factor.getFromUnit().getId())) // get all conversions from base factor
+                            .forEach(f -> resultMap.computeIfAbsent(new ConversionFactorKey(f.getFromUnit().getId(), f.getMarker()),
+                                    tc -> inflateFactorFromBase(factor, f)));
+                }
+            }
+        }
+        // maybe we have an exact match now
+        if (resultMap.containsKey(exactMatch)) {
+            return Collections.singletonList(resultMap.get(exactMatch));
+        }
+
+        // or a unit match, where the marker is null
+        if (resultMap.containsKey(nullMarkerMatch)) {
+            return Collections.singletonList(resultMap.get(nullMarkerMatch));
+        }
+
+        // if not, check for unit match without marker
+        unitMatches = getUnitMatches(resultMap, unitId);
+        if (!unitMatches.isEmpty()) {
+            return unitMatches;
+        }
+        return new ArrayList<>();
+    }
+
+    private List<ConversionFactor> getUnitMatches(Map<ConversionFactorKey, ConversionFactor> resultMap, Long unitId) {
         return resultMap.keySet().stream()
                 .filter(k -> Objects.equals(k.unitId, unitId))
                 .map(resultMap::get)
@@ -209,6 +244,19 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         public ConversionFactorKey(Long unitId, String marker) {
             this.unitId = unitId;
             this.marker = marker;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ConversionFactorKey that = (ConversionFactorKey) o;
+            return Objects.equals(unitId, that.unitId) && Objects.equals(marker, that.marker);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(unitId, marker);
         }
     }
 }

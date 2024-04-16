@@ -5,7 +5,7 @@
  *
  */
 
-package com.meg.listshop.lmt.service;
+package com.meg.listshop.lmt.service.conversion;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
@@ -63,6 +63,7 @@ public class ConversionTest {
     private static final Long fluidOzId = 1007L;
 
     private static final Long butterTagId = 348L;
+    private static final Long onionConversionId = 56630L;
 
     @Autowired
     ConverterService converterService;
@@ -335,5 +336,25 @@ public class ConversionTest {
         assertEquals(cupsId, converted.getUnit().getId());
     }
 
+    @Test
+    public void testTagSpecificConversion() throws ConversionPathException, ConversionFactorException {
+        UnitEntity tablespoon = unitRepository.findById(cupsId).orElse(null);
+        UnitEntity grams = unitRepository.findById(gId).orElse(null);
+
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        // 1/2 cup onions to unit, marker chopped
+        ConvertibleAmount amount = new SimpleAmount(0.5, tablespoon, onionConversionId, false, "chopped" );
+        ConvertibleAmount converted = converterService.convert(amount, grams);
+        assertNotNull(converted);
+        assertEquals(80.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(gId, converted.getUnit().getId());
+
+        // 1/2 cup onions to unit, marker chopped
+        amount = new SimpleAmount(0.5, tablespoon, onionConversionId, false, "chopped" );
+        converted = converterService.convert(amount, listContext);
+        assertNotNull(converted);
+     //   assertEquals(80.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+     //   assertEquals(gId, converted.getUnit().getId());
+    }
 
 }

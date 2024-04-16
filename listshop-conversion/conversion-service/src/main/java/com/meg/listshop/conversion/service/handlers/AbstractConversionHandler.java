@@ -95,7 +95,6 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
             LOG.warn(message);
         }
 
-        context.conversionFactorsFound(factors);
         return factors;
     }
 

@@ -22,7 +22,7 @@ public class SimpleAmount implements ConvertibleAmount {
         this.unit = unit;
         this.conversionId = conversionId;
         this.isLiquid = isLiquid;
-        this.marker = this.marker;
+        this.marker = marker;
     }
     public SimpleAmount(double quantity, UnitEntity unit) {
         this.quantity = quantity;

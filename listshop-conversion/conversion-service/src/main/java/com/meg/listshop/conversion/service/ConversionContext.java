@@ -39,11 +39,14 @@ public class ConversionContext {
     }
 
     public boolean requiresDomainConversion(ConvertibleAmount amount) {
+        if (unitFactors == null || targetSpec.getContextType() == null ) {
+            return !amount.getUnit().getType().equals(targetSpec.getUnitType());
+        }
         if (!unitFactors.isEmpty() && targetSpec.getContextType().equals(ConversionTargetType.List)) {
             return false;
         }
-
         return !amount.getUnit().getType().equals(targetSpec.getUnitType());
+
     }
 
     public ConversionTargetType getTargetContextType() {
@@ -80,7 +83,8 @@ public class ConversionContext {
     public void conversionFactorsFound(List<ConversionFactor> factors) {
         if (conversionId != null) {
             this.unitFactors = factors.stream()
-                    .filter(f -> f.getToUnit().getType().equals(UnitType.UNIT))
+                    .filter(f -> f.getFromUnit().getType().equals(UnitType.UNIT) ||
+                            f.getToUnit().getType().equals(UnitType.UNIT))
                     .collect(Collectors.toList());
         }
     }
@@ -95,6 +99,9 @@ public class ConversionContext {
 
     public boolean shouldScaleToUnit() {
         // unit factors exits, and target is list
-        return unitFactors!=null && !unitFactors.isEmpty() && targetSpec.getContextType().equals(ConversionTargetType.List);
+        return unitFactors!=null
+                && !unitFactors.isEmpty()
+                && targetSpec.getContextType() != null
+        && targetSpec.getContextType().equals(ConversionTargetType.List);
     }
 }

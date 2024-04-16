@@ -52,7 +52,7 @@ insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1049, 'stick', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific) values (1050, 'wedge', 'HYBRID', 'WEIGHT',TRUE, TRUE,FALSE,TRUE);
 
-insert into public.factors (factor_id, factor, to_unit, from_unit, tag_id)
+insert into public.factors (factor_id, factor, to_unit, from_unit, conversion_id)
 values  (1, 0.0625, 1005, 1017, null),
         (2, 0.5, 1006, 1017, null),
         (3, 0.25, 1010, 1017, null),

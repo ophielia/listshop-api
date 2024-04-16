@@ -48,6 +48,7 @@ public class UnitSpecifications {
             ArrayList<Predicate> predicates = new ArrayList<>();
 
             predicates.add(criteriaBuilder.equal(fromUnit.<String>get("type"), spec.getUnitType()));
+            predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isTagSpecific"),false));
             if (spec.getUnitSubtype() != null) {
                 predicates.add(criteriaBuilder.equal(fromUnit.<String>get("subtype"), spec.getUnitSubtype()));
             }
@@ -99,6 +100,7 @@ public class UnitSpecifications {
             ArrayList<Predicate> predicates = new ArrayList<>();
 
             predicates.add(criteriaBuilder.equal(fromUnit.<String>get("type"), spec.getUnitType()));
+            predicates.add(criteriaBuilder.equal(fromUnit.<Boolean>get("isTagSpecific"),false));
             if (spec.getUnitSubtype() != null) {
             predicates.add(criteriaBuilder.equal(fromUnit.<String>get("subtype"), spec.getUnitSubtype()));
             }

@@ -1,0 +1,1 @@
+delete from factors where conversion_id is not null;
