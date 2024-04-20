@@ -125,7 +125,7 @@ public class ConverterServiceImpl implements ConverterService {
         //       one handler for each domain (to metric) metric <=> us, metric <=> imperial
         //       two way handlers
         //       all units - volume / weight, etc.
-        if (context.requiresDomainConversion(amount)) { //!result.getUnit().getType().equals(conversionSpec.getUnitType())
+        if (context.requiresDomainConversion(result)) { //!result.getUnit().getType().equals(conversionSpec.getUnitType())
             result = convertDomain(result, context); // conversionSpec.getUnitType(), conversionSpec.getUnitId()
         }
         // continuing with result - scaling
