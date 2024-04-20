@@ -60,8 +60,8 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
         return nearestUnitResult;
     }
 
-    public boolean scalerFor(ConversionTargetType listOrDish) {
-        return listOrDish.equals(scalerType);
+    public boolean scalerFor(ConversionTargetType listOrDish, boolean hasTagSpecific) {
+        return listOrDish.equals(scalerType) && hasTagSpecific == isTagSpecific();
     }
 
     public ConvertibleAmount scale(ConvertibleAmount amount, ConversionContext context) throws ConversionFactorException {
@@ -101,6 +101,11 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
 
     public void setScalerType(ConversionTargetType scalerType) {
         this.scalerType = scalerType;
+    }
+
+    @Override
+    public boolean isTagSpecific() {
+        return false;
     }
 }
 

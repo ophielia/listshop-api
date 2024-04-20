@@ -4,6 +4,7 @@ import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.pojo.UnitSubtype;
 import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
+import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.service.ConversionContext;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,12 +24,15 @@ import java.util.List;
 public class TagSpecificHandler extends AbstractConversionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(TagSpecificHandler.class);
 
+    @Value("${conversionservice.gram.unit.id:1013}")
+    private Long GRAM_UNIT_ID;
+
     private TagSpecificConversionSource conversionSource;
 
     @Autowired
     public TagSpecificHandler(ConversionFactorRepository factorRepository) {
         super();
-        LOG.info("initializing WeightVolumeHandler");
+        LOG.info("initializing TagSpecificHandler");
 
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.HYBRID, UnitSubtype.SOLID);
@@ -55,5 +60,13 @@ public class TagSpecificHandler extends AbstractConversionHandler {
 
     }
 
+    @Override
+    public ConvertibleAmount convert(ConvertibleAmount toConvert, ConversionContext context) throws ConversionFactorException {
+        ConvertibleAmount amount = super.convert(toConvert, context);
+        if (GRAM_UNIT_ID.equals(amount.getUnit().getId())) {
+            context.setGramWeight(amount.getQuantity());
+        }
+        return amount;
+    }
 
 }

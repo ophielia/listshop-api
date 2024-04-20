@@ -41,6 +41,9 @@ public class UnitEntity {
     @Column(name = "IS_TAG_SPECIFIC")
     private boolean isTagSpecific;
 
+    @Column(name = "EXCLUDED_DOMAINS")
+    private String excludedDomainList;
+
     public Long getId() {
         return id;
     }
@@ -120,6 +123,21 @@ public class UnitEntity {
 
     public void setTagSpecific(boolean tagSpecific) {
         isTagSpecific = tagSpecific;
+    }
+
+    public String getExcludedDomainList() {
+        return excludedDomainList;
+    }
+
+    public void setExcludedDomainList(String excludedDomainList) {
+        this.excludedDomainList = excludedDomainList;
+    }
+
+    public boolean isAvailableForDomain(UnitType domain) {
+        if (excludedDomainList == null || excludedDomainList.isEmpty()) {
+            return true;
+        }
+        return excludedDomainList.contains(domain.toString());
     }
 
     @Override

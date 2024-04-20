@@ -147,14 +147,15 @@ public class ConverterServiceImpl implements ConverterService {
 
 
     private ScalingHandler getScalerForContext(ConversionContext context) {
-        //MM will need to handle TagSpecific scaler here - for units, and possibly, a stick of butter
-
-        if (context.shouldScaleToUnit()) {
-            return new UnitScalingHandler();
-        } else       if (context.getTargetContextType() == null) {
+        if (context.getTargetContextType() == null) {
             return null;
         }
-        return scalerList.stream().filter(s -> s.scalerFor(context.getTargetContextType())).findFirst().orElse(null);
+        if (context.shouldScaleToUnit()) {
+            return new UnitScalingHandler();
+        } else if (context.canScaleForTagSpecific() ) {
+            return scalerList.stream().filter(s -> s.scalerFor(context.getTargetContextType(),true)).findFirst().orElse(null);
+        }
+        return scalerList.stream().filter(s -> s.scalerFor(context.getTargetContextType(),false)).findFirst().orElse(null);
     }
 
 

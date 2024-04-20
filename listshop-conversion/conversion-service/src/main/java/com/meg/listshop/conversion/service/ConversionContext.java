@@ -18,6 +18,8 @@ public class ConversionContext {
     ConversionSpec targetSpec;
 
     List<ConversionFactor> unitFactors = new ArrayList<>();
+    List<ConversionFactor> destinationFactors = new ArrayList<>();
+    private double gramWeight;
 
 
     public ConversionContext(ConvertibleAmount amount, ConversionSpec conversionSpec) {
@@ -86,7 +88,25 @@ public class ConversionContext {
                     .filter(f -> f.getFromUnit().getType().equals(UnitType.UNIT) ||
                             f.getToUnit().getType().equals(UnitType.UNIT))
                     .collect(Collectors.toList());
+            if (targetSpec.getContextType() != null) {
+                this.destinationFactors = pullFactorsByTargetType(targetSpec.getContextType(), factors);
+            }
         }
+    }
+
+    private List<ConversionFactor> pullFactorsByTargetType(ConversionTargetType contextType,List<ConversionFactor> factors ) {
+            if (contextType == ConversionTargetType.List) {
+                return factors.stream()
+                        .filter(f -> f.getFromUnit().isListUnit())
+                        .filter(f -> f.getFromUnit().isAvailableForDomain(targetSpec.getUnitType()))
+                        .collect(Collectors.toList());
+            } else if (contextType == ConversionTargetType.Dish) {
+                return factors.stream()
+                        .filter(f -> f.getFromUnit().isDishUnit())
+                        .filter(f -> f.getFromUnit().isAvailableForDomain(targetSpec.getUnitType()))
+                        .collect(Collectors.toList());
+            }
+        return null;
     }
 
     public Long getConversionId() {
@@ -103,5 +123,21 @@ public class ConversionContext {
                 && !unitFactors.isEmpty()
                 && targetSpec.getContextType() != null
         && targetSpec.getContextType().equals(ConversionTargetType.List);
+    }
+
+    public boolean canScaleForTagSpecific() {
+        return this.destinationFactors != null && !this.destinationFactors.isEmpty();
+    }
+
+    public List<ConversionFactor> getTagSpecificFactors() {
+        return this.destinationFactors;
+    }
+
+    public double getGramWeight() {
+        return this.gramWeight;
+    }
+
+    public void setGramWeight(double gramWeight) {
+        this.gramWeight = gramWeight;
     }
 }

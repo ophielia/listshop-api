@@ -36,10 +36,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
     protected AbstractConversionHandler() {
 
     }
-    public boolean handlesDomain(ConversionSpec sourceSpec, ConversionSpec targetSpec) {
-        return (source.equals(sourceSpec) && target.equals(targetSpec)) ||
-                (target.equals(sourceSpec) && source.equals(targetSpec));
-    }
+
     public boolean handles(ConversionSpec sourceSpec, ConversionSpec targetSpec) {
         return (source.equals(sourceSpec) && target.equals(targetSpec)) ||
                 (target.equals(sourceSpec) && source.equals(targetSpec));
