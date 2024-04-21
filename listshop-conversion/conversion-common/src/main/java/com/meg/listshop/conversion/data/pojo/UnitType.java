@@ -4,6 +4,7 @@ public enum UnitType {
     US,
     METRIC,
     SPECIAL,
+    UK,
     HYBRID,
     UNIT
 }

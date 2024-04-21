@@ -518,7 +518,7 @@ public class ConversionTest {
         bigAmount = new SimpleAmount(16.0, slice, tomatoConversionId, false, null );
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
-        assertEquals(6.97, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(6.968, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(unitId, converted.getUnit().getId());
     }
 

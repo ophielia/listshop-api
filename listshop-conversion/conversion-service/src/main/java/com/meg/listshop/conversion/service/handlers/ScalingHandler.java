@@ -7,7 +7,7 @@ import com.meg.listshop.conversion.service.ConvertibleAmount;
 
 public interface ScalingHandler extends ConversionHandler {
 
-    boolean scalerFor(ConversionTargetType listOrDish, boolean hasTagSpecific);
+    boolean scalerFor(ConversionContext context);
 
     ConvertibleAmount scale(ConvertibleAmount amount, ConversionContext context) throws ConversionFactorException;
 

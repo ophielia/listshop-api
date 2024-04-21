@@ -73,7 +73,7 @@ public class ConverterServiceImpl implements ConverterService {
         ConversionSpec source = createConversionSpec(amount.getUnit());
         ConversionSpec target = createConversionSpec(targetUnit);
 
-        if (checkTargetEqualsSource(source, target)) {
+        if (checkTargetEqualsSource(source, target) && amount.getUnit().getId().equals(targetUnit.getId())) {
             LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
             return amount;
         }
@@ -147,15 +147,13 @@ public class ConverterServiceImpl implements ConverterService {
 
 
     private ScalingHandler getScalerForContext(ConversionContext context) {
-        if (context.getTargetContextType() == null) {
+        if (context.getTargetContextType() == null && context.getTargetUnitId() == null) {
             return null;
         }
         if (context.shouldScaleToUnit()) {
             return new UnitScalingHandler();
-        } else if (context.canScaleForTagSpecific() ) {
-            return scalerList.stream().filter(s -> s.scalerFor(context.getTargetContextType(),true)).findFirst().orElse(null);
         }
-        return scalerList.stream().filter(s -> s.scalerFor(context.getTargetContextType(),false)).findFirst().orElse(null);
+        return scalerList.stream().filter(s -> s.scalerFor(context)).findFirst().orElse(null);
     }
 
 

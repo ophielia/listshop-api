@@ -524,7 +524,8 @@ class LayoutServiceImplMockTest {
         Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(null);
         Mockito.when(listLayoutRepository.save(layoutCaptor.capture())).thenReturn(newDefault);
         Mockito.when(listLayoutRepository.getTagsToDeleteFromLayout(anyLong(), anySet())).thenReturn(new ArrayList<>());
-        Mockito.when(categoryRepositoryRepository.findById(categoryTemplateId)).thenReturn(null);
+
+        Mockito.when(categoryRepositoryRepository.findById(categoryTemplateId)).thenReturn(Optional.ofNullable(null));
         Mockito.when(categoryRepositoryRepository.findByNameInLayout(categoryTemplateName, layoutId)).thenReturn(null);
         Mockito.when(categoryRepositoryRepository.save(categoryCaptor.capture())).thenReturn(newCategory);
         Mockito.when(tagRepository.getTagsForIdList(tagIdSet)).thenReturn(tagEntities);
