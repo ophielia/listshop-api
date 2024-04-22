@@ -162,7 +162,7 @@ insert into factors (factor_id, from_unit, to_unit, factor) select 102, f.unit_i
 select * from factors where from_unit in (1025,1028) or to_unit in (1025,1028) ;
 
 select * from factors where
-(from_unit = 1028 and to_unit = 1025) or
-(to_unit = 1025 and from_unit = 1028);
+(from_unit = 1003 and to_unit = 1024) or
+(to_unit = 1024 and from_unit = 1003);
 
 select * from units where unit_id = 1024
