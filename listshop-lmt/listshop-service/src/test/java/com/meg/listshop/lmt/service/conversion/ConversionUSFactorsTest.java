@@ -164,5 +164,112 @@ public class ConversionUSFactorsTest {
         assertEquals(lbId, converted.getUnit().getId());
     }
 
+    @Test
+    public void unitUSVolumeScaling() throws ConversionPathException, ConversionFactorException {
+        UnitEntity flTspOpt = unitRepository.findById(flTeaspoonId).orElse(null);
+        UnitEntity flTbOpt = unitRepository.findById(flTablespoonId).orElse(null);
+
+        ConversionRequest dishConversionContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+
+        // teaspoon to centiliter  12 US teaspoon => 2 fl oz
+        ConvertibleAmount amount = new SimpleAmount(12, flTspOpt);
+        ConvertibleAmount converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(2.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(flOzId, converted.getUnit().getId());
+
+        // teaspoon to liter  121 teaspoons => 1.26 pints
+        amount = new SimpleAmount(121, flTspOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(1.26, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(pintId, converted.getUnit().getId());
+
+        // teaspoon to centiliter 14.787 Centiliter = 30.0 US teaspoon
+        amount = new SimpleAmount(30.0, flTspOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(0.625, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(cupsId, converted.getUnit().getId());
+
+        // tablespoon to liter   0.6 Liter = 40.5768272 US tablespoon
+        amount = new SimpleAmount(40.577, flTbOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(1.268, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(pintId, converted.getUnit().getId());
+
+        // tablespoon to centiliter  3 Centiliter = 2 US tablespoon
+        amount = new SimpleAmount(10.0, flTbOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(0.625, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(cupsId, converted.getUnit().getId());
+
+        //  24 teaspoons = 0.5 cup
+        amount = new SimpleAmount(24.0, flTspOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(0.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(cupsId, converted.getUnit().getId());
+
+        // 6 teaspoons = 1 ounce
+        amount = new SimpleAmount(18.0, flTspOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(3.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(flOzId, converted.getUnit().getId());
+
+        // 16 tablespoons = 1 cup
+        amount = new SimpleAmount(16.0, flTbOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(1.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(cupsId, converted.getUnit().getId());
+
+        // 48 tablespoons = 0.75 quart
+        amount = new SimpleAmount(48, flTbOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(0.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(quartId, converted.getUnit().getId());
+
+
+        // 256 tablespoons = 1 gallon
+        amount = new SimpleAmount(256, flTbOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(gallonId, converted.getUnit().getId());
+
+        // 24 T = 0.75 pint
+        amount = new SimpleAmount(24, flTbOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(0.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(pintId, converted.getUnit().getId());
+
+        // 4 tablespoons = 2 oz
+        amount = new SimpleAmount(4, flTbOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(2, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(flOzId, converted.getUnit().getId());
+
+        //  576 teaspoons = 0.75 gallon
+        amount = new SimpleAmount(576, flTspOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(0.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(gallonId, converted.getUnit().getId());
+
+        // 96 teaspoons = 1 pint
+        amount = new SimpleAmount(96, flTspOpt);
+        converted = converterService.convert(amount, dishConversionContext);
+        assertNotNull(converted);
+        assertEquals(1.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(pintId, converted.getUnit().getId());
+
+    }
 
 }

@@ -76,15 +76,16 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         }
 
         List<ConversionFactor> factors = new ArrayList<>();
+        boolean isOneWayConversion = toConvert.getUnit().isOneWayConversion();
         if (context.convertsToSpecificUnit(toConvert)) {
-            ConversionFactor exact = conversionSource.getFactor(toConvert.getUnit().getId(), context.getTargetUnitId());
+            ConversionFactor exact = conversionSource.getFactor(toConvert.getUnit().getId(), context.getTargetUnitId(), isOneWayConversion);
             if (exact != null) {
                 LOG.trace("...exact match found for unitId: [{}], found [{}].", context.getTargetUnitId(), exact.getToUnit().getId());
                 factors.add(exact);
             }
         }
         if (factors.isEmpty()) {
-            factors.addAll(conversionSource.getFactors( toConvert, context.getConversionId() ));
+            factors.addAll(conversionSource.getFactors( toConvert, context.getConversionId(), isOneWayConversion ));
         }
 
         if (factors.isEmpty()) {

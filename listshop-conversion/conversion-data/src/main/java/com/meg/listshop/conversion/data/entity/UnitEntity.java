@@ -44,6 +44,9 @@ public class UnitEntity {
     @Column(name = "EXCLUDED_DOMAINS")
     private String excludedDomainList;
 
+    @Column(name = "ONE_WAY_CONVERSION")
+    private Boolean oneWayConversion;
+
     public Long getId() {
         return id;
     }
@@ -133,6 +136,14 @@ public class UnitEntity {
         this.excludedDomainList = excludedDomainList;
     }
 
+    public Boolean getOneWayConversion() {
+        return oneWayConversion;
+    }
+
+    public void setOneWayConversion(Boolean oneWayConversion) {
+        this.oneWayConversion = oneWayConversion;
+    }
+
     public boolean isAvailableForDomain(UnitType domain) {
         if (excludedDomainList == null || excludedDomainList.isEmpty()) {
             return true;
@@ -140,6 +151,12 @@ public class UnitEntity {
         return excludedDomainList.contains(domain.toString());
     }
 
+    public boolean isOneWayConversion() {
+        if (oneWayConversion == null) {
+            return false;
+        }
+        return oneWayConversion;
+    }
     @Override
     public String toString() {
         return "UnitEntity{" +

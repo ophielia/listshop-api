@@ -58,7 +58,7 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
 
 
     @Override
-    public List<ConversionFactor> getFactors(ConvertibleAmount convertibleAmount, Long conversionId) {
+    public List<ConversionFactor> getFactors(ConvertibleAmount convertibleAmount, Long conversionId, boolean isOneWay) {
         Long unitId = convertibleAmount.getUnit().getId();
         LOG.trace("... getting factors from db for conversionId: [{}], unitId [{}]", conversionId, unitId);
 
@@ -76,7 +76,7 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         // needs work - this isn't working now inverted would be unitid (grams) = to unit
         // - and they all have grams as the to unit
         boolean isInverted = metricInflationFactors.stream().anyMatch(f -> f.getFromUnit().getId().equals(unitId));
-        if (isInverted) {
+        if (isInverted && !isOneWay) {
             tagFactors = reverseTagFactors(tagFactors);
         }
 

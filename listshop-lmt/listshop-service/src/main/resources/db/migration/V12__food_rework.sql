@@ -18,6 +18,7 @@ alter table factors add column marker varchar(256);
 
 alter table units add column is_tag_specific bool default false;
 alter table units add column excluded_domains varchar(256);
+alter table units add column one_way_conversion bool default false;
 
 
 

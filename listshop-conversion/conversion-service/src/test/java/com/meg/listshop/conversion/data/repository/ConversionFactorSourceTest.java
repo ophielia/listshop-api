@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.*;
         UnitEntity unit = new UnitEntity();
         unit.setId(1L);
         ConvertibleAmount amount = new SimpleAmount(1.0, unit,null,false, null);
-        List<ConversionFactor> resultList = sourceToTest.getFactors(amount, null );
+        List<ConversionFactor> resultList = sourceToTest.getFactors(amount, null , false);
         assertEquals(2, resultList.size(), "two factors should be returned");
         assertEquals(1.4,resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)
@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
         unit.setId(4L);
         amount = new SimpleAmount(1.0, unit,null,false, null);
-        resultList = sourceToTest.getFactors(amount, null );
+        resultList = sourceToTest.getFactors(amount, null , false);
         assertEquals(2, resultList.size(), "two factors should be returned");
         double sum = resultList.stream()
                 .mapToDouble(ConversionFactor::getFactor)

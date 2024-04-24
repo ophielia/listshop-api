@@ -12,9 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.meg.listshop.conversion.data.repository.UnitSpecifications.matchingFromWithSpec;
@@ -22,22 +20,21 @@ import static com.meg.listshop.conversion.data.repository.UnitSpecifications.mat
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Component
-public class USHybridHandler extends AbstractChainConversionHandler  {
-    private static final Logger LOG = LoggerFactory.getLogger(USHybridHandler.class);
+public class UKHybridHandler extends AbstractChainConversionHandler  {
+    private static final Logger LOG = LoggerFactory.getLogger(UKHybridHandler.class);
 
 
     @Autowired
-    public USHybridHandler(ConversionFactorRepository factorRepository) {
+    public UKHybridHandler(ConversionFactorRepository factorRepository) {
         super();
-        LOG.info("initializing USToHybridHandler");
+        LOG.info("initializing UKHybridHandler");
         // make source from unit
         ConversionSpec source = ConversionSpec.basicSpec(UnitType.HYBRID,null);
         // make target
-        ConversionSpec target = ConversionSpec.basicSpec(UnitType.US, null);
+        ConversionSpec target = ConversionSpec.basicSpec(UnitType.UK, null);
 
         // initialize conversionSource
-        Set<ConversionFactorEntity> factors = new HashSet<>(factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target)))));
-        factors.addAll(factorRepository.findAll(where(matchingFromWithSpec(target).and(matchingToWithSpec(source)))));
+        List<ConversionFactorEntity> factors = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));
         ConversionFactorSource conversionSource = new SimpleConversionFactorSource(factors.stream().map(f -> (ConversionFactor) f).collect(Collectors.toList()));
 
         // initialize in abstract

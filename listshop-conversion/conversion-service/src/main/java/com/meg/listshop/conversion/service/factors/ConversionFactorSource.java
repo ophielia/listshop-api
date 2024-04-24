@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface ConversionFactorSource {
 
-    List<ConversionFactor> getFactors(ConvertibleAmount convertibleAmount, Long conversionId);
+
+    List<ConversionFactor> getFactors(ConvertibleAmount convertibleAmount, Long conversionId, boolean isOneWayConversion);
 
     ConversionFactor getFactor(Long fromUnitId, Long toUnitId);
+
+    ConversionFactor getFactor(Long fromUnitId, Long toUnitId, boolean isOneWayConversion);
 }

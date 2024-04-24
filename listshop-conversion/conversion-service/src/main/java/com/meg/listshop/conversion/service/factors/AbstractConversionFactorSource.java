@@ -25,16 +25,16 @@ public abstract class AbstractConversionFactorSource implements ConversionFactor
         this.oneWay = oneWay;
     }
 
-    @Override
-    public List<ConversionFactor> getFactors(ConvertibleAmount convertibleAmount, Long conversionId) {
+    public List<ConversionFactor> getFactors(ConvertibleAmount convertibleAmount, Long conversionId, boolean isOneWayConversion) {
+        boolean einbahnStrasse = oneWay || isOneWayConversion;
         Long unitId = convertibleAmount.getUnit().getId();
-        LOG.trace("... getting factors for unitId: [{}], oneWay: [{}]", unitId, oneWay);
+        LOG.trace("... getting factors for unitId: [{}], oneWay: [{}]", unitId, einbahnStrasse);
         List<ConversionFactor> results = new ArrayList<>();
         // go through factors
         for (ConversionFactor factor : factors) {
             if (factor.getFromUnit().getId().equals(unitId)) {
                 results.add(factor);
-            } else if (!oneWay && factor.getToUnit().getId().equals(unitId)) {
+            } else if (!einbahnStrasse && factor.getToUnit().getId().equals(unitId)) {
                 results.add(SimpleConversionFactor.reverseFactor(factor));
             }
         }
@@ -43,8 +43,13 @@ public abstract class AbstractConversionFactorSource implements ConversionFactor
 
     @Override
     public ConversionFactor getFactor(Long fromUnitId, Long toUnitId) {
+        return getFactor(fromUnitId, toUnitId, false);
+    }
+
+    @Override
+    public ConversionFactor getFactor(Long fromUnitId, Long toUnitId, boolean isOneWayConversion) {
         ConversionFactor factor = factors.stream()
-                .filter(f -> isExactMatch(f, fromUnitId, toUnitId))
+                .filter(f -> isExactMatch(f, fromUnitId, toUnitId, isOneWayConversion ))
                 .findAny().orElse(null);
         if (factor == null) {
             return null;
@@ -55,11 +60,12 @@ public abstract class AbstractConversionFactorSource implements ConversionFactor
         return factor;
     }
 
-    private boolean isExactMatch(ConversionFactor factor, Long fromUnitId, Long toUnitId) {
+    private boolean isExactMatch(ConversionFactor factor, Long fromUnitId, Long toUnitId, boolean isOneWayConversion) {
         return (factor.getFromUnit().getId().equals(fromUnitId) &&
                 factor.getToUnit().getId().equals(toUnitId)) ||
+                ( !isOneWayConversion &&
                 (factor.getFromUnit().getId().equals(toUnitId) &&
-                        factor.getToUnit().getId().equals(fromUnitId));
+                        factor.getToUnit().getId().equals(fromUnitId)));
     }
 
 
