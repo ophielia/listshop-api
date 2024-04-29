@@ -82,11 +82,12 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
             if (exact != null) {
                 LOG.trace("...exact match found for unitId: [{}], found [{}].", context.getTargetUnitId(), exact.getToUnit().getId());
                 factors.add(exact);
+                return factors;
             }
         }
-        if (factors.isEmpty()) {
+
             factors.addAll(conversionSource.getFactors( toConvert, context.getConversionId(), isOneWayConversion ));
-        }
+
 
         if (factors.isEmpty()) {
             String message = String.format("No factors found in handler %s.", this.getClass().getName());

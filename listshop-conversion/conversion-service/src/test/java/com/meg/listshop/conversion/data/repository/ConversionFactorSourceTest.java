@@ -63,11 +63,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void testGetFactor() {
-        ConversionFactor result = sourceToTest.getFactor(1L, 2L);
+        ConversionFactor result = sourceToTest.getFactor(1L, 2L, false);
         assertNotNull(result, "factor should be found");
         assertEquals(0.5, result.getFactor(), "factor should be 0.5");
 
-        result = sourceToTest.getFactor(4L, 3L);
+        result = sourceToTest.getFactor(4L, 3L, false);
         assertNotNull(result, "factor should be found");
         assertEquals(4, result.getFactor(), "factor should be 4");
     }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class TagSpecificDishScalingHandler extends DishScalingHandler {
@@ -42,11 +43,12 @@ public class TagSpecificDishScalingHandler extends DishScalingHandler {
         double gramPerUnitFactor = gramWeight / Math.max(amountToScale, 0.0001);
 
         List<ConversionFactor> tagFactorsToAdd = new ArrayList<>();
-        for (ConversionFactor factor : tagFactors) {
-            // new factor gramPerUnitFactor * gramWeight * factor.factor
-            double newFactor = gramPerUnitFactor * gramWeight * factor.getFactor();
-            tagFactorsToAdd.add(SimpleConversionFactor.conversionFactor(unitToScale, factor.getToUnit(), newFactor));
-        }
+        tagFactors.stream()
+                .filter(f -> !Objects.equals(f.getFromUnit().getId(), f.getToUnit().getId()))
+                .forEach(f -> {
+                    double newFactor = gramPerUnitFactor / f.getFactor();
+                    tagFactorsToAdd.add(SimpleConversionFactor.conversionFactor(unitToScale, f.getFromUnit(), newFactor));
+                });
 
         if (!tagFactorsToAdd.isEmpty()) {
             factors.addAll(tagFactorsToAdd);

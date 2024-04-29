@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -54,9 +55,17 @@ public class TagSpecificHandler extends AbstractConversionHandler {
             return null;
         }
 
-        List<ConversionFactor> factors = conversionSource.getAllPossibleFactors(toConvert, context.getConversionId());
-        context.conversionFactorsFound(factors);
-        return conversionSource.selectFactorsForConversion(toConvert, factors);
+        List<ConversionFactor> scalingFactors = conversionSource.getScalingFactors(toConvert, context);
+        List<ConversionFactor> conversionFactors = pullConversionFactors(scalingFactors,  toConvert);
+        context.conversionFactorsFound(scalingFactors);
+        return conversionFactors;
+
+    }
+
+    private List<ConversionFactor> pullConversionFactors(List<ConversionFactor> scalingFactors, ConvertibleAmount toConvert) {
+        return scalingFactors.stream()
+                .filter(f -> f.getFromUnit().getId().equals(toConvert.getUnit().getId()))
+                .collect(Collectors.toList());
 
     }
 

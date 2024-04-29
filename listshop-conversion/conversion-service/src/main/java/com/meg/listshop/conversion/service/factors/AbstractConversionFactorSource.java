@@ -42,11 +42,6 @@ public abstract class AbstractConversionFactorSource implements ConversionFactor
     }
 
     @Override
-    public ConversionFactor getFactor(Long fromUnitId, Long toUnitId) {
-        return getFactor(fromUnitId, toUnitId, false);
-    }
-
-    @Override
     public ConversionFactor getFactor(Long fromUnitId, Long toUnitId, boolean isOneWayConversion) {
         ConversionFactor factor = factors.stream()
                 .filter(f -> isExactMatch(f, fromUnitId, toUnitId, isOneWayConversion ))

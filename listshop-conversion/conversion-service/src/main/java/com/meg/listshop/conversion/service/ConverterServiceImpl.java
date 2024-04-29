@@ -147,9 +147,6 @@ public class ConverterServiceImpl implements ConverterService {
 
 
     private ScalingHandler getScalerForContext(ConversionContext context) {
-        if (context.getTargetContextType() == null && context.getTargetUnitId() == null) {
-            return null;
-        }
         if (context.shouldScaleToUnit()) {
             return new UnitScalingHandler();
         }

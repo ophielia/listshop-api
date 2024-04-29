@@ -2,7 +2,7 @@
 delete from factors;
 delete from units;
 
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1000, 'cup', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE,'', FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1000, 'cup', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE,'METRIC', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1001, 'tablespoon', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1002, 'teaspoon', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1003, 'liter', 'METRIC', 'VOLUME',TRUE, TRUE,TRUE,FALSE,'', FALSE);
@@ -19,8 +19,8 @@ insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1015, 'centiliter', 'METRIC', 'VOLUME',FALSE, TRUE,TRUE,FALSE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1016, 'milligram', 'METRIC', 'WEIGHT',TRUE, TRUE,FALSE,FALSE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1017, 'cup (fluid)', 'US', 'VOLUME',FALSE, TRUE,TRUE,FALSE,'', FALSE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1019, 'teaspoon (fluid)', 'HYBRID', 'LIQUID',FALSE, TRUE,TRUE,FALSE,'', FALSE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1021, 'tablespoon (fluid)', 'HYBRID', 'LIQUID',FALSE, TRUE,TRUE,FALSE,'', FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1019, 'teaspoon (fluid)', 'US', 'LIQUID',FALSE, TRUE,TRUE,FALSE,'', FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1021, 'tablespoon (fluid)', 'US', 'LIQUID',FALSE, TRUE,TRUE,FALSE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1022, 'slice', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1023, 'stick', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1024, 'gallon (UK)', 'UK', 'VOLUME',TRUE, TRUE,TRUE,FALSE,'', FALSE);

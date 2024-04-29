@@ -148,7 +148,7 @@ public class UnitEntity {
         if (excludedDomainList == null || excludedDomainList.isEmpty()) {
             return true;
         }
-        return excludedDomainList.contains(domain.toString());
+        return !excludedDomainList.contains(domain.toString());
     }
 
     public boolean isOneWayConversion() {

@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 public class ConversionContext {
 
     Long conversionId;
-    String marker;
     ConversionSpec targetSpec;
 
     List<ConversionFactor> unitFactors = new ArrayList<>();
@@ -28,6 +27,9 @@ public class ConversionContext {
     }
 
     public boolean requiresAndCanDoTagSpecificConversion(ConvertibleAmount amount) {
+        if (amount.getConversionId() != null && amount.getUnit().getType() != targetSpec.getUnitType()) {
+            return true;
+        }
         Set<UnitSubtype> subtypes = new HashSet<>();
         subtypes.add(amount.getUnit().getSubtype());
         subtypes.add(targetSpec.getUnitSubtype());
@@ -41,10 +43,9 @@ public class ConversionContext {
     }
 
     public boolean requiresDomainConversion(ConvertibleAmount amount) {
-        if (unitFactors == null || targetSpec.getContextType() == null ) {
-            return !amount.getUnit().getType().equals(targetSpec.getUnitType());
-        }
-        if (!unitFactors.isEmpty() && targetSpec.getContextType().equals(ConversionTargetType.List)) {
+        if (unitFactors!= null &&
+                !unitFactors.isEmpty() &&
+                ConversionTargetType.List.equals(targetSpec.getContextType())) {
             return false;
         }
         return !amount.getUnit().getType().equals(targetSpec.getUnitType());
@@ -89,12 +90,12 @@ public class ConversionContext {
                             f.getToUnit().getType().equals(UnitType.UNIT))
                     .collect(Collectors.toList());
             if (targetSpec.getContextType() != null) {
-                this.destinationFactors = pullFactorsByTargetType(targetSpec.getContextType(), factors);
+                this.destinationFactors = pullScalingFactorsByTargetType(targetSpec.getContextType(), factors);
             }
         }
     }
 
-    private List<ConversionFactor> pullFactorsByTargetType(ConversionTargetType contextType,List<ConversionFactor> factors ) {
+    private List<ConversionFactor> pullScalingFactorsByTargetType(ConversionTargetType contextType, List<ConversionFactor> factors ) {
             if (contextType == ConversionTargetType.List) {
                 return factors.stream()
                         .filter(f -> f.getFromUnit().isListUnit())

@@ -25,6 +25,5 @@ values  (95915, 95915, 224, 1000, 1013),
 insert into factors (conversion_id, factor_id, factor, from_unit, to_unit, marker)
 values  (127791, 127791, 20, 1022, 1013, 'sliced'),
         (127791, 1277912, 149, 1000, 1013, null),
-        (127791, 1277913, 27, 1022, 1013, 'sliced'),
         (127791, 1277914, 180, 1000, 1013, 'chopped'),
         (127791, 1277915, 62, 1011, 1013, null);
