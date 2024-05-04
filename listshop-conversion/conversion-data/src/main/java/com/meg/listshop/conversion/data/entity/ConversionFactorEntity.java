@@ -43,6 +43,12 @@ public class ConversionFactorEntity implements ConversionFactor {
 
     private String marker;
 
+    @Column(name = "unit_size")
+    private String unitSize;
+
+    @Column(name = "unit_default")
+    private Boolean unitDefault;
+
     public ConversionFactorEntity() {
         // empty constructor for jpa
     }
@@ -103,6 +109,22 @@ public class ConversionFactorEntity implements ConversionFactor {
         this.marker = marker;
     }
 
+    public String getUnitSize() {
+        return unitSize;
+    }
+
+    public void setUnitSize(String unitSize) {
+        this.unitSize = unitSize;
+    }
+
+    public Boolean getUnitDefault() {
+        return unitDefault;
+    }
+
+    public void setUnitDefault(Boolean unitDefault) {
+        this.unitDefault = unitDefault;
+    }
+
     @Override
     public String toString() {
         return "ConversionFactorEntity{" +
@@ -112,7 +134,9 @@ public class ConversionFactorEntity implements ConversionFactor {
                 ", fromUnit=" + fromUnit +
                 ", conversionId=" + conversionId +
                 ", referenceId=" + referenceId +
-                ", marker=" + marker +
+                ", marker='" + marker + '\'' +
+                ", unitSize='" + unitSize + '\'' +
+                ", unitDefault=" + unitDefault +
                 '}';
     }
 }

@@ -38,6 +38,12 @@ public class FoodConversionEntity implements FoodFactor {
     @Column(name = "unit_id")
     private Long unitId;
 
+    @Column(name = "unit_size")
+    private String unitSize;
+
+    @Column(name = "unit_default")
+    private Boolean unitDefault;
+
     public FoodConversionEntity() {
     }
 
@@ -118,6 +124,26 @@ public class FoodConversionEntity implements FoodFactor {
         this.unitId = unitId;
     }
 
+    public Long getUnitId() {
+        return unitId;
+    }
+
+    public String getUnitSize() {
+        return unitSize;
+    }
+
+    public void setUnitSize(String unitSize) {
+        this.unitSize = unitSize;
+    }
+
+    public Boolean getUnitDefault() {
+        return unitDefault;
+    }
+
+    public void setUnitDefault(Boolean unitDefault) {
+        this.unitDefault = unitDefault;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -143,6 +169,8 @@ public class FoodConversionEntity implements FoodFactor {
                 ", unitName='" + unitName + '\'' +
                 ", gramWeight=" + gramWeight +
                 ", unitId=" + unitId +
+                ", unitSize='" + unitSize + '\'' +
+                ", unitDefault=" + unitDefault +
                 '}';
     }
 }
