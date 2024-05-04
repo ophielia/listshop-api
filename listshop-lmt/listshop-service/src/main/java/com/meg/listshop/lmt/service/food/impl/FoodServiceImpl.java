@@ -147,12 +147,12 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     public void fillFoodInformation(AdminTagFullInfo tagInfo) {
-        if (tagInfo == null || tagInfo.getFoodId() == null) {
+        if (tagInfo == null || tagInfo.getConversionId() == null) {
             return;
         }
-        String stringFoodId = tagInfo.getFoodId();
-        Long foodId = Long.valueOf(stringFoodId);
-        FoodEntity food = getFoodById(foodId);
+        String stringConversionId = tagInfo.getConversionId();
+        Long foodId = Long.valueOf(stringConversionId);
+        FoodEntity food = getFoodByConversionId(foodId);
         if (food != null) {
             tagInfo.setFoodName(food.getName());
         }
@@ -260,12 +260,11 @@ public class FoodServiceImpl implements FoodService {
         tag.setInternalStatus(TagInternalStatus.CATEGORY_ASSIGNED);
     }
 
-
-    private FoodEntity getFoodById(Long foodId) {
-        if (foodId == null) {
+    private FoodEntity getFoodByConversionId(Long conversionId) {
+        if (conversionId == null) {
             return null;
         }
-        return foodRepository.findById(foodId).orElse(null);
+        return foodRepository.findDistinctFirstByConversionId(conversionId).orElse(null);
     }
 
     private FoodCategoryMappingEntity findCategoryInHierarchy(Long tagId, Map<Long, TagInfoDTO> tagsToParents, Map<Long, FoodCategoryMappingEntity> mappingLookup) {

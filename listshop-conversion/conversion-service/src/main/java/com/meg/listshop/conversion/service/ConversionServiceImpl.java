@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,9 @@ public class ConversionServiceImpl implements ConversionService {
 
     @Value("${conversionservice.gram.unit.id:1013}")
     private Long GRAM_UNIT_ID;
+
+    @Value("${conversionservice.single.unit.id:1011}")
+    private Long SINGLE_UNIT_ID;
 
     @Autowired
     public ConversionServiceImpl(ConversionFactorRepository conversionFactorRepository,
@@ -48,7 +52,7 @@ public class ConversionServiceImpl implements ConversionService {
         // get gram unit
         UnitEntity gramUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
 
-        Map<Long,ConversionFactorEntity> existing = conversionFactorRepository.findAllByConversionIdIs(conversionId).stream()
+        Map<Long, ConversionFactorEntity> existing = conversionFactorRepository.findAllByConversionIdIs(conversionId).stream()
                 .collect(Collectors.toMap(ConversionFactorEntity::getReferenceId, Function.identity()));
         List<FoodFactor> filteredFactors = foodFactors.stream()
                 .filter(f -> !existing.containsKey(f.getReferenceId()))
@@ -70,40 +74,97 @@ public class ConversionServiceImpl implements ConversionService {
             toAdd.setMarker(foodFactor.getMarker());
             conversionFactorRepository.save(toAdd);
 
-    }
+        }
 
 
     }
 
     @Override
     public List<ConversionSampleDTO> conversionSamplesForId(Long conversionId, Boolean isLiquid) {
-        //MM work to do here, after conversion changes
         List<ConversionSampleDTO> result = new ArrayList<>();
         if (conversionId == null || (isLiquid != null && isLiquid)) {
             return result;
         }
 
-        // find hybrid units
-        List<UnitEntity> hybridUnits = unitRepository.findUnitEntitiesByTypeAndSubtypeIsNot(UnitType.HYBRID, UnitSubtype.LIQUID);
+        // get conversion factors
+        List<ConversionFactorEntity> factors = conversionFactorRepository.findAllByConversionIdIs(conversionId);
 
-        UnitEntity gramUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
-        // convert each hybrid unit, and add to result
-        for (UnitEntity unit : hybridUnits) {
+        // get target unit - grams or unit
+        UnitEntity targetUnit = determineSampleTarget(factors);
+
+        // get units to convert to do conversion for
+        List<UnitEntity> unitsToConvert = determineUnitsToConvert(factors);
+
+        // get markers in factors
+        List<String> markers = pullAvailableMarkers(factors);
+
+        // do conversions
+        for (UnitEntity unit : unitsToConvert) {
             SimpleAmount from = new SimpleAmount(1.0, unit, conversionId, isLiquid, null);
 
             ConvertibleAmount to = null;
             try {
-                to = converterService.convert(from, gramUnit);
+                to = converterService.convert(from, targetUnit);
                 // rounded "to amount"
-                SimpleAmount roundedTo = new SimpleAmount(RoundingUtils.roundToHundredths(to.getQuantity()),to.getUnit());
-                result.add(new ConversionSampleDTO(from, roundedTo));
+                SimpleAmount roundedTo = new SimpleAmount(RoundingUtils.roundToHundredths(to.getQuantity()), to.getUnit());
+                if (roundedTo.getUnit().equals(targetUnit)) {
+                    result.add(new ConversionSampleDTO(from, roundedTo));
+                }
             } catch (ConversionPathException | ConversionFactorException g) {
-                LOG.error("Exception [{}] thrown during conversion, but continuing to next conversion.",g.getClass(), g);
+                LOG.error("Exception [{}] thrown during conversion, but continuing to next conversion.", g.getClass(), g);
             }
 
         }
+        // add conversions for markers
+        for (String marker : markers) {
+            for (UnitEntity unit : unitsToConvert) {
+                SimpleAmount from = new SimpleAmount(1.0, unit, conversionId, isLiquid, marker);
+
+                ConvertibleAmount to = null;
+                try {
+                    to = converterService.convert(from, targetUnit);
+                    // rounded "to amount"
+                    SimpleAmount roundedTo = new SimpleAmount(RoundingUtils.roundToHundredths(to.getQuantity()), to.getUnit());
+                    result.add(new ConversionSampleDTO(from, roundedTo));
+                } catch (ConversionPathException | ConversionFactorException g) {
+                    LOG.error("Exception [{}] thrown during conversion, but continuing to next conversion.", g.getClass(), g);
+                }
+
+            }
+        }
+
         // return results
         return result;
+    }
+
+    private List<String> pullAvailableMarkers(List<ConversionFactorEntity> factors) {
+        Set<String> markers = factors.stream()
+                .map(ConversionFactorEntity::getMarker)
+                .collect(Collectors.toSet());
+        return new ArrayList<>(markers);
+    }
+
+    private List<UnitEntity> determineUnitsToConvert(List<ConversionFactorEntity> factors) {
+        // find hybrid units
+        List<UnitEntity> hybridUnits = unitRepository.findGenericWeightHybrids(UnitType.HYBRID, UnitSubtype.LIQUID);
+        List<UnitEntity> additionalUnits = factors.stream()
+                .filter(f -> f.getFromUnit().isTagSpecific())
+                .map(ConversionFactorEntity::getFromUnit)
+                .collect(Collectors.toList());
+        if (!additionalUnits.isEmpty()) {
+            hybridUnits.addAll(additionalUnits);
+        }
+        return hybridUnits;
+    }
+
+    private UnitEntity determineSampleTarget(List<ConversionFactorEntity> factors) {
+        ConversionFactorEntity unitFactor = factors.stream()
+                .filter(f -> f.getFromUnit().getId().equals(SINGLE_UNIT_ID))
+                .findFirst().orElse(null);
+        if (unitFactor != null) {
+            return unitFactor.getFromUnit();
+        }
+        return unitRepository.findById(GRAM_UNIT_ID).orElse(null);
     }
 
 }

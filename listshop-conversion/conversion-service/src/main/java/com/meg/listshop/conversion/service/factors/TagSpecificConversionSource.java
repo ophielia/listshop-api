@@ -75,7 +75,9 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         Long conversionId = context.getConversionId();
         Long unitId = convertibleAmount.getUnit().getId();
         List<ConversionFactor> possibleFactors = getAllPossibleFactors(convertibleAmount, conversionId);
-
+        if (possibleFactors.isEmpty()) {
+            return new ArrayList<>();
+        }
         LOG.trace("... selecting factors from list : [{}], unitId [{}]", possibleFactors, unitId);
 
 
@@ -94,11 +96,9 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
             }
             factorsByMarker.get(marker).add(f);
         }
-        List<ConversionFactor> markerFactors = factorsByMarker.get(convertibleAmount.getMarker());
-        if (markerFactors.isEmpty() && convertibleAmount.getMarker() != null && factorsByMarker.containsKey(null)) {
-            // use "non-marker" factors if marker factors not available
-            markerFactors = factorsByMarker.get(null);
-        }
+
+
+        List<ConversionFactor> markerFactors = getFactorsByMarker(factorsByMarker, convertibleAmount.getMarker());
 
         // inflate factors
         List<ConversionFactor> inflatedFactors = inflateFactors(markerFactors, context.getTargetUnitType());
@@ -126,6 +126,27 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         return scalingFactors;
     }
 
+    private List<ConversionFactor> getFactorsByMarker(Map<String, List<ConversionFactor>> factorsByMarker,String marker) {
+        List<ConversionFactor> factors = new ArrayList<>();
+        if (factorsByMarker == null || factorsByMarker.isEmpty()) {
+            return factors;
+        }
+        // do we have an exact match?
+        if (factorsByMarker.containsKey(marker)) {
+            return factorsByMarker.get(marker);
+        }
+        // no exact match - do we have any null marker factors?
+        if (factorsByMarker.containsKey(null)) {
+            return factorsByMarker.get(null);
+        }
+        // no null factors, we'll return the first marker available
+        String guessMarker = factorsByMarker.keySet().stream().findFirst().orElse(null);
+        if (guessMarker != null) {
+            return  factorsByMarker.get(guessMarker);
+        }
+        return factors;
+    }
+
 
     private ConversionFactor inflateFactorFromBase(ConversionFactor base, ConversionFactor factorToConvert) {
         // basic idea - when base factor is cups to grams
@@ -146,6 +167,9 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
     }
 
     private List<ConversionFactor> inflateFactors(List<ConversionFactor> factors, UnitType targetUnitType) {
+        if (factors == null || factors.isEmpty()) {
+            return new ArrayList<>();
+        }
         ConversionFactor baseFactor = factors.stream()
                 .filter(f -> !f.getFromUnit().isTagSpecific() && f.getFromUnit().getType().equals(UnitType.HYBRID))
                 .findFirst()

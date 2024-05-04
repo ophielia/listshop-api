@@ -45,7 +45,8 @@ public class ConversionContext {
     public boolean requiresDomainConversion(ConvertibleAmount amount) {
         if (unitFactors!= null &&
                 !unitFactors.isEmpty() &&
-                ConversionTargetType.List.equals(targetSpec.getContextType())) {
+                (ConversionTargetType.List.equals(targetSpec.getContextType()) ||
+                        targetSpec.getUnitType().equals(UnitType.UNIT))) {
             return false;
         }
         return !amount.getUnit().getType().equals(targetSpec.getUnitType());

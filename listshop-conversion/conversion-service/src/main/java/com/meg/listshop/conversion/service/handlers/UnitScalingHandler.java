@@ -50,6 +50,16 @@ public class UnitScalingHandler extends AbstractScalingHandler {
         }
         // no direct match, medium isn't there.  Just return the first one
         return Collections.singletonList(factors.get(0));
+
+        // to make the integrals right - need
+        // * fix the db
+        // * way to pass the prefered integral size in (part of ConversionRequest)
+        // * factors need to be saved with integrals
+        // * this method needs to pull preferred first, then medium...
+        // *    otherwise - all, for dynamic size change when scaling
+        // *                or first, for fewer changes, less predictability
+        // * integral returned in result
+        // * integral saved in dish item - list item
     }
 
     private List<ConversionFactor> reverseIfNecessary(List<ConversionFactor> factors) {
