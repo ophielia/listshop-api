@@ -13,4 +13,6 @@ public interface ConvertibleAmount {
     String getMarker();
 
     Boolean getIsLiquid();
+
+    String getUnitSize();
 }

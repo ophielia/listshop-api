@@ -33,33 +33,38 @@ public class UnitScalingHandler extends AbstractScalingHandler {
         if (factors.size() == 1) {
             return factors;
         }
-        // we have more than one factor. Look for marker match
-        String markerToFind = toConvert.getMarker();
-        Map<String, ConversionFactor> markerMap = new HashMap<>();
-        for (ConversionFactor factor : factors) {
-            if (markerMap.containsKey(factor.getMarker())) {
-                continue;
-            }
-            markerMap.put(factor.getMarker(), factor);
-        }
-        if (markerMap.containsKey(markerToFind)) {
-            return Collections.singletonList(markerMap.get(markerToFind));
-        }
-        if (markerMap.containsKey("medium")) {
-            return Collections.singletonList(markerMap.get("medium"));
-        }
-        // no direct match, medium isn't there.  Just return the first one
-        return Collections.singletonList(factors.get(0));
 
-        // to make the integrals right - need
-        // * fix the db
-        // * way to pass the prefered integral size in (part of ConversionRequest)
-        // * factors need to be saved with integrals
-        // * this method needs to pull preferred first, then medium...
-        // *    otherwise - all, for dynamic size change when scaling
-        // *                or first, for fewer changes, less predictability
-        // * integral returned in result
-        // * integral saved in dish item - list item
+        // get target unit size
+        String targetSize = context.getTargetUnitSize();
+
+        // return default, if targetSize is not set
+        if (targetSize == null) {
+            // return default (first, because there may be more than one)
+            return returnDefaultFactor(factors);
+
+        }
+
+        ConversionFactor targetSizeFactor = factors.stream()
+                .filter(f -> f.getUnitSize().equals(targetSize))
+                .findFirst()
+                .orElse(null);
+        if (targetSizeFactor != null) {
+            return Collections.singletonList(targetSizeFactor);
+        }
+        return returnDefaultFactor(factors);
+    }
+
+    private List<ConversionFactor> returnDefaultFactor(List<ConversionFactor> factors) {
+        ConversionFactor defaultFactor = factors.stream()
+                .filter(f -> f.isUnitDefault())
+                .findFirst()
+                .orElse(null);
+        if (defaultFactor != null) {
+            return Collections.singletonList(defaultFactor);
+        } else if (!factors.isEmpty()) {
+            return Collections.singletonList(factors.get(0));
+        }
+        return Collections.emptyList();
     }
 
     private List<ConversionFactor> reverseIfNecessary(List<ConversionFactor> factors) {

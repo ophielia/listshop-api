@@ -73,7 +73,21 @@ public class ConversionServiceImpl implements ConversionService {
             toAdd.setFactor(conversionGramWeight);
             toAdd.setMarker(foodFactor.getMarker());
             conversionFactorRepository.save(toAdd);
-
+//MM unit_sizes -
+            //  start here to copy unit sizes from food_conversions to factors
+            // next -
+            //     add unit size to ConvertibleAmount
+            //     Pass 1 - current functionality
+            // d    follow TagSpecificHandler flow to
+            // d         pull and save multiple unit factors
+            // d         in scaler, use the default
+            // d         test with tomatoes - no unit size passed - does it convert to medium unit?
+            //     Pass 2 - request conversion with unit size
+            //          in scaler, use the passed size if it exists
+            //          test with tomatoes - pass with small - does it convert to small unit?
+            //     Afterwards....
+            //          Conversion Samples
+            //          and other fixes in youtrack
         }
 
 

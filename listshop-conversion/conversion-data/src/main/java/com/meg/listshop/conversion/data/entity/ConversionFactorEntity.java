@@ -117,8 +117,8 @@ public class ConversionFactorEntity implements ConversionFactor {
         this.unitSize = unitSize;
     }
 
-    public Boolean getUnitDefault() {
-        return unitDefault;
+    public Boolean isUnitDefault() {
+        return unitDefault != null && unitDefault;
     }
 
     public void setUnitDefault(Boolean unitDefault) {

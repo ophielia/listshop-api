@@ -526,7 +526,52 @@ public class ConversionTest {
     }
 
     @Test
-    public void testNextTestCupOfDicedTomatoes() throws ConversionPathException, ConversionFactorException {
+    public void testCupOfDicedTomatoes() throws ConversionPathException, ConversionFactorException {
+        UnitEntity grams = unitRepository.findById(gId).orElse(null);
+        UnitEntity cup = unitRepository.findById(cupsId).orElse(null);
+
+        // list context, metric
+
+        // tomato slice to grams
+        ConvertibleAmount amount = new SimpleAmount(1, cup, tomatoConversionId, false, "chopped");
+        ConvertibleAmount converted = converterService.convert(amount, grams);
+        assertNotNull(converted);
+        System.out.println(converted);
+        assertEquals(180.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(gId, converted.getUnit().getId());
+
+        // list context metric
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        converted = converterService.convert(amount, listContext);
+        assertNotNull(converted);
+        assertEquals(2.903, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(unitId, converted.getUnit().getId());
+
+        // dish context metric
+        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        converted = converterService.convert(amount, dishContext);
+        assertNotNull(converted);
+        assertEquals(2.903, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(unitId, converted.getUnit().getId());
+
+        dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
+        ConvertibleAmount bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
+        converted = converterService.convert(bigAmount, dishContext);
+        assertNotNull(converted);
+        assertEquals(2.376, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(lbId, converted.getUnit().getId());
+
+        // cup chopped tomatoes to us list
+        dishContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
+        converted = converterService.convert(bigAmount, dishContext);
+        assertNotNull(converted);
+        assertEquals(17.419, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(unitId, converted.getUnit().getId());
+    }
+
+    @Test
+    public void testCupOfDicedTomatoesUnitSize() throws ConversionPathException, ConversionFactorException {
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
         UnitEntity cup = unitRepository.findById(cupsId).orElse(null);
 

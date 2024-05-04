@@ -15,6 +15,7 @@ public class SimpleAmount implements ConvertibleAmount {
     private Boolean isLiquid;
 
     private String marker;
+    private String unitSize;
 
 
     public SimpleAmount(double quantity, UnitEntity unit, Long conversionId, Boolean isLiquid, String marker) {
@@ -66,6 +67,15 @@ public class SimpleAmount implements ConvertibleAmount {
     }
 
     @Override
+    public String getUnitSize() {
+        return unitSize;
+    }
+
+    public void setUnitSize(String unitSize) {
+        this.unitSize = unitSize;
+    }
+
+    @Override
     public String toString() {
         return "SimpleAmount{" +
                 "quantity=" + quantity +
@@ -73,6 +83,7 @@ public class SimpleAmount implements ConvertibleAmount {
                 ", tagId=" + conversionId +
                 ", isLiquid=" + isLiquid +
                 ", marker=" + marker +
+                ", unitSize=" + unitSize +
                 '}';
     }
 

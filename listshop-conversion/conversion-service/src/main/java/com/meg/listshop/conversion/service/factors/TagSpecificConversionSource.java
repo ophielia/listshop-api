@@ -83,11 +83,11 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
 
         // classify factors by markers and pull unit factor
         // choose marker source - marker, null, or marker + null
-        ConversionFactor unitFactor = null;
+        List<ConversionFactor> unitFactors = new ArrayList<>();
         Map<String, List<ConversionFactor>> factorsByMarker = new HashMap<>();
         for (ConversionFactor f : possibleFactors) {
             if (f.getFromUnit().getId().equals(UNIT_UNIT_ID)) {
-                unitFactor = f;
+                unitFactors.add(f);
                 continue;
             }
             String marker = f.getMarker();
@@ -101,7 +101,7 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         List<ConversionFactor> markerFactors = getFactorsByMarker(factorsByMarker, convertibleAmount.getMarker());
 
         // inflate factors
-        List<ConversionFactor> inflatedFactors = inflateFactors(markerFactors, context.getTargetUnitType());
+        List<ConversionFactor> inflatedFactors = inflateFactors(markerFactors);
         List<ConversionFactor> scalingFactors = new ArrayList<>();
         // find conversion factor and tag specific scaling factors
         ConversionFactor conversionFactor = null;
@@ -117,8 +117,8 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         }
 
         // add unit factor and conversion factor to scaling factors, and return
-        if (unitFactor != null) {
-            scalingFactors.add(unitFactor);
+        if (!unitFactors.isEmpty()) {
+            scalingFactors.addAll(unitFactors);
         }
         if (conversionFactor != null) {
             scalingFactors.add(conversionFactor);
@@ -166,7 +166,7 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         return newFactor;
     }
 
-    private List<ConversionFactor> inflateFactors(List<ConversionFactor> factors, UnitType targetUnitType) {
+    private List<ConversionFactor> inflateFactors(List<ConversionFactor> factors) {
         if (factors == null || factors.isEmpty()) {
             return new ArrayList<>();
         }

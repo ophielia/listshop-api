@@ -69,6 +69,10 @@ public class ConversionContext {
         return targetSpec.getUnitSubtype();
     }
 
+    public String getTargetUnitSize() {
+        return targetSpec.getUnitSize();
+    }
+
     public boolean doesntRequireConversion(ConvertibleAmount toConvert) {
         boolean specMatches = targetSpec.matches(toConvert.getUnit());
         if (!specMatches) {

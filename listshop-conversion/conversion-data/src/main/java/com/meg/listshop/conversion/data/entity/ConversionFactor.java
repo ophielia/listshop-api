@@ -7,4 +7,6 @@ public interface ConversionFactor {
 
     UnitEntity getToUnit();
     String getMarker();
+    String getUnitSize();
+    Boolean isUnitDefault();
 }

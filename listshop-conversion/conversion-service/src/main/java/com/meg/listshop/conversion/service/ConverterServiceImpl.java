@@ -68,10 +68,17 @@ public class ConverterServiceImpl implements ConverterService {
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, UnitEntity targetUnit) throws ConversionPathException, ConversionFactorException {
+        return convert(amount, targetUnit, null);
+    }
+
+    @Override
+    public ConvertibleAmount convert(ConvertibleAmount amount, UnitEntity targetUnit, String unitSize) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for unit [{}], amount [{}]", targetUnit, amount);
-        //MM add unit not null check
+        if (targetUnit == null) {
+            throw new ConversionPathException("Target unit is null");
+        }
         ConversionSpec source = createConversionSpec(amount.getUnit());
-        ConversionSpec target = createConversionSpec(targetUnit);
+        ConversionSpec target = createConversionSpec(targetUnit, unitSize);
 
         if (checkTargetEqualsSource(source, target) && amount.getUnit().getId().equals(targetUnit.getId())) {
             LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
@@ -194,6 +201,10 @@ public class ConverterServiceImpl implements ConverterService {
 
     private ConversionSpec createConversionSpec(UnitEntity unit) {
         return ConversionSpec.basicSpec(unit.getId(), unit.getType(), unit.getSubtype(), new HashSet<>());
+    }
+
+    private ConversionSpec createConversionSpec(UnitEntity unit, String unitSize) {
+        return ConversionSpec.basicSpec(unit.getId(), unit.getType(), unit.getSubtype(), unitSize,new HashSet<>());
     }
 
     private HandlerChain getOrCreateChain(ConversionSpec source, ConversionSpec target) throws ConversionPathException {

@@ -19,35 +19,40 @@ public class ConversionSpec {
     private final ConversionTargetType contextType;
 
     private final Set<UnitFlavor> flavors;
+    private final String unitSize;
 
-    private ConversionSpec(Long unitId, UnitType unitType, UnitSubtype subtype, ConversionTargetType contextType, Set<UnitFlavor> flavors) {
+    private ConversionSpec(Long unitId, UnitType unitType, UnitSubtype subtype, ConversionTargetType contextType, String unitSize,Set<UnitFlavor> flavors) {
         this.unitId = unitId;
         this.unitType = unitType;
         this.flavors = flavors;
         this.unitSubtype = subtype;
         this.contextType = contextType;
+        this.unitSize = unitSize;
     }
 
     public static ConversionSpec specForDomain(UnitEntity unitSource, UnitType domain) {
-        return new ConversionSpec(null, domain, unitSource.getSubtype(),null,new HashSet<>());
+        return new ConversionSpec(null, domain, unitSource.getSubtype(),null,null,new HashSet<>());
     }
 
     public static ConversionSpec fromExactUnit(UnitEntity unitSource) {
-        return new ConversionSpec(unitSource.getId(), unitSource.getType(), unitSource.getSubtype(),null, ConversionTools.flavorsForUnit(unitSource));
+        return new ConversionSpec(unitSource.getId(), unitSource.getType(), unitSource.getSubtype(),null, null,ConversionTools.flavorsForUnit(unitSource));
     }
 
 
     public static ConversionSpec basicSpec(UnitType type, UnitSubtype subtype, UnitFlavor... flavors) {
         Set<UnitFlavor> flavorSet = new HashSet<>(Arrays.asList(flavors));
-        return new ConversionSpec(null, type, subtype,null, flavorSet);
+        return new ConversionSpec(null, type, subtype,null,null, flavorSet);
     }
 
     public static ConversionSpec basicSpec(Long unitId, UnitType type, UnitSubtype subtype, Set<UnitFlavor> flavorSet) {
-        return new ConversionSpec(unitId, type, subtype, null,flavorSet);
+        return new ConversionSpec(unitId, type, subtype, null,null,flavorSet);
+    }
+    public static ConversionSpec basicSpec(Long unitId, UnitType type, UnitSubtype subtype, String unitSize,Set<UnitFlavor> flavorSet) {
+        return new ConversionSpec(unitId, type, subtype, null,unitSize,flavorSet);
     }
 
     public static ConversionSpec specForContext(UnitType type, UnitSubtype subtype, ConversionTargetType contextType) {
-        return new ConversionSpec(null, type, subtype, contextType, new HashSet<>());
+        return new ConversionSpec(null, type, subtype, contextType, null,new HashSet<>());
     }
 
     public boolean matches(UnitEntity unit) {
@@ -79,6 +84,10 @@ public class ConversionSpec {
         return contextType;
     }
 
+    public String getUnitSize() {
+        return unitSize;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -100,6 +109,7 @@ public class ConversionSpec {
                 ", unitSubtype=" + unitSubtype/**/ +
                 ", contextType=" + contextType +
                 ", flavors=" + flavors +
+                ", unitSize=" + unitSize +
                 '}';
     }
 

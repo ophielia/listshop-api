@@ -7,6 +7,8 @@ public class SimpleConversionFactor implements ConversionFactor {
 
     private UnitEntity fromUnit;
     private String marker;
+    private String unitSize;
+    private Boolean unitDefault;
 
     public static ConversionFactor reverseFactor(ConversionFactor factor) {
         SimpleConversionFactor reversed = new SimpleConversionFactor();
@@ -31,6 +33,16 @@ public class SimpleConversionFactor implements ConversionFactor {
         reversed.setToUnit(toUnit);
         reversed.setFromUnit(fromUnit);
         reversed.setMarker(marker);
+        return reversed;
+    }
+
+    public static ConversionFactor conversionFactor(UnitEntity fromUnit, UnitEntity toUnit, double factor, String marker, String unitSize) {
+        SimpleConversionFactor reversed = new SimpleConversionFactor();
+        reversed.setFactor(factor);
+        reversed.setToUnit(toUnit);
+        reversed.setFromUnit(fromUnit);
+        reversed.setMarker(marker);
+        reversed.setUnitSize(unitSize);
         return reversed;
     }
 
@@ -84,5 +96,22 @@ public class SimpleConversionFactor implements ConversionFactor {
 
     public void setMarker(String marker) {
         this.marker = marker;
+    }
+
+    @Override
+    public String getUnitSize() {
+        return unitSize;
+    }
+
+    public void setUnitSize(String unitSize) {
+        this.unitSize = unitSize;
+    }
+
+    public Boolean isUnitDefault() {
+        return unitDefault != null && unitDefault;
+    }
+
+    public void setUnitDefault(Boolean unitDefault) {
+        this.unitDefault = unitDefault;
     }
 }
