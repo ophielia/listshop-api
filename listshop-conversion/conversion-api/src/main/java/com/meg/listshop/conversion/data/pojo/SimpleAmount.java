@@ -26,15 +26,25 @@ public class SimpleAmount implements ConvertibleAmount {
         this.marker = marker;
     }
     public SimpleAmount(double quantity, UnitEntity unit) {
+        this(quantity, unit, (String) null);
+    }
+
+    public SimpleAmount(double quantity, UnitEntity unit, String unitSize) {
         this.quantity = quantity;
         this.unit = unit;
+        this.unitSize = unitSize;
     }
 
     public SimpleAmount(double newQuantity, UnitEntity newUnit, ConvertibleAmount toConvert) {
+       this(newQuantity, newUnit,toConvert, (String) null);
+    }
+
+    public SimpleAmount(double newQuantity, UnitEntity newUnit, ConvertibleAmount toConvert, String unitSize) {
         this.quantity = newQuantity;
         this.unit = newUnit;
         this.conversionId = toConvert.getConversionId();
         this.isLiquid = toConvert.getIsLiquid();
+        this.unitSize = unitSize;
     }
 
     @Override

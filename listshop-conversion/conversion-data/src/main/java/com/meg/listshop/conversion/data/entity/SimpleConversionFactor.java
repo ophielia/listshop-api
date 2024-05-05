@@ -16,6 +16,8 @@ public class SimpleConversionFactor implements ConversionFactor {
         reversed.setToUnit(factor.getFromUnit());
         reversed.setFromUnit(factor.getToUnit());
         reversed.setMarker(factor.getMarker());
+        reversed.setUnitSize(factor.getUnitSize());
+        reversed.setUnitDefault(factor.isUnitDefault());
         return reversed;
     }
 

@@ -43,7 +43,7 @@ public class ConversionContext {
     }
 
     public boolean requiresDomainConversion(ConvertibleAmount amount) {
-        if (unitFactors!= null &&
+        if (unitFactors != null &&
                 !unitFactors.isEmpty() &&
                 (ConversionTargetType.List.equals(targetSpec.getContextType()) ||
                         targetSpec.getUnitType().equals(UnitType.UNIT))) {
@@ -90,28 +90,33 @@ public class ConversionContext {
 
     public void conversionFactorsFound(List<ConversionFactor> factors) {
         if (conversionId != null) {
-            this.unitFactors = factors.stream()
-                    .filter(f -> f.getFromUnit().getType().equals(UnitType.UNIT) ||
-                            f.getToUnit().getType().equals(UnitType.UNIT))
-                    .collect(Collectors.toList());
-            if (targetSpec.getContextType() != null) {
-                this.destinationFactors = pullScalingFactorsByTargetType(targetSpec.getContextType(), factors);
+            this.unitFactors = new ArrayList<>();
+            this.destinationFactors = new ArrayList<>();
+            for (ConversionFactor factor : factors) {
+                if (factor.getFromUnit().getType().equals(UnitType.UNIT) ||
+                        factor.getToUnit().getType().equals(UnitType.UNIT)) {
+                    this.unitFactors.add(factor);
+                } else {
+                    this.destinationFactors.add(factor);
+                }
             }
+            this.destinationFactors = pullScalingFactorsByTargetType(targetSpec.getContextType(), this.destinationFactors);
+
         }
     }
 
-    private List<ConversionFactor> pullScalingFactorsByTargetType(ConversionTargetType contextType, List<ConversionFactor> factors ) {
-            if (contextType == ConversionTargetType.List) {
-                return factors.stream()
-                        .filter(f -> f.getFromUnit().isListUnit())
-                        .filter(f -> f.getFromUnit().isAvailableForDomain(targetSpec.getUnitType()))
-                        .collect(Collectors.toList());
-            } else if (contextType == ConversionTargetType.Dish) {
-                return factors.stream()
-                        .filter(f -> f.getFromUnit().isDishUnit())
-                        .filter(f -> f.getFromUnit().isAvailableForDomain(targetSpec.getUnitType()))
-                        .collect(Collectors.toList());
-            }
+    private List<ConversionFactor> pullScalingFactorsByTargetType(ConversionTargetType contextType, List<ConversionFactor> factors) {
+        if (contextType == ConversionTargetType.List) {
+            return factors.stream()
+                    .filter(f -> f.getFromUnit().isListUnit())
+                    .filter(f -> f.getFromUnit().isAvailableForDomain(targetSpec.getUnitType()))
+                    .collect(Collectors.toList());
+        } else if (contextType == ConversionTargetType.Dish) {
+            return factors.stream()
+                    .filter(f -> f.getFromUnit().isDishUnit())
+                    .filter(f -> f.getFromUnit().isAvailableForDomain(targetSpec.getUnitType()))
+                    .collect(Collectors.toList());
+        }
         return null;
     }
 
@@ -125,10 +130,10 @@ public class ConversionContext {
 
     public boolean shouldScaleToUnit() {
         // unit factors exits, and target is list
-        return unitFactors!=null
+        return unitFactors != null
                 && !unitFactors.isEmpty()
                 && targetSpec.getContextType() != null
-        && targetSpec.getContextType().equals(ConversionTargetType.List);
+                && targetSpec.getContextType().equals(ConversionTargetType.List);
     }
 
     public boolean canScaleForTagSpecific() {

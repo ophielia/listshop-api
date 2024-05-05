@@ -56,7 +56,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
                     double newQuantity = toConvert.getQuantity() * f.getFactor();
                     UnitEntity newUnit = f.getToUnit();
 
-                    return new SimpleAmount(newQuantity, newUnit);
+                    return new SimpleAmount(newQuantity, newUnit, f.getUnitSize());
                 }).collect(Collectors.toList());
 
         // sort for best result, according to sort type
@@ -66,7 +66,7 @@ public abstract class AbstractConversionHandler implements ConversionHandler {
         }
 
         // return best result
-        return new SimpleAmount(bestResult.getQuantity(), bestResult.getUnit(), toConvert);
+        return new SimpleAmount(bestResult.getQuantity(), bestResult.getUnit(), toConvert, bestResult.getUnitSize());
     }
 
     public List<ConversionFactor> findFactors(ConvertibleAmount toConvert , ConversionContext context) {

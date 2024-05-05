@@ -56,7 +56,7 @@ public class UnitScalingHandler extends AbstractScalingHandler {
 
     private List<ConversionFactor> returnDefaultFactor(List<ConversionFactor> factors) {
         ConversionFactor defaultFactor = factors.stream()
-                .filter(f -> f.isUnitDefault())
+                .filter(ConversionFactor::isUnitDefault)
                 .findFirst()
                 .orElse(null);
         if (defaultFactor != null) {

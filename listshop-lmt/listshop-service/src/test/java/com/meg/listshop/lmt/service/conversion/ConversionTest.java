@@ -68,7 +68,7 @@ public class ConversionTest {
     private static final Long butterConversionId = 87209L;
     private static final Long cheddarConversionId = 95915L;
     private static final Long onionConversionId = 56630L;
-    private static final Long tomatoConversionId = 127791L;
+    private static final Long tomatoConversionId = 225744L;
 
     @Autowired
     ConverterService converterService;
@@ -498,13 +498,15 @@ public class ConversionTest {
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
-        assertEquals(0.323, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        System.out.println(converted);
+        assertEquals(0.163, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(unitId, converted.getUnit().getId());
 
         // dish context metric
         ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
         converted = converterService.convert(amount, dishContext);
         assertNotNull(converted);
+        System.out.println(converted);
         assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(sliceId, converted.getUnit().getId());
 
@@ -513,16 +515,18 @@ public class ConversionTest {
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, slice, tomatoConversionId, false, "sliced");
          converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
-        //assertEquals(6.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        //assertEquals(sliceId, converted.getUnit().getId());
+        System.out.println(converted);
+        assertEquals(4.224, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(ounceId, converted.getUnit().getId());
 
         // tomato slice to us list
         dishContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
         bigAmount = new SimpleAmount(16.0, slice, tomatoConversionId, false, null);
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
-        //assertEquals(6.968, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        //assertEquals(unitId, converted.getUnit().getId());
+        System.out.println(converted);
+        assertEquals(2.602, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(unitId, converted.getUnit().getId());
     }
 
     @Test
@@ -544,15 +548,16 @@ public class ConversionTest {
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
-        assertEquals(2.903, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        System.out.println(converted);
+        assertEquals(1.463, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(unitId, converted.getUnit().getId());
 
         // dish context metric
         ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
         converted = converterService.convert(amount, dishContext);
         assertNotNull(converted);
-        assertEquals(2.903, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(unitId, converted.getUnit().getId());
+        assertEquals(180.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(gId, converted.getUnit().getId());
 
         dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
@@ -566,8 +571,9 @@ public class ConversionTest {
         bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
-        assertEquals(17.419, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(8.78, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(unitId, converted.getUnit().getId());
+        assertEquals("medium", converted.getUnitSize());
     }
 
     @Test
@@ -589,15 +595,17 @@ public class ConversionTest {
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
-        assertEquals(2.903, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        System.out.println(converted);
+        assertEquals(1.463, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(unitId, converted.getUnit().getId());
 
         // dish context metric
         ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
         converted = converterService.convert(amount, dishContext);
         assertNotNull(converted);
-        assertEquals(2.903, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(unitId, converted.getUnit().getId());
+        System.out.println(converted);
+        assertEquals(180.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(gId, converted.getUnit().getId());
 
         dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
@@ -610,8 +618,9 @@ public class ConversionTest {
         dishContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
         bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
         converted = converterService.convert(bigAmount, dishContext);
+        System.out.println(converted);
         assertNotNull(converted);
-        assertEquals(17.419, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(8.78, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(unitId, converted.getUnit().getId());
     }
 

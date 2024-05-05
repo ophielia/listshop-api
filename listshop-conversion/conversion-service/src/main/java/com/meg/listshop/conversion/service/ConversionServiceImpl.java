@@ -82,9 +82,9 @@ public class ConversionServiceImpl implements ConversionService {
             // d         pull and save multiple unit factors
             // d         in scaler, use the default
             // d         test with tomatoes - no unit size passed - does it convert to medium unit?
-            //     Pass 2 - request conversion with unit size
-            //          in scaler, use the passed size if it exists
-            //          test with tomatoes - pass with small - does it convert to small unit?
+            // d    Pass 2 - request conversion with unit size
+            // d         in scaler, use the passed size if it exists
+            // =>         test with tomatoes - pass with small - does it convert to small unit?
             //     Afterwards....
             //          Conversion Samples
             //          and other fixes in youtrack
