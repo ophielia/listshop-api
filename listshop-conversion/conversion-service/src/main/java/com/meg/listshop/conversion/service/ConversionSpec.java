@@ -51,8 +51,8 @@ public class ConversionSpec {
         return new ConversionSpec(unitId, type, subtype, null,unitSize,flavorSet);
     }
 
-    public static ConversionSpec specForContext(UnitType type, UnitSubtype subtype, ConversionTargetType contextType) {
-        return new ConversionSpec(null, type, subtype, contextType, null,new HashSet<>());
+    public static ConversionSpec specForContext(UnitType type, UnitSubtype subtype, ConversionTargetType contextType, String unitSize) {
+        return new ConversionSpec(null, type, subtype, contextType, unitSize,new HashSet<>());
     }
 
     public boolean matches(UnitEntity unit) {

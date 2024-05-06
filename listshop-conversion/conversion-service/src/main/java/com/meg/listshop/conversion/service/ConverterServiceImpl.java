@@ -43,7 +43,9 @@ public class ConverterServiceImpl implements ConverterService {
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, UnitType domain) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for domain [{}], amount [{}]", domain, amount);
-        //MM add unit not null check
+        if (domain == null) {
+            throw new ConversionPathException("Cannot convert, domain is null");
+        }
         ConversionSpec source = createConversionSpec(amount.getUnit());
         ConversionSpec target = ConversionSpec.specForDomain(amount.getUnit(), domain);
 
@@ -57,10 +59,17 @@ public class ConverterServiceImpl implements ConverterService {
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest context) throws ConversionPathException, ConversionFactorException {
-        LOG.debug("Beginning convert for context [{}], amount [{}]", context, amount);
-        //MM add unit not null check
+        return convert(amount, context, null);
+    }
+
+    @Override
+    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest context, String unitSize) throws ConversionPathException, ConversionFactorException {
+        LOG.debug("Beginning convert for context [{}], amount [{}, unitSize [{}]", context, amount, unitSize);
+        if (context == null) {
+            throw new ConversionPathException("Cannot convert, context is null");
+        }
         UnitSubtype targetSubtype = determineSubtypeFromContext(amount, context);
-        ConversionSpec conversionSpec = ConversionSpec.specForContext(context.getUnitType(), targetSubtype, context.getContextType());
+        ConversionSpec conversionSpec = ConversionSpec.specForContext(context.getUnitType(), targetSubtype, context.getContextType(), unitSize);
 
         return doConversion(amount, conversionSpec);
     }

@@ -129,11 +129,11 @@ public class ConversionContext {
     }
 
     public boolean shouldScaleToUnit() {
-        // unit factors exits, and target is list
-        return unitFactors != null
-                && !unitFactors.isEmpty()
-                && targetSpec.getContextType() != null
-                && targetSpec.getContextType().equals(ConversionTargetType.List);
+        // unit factors exits, and target is list (or unit)
+        boolean unitFactorsExist = unitFactors != null  && !unitFactors.isEmpty();
+        boolean contextIsList = targetSpec.getContextType() != null  && targetSpec.getContextType().equals(ConversionTargetType.List);
+        boolean targetIsUnit = targetSpec.getUnitType() != null  && targetSpec.getUnitType().equals(UnitType.UNIT);
+        return unitFactorsExist && (contextIsList || targetIsUnit);
     }
 
     public boolean canScaleForTagSpecific() {

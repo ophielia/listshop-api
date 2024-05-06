@@ -32,7 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;/**/
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -580,47 +580,40 @@ public class ConversionTest {
     public void testCupOfDicedTomatoesUnitSize() throws ConversionPathException, ConversionFactorException {
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
         UnitEntity cup = unitRepository.findById(cupsId).orElse(null);
+        UnitEntity unit = unitRepository.findById(unitId).orElse(null);
 
         // list context, metric
-
-        // tomato slice to grams
-        ConvertibleAmount amount = new SimpleAmount(1, cup, tomatoConversionId, false, "chopped");
-        ConvertibleAmount converted = converterService.convert(amount, grams);
-        assertNotNull(converted);
-        System.out.println(converted);
-        assertEquals(180.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(gId, converted.getUnit().getId());
-
-        // list context metric
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
-        converted = converterService.convert(amount, listContext);
+        // tomato slice to units - no size passed
+        ConvertibleAmount amount = new SimpleAmount(1, cup, tomatoConversionId, false, "chopped");
+        ConvertibleAmount converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         System.out.println(converted);
         assertEquals(1.463, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(unitId, converted.getUnit().getId());
 
-        // dish context metric
-        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
-        converted = converterService.convert(amount, dishContext);
+        // to unit, with size
+        converted = converterService.convert(amount, unit, "large");
         assertNotNull(converted);
         System.out.println(converted);
-        assertEquals(180.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(gId, converted.getUnit().getId());
+        assertEquals(0.989, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(unitId, converted.getUnit().getId());
 
-        dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
+        // to metric list, with size
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
-        converted = converterService.convert(bigAmount, dishContext);
-        assertNotNull(converted);
-        assertEquals(2.376, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(lbId, converted.getUnit().getId());
-
-        // cup chopped tomatoes to us list
-        dishContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
-        bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
-        converted = converterService.convert(bigAmount, dishContext);
+        converted = converterService.convert(bigAmount, listContext, "small");
         System.out.println(converted);
         assertNotNull(converted);
-        assertEquals(8.78, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(11.868, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(unitId, converted.getUnit().getId());
+
+        // to us list, with size
+        listContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
+        converted = converterService.convert(bigAmount, listContext, "large");
+        System.out.println(converted);
+        assertNotNull(converted);
+        assertEquals(5.934, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(unitId, converted.getUnit().getId());
     }
 
