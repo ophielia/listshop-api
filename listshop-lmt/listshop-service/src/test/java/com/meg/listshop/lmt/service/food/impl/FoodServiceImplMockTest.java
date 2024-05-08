@@ -382,29 +382,21 @@ class FoodServiceImplMockTest {
 
     @Test
     void testSamplesForConversionIdSingleUnit() throws ConversionPathException, ConversionFactorException {
-        //MM TODO - start here
-        // integration tests -
-        // chicken, oregano and tomatoes
         Long conversionId = 12345L;
         Boolean isLiquid = false;
-        Long fromUnitId = TABLESPOON_ID;
+        Long fromUnitId = SINGLE_UNIT_ID;
 
-        FoodConversionEntity teaspoonFactor = buildFoodConversionFactor(conversionId, fromUnitId, null, null);
+        FoodConversionEntity singleUnitFactor = buildFoodConversionFactor(conversionId, fromUnitId, null, null);
         Set<Long> unitIdsSearch = new HashSet<>();
-        unitIdsSearch.add(TABLESPOON_ID);
-        unitIdsSearch.add(TEASPOON_ID);
-        unitIdsSearch.add(CUP_ID);
+        unitIdsSearch.add(SINGLE_UNIT_ID);
         List<UnitEntity> foundUnits = unitIdsSearch.stream()
                 .map(s -> testUnitLookups.get(s))
                 .collect(Collectors.toList());
 
-        SimpleAmount toConvertTeaspoon = new SimpleAmount(1.0, testUnitLookups.get(TEASPOON_ID), conversionId, false, null);
-        SimpleAmount toConvertTablespoon = new SimpleAmount(1.0, testUnitLookups.get(TABLESPOON_ID), conversionId, false, null);
-        SimpleAmount toConvertCup = new SimpleAmount(1.0, testUnitLookups.get(CUP_ID), conversionId, false, null);
-
+        SimpleAmount toConvertSingleUnit = new SimpleAmount(1.0, testUnitLookups.get(SINGLE_UNIT_ID), conversionId, false, null);
 
         Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
-                .thenReturn(Collections.singletonList(teaspoonFactor));
+                .thenReturn(Collections.singletonList(singleUnitFactor));
         Mockito.when(unitRepository.findById(SINGLE_UNIT_ID))
                 .thenReturn(Optional.of(testUnitLookups.get(SINGLE_UNIT_ID)));
         Mockito.when(unitRepository.findById(GRAM_ID))
@@ -412,23 +404,21 @@ class FoodServiceImplMockTest {
         Mockito.when(unitRepository.findAllById(unitIdsSearch))
                 .thenReturn(foundUnits);
 
-        Mockito.when(conversionService.convertToUnit(toConvertTeaspoon, testUnitLookups.get(GRAM_ID), null))
+        Mockito.when(conversionService.convertToUnit(toConvertSingleUnit, testUnitLookups.get(GRAM_ID), null))
                 .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
-        Mockito.when(conversionService.convertToUnit(toConvertTablespoon, testUnitLookups.get(GRAM_ID), null))
-                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
-        Mockito.when(conversionService.convertToUnit(toConvertCup, testUnitLookups.get(GRAM_ID), null))
-                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
-
 
         List<ConversionSampleDTO> result = foodService.samplesForConversionId(conversionId, isLiquid);
 
         Assertions.assertNotNull(result, "should have captured value");
-        Assertions.assertEquals(3, result.size(), "should be 3 results");
+        Assertions.assertEquals(1, result.size(), "should contain 1 result");
     }
 
     @Test
     void testSamplesForConversionIdMultiUnitsAndMarkers() throws ConversionPathException, ConversionFactorException {
-        //MM TODO
+        //MM TODO - start here - tomato test
+        // integration tests -
+        // chicken, oregano and tomatoes
+
         Long conversionId = 12345L;
         Boolean isLiquid = false;
         Long fromUnitId = TABLESPOON_ID;

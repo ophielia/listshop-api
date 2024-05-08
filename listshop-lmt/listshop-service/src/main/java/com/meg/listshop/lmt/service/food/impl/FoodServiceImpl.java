@@ -297,12 +297,19 @@ public class FoodServiceImpl implements FoodService {
         Set<Long> unitIds = factors.stream()
                 .map(FoodConversionEntity::getUnitId)
                 .collect(Collectors.toSet());
+        Long genericId = unitIds.stream()
+                .filter( u -> GENERIC_IDS.contains(u))
+                .findFirst()
+                .orElse(null);
 
-        for (Long unitId : GENERIC_IDS) {
-            if (!unitIds.contains(unitId)) {
-                unitIds.add(unitId);
+        if (genericId != null) {
+            for (Long unitId : GENERIC_IDS) {
+                if (!unitIds.contains(unitId)) {
+                    unitIds.add(unitId);
+                }
             }
         }
+
 
         List<UnitEntity> units = unitRepository.findAllById(unitIds);
         return units.stream()
