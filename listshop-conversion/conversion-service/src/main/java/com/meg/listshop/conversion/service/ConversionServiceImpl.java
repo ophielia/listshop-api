@@ -136,6 +136,11 @@ public class ConversionServiceImpl implements ConversionService {
         return result;
     }
 
+    @Override
+    public ConvertibleAmount convertToUnit(ConvertibleAmount amount, UnitEntity targetUnit, String unitSize) throws ConversionPathException, ConversionFactorException {
+        return converterService.convert(amount, targetUnit, unitSize);
+    }
+
     private List<String> pullAvailableMarkers(List<ConversionFactorEntity> factors) {
         Set<String> markers = factors.stream()
                 .map(ConversionFactorEntity::getMarker)

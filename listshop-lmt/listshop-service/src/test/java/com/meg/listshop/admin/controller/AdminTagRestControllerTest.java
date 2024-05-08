@@ -51,9 +51,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-/**
- * Created by margaretmartin on 13/05/2017.
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
@@ -132,15 +129,15 @@ public class AdminTagRestControllerTest {
     @WithMockUser
     public void findFoodSuggestions() throws Exception {
         // @GetMapping(value = "/{tagId}/food/suggestions")
-        MvcResult result = this.mockMvc.perform(get("/admin/tag/888999/food/suggestions" )
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/888999/food/suggestions")
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
         String jsonList = result.getResponse().getContentAsString();
         ObjectMapper objectMapper = new ObjectMapper();
-        FoodListResource afterList = objectMapper.readValue(jsonList,FoodListResource.class);
-Assert.assertNotNull(afterList);
+        FoodListResource afterList = objectMapper.readValue(jsonList, FoodListResource.class);
+        Assert.assertNotNull(afterList);
 
 
         long countForCategoryThree = afterList.getEmbeddedList().getFoodResourceList().stream()
@@ -176,7 +173,7 @@ Assert.assertNotNull(afterList);
                 .andReturn();
 
         MvcResult result = this.mockMvc.perform(get("/admin/tag/888999/fullinfo")
-                .with(user(userDetails)))
+                        .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
         Assertions.assertNotNull(result);
@@ -196,7 +193,7 @@ Assert.assertNotNull(afterList);
                 .andReturn();
 
         Assertions.assertNotNull(result);
-                ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         CategoryMappingListResource embeddedList = mapper.readValue(result.getResponse().getContentAsString(), CategoryMappingListResource.class);
         List<FoodCategoryMappingResource> mappingList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getMappingResourceList() : new ArrayList<>();
         Assertions.assertNotNull(mappingList);
@@ -285,9 +282,9 @@ Assert.assertNotNull(afterList);
         String url = "/admin/tag/search";
         MvcResult result = this.mockMvc.perform(post(url)
                         .with(user(userDetails))
-                .with(user(userDetails))
-                .contentType(contentType)
-                .content(payload))
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(payload))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
@@ -315,9 +312,9 @@ Assert.assertNotNull(afterList);
         // now test exclude groups
         postSearchTags.setGroupIncludeType(IncludeType.EXCLUDE.getDisplayName());
 
-         payload = json(postSearchTags);
-         url = "/admin/tag/search";
-         result = this.mockMvc.perform(post(url)
+        payload = json(postSearchTags);
+        url = "/admin/tag/search";
+        result = this.mockMvc.perform(post(url)
                         .with(user(userDetails))
                         .with(user(userDetails))
                         .contentType(contentType)
@@ -326,20 +323,20 @@ Assert.assertNotNull(afterList);
                 .andReturn();
 
         Assert.assertNotNull(result);
-         resultBody = result.getResponse().getContentAsString();
+        resultBody = result.getResponse().getContentAsString();
         System.out.println("\n\n" + resultBody + "\n\n");
         Assert.assertNotNull(resultBody);
-         resultResource = deserializeTagListResource(resultBody);
+        resultResource = deserializeTagListResource(resultBody);
         Assert.assertNotNull(resultResource);
 
         // check that results do not contain "carrots" (since carrots are not a group)
 
-         notFoundCarrots = resultResource.getEmbeddedList().getTagResourceList().stream()
+        notFoundCarrots = resultResource.getEmbeddedList().getTagResourceList().stream()
                 .filter(t -> t.getTag().getName().equalsIgnoreCase("carrots"))
                 .findFirst()
                 .orElse(null);
         // check that results do  contain "Frozen"
-         foundDryGoods = resultResource.getEmbeddedList().getTagResourceList().stream()
+        foundDryGoods = resultResource.getEmbeddedList().getTagResourceList().stream()
                 .filter(t -> t.getTag().getName().equalsIgnoreCase("frozen"))
                 .findFirst()
                 .orElse(null);
@@ -356,9 +353,9 @@ Assert.assertNotNull(afterList);
         String url = "/admin/tag/search";
         MvcResult result = this.mockMvc.perform(post(url)
                         .with(user(userDetails))
-                .with(user(userDetails))
-                .contentType(contentType)
-                .content(payload))
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(payload))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
@@ -386,9 +383,9 @@ Assert.assertNotNull(afterList);
         // now test userId - 101010
         postSearchTags.setUserId("101010");
 
-         payload = json(postSearchTags);
-         url = "/admin/tag/search";
-         result = this.mockMvc.perform(post(url)
+        payload = json(postSearchTags);
+        url = "/admin/tag/search";
+        result = this.mockMvc.perform(post(url)
                         .with(user(userDetails))
                         .with(user(userDetails))
                         .contentType(contentType)
@@ -397,10 +394,10 @@ Assert.assertNotNull(afterList);
                 .andReturn();
 
         Assert.assertNotNull(result);
-         resultBody = result.getResponse().getContentAsString();
+        resultBody = result.getResponse().getContentAsString();
         System.out.println("\n\n" + resultBody + "\n\n");
         Assert.assertNotNull(resultBody);
-         resultResource = deserializeTagListResource(resultBody);
+        resultResource = deserializeTagListResource(resultBody);
         Assert.assertNotNull(resultResource);
 
         // check that results do  contain "some green things"

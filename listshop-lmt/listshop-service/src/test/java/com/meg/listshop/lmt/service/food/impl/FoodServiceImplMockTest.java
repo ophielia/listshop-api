@@ -1,6 +1,13 @@
 package com.meg.listshop.lmt.service.food.impl;
 
+import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
+import com.meg.listshop.conversion.data.pojo.SimpleAmount;
+import com.meg.listshop.conversion.data.repository.UnitRepository;
+import com.meg.listshop.conversion.exceptions.ConversionFactorException;
+import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConversionService;
+import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
@@ -22,10 +29,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -51,20 +56,55 @@ class FoodServiceImplMockTest {
     FoodConversionRepository foodConversionRepository;
 
     @MockBean
-    ConversionService conversionFactorService;
+    ConversionService conversionService;
+
+    @MockBean
+    UnitRepository unitRepository;
 
     List<FoodCategoryMappingEntity> allMappedCategories;
     List<FoodCategoryEntity> allCategories;
 
     List<TagInfoDTO> allSearchTags;
 
+    Map<Long, UnitEntity> testUnitLookups = new HashMap<>();
+    private Long GRAM_ID = 1013L;
+    private Long SINGLE_UNIT_ID = 1011L;
+    private Long CUP_ID = 1000L;
+    private Long TABLESPOON_ID = 1001L;
+    private Long TEASPOON_ID = 1002L;
+
+
     @BeforeEach
-    void setUp() {
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
         this.foodService = new FoodServiceImpl(
                 foodCategoryMappingRepo, foodRepository, foodCategoryRepository,
                 tagService, tagStructureService,
-                foodConversionRepository, conversionFactorService
+                foodConversionRepository, conversionService,
+                unitRepository
         );
+
+        // set single unit id
+        Field nameField = this.foodService.getClass()
+                .getDeclaredField("SINGLE_UNIT_ID");
+        nameField.setAccessible(true);
+        nameField.set(this.foodService, SINGLE_UNIT_ID);
+
+        // set gram unit id
+        Field gramField = this.foodService.getClass()
+                .getDeclaredField("GRAM_UNIT_ID");
+        gramField.setAccessible(true);
+        gramField.set(this.foodService, GRAM_ID);
+
+        // set generic ids
+        Set<Long> genericIds = new HashSet<>();
+        genericIds.add(1000L);
+        genericIds.add(1001L);
+        genericIds.add(1002L);
+        Field genericField = this.foodService.getClass()
+                .getDeclaredField("GENERIC_IDS");
+        genericField.setAccessible(true);
+        genericField.set(this.foodService, genericIds);
+
         allSearchTags = new ArrayList<>();
         allSearchTags.add(buildTagInfoDTO(1L, "searchTag1", 2L));
         allSearchTags.add(buildTagInfoDTO(2L, "searchTag2", 3L));
@@ -80,6 +120,12 @@ class FoodServiceImplMockTest {
         allCategories.add(buildCategory(22L, "category2"));
         allCategories.add(buildCategory(33L, "category3"));
         allCategories.add(buildCategory(44L, "category4"));
+
+        testUnitLookups.put(CUP_ID, buildUnit(CUP_ID, "cup"));
+        testUnitLookups.put(TABLESPOON_ID, buildUnit(TABLESPOON_ID, "tablespoon"));
+        testUnitLookups.put(TEASPOON_ID, buildUnit(TEASPOON_ID, "teaspoon"));
+        testUnitLookups.put(GRAM_ID, buildUnit(GRAM_ID, "gram"));
+        testUnitLookups.put(SINGLE_UNIT_ID, buildUnit(SINGLE_UNIT_ID, "unit"));
     }
 
 
@@ -229,18 +275,18 @@ class FoodServiceImplMockTest {
         Mockito.when(foodRepository.findById(foodId)).thenReturn(Optional.of(foodEntity));
         Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
                 .thenReturn(Collections.singletonList(conversionEntity));
-        Mockito.doNothing().when(conversionFactorService).saveConversionFactors(conversionId, Collections.singletonList(conversionEntity));
+        Mockito.doNothing().when(conversionService).saveConversionFactors(conversionId, Collections.singletonList(conversionEntity));
         Mockito.when(tagService.updateTag(Mockito.eq(tagId), tagCaptor.capture())).thenReturn(tagNoFood);
 
         // call under test
         foodService.addOrUpdateFoodForTag(tagId, foodId, true);
 
-        Mockito.verify(conversionFactorService).saveConversionFactors(conversionId, Collections.singletonList(conversionEntity));
+        Mockito.verify(conversionService).saveConversionFactors(conversionId, Collections.singletonList(conversionEntity));
 
         TagEntity saved = tagCaptor.getValue();
         Assertions.assertNotNull(saved, "should have captured value");
         Assertions.assertEquals(conversionId, saved.getConversionId(), "conversion id should match tag conversion id");
-        Assertions.assertEquals((saved.getInternalStatus() % 7) == 0, true, "should have correct internal status");
+        Assertions.assertEquals(true, (saved.getInternalStatus() % 7) == 0, "should have correct internal status");
         Assertions.assertNull(saved.getMarker(), "marker was not set");
     }
 
@@ -275,22 +321,168 @@ class FoodServiceImplMockTest {
         Mockito.when(foodRepository.findById(foodId)).thenReturn(Optional.of(foodEntity));
         Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
                 .thenReturn(Collections.singletonList(conversionEntity));
-        Mockito.doNothing().when(conversionFactorService).saveConversionFactors(conversionId, Collections.singletonList(conversionEntity));
+        Mockito.doNothing().when(conversionService).saveConversionFactors(conversionId, Collections.singletonList(conversionEntity));
         Mockito.when(tagService.updateTag(Mockito.eq(tagId), tagCaptor.capture())).thenReturn(tagNoFood);
 
         // call under test
         foodService.addOrUpdateFoodForTag(tagId, foodId, true);
 
-        Mockito.verify(conversionFactorService).saveConversionFactors(conversionId, Collections.singletonList(conversionEntity));
+        Mockito.verify(conversionService).saveConversionFactors(conversionId, Collections.singletonList(conversionEntity));
 
         TagEntity saved = tagCaptor.getValue();
         Assertions.assertNotNull(saved, "should have captured value");
         Assertions.assertEquals(conversionId, saved.getConversionId(), "conversion id should match tag conversion id");
-        Assertions.assertEquals(true,(saved.getInternalStatus() % 7) == 0,  "should have correct internal status");
+        Assertions.assertEquals(true, (saved.getInternalStatus() % 7) == 0, "should have correct internal status");
         Assertions.assertNotNull(saved.getMarker(), "marker was not set");
         Assertions.assertEquals(marker, saved.getMarker(), "marker was not set");
     }
 
+    @Test
+    void testSamplesForConversionIdSimple() throws ConversionPathException, ConversionFactorException {
+        Long conversionId = 12345L;
+        Boolean isLiquid = false;
+        Long fromUnitId = TABLESPOON_ID;
+
+        FoodConversionEntity teaspoonFactor = buildFoodConversionFactor(conversionId, fromUnitId, null, null);
+        Set<Long> unitIdsSearch = new HashSet<>();
+        unitIdsSearch.add(TABLESPOON_ID);
+        unitIdsSearch.add(TEASPOON_ID);
+        unitIdsSearch.add(CUP_ID);
+        List<UnitEntity> foundUnits = unitIdsSearch.stream()
+                .map(s -> testUnitLookups.get(s))
+                .collect(Collectors.toList());
+
+        SimpleAmount toConvertTeaspoon = new SimpleAmount(1.0, testUnitLookups.get(TEASPOON_ID), conversionId, false, null);
+        SimpleAmount toConvertTablespoon = new SimpleAmount(1.0, testUnitLookups.get(TABLESPOON_ID), conversionId, false, null);
+        SimpleAmount toConvertCup = new SimpleAmount(1.0, testUnitLookups.get(CUP_ID), conversionId, false, null);
+
+
+        Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
+                .thenReturn(Collections.singletonList(teaspoonFactor));
+        Mockito.when(unitRepository.findById(SINGLE_UNIT_ID))
+                .thenReturn(Optional.of(testUnitLookups.get(SINGLE_UNIT_ID)));
+        Mockito.when(unitRepository.findById(GRAM_ID))
+                .thenReturn(Optional.of(testUnitLookups.get(GRAM_ID)));
+        Mockito.when(unitRepository.findAllById(unitIdsSearch))
+                .thenReturn(foundUnits);
+
+        Mockito.when(conversionService.convertToUnit(toConvertTeaspoon, testUnitLookups.get(GRAM_ID), null))
+                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
+        Mockito.when(conversionService.convertToUnit(toConvertTablespoon, testUnitLookups.get(GRAM_ID), null))
+                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
+        Mockito.when(conversionService.convertToUnit(toConvertCup, testUnitLookups.get(GRAM_ID), null))
+                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
+
+
+        List<ConversionSampleDTO> result = foodService.samplesForConversionId(conversionId, isLiquid);
+
+        Assertions.assertNotNull(result, "should have captured value");
+        Assertions.assertEquals(3, result.size(), "should be 3 results");
+    }
+
+    @Test
+    void testSamplesForConversionIdSingleUnit() throws ConversionPathException, ConversionFactorException {
+        //MM TODO - start here
+        // integration tests -
+        // chicken, oregano and tomatoes
+        Long conversionId = 12345L;
+        Boolean isLiquid = false;
+        Long fromUnitId = TABLESPOON_ID;
+
+        FoodConversionEntity teaspoonFactor = buildFoodConversionFactor(conversionId, fromUnitId, null, null);
+        Set<Long> unitIdsSearch = new HashSet<>();
+        unitIdsSearch.add(TABLESPOON_ID);
+        unitIdsSearch.add(TEASPOON_ID);
+        unitIdsSearch.add(CUP_ID);
+        List<UnitEntity> foundUnits = unitIdsSearch.stream()
+                .map(s -> testUnitLookups.get(s))
+                .collect(Collectors.toList());
+
+        SimpleAmount toConvertTeaspoon = new SimpleAmount(1.0, testUnitLookups.get(TEASPOON_ID), conversionId, false, null);
+        SimpleAmount toConvertTablespoon = new SimpleAmount(1.0, testUnitLookups.get(TABLESPOON_ID), conversionId, false, null);
+        SimpleAmount toConvertCup = new SimpleAmount(1.0, testUnitLookups.get(CUP_ID), conversionId, false, null);
+
+
+        Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
+                .thenReturn(Collections.singletonList(teaspoonFactor));
+        Mockito.when(unitRepository.findById(SINGLE_UNIT_ID))
+                .thenReturn(Optional.of(testUnitLookups.get(SINGLE_UNIT_ID)));
+        Mockito.when(unitRepository.findById(GRAM_ID))
+                .thenReturn(Optional.of(testUnitLookups.get(GRAM_ID)));
+        Mockito.when(unitRepository.findAllById(unitIdsSearch))
+                .thenReturn(foundUnits);
+
+        Mockito.when(conversionService.convertToUnit(toConvertTeaspoon, testUnitLookups.get(GRAM_ID), null))
+                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
+        Mockito.when(conversionService.convertToUnit(toConvertTablespoon, testUnitLookups.get(GRAM_ID), null))
+                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
+        Mockito.when(conversionService.convertToUnit(toConvertCup, testUnitLookups.get(GRAM_ID), null))
+                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
+
+
+        List<ConversionSampleDTO> result = foodService.samplesForConversionId(conversionId, isLiquid);
+
+        Assertions.assertNotNull(result, "should have captured value");
+        Assertions.assertEquals(3, result.size(), "should be 3 results");
+    }
+
+    @Test
+    void testSamplesForConversionIdMultiUnitsAndMarkers() throws ConversionPathException, ConversionFactorException {
+        //MM TODO
+        Long conversionId = 12345L;
+        Boolean isLiquid = false;
+        Long fromUnitId = TABLESPOON_ID;
+
+        FoodConversionEntity teaspoonFactor = buildFoodConversionFactor(conversionId, fromUnitId, null, null);
+        Set<Long> unitIdsSearch = new HashSet<>();
+        unitIdsSearch.add(TABLESPOON_ID);
+        unitIdsSearch.add(TEASPOON_ID);
+        unitIdsSearch.add(CUP_ID);
+        List<UnitEntity> foundUnits = unitIdsSearch.stream()
+                .map(s -> testUnitLookups.get(s))
+                .collect(Collectors.toList());
+
+        SimpleAmount toConvertTeaspoon = new SimpleAmount(1.0, testUnitLookups.get(TEASPOON_ID), conversionId, false, null);
+        SimpleAmount toConvertTablespoon = new SimpleAmount(1.0, testUnitLookups.get(TABLESPOON_ID), conversionId, false, null);
+        SimpleAmount toConvertCup = new SimpleAmount(1.0, testUnitLookups.get(CUP_ID), conversionId, false, null);
+
+
+        Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
+                .thenReturn(Collections.singletonList(teaspoonFactor));
+        Mockito.when(unitRepository.findById(SINGLE_UNIT_ID))
+                .thenReturn(Optional.of(testUnitLookups.get(SINGLE_UNIT_ID)));
+        Mockito.when(unitRepository.findById(GRAM_ID))
+                .thenReturn(Optional.of(testUnitLookups.get(GRAM_ID)));
+        Mockito.when(unitRepository.findAllById(unitIdsSearch))
+                .thenReturn(foundUnits);
+
+        Mockito.when(conversionService.convertToUnit(toConvertTeaspoon, testUnitLookups.get(GRAM_ID), null))
+                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
+        Mockito.when(conversionService.convertToUnit(toConvertTablespoon, testUnitLookups.get(GRAM_ID), null))
+                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
+        Mockito.when(conversionService.convertToUnit(toConvertCup, testUnitLookups.get(GRAM_ID), null))
+                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
+
+
+        List<ConversionSampleDTO> result = foodService.samplesForConversionId(conversionId, isLiquid);
+
+        Assertions.assertNotNull(result, "should have captured value");
+        Assertions.assertEquals(3, result.size(), "should be 3 results");
+    }
+
+
+    private ConvertibleAmount dummyConvert(UnitEntity targetUnit, String marker) {
+        return new SimpleAmount(2.0, targetUnit, null, false, marker);
+    }
+
+    private FoodConversionEntity buildFoodConversionFactor(Long conversionId, Long fromUnitId, String marker, String unitSize) {
+        FoodConversionEntity conversionEntity = new FoodConversionEntity();
+        conversionEntity.setUnitId(fromUnitId);
+        conversionEntity.setConversionId(conversionId);
+        conversionEntity.setMarker(marker);
+        conversionEntity.setUnitSize(unitSize);
+        return conversionEntity;
+    }
 
     private FoodCategoryMappingEntity buildMapping(Long tagId, Long categoryId) {
         FoodCategoryMappingEntity entity = new FoodCategoryMappingEntity();
@@ -328,6 +520,13 @@ class FoodServiceImplMockTest {
         food.setName(foodName);
         food.setCategoryId(categoryId);
         return food;
+    }
+
+    private UnitEntity buildUnit(Long unitId, String unitName) {
+        UnitEntity unit = new UnitEntity();
+        unit.setId(unitId);
+        unit.setName(unitName);
+        return unit;
     }
 
 }

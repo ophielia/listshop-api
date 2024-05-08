@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.food;
 
+import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.data.entity.FoodCategoryEntity;
 import com.meg.listshop.lmt.data.entity.FoodConversionEntity;
@@ -24,6 +25,7 @@ public interface FoodService {
 
     void addOrUpdateFoodForTag(Long tagId, Long foodId, boolean fromAdmin);
 
+    List<ConversionSampleDTO> samplesForConversionId(Long tagId, Boolean isLiquid);
 
     List<FoodMappingDTO> getFoodCategoryMappings();
 

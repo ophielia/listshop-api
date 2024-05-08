@@ -16,8 +16,14 @@ public class ConversionSample {
     @JsonProperty("to_unit")
     private String toUnit;
 
-    public ConversionSample() {
+    @JsonProperty("from_modifier")
+    private String fromModifier;
 
+    @JsonProperty("to_modifier")
+    private String toModifier;
+
+    public ConversionSample() {
+        // empty impl for jackson
     }
 
     public String getFromAmount() {
@@ -52,6 +58,22 @@ public class ConversionSample {
         this.toUnit = toUnit;
     }
 
+    public String getFromModifier() {
+        return fromModifier;
+    }
+
+    public void setFromModifier(String fromModifier) {
+        this.fromModifier = fromModifier;
+    }
+
+    public String getToModifier() {
+        return toModifier;
+    }
+
+    public void setToModifier(String toModifier) {
+        this.toModifier = toModifier;
+    }
+
     @Override
     public String toString() {
         return "ConversionSample{" +
@@ -59,6 +81,8 @@ public class ConversionSample {
                 ", fromUnit='" + fromUnit + '\'' +
                 ", toAmount='" + toAmount + '\'' +
                 ", toUnit='" + toUnit + '\'' +
+                ", fromModifier='" + fromModifier + '\'' +
+                ", toModifier='" + toModifier + '\'' +
                 '}';
     }
 }

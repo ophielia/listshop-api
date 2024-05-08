@@ -13,7 +13,8 @@ public interface ConverterService {
 
     ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest context) throws ConversionPathException, ConversionFactorException;
 
-    ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest context, String unitSize) throws ConversionPathException, ConversionFactorException;
+    ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest context, String unitSize
+    ) throws ConversionPathException, ConversionFactorException;
 
     ConvertibleAmount convert(ConvertibleAmount amount, UnitEntity unit) throws ConversionPathException, ConversionFactorException;
 
