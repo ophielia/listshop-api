@@ -415,15 +415,15 @@ class FoodServiceImplMockTest {
 
     @Test
     void testSamplesForConversionIdMultiUnitsAndMarkers() throws ConversionPathException, ConversionFactorException {
-        //MM TODO - start here - tomato test
-        // integration tests -
-        // chicken, oregano and tomatoes
-
         Long conversionId = 12345L;
         Boolean isLiquid = false;
-        Long fromUnitId = TABLESPOON_ID;
 
-        FoodConversionEntity teaspoonFactor = buildFoodConversionFactor(conversionId, fromUnitId, null, null);
+        FoodConversionEntity dicedTeaspoonFactor = buildFoodConversionFactor(conversionId, TABLESPOON_ID, "diced", null);
+        FoodConversionEntity slicedCupFactor = buildFoodConversionFactor(conversionId, CUP_ID, "sliced", null);
+        FoodConversionEntity noMarkerCupFactor = buildFoodConversionFactor(conversionId, CUP_ID, null, null);
+        FoodConversionEntity largeUnitFactor = buildFoodConversionFactor(conversionId, SINGLE_UNIT_ID,null , "large");
+        FoodConversionEntity mediumUnitFactor = buildFoodConversionFactor(conversionId, SINGLE_UNIT_ID, null, "medium");
+
         Set<Long> unitIdsSearch = new HashSet<>();
         unitIdsSearch.add(TABLESPOON_ID);
         unitIdsSearch.add(TEASPOON_ID);
@@ -432,13 +432,20 @@ class FoodServiceImplMockTest {
                 .map(s -> testUnitLookups.get(s))
                 .collect(Collectors.toList());
 
+        SimpleAmount toConvertTeaspoonDiced = new SimpleAmount(1.0, testUnitLookups.get(TEASPOON_ID), conversionId, false, "diced");
+        SimpleAmount toConvertTablespoonDiced = new SimpleAmount(1.0, testUnitLookups.get(TABLESPOON_ID), conversionId, false, "diced");
+        SimpleAmount toConvertCupDiced = new SimpleAmount(1.0, testUnitLookups.get(CUP_ID), conversionId, false, "diced");
+
+        SimpleAmount toConvertTeaspoonSliced = new SimpleAmount(1.0, testUnitLookups.get(TEASPOON_ID), conversionId, false, "sliced");
+        SimpleAmount toConvertTablespoonSliced = new SimpleAmount(1.0, testUnitLookups.get(TABLESPOON_ID), conversionId, false, "sliced");
+        SimpleAmount toConvertCupSliced = new SimpleAmount(1.0, testUnitLookups.get(CUP_ID), conversionId, false, "sliced");
+
         SimpleAmount toConvertTeaspoon = new SimpleAmount(1.0, testUnitLookups.get(TEASPOON_ID), conversionId, false, null);
         SimpleAmount toConvertTablespoon = new SimpleAmount(1.0, testUnitLookups.get(TABLESPOON_ID), conversionId, false, null);
         SimpleAmount toConvertCup = new SimpleAmount(1.0, testUnitLookups.get(CUP_ID), conversionId, false, null);
 
-
         Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
-                .thenReturn(Collections.singletonList(teaspoonFactor));
+                .thenReturn(Arrays.asList(dicedTeaspoonFactor, slicedCupFactor, noMarkerCupFactor, largeUnitFactor, mediumUnitFactor));
         Mockito.when(unitRepository.findById(SINGLE_UNIT_ID))
                 .thenReturn(Optional.of(testUnitLookups.get(SINGLE_UNIT_ID)));
         Mockito.when(unitRepository.findById(GRAM_ID))
@@ -446,18 +453,17 @@ class FoodServiceImplMockTest {
         Mockito.when(unitRepository.findAllById(unitIdsSearch))
                 .thenReturn(foundUnits);
 
-        Mockito.when(conversionService.convertToUnit(toConvertTeaspoon, testUnitLookups.get(GRAM_ID), null))
-                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
-        Mockito.when(conversionService.convertToUnit(toConvertTablespoon, testUnitLookups.get(GRAM_ID), null))
-                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
-        Mockito.when(conversionService.convertToUnit(toConvertCup, testUnitLookups.get(GRAM_ID), null))
-                .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
-
+        Mockito.when(conversionService.convertToUnit(Mockito.any(ConvertibleAmount.class), Mockito.any(UnitEntity.class), Mockito.eq("large")))
+                .thenReturn(dummyConvert(testUnitLookups.get(SINGLE_UNIT_ID), null));
+        Mockito.when(conversionService.convertToUnit(Mockito.any(ConvertibleAmount.class), Mockito.any(UnitEntity.class),Mockito.eq("medium")))
+                .thenReturn(dummyConvert(testUnitLookups.get(SINGLE_UNIT_ID), null));
+        Mockito.when(conversionService.convertToUnit(Mockito.any(ConvertibleAmount.class), Mockito.any(UnitEntity.class), Mockito.eq(null)))
+                .thenReturn(dummyConvert(testUnitLookups.get(SINGLE_UNIT_ID), null));
 
         List<ConversionSampleDTO> result = foodService.samplesForConversionId(conversionId, isLiquid);
 
         Assertions.assertNotNull(result, "should have captured value");
-        Assertions.assertEquals(3, result.size(), "should be 3 results");
+        Assertions.assertEquals(18, result.size(), "should be 18 results");
     }
 
 
