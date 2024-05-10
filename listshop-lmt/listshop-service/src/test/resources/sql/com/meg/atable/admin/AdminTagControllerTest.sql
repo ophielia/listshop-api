@@ -81,6 +81,9 @@ insert into factors (factor_id, factor, to_unit, from_unit, conversion_id) VALUE
      (1234567, 1.5, 1013, 1000, 99001);
 insert into factors (factor_id, factor, to_unit, from_unit, conversion_id) VALUES
      (2345678, 100, 1013, 1000, 101010);
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default) values
+    (1065, 88,  1013, 1011,227959, 106417, null, null, false);
+
 
 
 

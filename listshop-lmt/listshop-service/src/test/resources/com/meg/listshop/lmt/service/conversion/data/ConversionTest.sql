@@ -41,4 +41,4 @@ values  (1055, 180, 1013, 1000, 225744, 104748, 'chopped', null, false),
 
 -- chicken drumstick
 insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default)
-values (1064, 88, 1013, 1011, 227959, 106417, null, null, false);
+values (1064222, 88, 1013, 1011, 227959, 106417, null, null, false);

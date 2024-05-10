@@ -64,7 +64,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public class AdminTagRestControllerTest {
 
     @ClassRule
-    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
+    public static ListShopPostgresqlContainer postgresSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private static UserDetails userDetails;
     @Autowired
@@ -208,7 +208,7 @@ public class AdminTagRestControllerTest {
     @Test
     @WithMockUser
     public void testGetFullTagInfo() throws Exception {
-        Long tagId = 9991029L;
+        long tagId = 9991029;
         MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful())
@@ -227,7 +227,7 @@ public class AdminTagRestControllerTest {
         // chicken breast
         // tomatoes
 
-        Long tagId = 9991029L;
+        long tagId = 9991029;
         MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful())
@@ -243,7 +243,7 @@ public class AdminTagRestControllerTest {
     @WithMockUser
     public void testFullTagInfoConversionSamplesOregano() throws Exception {
         // oregano - that is to say, one factor, converting to grams, no markers or unit sizes
-        Long tagId = 888888L;
+        long tagId = 888888;
         MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful())
@@ -269,7 +269,7 @@ public class AdminTagRestControllerTest {
     public void testFullTagInfoConversionSamplesChickenBreast() throws Exception {
         // chicken breast - one factor, between unit and grams.
 
-        Long tagId = 777777L;
+        long tagId = 777777;
         MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful())
@@ -289,6 +289,35 @@ public class AdminTagRestControllerTest {
                 .count();
         Assert.assertEquals(0L, commaCount);
     }
+
+
+    @Test
+    @WithMockUser
+    public void testFullTagInfoConversionSamplesTomatoes() throws Exception {
+        // MM START HERE - To Ma To es
+        // in other words - multiple unit sizes and markers
+
+        long tagId = 777777;
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        Assertions.assertNotNull(result);
+        ObjectMapper mapper = new ObjectMapper();
+        AdminTagFullInfoResource resultObject = mapper.readValue(result.getResponse().getContentAsString(), AdminTagFullInfoResource.class);
+        // this "chicken" has 1 factor, which is a unit
+        // so we should have one sample, converting to grams, without any markers or unit sizes
+        ConversionGrid grid = resultObject.getTag().getConversionGrid();
+        Assertions.assertNotNull(grid);
+        Assertions.assertEquals(1, grid.getSamples().size(), "expected 3 samples");
+        long commaCount = grid.getSamples().stream()
+                .filter( s -> s.getFromAmount().contains(",") ||
+                        s.getToAmount().contains(","))
+                .count();
+        Assert.assertEquals(0L, commaCount);
+    }
+
 
     @Test
     public void addChildren() throws Exception {
