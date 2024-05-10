@@ -69,6 +69,7 @@ public class ConversionMetricFactorsTest {
         UnitEntity milliliterOpt = unitRepository.findById(milliliterId).orElse(null);
         UnitEntity centiliterOpt = unitRepository.findById(centileterId).orElse(null);
         UnitEntity gramOpt = unitRepository.findById(gId).orElse(null);
+        UnitEntity kgOpt = unitRepository.findById(kgId).orElse(null);
 
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
         ConversionRequest listContextVolume = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
@@ -77,49 +78,49 @@ public class ConversionMetricFactorsTest {
 
 //        688 Gram = 0.688 Kilogram
         ConvertibleAmount amount = new SimpleAmount(688, gramOpt);
-        ConvertibleAmount converted = converterService.convert(amount, listContext);
+        ConvertibleAmount converted = converterService.convert(amount, kgOpt);
         assertNotNull(converted);
         assertEquals(0.688, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(kgId, converted.getUnit().getId());
 
 //        .15 Liter = 15 Centiliter
         amount = new SimpleAmount(0.15, litersOpt);
-        converted = converterService.convert(amount, dishContextVolume);
+        converted = converterService.convert(amount, centiliterOpt);
         assertNotNull(converted);
         assertEquals(15.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(centileterId, converted.getUnit().getId());
 
 //        2.345 Liter = 2345 Milliliter
         amount = new SimpleAmount(.2345, litersOpt);
-        converted = converterService.convert(amount, listContextVolume);
+        converted = converterService.convert(amount, milliliterOpt);
         assertNotNull(converted);
         assertEquals(234.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(milliliterId, converted.getUnit().getId());
 
         //        900 Milliliter = 0.9 Liter
         amount = new SimpleAmount(900, milliliterOpt);
-        converted = converterService.convert(amount, listContextVolume);
+        converted = converterService.convert(amount, litersOpt);
         assertNotNull(converted);
         assertEquals(literId, converted.getUnit().getId());
         assertEquals(0.9, RoundingUtils.roundToThousandths(converted.getQuantity()));
 
         //        600 Milliliter = 60 Centiliter
         amount = new SimpleAmount(300, milliliterOpt);
-        converted = converterService.convert(amount, dishContextVolume);
+        converted = converterService.convert(amount, centiliterOpt);
         assertNotNull(converted);
         assertEquals(30.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(centileterId, converted.getUnit().getId());
 
         //        50 Centiliter = 0.5 Liter
         amount = new SimpleAmount(50.0, centiliterOpt);
-        converted = converterService.convert(amount, listContextVolume);
+        converted = converterService.convert(amount, litersOpt);
         assertNotNull(converted);
         assertEquals(0.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(literId, converted.getUnit().getId());
 
         //        0.25 Centiliter = 2.5 Milliliter
         amount = new SimpleAmount(0.25, centiliterOpt);
-        converted = converterService.convert(amount, listContextVolume);
+        converted = converterService.convert(amount, milliliterOpt);
         assertNotNull(converted);
         assertEquals(2.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(milliliterId, converted.getUnit().getId());

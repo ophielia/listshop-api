@@ -14,8 +14,8 @@ VALUES (101010, 999999, NULL, 'some green thing', 'Ingredient', NULL, NULL, NULL
 INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id)
 VALUES (999999, 999999, 388);-- Produce
 INSERT INTO tag (user_id, tag_id, description, name, tag_type, tag_type_default, is_verified,
-                 power)
-VALUES (101010, 888888, NULL, 'some black thing', 'Ingredient', NULL, NULL, NULL);
+                 power, conversion_id)
+VALUES (101010, 777777, NULL, 'poltry', 'Ingredient', NULL, NULL, NULL,227959);
 
 
 -- for food suggestion test
@@ -62,6 +62,8 @@ insert into foods (food_id,conversion_id,name, category_id, has_factor) values
     (9004,99004,'butterlike spread', 18,true);
 insert into foods (food_id,conversion_id,name, category_id, has_factor) values
     (9005,99005,'cant call it cheese', 18,true);
+insert into foods (food_id,conversion_id,name, category_id, has_factor) values
+    (10101011,101010,'black oregano - pre-assigned', 18,true);
 
 insert into food_category_mapping (food_category_mapping_id,category_id, tag_id) values (1,3,8881019);
 
@@ -69,11 +71,20 @@ insert into food_conversions (food_conversion_id, conversion_id, food_id, fdc_id
     (9900000,99000, 9000, 900, 1.0, '', 150.0, 1000)  ;
 insert into food_conversions (food_conversion_id, conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id) values
     (9900011,99001, 9005, 901, 1.0, '', 150.0, 1000)  ;
+insert into food_conversions (food_conversion_id, conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id) values
+    (10101011,101010, 10101011, 101, 1.0, '', 100.0, 1000)  ;
+insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id, food_conversion_id, integral, marker, sub_amount, info, unit_size, unit_default)
+    values (227959, 106417, 173619, 1, 'unit', 88, 1011, 234058, 'drumstick', null, null, null, null, true);
+
 
 insert into factors (factor_id, factor, to_unit, from_unit, conversion_id) VALUES
-     (1234567, 1.5, 1013, 1000, 9991029);
+     (1234567, 1.5, 1013, 1000, 99001);
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id) VALUES
+     (2345678, 100, 1013, 1000, 101010);
 
-update tag set conversion_id = 9005 where tag_id = 9991029;
+
+
+update tag set conversion_id = 99001 where tag_id = 9991029;
 update tag set is_liquid = false where tag_id = 9991029;
 
 

@@ -221,6 +221,76 @@ public class AdminTagRestControllerTest {
     }
 
     @Test
+    @WithMockUser
+    public void testFullTagInfoConversionSamplesBasic() throws Exception {
+        // oregano
+        // chicken breast
+        // tomatoes
+
+        Long tagId = 9991029L;
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        Assertions.assertNotNull(result);
+        ObjectMapper mapper = new ObjectMapper();
+        AdminTagFullInfoResource resultObject = mapper.readValue(result.getResponse().getContentAsString(), AdminTagFullInfoResource.class);
+        Assertions.assertNotNull(resultObject);
+    }
+
+    @Test
+    @WithMockUser
+    public void testFullTagInfoConversionSamplesOregano() throws Exception {
+        // oregano - that is to say, one factor, converting to grams, no markers or unit sizes
+        Long tagId = 888888L;
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        Assertions.assertNotNull(result);
+        ObjectMapper mapper = new ObjectMapper();
+        AdminTagFullInfoResource resultObject = mapper.readValue(result.getResponse().getContentAsString(), AdminTagFullInfoResource.class);
+        // this "oregano" has 1 factor, which is generic
+        // so we should have three samples, all converting to grams, without any markers or unit sizes
+        ConversionGrid grid = resultObject.getTag().getConversionGrid();
+        Assertions.assertNotNull(grid);
+        Assertions.assertEquals(3, grid.getSamples().size(), "expected 3 samples");
+        long commaCount = grid.getSamples().stream()
+                .filter( s -> s.getFromAmount().contains(",") ||
+                        s.getToAmount().contains(","))
+                .count();
+        Assert.assertEquals(0L, commaCount);
+    }
+
+    @Test
+    @WithMockUser
+    public void testFullTagInfoConversionSamplesChickenBreast() throws Exception {
+        // chicken breast - one factor, between unit and grams.
+
+        Long tagId = 777777L;
+        MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
+                        .with(user(userDetails)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        Assertions.assertNotNull(result);
+        ObjectMapper mapper = new ObjectMapper();
+        AdminTagFullInfoResource resultObject = mapper.readValue(result.getResponse().getContentAsString(), AdminTagFullInfoResource.class);
+        // this "chicken" has 1 factor, which is a unit
+        // so we should have one sample, converting to grams, without any markers or unit sizes
+        ConversionGrid grid = resultObject.getTag().getConversionGrid();
+        Assertions.assertNotNull(grid);
+        Assertions.assertEquals(1, grid.getSamples().size(), "expected 3 samples");
+        long commaCount = grid.getSamples().stream()
+                .filter( s -> s.getFromAmount().contains(",") ||
+                        s.getToAmount().contains(","))
+                .count();
+        Assert.assertEquals(0L, commaCount);
+    }
+
+    @Test
     public void addChildren() throws Exception {
         String url = "/admin/tag/" + TestConstants.PARENT_TAG_ID_1 + "/children?tagIds=" + TestConstants.TAG_MEAT + "," + TestConstants.TAG_CARROTS + "," + TestConstants.TAG_CROCKPOT;
 
@@ -413,7 +483,6 @@ public class AdminTagRestControllerTest {
         Assert.assertNull(notFoundCarrots);
         Assert.assertNotNull(foundSomeGreenThing);
     }
-
 
     private String json(Object o) throws IOException {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);

@@ -12,6 +12,7 @@ import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 import static com.meg.listshop.conversion.data.repository.UnitSpecifications.*;
 import static org.springframework.data.jpa.domain.Specification.where;
 
-
+@Component
 public class TagSpecificConversionSource extends AbstractConversionFactorSource {
     private static final Logger LOG = LoggerFactory.getLogger(TagSpecificConversionSource.class);
 
@@ -29,11 +30,11 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
 
     private final ConversionFactorRepository factorRepository;
 
-    private final Long UNIT_UNIT_ID;
+    private Long SINGLE_UNIT_ID;
 
     public TagSpecificConversionSource(ConversionFactorRepository factorRepository) {
         super(new ArrayList<>(), false);
-        this.UNIT_UNIT_ID = 1011L;
+        this.SINGLE_UNIT_ID = 1011L;
         this.factorRepository = factorRepository;
 
         ConversionSpec inflationSource = ConversionSpec.basicSpec(UnitType.HYBRID, UnitSubtype.SOLID);  // teaspoons , tablespoons , cups
@@ -86,7 +87,7 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         List<ConversionFactor> unitFactors = new ArrayList<>();
         Map<String, List<ConversionFactor>> factorsByMarker = new HashMap<>();
         for (ConversionFactor f : possibleFactors) {
-            if (f.getFromUnit().getId().equals(UNIT_UNIT_ID)) {
+            if (f.getFromUnit().getId().equals(SINGLE_UNIT_ID)) {
                 unitFactors.add(f);
                 continue;
             }
@@ -126,7 +127,7 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         return scalingFactors;
     }
 
-    private List<ConversionFactor> getFactorsByMarker(Map<String, List<ConversionFactor>> factorsByMarker,String marker) {
+    private List<ConversionFactor> getFactorsByMarker(Map<String, List<ConversionFactor>> factorsByMarker, String marker) {
         List<ConversionFactor> factors = new ArrayList<>();
         if (factorsByMarker == null || factorsByMarker.isEmpty()) {
             return factors;
@@ -142,7 +143,7 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         // no null factors, we'll return the first marker available
         String guessMarker = factorsByMarker.keySet().stream().findFirst().orElse(null);
         if (guessMarker != null) {
-            return  factorsByMarker.get(guessMarker);
+            return factorsByMarker.get(guessMarker);
         }
         return factors;
     }

@@ -14,7 +14,6 @@ import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.common.FlatStringUtils;
-import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
@@ -50,6 +49,7 @@ public class ModelMapper {
         grid.setSamples(samples);
         return grid;
     }
+
     public static ConversionGrid toConversionGrid(List<ConversionSampleDTO> conversionSamples) {
         List<ConversionSample> samples = conversionSamples.stream()
                 .map(ModelMapper::toModel)
@@ -67,12 +67,22 @@ public class ModelMapper {
         sample.setToUnit("grams");
         return sample;
     }
+
     private static ConversionSample toModel(ConversionSampleDTO conversionSampleDTO) {
         ConversionSample sample = new ConversionSample();
+        // assuming (for now, right or wrong) from => marker, to => unit size
+        String fromUnit = conversionSampleDTO.getFromAmount().getUnit().getName();
+        if (conversionSampleDTO.getFromAmount().getMarker() != null) {
+            fromUnit = fromUnit + "," + conversionSampleDTO.getFromAmount().getMarker();
+        }
+        String toUnit = conversionSampleDTO.getFromAmount().getUnit().getName();
+        if (conversionSampleDTO.getFromAmount().getUnitSize() != null) {
+            toUnit = toUnit + "," + conversionSampleDTO.getFromAmount().getUnitSize();
+        }
         sample.setFromAmount(String.valueOf(conversionSampleDTO.getFromAmount().getQuantity()));
         sample.setToAmount(String.valueOf(conversionSampleDTO.getToAmount().getQuantity()));
-        sample.setToUnit(conversionSampleDTO.getToAmount().getUnit().getName());
-        sample.setFromUnit(conversionSampleDTO.getFromAmount().getUnit().getName());
+        sample.setToUnit(toUnit);
+        sample.setFromUnit(fromUnit);
         return sample;
     }
 
@@ -330,7 +340,7 @@ public class ModelMapper {
         for (ListLayoutCategoryEntity cat : categories) {
             ListLayoutCategory llc = new ListLayoutCategory(cat.getId());
             llc.setName(cat.getName());
-            llc.setDefault(cat.getDefault() != null &&  cat.getDefault());
+            llc.setDefault(cat.getDefault() != null && cat.getDefault());
             llc.setTags(toShortModel(cat.getTags()));
             llc.setDisplayOrder(cat.getDisplayOrder());
             categoryList.add(llc);
@@ -338,6 +348,7 @@ public class ModelMapper {
         return categoryList;
 
     }
+
     private static List<ListLayoutCategory> layoutCategoriesToModel(List<ListLayoutCategoryPojo> categories) {
         if (categories == null) {
             return new ArrayList<>();
@@ -372,6 +383,7 @@ public class ModelMapper {
     public static Category toModel(ListLayoutCategoryEntity cat) {
         return toModel(cat, false);
     }
+
     public static Category toModel(ListLayoutCategoryEntity cat, boolean includeTags) {
 
         if (cat == null) {
@@ -435,7 +447,7 @@ public class ModelMapper {
 
     private static List<Tag> toModelItemsAsTags(List<DishItemEntity> itemEntities) {
         if (itemEntities == null) {
-            return new ArrayList<Tag>();
+            return new ArrayList<>();
         }
         return toModel(itemEntities.stream().map(DishItemEntity::getTag).collect(Collectors.toList()));
     }
@@ -574,7 +586,6 @@ public class ModelMapper {
                 .mealPlanId(slotEntity.getMealPlan().getId())
                 .dish(toModel(slotEntity.getDish(), false));
     }
-
 
 
     private static List<Slot> slotsToModel(List<SlotEntity> slots) {

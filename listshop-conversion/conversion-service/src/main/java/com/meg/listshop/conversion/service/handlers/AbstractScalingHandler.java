@@ -64,7 +64,7 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
     public boolean scalerFor(ConversionContext context) {
         ConversionTargetType unitListOrNull = context.getTargetContextType();
         if (unitListOrNull == null ) {
-            return scalerType == null  && context.getTargetUnitId()!= null;
+            return scalerType == null;
         }
         return unitListOrNull.equals(scalerType) && context.canScaleForTagSpecific() == isTagSpecific();
     }

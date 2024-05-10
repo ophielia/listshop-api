@@ -18,7 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class ConverterServiceImpl implements ConverterService {
@@ -28,7 +31,6 @@ public class ConverterServiceImpl implements ConverterService {
     private final List<ScalingHandler> scalerList;
 
     private final ConversionHandler tagSpecificHandler;
-
 
 
     @Autowired
@@ -46,13 +48,7 @@ public class ConverterServiceImpl implements ConverterService {
         if (domain == null) {
             throw new ConversionPathException("Cannot convert, domain is null");
         }
-        ConversionSpec source = createConversionSpec(amount.getUnit());
         ConversionSpec target = ConversionSpec.specForDomain(amount.getUnit(), domain);
-
-        if (checkTargetEqualsSource(source, target)) {
-            LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
-            return amount;
-        }
 
         return doConversion(amount, target);
     }
@@ -86,13 +82,7 @@ public class ConverterServiceImpl implements ConverterService {
         if (targetUnit == null) {
             throw new ConversionPathException("Target unit is null");
         }
-        ConversionSpec source = createConversionSpec(amount.getUnit());
         ConversionSpec target = createConversionSpec(targetUnit, unitSize);
-
-        if (checkTargetEqualsSource(source, target) && amount.getUnit().getId().equals(targetUnit.getId())) {
-            LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", source, target);
-            return amount;
-        }
 
         return doConversion(amount, target);
     }
@@ -121,8 +111,14 @@ public class ConverterServiceImpl implements ConverterService {
     private ConvertibleAmount doConversion(ConvertibleAmount amount, ConversionSpec conversionSpec) throws ConversionPathException, ConversionFactorException {
         ConvertibleAmount result = amount;
 
+        // return if no conversion necessary
+        if (noConversionNecessary(amount, conversionSpec)) {
+            LOG.info("No conversion to do for source [{}] and target [{}]. ", amount, conversionSpec);
+            return amount;
+        }
+
         // Create ConversionContext
-        ConversionContext context = new ConversionContext(amount,conversionSpec);
+        ConversionContext context = new ConversionContext(amount, conversionSpec);
 
         // if conversion necessary, convert for tag specific
         // required if - volume < = > weight
@@ -160,6 +156,29 @@ public class ConverterServiceImpl implements ConverterService {
 
     }
 
+    private boolean noConversionNecessary(ConvertibleAmount amount, ConversionSpec conversionSpec) {
+        // no conversion necessary if
+        // amount unit id = spec unit id
+        if (conversionSpec.getUnitId() != null && amount.getUnit().getId().equals(conversionSpec.getUnitId())) {
+            return true;
+        }
+        if (conversionSpec.getContextType() != null && conversionSpec.getContextType().equals(ConversionTargetType.List)) {
+            return domainMatches(amount, conversionSpec) && amount.getUnit().isListUnit();
+        }
+        if (conversionSpec.getContextType() != null && conversionSpec.getContextType().equals(ConversionTargetType.Dish)) {
+            return domainMatches(amount, conversionSpec) && amount.getUnit().isDishUnit();
+        }
+        return false;
+    }
+
+    private boolean domainMatches(ConvertibleAmount amount, ConversionSpec conversionSpec) {
+        // unit matches everything
+        if (amount.getUnit().getType().equals(UnitType.UNIT)) {
+            return true;
+        }
+        return conversionSpec.getUnitType() != null &&
+                conversionSpec.getUnitType().equals(amount.getUnit().getType());
+    }
 
 
     private ScalingHandler getScalerForContext(ConversionContext context) {
@@ -168,7 +187,6 @@ public class ConverterServiceImpl implements ConverterService {
         }
         return scalerList.stream().filter(s -> s.scalerFor(context)).findFirst().orElse(null);
     }
-
 
 
     private ConvertibleAmount convertDomain(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
@@ -195,7 +213,7 @@ public class ConverterServiceImpl implements ConverterService {
     }
 
 
-    private ConvertibleAmount doDomainConversion(ConvertibleAmount amount,ConversionContext context) throws ConversionFactorException, ConversionPathException {
+    private ConvertibleAmount doDomainConversion(ConvertibleAmount amount, ConversionContext context) throws ConversionFactorException, ConversionPathException {
         Long unitId = context.getTargetUnitId();
         UnitType domainType = context.getTargetUnitType();
         ConversionSpec source = createConversionSpec(amount.getUnit());
@@ -213,7 +231,7 @@ public class ConverterServiceImpl implements ConverterService {
     }
 
     private ConversionSpec createConversionSpec(UnitEntity unit, String unitSize) {
-        return ConversionSpec.basicSpec(unit.getId(), unit.getType(), unit.getSubtype(), unitSize,new HashSet<>());
+        return ConversionSpec.basicSpec(unit.getId(), unit.getType(), unit.getSubtype(), unitSize, new HashSet<>());
     }
 
     private HandlerChain getOrCreateChain(ConversionSpec source, ConversionSpec target) throws ConversionPathException {
@@ -292,8 +310,5 @@ public class ConverterServiceImpl implements ConverterService {
                 .findFirst().orElse(null);
     }
 
-    private boolean checkTargetEqualsSource(ConversionSpec source, ConversionSpec target) {
-        return (source.equals(target));
-    }
 
 }

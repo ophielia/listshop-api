@@ -64,7 +64,7 @@ public class FoodServiceImpl implements FoodService {
     @Value("${conversionservice.gram.unit.id:1013}")
     private Long GRAM_UNIT_ID;
 
-    @Value("#{'${conversionservice.generic.ids}'.split(',')}:1000,1001,1002}")
+    @Value("#{'${conversionservice.generic.ids:1000,1001,1002}'.split(',')}")
     private Set<Long> GENERIC_IDS;
 
     @Autowired
@@ -240,7 +240,7 @@ public class FoodServiceImpl implements FoodService {
                     ConvertibleAmount converted = conversionService.convertToUnit(toConvert, target.unitEntity, target.unitSize);
                     Double roundedQuantity = RoundingUtils.roundToHundredths(converted.getQuantity());
                     SimpleAmount roundedResult = new SimpleAmount(roundedQuantity, converted.getUnit(), conversionId, isLiquid, converted.getMarker());
-                    if (roundedResult.getUnit().equals(target.unitEntity)) {
+                    if (roundedResult.getUnit().getId().equals(target.unitEntity.getId())) {
                         result.add(new ConversionSampleDTO(toConvert, roundedResult));
                     }
                 } catch (ConversionPathException | ConversionFactorException e) {

@@ -67,6 +67,7 @@ public class ConversionTest {
     private static final Long butterTagId = 87209L;
     private static final Long butterConversionId = 87209L;
     private static final Long cheddarConversionId = 95915L;
+    private static final Long chickenDrumstickId = 227959L;
     private static final Long onionConversionId = 56630L;
     private static final Long tomatoConversionId = 225744L;
 
@@ -480,6 +481,84 @@ public class ConversionTest {
     }
 
     @Test
+    public void testTagSpecificUnitToGrams() throws ConversionPathException, ConversionFactorException {
+        UnitEntity singleUnit = unitRepository.findById(unitId).orElse(null);
+        UnitEntity grams = unitRepository.findById(gId).orElse(null);
+        UnitEntity pounds = unitRepository.findById(lbId).orElse(null);
+
+        // one chicken drumstick to grams
+        ConvertibleAmount amount = new SimpleAmount(1, singleUnit, chickenDrumstickId, false, null);
+        ConvertibleAmount converted = converterService.convert(amount, grams);
+        assertNotNull(converted);
+        System.out.println(converted);
+        assertEquals(88.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(gId, converted.getUnit().getId());
+
+        // list context metric
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        converted = converterService.convert(amount, listContext);
+        assertNotNull(converted);
+        System.out.println(converted);
+        assertEquals(1.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(unitId, converted.getUnit().getId());
+
+
+        // dish context metric
+        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        converted = converterService.convert(amount, dishContext);
+        assertNotNull(converted);
+        System.out.println(converted);
+        //assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(1.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(unitId, converted.getUnit().getId());
+
+
+
+        // chicken drumstick us dish
+        dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
+        ConvertibleAmount bigAmount = new SimpleAmount(6.0, singleUnit, chickenDrumstickId, false, null);
+        converted = converterService.convert(bigAmount, dishContext);
+        assertNotNull(converted);
+        System.out.println(converted);
+        assertEquals(6.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(unitId, converted.getUnit().getId());
+
+
+        // chicken drumstick us list
+        dishContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        bigAmount = new SimpleAmount(16.0, singleUnit, chickenDrumstickId, false, null);
+        converted = converterService.convert(bigAmount, dishContext);
+        System.out.println(converted);
+        assertNotNull(converted);
+        assertEquals(16.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(unitId, converted.getUnit().getId());
+
+        // chicken drumstick us pounds
+        bigAmount = new SimpleAmount(16.0, singleUnit, chickenDrumstickId, false, null);
+        converted = converterService.convert(bigAmount, pounds);
+        System.out.println(converted);
+        assertNotNull(converted);
+        assertEquals(3.098, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(lbId, converted.getUnit().getId());
+
+        // chicken drumstick us domain
+        bigAmount = new SimpleAmount(16.0, singleUnit, chickenDrumstickId, false, null);
+        converted = converterService.convert(bigAmount, UnitType.US);
+        System.out.println(converted);
+        assertNotNull(converted);
+        assertEquals(3.098, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(lbId, converted.getUnit().getId());
+
+        // chicken drumstick metric domain
+        bigAmount = new SimpleAmount(16.0, singleUnit, chickenDrumstickId, false, null);
+        converted = converterService.convert(bigAmount, UnitType.METRIC);
+        System.out.println(converted);
+        assertNotNull(converted);
+        assertEquals(1.408, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(kgId, converted.getUnit().getId());
+    }
+
+    @Test
     public void testTagSpecificMarker() throws ConversionPathException, ConversionFactorException {
         UnitEntity slice = unitRepository.findById(sliceId).orElse(null);
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
@@ -689,8 +768,8 @@ public class ConversionTest {
          converted = converterService.convert(amount, UnitType.US);
         assertNotNull(converted);
         System.out.println(converted);
-        assertEquals(0.25, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(lbId, converted.getUnit().getId());
+        assertEquals(3.999, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(ounceId, converted.getUnit().getId());
     }
 
 }

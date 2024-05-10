@@ -3,25 +3,18 @@ package com.meg.listshop.conversion.service;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
-import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.data.pojo.UnitSubtype;
-import com.meg.listshop.conversion.data.pojo.UnitType;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
-import com.meg.listshop.conversion.tools.RoundingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,8 +28,6 @@ public class ConversionServiceImpl implements ConversionService {
     @Value("${conversionservice.gram.unit.id:1013}")
     private Long GRAM_UNIT_ID;
 
-    @Value("${conversionservice.single.unit.id:1011}")
-    private Long SINGLE_UNIT_ID;
 
     @Autowired
     public ConversionServiceImpl(ConversionFactorRepository conversionFactorRepository,
@@ -79,96 +70,8 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     @Override
-    public List<ConversionSampleDTO> conversionSamplesForId(Long conversionId, Boolean isLiquid) {
-        List<ConversionSampleDTO> result = new ArrayList<>();
-        if (conversionId == null || (isLiquid != null && isLiquid)) {
-            return result;
-        }
-
-        // get conversion factors
-        List<ConversionFactorEntity> factors = conversionFactorRepository.findAllByConversionIdIs(conversionId);
-
-        // get target unit - grams or unit
-        UnitEntity targetUnit = determineSampleTarget(factors);
-
-        // get units to convert to do conversion for
-        List<UnitEntity> unitsToConvert = determineUnitsToConvert(factors);
-
-        // get markers in factors
-        List<String> markers = pullAvailableMarkers(factors);
-
-        // do conversions
-        for (UnitEntity unit : unitsToConvert) {
-            SimpleAmount from = new SimpleAmount(1.0, unit, conversionId, isLiquid, null);
-
-            ConvertibleAmount to = null;
-            try {
-                to = converterService.convert(from, targetUnit);
-                // rounded "to amount"
-                SimpleAmount roundedTo = new SimpleAmount(RoundingUtils.roundToHundredths(to.getQuantity()), to.getUnit());
-                if (roundedTo.getUnit().equals(targetUnit)) {
-                    result.add(new ConversionSampleDTO(from, roundedTo));
-                }
-            } catch (ConversionPathException | ConversionFactorException g) {
-                LOG.error("Exception [{}] thrown during conversion, but continuing to next conversion.", g.getClass(), g);
-            }
-
-        }
-        // add conversions for markers
-        for (String marker : markers) {
-            for (UnitEntity unit : unitsToConvert) {
-                SimpleAmount from = new SimpleAmount(1.0, unit, conversionId, isLiquid, marker);
-
-                ConvertibleAmount to = null;
-                try {
-                    to = converterService.convert(from, targetUnit);
-                    // rounded "to amount"
-                    SimpleAmount roundedTo = new SimpleAmount(RoundingUtils.roundToHundredths(to.getQuantity()), to.getUnit());
-                    result.add(new ConversionSampleDTO(from, roundedTo));
-                } catch (ConversionPathException | ConversionFactorException g) {
-                    LOG.error("Exception [{}] thrown during conversion, but continuing to next conversion.", g.getClass(), g);
-                }
-
-            }
-        }
-
-        // return results
-        return result;
-    }
-
-    @Override
     public ConvertibleAmount convertToUnit(ConvertibleAmount amount, UnitEntity targetUnit, String unitSize) throws ConversionPathException, ConversionFactorException {
         return converterService.convert(amount, targetUnit, unitSize);
-    }
-
-    private List<String> pullAvailableMarkers(List<ConversionFactorEntity> factors) {
-        Set<String> markers = factors.stream()
-                .map(ConversionFactorEntity::getMarker)
-                .collect(Collectors.toSet());
-        return new ArrayList<>(markers);
-    }
-
-    private List<UnitEntity> determineUnitsToConvert(List<ConversionFactorEntity> factors) {
-        // find hybrid units
-        List<UnitEntity> hybridUnits = unitRepository.findGenericWeightHybrids(UnitType.HYBRID, UnitSubtype.LIQUID);
-        List<UnitEntity> additionalUnits = factors.stream()
-                .filter(f -> f.getFromUnit().isTagSpecific())
-                .map(ConversionFactorEntity::getFromUnit)
-                .collect(Collectors.toList());
-        if (!additionalUnits.isEmpty()) {
-            hybridUnits.addAll(additionalUnits);
-        }
-        return hybridUnits;
-    }
-
-    private UnitEntity determineSampleTarget(List<ConversionFactorEntity> factors) {
-        ConversionFactorEntity unitFactor = factors.stream()
-                .filter(f -> f.getFromUnit().getId().equals(SINGLE_UNIT_ID))
-                .findFirst().orElse(null);
-        if (unitFactor != null) {
-            return unitFactor.getFromUnit();
-        }
-        return unitRepository.findById(GRAM_UNIT_ID).orElse(null);
     }
 
 }

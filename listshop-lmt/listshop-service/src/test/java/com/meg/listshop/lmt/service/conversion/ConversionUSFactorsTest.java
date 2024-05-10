@@ -71,6 +71,7 @@ public class ConversionUSFactorsTest {
         UnitEntity quartOpt = unitRepository.findById(quartId).orElse(null);
         UnitEntity flOzOpt = unitRepository.findById(flOzId).orElse(null);
         UnitEntity poundOpt = unitRepository.findById(lbId).orElse(null);
+        UnitEntity gallonOpt = unitRepository.findById(gallonId).orElse(null);
 
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
         ConversionRequest listContextVolume = new ConversionRequest(ConversionTargetType.List, UnitType.US);
@@ -81,84 +82,84 @@ public class ConversionUSFactorsTest {
 
 // 6 US cup = 0.375 US gallon
         ConvertibleAmount amount = new SimpleAmount(12.0, cupsOpt);
-        ConvertibleAmount converted = converterService.convert(amount, listContextVolume);
+        ConvertibleAmount converted = converterService.convert(amount, gallonOpt);
         assertNotNull(converted);
         assertEquals(0.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         // 68 US ounce = 0.53125 US gallon
         amount = new SimpleAmount(68.0, flOzOpt);
-        converted = converterService.convert(amount, listContextVolume);
+        converted = converterService.convert(amount, gallonOpt);
         assertNotNull(converted);
         assertEquals(0.531, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         // 35 US pint = 4.375 US gallon
         amount = new SimpleAmount(35.0, pintOpt);
-        converted = converterService.convert(amount, listContextVolume);
+        converted = converterService.convert(amount, gallonOpt);
         assertNotNull(converted);
         assertEquals(4.375, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         // 15 US quart = 3.75 US gallon
         amount = new SimpleAmount(15.0, quartOpt);
-        converted = converterService.convert(amount, listContextVolume);
+        converted = converterService.convert(amount, gallonOpt);
         assertNotNull(converted);
         assertEquals(3.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         // 7 fluid ounce (US) = 0.875 cup (US)
         amount = new SimpleAmount(7.0, flOzOpt);
-        converted = converterService.convert(amount, dishContextVolume);
+        converted = converterService.convert(amount, cupsOpt);
         assertNotNull(converted);
         assertEquals(0.875, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(cupsId, converted.getUnit().getId());
 
         // 0.2 Pound = 3.2 Ounce
         amount = new SimpleAmount(0.2, poundOpt);
-        converted = converterService.convert(amount, listContext);
+        converted = converterService.convert(amount, ounceOpt);
         assertNotNull(converted);
         assertEquals(3.2, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(ounceId, converted.getUnit().getId());
 
         // 4 US cup = 1 US quart
         amount = new SimpleAmount(4, cupsOpt);
-        converted = converterService.convert(amount, listContextVolume);
+        converted = converterService.convert(amount, quartOpt);
         assertNotNull(converted);
-        //assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        //assertEquals(quartId, converted.getUnit().getId());
+        assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(quartId, converted.getUnit().getId());
 
         // 36 US ounce = 2.25 US lb
         amount = new SimpleAmount(36.00, ounceOpt);
-        converted = converterService.convert(amount, listContext);
+        converted = converterService.convert(amount, poundOpt);
         assertNotNull(converted);
         assertEquals(2.25, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(lbId, converted.getUnit().getId());
 
         // 38 US ounce = 1.1875 US quart
         amount = new SimpleAmount(38.00, flOzOpt);
-        converted = converterService.convert(amount, listContextVolume);
+        converted = converterService.convert(amount, quartOpt);
         assertNotNull(converted);
         assertEquals(1.188, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(quartId, converted.getUnit().getId());
 
         // 6 US cup = 1.5 US quart
         amount = new SimpleAmount(6.0, cupsOpt);
-        converted = converterService.convert(amount, listContextVolume);
+        converted = converterService.convert(amount, quartOpt);
         assertNotNull(converted);
         assertEquals(1.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(quartId, converted.getUnit().getId());
 
         // 1 US pint = .5 US quart
         amount = new SimpleAmount(1.00, pintOpt);
-        converted = converterService.convert(amount, listContextVolume);
+        converted = converterService.convert(amount, quartOpt);
         assertNotNull(converted);
         assertEquals(.5, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(quartId, converted.getUnit().getId());
 
         // 28 Ounce = 1.75 Pound
         amount = new SimpleAmount(28, ounceOpt);
-        converted = converterService.convert(amount, listContext);
+        converted = converterService.convert(amount, poundOpt);
         assertNotNull(converted);
         assertEquals(1.75, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(lbId, converted.getUnit().getId());

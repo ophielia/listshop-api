@@ -432,18 +432,6 @@ class FoodServiceImplMockTest {
                 .map(s -> testUnitLookups.get(s))
                 .collect(Collectors.toList());
 
-        SimpleAmount toConvertTeaspoonDiced = new SimpleAmount(1.0, testUnitLookups.get(TEASPOON_ID), conversionId, false, "diced");
-        SimpleAmount toConvertTablespoonDiced = new SimpleAmount(1.0, testUnitLookups.get(TABLESPOON_ID), conversionId, false, "diced");
-        SimpleAmount toConvertCupDiced = new SimpleAmount(1.0, testUnitLookups.get(CUP_ID), conversionId, false, "diced");
-
-        SimpleAmount toConvertTeaspoonSliced = new SimpleAmount(1.0, testUnitLookups.get(TEASPOON_ID), conversionId, false, "sliced");
-        SimpleAmount toConvertTablespoonSliced = new SimpleAmount(1.0, testUnitLookups.get(TABLESPOON_ID), conversionId, false, "sliced");
-        SimpleAmount toConvertCupSliced = new SimpleAmount(1.0, testUnitLookups.get(CUP_ID), conversionId, false, "sliced");
-
-        SimpleAmount toConvertTeaspoon = new SimpleAmount(1.0, testUnitLookups.get(TEASPOON_ID), conversionId, false, null);
-        SimpleAmount toConvertTablespoon = new SimpleAmount(1.0, testUnitLookups.get(TABLESPOON_ID), conversionId, false, null);
-        SimpleAmount toConvertCup = new SimpleAmount(1.0, testUnitLookups.get(CUP_ID), conversionId, false, null);
-
         Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
                 .thenReturn(Arrays.asList(dicedTeaspoonFactor, slicedCupFactor, noMarkerCupFactor, largeUnitFactor, mediumUnitFactor));
         Mockito.when(unitRepository.findById(SINGLE_UNIT_ID))

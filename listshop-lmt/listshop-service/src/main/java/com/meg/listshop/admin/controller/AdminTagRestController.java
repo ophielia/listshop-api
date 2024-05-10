@@ -3,7 +3,6 @@ package com.meg.listshop.admin.controller;
 import com.meg.listshop.admin.model.PostSearchTags;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
-import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.FoodConversionEntity;
 import com.meg.listshop.lmt.data.entity.FoodEntity;
@@ -43,18 +42,15 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     private final TagService tagService;
     private final TagStructureService tagStructureService;
     private final FoodService foodService;
-    private final ConversionService conversionService;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminTagRestController.class);
 
     @Autowired
     AdminTagRestController(TagService tagService, TagStructureService tagStructureService,
-                           FoodService foodService,
-                           ConversionService conversionService) {
+                           FoodService foodService) {
         this.tagStructureService = tagStructureService;
         this.tagService = tagService;
         this.foodService = foodService;
-        this.conversionService = conversionService;
     }
 
 
@@ -108,11 +104,11 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         //@GetMapping(value = "/{tag_id}/food/suggestions")
 
         List<FoodEntity> foodEntities = foodService.getSuggestedFoods(tagId, searchTerm);
-        Map<Long,List<FoodConversionEntity>> conversionFactors = foodService.getFoodFactors(foodEntities);
+        Map<Long, List<FoodConversionEntity>> conversionFactors = foodService.getFoodFactors(foodEntities);
         List<FoodResource> resourceList = new ArrayList<>();
-        for (FoodEntity foodEntity: foodEntities) {
+        for (FoodEntity foodEntity : foodEntities) {
             List<FoodConversionEntity> factors = conversionFactors.get(foodEntity.getFoodId());
-            Food food = ModelMapper.toModel(foodEntity,factors);
+            Food food = ModelMapper.toModel(foodEntity, factors);
             resourceList.add(new FoodResource(food));
         }
 
@@ -121,12 +117,12 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
     public ResponseEntity<FoodListResource> getFoodSuggestionsForTerm(@RequestParam(value = "searchTerm", required = true) String searchTerm) {
-        List<FoodEntity> foodEntities = foodService.getSuggestedFoods( searchTerm);
-        Map<Long,List<FoodConversionEntity>> conversionFactors = foodService.getFoodFactors(foodEntities);
+        List<FoodEntity> foodEntities = foodService.getSuggestedFoods(searchTerm);
+        Map<Long, List<FoodConversionEntity>> conversionFactors = foodService.getFoodFactors(foodEntities);
         List<FoodResource> resourceList = new ArrayList<>();
-        for (FoodEntity foodEntity: foodEntities) {
+        for (FoodEntity foodEntity : foodEntities) {
             List<FoodConversionEntity> factors = conversionFactors.get(foodEntity.getFoodId());
-            Food food = ModelMapper.toModel(foodEntity,factors);
+            Food food = ModelMapper.toModel(foodEntity, factors);
             resourceList.add(new FoodResource(food));
         }
 
@@ -186,7 +182,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         AdminTagFullInfo tagInfo = tagService.getFullTagInfo(tagId);
         foodService.fillFoodInformation(tagInfo);
         if (tagInfo.getConversionId() != null) {
-            List<ConversionSampleDTO> conversionSamples = conversionService.conversionSamplesForId(Long.valueOf(tagInfo.getConversionId()), tagInfo.getLiquid());
+            List<ConversionSampleDTO> conversionSamples = foodService.samplesForConversionId(Long.valueOf(tagInfo.getConversionId()), tagInfo.getLiquid());
             ConversionGrid grid = ModelMapper.toConversionGrid(conversionSamples);
             tagInfo.setConversionGrid(grid);
         }
