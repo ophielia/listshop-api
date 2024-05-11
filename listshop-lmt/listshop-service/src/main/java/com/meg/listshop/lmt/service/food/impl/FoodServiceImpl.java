@@ -239,7 +239,7 @@ public class FoodServiceImpl implements FoodService {
                 try {
                     ConvertibleAmount converted = conversionService.convertToUnit(toConvert, target.unitEntity, target.unitSize);
                     Double roundedQuantity = RoundingUtils.roundToHundredths(converted.getQuantity());
-                    SimpleAmount roundedResult = new SimpleAmount(roundedQuantity, converted.getUnit(), conversionId, isLiquid, converted.getMarker());
+                    SimpleAmount roundedResult = new SimpleAmount(roundedQuantity, converted.getUnit(), conversionId, isLiquid, converted.getMarker(), converted.getUnitSize());
                     if (roundedResult.getUnit().getId().equals(target.unitEntity.getId())) {
                         result.add(new ConversionSampleDTO(toConvert, roundedResult));
                     }

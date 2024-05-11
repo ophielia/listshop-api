@@ -75,9 +75,9 @@ public class ModelMapper {
         if (conversionSampleDTO.getFromAmount().getMarker() != null) {
             fromUnit = fromUnit + "," + conversionSampleDTO.getFromAmount().getMarker();
         }
-        String toUnit = conversionSampleDTO.getFromAmount().getUnit().getName();
-        if (conversionSampleDTO.getFromAmount().getUnitSize() != null) {
-            toUnit = toUnit + "," + conversionSampleDTO.getFromAmount().getUnitSize();
+        String toUnit = conversionSampleDTO.getToAmount().getUnit().getName();
+        if (conversionSampleDTO.getToAmount().getUnitSize() != null) {
+            toUnit = toUnit + "," + conversionSampleDTO.getToAmount().getUnitSize();
         }
         sample.setFromAmount(String.valueOf(conversionSampleDTO.getFromAmount().getQuantity()));
         sample.setToAmount(String.valueOf(conversionSampleDTO.getToAmount().getQuantity()));

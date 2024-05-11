@@ -16,6 +16,9 @@ VALUES (999999, 999999, 388);-- Produce
 INSERT INTO tag (user_id, tag_id, description, name, tag_type, tag_type_default, is_verified,
                  power, conversion_id)
 VALUES (101010, 777777, NULL, 'poltry', 'Ingredient', NULL, NULL, NULL,227959);
+INSERT INTO tag (user_id, tag_id, description, name, tag_type, tag_type_default, is_verified,
+                 power, conversion_id)
+VALUES (101010, 666666, NULL, 'to-mahhhh-toes', 'Ingredient', NULL, NULL, NULL,227959);
 
 
 -- for food suggestion test
@@ -84,10 +87,27 @@ insert into factors (factor_id, factor, to_unit, from_unit, conversion_id) VALUE
 insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default) values
     (1065, 88,  1013, 1011,227959, 106417, null, null, false);
 
+-- tomato test
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default) values (1140, 180, 1013, 1000, 225744, 104748, 'chopped', null, false);
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default) values (1141, 182, 1013, 1011, 225744, 105738, null, 'large', false);
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default) values (1142, 123, 1013, 1011, 225744, 105738, null, 'medium', true);
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default) values (1144, 91, 1013, 1011, 225744, 105738, null, 'small', false);
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default) values (1145, 27, 1013, 1022, 225744, 105738, null, null, false);
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default) values (1146, 31, 1013, 1050, 225744, 104539, 'wedge', null, false);
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default) values (1147, 20, 1013, 1022, 225744, 105738, null, null, false);
+
+insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id, food_conversion_id, integral, marker, sub_amount, info, unit_size, unit_default) values (225744, 104748, 170457, 1, 'cup', 180, 1000, 228179, null, 'chopped', null, null, null, false);
+insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id, food_conversion_id, integral, marker, sub_amount, info, unit_size, unit_default) values (225744, 105738, 170457, 1, 'unit', 182, 1011, 228180, null, null, null, 'whole 3"" dia', 'large', false);
+insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id, food_conversion_id, integral, marker, sub_amount, info, unit_size, unit_default) values (225744, 105738, 170457, 1, 'unit', 123, 1011, 228182, null, null, null, '2-3/5" dia', 'medium', true);
+insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id, food_conversion_id, integral, marker, sub_amount, info, unit_size, unit_default) values (225744, 105738, 170457, 1, 'unit', 91, 1011, 229672, null, null, null, '2-2/5" dia', 'small', false);
+insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id, food_conversion_id, integral, marker, sub_amount, info, unit_size, unit_default) values (225744, 105738, 170457, 1, 'slice', 27, 1022, 229673, null, null, null, '1/2" thick', null, false);
+insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id, food_conversion_id, integral, marker, sub_amount, info, unit_size, unit_default) values (225744, 104539, 170457, 1, 'wedge', 31, 1050, 229970, null, 'wedge', null, '1/4 tomato', null, false);
+insert into food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id, food_conversion_id, integral, marker, sub_amount, info, unit_size, unit_default) values (225744, 105738, 170457, 1, 'slice', 20, 1022, 230808, null, null, null, '1/4" thick', null, false);
 
 
 
 update tag set conversion_id = 99001 where tag_id = 9991029;
+update tag set conversion_id = 225744 where tag_id = 666666;
 update tag set is_liquid = false where tag_id = 9991029;
 
 

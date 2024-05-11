@@ -268,7 +268,6 @@ public class AdminTagRestControllerTest {
     @WithMockUser
     public void testFullTagInfoConversionSamplesChickenBreast() throws Exception {
         // chicken breast - one factor, between unit and grams.
-
         long tagId = 777777;
         MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
                         .with(user(userDetails)))
@@ -296,8 +295,9 @@ public class AdminTagRestControllerTest {
     public void testFullTagInfoConversionSamplesTomatoes() throws Exception {
         // MM START HERE - To Ma To es
         // in other words - multiple unit sizes and markers
+        // 3 unit sizes, 3 markers (including null) - generics
 
-        long tagId = 777777;
+        long tagId = 666666;
         MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful())
@@ -306,16 +306,16 @@ public class AdminTagRestControllerTest {
         Assertions.assertNotNull(result);
         ObjectMapper mapper = new ObjectMapper();
         AdminTagFullInfoResource resultObject = mapper.readValue(result.getResponse().getContentAsString(), AdminTagFullInfoResource.class);
-        // this "chicken" has 1 factor, which is a unit
-        // so we should have one sample, converting to grams, without any markers or unit sizes
+        // "tomatoes"" have 3 unit factors, 1 cup (generic) factor, and 2 units slice and wedge
+        // so we should have 15 (3 x 5) samples, converting to units, with markers and unit sizes
         ConversionGrid grid = resultObject.getTag().getConversionGrid();
         Assertions.assertNotNull(grid);
-        Assertions.assertEquals(1, grid.getSamples().size(), "expected 3 samples");
+        Assertions.assertEquals(15, grid.getSamples().size(), "expected 3 samples");
         long commaCount = grid.getSamples().stream()
-                .filter( s -> s.getFromAmount().contains(",") ||
-                        s.getToAmount().contains(","))
+                .filter( s -> s.getFromUnit().contains(",") ||
+                        s.getToUnit().contains(","))
                 .count();
-        Assert.assertEquals(0L, commaCount);
+        Assert.assertTrue(commaCount > 1);
     }
 
 
