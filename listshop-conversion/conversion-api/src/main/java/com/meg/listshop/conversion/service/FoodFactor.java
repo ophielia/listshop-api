@@ -11,4 +11,8 @@ public interface FoodFactor {
     Long getFromUnitId();
 
     String getMarker();
+
+    String getUnitSize();
+
+    Boolean getUnitDefault();
 }

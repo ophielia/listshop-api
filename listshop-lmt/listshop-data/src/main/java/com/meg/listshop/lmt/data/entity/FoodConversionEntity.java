@@ -124,10 +124,7 @@ public class FoodConversionEntity implements FoodFactor {
         this.unitId = unitId;
     }
 
-    public Long getUnitId() {
-        return unitId;
-    }
-
+    @Override
     public String getUnitSize() {
         return unitSize;
     }
@@ -136,6 +133,7 @@ public class FoodConversionEntity implements FoodFactor {
         this.unitSize = unitSize;
     }
 
+    @Override
     public Boolean getUnitDefault() {
         return unitDefault;
     }

@@ -295,7 +295,7 @@ public class FoodServiceImpl implements FoodService {
 
     private Map<Long, UnitEntity> getUnitsForFactorsWithGenerics(List<FoodConversionEntity> factors) {
         Set<Long> unitIds = factors.stream()
-                .map(FoodConversionEntity::getUnitId)
+                .map(FoodConversionEntity::getFromUnitId)
                 .collect(Collectors.toSet());
         Long genericId = unitIds.stream()
                 .filter( u -> GENERIC_IDS.contains(u))
@@ -324,7 +324,7 @@ public class FoodServiceImpl implements FoodService {
             return Collections.singletonList(new TargetUnit(gramUnit, null));
         }
         for (FoodConversionEntity foodConversionEntity : factors) {
-            if (foodConversionEntity.getUnitId().equals(SINGLE_UNIT_ID)) {
+            if (foodConversionEntity.getFromUnitId().equals(SINGLE_UNIT_ID)) {
                 results.add(new TargetUnit(singleUnit, foodConversionEntity.getUnitSize()));
             }
         }

@@ -63,6 +63,8 @@ public class ConversionServiceImpl implements ConversionService {
             toAdd.setToUnit(gramUnit);
             toAdd.setFactor(conversionGramWeight);
             toAdd.setMarker(foodFactor.getMarker());
+            toAdd.setUnitSize(foodFactor.getUnitSize());
+            toAdd.setUnitDefault(foodFactor.getUnitDefault());
             conversionFactorRepository.save(toAdd);
         }
 

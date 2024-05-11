@@ -1,1 +1,1 @@
-delete from factors where conversion_id is not null;
+delete from factors where factor_id > 500;

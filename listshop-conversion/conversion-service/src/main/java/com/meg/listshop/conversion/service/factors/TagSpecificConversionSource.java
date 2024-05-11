@@ -185,7 +185,8 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
                 .collect(Collectors.toSet());
         List<ConversionFactor> inflatedFactors = new ArrayList<>();
         for (ConversionFactor f : hybridInflationFactors) {
-            if (mappedUnitIds.contains(f.getFromUnit().getId())) {
+            if (mappedUnitIds.contains(f.getFromUnit().getId()) ||
+                 !baseFactor.getFromUnit().getId().equals(f.getToUnit().getId())) {
                 continue;
             }
             mappedUnitIds.add(f.getFromUnit().getId());

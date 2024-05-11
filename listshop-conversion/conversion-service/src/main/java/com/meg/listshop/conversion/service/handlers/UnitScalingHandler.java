@@ -45,7 +45,7 @@ public class UnitScalingHandler extends AbstractScalingHandler {
         }
 
         ConversionFactor targetSizeFactor = factors.stream()
-                .filter(f -> f.getUnitSize().equals(targetSize))
+                .filter(f -> f.getUnitSize() != null && f.getUnitSize().equals(targetSize))
                 .findFirst()
                 .orElse(null);
         if (targetSizeFactor != null) {

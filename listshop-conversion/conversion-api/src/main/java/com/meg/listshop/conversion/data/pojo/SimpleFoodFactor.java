@@ -10,6 +10,8 @@ public class SimpleFoodFactor implements FoodFactor {
     private Long fromUnitId;
 
     private String marker;
+    private String unitSize;
+    private Boolean unitDefault;
 
     public SimpleFoodFactor(Long referenceId, double gramWeight, double amount, Long fromUnitId) {
          this( referenceId, gramWeight, amount, fromUnitId,null);
@@ -66,5 +68,23 @@ public class SimpleFoodFactor implements FoodFactor {
 
     public void setMarker(String marker) {
         this.marker = marker;
+    }
+
+    @Override
+    public String getUnitSize() {
+        return unitSize;
+    }
+
+    public void setUnitSize(String unitSize) {
+        this.unitSize = unitSize;
+    }
+
+    @Override
+    public Boolean getUnitDefault() {
+        return unitDefault;
+    }
+
+    public void setUnitDefault(Boolean unitDefault) {
+        this.unitDefault = unitDefault;
     }
 }

@@ -15,6 +15,9 @@ INSERT INTO tag_relation (tag_relation_id, child_tag_id, parent_tag_id)
 VALUES (999999, 999999, 388);-- Produce
 INSERT INTO tag (user_id, tag_id, description, name, tag_type, tag_type_default, is_verified,
                  power, conversion_id)
+VALUES (101010, 888888, NULL, 'some black thing', 'Ingredient', NULL, NULL, NULL, 101010);
+INSERT INTO tag (user_id, tag_id, description, name, tag_type, tag_type_default, is_verified,
+                 power, conversion_id)
 VALUES (101010, 777777, NULL, 'poltry', 'Ingredient', NULL, NULL, NULL,227959);
 INSERT INTO tag (user_id, tag_id, description, name, tag_type, tag_type_default, is_verified,
                  power, conversion_id)
