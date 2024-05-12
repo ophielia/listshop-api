@@ -21,6 +21,8 @@ public class Dish {
 
     private List<Tag> tags = new ArrayList<>();
 
+    private List<Ingredient> ingredients = new ArrayList<>();
+
     private Long userId;
 
     @JsonProperty("last_added")
@@ -110,5 +112,27 @@ public class Dish {
     public Dish reference(String reference) {
         this.reference = reference;
         return this;
+    }
+
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    @Override
+    public String toString() {
+        return "Dish{" +
+                "dish_id=" + dish_id +
+                ", dishName='" + dishName + '\'' +
+                ", description='" + description + '\'' +
+                ", reference='" + reference + '\'' +
+                ", tags=" + tags +
+                ", ingredients=" + ingredients +
+                ", userId=" + userId +
+                ", lastAdded=" + lastAdded +
+                '}';
     }
 }
