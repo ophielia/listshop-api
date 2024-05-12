@@ -1,52 +1,47 @@
 package com.meg.listshop.lmt.api.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class Ingredient {
 
-    @JsonProperty("dish_item_id")
-private Long dishItemId;
+    @JsonProperty("id")
+    private String id;
     @JsonProperty("tag_id")
-private Long tagId;
+    private String tagId;
     @JsonProperty("tag_display")
-private String tagDisplay;
+    private String tagDisplay;
     @JsonProperty("whole_quantity")
-private Integer wholeQuantity;
+    private Integer wholeQuantity;
     @JsonProperty("fractional_quantity")
-private String fractionalQuantity;
+    private String fractionalQuantity;
     @JsonProperty("quantity_display")
-private String quantityDisplay;
+    private String quantityDisplay;
     @JsonProperty("unit_id")
-private String unitId;
+    private String unitId;
     @JsonProperty("unit_name")
-private String unitName;
+    private String unitName;
     @JsonProperty("raw_modifiers")
-private String rawModifiers;
+    private String rawModifiers;
     @JsonProperty("unit_display")
-private String unitDisplay;
+    private String unitDisplay;
 
     public Ingredient() {
         // empty constructor
     }
 
-    public Long getDishItemId() {
-        return dishItemId;
+    public String getId() {
+        return id;
     }
 
-    public void setDishItemId(Long dishItemId) {
-        this.dishItemId = dishItemId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public Long getTagId() {
+    public String getTagId() {
         return tagId;
     }
 
-    public void setTagId(Long tagId) {
+    public void setTagId(String tagId) {
         this.tagId = tagId;
     }
 
@@ -117,16 +112,16 @@ private String unitDisplay;
     @Override
     public String toString() {
         return "Ingredient{" +
-                "dishItemId=" + dishItemId +
-                ", tagId=" + tagId +
+                "id='" + id + '\'' +
+                ", tagId='" + tagId + '\'' +
                 ", tagDisplay='" + tagDisplay + '\'' +
-                ", quantityDisplay='" + quantityDisplay + '\'' +
-                ", unitDisplay='" + unitDisplay + '\'' +
                 ", wholeQuantity=" + wholeQuantity +
                 ", fractionalQuantity='" + fractionalQuantity + '\'' +
+                ", quantityDisplay='" + quantityDisplay + '\'' +
                 ", unitId='" + unitId + '\'' +
                 ", unitName='" + unitName + '\'' +
                 ", rawModifiers='" + rawModifiers + '\'' +
+                ", unitDisplay='" + unitDisplay + '\'' +
                 '}';
     }
 }

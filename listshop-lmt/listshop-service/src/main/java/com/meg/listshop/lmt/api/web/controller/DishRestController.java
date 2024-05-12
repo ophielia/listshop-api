@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.api.web.controller;
 
 import com.google.common.base.Enums;
-import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.controller.DishRestControllerApi;
 import com.meg.listshop.lmt.api.model.*;
@@ -44,7 +43,6 @@ public class DishRestController implements DishRestControllerApi {
 
     @Autowired
     DishRestController(DishService dishService,
-                       UserService userService,
                        DishSearchService dishSearchService,
                        TagService tagService) {
         this.dishService = dishService;
@@ -173,7 +171,7 @@ public class DishRestController implements DishRestControllerApi {
 
         DishResource resource = new DishResource(ModelMapper.toModel(dish, true));
 
-        return new ResponseEntity<DishResource>(resource, HttpStatus.OK);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     public ResponseEntity<CollectionModel<TagResource>> getTagsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable Long dishId) {
@@ -186,7 +184,7 @@ public class DishRestController implements DishRestControllerApi {
                 .map(TagResource::new)
                 .collect(Collectors.toList());
         tagList.forEach(tr -> tr.fillLinks(request, tr));
-        return new ResponseEntity(tagList, HttpStatus.OK);
+        return new ResponseEntity<>((CollectionModel<TagResource>) tagList, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> addTagToDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long tagId) {
@@ -251,7 +249,7 @@ public class DishRestController implements DishRestControllerApi {
         var ratingUpdateInfo = tagService.getRatingUpdateInfoForDishIds(Collections.singletonList(dishId));
         var ratingResource = new RatingUpdateInfoResource(ratingUpdateInfo);
 
-        return new ResponseEntity<RatingUpdateInfoResource>(ratingResource, HttpStatus.OK);
+        return new ResponseEntity<>(ratingResource, HttpStatus.OK);
 
     }
 
