@@ -73,7 +73,7 @@ public class DishRestController implements DishRestControllerApi {
 
         DishListResource resource = new DishListResource(dishList);
         resource.fillLinks(request, resource);
-        return new ResponseEntity<DishListResource>(resource, HttpStatus.OK);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
 
     }
 
@@ -173,7 +173,7 @@ public class DishRestController implements DishRestControllerApi {
 
         DishResource resource = new DishResource(ModelMapper.toModel(dish, true));
 
-        return new ResponseEntity(resource, HttpStatus.OK);
+        return new ResponseEntity<DishResource>(resource, HttpStatus.OK);
     }
 
     public ResponseEntity<CollectionModel<TagResource>> getTagsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable Long dishId) {
@@ -251,7 +251,7 @@ public class DishRestController implements DishRestControllerApi {
         var ratingUpdateInfo = tagService.getRatingUpdateInfoForDishIds(Collections.singletonList(dishId));
         var ratingResource = new RatingUpdateInfoResource(ratingUpdateInfo);
 
-        return new ResponseEntity(ratingResource, HttpStatus.OK);
+        return new ResponseEntity<RatingUpdateInfoResource>(ratingResource, HttpStatus.OK);
 
     }
 

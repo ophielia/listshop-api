@@ -35,6 +35,25 @@ public class DishItemEntity {
     @JoinColumn(name = "dish_id", nullable = false)
     private DishEntity dish;
 
+    @Column(name = "whole_quantity")
+    private Integer wholeQuantity;
+
+    @Column(name = "fractional_quantity")
+    private String fractionalQuantity;
+
+    private Double quantity;
+
+    @Column(name = "unit_id")
+    private Long unitId;
+
+    private String marker;
+
+    @Column(name = "unit_size")
+    private String unitSize;
+
+    @Column(name = "raw_modifiers")
+    private String rawModifiers;
+
     public DishItemEntity(Long id) {
         dishItemId = id;
     }
@@ -68,17 +87,73 @@ public class DishItemEntity {
         this.dish = dish;
     }
 
+    public String getRawModifiers() {
+        return rawModifiers;
+    }
+
+    public void setRawModifiers(String rawModifiers) {
+        this.rawModifiers = rawModifiers;
+    }
+
+    public String getUnitSize() {
+        return unitSize;
+    }
+
+    public void setUnitSize(String unitSize) {
+        this.unitSize = unitSize;
+    }
+
+    public String getMarker() {
+        return marker;
+    }
+
+    public void setMarker(String marker) {
+        this.marker = marker;
+    }
+
+    public Long getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(Long unitId) {
+        this.unitId = unitId;
+    }
+
+    public Double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getFractionalQuantity() {
+        return fractionalQuantity;
+    }
+
+    public void setFractionalQuantity(String fractionQuantity) {
+        this.fractionalQuantity = fractionQuantity;
+    }
+
+    public Integer getWholeQuantity() {
+        return wholeQuantity;
+    }
+
+    public void setWholeQuantity(Integer wholeQuantity) {
+        this.wholeQuantity = wholeQuantity;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DishItemEntity that = (DishItemEntity) o;
-        return Objects.equals(dishItemId, that.dishItemId) && Objects.equals(tag, that.tag) && Objects.equals(dish, that.dish);
+        return Objects.equals(dishItemId, that.dishItemId) && Objects.equals(tag, that.tag) && Objects.equals(dish, that.dish) && Objects.equals(quantity, that.quantity) && Objects.equals(unitId, that.unitId) && Objects.equals(marker, that.marker) && Objects.equals(unitSize, that.unitSize) && Objects.equals(rawModifiers, that.rawModifiers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dishItemId, tag, dish);
+        return Objects.hash(dishItemId, tag, dish, quantity, unitId, marker, unitSize, rawModifiers);
     }
 
     @Override
@@ -87,6 +162,13 @@ public class DishItemEntity {
                 "dishItemId=" + dishItemId +
                 ", tag=" + tag +
                 ", dish=" + dish +
+                ", wholeQuantity=" + wholeQuantity +
+                ", fractionQuantity='" + fractionalQuantity + '\'' +
+                ", quantity=" + quantity +
+                ", unitId=" + unitId +
+                ", marker='" + marker + '\'' +
+                ", unitSize='" + unitSize + '\'' +
+                ", rawModifiers='" + rawModifiers + '\'' +
                 '}';
     }
 }
