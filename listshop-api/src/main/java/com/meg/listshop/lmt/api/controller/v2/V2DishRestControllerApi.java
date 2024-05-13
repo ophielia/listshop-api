@@ -24,10 +24,10 @@ public interface V2DishRestControllerApi {
     ResponseEntity<CollectionModel<IngredientResource>> getIngredientssByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
 
     @PostMapping(value = "/{dishId}/ingredient", produces = "application/json")
-    ResponseEntity<Object> addIngredientToDish(Authentication authentication, @PathVariable Long dishId, @RequestParam(value = "ingredient") Ingredient ingredient);
+    ResponseEntity<Object> addIngredientToDish(Authentication authentication, @PathVariable Long dishId, @RequestParam(value = "ingredient") IngredientPut ingredient);
 
     @PutMapping(value = "/{dishId}/ingredient", produces = "application/json")
-    ResponseEntity<Object> updateIngredientToDish(Authentication authentication, @PathVariable Long dishId, @RequestParam(value = "ingredient") Ingredient ingredient);
+    ResponseEntity<Object> updateIngredientToDish(Authentication authentication, @PathVariable Long dishId, @RequestParam(value = "ingredient") IngredientPut ingredient);
 
     @DeleteMapping(value = "/{dishId}/ingredient/{ingredientId}", produces = "application/json")
     ResponseEntity<Object> deleteIngredientFromDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long ingredientId);

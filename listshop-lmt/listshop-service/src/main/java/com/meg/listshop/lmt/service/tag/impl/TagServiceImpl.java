@@ -734,6 +734,10 @@ public class TagServiceImpl implements TagService {
         return tagRepository.getTagsForIdList(new HashSet<>(tagIds));
     }
 
+    public void countTagAddedToDish(Long userId, Long tagId) {
+        tagStatisticService.countTagAddedToDish(userId, tagId);
+    }
+
     public void addOrUpdateLiquidPropertyForTag(Long tagId, Boolean isLiquid) {
         // get tag
         TagEntity tag = getTagById(tagId);

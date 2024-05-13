@@ -13,10 +13,17 @@ import com.meg.listshop.common.StringTools;
 import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
+import com.meg.listshop.lmt.api.model.FractionType;
+import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.data.entity.DishItemEntity;
+import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.DishItemDTO;
+import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
 import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
@@ -40,14 +47,15 @@ public class DishServiceImpl implements DishService {
 
     private final DishRepository dishRepository;
 
-    private final DishSearchService dishSearchService;
-
     private final UserRepository userRepository;
 
     private final AutoTagService autoTagService;
 
     private final TagService tagService;
-    private final ConverterService converterService;
+
+    private final DishItemRepository dishItemRepository;
+
+    private final FoodService foodService;
 
 
     private static final Logger logger = LoggerFactory.getLogger(DishServiceImpl.class);
@@ -55,18 +63,18 @@ public class DishServiceImpl implements DishService {
     @Autowired
     public DishServiceImpl(
             DishRepository dishRepository,
-            DishSearchService dishSearchService,
             UserRepository userRepository,
             @Lazy AutoTagService autoTagService,
             TagService tagService,
-            ConverterService converterService
+            DishItemRepository dishItemRepository,
+            FoodService foodService
     ) {
         this.dishRepository = dishRepository;
-        this.dishSearchService = dishSearchService;
         this.userRepository = userRepository;
         this.autoTagService = autoTagService;
         this.tagService = tagService;
-        this.converterService = converterService;
+        this.dishItemRepository = dishItemRepository;
+        this.foodService = foodService;
     }
 
     @Override
@@ -207,4 +215,84 @@ public class DishServiceImpl implements DishService {
         Pageable limit = PageRequest.of(0, dishLimit);
         return dishRepository.findDishesToAutotag(statusFlag, limit);
     }
+
+    @Override
+    public void addIngredientToDish(Long userId, Long dishId, DishItemDTO dishItemDTO) {
+        // get dish
+        DishEntity dish = getDishForUserById(userId, dishId);
+        List<DishItemEntity> dishItems = dish.getItems();
+        // check if ingredient already exists for this tagId and unit
+        TagEntity existingTag = dishItems.stream()
+                .filter(i -> i.getUnitId() != null && i.getUnitId().equals(dishItemDTO.getUnitId()))
+                .map(DishItemEntity::getTag)
+                .filter(t -> t.getId().equals(dishItemDTO.getTagId()))
+                .findFirst()
+                .orElse(null);
+
+        if (existingTag != null) {
+            // ingredient already exists for this tag and unit
+            return;
+        }
+        DishItemEntity dishItemEntity = new DishItemEntity();
+        dishItemEntity.setDish(dish);
+        // get tag
+        TagEntity tag = tagService.getTagById(dishItemDTO.getTagId());
+        if (tag == null) {
+            throw new ObjectNotFoundException("Tag not found", dishItemDTO.getTagId(), "Tag");
+        }
+        dishItemEntity.setTag(tag);
+        // calculate quantity from fraction and whole
+        Double quantity = calculateQuantity(dishItemDTO);
+        dishItemEntity.setQuantity(quantity);
+
+        // fill unitSize and marker from raw_modifiers
+        dishItemDTO.setRawModifiers(dishItemEntity.getRawModifiers());
+        if (tag.getConversionId() != null) {
+            fillIngredientModifiers(tag.getConversionId(), dishItemDTO.getRawModifiers(), dishItemEntity);
+            dishItemEntity.setModifiersProcessed(true);
+        } else if (dishItemDTO.getRawModifiers() != null) {
+            dishItemEntity.setModifiersProcessed(false);
+        }
+
+        // save ingredient
+        dishItemRepository.save(dishItemEntity);
+        dishItems.add(dishItemEntity);
+        // add ingredient to dish
+        dish.setItems(dishItems);
+        save(dish, false);
+        // update statistic
+        tagService.countTagAddedToDish(dish.getUserId(), tag.getId());
+    }
+
+    private Double calculateQuantity(DishItemDTO dishItemDTO) {
+        Double quantity = 0.0;
+        if (dishItemDTO.getWholeQuantity() != null) {
+            quantity = quantity + dishItemDTO.getWholeQuantity();
+        }
+        if (dishItemDTO.getFractionalQuantity() != null) {
+            Double fractionalValue = FractionType.doubleValueOf(dishItemDTO.getFractionalQuantity());
+            quantity = quantity + fractionalValue;
+        }
+
+        return quantity;
+    }
+
+    private void fillIngredientModifiers(Long conversionId, String rawModifiers, DishItemEntity dishItemEntity) {
+        if (rawModifiers == null) {
+            return;
+        }
+        List<String> modifierTokens = foodService.pullModifierTokens(rawModifiers);
+        List<String> markers = foodService.pullMarkersForModifers(modifierTokens, conversionId);
+        if (markers != null && !markers.isEmpty()) {
+            String firstMarker = markers.get(0);
+            dishItemEntity.setMarker(firstMarker);
+        }
+        List<String> unitSizes = foodService.pullUnitSizesForModifiers(modifierTokens);
+        if (unitSizes != null && !unitSizes.isEmpty()) {
+            String firstUnit = unitSizes.get(0);
+            dishItemEntity.setUnitSize(firstUnit);
+        }
+        return;
+    }
+
 }

@@ -3,9 +3,11 @@ package com.meg.listshop.lmt.service.impl;
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
 import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -41,21 +43,20 @@ public class DishServiceImplMockTest {
     @MockBean
     private TagService tagService;
     @MockBean
-    private TagStructureService tagStructureService;
+    private DishItemRepository dishItemRepository;
     @MockBean
-    private DishSearchService dishSearchService;
-    @MockBean
-    private ConverterService converterService;
+    private FoodService foodService;
+
 
     @Before
     public void setUp() {
 
         dishService = new DishServiceImpl(dishRepository,
-                dishSearchService,
                 userRepository,
                 autoTagService,
                 tagService,
-                converterService
+                dishItemRepository,
+                foodService
         );
     }
 

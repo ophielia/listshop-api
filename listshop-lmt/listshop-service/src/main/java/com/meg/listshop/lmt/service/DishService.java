@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -33,4 +34,6 @@ public interface DishService {
     void updateLastAddedForDish(Long dishId);
 
     List<DishEntity> getDishesToAutotag(Long statusFlag, int dishLimit);
+
+    void addIngredientToDish(Long id, Long dishId, DishItemDTO validatedEntry);
 }

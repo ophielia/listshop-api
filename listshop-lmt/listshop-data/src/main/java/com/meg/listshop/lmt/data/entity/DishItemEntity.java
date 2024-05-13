@@ -54,6 +54,9 @@ public class DishItemEntity {
     @Column(name = "raw_modifiers")
     private String rawModifiers;
 
+    @Column(name = "modifiers_processed")
+    private Boolean modifiersProcessed;
+
     public DishItemEntity(Long id) {
         dishItemId = id;
     }
@@ -143,6 +146,14 @@ public class DishItemEntity {
         this.wholeQuantity = wholeQuantity;
     }
 
+    public Boolean getModifiersProcessed() {
+        return modifiersProcessed;
+    }
+
+    public void setModifiersProcessed(Boolean modifiersProcessed) {
+        this.modifiersProcessed = modifiersProcessed;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -169,6 +180,7 @@ public class DishItemEntity {
                 ", marker='" + marker + '\'' +
                 ", unitSize='" + unitSize + '\'' +
                 ", rawModifiers='" + rawModifiers + '\'' +
+                ", modifiersProcessed='" + modifiersProcessed + '\'' +
                 '}';
     }
 }

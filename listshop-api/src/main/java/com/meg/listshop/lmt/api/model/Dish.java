@@ -21,7 +21,7 @@ public class Dish {
 
     private List<Tag> tags = new ArrayList<>();
 
-    private List<Ingredient> ingredients = new ArrayList<>();
+    private List<IngredientPut> ingredients = new ArrayList<>();
 
     private Long userId;
 
@@ -114,11 +114,11 @@ public class Dish {
         return this;
     }
 
-    public List<Ingredient> getIngredients() {
+    public List<IngredientPut> getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(List<Ingredient> ingredients) {
+    public void setIngredients(List<IngredientPut> ingredients) {
         this.ingredients = ingredients;
     }
 

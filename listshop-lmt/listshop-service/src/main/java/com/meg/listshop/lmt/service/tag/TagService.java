@@ -91,4 +91,6 @@ public interface TagService {
     void addOrUpdateLiquidPropertyForTagList(List<Long> tagIds, Boolean isLiquid);
 
     List<TagEntity> getTagsForIdList(List<Long> tagIds);
+
+    void countTagAddedToDish(Long userId, Long tagId);
 }

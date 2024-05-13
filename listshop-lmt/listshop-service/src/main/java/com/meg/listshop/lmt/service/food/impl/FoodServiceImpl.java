@@ -67,6 +67,9 @@ public class FoodServiceImpl implements FoodService {
     @Value("#{'${conversionservice.generic.ids:1000,1001,1002}'.split(',')}")
     private Set<Long> GENERIC_IDS;
 
+    @Value("#{'${conversionservice.token.combine:extra,xtra}'.split(',')}")
+    private Set<String> TAKES_NEXT_TOKEN;
+
     @Autowired
     public FoodServiceImpl(FoodCategoryMappingRepository foodCategoryMappingRepo, FoodRepository foodRepository,
                            FoodCategoryRepository foodCategoryRepository,
@@ -250,6 +253,34 @@ public class FoodServiceImpl implements FoodService {
         }
 
         // return results
+        return result;
+    }
+
+    @Override
+    public List<String> pullModifierTokens(String rawModifiers) {
+        List<String> result = new ArrayList<>();
+        StringTokenizer tokens = new StringTokenizer(rawModifiers, " ");
+        while(tokens.hasMoreTokens()){
+            String token = tokens.nextToken();
+            if (TAKES_NEXT_TOKEN.contains(token) && tokens.hasMoreTokens()) {
+                String nextToken = tokens.nextToken();
+                result.add(String.join(" ",token, nextToken));
+            } else {
+                result.add(token);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<String> pullMarkersForModifers(List<String> modifierTokens, Long conversionId) {
+        List<String> result = new ArrayList<>();
+        return result;
+    }
+
+    @Override
+    public List<String> pullUnitSizesForModifiers(List<String> modifierTokens) {
+        List<String> result = new ArrayList<>();
         return result;
     }
 
