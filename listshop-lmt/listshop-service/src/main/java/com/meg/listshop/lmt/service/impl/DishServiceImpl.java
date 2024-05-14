@@ -10,20 +10,17 @@ package com.meg.listshop.lmt.service.impl;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.common.StringTools;
-import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import com.meg.listshop.lmt.api.model.FractionType;
-import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
-import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
-import com.meg.listshop.lmt.service.food.FoodService;
+import com.meg.listshop.lmt.service.food.AmountService;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
@@ -55,7 +52,7 @@ public class DishServiceImpl implements DishService {
 
     private final DishItemRepository dishItemRepository;
 
-    private final FoodService foodService;
+    private final AmountService amountService;
 
 
     private static final Logger logger = LoggerFactory.getLogger(DishServiceImpl.class);
@@ -67,14 +64,14 @@ public class DishServiceImpl implements DishService {
             @Lazy AutoTagService autoTagService,
             TagService tagService,
             DishItemRepository dishItemRepository,
-            FoodService foodService
+            AmountService amountService
     ) {
         this.dishRepository = dishRepository;
         this.userRepository = userRepository;
         this.autoTagService = autoTagService;
         this.tagService = tagService;
         this.dishItemRepository = dishItemRepository;
-        this.foodService = foodService;
+        this.amountService = amountService;
     }
 
     @Override
@@ -149,7 +146,7 @@ public class DishServiceImpl implements DishService {
                 createDish.getDescription());
         newDish.setReference(createDish.getReference());
 
-        DishEntity createdDish =  dishRepository.save(newDish);
+        DishEntity createdDish = dishRepository.save(newDish);
         tagService.assignDefaultRatingsToDish(userId, createdDish.getId());
         return createdDish;
     }
@@ -281,18 +278,17 @@ public class DishServiceImpl implements DishService {
         if (rawModifiers == null) {
             return;
         }
-        List<String> modifierTokens = foodService.pullModifierTokens(rawModifiers);
-        List<String> markers = foodService.pullMarkersForModifers(modifierTokens, conversionId);
+        List<String> modifierTokens = amountService.pullModifierTokens(rawModifiers);
+        List<String> markers = amountService.pullMarkersForModifers(modifierTokens, conversionId);
         if (markers != null && !markers.isEmpty()) {
             String firstMarker = markers.get(0);
             dishItemEntity.setMarker(firstMarker);
         }
-        List<String> unitSizes = foodService.pullUnitSizesForModifiers(modifierTokens);
+        List<String> unitSizes = amountService.pullUnitSizesForModifiers(modifierTokens, conversionId);
         if (unitSizes != null && !unitSizes.isEmpty()) {
             String firstUnit = unitSizes.get(0);
             dishItemEntity.setUnitSize(firstUnit);
         }
-        return;
     }
 
 }

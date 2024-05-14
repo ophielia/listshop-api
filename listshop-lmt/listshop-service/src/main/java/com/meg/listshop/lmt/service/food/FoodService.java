@@ -41,9 +41,4 @@ public interface FoodService {
 
     void addOrUpdateFoodForTags(List<Long> tagIds, Long foodIdToAssign);
 
-    List<String> pullModifierTokens(String rawModifiers);
-
-    List<String> pullMarkersForModifers(List<String> modifierTokens, Long conversionId);
-
-    List<String> pullUnitSizesForModifiers(List<String> modifierTokens);
 }

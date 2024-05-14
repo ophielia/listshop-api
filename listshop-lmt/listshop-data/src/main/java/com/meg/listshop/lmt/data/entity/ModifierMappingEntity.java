@@ -1,9 +1,9 @@
 package com.meg.listshop.lmt.data.entity;
 
+import com.meg.listshop.lmt.api.model.ModifierType;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 /**
  * Created by margaretmartin on 24/10/2017.
@@ -26,8 +26,9 @@ public class ModifierMappingEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "modifier_mapping_sequence")
     @Column(name = "mapping_id")
     private Long mappingId;
+    @Enumerated(EnumType.STRING)
     @Column(name = "modifier_type")
-    private String modifierType;
+    private ModifierType modifierType;
     private String modifier;
     @Column(name = "mapped_modifier")
     private String mappedModifier;
@@ -44,11 +45,11 @@ public class ModifierMappingEntity {
         this.mappingId = mappingId;
     }
 
-    public String getModifierType() {
+    public ModifierType getModifierType() {
         return modifierType;
     }
 
-    public void setModifierType(String modifierType) {
+    public void setModifierType(ModifierType modifierType) {
         this.modifierType = modifierType;
     }
 

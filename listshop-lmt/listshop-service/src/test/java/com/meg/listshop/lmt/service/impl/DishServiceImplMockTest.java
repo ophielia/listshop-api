@@ -7,6 +7,7 @@ import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
 import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.service.food.AmountService;
 import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -45,7 +46,7 @@ public class DishServiceImplMockTest {
     @MockBean
     private DishItemRepository dishItemRepository;
     @MockBean
-    private FoodService foodService;
+    private AmountService amountService;
 
 
     @Before
@@ -56,7 +57,7 @@ public class DishServiceImplMockTest {
                 autoTagService,
                 tagService,
                 dishItemRepository,
-                foodService
+                amountService
         );
     }
 
