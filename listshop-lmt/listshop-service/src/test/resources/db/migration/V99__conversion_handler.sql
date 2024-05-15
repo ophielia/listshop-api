@@ -1,7 +1,7 @@
 -- reinsert units and factors
 delete from factors;
 delete from units;
-delete from mapped_modifiers;
+delete from modifier_mappings;
 
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1000, 'cup', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE,'METRIC', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1001, 'tablespoon', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE,'', FALSE);

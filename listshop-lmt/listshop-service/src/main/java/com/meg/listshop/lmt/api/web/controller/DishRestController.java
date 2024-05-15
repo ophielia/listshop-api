@@ -171,7 +171,7 @@ public class DishRestController implements DishRestControllerApi {
 
         DishResource resource = new DishResource(ModelMapper.toModel(dish, true));
 
-        return new ResponseEntity<>(resource, HttpStatus.OK);
+        return new ResponseEntity(resource, HttpStatus.OK);
     }
 
     public ResponseEntity<CollectionModel<TagResource>> getTagsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable Long dishId) {
@@ -184,7 +184,7 @@ public class DishRestController implements DishRestControllerApi {
                 .map(TagResource::new)
                 .collect(Collectors.toList());
         tagList.forEach(tr -> tr.fillLinks(request, tr));
-        return new ResponseEntity<>((CollectionModel<TagResource>) tagList, HttpStatus.OK);
+        return new ResponseEntity(tagList, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> addTagToDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long tagId) {
