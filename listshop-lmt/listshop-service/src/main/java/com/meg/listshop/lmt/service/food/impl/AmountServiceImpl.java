@@ -24,7 +24,7 @@ public class AmountServiceImpl implements AmountService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AmountServiceImpl.class);
 
-    private AmountRepository amountRepository;
+    private final AmountRepository amountRepository;
 
     @Value("#{'${conversionservice.token.combine:extra,xtra,firmly,loosely}'.split(',')}")
     private Set<String> TAKES_NEXT_TOKEN;
@@ -37,6 +37,12 @@ public class AmountServiceImpl implements AmountService {
     @Override
     public List<String> pullModifierTokens(String rawModifiers) {
         List<String> result = new ArrayList<>();
+        if (rawModifiers == null) {
+            return result;
+        }
+        if (rawModifiers.contains(",")) {
+            rawModifiers = rawModifiers.replace(",", "");
+        }
         StringTokenizer tokens = new StringTokenizer(rawModifiers, " ");
         while (tokens.hasMoreTokens()) {
             String token = tokens.nextToken();
