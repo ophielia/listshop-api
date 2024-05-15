@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.data.entity;
 
+import com.meg.listshop.lmt.api.model.FractionType;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -39,7 +40,8 @@ public class DishItemEntity {
     private Integer wholeQuantity;
 
     @Column(name = "fractional_quantity")
-    private String fractionalQuantity;
+    @Enumerated(EnumType.STRING)
+    private FractionType fractionalQuantity;
 
     private Double quantity;
 
@@ -130,11 +132,11 @@ public class DishItemEntity {
         this.quantity = quantity;
     }
 
-    public String getFractionalQuantity() {
+    public FractionType getFractionalQuantity() {
         return fractionalQuantity;
     }
 
-    public void setFractionalQuantity(String fractionQuantity) {
+    public void setFractionalQuantity(FractionType fractionQuantity) {
         this.fractionalQuantity = fractionQuantity;
     }
 

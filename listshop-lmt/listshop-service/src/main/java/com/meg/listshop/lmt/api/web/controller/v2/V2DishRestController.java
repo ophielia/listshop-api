@@ -81,6 +81,9 @@ public class V2DishRestController implements V2DishRestControllerApi {
         if (ingredient.getTagId() == null) {
             throw new BadRequestException("Ingredient tag id is null");
         }
+        if (ingredient.getUnitId() == null) {
+            throw new BadRequestException("Ingredient unit id is null");
+        }
         DishItemDTO dishItemDTO = new DishItemDTO();
         if (ingredient.getWholeQuantity() != null) {
             dishItemDTO.setWholeQuantity(ingredient.getWholeQuantity());

@@ -1,17 +1,17 @@
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.repository.UserRepository;
-import com.meg.listshop.conversion.service.ConverterService;
+import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.data.entity.DishItemEntity;
+import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
-import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
 import com.meg.listshop.lmt.service.food.AmountService;
-import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
 import com.meg.listshop.lmt.service.tag.TagService;
-import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,9 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -63,9 +61,8 @@ public class DishServiceImplMockTest {
 
 
     @Test
-    public void testCreateDish() throws Exception {
+    public void testCreateDish() {
         String testDishName = "test mock dish";
-        String testUserName = "mojo.is.sleeping@test.com";
         Long userId = 99L;
         DishEntity dish = new DishEntity();
         dish.setDishName(testDishName);
@@ -89,7 +86,7 @@ public class DishServiceImplMockTest {
     }
 
     @Test
-    public void testCreateDish_ExistingName() throws Exception {
+    public void testCreateDish_ExistingName() {
         String testDishName = "test mock dish";
         Long testUserId = 99L;
         DishEntity dish = new DishEntity();
@@ -137,6 +134,265 @@ public class DishServiceImplMockTest {
         Mockito.verify(dishRepository, Mockito.times(1)).findDishesToAutotag(statusFlag, expectedPageable);
 
 
+    }
+
+    @Test
+    public void testAddIngredientToDish_Simple() {
+        Long userId = 99L;
+        Long dishId = 999L;
+        Long tagId = 9999L;
+        Long unitId = 99999L;
+        DishItemDTO dishItemDto = new DishItemDTO();
+        dishItemDto.setTagId(tagId);
+        dishItemDto.setWholeQuantity(1);
+        dishItemDto.setFractionalQuantity(FractionType.OneHalf);
+        dishItemDto.setUnitId(unitId);
+
+        DishEntity dishEntity = new DishEntity();
+        dishEntity.setUserId(userId);
+        dishEntity.setId(dishId);
+
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+
+        ArgumentCaptor<DishItemEntity> itemCaptor = ArgumentCaptor.forClass(DishItemEntity.class);
+        ArgumentCaptor<DishEntity> dishCaptor = ArgumentCaptor.forClass(DishEntity.class);
+
+        Mockito.when(dishRepository.findByDishIdForUser(userId, dishId))
+                .thenReturn(Optional.of(dishEntity));
+        Mockito.when(tagService.getTagById(tagId))
+                .thenReturn(tag);
+        Mockito.when(dishItemRepository.save(itemCaptor.capture()))
+                .thenReturn(new DishItemEntity());
+        Mockito.when(dishRepository.save(dishCaptor.capture()))
+                .thenReturn(new DishEntity());
+
+        dishService.addIngredientToDish(userId, dishId, dishItemDto);
+        DishEntity dishResult = dishCaptor.getValue();
+        DishItemEntity ingredientResult = itemCaptor.getValue();
+        Assert.assertNotNull(ingredientResult);
+        Assert.assertNotNull(dishResult);
+        // check dish result
+        Assert.assertEquals(1, dishResult.getItems().size());
+        Assert.assertEquals(dishResult.getItems().get(0).getTag(), tag);
+        Assert.assertEquals(1.5, dishResult.getItems().get(0).getQuantity(), 0.001);
+        // check ingredient
+        Assert.assertNull(ingredientResult.getMarker());
+        Assert.assertNull(ingredientResult.getUnitSize());
+        Assert.assertNull(ingredientResult.getRawModifiers());
+        Assert.assertEquals(ingredientResult.getWholeQuantity(), (Integer) 1);
+        Assert.assertEquals(FractionType.OneHalf, ingredientResult.getFractionalQuantity());
+        Assert.assertEquals(1.5, ingredientResult.getQuantity(), 0.001);
+        Assert.assertEquals(unitId, ingredientResult.getUnitId());
+        Assert.assertNotNull(ingredientResult.getUnitId());
+        Assert.assertFalse(ingredientResult.getModifiersProcessed());
+        Assert.assertNull(dishResult.getItems().get(0).getTag().getConversionId());
+    }
+
+    @Test
+    public void testAddIngredientToDish_ConversionIdNoMarkers() {
+        Long userId = 99L;
+        Long dishId = 999L;
+        Long tagId = 9999L;
+        Long unitId = 99999L;
+        Long conversionId = 999999L;
+
+        DishItemDTO dishItemDto = new DishItemDTO();
+        dishItemDto.setTagId(tagId);
+        dishItemDto.setWholeQuantity(1);
+        dishItemDto.setUnitId(unitId);
+
+        DishEntity dishEntity = new DishEntity();
+        dishEntity.setUserId(userId);
+        dishEntity.setId(dishId);
+
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+        tag.setConversionId(conversionId);
+
+        ArgumentCaptor<DishItemEntity> itemCaptor = ArgumentCaptor.forClass(DishItemEntity.class);
+        ArgumentCaptor<DishEntity> dishCaptor = ArgumentCaptor.forClass(DishEntity.class);
+
+        Mockito.when(dishRepository.findByDishIdForUser(userId, dishId))
+                .thenReturn(Optional.of(dishEntity));
+        Mockito.when(tagService.getTagById(tagId))
+                .thenReturn(tag);
+        Mockito.when(dishItemRepository.save(itemCaptor.capture()))
+                .thenReturn(new DishItemEntity());
+        Mockito.when(dishRepository.save(dishCaptor.capture()))
+                .thenReturn(new DishEntity());
+
+        dishService.addIngredientToDish(userId, dishId, dishItemDto);
+
+
+        DishEntity dishResult = dishCaptor.getValue();
+        DishItemEntity ingredientResult = itemCaptor.getValue();
+        Assert.assertNotNull(ingredientResult);
+        Assert.assertNotNull(dishResult);
+        // check dish result
+        Assert.assertEquals(1, dishResult.getItems().size());
+        Assert.assertEquals(dishResult.getItems().get(0).getTag(), tag);
+        Assert.assertEquals(1.0, dishResult.getItems().get(0).getQuantity(), 0.001);
+        // check ingredient
+        Assert.assertNull(ingredientResult.getMarker());
+        Assert.assertNull(ingredientResult.getUnitSize());
+        Assert.assertNull(ingredientResult.getRawModifiers());
+        Assert.assertNotNull(dishResult.getItems().get(0).getTag().getConversionId());
+        Assert.assertNotNull(ingredientResult.getUnitId());
+        Assert.assertEquals(conversionId, dishResult.getItems().get(0).getTag().getConversionId());
+        Assert.assertEquals(ingredientResult.getWholeQuantity(), (Integer) 1);
+        Assert.assertNull(ingredientResult.getFractionalQuantity());
+        Assert.assertEquals(1, ingredientResult.getQuantity(), 0.001);
+        Assert.assertEquals(unitId, ingredientResult.getUnitId());
+        Assert.assertTrue(ingredientResult.getModifiersProcessed());
+    }
+
+    @Test
+    public void testAddIngredientToDish_ConversionMarkers() {
+        Long userId = 99L;
+        Long dishId = 999L;
+        Long tagId = 9999L;
+        Long unitId = 99999L;
+        Long conversionId = 999999L;
+        String rawModifiers = "chopped extra large";
+        List<String> modifierTokens = List.of("chopped", "extra large");
+        String marker = "chopped";
+        String unitSize = "extra large";
+
+        DishItemDTO dishItemDto = new DishItemDTO();
+        dishItemDto.setTagId(tagId);
+        dishItemDto.setWholeQuantity(1);
+        dishItemDto.setFractionalQuantity(FractionType.OneEighth);
+        dishItemDto.setUnitId(unitId);
+        dishItemDto.setRawModifiers(rawModifiers);
+
+        DishEntity dishEntity = new DishEntity();
+        dishEntity.setUserId(userId);
+        dishEntity.setId(dishId);
+
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+        tag.setConversionId(conversionId);
+
+        ArgumentCaptor<DishItemEntity> itemCaptor = ArgumentCaptor.forClass(DishItemEntity.class);
+        ArgumentCaptor<DishEntity> dishCaptor = ArgumentCaptor.forClass(DishEntity.class);
+
+        Mockito.when(dishRepository.findByDishIdForUser(userId, dishId))
+                .thenReturn(Optional.of(dishEntity));
+        Mockito.when(tagService.getTagById(tagId))
+                .thenReturn(tag);
+        Mockito.when(dishItemRepository.save(itemCaptor.capture()))
+                .thenReturn(new DishItemEntity());
+        Mockito.when(dishRepository.save(dishCaptor.capture()))
+                .thenReturn(new DishEntity());
+        Mockito.when(amountService.pullModifierTokens(rawModifiers))
+                .thenReturn(modifierTokens);
+        Mockito.when(amountService.pullMarkersForModifers(modifierTokens, conversionId))
+                .thenReturn(List.of(marker));
+        Mockito.when(amountService.pullUnitSizesForModifiers(modifierTokens, conversionId))
+                .thenReturn(List.of(unitSize));
+
+        dishService.addIngredientToDish(userId, dishId, dishItemDto);
+
+
+        DishEntity dishResult = dishCaptor.getValue();
+        DishItemEntity ingredientResult = itemCaptor.getValue();
+        Assert.assertNotNull(ingredientResult);
+        Assert.assertNotNull(dishResult);
+        // check dish result
+        Assert.assertEquals(1, dishResult.getItems().size());
+        Assert.assertEquals(dishResult.getItems().get(0).getTag(), tag);
+        Assert.assertEquals(1.125, dishResult.getItems().get(0).getQuantity(), 0.001);
+        // check ingredient
+        Assert.assertNotNull(ingredientResult.getMarker());
+        Assert.assertNotNull(ingredientResult.getUnitSize());
+        Assert.assertNotNull(ingredientResult.getRawModifiers());
+        Assert.assertNotNull(dishResult.getItems().get(0).getTag().getConversionId());
+        Assert.assertNotNull(ingredientResult.getUnitId());
+        Assert.assertNotNull(ingredientResult.getFractionalQuantity());
+        Assert.assertEquals(conversionId, dishResult.getItems().get(0).getTag().getConversionId());
+        Assert.assertEquals(ingredientResult.getWholeQuantity(), (Integer) 1);
+        Assert.assertEquals(FractionType.OneEighth, ingredientResult.getFractionalQuantity());
+        Assert.assertEquals(marker, ingredientResult.getMarker());
+        Assert.assertEquals(unitSize, ingredientResult.getUnitSize());
+        Assert.assertEquals(rawModifiers, ingredientResult.getRawModifiers());
+        Assert.assertEquals(1.125, ingredientResult.getQuantity(), 0.001);
+        Assert.assertEquals(unitId, ingredientResult.getUnitId());
+        Assert.assertTrue(ingredientResult.getModifiersProcessed());
+    }
+
+    @Test
+    public void testAddIngredientToDish_ConversionMarkersMultiple() {
+        Long userId = 99L;
+        Long dishId = 999L;
+        Long tagId = 9999L;
+        Long unitId = 99999L;
+        Long conversionId = 999999L;
+        String rawModifiers = "chopped extra large and other diced ignored";
+        List<String> modifierTokens = List.of("chopped", "extra large", "and", "other", "diced", "ignored");
+        String marker = "chopped";
+        String unitSize = "extra large";
+
+        DishItemDTO dishItemDto = new DishItemDTO();
+        dishItemDto.setTagId(tagId);
+        dishItemDto.setWholeQuantity(1);
+        dishItemDto.setFractionalQuantity(FractionType.OneEighth);
+        dishItemDto.setUnitId(unitId);
+        dishItemDto.setRawModifiers(rawModifiers);
+
+        DishEntity dishEntity = new DishEntity();
+        dishEntity.setUserId(userId);
+        dishEntity.setId(dishId);
+
+        TagEntity tag = new TagEntity();
+        tag.setId(tagId);
+        tag.setConversionId(conversionId);
+
+        ArgumentCaptor<DishItemEntity> itemCaptor = ArgumentCaptor.forClass(DishItemEntity.class);
+        ArgumentCaptor<DishEntity> dishCaptor = ArgumentCaptor.forClass(DishEntity.class);
+
+        Mockito.when(dishRepository.findByDishIdForUser(userId, dishId))
+                .thenReturn(Optional.of(dishEntity));
+        Mockito.when(tagService.getTagById(tagId))
+                .thenReturn(tag);
+        Mockito.when(dishItemRepository.save(itemCaptor.capture()))
+                .thenReturn(new DishItemEntity());
+        Mockito.when(dishRepository.save(dishCaptor.capture()))
+                .thenReturn(new DishEntity());
+        Mockito.when(amountService.pullModifierTokens(rawModifiers))
+                .thenReturn(modifierTokens);
+        Mockito.when(amountService.pullMarkersForModifers(modifierTokens, conversionId))
+                .thenReturn(List.of(marker, "diced"));
+        Mockito.when(amountService.pullUnitSizesForModifiers(modifierTokens, conversionId))
+                .thenReturn(List.of(unitSize));
+
+        dishService.addIngredientToDish(userId, dishId, dishItemDto);
+
+
+        DishEntity dishResult = dishCaptor.getValue();
+        DishItemEntity ingredientResult = itemCaptor.getValue();
+        Assert.assertNotNull(ingredientResult);
+        Assert.assertNotNull(dishResult);
+        // check dish result
+        Assert.assertEquals(1, dishResult.getItems().size());
+        Assert.assertEquals(dishResult.getItems().get(0).getTag(), tag);
+        Assert.assertEquals(1.125, dishResult.getItems().get(0).getQuantity(), 0.001);
+        // check ingredient
+        Assert.assertNotNull(ingredientResult.getMarker());
+        Assert.assertNotNull(ingredientResult.getUnitSize());
+        Assert.assertNotNull(ingredientResult.getRawModifiers());
+        Assert.assertNotNull(dishResult.getItems().get(0).getTag().getConversionId());
+        Assert.assertNotNull(ingredientResult.getUnitId());
+        Assert.assertNotNull(ingredientResult.getFractionalQuantity());
+        Assert.assertEquals(conversionId, dishResult.getItems().get(0).getTag().getConversionId());
+        Assert.assertEquals(ingredientResult.getWholeQuantity(), (Integer) 1);
+        Assert.assertEquals(FractionType.OneEighth, ingredientResult.getFractionalQuantity());
+        Assert.assertEquals(marker, ingredientResult.getMarker());
+        Assert.assertEquals(unitSize, ingredientResult.getUnitSize());
+        Assert.assertEquals(rawModifiers, ingredientResult.getRawModifiers());
+        Assert.assertEquals(1.125, ingredientResult.getQuantity(), 0.001);
+        Assert.assertEquals(unitId, ingredientResult.getUnitId());
+        Assert.assertTrue(ingredientResult.getModifiersProcessed());
     }
 
 }

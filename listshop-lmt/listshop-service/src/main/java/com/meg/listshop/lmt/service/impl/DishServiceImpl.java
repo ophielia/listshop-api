@@ -40,8 +40,6 @@ import java.util.stream.Collectors;
 @Service
 public class DishServiceImpl implements DishService {
 
-    public static final Comparator<DishEntity> DISHNAME = (DishEntity o1, DishEntity o2) -> o1.getDishName().toLowerCase().compareTo(o2.getDishName().toLowerCase());
-
     private final DishRepository dishRepository;
 
     private final UserRepository userRepository;
@@ -115,7 +113,7 @@ public class DishServiceImpl implements DishService {
         }
 
         Optional<DishEntity> dishOpt = dishRepository.findByDishIdForUser(userId, dishId);
-        if (!dishOpt.isPresent()) {
+        if (dishOpt.isEmpty()) {
             final String msg = String.format("No dish found by id for user [%s] and dishId [%s]", userId, dishId);
             throw new ObjectNotFoundException(msg, dishId, "Dish");
         }
@@ -238,16 +236,22 @@ public class DishServiceImpl implements DishService {
             throw new ObjectNotFoundException("Tag not found", dishItemDTO.getTagId(), "Tag");
         }
         dishItemEntity.setTag(tag);
+
         // calculate quantity from fraction and whole
         Double quantity = calculateQuantity(dishItemDTO);
         dishItemEntity.setQuantity(quantity);
+        dishItemEntity.setWholeQuantity(dishItemDTO.getWholeQuantity());
+        dishItemEntity.setFractionalQuantity(dishItemDTO.getFractionalQuantity());
+
+        // unit
+        dishItemEntity.setUnitId(dishItemDTO.getUnitId());
 
         // fill unitSize and marker from raw_modifiers
-        dishItemDTO.setRawModifiers(dishItemEntity.getRawModifiers());
+        dishItemEntity.setRawModifiers(dishItemDTO.getRawModifiers());
         if (tag.getConversionId() != null) {
             fillIngredientModifiers(tag.getConversionId(), dishItemDTO.getRawModifiers(), dishItemEntity);
             dishItemEntity.setModifiersProcessed(true);
-        } else if (dishItemDTO.getRawModifiers() != null) {
+        } else  {
             dishItemEntity.setModifiersProcessed(false);
         }
 
