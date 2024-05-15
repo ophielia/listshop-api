@@ -36,4 +36,6 @@ public interface DishService {
     List<DishEntity> getDishesToAutotag(Long statusFlag, int dishLimit);
 
     void addIngredientToDish(Long id, Long dishId, DishItemDTO validatedEntry);
+
+    void updateIngredientInDish(Long id, Long dishId, DishItemDTO validatedEntry);
 }

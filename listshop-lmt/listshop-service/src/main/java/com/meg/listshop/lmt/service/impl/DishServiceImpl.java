@@ -229,6 +229,30 @@ public class DishServiceImpl implements DishService {
             return;
         }
         DishItemEntity dishItemEntity = new DishItemEntity();
+        doAddOrUpdateIngredient(dish, dishItemEntity, dishItemDTO, true);
+    }
+
+    @Override
+    public void updateIngredientInDish(Long userId, Long dishId, DishItemDTO dishItemDTO) {
+        // get dish
+        DishEntity dish = getDishForUserById(userId, dishId);
+        List<DishItemEntity> dishItems = dish.getItems();
+        // pull this ingredient
+        Long dishItemId = dishItemDTO.getDishItemId();
+        DishItemEntity dishItemEntity = dishItems.stream()
+                .filter(i -> i.getDishItemId() != null && i.getDishItemId().equals(dishItemId))
+                .findFirst()
+                .orElse(null);
+
+        if (dishItemEntity == null) {
+            throw new ObjectNotFoundException("DishItem not found", dishItemId, "DishItem");
+        }
+
+        doAddOrUpdateIngredient(dish, dishItemEntity, dishItemDTO, false);
+    }
+
+    public void doAddOrUpdateIngredient(DishEntity dish, DishItemEntity dishItemEntity, DishItemDTO dishItemDTO, boolean updateStatistics) {
+        List<DishItemEntity> dishItems = dish.getItems();
         dishItemEntity.setDish(dish);
         // get tag
         TagEntity tag = tagService.getTagById(dishItemDTO.getTagId());
@@ -251,18 +275,23 @@ public class DishServiceImpl implements DishService {
         if (tag.getConversionId() != null) {
             fillIngredientModifiers(tag.getConversionId(), dishItemDTO.getRawModifiers(), dishItemEntity);
             dishItemEntity.setModifiersProcessed(true);
-        } else  {
+        } else {
             dishItemEntity.setModifiersProcessed(false);
         }
 
         // save ingredient
+        boolean isNewIngredient = dishItemEntity.getDishItemId() == null;
         dishItemRepository.save(dishItemEntity);
-        dishItems.add(dishItemEntity);
+        if (isNewIngredient) {
+            dishItems.add(dishItemEntity);
+        }
         // add ingredient to dish
         dish.setItems(dishItems);
         save(dish, false);
         // update statistic
-        tagService.countTagAddedToDish(dish.getUserId(), tag.getId());
+        if (updateStatistics) {
+            tagService.countTagAddedToDish(dish.getUserId(), tag.getId());
+        }
     }
 
     private Double calculateQuantity(DishItemDTO dishItemDTO) {
@@ -280,6 +309,8 @@ public class DishServiceImpl implements DishService {
 
     private void fillIngredientModifiers(Long conversionId, String rawModifiers, DishItemEntity dishItemEntity) {
         if (rawModifiers == null) {
+            dishItemEntity.setMarker(null);
+            dishItemEntity.setUnitSize(null);
             return;
         }
         List<String> modifierTokens = amountService.pullModifierTokens(rawModifiers);

@@ -58,9 +58,14 @@ public class V2DishRestController implements V2DishRestControllerApi {
 
 
     @Override
-    public ResponseEntity<Object> updateIngredientToDish(Authentication authentication, Long dishId, IngredientPut ingredient) {
+    public ResponseEntity<Object> updateIngredientInDish(Authentication authentication, Long dishId, IngredientPut ingredient) {
         //@PutMapping(value = "/{dishId}/ingredient", produces = "application/json")
-        return null;
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        // validate / translate ingredient to dishItem => strings to long, resolving fraction
+        DishItemDTO validatedEntry = validateIngredient(ingredient, true);
+        // sent to service with dishId, dishItemDTO
+        dishService.updateIngredientInDish(userDetails.getId(), dishId, validatedEntry);
+        return ResponseEntity.noContent().build();
     }
 
     @Override

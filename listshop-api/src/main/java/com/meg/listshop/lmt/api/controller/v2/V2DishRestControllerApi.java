@@ -27,7 +27,7 @@ public interface V2DishRestControllerApi {
     ResponseEntity<Object> addIngredientToDish(Authentication authentication, @PathVariable Long dishId, @RequestParam(value = "ingredient") IngredientPut ingredient);
 
     @PutMapping(value = "/{dishId}/ingredient", produces = "application/json")
-    ResponseEntity<Object> updateIngredientToDish(Authentication authentication, @PathVariable Long dishId, @RequestParam(value = "ingredient") IngredientPut ingredient);
+    ResponseEntity<Object> updateIngredientInDish(Authentication authentication, @PathVariable Long dishId, @RequestParam(value = "ingredient") IngredientPut ingredient);
 
     @DeleteMapping(value = "/{dishId}/ingredient/{ingredientId}", produces = "application/json")
     ResponseEntity<Object> deleteIngredientFromDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long ingredientId);
