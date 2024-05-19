@@ -18,5 +18,7 @@ public interface AmountRepository extends JpaRepository<ModifierMappingEntity, L
             "where modifier_type = 'UnitSize' and conversion_id = :conversionId and mm.modifier in (:modifierList)", nativeQuery = true)
     List<String> mapUnitSizesForConversionId(@Param("conversionId") Long conversionId, @Param("modifierList") List<String> modifierList);
 
-
+    @Query(value = "select distinct modifier from modifier_mappings " +
+            "where modifier_type = 'Marker' ", nativeQuery = true)
+    List<String> getDistinctMarkers();
 }

@@ -860,4 +860,15 @@ public class ModelMapper {
                 .lastAdded(dishDto.getDish().getLastAdded())
                 .userId(dishDto.getDish().getUserId());
     }
+
+    public static com.meg.listshop.lmt.api.model.v2.Dish toV2DishModel(DishEntity dishEntity, boolean includeTags) {
+        // tags and ingredients - to do....
+
+        return new com.meg.listshop.lmt.api.model.v2.Dish(dishEntity.getId())
+                .description(dishEntity.getDescription())
+                .dishName(dishEntity.getDishName())
+                .reference(dishEntity.getReference())
+                .lastAdded(dishEntity.getLastAdded())
+                .userId(dishEntity.getUserId());
+    }
 }

@@ -65,4 +65,10 @@ public class AmountServiceImpl implements AmountService {
     public List<String> pullUnitSizesForModifiers(List<String> modifierTokens, Long conversionId) {
         return amountRepository.mapUnitSizesForConversionId(conversionId, modifierTokens);
     }
+
+    @Override
+    public List<String> getAllModifiers() {
+        // return list of modifiers from ModifierMappings
+        return amountRepository.getDistinctMarkers();
+    }
 }

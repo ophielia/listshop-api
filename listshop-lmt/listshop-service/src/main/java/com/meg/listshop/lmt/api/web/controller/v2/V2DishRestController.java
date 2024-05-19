@@ -1,17 +1,21 @@
 package com.meg.listshop.lmt.api.web.controller.v2;
 
 import com.github.dockerjava.api.exception.BadRequestException;
+import com.google.common.base.Enums;
 import com.meg.listshop.auth.service.impl.JwtUser;
+import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.api.controller.v2.V2DishRestControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.model.DishSortDirection;
+import com.meg.listshop.lmt.api.model.DishSortKey;
 import com.meg.listshop.lmt.api.model.FractionType;
-import com.meg.listshop.lmt.api.model.IngredientListResource;
 import com.meg.listshop.lmt.api.model.ModelMapper;
-import com.meg.listshop.lmt.api.model.v2.DishResource;
-import com.meg.listshop.lmt.api.model.v2.IngredientPut;
-import com.meg.listshop.lmt.api.model.v2.IngredientResource;
+import com.meg.listshop.lmt.api.model.v2.*;
+import com.meg.listshop.lmt.api.model.v2.DishListResource;
 import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
+import com.meg.listshop.lmt.service.DishSearchCriteria;
+import com.meg.listshop.lmt.service.DishSearchService;
 import com.meg.listshop.lmt.service.DishService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +24,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -33,10 +39,37 @@ public class V2DishRestController implements V2DishRestControllerApi {
     private static final Logger logger = LoggerFactory.getLogger(V2DishRestController.class);
 
     private final DishService dishService;
+    private final DishSearchService dishSearchService;
 
     @Autowired
-    V2DishRestController(DishService dishService) {
+    V2DishRestController(DishService dishService,
+                         DishSearchService dishSearchService) {
         this.dishService = dishService;
+        this.dishSearchService = dishSearchService;
+    }
+
+    public ResponseEntity<DishListResource> retrieveDishes(HttpServletRequest request,
+                                                           Authentication authentication,
+                                                           @RequestParam(value = "searchFragment", required = false) String searchFragment,
+                                                           @RequestParam(value = "includedTags", required = false) String includedTags,
+                                                           @RequestParam(value = "excludedTags", required = false) String excludedTags,
+                                                           @RequestParam(value = "sortKey", required = false) String sortKey,
+                                                           @RequestParam(value = "sortDirection", required = false) String sortDirection
+    ) {
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        logger.info("Entered retrieveDishes includedTags: [{}], excludedTags: [{}], sortKey: [{}], sortDirection: [{}]", includedTags, excludedTags, sortKey, sortDirection);
+        List<DishResource> dishList;
+        if (ObjectUtils.isEmpty(includedTags) && ObjectUtils.isEmpty(excludedTags)
+                && ObjectUtils.isEmpty(sortKey) && ObjectUtils.isEmpty(sortDirection)) {
+            dishList = getAllDishes(userDetails.getId());
+        } else {
+            dishList = findDishes(userDetails.getId(), includedTags, excludedTags, searchFragment, sortKey, sortDirection);
+        }
+
+        DishListResource resource = new DishListResource(dishList);
+        resource.fillLinks(request, resource);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
+
     }
 
     @Override
@@ -116,7 +149,7 @@ public class V2DishRestController implements V2DishRestControllerApi {
         if (ingredient == null) {
             throw new BadRequestException("Ingredient is null");
         }
-        if (verifyItemId && ingredient.getId() == null) {
+        if (Boolean.TRUE.equals(verifyItemId) && ingredient.getId() == null) {
             throw new BadRequestException("Ingredient id is null");
         }
         if (ingredient.getTagId() == null) {
@@ -166,5 +199,46 @@ public class V2DishRestController implements V2DishRestControllerApi {
             throw new BadRequestException("Invalid unit id");
         }
         return longValue;
+    }
+
+
+    private List<DishResource> findDishes(Long userId, String includedTags, String excludedTags,
+                                          String searchFragment, String sortKey, String sortDirection) {
+        String message = String.format("find dishesfor user [%S] - search [%S]", userId, searchFragment);
+        logger.info(message);
+
+        var criteria = new DishSearchCriteria(userId);
+        if (includedTags != null) {
+            List<Long> tagIdList = FlatStringUtils.inflateStringToLongList(includedTags,",");
+            criteria.setIncludedTagIds(tagIdList);
+        }
+        if (excludedTags != null) {
+            List<Long> tagIdList = FlatStringUtils.inflateStringToLongList(excludedTags,",");
+            criteria.setExcludedTagIds(tagIdList);
+        }
+        if (!ObjectUtils.isEmpty(sortKey)) {
+            var dishSortKey = Enums.getIfPresent(DishSortKey.class, sortKey).orNull();
+            criteria.setSortKey(dishSortKey);
+        }
+        if (!ObjectUtils.isEmpty(sortDirection)) {
+            var dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
+            criteria.setSortDirection(dishSortDirection);
+        }
+        if (!ObjectUtils.isEmpty(searchFragment)) {
+            criteria.setNameFragment(searchFragment);
+        }
+        logger.debug("Searching for dishes with criteria [{}]. ", criteria);
+        return dishSearchService.findDishes(criteria).stream()
+                .map(d -> ModelMapper.toV2DishModel(d, false))
+                .map(DishResource::new)
+                .collect(Collectors.toList());
+    }
+
+    private List<DishResource> getAllDishes(Long userId) {
+        return dishService.getDishesForUser(userId).stream()
+                .map(d -> ModelMapper.toV2DishModel(d, false))
+                .map(DishResource::new)
+                .collect(Collectors.toList());
+
     }
 }
