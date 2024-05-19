@@ -1,5 +1,7 @@
 package com.meg.listshop.lmt.api.controller.v2;
 
+import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.model.IngredientListResource;
 import com.meg.listshop.lmt.api.model.v2.IngredientPut;
 import com.meg.listshop.lmt.api.model.v2.IngredientResource;
 import com.meg.listshop.lmt.api.model.v2.DishResource;
@@ -23,7 +25,7 @@ public interface V2DishRestControllerApi {
     ResponseEntity<DishResource> retrieveDish(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
 
     @GetMapping(value = "/{dishId}/ingredients", produces = "application/json")
-    ResponseEntity<CollectionModel<IngredientResource>> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
+    ResponseEntity<IngredientListResource> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId) throws BadParameterException;
 
     @PostMapping(value = "/{dishId}/ingredients", produces = "application/json")
     ResponseEntity<Object> addIngredientToDish(Authentication authentication, @PathVariable Long dishId, @RequestBody IngredientPut ingredient);
@@ -32,6 +34,6 @@ public interface V2DishRestControllerApi {
     ResponseEntity<Object> updateIngredientInDish(Authentication authentication, @PathVariable Long dishId, @RequestBody IngredientPut ingredient);
 
     @DeleteMapping(value = "/{dishId}/ingredients/{ingredientId}", produces = "application/json")
-    ResponseEntity<Object> deleteIngredientFromDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long ingredientId);
+    ResponseEntity<Object> deleteIngredientFromDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long ingredientId) throws BadParameterException;
 
 }

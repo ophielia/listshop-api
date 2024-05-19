@@ -3,7 +3,9 @@ package com.meg.listshop.lmt.api.web.controller.v2;
 import com.github.dockerjava.api.exception.BadRequestException;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.controller.v2.V2DishRestControllerApi;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.FractionType;
+import com.meg.listshop.lmt.api.model.IngredientListResource;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.v2.DishResource;
 import com.meg.listshop.lmt.api.model.v2.IngredientPut;
@@ -14,7 +16,6 @@ import com.meg.listshop.lmt.service.DishService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @CrossOrigin
@@ -55,9 +58,20 @@ public class V2DishRestController implements V2DishRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<CollectionModel<IngredientResource>> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, Long dishId) {
+    public ResponseEntity<IngredientListResource> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, Long dishId) throws BadParameterException {
         //@GetMapping(value = "/{dishId}/ingredients", produces = "application/json")
-        return null;
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+
+        if (dishId == null) {
+            throw new BadParameterException("Dish id cannot be null in getIngredientsByDishId");
+        }
+        List<DishItemDTO> rawIngredients = dishService.getDishIngredients(userDetails.getId(), dishId);
+        List<IngredientResource> ingredients = rawIngredients.stream()
+                .map(ModelMapper::toModel)
+                .map(IngredientResource::new)
+                .collect(Collectors.toList());
+        var returnValue = new IngredientListResource(ingredients);
+        return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
     @Override
@@ -84,9 +98,17 @@ public class V2DishRestController implements V2DishRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteIngredientFromDish(Authentication authentication, Long dishId, Long ingredientId) {
-        //@DeleteMapping(value = "/{dishId}/ingredient/{ingredientId}", produces = "application/json")
-        return null;
+    public ResponseEntity<Object> deleteIngredientFromDish(Authentication authentication, Long dishId, Long ingredientId) throws BadParameterException {
+        //@DeleteMapping(value = "/{dishId}/ingredients/{ingredientId}", produces = "application/json")
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+
+        if (ingredientId == null || dishId == null) {
+            String message = String.format("can't delete ingredient without ingredientId [%s] or dishId [%s]", ingredientId, dishId);
+            throw new BadParameterException(message);
+        }
+        // sent to service with dishId, dishItemDTO
+        dishService.deleteIngredientFromDish(userDetails.getId(), dishId, ingredientId);
+        return ResponseEntity.noContent().build();
     }
 
 
@@ -95,7 +117,7 @@ public class V2DishRestController implements V2DishRestControllerApi {
             throw new BadRequestException("Ingredient is null");
         }
         if (verifyItemId && ingredient.getId() == null) {
-                throw new BadRequestException("Ingredient id is null");
+            throw new BadRequestException("Ingredient id is null");
         }
         if (ingredient.getTagId() == null) {
             throw new BadRequestException("Ingredient tag id is null");

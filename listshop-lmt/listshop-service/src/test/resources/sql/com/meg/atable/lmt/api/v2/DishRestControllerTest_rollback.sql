@@ -2,13 +2,13 @@
 
 delete
 from dish_tags
-where dish_id = 9999999;
+where dish_id = 9999992;
 
-delete from dish_items where dish_id = 9999999;
+delete from dish_items where dish_id = 9999992;
 
 delete
 from dish
-where dish_id = 9999999;
+where dish_id = 9999992;
 
 
 delete

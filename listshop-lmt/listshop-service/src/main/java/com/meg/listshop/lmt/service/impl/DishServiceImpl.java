@@ -264,6 +264,28 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
+    public void deleteIngredientFromDish(Long userId, Long dishId, Long ingredientId) {
+
+        // get dish
+        DishEntity dish = getDishForUserById(userId, dishId);
+        List<DishItemEntity> dishItems = dish.getItems();
+        // pull this ingredient
+        DishItemEntity dishItemEntity = dishItems.stream()
+                .filter(i -> i.getDishItemId() != null && i.getDishItemId().equals(ingredientId))
+                .findFirst()
+                .orElse(null);
+
+        if (dishItemEntity == null) {
+            throw new ObjectNotFoundException("Ingredient not found", ingredientId, "DishItem");
+        }
+
+        dishItems.remove(dishItemEntity);
+        dishItemRepository.delete(dishItemEntity);
+        dish.setItems(dishItems);
+        save(dish, true);
+    }
+
+    @Override
     public DishDTO getDishForV2Display(Long userId, Long dishId) {
         // get dish, with tags, ingredients and ratings
         // sub objects sorted, but in "raw" form
@@ -301,6 +323,35 @@ public class DishServiceImpl implements DishService {
         RatingUpdateInfo ratings = tagService.getRatingUpdateInfoForDishIds(Collections.singletonList(dishId));
 
         return new DishDTO(dish, ingredients, tags, ratings);
+    }
+
+    @Override
+    public List<DishItemDTO> getDishIngredients(Long userId, Long dishId) {
+        // get dish, with tags, ingredients and ratings
+        // sub objects sorted, but in "raw" form
+        // will be "translated" into ingredients in ModelMapper
+        if (dishId == null) {
+            final String msg = String.format("Null dishId passed as argument userId [%s].", userId);
+            throw new ObjectNotFoundException(msg, null, "Dish");
+        }
+
+        Optional<DishEntity> dishOpt = dishRepository.findByDishIdForUser(userId, dishId);
+        if (dishOpt.isEmpty()) {
+            final String msg = String.format("No dish found by id for user [%s] and dishId [%s]", userId, dishId);
+            throw new ObjectNotFoundException(msg, dishId, "Dish");
+        }
+
+        // get ingredients
+        List<DishItemDTO> ingredients = dishItemRepository.getIngredientsForDish(dishId);
+        ingredients.forEach( in -> {
+            // insert fraction display
+            if (in.getFractionalQuantity() != null) {
+                String fractionDisplay = in.getFractionalQuantity().getDisplayName();
+                in.setFractionDisplay(fractionDisplay);
+            }
+        });
+        ingredients.sort(Comparator.comparing(DishItemDTO::getTagDisplay));
+        return ingredients;
     }
 
     public void doAddOrUpdateIngredient(DishEntity dish, DishItemEntity dishItemEntity, DishItemDTO dishItemDTO, boolean updateStatistics) {

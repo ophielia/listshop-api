@@ -41,4 +41,8 @@ public interface DishService {
     void updateIngredientInDish(Long id, Long dishId, DishItemDTO validatedEntry);
 
     DishDTO getDishForV2Display(Long userId, Long dishId);
+
+    void deleteIngredientFromDish(Long userId, Long dishId, Long ingredientId);
+
+    List<DishItemDTO> getDishIngredients(Long userId, Long dishId);
 }

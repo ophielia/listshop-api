@@ -6,6 +6,7 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
+import com.meg.listshop.lmt.api.model.IngredientListResource;
 import com.meg.listshop.lmt.api.model.Tag;
 import com.meg.listshop.lmt.api.model.v2.Dish;
 import com.meg.listshop.lmt.api.model.v2.DishResource;
@@ -227,27 +228,106 @@ public class V2DishRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetIngredientsForDish() throws Exception {
-        String url = urlRoot + TestConstants.DISH_1_ID + "/tag/" + TestConstants.TAG_CARROTS;
+    public void testDeleteIngredientFromDish() throws Exception {
+        Dish dish = new Dish();
+        dish.setDishName("update new dish");
+
+        Long testId =         createDish(userDetails,dish);
+
+        IngredientPut ingredientPut = new IngredientPut();
+        ingredientPut.setTagId("12");
+        ingredientPut.setWholeQuantity(1);
+        ingredientPut.setFractionalQuantity("OneHalf");
+        ingredientPut.setUnitId("1000");
+        String payload = json(ingredientPut);
+        String url = urlRoot + testId + "/ingredients";
         this.mockMvc.perform(post(url)
                         .with(user(userDetails))
+                        .content(payload)
                         .contentType(contentType))
+                .andDo(print())
                 .andExpect(status().isNoContent());
+
+        Dish dishResult = retrieveDish(userDetails,testId);
+        Assert.assertNotNull(dishResult);
+        Assert.assertEquals("should be 1 ingredient", 1, dishResult.getIngredients().size());
+        Ingredient ingredient = dishResult.getIngredients().get(0);
+        String ingredientId = ingredient.getId();
+
+        // now - delete it
+        String deleteUrl = urlRoot + testId + "/ingredients/" + ingredientId;
+        this.mockMvc.perform(delete(deleteUrl)
+                        .with(user(userDetails))
+                        .content(payload)
+                        .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        dishResult = retrieveDish(userDetails,testId);
+        Assert.assertNotNull(dishResult);
+        Assert.assertEquals("ingredients should be empty", 0, dishResult.getIngredients().size());
     }
+
 
     @Test
     @WithMockUser
-    public void testDeleteIngredientFromDish() throws Exception {
-        String url = urlRoot + TestConstants.DISH_1_ID + "/tag/344";
-        this.mockMvc.perform(delete(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().is2xxSuccessful());
+    public void testGetIngredientsForDish() throws Exception {
+        Dish dish = new Dish();
+        dish.setDishName("Yummy new dish");
 
-        Dish result = retrieveDish(userDetails, TestConstants.DISH_1_ID);
-        Optional<Tag> threeFourFourTag = result.getTags().stream().filter(t -> t.getId().equals(344L)).findFirst();
-        Assert.assertFalse(threeFourFourTag.isPresent());
+
+        Long testId =         createDish(userDetails,dish);
+
+        IngredientPut ingredientPut = new IngredientPut();
+        ingredientPut.setTagId("12");
+        ingredientPut.setWholeQuantity(1);
+        ingredientPut.setFractionalQuantity("OneHalf");
+        ingredientPut.setUnitId("1000");
+        String payload = json(ingredientPut);
+        String url = urlRoot + testId + "/ingredients";
+        this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .content(payload)
+                        .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        ingredientPut.setTagId("112");
+        ingredientPut.setWholeQuantity(12);
+        ingredientPut.setUnitId("1000");
+         payload = json(ingredientPut);
+
+        this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .content(payload)
+                        .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        ingredientPut.setTagId("113");
+        ingredientPut.setWholeQuantity(13);
+        ingredientPut.setUnitId("1011");
+        payload = json(ingredientPut);
+
+        this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .content(payload)
+                        .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        // now get the ingredients
+        MvcResult listResultsAfter = this.mockMvc.perform(get(urlRoot + testId + "/ingredients")
+                        .with(user(userDetails)))
+                .andReturn();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonList = listResultsAfter.getResponse().getContentAsString();
+        IngredientListResource afterList = objectMapper.readValue(jsonList, IngredientListResource.class);
+        Assert.assertNotNull(afterList);
+        Assert.assertEquals(3,afterList.getEmbeddedList().getIngredientResourceList().size());
     }
+
+
 
 
     private Long createDish(UserDetails userDetails, Dish dish) throws Exception {
