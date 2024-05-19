@@ -32,6 +32,33 @@ import java.util.Objects;
                 "join tag_relation tr on tr.child_tag_id = t.tag_id " +
                 "where tr.parent_tag_id = :rating_parent order by power"
 )
+@NamedNativeQuery(name = "IngredientsForDish",
+        query = "select d.dish_id, dish_item_id , i.tag_id, i.unit_id, " +
+                " quantity, whole_quantity , fractional_quantity, 'fractionDisplay' as fractionDisplay, " +
+                " t.name as tagDisplay, i.raw_modifiers as raw_modifiers, u.name AS unit_name, i.marker, i.unit_size " +
+                "from dish d join dish_items i on i.dish_id = d.dish_id join tag t on t.tag_id = i.tag_id " +
+                "left outer join units u on u.unit_id = i.unit_id " +
+                "where d.dish_id = :dishId and t.tag_type = 'Ingredient'",
+        resultSetMapping = "Mapping.DishItemDTO")
+@SqlResultSetMapping(
+        name = "Mapping.DishItemDTO",
+        classes = {
+                @ConstructorResult(
+                        targetClass = com.meg.listshop.lmt.data.pojos.DishItemDTO.class,
+                        columns = {
+                                @ColumnResult(name = "dish_id", type = Long.class),
+                                @ColumnResult(name = "dish_item_id", type = Long.class),
+                                @ColumnResult(name = "tag_id", type = Long.class),
+                                @ColumnResult(name = "unit_id", type = Long.class),
+                                @ColumnResult(name = "quantity", type = Double.class),
+                                @ColumnResult(name = "whole_quantity", type = Integer.class),
+                                @ColumnResult(name = "fractional_quantity", type = String.class),
+                                @ColumnResult(name = "tagDisplay", type = String.class),
+                                @ColumnResult(name = "raw_modifiers", type = String.class),
+                                @ColumnResult(name = "unit_name", type = String.class),
+                                @ColumnResult(name = "marker", type = String.class),
+                                @ColumnResult(name = "unit_size", type = String.class)})})
+
 public class TagEntity {
 
     @Id

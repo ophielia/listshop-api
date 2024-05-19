@@ -1,12 +1,13 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.lmt.api.model.DishRatingInfo;
+import com.meg.listshop.lmt.api.model.RatingInfo;
+import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -120,5 +121,9 @@ public class ServiceTestUtils {
 
     public static DishItemEntity buildDishItemFromTag(long dishItemId, long tagId, String tagName, TagType tagType) {
         return buildDishItemFromTag(dishItemId, tagId, tagName, tagType, null);
+    }
+
+    public static RatingUpdateInfo buildDummyRatingUpdateInfo() {
+        return new RatingUpdateInfo(Collections.emptySet(), Collections.emptySet());
     }
 }

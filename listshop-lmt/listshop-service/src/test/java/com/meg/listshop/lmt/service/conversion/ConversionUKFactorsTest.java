@@ -204,7 +204,6 @@ public class ConversionUKFactorsTest {
 
 
         // cups to pint      3.122 cups => 1.3 pints
-        //MM issue here
         ConvertibleAmount amount = new SimpleAmount(3.122, cupsOpt);
         ConvertibleAmount converted = converterService.convert(amount, pintOpt);
         assertNotNull(converted);

@@ -3,16 +3,19 @@ package com.meg.listshop.lmt.api.web.controller.v2;
 import com.github.dockerjava.api.exception.BadRequestException;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.controller.v2.V2DishRestControllerApi;
-import com.meg.listshop.lmt.api.model.DishResource;
 import com.meg.listshop.lmt.api.model.FractionType;
-import com.meg.listshop.lmt.api.model.IngredientPut;
-import com.meg.listshop.lmt.api.model.IngredientResource;
+import com.meg.listshop.lmt.api.model.ModelMapper;
+import com.meg.listshop.lmt.api.model.v2.DishResource;
+import com.meg.listshop.lmt.api.model.v2.IngredientPut;
+import com.meg.listshop.lmt.api.model.v2.IngredientResource;
+import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 import com.meg.listshop.lmt.service.DishService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -36,11 +39,23 @@ public class V2DishRestController implements V2DishRestControllerApi {
     @Override
     public ResponseEntity<DishResource> retrieveDish(HttpServletRequest request, Authentication authentication, Long dishId) {
         //@GetMapping(value = "/{dishId}", produces = "application/json")
-        return null;
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        String message = String.format("retrieving dish [%S] for user [%S]", dishId, userDetails.getId());
+        logger.info(message);
+
+        // get dish, with tags, ingredients and ratings
+        // sub objects sorted, but in "raw" form
+        // will be "translated" in ModelMapper
+        DishDTO dish = this.dishService
+                .getDishForV2Display(userDetails.getId(), dishId);
+
+        DishResource resource = new DishResource(ModelMapper.toModel(dish, true));
+
+        return new ResponseEntity(resource, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<CollectionModel<IngredientResource>> getIngredientssByDishId(HttpServletRequest request, Authentication authentication, Long dishId) {
+    public ResponseEntity<CollectionModel<IngredientResource>> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, Long dishId) {
         //@GetMapping(value = "/{dishId}/ingredients", produces = "application/json")
         return null;
     }
@@ -76,12 +91,11 @@ public class V2DishRestController implements V2DishRestControllerApi {
 
 
     private DishItemDTO validateIngredient(IngredientPut ingredient, Boolean verifyItemId) {
-    //MM start here - validate ingredient and construct DishItemDTO
         if (ingredient == null) {
             throw new BadRequestException("Ingredient is null");
         }
         if (verifyItemId && ingredient.getId() == null) {
-            throw new BadRequestException("Ingredient id is null");
+                throw new BadRequestException("Ingredient id is null");
         }
         if (ingredient.getTagId() == null) {
             throw new BadRequestException("Ingredient tag id is null");
@@ -90,6 +104,10 @@ public class V2DishRestController implements V2DishRestControllerApi {
             throw new BadRequestException("Ingredient unit id is null");
         }
         DishItemDTO dishItemDTO = new DishItemDTO();
+        dishItemDTO.setDishItemId(stringToLongOrException(ingredient.getId()));
+        dishItemDTO.setTagId(stringToLongOrException(ingredient.getTagId()));
+        dishItemDTO.setUnitId(stringToLongOrException(ingredient.getUnitId()));
+
         if (ingredient.getWholeQuantity() != null) {
             dishItemDTO.setWholeQuantity(ingredient.getWholeQuantity());
         }
@@ -104,7 +122,18 @@ public class V2DishRestController implements V2DishRestControllerApi {
             dishItemDTO.setDishItemId(longValueOf(ingredient.getId()));
         }
         dishItemDTO.setRawModifiers(ingredient.getRawModifiers());
-    return dishItemDTO;
+        return dishItemDTO;
+    }
+
+    private Long stringToLongOrException(String toConvert) {
+        if (toConvert == null) {
+            return null;
+        }
+        try {
+            return Long.parseLong(toConvert);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException(String.format("Id [%s] cannot be converted to Long.", toConvert));
+        }
     }
 
     private Long longValueOf(String longValueAsString) {

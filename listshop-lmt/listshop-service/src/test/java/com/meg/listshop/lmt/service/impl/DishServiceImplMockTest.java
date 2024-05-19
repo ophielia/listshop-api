@@ -3,13 +3,16 @@ package com.meg.listshop.lmt.service.impl;
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.FractionType;
+import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
 import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.service.ServiceTestUtils;
 import com.meg.listshop.lmt.service.food.AmountService;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -26,6 +29,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -869,5 +873,106 @@ public class DishServiceImplMockTest {
         Assert.assertEquals(unitId, ingredientResult.getUnitId());
         Assert.assertTrue(ingredientResult.getModifiersProcessed());
     }
+
+    @Test
+    public void testGetDishForV2Display_IngredientsOnly() {
+        Long userId = 99L;
+        Long dishId = 999L;
+
+        DishEntity dish = new DishEntity();
+        dish.setId(dishId);
+
+        Long ingredientId1 = 1L;
+        Long ingredientTagId1 = 11L;
+        Integer wholeAmount1 = 1;
+        FractionType fractionalAmount1 = FractionType.SevenEighths;
+        Long unitId1 = 1L;
+        Long ingredientId2 = 2L;
+        Long ingredientTagId2 = 22L;
+        Integer wholeAmount2 = 2;
+        FractionType fractionalAmount2 = FractionType.OneHalf;
+        Long unitId2 = 1L;
+        Long ingredientId3 = 3L;
+        Long ingredientTagId3 = 33L;
+        Integer wholeAmount3 = 3;
+        FractionType fractionalAmount3 = null;
+        Long unitId3 = 1L;
+
+        DishItemDTO ingredient1 = buildIngredient(ingredientId1, ingredientTagId1, wholeAmount1, fractionalAmount1, unitId1);
+        DishItemDTO ingredient2 = buildIngredient(ingredientId2, ingredientTagId2, wholeAmount2, fractionalAmount2, unitId2);
+        DishItemDTO ingredient3 = buildIngredient(ingredientId3, ingredientTagId3, wholeAmount3, fractionalAmount3, unitId3);
+        List<DishItemDTO> ingredients = Arrays.asList(ingredient1, ingredient2, ingredient3);
+
+        RatingUpdateInfo updateInfo = ServiceTestUtils.buildDummyRatingUpdateInfo();
+
+        Mockito.when(dishRepository.findByDishIdForUser(userId, dishId))
+                        .thenReturn(Optional.of(dish));
+        Mockito.when(dishItemRepository.getIngredientsForDish(dishId))
+                        .thenReturn(ingredients);
+        Mockito.when(tagService.getRatingUpdateInfoForDishIds(Collections.singletonList(dishId)))
+                        .thenReturn(updateInfo);
+
+        DishDTO result = dishService.getDishForV2Display(userId, dishId);
+
+        Assert.assertNotNull(result);
+        Assert.assertNotNull(result.getIngredients());
+        Assert.assertTrue(result.getTags().isEmpty());
+        Assert.assertNotNull(result.getRatings());
+
+        Map<Long,DishItemDTO> ingredientMap = result.getIngredients().stream()
+                .collect(Collectors.toMap( r -> r.getDishItemId(),
+                        r -> r));
+        Assert.assertNotNull(ingredientMap);
+        // check fraction display
+        assertFractionDisplay(ingredientMap.get(ingredientId1), "7/8");
+        assertFractionDisplay(ingredientMap.get(ingredientId2), "1/2");
+        assertFractionDisplay(ingredientMap.get(ingredientId3), null);
+        /*
+        DishEntity dishResult = dishCaptor.getValue();
+        DishItemEntity ingredientResult = itemCaptor.getValue();
+        Assert.assertNotNull(ingredientResult);
+        // check dish result
+        Assert.assertEquals(1, dishResult.getItems().size());
+        Assert.assertEquals(dishResult.getItems().get(0).getTag(), tag);
+        Assert.assertEquals(1.125, dishResult.getItems().get(0).getQuantity(), 0.001);
+        // check ingredient
+        Assert.assertNotNull(ingredientResult.getMarker());
+        Assert.assertNotNull(ingredientResult.getUnitSize());
+        Assert.assertNotNull(ingredientResult.getRawModifiers());
+        Assert.assertNotNull(dishResult.getItems().get(0).getTag().getConversionId());
+        Assert.assertNotNull(ingredientResult.getUnitId());
+        Assert.assertNotNull(ingredientResult.getFractionalQuantity());
+        Assert.assertEquals(conversionId, dishResult.getItems().get(0).getTag().getConversionId());
+        Assert.assertEquals(ingredientResult.getWholeQuantity(), (Integer) 1);
+        Assert.assertEquals(FractionType.OneEighth, ingredientResult.getFractionalQuantity());
+        Assert.assertEquals(marker, ingredientResult.getMarker());
+        Assert.assertEquals(unitSize, ingredientResult.getUnitSize());
+        Assert.assertEquals(rawModifiers, ingredientResult.getRawModifiers());
+        Assert.assertEquals(1.125, ingredientResult.getQuantity(), 0.001);
+        Assert.assertEquals(unitId, ingredientResult.getUnitId());
+        Assert.assertTrue(ingredientResult.getModifiersProcessed());
+        */
+
+    }
+
+    private void assertFractionDisplay(DishItemDTO dishItemDTO, String value) {
+        if (value == null) {
+            Assert.assertNull(dishItemDTO.getFractionDisplay());
+            return;
+        }
+        Assert.assertEquals(dishItemDTO.getFractionDisplay(), value);
+    }
+
+    private DishItemDTO buildIngredient(Long ingredientId, Long ingredientTagId1, Integer wholeAmount1, FractionType fractionType, Long unitId1) {
+        DishItemDTO dishItemDTO = new DishItemDTO();
+        dishItemDTO.setDishItemId(ingredientId);
+        dishItemDTO.setTagId(ingredientTagId1);
+        dishItemDTO.setTagDisplay(String.valueOf(ingredientTagId1));
+        dishItemDTO.setWholeQuantity(wholeAmount1);
+        dishItemDTO.setFractionalQuantity(fractionType);
+        dishItemDTO.setUnitId(unitId1);
+        return dishItemDTO;
+    }
+
 
 }

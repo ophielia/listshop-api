@@ -253,9 +253,9 @@ public class DishRestController implements DishRestControllerApi {
 
     }
 
-    public ResponseEntity<Object> incrmentRatingForDish(Authentication authentication, @PathVariable Long dishId,
-                                                        @PathVariable Long ratingId,
-                                                        @RequestParam(value = "direction") String direction) {
+    public ResponseEntity<Object> incrementRatingForDish(Authentication authentication, @PathVariable Long dishId,
+                                                         @PathVariable Long ratingId,
+                                                         @RequestParam(value = "direction") String direction) {
         JwtUser userDetails = (JwtUser) authentication.getPrincipal();
         String message = String.format("increment rating for dish [%S],  user [%S] direction [%S]", dishId, userDetails.getId(), direction);
         logger.info(message);

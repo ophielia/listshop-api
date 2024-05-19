@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 
 import java.util.List;
@@ -38,4 +39,6 @@ public interface DishService {
     void addIngredientToDish(Long id, Long dishId, DishItemDTO validatedEntry);
 
     void updateIngredientInDish(Long id, Long dishId, DishItemDTO validatedEntry);
+
+    DishDTO getDishForV2Display(Long userId, Long dishId);
 }

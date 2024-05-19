@@ -1,7 +1,9 @@
-package com.meg.listshop.lmt.api.model;
+package com.meg.listshop.lmt.api.model.v2;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.meg.listshop.lmt.api.model.AbstractListShopResource;
+import com.meg.listshop.lmt.api.model.ListShopModel;
 
 public class IngredientResource extends AbstractListShopResource implements ListShopModel {
 

@@ -13,9 +13,12 @@ import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import com.meg.listshop.lmt.api.model.FractionType;
+import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
+import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
@@ -32,6 +35,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -55,6 +59,11 @@ public class DishServiceImpl implements DishService {
 
     private static final Logger logger = LoggerFactory.getLogger(DishServiceImpl.class);
 
+    Function<DishItemEntity, TagEntity> functionGetTag = DishItemEntity::getTag;
+    Function<DishItemEntity, String> functionGetTagName = functionGetTag.andThen(TagEntity::getName);
+
+    Set<TagType> includedInStandard;
+
     @Autowired
     public DishServiceImpl(
             DishRepository dishRepository,
@@ -70,6 +79,8 @@ public class DishServiceImpl implements DishService {
         this.tagService = tagService;
         this.dishItemRepository = dishItemRepository;
         this.amountService = amountService;
+
+        this.includedInStandard = Set.of(TagType.DishType, TagType.TagType);
     }
 
     @Override
@@ -218,6 +229,7 @@ public class DishServiceImpl implements DishService {
         List<DishItemEntity> dishItems = dish.getItems();
         // check if ingredient already exists for this tagId and unit
         TagEntity existingTag = dishItems.stream()
+                .filter( t-> t.getTag().getTagType().equals(TagType.Ingredient))
                 .filter(i -> i.getUnitId() != null && i.getUnitId().equals(dishItemDTO.getUnitId()))
                 .map(DishItemEntity::getTag)
                 .filter(t -> t.getId().equals(dishItemDTO.getTagId()))
@@ -249,6 +261,46 @@ public class DishServiceImpl implements DishService {
         }
 
         doAddOrUpdateIngredient(dish, dishItemEntity, dishItemDTO, false);
+    }
+
+    @Override
+    public DishDTO getDishForV2Display(Long userId, Long dishId) {
+        // get dish, with tags, ingredients and ratings
+        // sub objects sorted, but in "raw" form
+        // will be "translated" into ingredients in ModelMapper
+        if (dishId == null) {
+            final String msg = String.format("Null dishId passed as argument userId [%s].", userId);
+            throw new ObjectNotFoundException(msg, null, "Dish");
+        }
+
+        Optional<DishEntity> dishOpt = dishRepository.findByDishIdForUser(userId, dishId);
+        if (dishOpt.isEmpty()) {
+            final String msg = String.format("No dish found by id for user [%s] and dishId [%s]", userId, dishId);
+            throw new ObjectNotFoundException(msg, dishId, "Dish");
+        }
+        DishEntity dish = dishOpt.get();
+
+        // get ingredients
+        List<DishItemDTO> ingredients = dishItemRepository.getIngredientsForDish(dishId);
+        ingredients.forEach( in -> {
+            // insert fraction display
+            if (in.getFractionalQuantity() != null) {
+                String fractionDisplay = in.getFractionalQuantity().getDisplayName();
+                in.setFractionDisplay(fractionDisplay);
+            }
+        });
+        ingredients.sort(Comparator.comparing(DishItemDTO::getTagDisplay));
+
+        // tags
+        List<DishItemEntity> tags = dish.getItems().stream()
+                .filter( di -> includedInStandard.contains(di.getTag().getTagType()))
+                .collect(Collectors.toList());
+        tags.sort(Comparator.comparing(functionGetTagName));
+
+        // ratings
+        RatingUpdateInfo ratings = tagService.getRatingUpdateInfoForDishIds(Collections.singletonList(dishId));
+
+        return new DishDTO(dish, ingredients, tags, ratings);
     }
 
     public void doAddOrUpdateIngredient(DishEntity dish, DishItemEntity dishItemEntity, DishItemDTO dishItemDTO, boolean updateStatistics) {
@@ -283,6 +335,7 @@ public class DishServiceImpl implements DishService {
         boolean isNewIngredient = dishItemEntity.getDishItemId() == null;
         dishItemRepository.save(dishItemEntity);
         if (isNewIngredient) {
+            dishItemRepository.save(dishItemEntity);
             dishItems.add(dishItemEntity);
         }
         // add ingredient to dish

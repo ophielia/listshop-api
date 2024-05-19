@@ -1,8 +1,9 @@
-package com.meg.listshop.lmt.api.model;
+package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.listshop.lmt.api.model.v2.IngredientPut;
+import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
+import com.meg.listshop.lmt.api.model.Tag;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,7 +23,9 @@ public class Dish {
 
     private List<Tag> tags = new ArrayList<>();
 
-    private List<IngredientPut> ingredients = new ArrayList<>();
+    private List<Ingredient> ingredients = new ArrayList<>();
+
+    private RatingUpdateInfo ratings;
 
     private Long userId;
 
@@ -115,12 +118,22 @@ public class Dish {
         return this;
     }
 
-    public List<IngredientPut> getIngredients() {
+    public List<Ingredient> getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(List<IngredientPut> ingredients) {
+    public Dish ingredients(List<Ingredient> ingredients) {
         this.ingredients = ingredients;
+        return this;
+    }
+
+    public RatingUpdateInfo getRatings() {
+        return ratings;
+    }
+
+    public Dish ratings(RatingUpdateInfo ratings) {
+        this.ratings = ratings;
+        return this;
     }
 
     @Override
@@ -132,6 +145,7 @@ public class Dish {
                 ", reference='" + reference + '\'' +
                 ", tags=" + tags +
                 ", ingredients=" + ingredients +
+                ", ratings=" + ratings +
                 ", userId=" + userId +
                 ", lastAdded=" + lastAdded +
                 '}';

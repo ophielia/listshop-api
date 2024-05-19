@@ -1,6 +1,8 @@
 package com.meg.listshop.lmt.api.controller.v2;
 
-import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.api.model.v2.IngredientPut;
+import com.meg.listshop.lmt.api.model.v2.IngredientResource;
+import com.meg.listshop.lmt.api.model.v2.DishResource;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,15 +23,15 @@ public interface V2DishRestControllerApi {
     ResponseEntity<DishResource> retrieveDish(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
 
     @GetMapping(value = "/{dishId}/ingredients", produces = "application/json")
-    ResponseEntity<CollectionModel<IngredientResource>> getIngredientssByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
+    ResponseEntity<CollectionModel<IngredientResource>> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
 
-    @PostMapping(value = "/{dishId}/ingredient", produces = "application/json")
-    ResponseEntity<Object> addIngredientToDish(Authentication authentication, @PathVariable Long dishId, @RequestParam(value = "ingredient") IngredientPut ingredient);
+    @PostMapping(value = "/{dishId}/ingredients", produces = "application/json")
+    ResponseEntity<Object> addIngredientToDish(Authentication authentication, @PathVariable Long dishId, @RequestBody IngredientPut ingredient);
 
-    @PutMapping(value = "/{dishId}/ingredient", produces = "application/json")
-    ResponseEntity<Object> updateIngredientInDish(Authentication authentication, @PathVariable Long dishId, @RequestParam(value = "ingredient") IngredientPut ingredient);
+    @PutMapping(value = "/{dishId}/ingredients", produces = "application/json")
+    ResponseEntity<Object> updateIngredientInDish(Authentication authentication, @PathVariable Long dishId, @RequestBody IngredientPut ingredient);
 
-    @DeleteMapping(value = "/{dishId}/ingredient/{ingredientId}", produces = "application/json")
+    @DeleteMapping(value = "/{dishId}/ingredients/{ingredientId}", produces = "application/json")
     ResponseEntity<Object> deleteIngredientFromDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long ingredientId);
 
 }

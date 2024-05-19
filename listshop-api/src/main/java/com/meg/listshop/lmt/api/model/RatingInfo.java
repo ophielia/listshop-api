@@ -13,6 +13,9 @@ public class RatingInfo {
     private Integer power;
     private Integer maxPower;
 
+    public RatingInfo() {
+    }
+
     public RatingInfo(Long tagId, String name) {
         this.ratingTagId = tagId;
         this.ratingTagLabel = name;

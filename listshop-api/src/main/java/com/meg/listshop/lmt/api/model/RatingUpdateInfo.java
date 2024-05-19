@@ -13,6 +13,9 @@ public class RatingUpdateInfo {
 
     private Set<DishRatingInfo> dishRatingInfoSet;
 
+    public RatingUpdateInfo() {
+    }
+
     public RatingUpdateInfo(Set<RatingInfo> headers, Set<DishRatingInfo> dishRatingInfoSet) {
         this.ratingHeaders = headers;
         this.dishRatingInfoSet = dishRatingInfoSet;

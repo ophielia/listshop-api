@@ -173,6 +173,7 @@ public class DishRestControllerTest {
                         .with(user(userDetails))
                         .contentType(contentType)
                         .content(dishJson))
+                .andDo(print())
                 .andExpect(status().is2xxSuccessful());
 
         DishEntity result = dishService.getDishForUserById(TestConstants.USER_3_NAME, TestConstants.DISH_1_ID);

@@ -15,7 +15,10 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
+import com.meg.listshop.lmt.api.model.v2.Ingredient;
 import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.data.pojos.DishDTO;
+import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
@@ -452,6 +455,17 @@ public class ModelMapper {
         return toModel(itemEntities.stream().map(DishItemEntity::getTag).collect(Collectors.toList()));
     }
 
+    private static List<Ingredient> toModelIngredients(List<DishItemDTO> ingredientDTOs) {
+        if (ingredientDTOs == null) {
+            return new ArrayList<>();
+        }
+        List<Ingredient> ingredients = new ArrayList<>();
+        for (DishItemDTO dishItemDTO : ingredientDTOs) {
+            ingredients.add(toModel(dishItemDTO));
+        }
+        return ingredients;
+    }
+
     private static List<Tag> toModel(Set<TagEntity> tagEntities) {
         List<Tag> tags = new ArrayList<>();
         if (tagEntities == null) {
@@ -506,6 +520,34 @@ public class ModelMapper {
                 .searchSelect(tagEntity.getIsGroup())
                 .parentId(String.valueOf(tagEntity.getParentId()))
                 .toDelete(tagEntity.isToDelete());
+    }
+
+    public static Ingredient toModel(DishItemDTO ingredientDto) {
+        if (ingredientDto == null) {
+            return null;
+        }
+
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(String.valueOf(ingredientDto.getDishItemId()));
+        ingredient.setTagId(String.valueOf(ingredientDto.getTagId()));
+        ingredient.setTagDisplay(ingredientDto.getTagDisplay());
+        ingredient.setWholeQuantity(ingredientDto.getWholeQuantity());
+        if (ingredientDto.getFractionalQuantity() != null) {
+            ingredient.setFractionalQuantity(ingredientDto.getFractionalQuantity().name());
+        }
+        ingredient.setUnitId(String.valueOf(ingredientDto.getUnitId()));
+        ingredient.setUnitName(ingredientDto.getUnitName());
+        ingredient.setRawModifiers(ingredientDto.getRawModifiers());
+        ingredient.setUnitDisplay(ingredientDto.getUnitDisplay());
+        String quantityDisplay = "";
+        if (ingredientDto.getWholeQuantity() != null) {
+            quantityDisplay = quantityDisplay + ingredientDto.getWholeQuantity();
+        }
+        if (ingredientDto.getFractionalQuantity() != null) {
+            quantityDisplay = quantityDisplay + " " + ingredientDto.getFractionalQuantity().getDisplayName();
+        }
+        ingredient.setQuantityDisplay(quantityDisplay);
+        return ingredient;
     }
 
     public static Tag itemToTagModel(DishItemEntity itemEntity) {
@@ -794,5 +836,28 @@ public class ModelMapper {
         foodCategory.setCategoryName(foodCategoryEntity.getName());
         foodCategory.setCategoryId(String.valueOf(foodCategoryEntity.getId()));
         return foodCategory;
+    }
+
+    public static com.meg.listshop.lmt.api.model.v2.Dish toModel(DishDTO dishDto, boolean includeTags) {
+        // tags
+        List<Tag> dishTags = new ArrayList<>();
+        if (includeTags) {
+            dishTags = toModelItemsAsTags(dishDto.getTags());
+        }
+        // ingredients
+        List<Ingredient> ingredients = new ArrayList<>();
+        if (includeTags) {
+            ingredients = toModelIngredients(dishDto.getIngredients());
+        }
+
+        return new com.meg.listshop.lmt.api.model.v2.Dish(dishDto.getDish().getId())
+                .description(dishDto.getDish().getDescription())
+                .dishName(dishDto.getDish().getDishName())
+                .reference(dishDto.getDish().getReference())
+                .tags(dishTags)
+                .ratings(dishDto.getRatings())
+                .ingredients(ingredients)
+                .lastAdded(dishDto.getDish().getLastAdded())
+                .userId(dishDto.getDish().getUserId());
     }
 }

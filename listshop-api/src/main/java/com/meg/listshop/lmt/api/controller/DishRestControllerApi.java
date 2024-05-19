@@ -55,9 +55,9 @@ public interface DishRestControllerApi {
     ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Authentication authentication, @PathVariable Long dishId);
 
     @PostMapping(value = "/{dishId}/rating/{ratingId}", produces = "application/json")
-    ResponseEntity<Object> incrmentRatingForDish(Authentication authentication, @PathVariable Long dishId,
-                                                 @PathVariable Long ratingId,
-                                                 @RequestParam(value = "action", required = true) String direction);
+    ResponseEntity<Object> incrementRatingForDish(Authentication authentication, @PathVariable Long dishId,
+                                                  @PathVariable Long ratingId,
+                                                  @RequestParam(value = "action", required = true) String direction);
 
     @PutMapping(value = "/{dishId}/rating/{ratingId}/{step}", produces = "application/json")
     ResponseEntity<Object> setRatingForDish(Authentication authentication, @PathVariable Long dishId,

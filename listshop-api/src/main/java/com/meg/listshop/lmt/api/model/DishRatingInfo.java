@@ -14,6 +14,9 @@ public class DishRatingInfo {
 
     private Set<RatingInfo> ratings;
 
+    public DishRatingInfo() {
+    }
+
     public DishRatingInfo(Long id, String dishName) {
         this.dishId = id;
         this.dishName = dishName;
