@@ -4,45 +4,27 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.meg.listshop</groupId>
-    <artifactId>listshop-common</artifactId>
-    <version>1.16.2</version>
+    <artifactId>listshop-common-data</artifactId>
+    <version>1.17.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>listshop-common</name>
-    <description>api for the postoffice</description>
+    <name>listshop-common-data</name>
+    <description>data used by all</description>
 
     <parent>
         <groupId>com.meg.listshop</groupId>
-        <artifactId>listshop-parent</artifactId>
-        <version>1.16.2</version>
+        <artifactId>common</artifactId>
+        <version>1.17.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.hateoas</groupId>
-            <artifactId>spring-hateoas</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-logging</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j-to-slf4j</artifactId>
-                    <groupId>org.apache.logging.log4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jul-to-slf4j</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
+            <groupId>com.meg.listshop</groupId>
+            <artifactId>listshop-common</artifactId>
+            <scope>compile</scope>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -50,19 +32,9 @@
             <artifactId>spring-test</artifactId>
         </dependency>
 
-
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
 

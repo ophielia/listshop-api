@@ -1,8 +1,7 @@
-package com.meg.listshop.conversion.data.entity;
+package com.meg.listshop.common.data.entity;
 
-
-import com.meg.listshop.conversion.data.pojo.UnitSubtype;
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.common.UnitSubtype;
+import com.meg.listshop.common.UnitType;
 
 import javax.persistence.*;
 
@@ -157,6 +156,7 @@ public class UnitEntity {
         }
         return oneWayConversion;
     }
+
     @Override
     public String toString() {
         return "UnitEntity{" +

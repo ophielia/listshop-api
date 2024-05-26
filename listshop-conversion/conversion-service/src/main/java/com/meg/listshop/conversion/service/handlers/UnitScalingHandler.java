@@ -3,7 +3,7 @@ package com.meg.listshop.conversion.service.handlers;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.common.UnitType;
 import com.meg.listshop.conversion.service.ConversionContext;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import org.slf4j.Logger;

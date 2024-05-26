@@ -9,10 +9,10 @@ package com.meg.listshop.lmt.service.conversion;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.pojo.DomainType;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.data.pojo.UnitType;
-import com.meg.listshop.conversion.data.repository.UnitRepository;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
@@ -105,14 +105,14 @@ public class ConversionCanFactorsTest {
 
         // test domain - hybrid to us domain should not do conversion
         ConvertibleAmount amount = new SimpleAmount(1, largeCanOpt);
-        ConvertibleAmount converted = converterService.convert(amount, UnitType.US);
+        ConvertibleAmount converted = converterService.convert(amount, DomainType.US);
         assertNotNull(converted);
         assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(largeCanId, converted.getUnit().getId());
 
         // test domain - hybrid to uk domain should not do conversion
         amount = new SimpleAmount(1, smallCanOpt);
-        converted = converterService.convert(amount, UnitType.UK);
+        converted = converterService.convert(amount, DomainType.UK);
         assertNotNull(converted);
         assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(smallCanId, converted.getUnit().getId());
@@ -131,14 +131,14 @@ public class ConversionCanFactorsTest {
 
         // test domain - hybrid to us domain should not do conversion
         ConvertibleAmount amount = new SimpleAmount(1, largeCanOpt);
-        ConvertibleAmount converted = converterService.convert(amount, UnitType.US);
+        ConvertibleAmount converted = converterService.convert(amount, DomainType.US);
         assertNotNull(converted);
         assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(largeCanId, converted.getUnit().getId());
 
         // test domain - hybrid to uk domain should not do conversion
         amount = new SimpleAmount(1, smallCanOpt);
-        converted = converterService.convert(amount, UnitType.UK);
+        converted = converterService.convert(amount, DomainType.UK);
         assertNotNull(converted);
         assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(smallCanId, converted.getUnit().getId());

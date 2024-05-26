@@ -1,7 +1,7 @@
 package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
-import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.service.ConversionContext;

@@ -1,6 +1,6 @@
 package com.meg.listshop.conversion.service;
 
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.common.UnitType;
 
 import java.util.Objects;
 

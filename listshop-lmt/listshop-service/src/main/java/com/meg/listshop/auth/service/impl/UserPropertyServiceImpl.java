@@ -11,8 +11,10 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.auth.data.repository.UserPropertyRepository;
 import com.meg.listshop.auth.service.UserPropertyChangeListener;
+import com.meg.listshop.auth.service.UserPropertyKey;
 import com.meg.listshop.auth.service.UserPropertyService;
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.conversion.data.pojo.DomainType;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import org.slf4j.Logger;
@@ -115,6 +117,17 @@ public class UserPropertyServiceImpl implements UserPropertyService {
             userPropertyRepository.deleteAll(toDeleteList);
         }
 
+    }
+
+    @Override
+    public DomainType getUserPreferredDomain(Long userId) {
+        UserPropertyEntity property = userPropertyRepository.findByUserIdAndKey(userId, UserPropertyKey.PreferredDomain.name()).orElse(null);
+        if (property == null) {
+            return null;
+        }
+        String propertyValue = property.getValue();
+
+        return DomainType.findByName(propertyValue);
     }
 
     private void firePropertiesUpdatedEvent(List<UserPropertyEntity> updatedProperties) {

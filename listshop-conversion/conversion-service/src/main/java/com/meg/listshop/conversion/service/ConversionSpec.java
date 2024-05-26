@@ -1,6 +1,8 @@
 package com.meg.listshop.conversion.service;
 
-import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.common.UnitSubtype;
+import com.meg.listshop.common.UnitType;
+import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.tools.ConversionTools;
 
@@ -13,6 +15,7 @@ public class ConversionSpec {
 
     private final Long unitId;
 
+    private final DomainType domainType;
     private final UnitType unitType;
     private final UnitSubtype unitSubtype;
 
@@ -21,38 +24,55 @@ public class ConversionSpec {
     private final Set<UnitFlavor> flavors;
     private final String unitSize;
 
-    private ConversionSpec(Long unitId, UnitType unitType, UnitSubtype subtype, ConversionTargetType contextType, String unitSize,Set<UnitFlavor> flavors) {
+    private ConversionSpec(Long unitId, UnitType unitType, UnitSubtype subtype, ConversionTargetType contextType, String unitSize, DomainType domainType, Set<UnitFlavor> flavors) {
         this.unitId = unitId;
         this.unitType = unitType;
         this.flavors = flavors;
         this.unitSubtype = subtype;
         this.contextType = contextType;
         this.unitSize = unitSize;
+        this.domainType = domainType;
     }
 
-    public static ConversionSpec specForDomain(UnitEntity unitSource, UnitType domain) {
-        return new ConversionSpec(null, domain, unitSource.getSubtype(),null,null,new HashSet<>());
+    public static ConversionSpec specForDomain(UnitEntity unitSource, DomainType domain) {
+        UnitType unitType = unitTypeForDomain(domain);
+        return new ConversionSpec(null, unitType, unitSource.getSubtype(), null, null, domain, new HashSet<>());
+    }
+
+    private static UnitType unitTypeForDomain(DomainType domain) {
+        switch (domain) {
+            case US:
+                return UnitType.US;
+            case METRIC:
+                return UnitType.METRIC;
+            case UK:
+                return UnitType.UK;
+            default:
+                throw new IllegalArgumentException("Unsupported domain type: " + domain);
+        }
     }
 
     public static ConversionSpec fromExactUnit(UnitEntity unitSource) {
-        return new ConversionSpec(unitSource.getId(), unitSource.getType(), unitSource.getSubtype(),null, null,ConversionTools.flavorsForUnit(unitSource));
+        return new ConversionSpec(unitSource.getId(), unitSource.getType(), unitSource.getSubtype(), null, null, null, ConversionTools.flavorsForUnit(unitSource));
     }
 
 
     public static ConversionSpec basicSpec(UnitType type, UnitSubtype subtype, UnitFlavor... flavors) {
         Set<UnitFlavor> flavorSet = new HashSet<>(Arrays.asList(flavors));
-        return new ConversionSpec(null, type, subtype,null,null, flavorSet);
+        return new ConversionSpec(null, type, subtype, null, null, null, flavorSet);
     }
 
     public static ConversionSpec basicSpec(Long unitId, UnitType type, UnitSubtype subtype, Set<UnitFlavor> flavorSet) {
-        return new ConversionSpec(unitId, type, subtype, null,null,flavorSet);
-    }
-    public static ConversionSpec basicSpec(Long unitId, UnitType type, UnitSubtype subtype, String unitSize,Set<UnitFlavor> flavorSet) {
-        return new ConversionSpec(unitId, type, subtype, null,unitSize,flavorSet);
+        return new ConversionSpec(unitId, type, subtype, null, null, null, flavorSet);
     }
 
-    public static ConversionSpec specForContext(UnitType type, UnitSubtype subtype, ConversionTargetType contextType, String unitSize) {
-        return new ConversionSpec(null, type, subtype, contextType, unitSize,new HashSet<>());
+    public static ConversionSpec basicSpec(Long unitId, UnitType type, UnitSubtype subtype, String unitSize, Set<UnitFlavor> flavorSet) {
+        return new ConversionSpec(unitId, type, subtype, null, unitSize, null, flavorSet);
+    }
+
+    public static ConversionSpec specForContext(DomainType domainType, UnitSubtype subtype, ConversionTargetType contextType, String unitSize) {
+        UnitType mainType = unitTypeForDomain(domainType);
+        return new ConversionSpec(null, mainType, subtype, contextType, unitSize, domainType, new HashSet<>());
     }
 
     public boolean matches(UnitEntity unit) {

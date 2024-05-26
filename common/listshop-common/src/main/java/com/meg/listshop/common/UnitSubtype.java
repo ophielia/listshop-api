@@ -1,4 +1,4 @@
-package com.meg.listshop.conversion.data.pojo;
+package com.meg.listshop.common;
 
 public enum UnitSubtype {
     WEIGHT,

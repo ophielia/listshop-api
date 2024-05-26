@@ -4,7 +4,7 @@ import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.common.UnitType;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;

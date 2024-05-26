@@ -1,11 +1,10 @@
 package com.meg.listshop.conversion.service;
 
 
-import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionRequest;
-import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
-import com.meg.listshop.conversion.data.pojo.UnitSubtype;
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.common.UnitSubtype;
+import com.meg.listshop.common.UnitType;
+import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.handlers.ChainConversionHandler;
@@ -42,8 +41,10 @@ public class ConverterServiceImpl implements ConverterService {
         this.tagSpecificHandler = weightVolumeHandler;
     }
 
+
+
     @Override
-    public ConvertibleAmount convert(ConvertibleAmount amount, UnitType domain) throws ConversionPathException, ConversionFactorException {
+    public ConvertibleAmount convert(ConvertibleAmount amount, DomainType domain) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for domain [{}], amount [{}]", domain, amount);
         if (domain == null) {
             throw new ConversionPathException("Cannot convert, domain is null");
@@ -65,7 +66,7 @@ public class ConverterServiceImpl implements ConverterService {
             throw new ConversionPathException("Cannot convert, context is null");
         }
         UnitSubtype targetSubtype = determineSubtypeFromContext(amount, context);
-        ConversionSpec conversionSpec = ConversionSpec.specForContext(context.getUnitType(), targetSubtype, context.getContextType(), unitSize);
+        ConversionSpec conversionSpec = ConversionSpec.specForContext(context.getDomainType(), targetSubtype, context.getContextType(), unitSize);
 
         return doConversion(amount, conversionSpec);
     }
@@ -207,7 +208,7 @@ public class ConverterServiceImpl implements ConverterService {
             throws ConversionPathException, ConversionFactorException {
         if (context.getTargetSubtype().equals(UnitSubtype.VOLUME)
                 && !amount.getUnit().getType().equals(UnitType.METRIC)) {
-            return convert(amount, UnitType.METRIC);
+            return convert(amount, DomainType.METRIC);
         }
         return amount;
     }

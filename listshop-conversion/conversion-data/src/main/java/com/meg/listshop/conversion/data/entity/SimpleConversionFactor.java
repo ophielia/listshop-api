@@ -1,5 +1,7 @@
 package com.meg.listshop.conversion.data.entity;
 
+import com.meg.listshop.common.data.entity.UnitEntity;
+
 public class SimpleConversionFactor implements ConversionFactor {
     private Double factor;
 

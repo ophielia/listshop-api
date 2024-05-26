@@ -9,12 +9,9 @@ package com.meg.listshop.lmt.service.conversion;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionRequest;
-import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
-import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.data.pojo.UnitType;
-import com.meg.listshop.conversion.data.repository.UnitRepository;
+import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.pojo.*;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
@@ -37,21 +34,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ConversionUSFactorsTest {
 
     private static final Long ounceId = 1009L;
-    private static final Long gId = 1013L;
-    private static final Long kgId = 1014L;
     private static final Long lbId = 1008L;
     private static final Long flTeaspoonId = 1019L;
     private static final Long flTablespoonId = 1021L;
-    private static final Long tspId = 1002L;
-    private static final Long tbId = 1001L;
 
     private static final Long gallonId = 1005L;
-    private static final Long literId = 1003L;
     private static final Long quartId = 1010L;
     private static final Long pintId = 1006L;
     private static final Long cupsId = 1017L;
-    private static final Long centileterId = 1015L;
-    private static final Long milliliterId = 1004L;
     private static final Long flOzId = 1007L;
     @Autowired
     ConverterService converterService;
@@ -61,7 +51,7 @@ public class ConversionUSFactorsTest {
 
 
     @ClassRule
-    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
+    public static ListShopPostgresqlContainer postgresSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Test
     public void unitTestsUsScaling() throws ConversionPathException, ConversionFactorException {
@@ -73,12 +63,6 @@ public class ConversionUSFactorsTest {
         UnitEntity poundOpt = unitRepository.findById(lbId).orElse(null);
         UnitEntity gallonOpt = unitRepository.findById(gallonId).orElse(null);
 
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
-        ConversionRequest listContextVolume = new ConversionRequest(ConversionTargetType.List, UnitType.US);
-        ConversionRequest dishContextVolume = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
-
-
-        //        688 Gram = 0.688 Kilogram
 
 // 6 US cup = 0.375 US gallon
         ConvertibleAmount amount = new SimpleAmount(12.0, cupsOpt);
@@ -170,7 +154,7 @@ public class ConversionUSFactorsTest {
         UnitEntity flTspOpt = unitRepository.findById(flTeaspoonId).orElse(null);
         UnitEntity flTbOpt = unitRepository.findById(flTablespoonId).orElse(null);
 
-        ConversionRequest dishConversionContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        ConversionRequest dishConversionContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
 
         // teaspoon to centiliter  12 US teaspoon => 2 fl oz
         ConvertibleAmount amount = new SimpleAmount(12, flTspOpt);

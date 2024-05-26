@@ -1,8 +1,10 @@
-package com.meg.listshop.lmt.api.model;
+package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.listshop.lmt.api.model.v2.IngredientResource;
+import com.meg.listshop.lmt.api.model.AbstractListShopResource;
+import com.meg.listshop.lmt.api.model.EmbeddedIngredientListResource;
+import com.meg.listshop.lmt.api.model.ListShopModel;
 
 import java.util.List;
 

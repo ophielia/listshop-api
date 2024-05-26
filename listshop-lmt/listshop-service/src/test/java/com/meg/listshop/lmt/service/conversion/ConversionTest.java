@@ -9,12 +9,9 @@ package com.meg.listshop.lmt.service.conversion;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionRequest;
-import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
-import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.data.pojo.UnitType;
-import com.meg.listshop.conversion.data.repository.UnitRepository;
+import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.pojo.*;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
@@ -156,20 +153,20 @@ public class ConversionTest {
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
 
         ConvertibleAmount amount = new SimpleAmount(20.0, litersOpt.get());
-        ConvertibleAmount converted = converterService.convert(amount, UnitType.US);
+        ConvertibleAmount converted = converterService.convert(amount, DomainType.US);
         assertNotNull(converted);
         assertEquals(5.283, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gallonId, converted.getUnit().getId());
 
         amount = new SimpleAmount(50, centiliterOpt.get());
-        converted = converterService.convert(amount, UnitType.US);
+        converted = converterService.convert(amount, DomainType.US);
         assertNotNull(converted);
         assertEquals(1.057, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(pintId, converted.getUnit().getId());
 
 
         amount = new SimpleAmount(3.0, cupsOpt.get());
-        converted = converterService.convert(amount, UnitType.METRIC);
+        converted = converterService.convert(amount, DomainType.METRIC);
         assertNotNull(converted);
         assertEquals(0.71, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(literId, converted.getUnit().getId());
@@ -181,14 +178,14 @@ public class ConversionTest {
         Optional<UnitEntity> pintOpt = unitRepository.findById(pintId);
 
         ConvertibleAmount amount = new SimpleAmount(3, quartOpt.get());
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
         ConvertibleAmount converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(2.839, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(literId, converted.getUnit().getId());
 
         amount = new SimpleAmount(0.021133764, pintOpt.get());
-        converted = converterService.convert(amount, UnitType.METRIC);
+        converted = converterService.convert(amount, DomainType.METRIC);
         assertNotNull(converted);
         // confirm that we have this pint fraction translated to 1 centiliter
         assertEquals(1.000, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -208,7 +205,7 @@ public class ConversionTest {
         Optional<UnitEntity> teaspoonOpt = unitRepository.findById(teaspoonId);
 
         ConvertibleAmount amount = new SimpleAmount(3, teaspoonOpt.get());
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         ConvertibleAmount converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -222,7 +219,7 @@ public class ConversionTest {
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
 
         ConvertibleAmount amount = new SimpleAmount(473.17, milliliterOpt.get());
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
 
         ConvertibleAmount converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
@@ -230,7 +227,7 @@ public class ConversionTest {
         assertEquals(quartId, converted.getUnit().getId());
 
         amount = new SimpleAmount(23.6588, centiliterOpt.get());
-        converted = converterService.convert(amount, UnitType.US);
+        converted = converterService.convert(amount, DomainType.US);
         assertNotNull(converted);
         // confirm that we have this centiliter converted to 1 cup
         assertEquals(1.000, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -252,7 +249,7 @@ public class ConversionTest {
 
         // 113.398093 gm = 4 ounces => ounce destination
         ConvertibleAmount amount = new SimpleAmount(113.398093, gramOpt.get());
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         ConvertibleAmount converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(ounceId, converted.getUnit().getId());
@@ -260,7 +257,7 @@ public class ConversionTest {
 
         // 15 Ounce = 425.242847 Gram  => pound destination
         amount = new SimpleAmount(425.242847, gramOpt.get());
-        listContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(0.936, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -273,7 +270,7 @@ public class ConversionTest {
         UnitEntity tablespoon = unitRepository.findById(tablespoonId).orElse(null);
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
 
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
         // tablespoon of butter to grams
         ConvertibleAmount amount = new SimpleAmount(1, tablespoon, 348L, false, null);
         //ConvertibleAmount amount = new SimpleAmount(1, tablespoon, butterTagId, false, null);
@@ -304,7 +301,7 @@ public class ConversionTest {
         assertEquals(gId, converted.getUnit().getId());
 
         // 16 tablespoons of butter to dish context - metric
-        listContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        listContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         bigAmount = new SimpleAmount(16.0, tablespoon, butterTagId, false, null);
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
@@ -312,7 +309,7 @@ public class ConversionTest {
         assertEquals(tablespoonId, converted.getUnit().getId());
 
         // 8 tablespoons of butter to dish context - metric
-        listContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        listContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         bigAmount = new SimpleAmount(8.0, tablespoon, butterTagId, false, null);
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
@@ -320,7 +317,7 @@ public class ConversionTest {
         assertEquals(tablespoonId, converted.getUnit().getId());
 
         // 7 tablespoons of butter to dish context - metric
-        listContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        listContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         bigAmount = new SimpleAmount(7.0, tablespoon, butterTagId, false, null);
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
@@ -329,7 +326,7 @@ public class ConversionTest {
 
 
         // 8 tablespoons of butter to context dish - us
-        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
+        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
         bigAmount = new SimpleAmount(8.0, tablespoon, butterTagId, false, null);
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
@@ -337,7 +334,7 @@ public class ConversionTest {
         assertEquals(butterStickId, converted.getUnit().getId());
 
         // 16 tablespoons of butter to list context - us
-        listContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         bigAmount = new SimpleAmount(16.0, tablespoon, butterTagId, false, null);
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
@@ -351,7 +348,7 @@ public class ConversionTest {
         UnitEntity tablespoon = unitRepository.findById(cupsId).orElse(null);
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
 
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
         // 1/2 cup onions to unit, marker chopped
         ConvertibleAmount amount = new SimpleAmount(0.5, tablespoon, onionConversionId, false, "chopped");
         ConvertibleAmount converted = converterService.convert(amount, grams);
@@ -373,7 +370,7 @@ public class ConversionTest {
         UnitEntity tablespoon = unitRepository.findById(tablespoonId).orElse(null);
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
 
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
         // tablespoon of butter to grams
         ConvertibleAmount amount = new SimpleAmount(1, tablespoon, butterConversionId, false, null);
         ConvertibleAmount converted = converterService.convert(amount, grams);
@@ -401,7 +398,7 @@ public class ConversionTest {
         assertEquals(gId, converted.getUnit().getId());
 
         // 16 tablespoons of butter to dish context - metric
-        listContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        listContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         bigAmount = new SimpleAmount(16.0, tablespoon, butterConversionId, false, null);
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
@@ -409,7 +406,7 @@ public class ConversionTest {
         assertEquals(tablespoonId, converted.getUnit().getId());
 
         // 8 tablespoons of butter to dish context - metric
-        listContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        listContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         bigAmount = new SimpleAmount(8.0, tablespoon, butterConversionId, false, null);
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
@@ -417,7 +414,7 @@ public class ConversionTest {
         assertEquals(tablespoonId, converted.getUnit().getId());
 
         // 7 tablespoons of butter to dish context - metric
-        listContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        listContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         bigAmount = new SimpleAmount(7.0, tablespoon, butterConversionId, false, null);
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
@@ -425,7 +422,7 @@ public class ConversionTest {
         assertEquals(tablespoonId, converted.getUnit().getId());
 
         // 16 tablespoons of butter to list context - us
-        listContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         bigAmount = new SimpleAmount(16.0, tablespoon, butterConversionId, false, null);
         converted = converterService.convert(bigAmount, listContext);
         assertNotNull(converted);
@@ -434,7 +431,7 @@ public class ConversionTest {
 
 
         // 16 tablespoons of butter to context dish - us
-        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
+        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
         bigAmount = new SimpleAmount(8.0, tablespoon, butterConversionId, false, null);
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
@@ -456,7 +453,7 @@ public class ConversionTest {
         assertEquals(gId, converted.getUnit().getId());
 
         // dish context metric
-        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         converted = converterService.convert(amount, dishContext);
         assertNotNull(converted);
         assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -464,7 +461,7 @@ public class ConversionTest {
 
 
         // cheddar slice to us dish
-        dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
+        dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, slice, cheddarConversionId, false, null);
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
@@ -472,7 +469,7 @@ public class ConversionTest {
         assertEquals(ounceId, converted.getUnit().getId());
 
         // cheddar slice to us list
-        dishContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        dishContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         bigAmount = new SimpleAmount(16.0, slice, cheddarConversionId, false, null);
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
@@ -495,7 +492,7 @@ public class ConversionTest {
         assertEquals(gId, converted.getUnit().getId());
 
         // list context metric
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         System.out.println(converted);
@@ -504,7 +501,7 @@ public class ConversionTest {
 
 
         // dish context metric
-        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         converted = converterService.convert(amount, dishContext);
         assertNotNull(converted);
         System.out.println(converted);
@@ -515,7 +512,7 @@ public class ConversionTest {
 
 
         // chicken drumstick us dish
-        dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
+        dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, singleUnit, chickenDrumstickId, false, null);
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
@@ -525,7 +522,7 @@ public class ConversionTest {
 
 
         // chicken drumstick us list
-        dishContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        dishContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         bigAmount = new SimpleAmount(16.0, singleUnit, chickenDrumstickId, false, null);
         converted = converterService.convert(bigAmount, dishContext);
         System.out.println(converted);
@@ -543,7 +540,7 @@ public class ConversionTest {
 
         // chicken drumstick us domain
         bigAmount = new SimpleAmount(16.0, singleUnit, chickenDrumstickId, false, null);
-        converted = converterService.convert(bigAmount, UnitType.US);
+        converted = converterService.convert(bigAmount, DomainType.US);
         System.out.println(converted);
         assertNotNull(converted);
         assertEquals(3.098, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -551,7 +548,7 @@ public class ConversionTest {
 
         // chicken drumstick metric domain
         bigAmount = new SimpleAmount(16.0, singleUnit, chickenDrumstickId, false, null);
-        converted = converterService.convert(bigAmount, UnitType.METRIC);
+        converted = converterService.convert(bigAmount, DomainType.METRIC);
         System.out.println(converted);
         assertNotNull(converted);
         assertEquals(1.408, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -574,7 +571,7 @@ public class ConversionTest {
         assertEquals(gId, converted.getUnit().getId());
 
         // list context metric
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         System.out.println(converted);
@@ -582,7 +579,7 @@ public class ConversionTest {
         assertEquals(unitId, converted.getUnit().getId());
 
         // dish context metric
-        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         converted = converterService.convert(amount, dishContext);
         assertNotNull(converted);
         System.out.println(converted);
@@ -590,7 +587,7 @@ public class ConversionTest {
         assertEquals(sliceId, converted.getUnit().getId());
 
         // tomato slice to us dish
-         dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
+         dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, slice, tomatoConversionId, false, "sliced");
          converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
@@ -599,7 +596,7 @@ public class ConversionTest {
         assertEquals(ounceId, converted.getUnit().getId());
 
         // tomato slice to us list
-        dishContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        dishContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         bigAmount = new SimpleAmount(16.0, slice, tomatoConversionId, false, null);
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
@@ -624,7 +621,7 @@ public class ConversionTest {
         assertEquals(gId, converted.getUnit().getId());
 
         // list context metric
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         System.out.println(converted);
@@ -632,13 +629,13 @@ public class ConversionTest {
         assertEquals(unitId, converted.getUnit().getId());
 
         // dish context metric
-        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         converted = converterService.convert(amount, dishContext);
         assertNotNull(converted);
         assertEquals(180.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(gId, converted.getUnit().getId());
 
-        dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
+        dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
@@ -646,7 +643,7 @@ public class ConversionTest {
         assertEquals(lbId, converted.getUnit().getId());
 
         // cup chopped tomatoes to us list
-        dishContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        dishContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
@@ -662,7 +659,7 @@ public class ConversionTest {
         UnitEntity unit = unitRepository.findById(unitId).orElse(null);
 
         // list context, metric
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
         // tomato slice to units - no size passed
         ConvertibleAmount amount = new SimpleAmount(1, cup, tomatoConversionId, false, "chopped");
         ConvertibleAmount converted = converterService.convert(amount, listContext);
@@ -687,7 +684,7 @@ public class ConversionTest {
         assertEquals(unitId, converted.getUnit().getId());
 
         // to us list, with size
-        listContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
         converted = converterService.convert(bigAmount, listContext, "large");
         System.out.println(converted);
@@ -710,7 +707,7 @@ public class ConversionTest {
         assertEquals(113.6, RoundingUtils.roundToThousandths(converted.getQuantity()));
 
         // 8 tablespoons to dish, metric
-        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         converted = converterService.convert(amount, dishContext);
         assertNotNull(converted);
         System.out.println(converted);
@@ -719,7 +716,7 @@ public class ConversionTest {
 
 
         // 8 tablespoons to list, metric
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         System.out.println(converted);
@@ -727,7 +724,7 @@ public class ConversionTest {
         assertEquals(113.6, RoundingUtils.roundToThousandths(converted.getQuantity()));
 
         // 8 tablespoons to metric
-         converted = converterService.convert(amount, UnitType.METRIC);
+         converted = converterService.convert(amount, DomainType.METRIC);
         assertNotNull(converted);
         System.out.println(converted);
         assertEquals(113.6, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -748,7 +745,7 @@ public class ConversionTest {
         assertEquals(4.007, RoundingUtils.roundToThousandths(converted.getQuantity()));
 
         // 8 tablespoons to dish, us
-        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
+        ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
         converted = converterService.convert(amount, dishContext);
         assertNotNull(converted);
         System.out.println(converted);
@@ -757,7 +754,7 @@ public class ConversionTest {
 
 
         // 8 tablespoons to list, us
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         System.out.println(converted);
@@ -765,7 +762,7 @@ public class ConversionTest {
         assertEquals(3.999, RoundingUtils.roundToThousandths(converted.getQuantity()));
 
         // 8 tablespoons to us
-         converted = converterService.convert(amount, UnitType.US);
+         converted = converterService.convert(amount, DomainType.US);
         assertNotNull(converted);
         System.out.println(converted);
         assertEquals(3.999, RoundingUtils.roundToThousandths(converted.getQuantity()));

@@ -2,8 +2,8 @@ package com.meg.listshop.conversion.service;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
-import com.meg.listshop.conversion.data.pojo.UnitSubtype;
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.common.UnitSubtype;
+import com.meg.listshop.common.UnitType;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,7 +27,7 @@ public class ConversionContext {
     }
 
     public boolean requiresAndCanDoTagSpecificConversion(ConvertibleAmount amount) {
-        if (amount.getConversionId() != null && amount.getUnit().getType() != targetSpec.getUnitType()) {
+        if (amount.getConversionId() != null) {
             return true;
         }
         Set<UnitSubtype> subtypes = new HashSet<>();

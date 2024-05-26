@@ -63,3 +63,18 @@ insert into factors (factor_id, from_unit, to_unit, factor) select 60, f.unit_id
 insert into factors (factor_id, from_unit, to_unit, factor) select 61, f.unit_id, t.unit_id, 1000 as factor from units f,units t where lower(f.name) = 'kilogram' and lower(t.name) = 'gram';
 insert into factors (factor_id, from_unit, to_unit, factor) select 62, f.unit_id, t.unit_id, 16 as factor from units f,units t where lower(f.name) = 'cup' and lower(t.name) = 'tablespoon';
 insert into factors (factor_id, from_unit, to_unit, factor) select 63, f.unit_id, t.unit_id, 48 as factor from units f,units t where lower(f.name) = 'cup' and lower(t.name) = 'teaspoon';
+
+
+
+select modifier_type, modifier as text, reference_id from modifier_mappings
+where modifier_type <> 'Unit';
+
+private ModifierType modifierType;
+private String text;
+private Long referenceId;
+
+select distinct modifier_type, modifier , reference_id  from modifier_mappings  where modifier_type <> 'Unit'
+
+select distinct u.id from units u join domain_unit du on du.unit_id = t.unit_id where u.id > 0   and du.domain_type = 'UK'
+
+select * from tag where name like '%onion%'

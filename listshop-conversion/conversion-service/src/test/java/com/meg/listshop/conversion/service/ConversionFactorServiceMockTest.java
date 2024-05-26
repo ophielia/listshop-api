@@ -1,11 +1,11 @@
 package com.meg.listshop.conversion.service;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
-import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleFoodFactor;
-import com.meg.listshop.conversion.data.pojo.UnitSubtype;
+import com.meg.listshop.common.UnitSubtype;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
-import com.meg.listshop.conversion.data.repository.UnitRepository;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.tools.ConversionTestTools;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -14,11 +14,9 @@ public class FlatStringUtils {
             return new HashSet<>();
         }
 
-        Set<String> idList = new HashSet<>();
-        idList = Arrays.asList(flatlist.split(delimiter)).stream()
+        return Arrays.asList(flatlist.split(delimiter)).stream()
                 .filter(i -> !i.isEmpty())
                 .collect(Collectors.toSet());
-        return idList;
     }
 
     public static Set<Long> inflateStringToLongSet(String flatlist, String delimiter) {

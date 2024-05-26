@@ -1,13 +1,12 @@
 package com.meg.listshop.conversion.service.handlers;
 
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.common.UnitType;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractChainConversionHandler extends AbstractConversionHandler implements ChainConversionHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractChainConversionHandler.class);
 
     private ConversionSpec source;
     private ConversionSpec target;

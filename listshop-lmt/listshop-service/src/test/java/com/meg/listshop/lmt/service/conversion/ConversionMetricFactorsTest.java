@@ -9,12 +9,9 @@ package com.meg.listshop.lmt.service.conversion;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionRequest;
-import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
-import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.data.pojo.UnitType;
-import com.meg.listshop.conversion.data.repository.UnitRepository;
+import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.pojo.*;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
@@ -71,9 +68,9 @@ public class ConversionMetricFactorsTest {
         UnitEntity gramOpt = unitRepository.findById(gId).orElse(null);
         UnitEntity kgOpt = unitRepository.findById(kgId).orElse(null);
 
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
-        ConversionRequest listContextVolume = new ConversionRequest(ConversionTargetType.List, UnitType.METRIC);
-        ConversionRequest dishContextVolume = new ConversionRequest(ConversionTargetType.Dish, UnitType.METRIC);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
+        ConversionRequest listContextVolume = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
+        ConversionRequest dishContextVolume = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
 
 
 //        688 Gram = 0.688 Kilogram

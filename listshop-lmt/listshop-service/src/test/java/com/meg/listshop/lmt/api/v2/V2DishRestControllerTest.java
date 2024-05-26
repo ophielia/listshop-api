@@ -6,8 +6,7 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.lmt.api.model.IngredientListResource;
-import com.meg.listshop.lmt.api.model.Tag;
+import com.meg.listshop.lmt.api.model.v2.IngredientListResource;
 import com.meg.listshop.lmt.api.model.v2.Dish;
 import com.meg.listshop.lmt.api.model.v2.DishResource;
 import com.meg.listshop.lmt.api.model.v2.Ingredient;
@@ -38,7 +37,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertNotNull;

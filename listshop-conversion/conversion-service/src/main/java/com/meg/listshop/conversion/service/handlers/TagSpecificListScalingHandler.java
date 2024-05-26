@@ -2,7 +2,7 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
-import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.service.ConversionContext;
 import com.meg.listshop.conversion.service.ConvertibleAmount;

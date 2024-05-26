@@ -37,6 +37,9 @@ public class UserPropertyEntity {
     @Column(name = "property_value")
     private String value;
 
+    @Column(name = "is_system")
+    private Boolean isSystem;
+
     public Long getId() {
         return id;
     }
@@ -69,6 +72,14 @@ public class UserPropertyEntity {
         this.value = value;
     }
 
+    public Boolean getSystem() {
+        return isSystem;
+    }
+
+    public void setSystem(Boolean system) {
+        isSystem = system;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -89,6 +100,7 @@ public class UserPropertyEntity {
                 ", user=" + user +
                 ", key='" + key + '\'' +
                 ", value='" + value + '\'' +
+                ", system='" + isSystem + '\'' +
                 '}';
     }
 }

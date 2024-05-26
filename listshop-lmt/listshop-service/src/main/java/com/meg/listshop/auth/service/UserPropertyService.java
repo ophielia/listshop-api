@@ -8,6 +8,7 @@
 package com.meg.listshop.auth.service;
 
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
+import com.meg.listshop.conversion.data.pojo.DomainType;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 
 import java.util.List;
@@ -27,4 +28,6 @@ public interface UserPropertyService {
 
     void setPropertiesForUser(String userName, List<UserPropertyEntity> userPropertyEntities, boolean suppressNotifications) throws BadParameterException;
 
+
+    DomainType getUserPreferredDomain(Long userId);
 }

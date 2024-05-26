@@ -1,6 +1,8 @@
 package com.meg.listshop.conversion.service;
 
-import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.common.UnitSubtype;
+import com.meg.listshop.common.UnitType;
+import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
@@ -98,18 +100,18 @@ class ConverterServiceTest {
     void testConvertByType() throws ConversionPathException, ConversionFactorException {
         // unittype - convert imperial volume to metric volume (say, liter to quart)
         ConvertibleAmount amount = new SimpleAmount(1, usQuart);
-        ConvertibleAmount converted = service.convert(amount, UnitType.METRIC);
+        ConvertibleAmount converted = service.convert(amount, DomainType.METRIC);
         assertNotNull(converted);
         assertEquals(1.67, ConversionTestTools.roundToHundredths(converted.getQuantity()));
 
         ConvertibleAmount backwardsAmount = new SimpleAmount(1, metricLiter);
-        ConvertibleAmount backwardsConverted = service.convert(backwardsAmount, UnitType.US);
+        ConvertibleAmount backwardsConverted = service.convert(backwardsAmount, DomainType.US);
         assertNotNull(backwardsConverted);
         assertEquals(0.60, ConversionTestTools.roundToHundredths(backwardsConverted.getQuantity()));
 
         // test looking for closest element
         ConvertibleAmount closerAmount = new SimpleAmount(1, metricGrams);
-        ConvertibleAmount closerConverted = service.convert(closerAmount, UnitType.US);
+        ConvertibleAmount closerConverted = service.convert(closerAmount, DomainType.US);
         assertNotNull(closerConverted);
         assertEquals(0.9, ConversionTestTools.roundToHundredths(closerConverted.getQuantity()));
         assertEquals(5L, closerConverted.getUnit().getId());
@@ -118,7 +120,7 @@ class ConverterServiceTest {
     @Test
     void testConvertByContext() throws ConversionPathException, ConversionFactorException {
         // context - convert imperial volume to list unit (cups to quart)
-        ConversionRequest context = new ConversionRequest(ConversionTargetType.List, UnitType.US);
+        ConversionRequest context = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         ConvertibleAmount amount = new SimpleAmount(4, usCups);
         ConvertibleAmount converted = service.convert(amount, context);
         assertNotNull(converted);

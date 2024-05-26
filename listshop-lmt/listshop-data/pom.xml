@@ -5,7 +5,7 @@
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>listshop-data</artifactId>
-    <version>1.16.2</version>
+    <version>1.17.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>listshop-data</name>
@@ -15,7 +15,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-lmt</artifactId>
-        <version>1.16.2</version>
+        <version>1.17.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -27,17 +27,17 @@
         </dependency>
         <dependency>
             <groupId>com.meg.listshop</groupId>
+            <artifactId>listshop-common-data</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.meg.listshop</groupId>
             <artifactId>listshop-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.meg.listshop</groupId>
             <artifactId>conversion-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.meg.postoffice</groupId>
-            <artifactId>postoffice-service</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -199,6 +199,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.meg.listshop</groupId>
+            <artifactId>conversion-data</artifactId>
+            <version>1.17.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

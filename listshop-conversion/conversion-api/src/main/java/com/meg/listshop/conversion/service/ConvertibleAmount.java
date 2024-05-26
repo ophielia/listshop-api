@@ -1,6 +1,6 @@
 package com.meg.listshop.conversion.service;
 
-import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.common.data.entity.UnitEntity;
 
 public interface ConvertibleAmount {
 

@@ -9,12 +9,9 @@ package com.meg.listshop.lmt.service.conversion;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionRequest;
-import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
-import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.data.pojo.UnitType;
-import com.meg.listshop.conversion.data.repository.UnitRepository;
+import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.pojo.*;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
@@ -68,7 +65,7 @@ public class ConversionHybridFactorsTest {
         UnitEntity flTspOpt = unitRepository.findById(flTeaspoonId).orElse(null);
         UnitEntity tablespoonOpt = unitRepository.findById(tbId).orElse(null);
 
-        ConversionRequest dishConversionContext = new ConversionRequest(ConversionTargetType.Dish, UnitType.US);
+        ConversionRequest dishConversionContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
 
 
         // 4 tablespoons = 12 teaspoons

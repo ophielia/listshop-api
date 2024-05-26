@@ -2,7 +2,8 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.conversion.data.pojo.DomainType;
+import com.meg.listshop.common.UnitType;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import com.meg.listshop.conversion.service.factors.ConversionFactorSource;
@@ -15,12 +16,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.meg.listshop.conversion.data.repository.UnitSpecifications.matchingFromWithSpec;
-import static com.meg.listshop.conversion.data.repository.UnitSpecifications.matchingToWithSpec;
-import static org.springframework.data.jpa.domain.Specification.where;
-
 @Component
-public class MetricUkHandler extends AbstractChainConversionHandler  {
+public class MetricUkHandler extends AbstractChainConversionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(MetricUkHandler.class);
 
 
@@ -29,12 +26,12 @@ public class MetricUkHandler extends AbstractChainConversionHandler  {
         super();
         LOG.info("initializing MetricUkHandler");
         // make source from unit
-        ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC,null);
+        ConversionSpec source = ConversionSpec.basicSpec(UnitType.METRIC, null);
         // make target
         ConversionSpec target = ConversionSpec.basicSpec(UnitType.UK, null);
 
         // initialize conversionSource
-        List<ConversionFactorEntity> factors = factorRepository.findAll(where(matchingFromWithSpec(source).and(matchingToWithSpec(target))));
+        List<ConversionFactorEntity> factors = factorRepository.findAllByDomains(DomainType.METRIC.name(), DomainType.UK.name());
         ConversionFactorSource conversionSource = new SimpleConversionFactorSource(factors.stream().map(f -> (ConversionFactor) f).collect(Collectors.toList()));
 
         // initialize in abstract

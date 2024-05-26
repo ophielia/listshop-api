@@ -1,8 +1,8 @@
-package com.meg.listshop.conversion.data.repository;
+package com.meg.listshop.common.data.repository;
 
-import com.meg.listshop.conversion.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.UnitSubtype;
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.common.UnitSubtype;
+import com.meg.listshop.common.UnitType;
+import com.meg.listshop.common.data.entity.UnitEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;

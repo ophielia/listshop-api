@@ -41,7 +41,7 @@ public class StringTools {
         try {
             return Long.valueOf(string);
         } catch (NumberFormatException e) {
-            logger.error("received non-numeric string [%s]", string);
+            logger.error("received non-numeric string [{}]", string);
             return -1L;
         }
     }

@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.food.impl;
 
+import com.meg.listshop.auth.service.UserPropertyService;
 import com.meg.listshop.lmt.data.repository.AmountRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,11 +21,14 @@ class AmountServiceImplMockTest {
 
     @MockBean
     AmountRepository amountRepository;
+    @MockBean
+    UserPropertyService userPropertyService;
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
         this.amountService = new AmountServiceImpl(
-                amountRepository
+                amountRepository,
+                userPropertyService
         );
 
         // set generic ids

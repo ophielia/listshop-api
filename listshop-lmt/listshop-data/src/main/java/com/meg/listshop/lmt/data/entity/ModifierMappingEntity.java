@@ -10,6 +10,26 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "modifier_mappings")
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "NonUnitSuggestions",
+                query = "select distinct modifier_type, modifier , reference_id  from modifier_mappings " +
+                        " where modifier_type <> 'Unit'" ,
+                resultSetMapping = "Mapping.SuggestionDTO"),
+        @NamedNativeQuery(name = "UnitSuggestions",
+                query = "select distinct modifier_type, modifier , reference_id  from modifier_mappings " +
+                        " where modifier_type = 'Unit' and reference_id in (:unitIds)" ,
+                resultSetMapping = "Mapping.SuggestionDTO")
+})
+@SqlResultSetMapping(
+        name = "Mapping.SuggestionDTO",
+        classes = {
+                @ConstructorResult(
+                        targetClass = com.meg.listshop.lmt.data.pojos.SuggestionDTO.class,
+                        columns = {
+                                @ColumnResult(name = "modifier_type", type = String.class),
+                                @ColumnResult(name = "modifier", type = String.class),
+                                @ColumnResult(name = "reference_id", type = Long.class)})})
+
 @GenericGenerator(
         name = "modifier_mapping_sequence",
         strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
@@ -32,6 +52,8 @@ public class ModifierMappingEntity {
     private String modifier;
     @Column(name = "mapped_modifier")
     private String mappedModifier;
+    @Column(name = "reference_id")
+    private Long referenceId;
 
     public ModifierMappingEntity() {
         // empty constructor

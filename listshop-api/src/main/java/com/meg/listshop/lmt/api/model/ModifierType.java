@@ -6,6 +6,7 @@ package com.meg.listshop.lmt.api.model;
 public enum ModifierType {
 
     Marker,
+    Unit,
     UnitSize;
 
 }

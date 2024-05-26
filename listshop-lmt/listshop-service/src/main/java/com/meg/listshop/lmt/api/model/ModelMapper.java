@@ -17,10 +17,7 @@ import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.api.model.v2.Ingredient;
 import com.meg.listshop.lmt.data.entity.*;
-import com.meg.listshop.lmt.data.pojos.DishDTO;
-import com.meg.listshop.lmt.data.pojos.DishItemDTO;
-import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
-import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
+import com.meg.listshop.lmt.data.pojos.*;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 
 import java.util.ArrayList;
@@ -859,5 +856,26 @@ public class ModelMapper {
                 .ingredients(ingredients)
                 .lastAdded(dishDto.getDish().getLastAdded())
                 .userId(dishDto.getDish().getUserId());
+    }
+
+    public static com.meg.listshop.lmt.api.model.v2.Dish toV2DishModel(DishEntity dishEntity, boolean includeTags) {
+        // tags and ingredients - to do....
+//MM TODO
+        return new com.meg.listshop.lmt.api.model.v2.Dish(dishEntity.getId())
+                .description(dishEntity.getDescription())
+                .dishName(dishEntity.getDishName())
+                .reference(dishEntity.getReference())
+                .lastAdded(dishEntity.getLastAdded())
+                .userId(dishEntity.getUserId());
+    }
+
+    public static Suggestion toModel(SuggestionDTO suggestionDTO) {
+        Suggestion suggestion = new Suggestion();
+        suggestion.setText(suggestionDTO.getText());
+        suggestion.setReferenceId(String.valueOf(suggestionDTO.getReferenceId()));
+        if (suggestionDTO.getModifierType() != null) {
+        suggestion.setModifierType(suggestionDTO.getModifierType().name());
+        }
+        return suggestion;
     }
 }

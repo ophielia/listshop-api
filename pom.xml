@@ -5,7 +5,7 @@
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>listshop-parent</artifactId>
-    <version>1.16.2</version>
+    <version>1.17.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>listshop-parent</name>
@@ -271,6 +271,7 @@
                         <reuseForks>true</reuseForks>
                         <forkCount>4</forkCount>
                     </configuration>
+                    <version>3.2.5</version>
                 </plugin>
 
                 <plugin>
@@ -305,7 +306,7 @@
     <modules>
         <module>postoffice</module>
         <module>listshop-conversion</module>
-        <module>listshop-common</module>
+        <module>common</module>
         <module>listshop-api</module>
         <module>listshop-lmt</module>
     </modules>

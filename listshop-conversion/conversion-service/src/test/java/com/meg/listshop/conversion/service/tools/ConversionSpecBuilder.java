@@ -1,9 +1,9 @@
 package com.meg.listshop.conversion.service.tools;
 
-import com.meg.listshop.conversion.data.entity.UnitEntity;
+import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.UnitFlavor;
-import com.meg.listshop.conversion.data.pojo.UnitSubtype;
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.common.UnitSubtype;
+import com.meg.listshop.common.UnitType;
 import com.meg.listshop.conversion.service.ConversionSpec;
 
 public class ConversionSpecBuilder {

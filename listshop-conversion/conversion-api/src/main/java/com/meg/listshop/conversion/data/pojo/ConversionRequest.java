@@ -3,11 +3,11 @@ package com.meg.listshop.conversion.data.pojo;
 public class ConversionRequest {
     private final ConversionTargetType contextType;
 
-    private final UnitType unitType;
+    private final DomainType domainType;
 
-    public ConversionRequest(ConversionTargetType contextType, UnitType unitType) {
+    public ConversionRequest(ConversionTargetType contextType, DomainType domainType) {
         this.contextType = contextType;
-        this.unitType = unitType;
+        this.domainType = domainType;
     }
 
     public ConversionTargetType getContextType() {
@@ -15,15 +15,16 @@ public class ConversionRequest {
     }
 
 
-    public UnitType getUnitType() {
-        return unitType;
+
+    public DomainType getDomainType() {
+        return domainType;
     }
 
     @Override
     public String toString() {
         return "ConversionContext{" +
                 "contextType=" + contextType +
-                ", unitType=" + unitType +
+                ", domainType=" + domainType +
                 '}';
     }
 }

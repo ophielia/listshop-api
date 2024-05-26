@@ -1,6 +1,6 @@
 package com.meg.listshop.conversion.service.handlers;
 
-import com.meg.listshop.conversion.data.pojo.UnitType;
+import com.meg.listshop.common.UnitType;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.service.ConversionContext;
 import com.meg.listshop.conversion.service.ConversionSpec;
