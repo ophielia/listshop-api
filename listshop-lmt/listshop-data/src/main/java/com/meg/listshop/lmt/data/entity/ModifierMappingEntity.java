@@ -12,12 +12,14 @@ import javax.persistence.*;
 @Table(name = "modifier_mappings")
 @NamedNativeQueries({
         @NamedNativeQuery(name = "NonUnitSuggestions",
-                query = "select distinct modifier_type, modifier , reference_id  from modifier_mappings " +
-                        " where modifier_type <> 'Unit'" ,
+                query = "select distinct modifier_type, modifier , reference_id , length(trim(modifier)) as discard from modifier_mappings " +
+                        " where modifier_type <> 'Unit'" +
+                        " order by length(trim(modifier)) desc" ,
                 resultSetMapping = "Mapping.SuggestionDTO"),
         @NamedNativeQuery(name = "UnitSuggestions",
-                query = "select distinct modifier_type, modifier , reference_id  from modifier_mappings " +
-                        " where modifier_type = 'Unit' and reference_id in (:unitIds)" ,
+                query = "select distinct modifier_type, modifier , reference_id, length(trim(modifier)) as discard  from modifier_mappings " +
+                        " where modifier_type = 'Unit' and reference_id in (:unitIds)" +
+                        " order by length(trim(modifier)) desc" ,
                 resultSetMapping = "Mapping.SuggestionDTO")
 })
 @SqlResultSetMapping(
@@ -28,7 +30,9 @@ import javax.persistence.*;
                         columns = {
                                 @ColumnResult(name = "modifier_type", type = String.class),
                                 @ColumnResult(name = "modifier", type = String.class),
-                                @ColumnResult(name = "reference_id", type = Long.class)})})
+                                @ColumnResult(name = "reference_id", type = Long.class),
+                                @ColumnResult(name = "discard", type = Long.class)
+                        })})
 
 @GenericGenerator(
         name = "modifier_mapping_sequence",

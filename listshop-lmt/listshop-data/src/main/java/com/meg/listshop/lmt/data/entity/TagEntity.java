@@ -35,7 +35,8 @@ import java.util.Objects;
 @NamedNativeQuery(name = "IngredientsForDish",
         query = "select d.dish_id, dish_item_id , i.tag_id, i.unit_id, " +
                 " quantity, whole_quantity , fractional_quantity, 'fractionDisplay' as fractionDisplay, " +
-                " t.name as tagDisplay, i.raw_modifiers as raw_modifiers, u.name AS unit_name, i.marker, i.unit_size " +
+                " t.name as tagDisplay, i.raw_modifiers as raw_modifiers, u.name AS unit_name, i.marker, i.unit_size, " +
+                " i.raw_entry " +
                 "from dish d join dish_items i on i.dish_id = d.dish_id join tag t on t.tag_id = i.tag_id " +
                 "left outer join units u on u.unit_id = i.unit_id " +
                 "where d.dish_id = :dishId and t.tag_type = 'Ingredient'",
@@ -57,7 +58,9 @@ import java.util.Objects;
                                 @ColumnResult(name = "raw_modifiers", type = String.class),
                                 @ColumnResult(name = "unit_name", type = String.class),
                                 @ColumnResult(name = "marker", type = String.class),
-                                @ColumnResult(name = "unit_size", type = String.class)})})
+                                @ColumnResult(name = "unit_size", type = String.class),
+                                @ColumnResult(name = "raw_entry", type = String.class)
+                        })})
 
 public class TagEntity {
 

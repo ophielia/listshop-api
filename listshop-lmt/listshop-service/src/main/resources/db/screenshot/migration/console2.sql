@@ -75,6 +75,8 @@ private Long referenceId;
 
 select distinct modifier_type, modifier , reference_id  from modifier_mappings  where modifier_type <> 'Unit'
 
+select * from tag where tag_id = 16;
+
 select distinct u.id from units u join domain_unit du on du.unit_id = t.unit_id where u.id > 0   and du.domain_type = 'UK'
 
 select * from tag where name like '%onion%'

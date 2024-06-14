@@ -1,10 +1,7 @@
 package com.meg.listshop.lmt.service.tag;
 
 import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
-import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
-import com.meg.listshop.lmt.api.model.SortOrMoveDirection;
-import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
@@ -81,7 +78,7 @@ public interface TagService {
 
     void assignTagsToUser(Long userId, List<Long> tagIds);
 
-    void setTagsAsVerified(List<Long> tagIds);
+    void updateTagStatus(List<Long> tagIds, TagOperationType operationType);
 
     void createStandardTagsFromUserTags(List<Long> tagIds);
 

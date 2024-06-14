@@ -4,7 +4,8 @@ alter table dish_items add column quantity double precision;
 alter table dish_items add column unit_id bigint;
 alter table dish_items add column marker varchar(256);
 alter table dish_items add column unit_size varchar(256);
-alter table dish_items add column raw_modifiers text;
+alter table dish_items add column raw_modifiers varchar(256);
+alter table dish_items add column raw_entry text;
 alter table dish_items add column modifiers_processed boolean;
 
 alter table user_properties add column if not exists is_system boolean;

@@ -59,6 +59,9 @@ public class DishItemEntity {
     @Column(name = "modifiers_processed")
     private Boolean modifiersProcessed;
 
+    @Column(name = "raw_entry")
+    private String rawEntry;
+
     public DishItemEntity(Long id) {
         dishItemId = id;
     }
@@ -152,6 +155,14 @@ public class DishItemEntity {
         return modifiersProcessed;
     }
 
+    public String getRawEntry() {
+        return rawEntry;
+    }
+
+    public void setRawEntry(String rawEntry) {
+        this.rawEntry = rawEntry;
+    }
+
     public void setModifiersProcessed(Boolean modifiersProcessed) {
         this.modifiersProcessed = modifiersProcessed;
     }
@@ -182,6 +193,7 @@ public class DishItemEntity {
                 ", marker='" + marker + '\'' +
                 ", unitSize='" + unitSize + '\'' +
                 ", rawModifiers='" + rawModifiers + '\'' +
+                ", rawEntry='" + rawEntry + '\'' +
                 ", modifiersProcessed='" + modifiersProcessed + '\'' +
                 '}';
     }

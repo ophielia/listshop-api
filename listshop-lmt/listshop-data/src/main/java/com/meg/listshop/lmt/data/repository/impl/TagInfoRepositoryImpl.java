@@ -161,18 +161,31 @@ public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
             predicates.add(tagRelationRoot.get("child").get("tagType").in(paramTagTypes));
             tagTypeParameter = criteria.getTagTypes();
         }
-        ParameterExpression<Integer> tagIncludeSelect = cb.parameter(Integer.class);
-        Integer tagIncludeParameter = null;
+
+        List<ParameterExpression<Integer>> includeClauses = new ArrayList<>();
+        List<Integer> includeClauseParameters = new ArrayList<>();
         if (!criteria.getIncludedStatuses().isEmpty()) {
-            tagIncludeParameter = calculateMagicNumberForStatuses(criteria.getIncludedStatuses());
-            predicates.add(cb.equal(cb.mod(tagRelationRoot.get("child").get("internalStatus"),tagIncludeSelect), 0));
+            criteria.getIncludedStatuses().stream()
+                    .forEach(i -> {
+                        ParameterExpression<Integer> tagExcludeSelect = cb.parameter(Integer.class);
+                        predicates.add(cb.equal(cb.mod(tagRelationRoot.get("child").get("internalStatus"), tagExcludeSelect), 0));
+                        includeClauses.add(tagExcludeSelect);
+                        includeClauseParameters.add((int) i.value());
+                    });
+
         }
 
-        ParameterExpression<Integer> tagExcludeSelect = cb.parameter(Integer.class);
-        Integer tagExcludeParameter = null;
+        List<ParameterExpression<Integer>> excludeClauses = new ArrayList<>();
+        List<Integer> excludeClauseParameters = new ArrayList<>();
         if (!criteria.getExcludedStatuses().isEmpty()) {
-            tagExcludeParameter = calculateMagicNumberForStatuses(criteria.getExcludedStatuses());
-            predicates.add(cb.notEqual(cb.mod(tagRelationRoot.get("child").get("internalStatus"),tagExcludeSelect), 0));
+            criteria.getExcludedStatuses().stream()
+                    .forEach(i -> {
+                        ParameterExpression<Integer> tagExcludeSelect = cb.parameter(Integer.class);
+                        predicates.add(cb.notEqual(cb.mod(tagRelationRoot.get("child").get("internalStatus"), tagExcludeSelect), 0));
+                        excludeClauses.add(tagExcludeSelect);
+                        excludeClauseParameters.add((int) i.value());
+                    });
+
         }
 
 
@@ -198,11 +211,23 @@ public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
         if (tagTypeParameter != null) {
             typedQuery.setParameter(paramTagTypes, tagTypeParameter);
         }
-        if (tagIncludeParameter != null) {
-            typedQuery.setParameter(tagIncludeSelect,tagIncludeParameter);
+
+        if (!includeClauseParameters.isEmpty()) {
+            for (int i = 0; i < includeClauseParameters.size(); i++) {
+                ParameterExpression<Integer> tagIncludeSelect = includeClauses.get(i);
+                Integer value = includeClauseParameters.get(i);
+                typedQuery.setParameter(tagIncludeSelect, value);
+            }
+
         }
-        if (tagExcludeParameter != null) {
-            typedQuery.setParameter(tagExcludeSelect,tagExcludeParameter);
+
+        if (!excludeClauseParameters.isEmpty()) {
+            for (int i = 0; i < excludeClauseParameters.size(); i++) {
+                ParameterExpression<Integer> tagExcludeSelect = excludeClauses.get(i);
+                Integer value = excludeClauseParameters.get(i);
+                typedQuery.setParameter(tagExcludeSelect, value);
+            }
+
         }
         return typedQuery.getResultList();
     }
@@ -229,6 +254,7 @@ public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
         }
         return magicNumber.intValue();
     }
+
     private static final class TagInfoMapper implements RowMapper<TagInfoDTO> {
 
         public TagInfoDTO mapRow(ResultSet rs, int rowNum) throws SQLException {

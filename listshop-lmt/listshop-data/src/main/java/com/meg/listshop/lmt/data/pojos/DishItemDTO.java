@@ -1,7 +1,9 @@
 package com.meg.listshop.lmt.data.pojos;
 
+import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.api.model.FractionType;
 
+import java.util.List;
 import java.util.Objects;
 
 
@@ -17,16 +19,17 @@ public class DishItemDTO {
     private String fractionDisplay;
     private String tagDisplay;
     private String unitDisplay;
-    private String rawModifiers;
+    private List<String> rawModifiers;
     private String unitName;
     private String marker;
     private String unitSize;
+    private String rawEntry;
 
     public DishItemDTO(Long dishId, Long dishItemId, Long tagId,
                        Long unitId, Double quantity, Integer wholeQuantity,
                        String fractionalQuantity, String tagDisplay,
-                       String rawModifiers, String unitName, String marker,
-                       String unitSize) {
+                       String rawModifiersString, String unitName, String marker,
+                       String unitSize, String rawEntry) {
         this.dishId = dishId;
         this.dishItemId = dishItemId;
         this.tagId = tagId;
@@ -34,10 +37,11 @@ public class DishItemDTO {
         this.quantity = quantity;
         this.wholeQuantity = wholeQuantity;
         this.tagDisplay = tagDisplay;
-        this.rawModifiers = rawModifiers;
+        this.rawModifiers = FlatStringUtils.inflateStringToList(rawModifiersString,"|");
         this.unitName = unitName;
         this.marker = marker;
         this.unitSize = unitSize;
+        this.rawEntry = rawEntry;
         if (fractionalQuantity != null) {
             this.fractionalQuantity = FractionType.valueOf(fractionalQuantity);
         }
@@ -102,11 +106,11 @@ public class DishItemDTO {
         this.fractionalQuantity = fractionalQuantity;
     }
 
-    public String getRawModifiers() {
+    public List<String> getRawModifiers() {
         return rawModifiers;
     }
 
-    public void setRawModifiers(String rawModifiers) {
+    public void setRawModifiers(List<String> rawModifiers) {
         this.rawModifiers = rawModifiers;
     }
 
@@ -158,6 +162,15 @@ public class DishItemDTO {
         this.unitDisplay = unitDisplay;
     }
 
+
+    public void setRawEntry(String rawEntry) {
+        this.rawEntry = rawEntry;
+    }
+
+    public String getRawEntry() {
+        return rawEntry;
+    }
+
     @Override
     public String toString() {
         return "DishItemDTO{" +
@@ -188,4 +201,5 @@ public class DishItemDTO {
     public int hashCode() {
         return Objects.hash(dishId, dishItemId, tagId, unitId, quantity, rawModifiers, marker, unitSize);
     }
+
 }

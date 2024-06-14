@@ -40,28 +40,6 @@ public class AmountServiceImpl implements AmountService {
     }
 
     @Override
-    public List<String> pullModifierTokens(String rawModifiers) {
-        List<String> result = new ArrayList<>();
-        if (rawModifiers == null) {
-            return result;
-        }
-        if (rawModifiers.contains(",")) {
-            rawModifiers = rawModifiers.replace(",", "");
-        }
-        StringTokenizer tokens = new StringTokenizer(rawModifiers, " ");
-        while (tokens.hasMoreTokens()) {
-            String token = tokens.nextToken();
-            if (TAKES_NEXT_TOKEN.contains(token) && tokens.hasMoreTokens()) {
-                String nextToken = tokens.nextToken();
-                result.add(String.join(" ", token, nextToken));
-            } else {
-                result.add(token);
-            }
-        }
-        return result;
-    }
-
-    @Override
     public List<String> pullMarkersForModifers(List<String> modifierTokens, Long conversionId) {
         return amountRepository.mapMarkersForConversionId(conversionId, modifierTokens);
     }
@@ -72,47 +50,45 @@ public class AmountServiceImpl implements AmountService {
     }
 
 
-    private Set<Long> getUnitIds(Long userId, Long tagId, Boolean isLiquid, DomainType domain) {
-        // resolve domain - passed, from user, or null
-        DomainType searchDomain = domain;
-        if (domain == null && userId != null) {
-            searchDomain = userPropertyService.getUserPreferredDomain(userId);
-        }
-        Set<Long> unitIds = new HashSet<>();
-
-        // get unit ids for tag, if available
-        if (tagId != null) {
-            Set<Long> unitIdsForTag = amountRepository.getUnitIdsForTag(tagId);
-            unitIds.addAll(unitIdsForTag);
-        }
-        // get unit ids for isLiquid and domain
-        UnitSearchCriteria searchCriteria = new UnitSearchCriteria(isLiquid,searchDomain);
-        Set<Long> nonTagUnitIds = amountRepository.getUnitIdsForCriteria(searchCriteria);
-        return new HashSet<Long>(nonTagUnitIds);
-    }
-
     private List<SuggestionDTO> getUnitSuggestionList(Long userId, Long tagId, Boolean isLiquid, DomainType domain) {
+        List<SuggestionDTO> suggestions = new ArrayList<>();
+
         // resolve domain - passed, from user, or null
         DomainType searchDomain = domain;
         if (searchDomain == null && userId != null) {
             searchDomain = userPropertyService.getUserPreferredDomain(userId);
         }
         // get unit ids for parameters
-        Set<Long> unitIds = getUnitIds(userId, tagId, isLiquid, searchDomain);
+        Set<Long> unitIds = new HashSet<>();
+        Set<Long> tagUnitIds = new HashSet<>();
 
-        // get suggestions (from mapped_modifiers, type unit) (this needs to be added)
-        return amountRepository.getUnitSuggestionsByIds(unitIds);
+        // get unit ids for tag, if available
+        if (tagId != null) {
+            tagUnitIds = amountRepository.getUnitIdsForTag(tagId);
+            if (!tagUnitIds.isEmpty()) {
+            unitIds.addAll(tagUnitIds);
+            suggestions.addAll(amountRepository.getUnitSuggestionsByIds(tagUnitIds));
+            }
+        }
+
+        // get unit ids for isLiquid and domain
+        UnitSearchCriteria searchCriteria = new UnitSearchCriteria(isLiquid,searchDomain);
+        Set<Long> nonTagUnitIds = amountRepository.getUnitIdsForCriteria(searchCriteria);
+        nonTagUnitIds.removeAll(tagUnitIds);
+        suggestions.addAll(amountRepository.getUnitSuggestionsByIds(nonTagUnitIds));
+
+
+        return suggestions;
     }
 
     @Override
     public List<SuggestionDTO> getTextSuggestions(Long userId, Long tagId, Boolean isLiquid, DomainType domainType) {
         LOG.debug("Get text suggestion list for userId [{}], tagId [{}], isLiquid [{}], domainType [{}]", userId, tagId, isLiquid, domainType);
         List<SuggestionDTO> suggestions = new ArrayList<>();
-        // get all non-unit text markers
-        suggestions.addAll(amountRepository.getNonUnitSuggestions());
         // get unit text markers
         suggestions.addAll(getUnitSuggestionList(userId,tagId,isLiquid,domainType));
-
+        // get all non-unit text markers
+        suggestions.addAll(amountRepository.getNonUnitSuggestions());
         return suggestions;
     }
 

@@ -11,8 +11,6 @@ import java.util.List;
 public interface AmountService {
 
 
-    List<String> pullModifierTokens(String rawModifiers);
-
     List<String> pullMarkersForModifers(List<String> modifierTokens, Long conversionId);
 
     List<String> pullUnitSizesForModifiers(List<String> modifierTokens, Long conversionId);

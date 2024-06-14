@@ -14,6 +14,8 @@ public class TagOperationPut {
     private String userId;
     @JsonProperty(value = "is_liquid")
     private Boolean isLiquid;
+    @JsonProperty(value = "from_tag_id")
+    private String fromTagId;
 
     @JsonProperty(value = "assign_id")
     private String assignId;
@@ -64,5 +66,13 @@ public class TagOperationPut {
 
     public void setAssignId(String assignId) {
         this.assignId = assignId;
+    }
+
+    public String getFromTagId() {
+        return fromTagId;
+    }
+
+    public void setFromTagId(String fromTagId) {
+        this.fromTagId = fromTagId;
     }
 }

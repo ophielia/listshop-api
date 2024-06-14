@@ -11,13 +11,13 @@ public class SuggestionDTO {
     private String text;
     private Long referenceId;
 
-    public SuggestionDTO(ModifierType modifierType, String text, Long referenceId) {
+    public SuggestionDTO(ModifierType modifierType, String text, Long referenceId, Long discard) {
         this.modifierType = modifierType;
         this.text = text;
         this.referenceId = referenceId;
     }
 
-    public SuggestionDTO(String modifierType, String text, Long referenceId) {
+    public SuggestionDTO(String modifierType, String text, Long referenceId, Long discard) {
         this.modifierType = ModifierType.valueOf(modifierType);
         this.text = text;
         this.referenceId = referenceId;

@@ -41,4 +41,5 @@ public interface FoodService {
 
     void addOrUpdateFoodForTags(List<Long> tagIds, Long foodIdToAssign);
 
+    void copyFoodFromTag(List<Long> tagIds, Long fromTagId);
 }

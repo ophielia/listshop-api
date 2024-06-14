@@ -2,6 +2,8 @@ package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class IngredientPut {
 
     @JsonProperty("id")
@@ -21,7 +23,9 @@ public class IngredientPut {
     @JsonProperty("unit_name")
     private String unitName;
     @JsonProperty("raw_modifiers")
-    private String rawModifiers;
+    private List<String> rawModifiers;
+    @JsonProperty("raw_entry")
+    private String rawEntry;
     @JsonProperty("unit_display")
     private String unitDisplay;
 
@@ -93,11 +97,11 @@ public class IngredientPut {
         this.unitName = unitName;
     }
 
-    public String getRawModifiers() {
+    public List<String> getRawModifiers() {
         return rawModifiers;
     }
 
-    public void setRawModifiers(String rawModifiers) {
+    public void setRawModifiers(List<String> rawModifiers) {
         this.rawModifiers = rawModifiers;
     }
 
@@ -107,6 +111,14 @@ public class IngredientPut {
 
     public void setUnitDisplay(String unitDisplay) {
         this.unitDisplay = unitDisplay;
+    }
+
+    public String getRawEntry() {
+        return rawEntry;
+    }
+
+    public void setRawEntry(String rawEntry) {
+        this.rawEntry = rawEntry;
     }
 
     @Override
@@ -122,6 +134,7 @@ public class IngredientPut {
                 ", unitName='" + unitName + '\'' +
                 ", rawModifiers='" + rawModifiers + '\'' +
                 ", unitDisplay='" + unitDisplay + '\'' +
+                ", rawEntry='" + rawEntry + '\'' +
                 '}';
     }
 }

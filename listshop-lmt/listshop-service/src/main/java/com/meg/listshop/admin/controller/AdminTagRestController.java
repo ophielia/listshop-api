@@ -75,7 +75,10 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
                 break;
             case MarkAsReviewed:
-                tagService.setTagsAsVerified(tagIds);
+                tagService.updateTagStatus(tagIds, TagOperationType.MarkAsReviewed);
+                break;
+            case MarkAsNoFoodVerified:
+                tagService.updateTagStatus(tagIds, TagOperationType.MarkAsNoFoodVerified);
                 break;
             case CopyToStandard:
                 tagService.createStandardTagsFromUserTags(tagIds);
@@ -93,6 +96,10 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
                 toAssignString = input.getAssignId();
                 Long foodIdToAssign = Long.valueOf(toAssignString);
                 foodService.addOrUpdateFoodForTags(tagIds, foodIdToAssign);
+                break;
+            case CopyFoodFromTag:
+                Long fromTagId = Long.valueOf(input.getFromTagId());
+                foodService.copyFoodFromTag(tagIds, fromTagId);
                 break;
         }
         return ResponseEntity.ok().build();

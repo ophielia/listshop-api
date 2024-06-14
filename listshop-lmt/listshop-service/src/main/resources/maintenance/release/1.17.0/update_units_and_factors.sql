@@ -51,6 +51,8 @@ insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1050, 'wedge', 'HYBRID', 'WEIGHT',FALSE, TRUE,FALSE,TRUE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1051, 'teaspoon (fluid) (UK)', 'UK', 'VOLUME',FALSE, TRUE,TRUE,FALSE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1052, 'tablespoon (fluid) (UK)', 'UK', 'VOLUME',FALSE, TRUE,TRUE,FALSE,'', FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1053, 'Pinch', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE,'', FALSE);
+
 
 insert into factors (factor_id, from_unit, to_unit, factor) select 1, f.unit_id, t.unit_id, 1 as factor from units f,units t where lower(f.name) = lower('#2 can') and lower(t.name) = lower('can');
 insert into factors (factor_id, from_unit, to_unit, factor) select 2, f.unit_id, t.unit_id, 1 as factor from units f,units t where lower(f.name) = lower('#2.5 can') and lower(t.name) = lower('large can');
@@ -164,7 +166,9 @@ insert into factors (factor_id, from_unit, to_unit, factor) select 109, f.unit_i
 insert into factors (factor_id, from_unit, to_unit, factor) select 110, f.unit_id, t.unit_id, 0.00104167 as factor from units f,units t where lower(f.name) = lower('teaspoon (fluid) (UK)') and lower(t.name) = lower('gallon (UK)');
 insert into factors (factor_id, from_unit, to_unit, factor) select 111, f.unit_id, t.unit_id, 0.00833334 as factor from units f,units t where lower(f.name) = lower('teaspoon (fluid) (UK)') and lower(t.name) = lower('pint (UK)');
 insert into factors (factor_id, from_unit, to_unit, factor) select 112, f.unit_id, t.unit_id, 0.00520833333333 as factor from units f,units t where lower(f.name) = lower('teaspoon (fluid) (UK)') and lower(t.name) = lower('quart (UK)');
-
+insert into factors (factor_id, from_unit, to_unit, factor) select 113, f.unit_id, t.unit_id, 0.12500000000 as factor from units f,units t where lower(f.name) = lower('pinch') and lower(t.name) = lower('teaspoon');
+insert into factors (factor_id, from_unit, to_unit, factor) select 114, f.unit_id, t.unit_id, 0.04166666667 as factor from units f,units t where lower(f.name) = lower('pinch') and lower(t.name) = lower('tablespoon');
+insert into factors (factor_id, from_unit, to_unit, factor) select 115, f.unit_id, t.unit_id, 0.00260416667 as factor from units f,units t where lower(f.name) = lower('pinch') and lower(t.name) = lower('cup');
 
 select * from factors where from_unit in (1025,1028) or to_unit in (1025,1028) ;
 

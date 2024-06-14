@@ -9,6 +9,7 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.repository.UserRepository;
+import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
@@ -230,6 +231,7 @@ public class DishServiceImpl implements DishService {
         // check if ingredient already exists for this tagId and unit
         TagEntity existingTag = dishItems.stream()
                 .filter( t-> t.getTag().getTagType().equals(TagType.Ingredient))
+                .filter(i -> i.getTag().getId().equals(dishItemDTO.getTagId()))
                 .filter(i -> i.getUnitId() != null && i.getUnitId().equals(dishItemDTO.getUnitId()))
                 .map(DishItemEntity::getTag)
                 .filter(t -> t.getId().equals(dishItemDTO.getTagId()))
@@ -374,13 +376,9 @@ public class DishServiceImpl implements DishService {
         dishItemEntity.setUnitId(dishItemDTO.getUnitId());
 
         // fill unitSize and marker from raw_modifiers
-        dishItemEntity.setRawModifiers(dishItemDTO.getRawModifiers());
-        if (tag.getConversionId() != null) {
-            fillIngredientModifiers(tag.getConversionId(), dishItemDTO.getRawModifiers(), dishItemEntity);
-            dishItemEntity.setModifiersProcessed(true);
-        } else {
-            dishItemEntity.setModifiersProcessed(false);
-        }
+        setModifiersFromRawModifiers(dishItemDTO, dishItemEntity,tag);
+
+        dishItemEntity.setRawEntry(dishItemDTO.getRawEntry());
 
         // save ingredient
         boolean isNewIngredient = dishItemEntity.getDishItemId() == null;
@@ -398,6 +396,24 @@ public class DishServiceImpl implements DishService {
         }
     }
 
+    private void setModifiersFromRawModifiers(DishItemDTO dishItemDTO, DishItemEntity dishItemEntity,TagEntity tag) {
+        List<String> rawModifiers = dishItemDTO.getRawModifiers();
+        if (rawModifiers == null || rawModifiers.isEmpty()) {
+            dishItemEntity.setRawModifiers(null);
+            dishItemEntity.setMarker(null);
+            dishItemEntity.setUnitSize(null);
+            dishItemEntity.setModifiersProcessed(true);
+            return;
+        }
+        dishItemEntity.setRawModifiers(FlatStringUtils.flattenListToString(rawModifiers,"|"));
+        if (tag.getConversionId() != null) {
+            fillIngredientModifiers(tag.getConversionId(), rawModifiers, dishItemEntity);
+            dishItemEntity.setModifiersProcessed(true);
+        } else {
+            dishItemEntity.setModifiersProcessed(false);
+        }
+    }
+
     private Double calculateQuantity(DishItemDTO dishItemDTO) {
         Double quantity = 0.0;
         if (dishItemDTO.getWholeQuantity() != null) {
@@ -411,19 +427,18 @@ public class DishServiceImpl implements DishService {
         return quantity;
     }
 
-    private void fillIngredientModifiers(Long conversionId, String rawModifiers, DishItemEntity dishItemEntity) {
+    private void fillIngredientModifiers(Long conversionId, List<String> rawModifiers, DishItemEntity dishItemEntity) {
         if (rawModifiers == null) {
             dishItemEntity.setMarker(null);
             dishItemEntity.setUnitSize(null);
             return;
         }
-        List<String> modifierTokens = amountService.pullModifierTokens(rawModifiers);
-        List<String> markers = amountService.pullMarkersForModifers(modifierTokens, conversionId);
+        List<String> markers = amountService.pullMarkersForModifers(rawModifiers, conversionId);
         if (markers != null && !markers.isEmpty()) {
             String firstMarker = markers.get(0);
             dishItemEntity.setMarker(firstMarker);
         }
-        List<String> unitSizes = amountService.pullUnitSizesForModifiers(modifierTokens, conversionId);
+        List<String> unitSizes = amountService.pullUnitSizesForModifiers(rawModifiers, conversionId);
         if (unitSizes != null && !unitSizes.isEmpty()) {
             String firstUnit = unitSizes.get(0);
             dishItemEntity.setUnitSize(firstUnit);

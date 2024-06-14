@@ -673,9 +673,10 @@ public class TagServiceImpl implements TagService {
         return tagRepository.findUsersWithTagInList(userId, tagId) > 0;
     }
 
-    public void setTagsAsVerified(List<Long> tagIds) {
+    public void updateTagStatus(List<Long> tagIds, TagOperationType operationType) {
+        TagInternalStatus status = TagOperationType.MarkAsReviewed.equals(operationType) ? TagInternalStatus.CHECKED : TagInternalStatus.FOOD_VERIFIED;
         List<TagEntity> allTags = tagRepository.findAllById(tagIds);
-        allTags.forEach(t -> t.setInternalStatus(TagInternalStatus.CHECKED));
+        allTags.forEach(t -> t.setInternalStatus(status));
     }
 
     public void createStandardTagsFromUserTags(List<Long> tagIds) {

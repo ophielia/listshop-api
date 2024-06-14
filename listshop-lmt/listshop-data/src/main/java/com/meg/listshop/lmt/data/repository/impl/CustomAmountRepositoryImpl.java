@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,6 +45,9 @@ public class CustomAmountRepositoryImpl implements CustomAmountRepository {
     }
 
     public List<SuggestionDTO> getUnitSuggestionsByIds(Set<Long> unitIds) {
+        if (unitIds == null || unitIds.isEmpty()) {
+            return new ArrayList<>();
+        }
         Session session = entityManager.unwrap(Session.class);
         Query query = session.createNamedQuery("UnitSuggestions", SuggestionDTO.class);
         query.setParameter("unitIds", unitIds);

@@ -20,6 +20,7 @@ import com.meg.listshop.lmt.service.DishService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -40,6 +41,9 @@ public class V2DishRestController implements V2DishRestControllerApi {
 
     private final DishService dishService;
     private final DishSearchService dishSearchService;
+
+    @Value("${conversionservice.single.unit.id:1011}")
+    private Long defaultUnitId;
 
     @Autowired
     V2DishRestController(DishService dishService,
@@ -155,14 +159,15 @@ public class V2DishRestController implements V2DishRestControllerApi {
         if (ingredient.getTagId() == null) {
             throw new BadRequestException("Ingredient tag id is null");
         }
-        if (ingredient.getUnitId() == null) {
-            throw new BadRequestException("Ingredient unit id is null");
-        }
+
         DishItemDTO dishItemDTO = new DishItemDTO();
         dishItemDTO.setDishItemId(stringToLongOrException(ingredient.getId()));
         dishItemDTO.setTagId(stringToLongOrException(ingredient.getTagId()));
-        dishItemDTO.setUnitId(stringToLongOrException(ingredient.getUnitId()));
 
+        Long unitId = stringToLongOrDefault(ingredient.getUnitId(), defaultUnitId);
+        dishItemDTO.setUnitId(unitId);
+
+        dishItemDTO.setRawEntry(ingredient.getRawEntry());
         if (ingredient.getWholeQuantity() != null) {
             dishItemDTO.setWholeQuantity(ingredient.getWholeQuantity());
         }
@@ -189,6 +194,19 @@ public class V2DishRestController implements V2DishRestControllerApi {
         } catch (NumberFormatException e) {
             throw new BadRequestException(String.format("Id [%s] cannot be converted to Long.", toConvert));
         }
+    }
+
+    private Long stringToLongOrDefault(String toConvert, Long defaultValue) {
+        if (toConvert == null) {
+            return defaultValue;
+        }
+        try {
+            return Long.parseLong(toConvert);
+        } catch (NumberFormatException e) {
+            String message = String.format("Id [%s] cannot be converted to Long.", toConvert);
+            logger.info(message);
+        }
+        return defaultValue;
     }
 
     private Long longValueOf(String longValueAsString) {

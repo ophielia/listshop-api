@@ -4,9 +4,9 @@
 package com.meg.listshop.lmt.service.food.impl;
 
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConversionService;
@@ -64,7 +64,7 @@ public class FoodServiceImpl implements FoodService {
     @Value("${conversionservice.gram.unit.id:1013}")
     private Long GRAM_UNIT_ID;
 
-    @Value("#{'${conversionservice.generic.ids:1000,1001,1002}'.split(',')}")
+    @Value("#{'${conversionservice.generic.ids:1000,1001,1002,1053}'.split(',')}")
     private Set<Long> GENERIC_IDS;
 
 
@@ -202,6 +202,20 @@ public class FoodServiceImpl implements FoodService {
         }
     }
 
+    @Override
+    public void copyFoodFromTag(List<Long> tagIds, Long fromTagId) {
+        TagEntity fromTag = tagService.getTagById(fromTagId);
+        List<TagEntity> tags = tagService.getTagsForIdList(tagIds);
+        for (TagEntity tag : tags) {
+            tag.setConversionId(fromTag.getConversionId());
+            tag.setMarker(fromTag.getMarker());
+            tag.setInternalStatus(TagInternalStatus.FOOD_ASSIGNED);
+            tag.setInternalStatus(TagInternalStatus.FOOD_VERIFIED);
+            tagService.updateTag(tag.getId(), tag);
+        }
+    }
+
+
     public void addOrUpdateFoodForTag(Long tagId, Long foodId, boolean fromAdmin) {
         // get tag
         TagEntity tag = tagService.getTagById(tagId);
@@ -300,7 +314,7 @@ public class FoodServiceImpl implements FoodService {
                 .map(FoodConversionEntity::getFromUnitId)
                 .collect(Collectors.toSet());
         Long genericId = unitIds.stream()
-                .filter( u -> GENERIC_IDS.contains(u))
+                .filter(u -> GENERIC_IDS.contains(u))
                 .findFirst()
                 .orElse(null);
 
