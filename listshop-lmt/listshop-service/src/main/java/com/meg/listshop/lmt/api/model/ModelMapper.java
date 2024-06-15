@@ -496,6 +496,7 @@ public class ModelMapper {
                 .isGroup(tagInfoDTO.isGroup())
                 .assignSelect(!tagInfoDTO.isGroup())
                 .searchSelect(tagInfoDTO.isGroup())
+                .isLiquid(tagInfoDTO.getLiquid())
                 .parentId(String.valueOf(tagInfoDTO.getParentId()))
                 .toDelete(tagInfoDTO.isToDelete());
     }
@@ -516,6 +517,7 @@ public class ModelMapper {
                 .assignSelect(!tagEntity.getIsGroup())
                 .searchSelect(tagEntity.getIsGroup())
                 .parentId(String.valueOf(tagEntity.getParentId()))
+                .isLiquid(tagEntity.getIsLiquid())
                 .toDelete(tagEntity.isToDelete());
     }
 

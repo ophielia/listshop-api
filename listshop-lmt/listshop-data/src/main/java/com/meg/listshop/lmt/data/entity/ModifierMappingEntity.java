@@ -14,12 +14,12 @@ import javax.persistence.*;
         @NamedNativeQuery(name = "NonUnitSuggestions",
                 query = "select distinct modifier_type, modifier , reference_id , length(trim(modifier)) as discard from modifier_mappings " +
                         " where modifier_type <> 'Unit'" +
-                        " order by length(trim(modifier)) desc" ,
+                        " order by length(trim(modifier)) " ,
                 resultSetMapping = "Mapping.SuggestionDTO"),
         @NamedNativeQuery(name = "UnitSuggestions",
                 query = "select distinct modifier_type, modifier , reference_id, length(trim(modifier)) as discard  from modifier_mappings " +
                         " where modifier_type = 'Unit' and reference_id in (:unitIds)" +
-                        " order by length(trim(modifier)) desc" ,
+                        " order by length(trim(modifier)) " ,
                 resultSetMapping = "Mapping.SuggestionDTO")
 })
 @SqlResultSetMapping(

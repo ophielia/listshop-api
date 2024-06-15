@@ -20,10 +20,17 @@ public class TagInfoDTO {
 
     private Long parentId;
     private boolean toDelete;
+    private Boolean isLiquid;
 
     public TagInfoDTO(Long tagId, String name, String description,
                       Double power, Long userId, TagType tagType,
                       boolean isGroup, Long parentId, boolean toDelete) {
+        this(tagId, name, description, power, userId, tagType, isGroup, parentId, toDelete, null);
+    }
+
+    public TagInfoDTO(Long tagId, String name, String description,
+                      Double power, Long userId, TagType tagType,
+                      boolean isGroup, Long parentId, boolean toDelete,Boolean isLiquid) {
         this.tag_id = tagId;
         this.name = name;
         this.description = description;
@@ -33,6 +40,7 @@ public class TagInfoDTO {
         this.isGroup = isGroup;
         this.parentId = parentId;
         this.toDelete = toDelete;
+        this.isLiquid = isLiquid;
     }
 
     public Long getTagId() {
@@ -69,6 +77,14 @@ public class TagInfoDTO {
 
     public boolean isToDelete() {
         return toDelete;
+    }
+
+    public Boolean getLiquid() {
+        return isLiquid;
+    }
+
+    public void setLiquid(Boolean liquid) {
+        isLiquid = liquid;
     }
 
     @Override

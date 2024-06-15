@@ -35,6 +35,8 @@ public class Tag {
 
     private Boolean toDelete;
 
+    private Boolean isLiquid;
+
     Tag() {
     }
 
@@ -85,10 +87,24 @@ public class Tag {
         return isGroup;
     }
 
+
     public Tag isGroup(boolean isGroup) {
         this.isGroup = isGroup;
         return this;
     }
+
+    @JsonProperty("is_liquid")
+    public Boolean getIsLiquid() {
+        return isLiquid;
+    }
+
+
+    public Tag isLiquid(Boolean isLiquid) {
+        this.isLiquid = isLiquid;
+        return this;
+    }
+
+
 
     public String getDescription() {
         return description;
