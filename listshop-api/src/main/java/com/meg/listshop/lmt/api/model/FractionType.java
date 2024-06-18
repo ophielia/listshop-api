@@ -22,6 +22,15 @@ public enum FractionType {
         this.display = displayName;
     }
 
+    public static FractionType fromDisplayName(String displayName) {
+        for (FractionType fractionType : values()) {
+            if (fractionType.display.equals(displayName)) {
+                return fractionType;
+            }
+        }
+        return null;
+    }
+
     public static Double doubleValueOf(FractionType fractionType) {
         switch (fractionType) {
             case OneEighth:

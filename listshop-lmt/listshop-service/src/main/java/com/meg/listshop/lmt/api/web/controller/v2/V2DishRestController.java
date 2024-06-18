@@ -171,12 +171,14 @@ public class V2DishRestController implements V2DishRestControllerApi {
         if (ingredient.getWholeQuantity() != null) {
             dishItemDTO.setWholeQuantity(ingredient.getWholeQuantity());
         }
-        if (ingredient.getFractionalQuantity() != null) {
-            FractionType fraction = FractionType.valueOf(ingredient.getFractionalQuantity());
+        if (ingredient.getFractionalQuantity() != null && !ingredient.getFractionalQuantity().isEmpty()) {
+            FractionType fraction = FractionType.fromDisplayName(ingredient.getFractionalQuantity());
+            if (fraction == null) {
+                String message = String.format("Fraction [%s] is invalid", ingredient.getFractionalQuantity());
+                throw new BadRequestException(message);
+
+            }
             dishItemDTO.setFractionalQuantity(fraction);
-        }
-        if (ingredient.getUnitId() != null) {
-            dishItemDTO.setUnitId(longValueOf(ingredient.getUnitId()));
         }
         if (ingredient.getId() != null) {
             dishItemDTO.setDishItemId(longValueOf(ingredient.getId()));

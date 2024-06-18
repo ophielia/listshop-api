@@ -229,20 +229,18 @@ public class DishServiceImpl implements DishService {
         DishEntity dish = getDishForUserById(userId, dishId);
         List<DishItemEntity> dishItems = dish.getItems();
         // check if ingredient already exists for this tagId and unit
-        TagEntity existingTag = dishItems.stream()
+        DishItemEntity dishItemEntity = dishItems.stream()
                 .filter( t-> t.getTag().getTagType().equals(TagType.Ingredient))
                 .filter(i -> i.getTag().getId().equals(dishItemDTO.getTagId()))
-                .filter(i -> i.getUnitId() != null && i.getUnitId().equals(dishItemDTO.getUnitId()))
-                .map(DishItemEntity::getTag)
-                .filter(t -> t.getId().equals(dishItemDTO.getTagId()))
+                //.filter(i -> i.getUnitId() != null && i.getUnitId().equals(dishItemDTO.getUnitId()))
+                .filter(t -> t.getTag().getId().equals(dishItemDTO.getTagId()))
                 .findFirst()
                 .orElse(null);
 
-        if (existingTag != null) {
-            // ingredient already exists for this tag and unit
-            return;
+        if (dishItemEntity == null) {
+            // this is a new ingredient
+            dishItemEntity = new DishItemEntity();
         }
-        DishItemEntity dishItemEntity = new DishItemEntity();
         doAddOrUpdateIngredient(dish, dishItemEntity, dishItemDTO, true);
     }
 
@@ -366,6 +364,9 @@ public class DishServiceImpl implements DishService {
         }
         dishItemEntity.setTag(tag);
 
+        // clear quantity fields
+        clearIngredientQuantities(dishItemEntity);
+
         // calculate quantity from fraction and whole
         Double quantity = calculateQuantity(dishItemDTO);
         dishItemEntity.setQuantity(quantity);
@@ -394,6 +395,15 @@ public class DishServiceImpl implements DishService {
         if (updateStatistics) {
             tagService.countTagAddedToDish(dish.getUserId(), tag.getId());
         }
+    }
+
+    private void clearIngredientQuantities(DishItemEntity dishItemEntity) {
+        dishItemEntity.setRawModifiers(null);
+        dishItemEntity.setQuantity(null);
+        dishItemEntity.setFractionalQuantity(null);
+        dishItemEntity.setQuantity(null);
+        dishItemEntity.setUnitSize(null);
+        dishItemEntity.setUnitId(null);
     }
 
     private void setModifiersFromRawModifiers(DishItemDTO dishItemDTO, DishItemEntity dishItemEntity,TagEntity tag) {

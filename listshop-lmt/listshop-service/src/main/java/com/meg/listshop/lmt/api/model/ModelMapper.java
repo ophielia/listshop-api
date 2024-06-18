@@ -536,8 +536,8 @@ public class ModelMapper {
         }
         ingredient.setUnitId(String.valueOf(ingredientDto.getUnitId()));
         ingredient.setUnitName(ingredientDto.getUnitName());
-        ingredient.setRawModifiers(ingredient.getRawModifiers());
-        ingredient.setRawEntry(ingredient.getRawEntry());
+        ingredient.setRawModifiers(ingredientDto.getRawModifiers());
+        ingredient.setRawEntry(ingredientDto.getRawEntry());
         ingredient.setUnitDisplay(ingredientDto.getUnitDisplay());
         String quantityDisplay = "";
         if (ingredientDto.getWholeQuantity() != null) {

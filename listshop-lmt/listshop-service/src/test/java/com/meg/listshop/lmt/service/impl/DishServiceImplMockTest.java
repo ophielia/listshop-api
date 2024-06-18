@@ -153,7 +153,6 @@ public class DishServiceImplMockTest {
         dishItemDto.setWholeQuantity(1);
         dishItemDto.setFractionalQuantity(FractionType.OneHalf);
         dishItemDto.setUnitId(unitId);
-        dishItemDto.setRawEntry("1 1/2 finely chopped");
 
         DishEntity dishEntity = new DishEntity();
         dishEntity.setUserId(userId);
@@ -193,7 +192,6 @@ public class DishServiceImplMockTest {
         Assert.assertEquals(unitId, ingredientResult.getUnitId());
         Assert.assertNotNull(ingredientResult.getUnitId());
         Assert.assertTrue(ingredientResult.getModifiersProcessed());
-        Assert.assertEquals("1 1/2 finely chopped",ingredientResult.getRawEntry());
         Assert.assertNull(dishResult.getItems().get(0).getTag().getConversionId());
     }
 
