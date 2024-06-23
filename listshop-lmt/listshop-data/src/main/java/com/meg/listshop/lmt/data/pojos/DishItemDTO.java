@@ -171,6 +171,11 @@ public class DishItemDTO {
         return rawEntry;
     }
 
+    public boolean hasAmount() {
+        return unitId != null
+                && ( quantity != null || wholeQuantity != null || fractionalQuantity != null);
+    }
+
     @Override
     public String toString() {
         return "DishItemDTO{" +

@@ -14,6 +14,8 @@ public class IngredientPut {
     private String tagDisplay;
     @JsonProperty("whole_quantity")
     private Integer wholeQuantity;
+    @JsonProperty("quantity")
+    private Double quantity;
     @JsonProperty("fractional_quantity")
     private String fractionalQuantity;
     @JsonProperty("quantity_display")
@@ -121,6 +123,14 @@ public class IngredientPut {
         this.rawEntry = rawEntry;
     }
 
+    public Double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
+    }
+
     @Override
     public String toString() {
         return "Ingredient{" +
@@ -134,6 +144,7 @@ public class IngredientPut {
                 ", unitName='" + unitName + '\'' +
                 ", rawModifiers='" + rawModifiers + '\'' +
                 ", unitDisplay='" + unitDisplay + '\'' +
+                ", quantity='" + quantity + '\'' +
                 ", rawEntry='" + rawEntry + '\'' +
                 '}';
     }

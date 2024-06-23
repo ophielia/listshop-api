@@ -10,6 +10,8 @@ package com.meg.listshop.lmt.service.impl;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.common.FlatStringUtils;
+import com.meg.listshop.common.FractionUtils;
+import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
@@ -35,6 +37,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -230,7 +233,7 @@ public class DishServiceImpl implements DishService {
         List<DishItemEntity> dishItems = dish.getItems();
         // check if ingredient already exists for this tagId and unit
         DishItemEntity dishItemEntity = dishItems.stream()
-                .filter( t-> t.getTag().getTagType().equals(TagType.Ingredient))
+                .filter(t -> t.getTag().getTagType().equals(TagType.Ingredient))
                 .filter(i -> i.getTag().getId().equals(dishItemDTO.getTagId()))
                 //.filter(i -> i.getUnitId() != null && i.getUnitId().equals(dishItemDTO.getUnitId()))
                 .filter(t -> t.getTag().getId().equals(dishItemDTO.getTagId()))
@@ -304,7 +307,7 @@ public class DishServiceImpl implements DishService {
 
         // get ingredients
         List<DishItemDTO> ingredients = dishItemRepository.getIngredientsForDish(dishId);
-        ingredients.forEach( in -> {
+        ingredients.forEach(in -> {
             // insert fraction display
             if (in.getFractionalQuantity() != null) {
                 String fractionDisplay = in.getFractionalQuantity().getDisplayName();
@@ -315,7 +318,7 @@ public class DishServiceImpl implements DishService {
 
         // tags
         List<DishItemEntity> tags = dish.getItems().stream()
-                .filter( di -> includedInStandard.contains(di.getTag().getTagType()))
+                .filter(di -> includedInStandard.contains(di.getTag().getTagType()))
                 .collect(Collectors.toList());
         tags.sort(Comparator.comparing(functionGetTagName));
 
@@ -343,7 +346,7 @@ public class DishServiceImpl implements DishService {
 
         // get ingredients
         List<DishItemDTO> ingredients = dishItemRepository.getIngredientsForDish(dishId);
-        ingredients.forEach( in -> {
+        ingredients.forEach(in -> {
             // insert fraction display
             if (in.getFractionalQuantity() != null) {
                 String fractionDisplay = in.getFractionalQuantity().getDisplayName();
@@ -367,19 +370,20 @@ public class DishServiceImpl implements DishService {
         // clear quantity fields
         clearIngredientQuantities(dishItemEntity);
 
-        // calculate quantity from fraction and whole
-        Double quantity = calculateQuantity(dishItemDTO);
-        dishItemEntity.setQuantity(quantity);
-        dishItemEntity.setWholeQuantity(dishItemDTO.getWholeQuantity());
-        dishItemEntity.setFractionalQuantity(dishItemDTO.getFractionalQuantity());
+        if (dishItemDTO.hasAmount()) {
+            // calculate quantity from fraction and whole
+            dishItemEntity.setQuantity(dishItemDTO.getQuantity());
+            dishItemEntity.setWholeQuantity(dishItemDTO.getWholeQuantity());
+            dishItemEntity.setFractionalQuantity(dishItemDTO.getFractionalQuantity());
 
-        // unit
-        dishItemEntity.setUnitId(dishItemDTO.getUnitId());
+            // unit
+            dishItemEntity.setUnitId(dishItemDTO.getUnitId());
 
-        // fill unitSize and marker from raw_modifiers
-        setModifiersFromRawModifiers(dishItemDTO, dishItemEntity,tag);
+            // fill unitSize and marker from raw_modifiers
+            setModifiersFromRawModifiers(dishItemDTO, dishItemEntity, tag);
 
-        dishItemEntity.setRawEntry(dishItemDTO.getRawEntry());
+            dishItemEntity.setRawEntry(dishItemDTO.getRawEntry());
+        }
 
         // save ingredient
         boolean isNewIngredient = dishItemEntity.getDishItemId() == null;
@@ -399,6 +403,7 @@ public class DishServiceImpl implements DishService {
 
     private void clearIngredientQuantities(DishItemEntity dishItemEntity) {
         dishItemEntity.setRawModifiers(null);
+        dishItemEntity.setRawEntry(null);
         dishItemEntity.setQuantity(null);
         dishItemEntity.setFractionalQuantity(null);
         dishItemEntity.setQuantity(null);
@@ -406,7 +411,7 @@ public class DishServiceImpl implements DishService {
         dishItemEntity.setUnitId(null);
     }
 
-    private void setModifiersFromRawModifiers(DishItemDTO dishItemDTO, DishItemEntity dishItemEntity,TagEntity tag) {
+    private void setModifiersFromRawModifiers(DishItemDTO dishItemDTO, DishItemEntity dishItemEntity, TagEntity tag) {
         List<String> rawModifiers = dishItemDTO.getRawModifiers();
         if (rawModifiers == null || rawModifiers.isEmpty()) {
             dishItemEntity.setRawModifiers(null);
@@ -415,26 +420,13 @@ public class DishServiceImpl implements DishService {
             dishItemEntity.setModifiersProcessed(true);
             return;
         }
-        dishItemEntity.setRawModifiers(FlatStringUtils.flattenListToString(rawModifiers,"|"));
+        dishItemEntity.setRawModifiers(FlatStringUtils.flattenListToString(rawModifiers, "|"));
         if (tag.getConversionId() != null) {
             fillIngredientModifiers(tag.getConversionId(), rawModifiers, dishItemEntity);
             dishItemEntity.setModifiersProcessed(true);
         } else {
             dishItemEntity.setModifiersProcessed(false);
         }
-    }
-
-    private Double calculateQuantity(DishItemDTO dishItemDTO) {
-        Double quantity = 0.0;
-        if (dishItemDTO.getWholeQuantity() != null) {
-            quantity = quantity + dishItemDTO.getWholeQuantity();
-        }
-        if (dishItemDTO.getFractionalQuantity() != null) {
-            Double fractionalValue = FractionType.doubleValueOf(dishItemDTO.getFractionalQuantity());
-            quantity = quantity + fractionalValue;
-        }
-
-        return quantity;
     }
 
     private void fillIngredientModifiers(Long conversionId, List<String> rawModifiers, DishItemEntity dishItemEntity) {

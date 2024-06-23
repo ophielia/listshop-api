@@ -5,6 +5,7 @@ package com.meg.listshop.lmt.api.model;
  */
 
 public enum FractionType {
+    Zero("0"),
     OneEighth("1/8"),
     OneQuarter("1/4"),
     ThreeEigths("3/8"),
@@ -13,7 +14,8 @@ public enum FractionType {
     ThreeQuarters("3/4"),
     SevenEighths("7/8"),
     OneThird("1/3"),
-    TwoThirds("2/3");
+    TwoThirds("2/3"),
+    One("1");
 
     private final String display;
 
@@ -33,6 +35,10 @@ public enum FractionType {
 
     public static Double doubleValueOf(FractionType fractionType) {
         switch (fractionType) {
+            case Zero:
+                return 0.0;
+            case One:
+                return 1.0;
             case OneEighth:
                 return 0.125;
             case OneQuarter:
@@ -53,6 +59,15 @@ public enum FractionType {
                 return 0.666666;
         }
         return 0.0;
+    }
+
+    public static FractionType fromDouble(double decimalPart) {
+        for (FractionType fractionType : values()) {
+            if (FractionType.doubleValueOf(fractionType).equals(decimalPart)) {
+                return fractionType;
+            }
+        }
+        return null;
     }
 
     public String getDisplayName() {

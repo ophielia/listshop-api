@@ -16,7 +16,7 @@ import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
-import com.meg.listshop.conversion.tools.RoundingUtils;
+import com.meg.listshop.common.RoundingUtils;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;

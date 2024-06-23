@@ -4,6 +4,8 @@ import com.github.dockerjava.api.exception.BadRequestException;
 import com.google.common.base.Enums;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.common.FlatStringUtils;
+import com.meg.listshop.common.FractionUtils;
+import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.lmt.api.controller.v2.V2DishRestControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.DishSortDirection;
@@ -30,7 +32,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Controller
@@ -164,27 +168,87 @@ public class V2DishRestController implements V2DishRestControllerApi {
         dishItemDTO.setDishItemId(stringToLongOrException(ingredient.getId()));
         dishItemDTO.setTagId(stringToLongOrException(ingredient.getTagId()));
 
+        if (!ingredientHasAmount(ingredient)) {
+            return dishItemDTO;
+        }
         Long unitId = stringToLongOrDefault(ingredient.getUnitId(), defaultUnitId);
         dishItemDTO.setUnitId(unitId);
 
-        dishItemDTO.setRawEntry(ingredient.getRawEntry());
-        if (ingredient.getWholeQuantity() != null) {
-            dishItemDTO.setWholeQuantity(ingredient.getWholeQuantity());
-        }
-        if (ingredient.getFractionalQuantity() != null && !ingredient.getFractionalQuantity().isEmpty()) {
-            FractionType fraction = FractionType.fromDisplayName(ingredient.getFractionalQuantity());
-            if (fraction == null) {
-                String message = String.format("Fraction [%s] is invalid", ingredient.getFractionalQuantity());
-                throw new BadRequestException(message);
+        // check quantity and round if necessary
 
-            }
-            dishItemDTO.setFractionalQuantity(fraction);
+        // check fraction, and round if necessary
+        if (ingredient.getQuantity() != null ) {
+            // fill from quantity
+            validateAndFillFromQuantity(dishItemDTO, ingredient);
+        } else {
+            // fill from whole number and fraction
+            validateAndFillFromParts(dishItemDTO, ingredient);
         }
+
         if (ingredient.getId() != null) {
             dishItemDTO.setDishItemId(longValueOf(ingredient.getId()));
         }
         dishItemDTO.setRawModifiers(ingredient.getRawModifiers());
+
         return dishItemDTO;
+    }
+
+    private void validateAndFillFromParts(DishItemDTO dishItemDTO, IngredientPut ingredient) {
+        String rawEntry = ingredient.getRawEntry();
+        Integer wholeQuantity = 0;
+        Double fractionQuantity = 0.0;
+        if (ingredient.getFractionalQuantity() != null && !ingredient.getFractionalQuantity().isEmpty()) {
+            FractionType fraction = FractionType.fromDisplayName(ingredient.getFractionalQuantity());
+            if (fraction == null) {
+                double fractionValue = RoundingUtils.doubleFromStringFraction(ingredient.getFractionalQuantity());
+                fraction = FractionUtils.getFractionTypeForDecimal(new BigDecimal(fractionValue));
+
+            }
+            fractionQuantity = FractionType.doubleValueOf(fraction);
+            // handle entry changes -- also fraction types of 0 and 1
+            rawEntry = rawEntry.replace(ingredient.getFractionalQuantity(), fraction.getDisplayName());
+            dishItemDTO.setFractionalQuantity(fraction);
+        }
+
+        if (ingredient.getWholeQuantity() != null) {
+            dishItemDTO.setWholeQuantity(ingredient.getWholeQuantity());
+        }
+
+        Double quantity = wholeQuantity.doubleValue();
+        quantity += fractionQuantity;
+
+        dishItemDTO.setWholeQuantity(wholeQuantity);
+        dishItemDTO.setQuantity(quantity);
+        dishItemDTO.setRawEntry(rawEntry);
+
+    }
+
+    private void validateAndFillFromQuantity(DishItemDTO dishItemDTO, IngredientPut ingredient) {
+        Double quantity = 0.0;
+        Double originalQuantity = ingredient.getQuantity();
+        BigDecimal bigDecimal = new BigDecimal(String.valueOf(originalQuantity));
+        int wholeNumber = bigDecimal.intValue();
+        BigDecimal decimalPart = bigDecimal.subtract(new BigDecimal(wholeNumber));
+        FractionType fraction = FractionUtils.getFractionTypeForDecimal(decimalPart);
+        quantity += wholeNumber;
+        quantity += FractionType.doubleValueOf(fraction);
+
+        String rawEntry = ingredient.getRawEntry();
+        if (!Objects.equals(quantity, originalQuantity)) {
+            // a change was made - replace in raw entry
+            rawEntry = rawEntry.replace(String.valueOf(originalQuantity), String.valueOf(quantity) );
+        }
+
+        dishItemDTO.setWholeQuantity(wholeNumber);
+        dishItemDTO.setFractionalQuantity(fraction);
+        dishItemDTO.setQuantity(quantity);
+        dishItemDTO.setRawEntry(rawEntry);
+    }
+
+    private boolean ingredientHasAmount(IngredientPut ingredient) {
+        return ingredient.getQuantity() != null ||
+                ingredient.getFractionalQuantity() != null ||
+                ingredient.getWholeQuantity() != null;
     }
 
     private Long stringToLongOrException(String toConvert) {
