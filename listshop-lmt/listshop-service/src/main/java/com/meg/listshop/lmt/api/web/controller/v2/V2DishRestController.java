@@ -211,7 +211,7 @@ public class V2DishRestController implements V2DishRestControllerApi {
         }
 
         if (ingredient.getWholeQuantity() != null) {
-            dishItemDTO.setWholeQuantity(ingredient.getWholeQuantity());
+            wholeQuantity = ingredient.getWholeQuantity();
         }
 
         Double quantity = wholeQuantity.doubleValue();
