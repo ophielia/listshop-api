@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.17.0]  - June 2024
+### Added
+- amounts to dish item
+- v2 dish controller endpoints to handle ingredients - tags with amounts
+- UK units
+### Changed
+- conversion algorithm to handle markers , unit_sizes and converting to unit
+
 ## [1.16.1]  - March 2024
 ### Fixed
 - Flyway upgrade scripts

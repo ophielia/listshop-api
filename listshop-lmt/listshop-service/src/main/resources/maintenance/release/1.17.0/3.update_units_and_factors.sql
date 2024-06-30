@@ -170,10 +170,4 @@ insert into factors (factor_id, from_unit, to_unit, factor) select 113, f.unit_i
 insert into factors (factor_id, from_unit, to_unit, factor) select 114, f.unit_id, t.unit_id, 0.04166666667 as factor from units f,units t where lower(f.name) = lower('pinch') and lower(t.name) = lower('tablespoon');
 insert into factors (factor_id, from_unit, to_unit, factor) select 115, f.unit_id, t.unit_id, 0.00260416667 as factor from units f,units t where lower(f.name) = lower('pinch') and lower(t.name) = lower('cup');
 
-select * from factors where from_unit in (1025,1028) or to_unit in (1025,1028) ;
 
-select * from factors where
-(from_unit = 1003 and to_unit = 1024) or
-(to_unit = 1024 and from_unit = 1003);
-
-select * from units where unit_id = 1024

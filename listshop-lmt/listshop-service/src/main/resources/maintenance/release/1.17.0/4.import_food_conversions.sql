@@ -6767,4 +6767,3 @@ values  (228057, 105627, 168424, 227727, 1, null, 'slice', 16, 1022, null, null,
 
 commit;
 
-select * from food_conversions;

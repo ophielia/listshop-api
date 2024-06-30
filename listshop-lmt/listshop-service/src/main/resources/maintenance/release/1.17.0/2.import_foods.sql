@@ -3763,5 +3763,5 @@ commit;
 
 
 
-select * from foods;
+
 
