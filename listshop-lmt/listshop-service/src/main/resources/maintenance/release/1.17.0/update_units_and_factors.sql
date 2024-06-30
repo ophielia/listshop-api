@@ -51,8 +51,8 @@ insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1050, 'wedge', 'HYBRID', 'WEIGHT',FALSE, TRUE,FALSE,TRUE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1051, 'teaspoon (fluid) (UK)', 'UK', 'VOLUME',FALSE, TRUE,TRUE,FALSE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1052, 'tablespoon (fluid) (UK)', 'UK', 'VOLUME',FALSE, TRUE,TRUE,FALSE,'', FALSE);
-insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1053, 'Pinch', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE,'', FALSE);
-
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1053, 'pinch', 'HYBRID', 'SOLID',FALSE, TRUE,FALSE,FALSE,'', FALSE);
+insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1054, 'jar', 'HYBRID', 'VOLUME',TRUE, TRUE,FALSE,FALSE,'', FALSE);
 
 insert into factors (factor_id, from_unit, to_unit, factor) select 1, f.unit_id, t.unit_id, 1 as factor from units f,units t where lower(f.name) = lower('#2 can') and lower(t.name) = lower('can');
 insert into factors (factor_id, from_unit, to_unit, factor) select 2, f.unit_id, t.unit_id, 1 as factor from units f,units t where lower(f.name) = lower('#2.5 can') and lower(t.name) = lower('large can');
