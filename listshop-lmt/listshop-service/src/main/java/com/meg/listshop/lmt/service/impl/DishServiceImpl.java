@@ -372,9 +372,7 @@ public class DishServiceImpl implements DishService {
 
         if (dishItemDTO.hasAmount()) {
             // calculate quantity from fraction and whole
-            dishItemEntity.setQuantity(dishItemDTO.getQuantity());
-            dishItemEntity.setWholeQuantity(dishItemDTO.getWholeQuantity());
-            dishItemEntity.setFractionalQuantity(dishItemDTO.getFractionalQuantity());
+            doubleCheckAndFillQuantity(dishItemEntity, dishItemDTO);
 
             // unit
             dishItemEntity.setUnitId(dishItemDTO.getUnitId());
@@ -399,6 +397,30 @@ public class DishServiceImpl implements DishService {
         if (updateStatistics) {
             tagService.countTagAddedToDish(dish.getUserId(), tag.getId());
         }
+    }
+
+    private void doubleCheckAndFillQuantity(DishItemEntity dishItemEntity, DishItemDTO dishItemDTO) {
+        Double dtoQuantity = dishItemDTO.getQuantity();
+        Integer dtoWhole = dishItemDTO.getWholeQuantity();
+        FractionType dtoFraction = dishItemDTO.getFractionalQuantity();
+
+        Double calculatedQuantity = 0.0;
+        if (dtoWhole != null) {
+            calculatedQuantity += new Double(dtoWhole);
+        }
+        if (dtoFraction != null) {
+            double fractionDouble = FractionType.doubleValueOf(dtoFraction);
+            calculatedQuantity += fractionDouble;
+        }
+
+        dishItemEntity.setWholeQuantity(dishItemDTO.getWholeQuantity());
+        dishItemEntity.setFractionalQuantity(dishItemDTO.getFractionalQuantity());
+        dishItemEntity.setQuantity(dishItemDTO.getQuantity());
+
+        if (!calculatedQuantity.equals(dtoQuantity)) {
+        dishItemEntity.setQuantity(calculatedQuantity);
+        }
+
     }
 
     private void clearIngredientQuantities(DishItemEntity dishItemEntity) {

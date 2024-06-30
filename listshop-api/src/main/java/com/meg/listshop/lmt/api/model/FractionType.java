@@ -26,7 +26,7 @@ public enum FractionType {
 
     public static FractionType fromDisplayName(String displayName) {
         for (FractionType fractionType : values()) {
-            if (fractionType.display.equals(displayName)) {
+            if (fractionType.name().equals(displayName)) {
                 return fractionType;
             }
         }

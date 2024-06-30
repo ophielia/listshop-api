@@ -194,7 +194,7 @@ public class V2DishRestController implements V2DishRestControllerApi {
     }
 
     private void validateAndFillFromParts(DishItemDTO dishItemDTO, IngredientPut ingredient) {
-        String rawEntry = ingredient.getRawEntry();
+        String rawEntry = ingredient.getRawEntry() == null? "":ingredient.getRawEntry();
         Integer wholeQuantity = 0;
         Double fractionQuantity = 0.0;
         if (ingredient.getFractionalQuantity() != null && !ingredient.getFractionalQuantity().isEmpty()) {
@@ -204,6 +204,7 @@ public class V2DishRestController implements V2DishRestControllerApi {
                 fraction = FractionUtils.getFractionTypeForDecimal(new BigDecimal(fractionValue));
 
             }
+
             fractionQuantity = FractionType.doubleValueOf(fraction);
             // handle entry changes -- also fraction types of 0 and 1
             rawEntry = rawEntry.replace(ingredient.getFractionalQuantity(), fraction.getDisplayName());
