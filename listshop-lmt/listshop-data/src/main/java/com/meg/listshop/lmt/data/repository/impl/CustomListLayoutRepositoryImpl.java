@@ -7,8 +7,8 @@ import com.meg.listshop.lmt.data.repository.CustomListLayoutRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.*;
-import javax.persistence.criteria.*;
+import jakarta.persistence.*;
+import jakarta.persistence.criteria.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;

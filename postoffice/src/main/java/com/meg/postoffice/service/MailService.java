@@ -12,14 +12,15 @@ import com.meg.postoffice.config.MailConfiguration;
 import com.meg.postoffice.service.content.ContentBuilderFactory;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
+
 import java.io.IOException;
 
 
@@ -64,7 +65,6 @@ public class MailService {
         } else {
             LOG.info("Email processed, but not sent, due to configuration");
         }
-
     }
 
     private String getEmailRecipient(EmailParameters emailParameters) {

@@ -6,8 +6,8 @@ import com.meg.listshop.conversion.data.pojo.UnitFlavor;
 import com.meg.listshop.conversion.service.ConversionSpec;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Objects;
 

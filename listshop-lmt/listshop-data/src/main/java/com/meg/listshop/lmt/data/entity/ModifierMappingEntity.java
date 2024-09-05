@@ -3,7 +3,7 @@ package com.meg.listshop.lmt.data.entity;
 import com.meg.listshop.lmt.api.model.ModifierType;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * Created by margaretmartin on 24/10/2017.

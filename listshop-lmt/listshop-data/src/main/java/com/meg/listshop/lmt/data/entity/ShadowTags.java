@@ -2,7 +2,7 @@ package com.meg.listshop.lmt.data.entity;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * Created by margaretmartin on 08/12/2017.

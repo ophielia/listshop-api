@@ -3,7 +3,7 @@ package com.meg.listshop.lmt.data.entity;
 import com.meg.listshop.lmt.data.pojos.TargetServiceConstants;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

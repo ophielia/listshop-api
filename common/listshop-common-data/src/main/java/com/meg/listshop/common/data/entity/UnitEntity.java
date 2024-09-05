@@ -3,7 +3,7 @@ package com.meg.listshop.common.data.entity;
 import com.meg.listshop.common.UnitSubtype;
 import com.meg.listshop.common.UnitType;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "units")

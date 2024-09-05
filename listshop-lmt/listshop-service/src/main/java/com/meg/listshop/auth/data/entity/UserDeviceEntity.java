@@ -2,9 +2,10 @@ package com.meg.listshop.auth.data.entity;
 
 
 import com.meg.listshop.auth.api.model.ClientType;
+import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+
 import java.util.Date;
 
 @Entity

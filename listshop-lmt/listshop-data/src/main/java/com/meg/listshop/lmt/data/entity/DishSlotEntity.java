@@ -3,7 +3,7 @@ package com.meg.listshop.lmt.data.entity;
 import com.meg.listshop.common.FlatStringUtils;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

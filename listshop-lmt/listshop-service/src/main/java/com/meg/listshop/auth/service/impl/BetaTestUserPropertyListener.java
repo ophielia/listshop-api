@@ -16,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.mail.MessagingException;
+import jakarta.annotation.PostConstruct;
+import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -28,10 +28,8 @@ import java.util.List;
 @Service
 public class BetaTestUserPropertyListener implements UserPropertyChangeListener {
 
-
     private static final String EMAIL_ERROR = "Unable to send email for property update, user[{}]";
     private UserPropertyService userPropertyService;
-
 
     private MailService mailService;
     @Value("${listservice.email.sender:support@the-list-shop.com}")
@@ -100,7 +98,5 @@ public class BetaTestUserPropertyListener implements UserPropertyChangeListener 
         initialCount++;
         emailSentProperty.setValue(String.valueOf(initialCount));
         userPropertyService.setPropertiesForUser(user.getUsername(), Collections.singletonList(emailSentProperty), true);
-
-
     }
 }

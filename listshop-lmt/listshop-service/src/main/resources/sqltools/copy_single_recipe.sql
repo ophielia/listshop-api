@@ -43,8 +43,7 @@ return 1;
 END;
 $_$;
 
-select copy_single_dish(56630, 34)
-into q;
+select copy_single_dish(56630, 34) into q;
 
 
 

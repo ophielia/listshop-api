@@ -2,7 +2,7 @@ package com.meg.listshop.lmt.data.entity;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "proposal_approach")

@@ -3,7 +3,7 @@ package com.meg.listshop.conversion.data.entity;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "factors")

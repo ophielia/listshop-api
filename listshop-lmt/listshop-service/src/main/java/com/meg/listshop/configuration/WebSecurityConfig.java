@@ -9,16 +9,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -30,7 +33,7 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig  {
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 
@@ -55,9 +58,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -65,9 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-
     @Bean
-    @Override
     public UserDetailsService userDetailsService() {
         return new JwtUserDetailsServiceImpl(userRepository);
     }
@@ -77,49 +78,40 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new JwtAuthenticationTokenFilter();
     }
 
-    @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
+    @Bean
+    public SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .csrf().disable()
-                .cors().and()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-
-                // don't create session
+                .cors(Customizer.withDefaults())
+                .csrf(c -> c.disable())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-
-                .authorizeRequests()
-                //.antMatchers(HttpMethod.OPTIONS,"/path/to/allow").permitAll()
-                .antMatchers("/static/**").permitAll()
-                .antMatchers("/user/password").authenticated()
-                .antMatchers("/user/properties").authenticated()
-                .antMatchers("/admin/user").hasRole("ADMIN")
-                .antMatchers("/user/**").permitAll()
-                .antMatchers("/campaign/**").permitAll()
-                .antMatchers("/auth/logout").authenticated()
-                .antMatchers("/auth/**").permitAll()
-                .antMatchers("/auth").permitAll()
-                .antMatchers("/actuator/**").permitAll()
-                .antMatchers("/swagger-ui.html").permitAll()
-                .antMatchers("/v3/api-docs/**").permitAll()
-                .antMatchers("/swagger*/**").permitAll()
-                .antMatchers("/webjars/**").permitAll()
-                .antMatchers("/v2/api-docs/**").permitAll()
-                .antMatchers("/h2-console/**").permitAll()
-                .antMatchers("/tag/**").permitAll()
-                .antMatchers("/listlayout/default").permitAll()
-                .antMatchers("/layout/default").permitAll()
-                .antMatchers("/taginfo/**").permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .anyRequest().authenticated();
-
-
-        // Custom JWT based security filter
-        httpSecurity
-                .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
-
-        // disable page caching
-        httpSecurity.headers().cacheControl();
-        httpSecurity.headers().frameOptions().disable();
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers(
+                                AntPathRequestMatcher.antMatcher("/user/password"),
+                                AntPathRequestMatcher.antMatcher("/user/properties"),
+                                AntPathRequestMatcher.antMatcher("/auth/logout")
+                        ).authenticated()
+                        .requestMatchers(
+                                AntPathRequestMatcher.antMatcher("/user/**"),
+                                AntPathRequestMatcher.antMatcher("/campaign/**"),
+                                AntPathRequestMatcher.antMatcher("/auth/**"),
+                                AntPathRequestMatcher.antMatcher("/auth"),
+                                AntPathRequestMatcher.antMatcher("/actuator/**"),
+                                AntPathRequestMatcher.antMatcher("/swagger-ui.html"),
+                                AntPathRequestMatcher.antMatcher("/v3/api-docs/**"),
+                                AntPathRequestMatcher.antMatcher("/swagger*/**"),
+                                AntPathRequestMatcher.antMatcher("/webjars/**"),
+                                AntPathRequestMatcher.antMatcher("/v2/api-docs/**"),
+                                AntPathRequestMatcher.antMatcher("/h2-console/**"),
+                                AntPathRequestMatcher.antMatcher("/tag/**"),
+                                AntPathRequestMatcher.antMatcher("/listlayout/default"),
+                                AntPathRequestMatcher.antMatcher("/layout/default"),
+                                AntPathRequestMatcher.antMatcher("/taginfo/**")
+                        ).permitAll()
+                        .requestMatchers(
+                                AntPathRequestMatcher.antMatcher("/admin/user")
+                        ).hasRole("ADMIN")
+                        .anyRequest().authenticated());
+        return httpSecurity.build();
     }
 
     @Bean

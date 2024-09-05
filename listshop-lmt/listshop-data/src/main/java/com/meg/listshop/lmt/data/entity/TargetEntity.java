@@ -11,7 +11,7 @@ import com.meg.listshop.auth.api.model.TargetType;
 import com.meg.listshop.lmt.data.pojos.TargetServiceConstants;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
