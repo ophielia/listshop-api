@@ -1,32 +1,19 @@
 package com.meg.listshop.auth.data.entity;
 
 
-import org.hibernate.annotations.GenericGenerator;
-
+import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-@GenericGenerator(
-        name = "user_id_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value="user_id_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "initial_value",
-                        value="500"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value="1")}
-)
 public class UserEntity {
 
     @Id
-    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="user_id_sequence")
+    @Tsid
     @Column(name = "user_id")
     private Long id;
 
@@ -54,7 +41,7 @@ public class UserEntity {
         this.password = password;
     }
 
-    public UserEntity(String userName, String email,  String password) {
+    public UserEntity(String userName, String email, String password) {
         this.username = userName;
         this.password = password;
         this.email = email;

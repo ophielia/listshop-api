@@ -1,27 +1,17 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.lmt.api.model.ApproachType;
-import org.hibernate.annotations.GenericGenerator;
-
+import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity
 @Table(name = "proposal_context")
-@GenericGenerator(
-        name = "proposal_context_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "proposal_context_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 public class ProposalContextEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "proposal_context_sequence")
+    @Tsid
     @Column(name = "proposal_context_id")
     private Long proposalContextId;
 

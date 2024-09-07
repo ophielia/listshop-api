@@ -9,29 +9,19 @@ package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.auth.api.model.TargetType;
 import com.meg.listshop.lmt.data.pojos.TargetServiceConstants;
-import org.hibernate.annotations.GenericGenerator;
-
+import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "target")
-@GenericGenerator(
-        name = "target_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "target_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 public class TargetEntity extends AbstractInflateAndFlatten {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "target_sequence")
+    @Tsid
     private Long targetId;
 
     private Long userId;

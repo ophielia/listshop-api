@@ -1,8 +1,8 @@
 package com.meg.listshop.lmt.data.entity;
 
-import org.hibernate.annotations.GenericGenerator;
-
+import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,23 +11,13 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "list_layout")
-@GenericGenerator(
-        name = "list_layout_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "list_layout_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 @NamedEntityGraph(
         name = "graph.LayoutCategoriesItems",
         attributeNodes = @NamedAttributeNode(value = "categories", subgraph = "tags"),
         subgraphs = @NamedSubgraph(name = "tags", attributeNodes = @NamedAttributeNode("tags")))
 public class ListLayoutEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_layout_sequence")
+    @Tsid
     @Column(name = "layout_id")
     private Long layoutId;
 

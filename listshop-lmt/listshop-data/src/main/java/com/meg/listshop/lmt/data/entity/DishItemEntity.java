@@ -1,9 +1,9 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.lmt.api.model.FractionType;
-import org.hibernate.annotations.GenericGenerator;
-
+import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
+
 import java.util.Objects;
 
 /**
@@ -11,20 +11,10 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "dish_items")
-@GenericGenerator(
-        name = "dish_item_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "dish_item_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 public class DishItemEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dish_item_sequence")
+    @Tsid
     @Column(name = "dish_item_id")
     private Long dishItemId;
 

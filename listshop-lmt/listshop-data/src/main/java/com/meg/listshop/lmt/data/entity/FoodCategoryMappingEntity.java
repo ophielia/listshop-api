@@ -1,36 +1,29 @@
 package com.meg.listshop.lmt.data.entity;
 
-import org.hibernate.annotations.GenericGenerator;
+import io.hypersistence.utils.hibernate.id.Tsid;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-import jakarta.persistence.*;
 import java.util.Objects;
 
 /**
  * Created by margaretmartin on 22/05/2017.
  */
 @Entity
-@Table(name="food_category_mapping")
-@GenericGenerator(
-        name = "food_category_mapping_seq",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value="food_category_mapping_seq"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value="1")}
-)
+@Table(name = "food_category_mapping")
 public class FoodCategoryMappingEntity {
 
     @Id
-    @GeneratedValue
+    @Tsid
     @Column(name = "food_category_mapping_id")
     Long id;
 
 
-    @Column(name="category_id")
+    @Column(name = "category_id")
     private Long categoryId;
-    @Column(name="tag_id")
+    @Column(name = "tag_id")
     private Long tagId;
 
     public FoodCategoryMappingEntity() {

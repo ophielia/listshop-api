@@ -1,25 +1,17 @@
 package com.meg.listshop.lmt.data.entity;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import jakarta.persistence.*;
+import io.hypersistence.utils.hibernate.id.Tsid;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "list_tag_stats")
-@GenericGenerator(
-        name = "list_tag_stats_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value="list_tag_stats_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value="1")}
-)
 public class ListTagStatistic {
 
     @Id
-    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="list_tag_stats_sequence")
+    @Tsid
     @Column(name = "list_tag_stat_id")
     private Long listTagStatId;
 

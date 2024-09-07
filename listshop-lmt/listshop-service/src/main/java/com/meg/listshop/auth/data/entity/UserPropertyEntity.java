@@ -1,30 +1,17 @@
 package com.meg.listshop.auth.data.entity;
 
-import org.hibernate.annotations.GenericGenerator;
-
+import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
+
 import java.util.Objects;
 
 @Entity
 @Table(name = "USER_PROPERTIES")
-@GenericGenerator(
-        name = "user_properties_id_seq",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "authority_id_seq"),
-                @org.hibernate.annotations.Parameter(
-                        name = "initial_value",
-                        value = "500"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 public class UserPropertyEntity {
 
     @Id
     @Column(name = "user_property_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_properties_id_seq")
+    @Tsid
     private Long id;
 
     @ManyToOne

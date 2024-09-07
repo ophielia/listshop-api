@@ -3,9 +3,9 @@ package com.meg.listshop.lmt.data.entity;
 import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
-import org.hibernate.annotations.GenericGenerator;
-
+import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,16 +13,6 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tag")
-@GenericGenerator(
-        name = "tag_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "tag_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 @NamedEntityGraph(
         name = "graph.TagCategory",
         attributeNodes = @NamedAttributeNode(value = "categories"))
@@ -65,7 +55,7 @@ import java.util.Objects;
 public class TagEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tag_sequence")
+    @Tsid
     @Column(name = "tag_id")
     private Long tag_id;
 
@@ -376,7 +366,7 @@ public class TagEntity {
 
 
     public AdminTagFullInfo toAdminFullInfo() {
-        AdminTagFullInfo fullInfo = new AdminTagFullInfo( );
+        AdminTagFullInfo fullInfo = new AdminTagFullInfo();
         fullInfo.setTagId(nullOrValueAsString(getId()));
         fullInfo.setName(getName());
         fullInfo.setUserId(nullOrValueAsString(getUserId()));

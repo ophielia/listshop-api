@@ -1,8 +1,8 @@
 package com.meg.listshop.lmt.data.entity;
 
-import org.hibernate.annotations.GenericGenerator;
-
+import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,16 +12,6 @@ import java.util.List;
  */
 @Entity
 @Table(name = "list")
-@GenericGenerator(
-        name = "list_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "list_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 @NamedEntityGraph(
         name = "list-entity-graph",
         attributeNodes = {
@@ -39,7 +29,7 @@ import java.util.List;
 public class ShoppingListEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_sequence")
+    @Tsid
     @Column(name = "list_id")
     private Long listId;
 
