@@ -156,13 +156,6 @@
             <artifactId>jjwt</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <!-- flyway -->
         <dependency>
             <groupId>org.flywaydb</groupId>
