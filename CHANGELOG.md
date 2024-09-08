@@ -1,6 +1,11 @@
 # Changelog - The List Shop - API
 
 All notable changes to this project will be documented in this file.
+## [1.18.0]  - June 2024
+### Changed
+- upgrade to springboot 3, java 17
+
+
 
 ## [1.17.0]  - June 2024
 ### Added
