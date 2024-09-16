@@ -38,17 +38,9 @@ SET row_security = off;
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
-create user listshopstarter
-    superuser
-    createdb
-    replication
-;
 
-create user bank
-    superuser
-    createdb
-    replication
-;
+
+
 --
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
@@ -89,7 +81,7 @@ END;
 $_$;
 
 
-ALTER FUNCTION public.copy_single_dish(integer, integer) OWNER TO listshopstarter;
+ALTER FUNCTION public.copy_single_dish(integer, integer) OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -109,7 +101,7 @@ CREATE TABLE public.dish (
 );
 
 
-ALTER TABLE public.dish OWNER TO listshopstarter;
+ALTER TABLE public.dish OWNER TO postgres;
 
 --
 -- Name: list; Type: TABLE; Schema: public; Owner: bank
@@ -128,7 +120,7 @@ CREATE TABLE public.list (
 );
 
 
-ALTER TABLE public.list OWNER TO listshopstarter;
+ALTER TABLE public.list OWNER TO postgres;
 
 --
 -- Name: meal_plan; Type: TABLE; Schema: public; Owner: bank
@@ -144,7 +136,7 @@ CREATE TABLE public.meal_plan (
 );
 
 
-ALTER TABLE public.meal_plan OWNER TO listshopstarter;
+ALTER TABLE public.meal_plan OWNER TO postgres;
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: bank
@@ -162,7 +154,7 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO listshopstarter;
+ALTER TABLE public.users OWNER TO postgres;
 
 --
 -- Name: admin_user_details; Type: VIEW; Schema: public; Owner: bank
@@ -184,7 +176,7 @@ CREATE VIEW public.admin_user_details AS
   GROUP BY u.user_id, u.email, u.username, u.creation_date, u.last_login;
 
 
-ALTER TABLE public.admin_user_details OWNER TO listshopstarter;
+ALTER TABLE public.admin_user_details OWNER TO postgres;
 
 --
 -- Name: authority; Type: TABLE; Schema: public; Owner: bank
@@ -197,7 +189,7 @@ CREATE TABLE public.authority (
 );
 
 
-ALTER TABLE public.authority OWNER TO listshopstarter;
+ALTER TABLE public.authority OWNER TO postgres;
 
 --
 -- Name: authority_id_seq; Type: SEQUENCE; Schema: public; Owner: bank
@@ -211,7 +203,7 @@ CREATE SEQUENCE public.authority_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.authority_id_seq OWNER TO listshopstarter;
+ALTER TABLE public.authority_id_seq OWNER TO postgres;
 
 --
 -- Name: authority_seq; Type: SEQUENCE; Schema: public; Owner: bank
@@ -225,7 +217,7 @@ CREATE SEQUENCE public.authority_seq
     CACHE 1;
 
 
-ALTER TABLE public.authority_seq OWNER TO listshopstarter;
+ALTER TABLE public.authority_seq OWNER TO postgres;
 
 --
 -- Name: auto_tag_instructions; Type: TABLE; Schema: public; Owner: bank
@@ -241,7 +233,7 @@ CREATE TABLE public.auto_tag_instructions (
 );
 
 
-ALTER TABLE public.auto_tag_instructions OWNER TO listshopstarter;
+ALTER TABLE public.auto_tag_instructions OWNER TO postgres;
 
 --
 -- Name: auto_tag_instructions_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -255,7 +247,7 @@ CREATE SEQUENCE public.auto_tag_instructions_sequence
     CACHE 1;
 
 
-ALTER TABLE public.auto_tag_instructions_sequence OWNER TO listshopstarter;
+ALTER TABLE public.auto_tag_instructions_sequence OWNER TO postgres;
 
 --
 -- Name: list_stat_configs; Type: TABLE; Schema: public; Owner: bank
@@ -274,7 +266,7 @@ CREATE TABLE public.list_stat_configs (
 );
 
 
-ALTER TABLE public.list_stat_configs OWNER TO listshopstarter;
+ALTER TABLE public.list_stat_configs OWNER TO postgres;
 
 --
 -- Name: list_tag_stats; Type: TABLE; Schema: public; Owner: bank
@@ -298,7 +290,7 @@ CREATE TABLE public.list_tag_stats (
 );
 
 
-ALTER TABLE public.list_tag_stats OWNER TO listshopstarter;
+ALTER TABLE public.list_tag_stats OWNER TO postgres;
 
 --
 -- Name: calculated_stats; Type: VIEW; Schema: public; Owner: bank
@@ -314,7 +306,7 @@ CREATE VIEW public.calculated_stats AS
   WHERE (((((list_tag_stats.added_single * c.added_single_factor) + (list_tag_stats.added_dish * c.added_dish_factor)) + (list_tag_stats.added_list * c.added_list_factor)) + (list_tag_stats.added_starterlist * c.added_starterlist_factor)) > 0);
 
 
-ALTER TABLE public.calculated_stats OWNER TO listshopstarter;
+ALTER TABLE public.calculated_stats OWNER TO postgres;
 
 --
 -- Name: campaign_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -328,7 +320,7 @@ CREATE SEQUENCE public.campaign_sequence
     CACHE 1;
 
 
-ALTER TABLE public.campaign_sequence OWNER TO listshopstarter;
+ALTER TABLE public.campaign_sequence OWNER TO postgres;
 
 --
 -- Name: campaigns; Type: TABLE; Schema: public; Owner: bank
@@ -343,7 +335,7 @@ CREATE TABLE public.campaigns (
 );
 
 
-ALTER TABLE public.campaigns OWNER TO listshopstarter;
+ALTER TABLE public.campaigns OWNER TO postgres;
 
 --
 -- Name: category_relation_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -357,7 +349,7 @@ CREATE SEQUENCE public.category_relation_sequence
     CACHE 1;
 
 
-ALTER TABLE public.category_relation_sequence OWNER TO listshopstarter;
+ALTER TABLE public.category_relation_sequence OWNER TO postgres;
 
 --
 -- Name: category_tags; Type: TABLE; Schema: public; Owner: bank
@@ -369,7 +361,7 @@ CREATE TABLE public.category_tags (
 );
 
 
-ALTER TABLE public.category_tags OWNER TO listshopstarter;
+ALTER TABLE public.category_tags OWNER TO postgres;
 
 --
 -- Name: dish_item_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -383,7 +375,7 @@ CREATE SEQUENCE public.dish_item_sequence
     CACHE 1;
 
 
-ALTER TABLE public.dish_item_sequence OWNER TO listshopstarter;
+ALTER TABLE public.dish_item_sequence OWNER TO postgres;
 
 --
 -- Name: dish_items; Type: TABLE; Schema: public; Owner: bank
@@ -405,7 +397,7 @@ CREATE TABLE public.dish_items (
 );
 
 
-ALTER TABLE public.dish_items OWNER TO listshopstarter;
+ALTER TABLE public.dish_items OWNER TO postgres;
 
 --
 -- Name: dish_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -419,7 +411,7 @@ CREATE SEQUENCE public.dish_sequence
     CACHE 1;
 
 
-ALTER TABLE public.dish_sequence OWNER TO listshopstarter;
+ALTER TABLE public.dish_sequence OWNER TO postgres;
 
 --
 -- Name: dish_tags; Type: TABLE; Schema: public; Owner: bank
@@ -431,7 +423,7 @@ CREATE TABLE public.dish_tags (
 );
 
 
-ALTER TABLE public.dish_tags OWNER TO listshopstarter;
+ALTER TABLE public.dish_tags OWNER TO postgres;
 
 --
 -- Name: domain_unit; Type: TABLE; Schema: public; Owner: bank
@@ -444,7 +436,7 @@ CREATE TABLE public.domain_unit (
 );
 
 
-ALTER TABLE public.domain_unit OWNER TO listshopstarter;
+ALTER TABLE public.domain_unit OWNER TO postgres;
 
 --
 -- Name: domain_unit_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -458,7 +450,7 @@ CREATE SEQUENCE public.domain_unit_sequence
     CACHE 1;
 
 
-ALTER TABLE public.domain_unit_sequence OWNER TO listshopstarter;
+ALTER TABLE public.domain_unit_sequence OWNER TO postgres;
 
 --
 -- Name: factor_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -472,7 +464,7 @@ CREATE SEQUENCE public.factor_sequence
     CACHE 1;
 
 
-ALTER TABLE public.factor_sequence OWNER TO listshopstarter;
+ALTER TABLE public.factor_sequence OWNER TO postgres;
 
 --
 -- Name: factors; Type: TABLE; Schema: public; Owner: bank
@@ -491,7 +483,7 @@ CREATE TABLE public.factors (
 );
 
 
-ALTER TABLE public.factors OWNER TO listshopstarter;
+ALTER TABLE public.factors OWNER TO postgres;
 
 
 --
@@ -505,7 +497,7 @@ CREATE TABLE public.food_categories (
 );
 
 
-ALTER TABLE public.food_categories OWNER TO listshopstarter;
+ALTER TABLE public.food_categories OWNER TO postgres;
 
 --
 -- Name: food_category_mapping; Type: TABLE; Schema: public; Owner: bank
@@ -518,7 +510,7 @@ CREATE TABLE public.food_category_mapping (
 );
 
 
-ALTER TABLE public.food_category_mapping OWNER TO listshopstarter;
+ALTER TABLE public.food_category_mapping OWNER TO postgres;
 
 --
 -- Name: food_category_mapping_seq; Type: SEQUENCE; Schema: public; Owner: bank
@@ -532,7 +524,7 @@ CREATE SEQUENCE public.food_category_mapping_seq
     CACHE 1;
 
 
-ALTER TABLE public.food_category_mapping_seq OWNER TO listshopstarter;
+ALTER TABLE public.food_category_mapping_seq OWNER TO postgres;
 
 --
 -- Name: food_conversions; Type: TABLE; Schema: public; Owner: bank
@@ -556,7 +548,7 @@ CREATE TABLE public.food_conversions (
 );
 
 
-ALTER TABLE public.food_conversions OWNER TO listshopstarter;
+ALTER TABLE public.food_conversions OWNER TO postgres;
 
 --
 -- Name: foods; Type: TABLE; Schema: public; Owner: bank
@@ -575,7 +567,7 @@ CREATE TABLE public.foods (
 );
 
 
-ALTER TABLE public.foods OWNER TO listshopstarter;
+ALTER TABLE public.foods OWNER TO postgres;
 
 --
 -- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -589,7 +581,7 @@ CREATE SEQUENCE public.hibernate_sequence
     CACHE 1;
 
 
-ALTER TABLE public.hibernate_sequence OWNER TO listshopstarter;
+ALTER TABLE public.hibernate_sequence OWNER TO postgres;
 
 --
 -- Name: list_category; Type: TABLE; Schema: public; Owner: bank
@@ -604,7 +596,7 @@ CREATE TABLE public.list_category (
 );
 
 
-ALTER TABLE public.list_category OWNER TO listshopstarter;
+ALTER TABLE public.list_category OWNER TO postgres;
 
 --
 -- Name: list_item; Type: TABLE; Schema: public; Owner: bank
@@ -628,7 +620,7 @@ CREATE TABLE public.list_item (
 );
 
 
-ALTER TABLE public.list_item OWNER TO listshopstarter;
+ALTER TABLE public.list_item OWNER TO postgres;
 
 --
 -- Name: list_item_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -642,7 +634,7 @@ CREATE SEQUENCE public.list_item_sequence
     CACHE 1;
 
 
-ALTER TABLE public.list_item_sequence OWNER TO listshopstarter;
+ALTER TABLE public.list_item_sequence OWNER TO postgres;
 
 --
 -- Name: list_layout; Type: TABLE; Schema: public; Owner: bank
@@ -656,7 +648,7 @@ CREATE TABLE public.list_layout (
 );
 
 
-ALTER TABLE public.list_layout OWNER TO listshopstarter;
+ALTER TABLE public.list_layout OWNER TO postgres;
 
 --
 -- Name: list_layout_category_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -670,7 +662,7 @@ CREATE SEQUENCE public.list_layout_category_sequence
     CACHE 1;
 
 
-ALTER TABLE public.list_layout_category_sequence OWNER TO listshopstarter;
+ALTER TABLE public.list_layout_category_sequence OWNER TO postgres;
 
 --
 -- Name: list_layout_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -684,7 +676,7 @@ CREATE SEQUENCE public.list_layout_sequence
     CACHE 1;
 
 
-ALTER TABLE public.list_layout_sequence OWNER TO listshopstarter;
+ALTER TABLE public.list_layout_sequence OWNER TO postgres;
 
 --
 -- Name: list_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -698,7 +690,7 @@ CREATE SEQUENCE public.list_sequence
     CACHE 1;
 
 
-ALTER TABLE public.list_sequence OWNER TO listshopstarter;
+ALTER TABLE public.list_sequence OWNER TO postgres;
 
 --
 -- Name: list_tag_stats_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -712,7 +704,7 @@ CREATE SEQUENCE public.list_tag_stats_sequence
     CACHE 1;
 
 
-ALTER TABLE public.list_tag_stats_sequence OWNER TO listshopstarter;
+ALTER TABLE public.list_tag_stats_sequence OWNER TO postgres;
 
 --
 -- Name: meal_plan_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -726,7 +718,7 @@ CREATE SEQUENCE public.meal_plan_sequence
     CACHE 1;
 
 
-ALTER TABLE public.meal_plan_sequence OWNER TO listshopstarter;
+ALTER TABLE public.meal_plan_sequence OWNER TO postgres;
 
 --
 -- Name: meal_plan_slot; Type: TABLE; Schema: public; Owner: bank
@@ -739,7 +731,7 @@ CREATE TABLE public.meal_plan_slot (
 );
 
 
-ALTER TABLE public.meal_plan_slot OWNER TO listshopstarter;
+ALTER TABLE public.meal_plan_slot OWNER TO postgres;
 
 --
 -- Name: meal_plan_slot_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -753,7 +745,7 @@ CREATE SEQUENCE public.meal_plan_slot_sequence
     CACHE 1;
 
 
-ALTER TABLE public.meal_plan_slot_sequence OWNER TO listshopstarter;
+ALTER TABLE public.meal_plan_slot_sequence OWNER TO postgres;
 
 --
 -- Name: modifier_mapping_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -767,7 +759,7 @@ CREATE SEQUENCE public.modifier_mapping_sequence
     CACHE 1;
 
 
-ALTER TABLE public.modifier_mapping_sequence OWNER TO listshopstarter;
+ALTER TABLE public.modifier_mapping_sequence OWNER TO postgres;
 
 --
 -- Name: modifier_mappings; Type: TABLE; Schema: public; Owner: bank
@@ -782,7 +774,7 @@ CREATE TABLE public.modifier_mappings (
 );
 
 
-ALTER TABLE public.modifier_mappings OWNER TO listshopstarter;
+ALTER TABLE public.modifier_mappings OWNER TO postgres;
 
 --
 -- Name: proposal; Type: TABLE; Schema: public; Owner: bank
@@ -796,7 +788,7 @@ CREATE TABLE public.proposal (
 );
 
 
-ALTER TABLE public.proposal OWNER TO listshopstarter;
+ALTER TABLE public.proposal OWNER TO postgres;
 
 --
 -- Name: proposal_approach; Type: TABLE; Schema: public; Owner: bank
@@ -810,7 +802,7 @@ CREATE TABLE public.proposal_approach (
 );
 
 
-ALTER TABLE public.proposal_approach OWNER TO listshopstarter;
+ALTER TABLE public.proposal_approach OWNER TO postgres;
 
 --
 -- Name: proposal_approach_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -824,7 +816,7 @@ CREATE SEQUENCE public.proposal_approach_sequence
     CACHE 1;
 
 
-ALTER TABLE public.proposal_approach_sequence OWNER TO listshopstarter;
+ALTER TABLE public.proposal_approach_sequence OWNER TO postgres;
 
 --
 -- Name: proposal_context; Type: TABLE; Schema: public; Owner: bank
@@ -843,7 +835,7 @@ CREATE TABLE public.proposal_context (
 );
 
 
-ALTER TABLE public.proposal_context OWNER TO listshopstarter;
+ALTER TABLE public.proposal_context OWNER TO postgres;
 
 --
 -- Name: proposal_context_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -857,7 +849,7 @@ CREATE SEQUENCE public.proposal_context_sequence
     CACHE 1;
 
 
-ALTER TABLE public.proposal_context_sequence OWNER TO listshopstarter;
+ALTER TABLE public.proposal_context_sequence OWNER TO postgres;
 
 --
 -- Name: proposal_context_slot_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -871,7 +863,7 @@ CREATE SEQUENCE public.proposal_context_slot_sequence
     CACHE 1;
 
 
-ALTER TABLE public.proposal_context_slot_sequence OWNER TO listshopstarter;
+ALTER TABLE public.proposal_context_slot_sequence OWNER TO postgres;
 
 --
 -- Name: proposal_dish; Type: TABLE; Schema: public; Owner: bank
@@ -885,7 +877,7 @@ CREATE TABLE public.proposal_dish (
 );
 
 
-ALTER TABLE public.proposal_dish OWNER TO listshopstarter;
+ALTER TABLE public.proposal_dish OWNER TO postgres;
 
 --
 -- Name: proposal_dish_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -899,7 +891,7 @@ CREATE SEQUENCE public.proposal_dish_sequence
     CACHE 1;
 
 
-ALTER TABLE public.proposal_dish_sequence OWNER TO listshopstarter;
+ALTER TABLE public.proposal_dish_sequence OWNER TO postgres;
 
 --
 -- Name: proposal_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -913,7 +905,7 @@ CREATE SEQUENCE public.proposal_sequence
     CACHE 1;
 
 
-ALTER TABLE public.proposal_sequence OWNER TO listshopstarter;
+ALTER TABLE public.proposal_sequence OWNER TO postgres;
 
 --
 -- Name: proposal_slot; Type: TABLE; Schema: public; Owner: bank
@@ -929,7 +921,7 @@ CREATE TABLE public.proposal_slot (
 );
 
 
-ALTER TABLE public.proposal_slot OWNER TO listshopstarter;
+ALTER TABLE public.proposal_slot OWNER TO postgres;
 
 --
 -- Name: proposal_slot_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -943,7 +935,7 @@ CREATE SEQUENCE public.proposal_slot_sequence
     CACHE 1;
 
 
-ALTER TABLE public.proposal_slot_sequence OWNER TO listshopstarter;
+ALTER TABLE public.proposal_slot_sequence OWNER TO postgres;
 
 --
 -- Name: q; Type: TABLE; Schema: public; Owner: bank
@@ -954,7 +946,7 @@ CREATE TABLE public.q (
 );
 
 
-ALTER TABLE public.q OWNER TO listshopstarter;
+ALTER TABLE public.q OWNER TO postgres;
 
 --
 -- Name: shadow_tags; Type: TABLE; Schema: public; Owner: bank
@@ -967,7 +959,7 @@ CREATE TABLE public.shadow_tags (
 );
 
 
-ALTER TABLE public.shadow_tags OWNER TO listshopstarter;
+ALTER TABLE public.shadow_tags OWNER TO postgres;
 
 --
 -- Name: shadow_tags_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -981,7 +973,7 @@ CREATE SEQUENCE public.shadow_tags_sequence
     CACHE 1;
 
 
-ALTER TABLE public.shadow_tags_sequence OWNER TO listshopstarter;
+ALTER TABLE public.shadow_tags_sequence OWNER TO postgres;
 
 --
 -- Name: tag; Type: TABLE; Schema: public; Owner: bank
@@ -1010,7 +1002,7 @@ CREATE TABLE public.tag (
 );
 
 
-ALTER TABLE public.tag OWNER TO listshopstarter;
+ALTER TABLE public.tag OWNER TO postgres;
 
 --
 -- Name: tag_relation; Type: TABLE; Schema: public; Owner: bank
@@ -1023,7 +1015,7 @@ CREATE TABLE public.tag_relation (
 );
 
 
-ALTER TABLE public.tag_relation OWNER TO listshopstarter;
+ALTER TABLE public.tag_relation OWNER TO postgres;
 
 --
 -- Name: tag_relation_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1037,7 +1029,7 @@ CREATE SEQUENCE public.tag_relation_sequence
     CACHE 1;
 
 
-ALTER TABLE public.tag_relation_sequence OWNER TO listshopstarter;
+ALTER TABLE public.tag_relation_sequence OWNER TO postgres;
 
 --
 -- Name: tag_search_group_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1051,7 +1043,7 @@ CREATE SEQUENCE public.tag_search_group_sequence
     CACHE 1;
 
 
-ALTER TABLE public.tag_search_group_sequence OWNER TO listshopstarter;
+ALTER TABLE public.tag_search_group_sequence OWNER TO postgres;
 
 --
 -- Name: tag_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1065,7 +1057,7 @@ CREATE SEQUENCE public.tag_sequence
     CACHE 1;
 
 
-ALTER TABLE public.tag_sequence OWNER TO listshopstarter;
+ALTER TABLE public.tag_sequence OWNER TO postgres;
 
 --
 -- Name: target; Type: TABLE; Schema: public; Owner: bank
@@ -1086,7 +1078,7 @@ CREATE TABLE public.target (
 );
 
 
-ALTER TABLE public.target OWNER TO listshopstarter;
+ALTER TABLE public.target OWNER TO postgres;
 
 --
 -- Name: target_proposal_dish_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1100,7 +1092,7 @@ CREATE SEQUENCE public.target_proposal_dish_sequence
     CACHE 1;
 
 
-ALTER TABLE public.target_proposal_dish_sequence OWNER TO listshopstarter;
+ALTER TABLE public.target_proposal_dish_sequence OWNER TO postgres;
 
 --
 -- Name: target_proposal_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1114,7 +1106,7 @@ CREATE SEQUENCE public.target_proposal_sequence
     CACHE 1;
 
 
-ALTER TABLE public.target_proposal_sequence OWNER TO listshopstarter;
+ALTER TABLE public.target_proposal_sequence OWNER TO postgres;
 
 --
 -- Name: target_proposal_slot_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1128,7 +1120,7 @@ CREATE SEQUENCE public.target_proposal_slot_sequence
     CACHE 1;
 
 
-ALTER TABLE public.target_proposal_slot_sequence OWNER TO listshopstarter;
+ALTER TABLE public.target_proposal_slot_sequence OWNER TO postgres;
 
 --
 -- Name: target_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1142,7 +1134,7 @@ CREATE SEQUENCE public.target_sequence
     CACHE 1;
 
 
-ALTER TABLE public.target_sequence OWNER TO listshopstarter;
+ALTER TABLE public.target_sequence OWNER TO postgres;
 
 --
 -- Name: target_slot; Type: TABLE; Schema: public; Owner: bank
@@ -1158,7 +1150,7 @@ CREATE TABLE public.target_slot (
 );
 
 
-ALTER TABLE public.target_slot OWNER TO listshopstarter;
+ALTER TABLE public.target_slot OWNER TO postgres;
 
 --
 -- Name: target_slot_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1172,7 +1164,7 @@ CREATE SEQUENCE public.target_slot_sequence
     CACHE 1;
 
 
-ALTER TABLE public.target_slot_sequence OWNER TO listshopstarter;
+ALTER TABLE public.target_slot_sequence OWNER TO postgres;
 
 --
 -- Name: token_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1186,7 +1178,7 @@ CREATE SEQUENCE public.token_sequence
     CACHE 1;
 
 
-ALTER TABLE public.token_sequence OWNER TO listshopstarter;
+ALTER TABLE public.token_sequence OWNER TO postgres;
 
 --
 -- Name: tokens; Type: TABLE; Schema: public; Owner: bank
@@ -1201,7 +1193,7 @@ CREATE TABLE public.tokens (
 );
 
 
-ALTER TABLE public.tokens OWNER TO listshopstarter;
+ALTER TABLE public.tokens OWNER TO postgres;
 
 --
 -- Name: unit_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1215,7 +1207,7 @@ CREATE SEQUENCE public.unit_sequence
     CACHE 1;
 
 
-ALTER TABLE public.unit_sequence OWNER TO listshopstarter;
+ALTER TABLE public.unit_sequence OWNER TO postgres;
 
 --
 -- Name: units; Type: TABLE; Schema: public; Owner: bank
@@ -1237,7 +1229,7 @@ CREATE TABLE public.units (
 );
 
 
-ALTER TABLE public.units OWNER TO listshopstarter;
+ALTER TABLE public.units OWNER TO postgres;
 
 --
 -- Name: user_device_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1251,7 +1243,7 @@ CREATE SEQUENCE public.user_device_sequence
     CACHE 1;
 
 
-ALTER TABLE public.user_device_sequence OWNER TO listshopstarter;
+ALTER TABLE public.user_device_sequence OWNER TO postgres;
 
 --
 -- Name: user_devices; Type: TABLE; Schema: public; Owner: bank
@@ -1273,7 +1265,7 @@ CREATE TABLE public.user_devices (
 );
 
 
-ALTER TABLE public.user_devices OWNER TO listshopstarter;
+ALTER TABLE public.user_devices OWNER TO postgres;
 
 --
 -- Name: user_id_sequence; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1287,7 +1279,7 @@ CREATE SEQUENCE public.user_id_sequence
     CACHE 1;
 
 
-ALTER TABLE public.user_id_sequence OWNER TO listshopstarter;
+ALTER TABLE public.user_id_sequence OWNER TO postgres;
 
 --
 -- Name: user_properties; Type: TABLE; Schema: public; Owner: bank
@@ -1302,7 +1294,7 @@ CREATE TABLE public.user_properties (
 );
 
 
-ALTER TABLE public.user_properties OWNER TO listshopstarter;
+ALTER TABLE public.user_properties OWNER TO postgres;
 
 --
 -- Name: user_properties_id_seq; Type: SEQUENCE; Schema: public; Owner: bank
@@ -1316,7 +1308,7 @@ CREATE SEQUENCE public.user_properties_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.user_properties_id_seq OWNER TO listshopstarter;
+ALTER TABLE public.user_properties_id_seq OWNER TO postgres;
 
 --
 --
@@ -1988,89 +1980,3 @@ ALTER TABLE ONLY public.list_category
 
 
 
---- grants for tables
-
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.admin_user_details TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.authority TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.auto_tag_instructions TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.calculated_stats TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.campaigns TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.category_tags TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.dish TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.dish_items TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.dish_tags TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.domain_unit TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.factors TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.food_categories TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.food_category_mapping TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.food_conversions TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.foods TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.list TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_category TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_item TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_layout TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_stat_configs TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_tag_stats TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.meal_plan TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.meal_plan_slot TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.modifier_mappings TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal_approach TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal_context TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal_dish TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal_slot TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.q TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.shadow_tags TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.tag TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.tag_relation TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.target TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.target_slot TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.tokens TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.units TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.user_devices TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.user_properties TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.users TO bank;
-
-
--- grants for sequences
-
-GRANT USAGE  ON public.auto_tag_instructions_sequence TO bank;
-GRANT USAGE  ON public.campaign_sequence TO bank;
-GRANT USAGE  ON public.category_relation_sequence TO bank;
-GRANT USAGE  ON public.dish_item_sequence TO bank;
-GRANT USAGE  ON public.dish_sequence TO bank;
-GRANT USAGE  ON public.domain_unit_sequence TO bank;
-GRANT USAGE  ON public.factor_sequence TO bank;
-GRANT USAGE  ON public.hibernate_sequence TO bank;
-GRANT USAGE  ON public.list_item_sequence TO bank;
-GRANT USAGE  ON public.list_layout_category_sequence TO bank;
-GRANT USAGE  ON public.list_layout_sequence TO bank;
-GRANT USAGE  ON public.list_sequence TO bank;
-GRANT USAGE  ON public.list_tag_stats_sequence TO bank;
-GRANT USAGE  ON public.meal_plan_sequence TO bank;
-GRANT USAGE  ON public.meal_plan_slot_sequence TO bank;
-GRANT USAGE  ON public.modifier_mapping_sequence TO bank;
-GRANT USAGE  ON public.proposal_approach_sequence TO bank;
-GRANT USAGE  ON public.proposal_context_sequence TO bank;
-GRANT USAGE  ON public.proposal_context_slot_sequence TO bank;
-GRANT USAGE  ON public.proposal_dish_sequence TO bank;
-GRANT USAGE  ON public.proposal_sequence TO bank;
-GRANT USAGE  ON public.proposal_slot_sequence TO bank;
-GRANT USAGE  ON public.shadow_tags_sequence TO bank;
-GRANT USAGE  ON public.tag_relation_sequence TO bank;
-GRANT USAGE  ON public.tag_search_group_sequence TO bank;
-GRANT USAGE  ON public.tag_sequence TO bank;
-GRANT USAGE  ON public.target_proposal_dish_sequence TO bank;
-GRANT USAGE  ON public.target_proposal_sequence TO bank;
-GRANT USAGE  ON public.target_proposal_slot_sequence TO bank;
-GRANT USAGE  ON public.target_sequence TO bank;
-GRANT USAGE  ON public.target_slot_sequence TO bank;
-GRANT USAGE  ON public.token_sequence TO bank;
-GRANT USAGE  ON public.unit_sequence TO bank;
-GRANT USAGE  ON public.user_device_sequence TO bank;
-GRANT USAGE  ON public.user_id_sequence TO bank;
-GRANT USAGE  ON public.authority_id_seq TO bank;
-GRANT USAGE  ON public.authority_seq TO bank;
-GRANT USAGE  ON public.food_category_mapping_seq TO bank;
-GRANT USAGE  ON public.user_properties_id_seq TO bank;
-GRANT ALL ON function public.copy_single_dish TO bank;

@@ -61,7 +61,8 @@ public class AuthenticationRestControllerTest {
     private MockMvc mockMvc;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private UserDetails userDetails;
-    private final String validToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZSIsImF1ZGllbmNlIjoibW9iaWxlIiwiY3JlYXRlZCI6MTU5MTQ0MzI2NzE3MX0.YWjx1Y2vANS_MyGn2BsSKSi7WGBji5DT5b6hao9fdC3MPOwF_syTRNyqcoJO9J9Joj9X5DX7-0cuXRNOnC6cpQ";
+    private final String validToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtZSIsImF1ZGllbmNlIjoibW9iaWxlIiwiY3JlYXRlZCI6MTcyNjEzNTI5NTk1MX0.yYkoSHttcOve_AoU-8FIpzNoP9f5Qhfg8dIk7GxadlskHpFN5hrOYnxzcMQE5lSB";
+    //private final String validToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZSIsImF1ZGllbmNlIjoibW9iaWxlIiwiY3JlYXRlZCI6MTU5MTQ0MzI2NzE3MX0.YWjx1Y2vANS_MyGn2BsSKSi7WGBji5DT5b6hao9fdC3MPOwF_syTRNyqcoJO9J9Joj9X5DX7-0cuXRNOnC6cpQ";
 
 
     @Autowired
@@ -137,7 +138,7 @@ public class AuthenticationRestControllerTest {
         JwtAuthorizationRequest jwtAuthenticationRequest = new JwtAuthorizationRequest(TestConstants.USER_3_NAME,
                 "admin");
         jwtAuthenticationRequest.setDeviceInfo(deviceInfo);
-
+System.out.println("MM!!!!!!!!!!!!! token which is sent: " + validToken);
         mockMvc.perform(post("/auth/authenticate")
                         .contentType(contentType)
                         .content(json(deviceInfo))

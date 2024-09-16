@@ -6,11 +6,14 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,11 +86,13 @@ public class JwtTokenUtil implements Serializable {
 
     private Claims getClaimsFromToken(String token) {
         Claims claims;
+        SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         try {
             claims = Jwts.parser()
-                    .setSigningKey(secret)
+                    .setSigningKey(key)
+                    .build()
                     .parseClaimsJws(token)
-                    .getBody();
+                    .getPayload();
         } catch (Exception e) {
             claims = null;
         }
@@ -146,15 +151,17 @@ public class JwtTokenUtil implements Serializable {
     }
 
     String generateToken(Map<String, Object> claims) {
+        SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+
         return Jwts.builder()
-                .setClaims(claims)
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .claims(claims)
+                .signWith(key)
                 .compact();
     }
 
     String generateExpiringToken(Map<String, Object> claims, Date expirationDate) {
         return Jwts.builder()
-                .setClaims(claims)
+                .claims(claims)
                 .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();

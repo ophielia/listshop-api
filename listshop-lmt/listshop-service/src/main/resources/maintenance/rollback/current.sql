@@ -24,5 +24,5 @@ alter table units drop column is_tag_specific;
 alter table units drop column excluded_domains;
 alter table units drop column one_way_conversion;
 
-select * from flyway_schema_history;
+select * from oow_flyway_schema_history;
 

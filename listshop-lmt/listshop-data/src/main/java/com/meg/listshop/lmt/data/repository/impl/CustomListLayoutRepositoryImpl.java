@@ -81,9 +81,9 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
         Query query = entityManager.createNamedQuery("ListLayoutCategoryEntity.defaultCategoryForSiblings");
         query.setParameter("sibling_tags", siblingIds);
         query.setMaxResults(1);
-        List<BigInteger> resultList = query.getResultList();
+        List<Long> resultList = query.getResultList();
         if (!resultList.isEmpty() ) {
-            return resultList.get(0).longValue();
+            return resultList.get(0);
         }
         return null;
     }

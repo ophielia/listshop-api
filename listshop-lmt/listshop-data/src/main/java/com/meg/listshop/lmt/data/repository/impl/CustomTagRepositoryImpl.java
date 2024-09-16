@@ -63,10 +63,10 @@ public class CustomTagRepositoryImpl implements CustomTagRepository {
         Query query = em.createNamedQuery("TagEntity.findRatingByParent");
         query.setParameter("rating_parent", ratingId);
         query.setMaxResults(step);
-        List<BigInteger> ratingTags = query.getResultList();
+        List<Long> ratingTags = query.getResultList();
         if (!ratingTags.isEmpty() && (ratingTags.size() == step)) {
-            BigInteger tagId = ratingTags.get(ratingTags.size() - 1);
-            return tagId.longValue();
+            Long tagId = ratingTags.get(ratingTags.size() - 1);
+            return tagId;
         }
         return null;
     }

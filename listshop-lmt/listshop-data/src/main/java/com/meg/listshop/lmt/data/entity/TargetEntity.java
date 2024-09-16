@@ -236,12 +236,12 @@ public class TargetEntity extends AbstractInflateAndFlatten {
 // this is used to decide if the tags for this target have changed since the last proposal was run
         // this is used to decide if the slots have changed since the last proposal has been run
         // slots changed == different picked dishes
-        StringBuilder hashCode = new StringBuilder(getTargetId().hashCode());
+        StringBuilder hashCode = new StringBuilder(String.valueOf(getTargetId().hashCode()));
         // make list of all tagList strings for target and contained slots
         // also include dish type tags
         List<String> targetTags = inflateStringToList(getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER);
         if (targetTags != null) {
-            targetTags.forEach(t -> hashCode.append(t.hashCode()));
+            targetTags.forEach(t -> hashCode.append(String.valueOf(t.hashCode())));
         }
 
         if (slots != null && !slots.isEmpty()) {

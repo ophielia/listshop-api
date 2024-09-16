@@ -81,7 +81,7 @@ public class AuthenticationRestController implements AuthenticationRestControlle
         // Reload password post-security so we can generate token
         UserEntity userEntity = userService.getUserByUserEmail(email);
         final String token = jwtTokenUtil.generateExpiringToken(userEntity, deviceInfo);
-
+        System.out.println("MM!!!!!!!!!!!!! token which is sent: " + token);
         // save token for user
         userService.saveTokenForUserAndDevice(userEntity, deviceInfo, token);
 
@@ -93,7 +93,7 @@ public class AuthenticationRestController implements AuthenticationRestControlle
     public ResponseEntity<Object> authenticateUser(HttpServletRequest request, @RequestBody ClientDeviceInfo deviceInfo) throws BadParameterException {
 
         String token = request.getHeader(tokenHeader);
-
+        System.out.println("MM!!!!!!!!!!!!! token which is received: " + token);
         String ipAddress = request.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
             ipAddress = request.getRemoteAddr();

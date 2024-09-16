@@ -184,11 +184,23 @@
 
 
 
-            <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
+            <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt</artifactId>
-                <version>0.7.0</version>
+                <artifactId>jjwt-api</artifactId>
+                <version>0.12.6</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>0.12.6</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+                <version>0.12.6</version>
+                <scope>runtime</scope>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
@@ -280,11 +292,11 @@
                 <plugin>
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-maven-plugin</artifactId>
-                    <version>5.2.4</version>
+                    <version>9.0.1</version>
                     <configuration>
-                        <url>jdbc:postgresql://localhost:5432/mt2</url>
-                        <user>postgres</user>
-                        <password>postgres</password>
+                        <url>jdbc:postgresql://localhost:5432/dishdev</url>
+                        <user>listshopstarter</user>
+                        <password>rainyM0rning202498tb</password>
                         <table>flyway_schema_history</table>
                     </configuration>
                 </plugin>

@@ -73,10 +73,11 @@ public class ProposalEntity {
     public String getPickedHashCode() {
         // this is used to decide if the slots have changed since the last proposal has been run
         // slots changed == different picked dishes
-        StringBuilder hashCode = new StringBuilder(getId().hashCode());
+        int hc = getId().hashCode();
+        StringBuilder hashCode = new StringBuilder(String.valueOf(hc));
         for (ProposalSlotEntity slot : getSlots()) {
             if (slot.getPickedDishId() != null) {
-                hashCode.append(slot.getPickedDishId().hashCode());
+                hashCode.append(String.valueOf(slot.getPickedDishId().hashCode()));
             }
         }
 

@@ -1,1 +1,1 @@
-GRANT ALL ON TABLE flyway_schema_history TO bankuser;
+GRANT ALL ON TABLE oow_flyway_schema_history TO bankuser;

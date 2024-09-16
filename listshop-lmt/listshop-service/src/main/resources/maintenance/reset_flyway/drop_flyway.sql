@@ -1,2 +1,2 @@
-drop table flyway_schema_history;
+drop table oow_flyway_schema_history;
 
