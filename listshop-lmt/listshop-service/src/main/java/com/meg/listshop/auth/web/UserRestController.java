@@ -14,6 +14,7 @@ import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.auth.service.UserPropertyService;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtTokenUtil;
+import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ProcessingException;
@@ -31,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
@@ -39,14 +41,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
 public class UserRestController implements UserRestControllerApi {
-    private static final Logger  LOG = LoggerFactory.getLogger(UserRestController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
 
     private final TokenService tokenService;
 
@@ -143,14 +144,16 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteUser(Principal principal) {
-        LOG.info("Begin delete user [{}]", principal.getName());
-        this.userService.deleteUser(principal.getName());
+    public ResponseEntity<Object> deleteUser(Authentication authentication) {
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        LOG.info("Begin delete user [{}]", userDetails.getUsername());
+        this.userService.deleteUser(userDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<UserResource> getUser(Principal principal) {
-        UserEntity user = this.userService.getUserByUserEmail(principal.getName());
+    public ResponseEntity<UserResource> getUser(Authentication authentication) {
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        UserEntity user = this.userService.getUserByUserEmail(userDetails.getUsername());
         var userResource = new UserResource(ModelMapper.toModel(user, ""));
 
         return new ResponseEntity<>(userResource, HttpStatus.OK);
@@ -159,7 +162,7 @@ public class UserRestController implements UserRestControllerApi {
     @Override
     public ResponseEntity<Object> userNameIsTaken(@RequestBody ListShopPayload payload) throws BadParameterException {
         var parameters = payload.getParameters();
-        if (ObjectUtils.isEmpty(parameters) ) {
+        if (ObjectUtils.isEmpty(parameters)) {
             throw new BadParameterException("User email is required as first parameter");
         }
         var rawName = parameters.get(0);
@@ -203,10 +206,11 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> changeUserPassword(Principal principal, @RequestBody PostChangePassword input) throws BadParameterException {
-        LOG.debug("Begin changeUserPassword, user[{}]", principal.getName());
+    public ResponseEntity<Object> changeUserPassword(Authentication authentication, @RequestBody PostChangePassword input) throws BadParameterException {
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        LOG.debug("Begin changeUserPassword, user[{}]", userDetails.getUsername());
         // get username from principal
-        String principalUsername = principal.getName();
+        String principalUsername = userDetails.getUsername();
         validatateUserForPasswordChange(input, principalUsername);
 
         // get new password from input
@@ -216,7 +220,7 @@ public class UserRestController implements UserRestControllerApi {
         byte[] origPasswordBytes = Base64.getDecoder().decode(input.getOriginalPassword());
         var originalPassword = new String(origPasswordBytes);
         userService.changePassword(principalUsername, newPassword, originalPassword);
-        LOG.debug("Finished changeUserPassword, user[{}]", principal.getName());
+        LOG.debug("Finished changeUserPassword, user[{}]", userDetails.getUsername());
         return ResponseEntity.ok().build();
 
     }
@@ -230,8 +234,9 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> getUserProperties(Principal principal) throws BadParameterException {
-        List<UserPropertyEntity> propertyEntities = this.userPropertyService.getPropertiesForUser(principal.getName());
+    public ResponseEntity<Object> getUserProperties(Authentication authentication) throws BadParameterException {
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        List<UserPropertyEntity> propertyEntities = this.userPropertyService.getPropertiesForUser(userDetails.getUsername());
         List<UserProperty> properties = propertyEntities.stream()
                 .map(ModelMapper::toModel)
                 .collect(Collectors.toList());
@@ -242,11 +247,12 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> getUserProperty(Principal principal, @PathVariable String key) throws BadParameterException {
+    public ResponseEntity<Object> getUserProperty(Authentication authentication, @PathVariable String key) throws BadParameterException {
         if (key == null) {
             throw new BadParameterException("key is required for /user/property/key");
         }
-        UserPropertyEntity propertyEntity = this.userPropertyService.getPropertyForUser(principal.getName(), key);
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        UserPropertyEntity propertyEntity = this.userPropertyService.getPropertyForUser(userDetails.getUsername(), key);
         if (propertyEntity == null) {
             throw new ObjectNotFoundException(String.format("key [%s] not found for user", key));
         }
@@ -258,13 +264,14 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> setUserProperties(Principal principal, @RequestBody PostUserProperties properties) throws BadParameterException, IOException {
+    public ResponseEntity<Object> setUserProperties(Authentication authentication, @RequestBody PostUserProperties properties) throws BadParameterException, IOException {
         validateUserProperties(properties);
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
         List<UserPropertyEntity> propertyEntities = properties.getProperties().stream()
                 .map(ModelMapper::toEntity)
                 .collect(Collectors.toList());
 
-        this.userPropertyService.setPropertiesForUser(principal.getName(), propertyEntities);
+        this.userPropertyService.setPropertiesForUser(userDetails.getUsername(), propertyEntities);
 
         return ResponseEntity.ok().build();
     }
@@ -290,8 +297,8 @@ public class UserRestController implements UserRestControllerApi {
         if (!StringUtils.hasText(postChangePassword.getOriginalPassword())) {
             throw new BadParameterException("Input for change password does not include the original password");
         }
-        if (principalUsername.length()>255 || postChangePassword.getNewPassword().length() > 255 ||
-        postChangePassword.getOriginalPassword().length() > 255) {
+        if (principalUsername.length() > 255 || postChangePassword.getNewPassword().length() > 255 ||
+                postChangePassword.getOriginalPassword().length() > 255) {
             throw new BadParameterException("Input for change passowrd (userName, newPassword, oldPassword) contains an entry longer tahn 255 characters");
         }
     }

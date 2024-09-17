@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.service.proposal.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.data.entity.DishSlotEntity;
@@ -10,10 +11,10 @@ import com.meg.listshop.lmt.data.entity.ProposalSlotEntity;
 import com.meg.listshop.lmt.data.repository.ProposalRepository;
 import com.meg.listshop.lmt.service.proposal.ProposalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Principal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -109,8 +110,9 @@ public class ProposalServiceImpl implements ProposalService {
     }
 
     @Override
-    public void clearDishFromSlot(Principal principal, Long proposalId, Long slotId, Long dishId) {
-        ProposalEntity proposalEntity = getProposalById(principal.getName(), proposalId);
+    public void clearDishFromSlot(Authentication authentication, Long proposalId, Long slotId, Long dishId) {
+        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        ProposalEntity proposalEntity = getProposalById(userDetails.getUsername(), proposalId);
         if (proposalEntity == null ||
                 proposalEntity.getSlots() == null) {
             return;
