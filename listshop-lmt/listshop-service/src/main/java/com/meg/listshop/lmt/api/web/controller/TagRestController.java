@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.api.web.controller;
 
-import com.meg.listshop.auth.service.impl.JwtUser;
+
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.lmt.api.controller.TagRestControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.ModelMapper;
@@ -51,7 +52,7 @@ public class TagRestController implements TagRestControllerApi {
             String message = String.format("Retrieving tags for anonymous user");
             logger.info(message);
         } else {
-            JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             userId = userDetails.getId();
             String message = String.format("Retrieving tags for user [%S]", userId);
             logger.info(message);
@@ -68,7 +69,7 @@ public class TagRestController implements TagRestControllerApi {
 
     public ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
                                           @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Creating add tag for user [%S]", userDetails.getId());
         logger.info(message);
 

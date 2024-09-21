@@ -9,7 +9,8 @@ package com.meg.listshop.lmt.api.web.controller;
 
 import com.meg.listshop.auth.api.controller.ProposalRestControllerApi;
 import com.meg.listshop.auth.api.model.ProposalResource;
-import com.meg.listshop.auth.service.impl.JwtUser;
+
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.lmt.api.exception.ProposalProcessingException;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.data.entity.ProposalEntity;
@@ -48,7 +49,7 @@ public class ProposalRestController implements ProposalRestControllerApi {
 
     @Override
     public ResponseEntity<Object> generateProposal(HttpServletRequest request, Authentication authentication, @PathVariable Long targetId) throws ProposalProcessingException {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.debug("Entering generateProposal method for user [{}]", userDetails.getId());
         ProposalEntity proposalEntity = this.targetProposalGenerator.generateProposal(userDetails.getUsername(), targetId);
         if (proposalEntity != null) {
@@ -61,7 +62,7 @@ public class ProposalRestController implements ProposalRestControllerApi {
 
     @Override
     public ResponseEntity<ProposalResource> getProposal(Authentication authentication, @PathVariable("proposalId") Long proposalId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.debug("Entering getProposal method for user [{}]", userDetails.getId());
         ProposalEntity proposalEntity = this.targetProposalService.getProposalById(userDetails.getUsername(), proposalId);
         if (proposalEntity != null) {
@@ -78,7 +79,7 @@ public class ProposalRestController implements ProposalRestControllerApi {
     @Override
     public ResponseEntity<Object> refreshProposal(Authentication authentication, @PathVariable("proposalId") Long proposalId,
                                                   @RequestParam(value = "direction", required = false) String direction) throws ProposalProcessingException {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.debug("Entering refreshProposal method for user [{}]", userDetails.getId());
         this.targetProposalGenerator.refreshProposal(userDetails.getUsername(), proposalId);
 
@@ -88,7 +89,7 @@ public class ProposalRestController implements ProposalRestControllerApi {
 
     @Override
     public ResponseEntity<Object> selectDishInSlot(Authentication authentication, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.debug("Entering selectDishInSlot method for user [{}]", userDetails.getId());
         this.targetProposalService.selectDishInSlot(userDetails.getUsername(), proposalId, slotId, dishId);
 
@@ -97,7 +98,7 @@ public class ProposalRestController implements ProposalRestControllerApi {
 
     @Override
     public ResponseEntity<Object> clearDishFromSlot(Authentication authentication, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.debug("Entering clearDishFromSlot method for user [{}]", userDetails.getId());
         this.targetProposalService.clearDishFromSlot(authentication, proposalId, slotId, dishId);
 
@@ -106,7 +107,7 @@ public class ProposalRestController implements ProposalRestControllerApi {
 
     @Override
     public ResponseEntity<Object> refreshProposalSlot(Authentication authentication, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) throws ProposalProcessingException {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.debug("Entering refreshProposalSlot method for user [{}]", userDetails.getId());
         this.targetProposalGenerator.addToProposalSlot(userDetails.getUsername(), proposalId, slotId.intValue());
 

@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.api.web.controller.v2;
 
-import com.meg.listshop.auth.service.impl.JwtUser;
+
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.conversion.data.pojo.DomainType;
 import com.meg.listshop.lmt.api.controller.v2.AmountRestControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
@@ -35,7 +36,7 @@ public class AmountRestController implements AmountRestControllerApi {
     @Override
     public ResponseEntity<SuggestionListResource> retrieveTextSuggestionsForTag(Authentication authentication, String tagId, Boolean isLiquid, String domain) throws BadParameterException {
         //@GetMapping(value = "/suggestions/{tagId}")
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("retrieving text suggestions for user [%S], tag [%S], liquid [%S] and domain [%S]",
                  userDetails.getId(), tagId, isLiquid, domain);
         logger.info(message);

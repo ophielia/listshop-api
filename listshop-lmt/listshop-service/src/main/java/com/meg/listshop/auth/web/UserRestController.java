@@ -11,10 +11,10 @@ import com.meg.listshop.auth.api.controller.UserRestControllerApi;
 import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserPropertyService;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.auth.service.impl.JwtTokenUtil;
-import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ProcessingException;
@@ -145,14 +145,14 @@ public class UserRestController implements UserRestControllerApi {
 
     @Override
     public ResponseEntity<Object> deleteUser(Authentication authentication) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.info("Begin delete user [{}]", userDetails.getUsername());
         this.userService.deleteUser(userDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     public ResponseEntity<UserResource> getUser(Authentication authentication) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         UserEntity user = this.userService.getUserByUserEmail(userDetails.getUsername());
         var userResource = new UserResource(ModelMapper.toModel(user, ""));
 
@@ -207,7 +207,7 @@ public class UserRestController implements UserRestControllerApi {
 
     @Override
     public ResponseEntity<Object> changeUserPassword(Authentication authentication, @RequestBody PostChangePassword input) throws BadParameterException {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.debug("Begin changeUserPassword, user[{}]", userDetails.getUsername());
         // get username from principal
         String principalUsername = userDetails.getUsername();
@@ -235,7 +235,7 @@ public class UserRestController implements UserRestControllerApi {
 
     @Override
     public ResponseEntity<Object> getUserProperties(Authentication authentication) throws BadParameterException {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         List<UserPropertyEntity> propertyEntities = this.userPropertyService.getPropertiesForUser(userDetails.getUsername());
         List<UserProperty> properties = propertyEntities.stream()
                 .map(ModelMapper::toModel)
@@ -251,7 +251,7 @@ public class UserRestController implements UserRestControllerApi {
         if (key == null) {
             throw new BadParameterException("key is required for /user/property/key");
         }
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         UserPropertyEntity propertyEntity = this.userPropertyService.getPropertyForUser(userDetails.getUsername(), key);
         if (propertyEntity == null) {
             throw new ObjectNotFoundException(String.format("key [%s] not found for user", key));
@@ -266,7 +266,7 @@ public class UserRestController implements UserRestControllerApi {
     @Override
     public ResponseEntity<Object> setUserProperties(Authentication authentication, @RequestBody PostUserProperties properties) throws BadParameterException, IOException {
         validateUserProperties(properties);
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         List<UserPropertyEntity> propertyEntities = properties.getProperties().stream()
                 .map(ModelMapper::toEntity)
                 .collect(Collectors.toList());

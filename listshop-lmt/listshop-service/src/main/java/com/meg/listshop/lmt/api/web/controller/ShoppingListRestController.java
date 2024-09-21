@@ -1,7 +1,8 @@
 package com.meg.listshop.lmt.api.web.controller;
 
 import com.google.common.base.Enums;
-import com.meg.listshop.auth.service.impl.JwtUser;
+import com.meg.listshop.auth.service.CustomUserDetails;
+
 import com.meg.listshop.lmt.api.controller.ShoppingListRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
@@ -41,7 +42,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     public ResponseEntity<ShoppingListListResource> retrieveLists(HttpServletRequest request, Authentication authentication) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         String message = String.format("Retrieving all lists for user [%S]", userDetails.getId());
         logger.info(message);
@@ -59,7 +60,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> createList(HttpServletRequest request, Authentication authentication, @RequestBody ListGenerateProperties listGenerateProperties) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Creating list for user [%S]", authentication.getName());
         logger.info(message);
 
@@ -80,7 +81,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<MergeResultResource> mergeList(Authentication authentication, @RequestBody MergeRequest mergeRequest) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Merging list for user [%S]", userDetails.getId());
         logger.info(message);
 
@@ -110,7 +111,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> updateList(HttpServletRequest request, Authentication authentication, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         final String message = String.format("Updating list for list [%d]", listId);
         logger.info(message);
         ShoppingListEntity updateFrom = ModelMapper.toEntity(shoppingList);
@@ -126,7 +127,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> updateItems(Authentication authentication, @PathVariable("listId") Long listId, @RequestBody ItemOperationPut itemOperation) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("beginning updateItems for input: %S", itemOperation);
         logger.debug(message);
         if (itemOperation == null) {
@@ -148,7 +149,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     public ResponseEntity<ShoppingListResource> retrieveMostRecentList(HttpServletRequest request, Authentication authentication) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Retrieving most recent list for user {}", userDetails.getId());
         ShoppingListEntity result = shoppingListService.getMostRecentList(userDetails.getId());
         if (result == null) {
@@ -160,7 +161,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     public ResponseEntity<ShoppingListResource> retrieveStarterList(HttpServletRequest request, Authentication authentication) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Retrieving starter list for user {}", userDetails.getId());
         ShoppingListEntity result = shoppingListService.getStarterList(userDetails.getId());
         if (result == null) {
@@ -173,7 +174,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<ShoppingListResource> retrieveListById(HttpServletRequest request, Authentication authentication, @PathVariable("listId") Long listId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Retrieving list [{}] by id for user [{}]", listId, userDetails.getId());
         ShoppingListEntity result = shoppingListService.getListForUserById(userDetails.getId(), listId);
         if (result == null) {
@@ -187,7 +188,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<ShoppingList> deleteList(Authentication authentication, @PathVariable("listId") Long listId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Deleting list [{}] for user [{}]", listId, userDetails.getId());
         shoppingListService.deleteList(userDetails.getId(), listId);
         return ResponseEntity.noContent().build();
@@ -199,7 +200,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
                                                        @PathVariable Long tagId,
                                                        @PathVariable Integer usedCount
     ) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         final String message = String.format("Update count for tag [%d] to [%d] in list [%d]", tagId, usedCount, listId);
         logger.info(message);
         this.shoppingListService.updateItemCount(userDetails.getId(), listId, tagId, usedCount);
@@ -207,7 +208,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     public ResponseEntity<Object> addItemToListByTag(Authentication authentication, @PathVariable Long listId, @PathVariable Long tagId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding tag [{}] to list [{}] for user [{}]", tagId, listId, userDetails.getId());
         this.shoppingListService.addItemToListByTag(userDetails.getId(), listId, tagId);
         return ResponseEntity.noContent().build();
@@ -217,7 +218,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<Object> deleteItemFromList(Authentication authentication, @PathVariable Long listId, @PathVariable Long itemId,
                                                      @RequestParam(value = "removeEntireItem", required = false, defaultValue = "false") Boolean removeEntireItem,
                                                      @RequestParam(value = "sourceId", required = false, defaultValue = "0") String sourceId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Deleting item [{}] from list [{}] for user [{}]", itemId, listId, userDetails.getId());
         Long serviceSourceId = null;
         if (!"0".equals(sourceId)) {
@@ -232,7 +233,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<Object> setCrossedOffForItem(Authentication authentication, @PathVariable Long listId, @PathVariable Long itemId,
                                                        @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff
     ) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Setting crossed off for item [{}] on list [{}] for user [{}]", itemId, listId, userDetails.getId());
         this.shoppingListService.updateItemCrossedOff(userDetails.getId(), listId, itemId, crossedOff);
 
@@ -241,7 +242,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     public ResponseEntity<Object> crossOffAllItemsOnList(Authentication authentication, @PathVariable Long listId,
                                                          @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Setting crossed off [{}] for all items on list [{}] for user [{}]", crossedOff, listId, userDetails.getId());
         this.shoppingListService.crossOffAllItems(userDetails.getId(), listId, crossedOff);
 
@@ -251,7 +252,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> deleteAllItemsFromList(Authentication authentication, @PathVariable Long listId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Deleting all items from list [{}] for user [{}]", listId, userDetails.getId());
         this.shoppingListService.deleteAllItemsFromList(userDetails.getId(), listId);
 
@@ -261,7 +262,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication authentication, @PathVariable Long mealPlanId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Generating list from mealplan [{}] for user [{}]", mealPlanId, userDetails.getId());
         ShoppingListEntity shoppingListEntity = this.shoppingListService.generateListFromMealPlan(userDetails.getId(), mealPlanId);
         if (shoppingListEntity != null) {
@@ -274,7 +275,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> addToListFromMealPlan(Authentication authentication, @PathVariable Long listId, @PathVariable Long mealPlanId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding to list [{}] from meal plan [{}] for user [{}]", listId, mealPlanId, userDetails.getId());
         this.shoppingListService.addToListFromMealPlan(userDetails.getId(), listId, mealPlanId);
         return ResponseEntity.noContent().build();
@@ -282,7 +283,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @PostMapping(value = "/{listId}/dish", produces = "application/json")
     public ResponseEntity<Object> addDishesToList(Authentication authentication, @PathVariable Long listId, @RequestBody ListAddProperties listAddProperties) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Adding dishes to list for user [%S]", userDetails.getId());
         logger.info(message);
 
@@ -299,7 +300,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> addDishToList(Authentication authentication, @PathVariable Long listId, @PathVariable Long dishId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding dish [{}] to list [{}] for user [{}]", dishId, listId, userDetails.getId());
         try {
             this.shoppingListService.addDishToList(userDetails.getId(), listId, dishId);
@@ -313,7 +314,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> removeDishFromList(Authentication authentication, @PathVariable Long listId, @PathVariable Long dishId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Removing dish [{}] from list [{}] for user [{}]", dishId, listId, userDetails.getId());
         this.shoppingListService.removeDishFromList(userDetails.getId(), listId, dishId);
 
@@ -323,7 +324,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> addToListFromList(Authentication authentication, @PathVariable Long listId, @PathVariable Long fromListId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding list [{}] to list [{}] for user [{}]", fromListId, listId, userDetails.getId());
         this.shoppingListService.addListToList(userDetails.getId(), listId, fromListId);
 
@@ -332,7 +333,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> removeFromListByList(Authentication authentication, @PathVariable Long listId, @PathVariable Long fromListId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Removing list [{}] from list [{}] for user [{}]", fromListId, listId, userDetails.getId());
         this.shoppingListService.removeListItemsFromList(userDetails.getId(), listId, fromListId);
 
@@ -341,7 +342,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     @Override
     public ResponseEntity<Object> changeListLayout(Authentication authentication, @PathVariable Long listId, @PathVariable Long layoutId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Chaning list layout [{}] for list [{}] for user [{}]", layoutId, listId, userDetails.getId());
         this.shoppingListService.changeListLayout(userDetails.getId(), listId, layoutId);
 

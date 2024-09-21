@@ -30,102 +30,13 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 
 @SuppressWarnings("SpringJavaAutowiringInspection")
-@Configuration
+/*@Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig  {
-    @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
+@EnableGlobalMethodSecurity(prePostEnabled = true)*/
+public class WebSecurityConfig {
+    /**
+     * 
+     */
 
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    public static final String USER_QUERY = "select email, password, enabled from users where email = ?";
-    public static final String AUTHORITIES_QUERY = "select username, a.name from users u, authority a  where u.user_id = a.user_id and email = ?";
-
-    @Autowired
-    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder
-                .jdbcAuthentication()
-                .passwordEncoder(passwordEncoder())
-                .dataSource(dataSource)
-                .authoritiesByUsernameQuery(AUTHORITIES_QUERY)
-                .usersByUsernameQuery(USER_QUERY);
     }
 
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public static PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new JwtUserDetailsServiceImpl(userRepository);
-    }
-
-    @Bean
-    public JwtAuthenticationTokenFilter authenticationTokenFilterBean()  {
-        return new JwtAuthenticationTokenFilter();
-    }
-
-    @Bean
-    public SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .cors(Customizer.withDefaults())
-                .csrf(c -> c.disable())
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(
-                                AntPathRequestMatcher.antMatcher("/user/password"),
-                                AntPathRequestMatcher.antMatcher("/user/properties"),
-                                AntPathRequestMatcher.antMatcher("/auth/logout")
-                        ).authenticated()
-                        .requestMatchers(
-                                AntPathRequestMatcher.antMatcher("/user/**"),
-                                AntPathRequestMatcher.antMatcher("/campaign/**"),
-                                AntPathRequestMatcher.antMatcher("/auth/**"),
-                                AntPathRequestMatcher.antMatcher("/auth"),
-                                AntPathRequestMatcher.antMatcher("/actuator/**"),
-                                AntPathRequestMatcher.antMatcher("/swagger-ui.html"),
-                                AntPathRequestMatcher.antMatcher("/v3/api-docs/**"),
-                                AntPathRequestMatcher.antMatcher("/swagger*/**"),
-                                AntPathRequestMatcher.antMatcher("/webjars/**"),
-                                AntPathRequestMatcher.antMatcher("/v2/api-docs/**"),
-                                AntPathRequestMatcher.antMatcher("/h2-console/**"),
-                                AntPathRequestMatcher.antMatcher("/tag/**"),
-                                AntPathRequestMatcher.antMatcher("/listlayout/default"),
-                                AntPathRequestMatcher.antMatcher("/layout/default"),
-                                AntPathRequestMatcher.antMatcher("/taginfo/**")
-                        ).permitAll()
-                        .requestMatchers(
-                                AntPathRequestMatcher.antMatcher("/admin/user")
-                        ).hasRole("ADMIN")
-                        .anyRequest().authenticated());
-        return httpSecurity.build();
-    }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Location"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
-
-
-}
