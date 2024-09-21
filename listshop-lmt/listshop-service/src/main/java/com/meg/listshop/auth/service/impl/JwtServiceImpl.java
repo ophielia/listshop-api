@@ -1,7 +1,10 @@
 package com.meg.listshop.auth.service.impl;
 
+import com.meg.listshop.auth.api.model.ClientDeviceInfo;
+import com.meg.listshop.auth.api.model.ClientType;
 import com.meg.listshop.auth.service.JwtService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -21,6 +24,12 @@ public class JwtServiceImpl implements JwtService {
 
     @Value("${jwt.secret.encoded}")
     public String secret;
+
+
+    @Value("${web.login.period.in.days:7}")
+    private Long expirationInDays;
+
+    private static final Long DAY_TO_MILLISECONDS = 60L * 60L * 24L * 1000L;
 
     @Override
     public String extractUsername(String token) {
@@ -45,9 +54,18 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(String username) {
+    public String generateToken(String username, ClientDeviceInfo deviceInfo) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
+        Date expirationDate = determineExpirationDate(deviceInfo);
+        return createToken(claims, username, expirationDate);
+    }
+
+    private Date determineExpirationDate(ClientDeviceInfo deviceInfo) {
+        ClientType clientType = deviceInfo.getClientType();
+        if (clientType == ClientType.Web) {
+            return new Date(System.currentTimeMillis() + expirationInDays * DAY_TO_MILLISECONDS);
+        }
+        return null;
     }
 
     private Claims extractAllClaims(String token) {
@@ -60,17 +78,24 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        Date expirationDate = extractExpiration(token);
+        return expirationDate != null && extractExpiration(token).before(new Date());
     }
 
-    private String createToken(Map<String, Object> claims, String username) {
-        return Jwts.builder()
+    private String createToken(Map<String, Object> claims, String username, Date expirationDate) {
+        JwtBuilder builder = Jwts.builder()
                 .claims(claims)
                 .subject(username)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1))
+                .issuedAt(new Date(System.currentTimeMillis()));
+
+        if (expirationDate != null) {
+            builder.expiration(expirationDate);
+        }
+
+        return builder
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
+
     }
 
     private SecretKey getSignKey() {

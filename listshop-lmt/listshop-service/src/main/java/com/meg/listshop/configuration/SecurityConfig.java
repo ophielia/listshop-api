@@ -1,5 +1,6 @@
 package com.meg.listshop.configuration;
 
+import com.meg.listshop.auth.data.repository.AuthorityRepository;
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.auth.service.impl.JwtAuthFilter;
 import com.meg.listshop.auth.service.impl.UserDetailsServiceImpl;
@@ -31,9 +32,12 @@ public class SecurityConfig {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    AuthorityRepository authorityRepository;
+
     @Bean
     UserDetailsService userDetailsService() {
-        return new UserDetailsServiceImpl(userRepository);
+        return new UserDetailsServiceImpl(userRepository, authorityRepository);
     }
 
     @Bean

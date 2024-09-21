@@ -2,6 +2,7 @@ package com.meg.listshop.auth.service.impl;
 
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.data.repository.AuthorityRepository;
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.conversion.service.handlers.AbstractConversionHandler;
@@ -21,12 +22,14 @@ import java.util.List;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     private static final Logger LOG = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+    private final AuthorityRepository authorityRepository;
 
     private UserRepository userRepository;
 
     @Autowired
-    public UserDetailsServiceImpl(UserRepository userRepository) {
+    public UserDetailsServiceImpl(UserRepository userRepository, AuthorityRepository authorityRepository) {
         this.userRepository = userRepository;
+        this.authorityRepository = authorityRepository;
     }
 
     @Override
@@ -42,4 +45,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         LOG.info("User Authenticated Successfully..!!!");
         return new CustomUserDetails(user);
     }
+
+    public UserDetails loadUserByToken(String token) {
+
+        // load by token
+        LOG.debug(String.format("loading user for token [%s]", token));
+        UserEntity user = userRepository.findByToken(token);
+        List<AuthorityEntity> authorities = authorityRepository.findByUserId(user.getId());
+        return new CustomUserDetails(user,authorities);
+    }
+
 }

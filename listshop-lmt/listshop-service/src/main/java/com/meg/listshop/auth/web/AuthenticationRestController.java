@@ -7,7 +7,6 @@ import com.meg.listshop.auth.api.model.UserResource;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.JwtService;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtTokenUtil;
 import com.meg.listshop.auth.service.impl.ListShopUserDetailsService;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
@@ -21,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -84,8 +82,7 @@ public class AuthenticationRestController implements AuthenticationRestControlle
 
         // Reload password post-security so we can generate token
         UserEntity userEntity = userService.getUserByUserEmail(email);
-        final String token = jwtService.generateToken(email);
-        System.out.println("MM!!!!!!!!!!!!! token which is sent: " + token);
+        final String token = jwtService.generateToken(email, deviceInfo);
         // save token for user
         userService.saveTokenForUserAndDevice(userEntity, deviceInfo, token);
 
@@ -97,7 +94,6 @@ public class AuthenticationRestController implements AuthenticationRestControlle
     public ResponseEntity<Object> authenticateUser(HttpServletRequest request, @RequestBody ClientDeviceInfo deviceInfo) throws BadParameterException {
 
         String token = request.getHeader(tokenHeader);
-        System.out.println("MM!!!!!!!!!!!!! token which is received: " + token);
         String ipAddress = request.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
             ipAddress = request.getRemoteAddr();

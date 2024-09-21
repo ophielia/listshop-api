@@ -27,6 +27,15 @@ public class CustomUserDetails implements UserDetails {
         this.authorities = auths;
     }
 
+    public CustomUserDetails(UserEntity byUsername, List<AuthorityEntity> authorities) {
+        this.id = byUsername.getId();
+        this.username = byUsername.getUsername();
+        this.password= byUsername.getPassword();
+        List<GrantedAuthority> auths = mapToGrantedAuthorities(authorities);
+
+        this.authorities = auths;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
