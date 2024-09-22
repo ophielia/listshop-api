@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.conversion.service.FoodFactor;
 
+import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -13,6 +14,7 @@ import java.util.Objects;
 public class FoodConversionEntity implements FoodFactor {
 
     @Id
+    @Tsid
     @Column(name = "food_conversion_id")
     private Long id;
 

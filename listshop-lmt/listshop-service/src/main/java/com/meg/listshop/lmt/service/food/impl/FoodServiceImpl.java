@@ -382,8 +382,8 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     public Map<Long, List<FoodConversionEntity>> getFoodFactors(List<FoodEntity> foodEntities) {
-        List<Long> tagIds = foodEntities.stream().map(FoodEntity::getFoodId).collect(Collectors.toList());
-        List<FoodConversionEntity> conversionEntities = foodConversionRepository.findAllByFoodIdIn(tagIds);
+        List<Long> foodIds = foodEntities.stream().map(FoodEntity::getFoodId).collect(Collectors.toList());
+        List<FoodConversionEntity> conversionEntities = foodConversionRepository.findAllByFoodIdIn(foodIds);
 
         Map<Long, List<FoodConversionEntity>> mappedFactors = new HashMap<>();
         for (FoodConversionEntity factor : conversionEntities) {
