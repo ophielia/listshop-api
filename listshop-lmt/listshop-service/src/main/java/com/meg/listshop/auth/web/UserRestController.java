@@ -12,9 +12,9 @@ import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
 import com.meg.listshop.auth.service.CustomUserDetails;
+import com.meg.listshop.auth.service.JwtService;
 import com.meg.listshop.auth.service.UserPropertyService;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtTokenUtil;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ProcessingException;
@@ -57,7 +57,7 @@ public class UserRestController implements UserRestControllerApi {
 
     private final AuthenticationManager authenticationManager;
 
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtService jwtService;
 
     @Value("${listshop.min.ios.version:1.0}")
     private String minIosClient;
@@ -67,10 +67,10 @@ public class UserRestController implements UserRestControllerApi {
 
     @Autowired
     public UserRestController(UserService userService, AuthenticationManager authenticationManager,
-                              JwtTokenUtil jwtTokenUtil, TokenService tokenService, UserPropertyService userPropertyService) {
+                              JwtService jwtService, TokenService tokenService, UserPropertyService userPropertyService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
+        this.jwtService = jwtService;
         this.tokenService = tokenService;
         this.userPropertyService = userPropertyService;
     }
@@ -103,7 +103,7 @@ public class UserRestController implements UserRestControllerApi {
 
         // Reload password post-security so we can generate token
         final UserEntity userDetails = userService.getUserByUserEmail(newUser.getEmail());
-        final String token = jwtTokenUtil.generateExpiringToken(newUser, deviceInfo);
+        final String token = jwtService.generateToken(newUser.getEmail(), deviceInfo);
 
         // create user device
         this.userService.createDeviceForUserAndDevice(newUser.getId(), deviceInfo, token);
