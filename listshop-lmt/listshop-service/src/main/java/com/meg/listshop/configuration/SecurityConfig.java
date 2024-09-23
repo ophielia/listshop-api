@@ -69,8 +69,11 @@ public class SecurityConfig {
                         .requestMatchers("/listlayout/default").permitAll()
                         .requestMatchers("/layout/default").permitAll()
                         .requestMatchers("/taginfo/**").permitAll()
-                        .requestMatchers("/auth/logout").authenticated()
-
+                )
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                )
+                .authorizeHttpRequests((authorize) -> authorize
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
