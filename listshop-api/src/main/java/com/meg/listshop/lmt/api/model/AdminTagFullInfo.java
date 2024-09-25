@@ -44,6 +44,13 @@ public class AdminTagFullInfo {
     @JsonProperty("conversion_grid")
     private ConversionGrid conversionGrid;
 
+    @JsonProperty("layout_category")
+    private String layoutCategory;
+
+    @JsonProperty("layout_category_id")
+    private long layoutCategoryId;
+
+
     public AdminTagFullInfo() {
     }
 
@@ -176,6 +183,22 @@ public class AdminTagFullInfo {
 
     public ConversionGrid getConversionGrid() {
         return conversionGrid;
+    }
+
+    public String getLayoutCategory() {
+        return layoutCategory;
+    }
+
+    public void setLayoutCategory(String layoutCategory) {
+        this.layoutCategory = layoutCategory;
+    }
+
+    public long getLayoutCategoryId() {
+        return layoutCategoryId;
+    }
+
+    public void setLayoutCategoryId(long layoutCategoryId) {
+        this.layoutCategoryId = layoutCategoryId;
     }
 
     @Override

@@ -15,21 +15,6 @@ import java.util.Set;
 public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCategoryEntity, Long> {
 
 
-    @Query(value = "select * " +
-            "from list_category lc " +
-            "  join category_relation cr on cr.child_category_id = lc.category_id " +
-            "where lc.layout_id = ?1 " +
-            "  and cr.parent_category_id = ?2 " +
-            "order by display_order desc", nativeQuery = true)
-    List<ListLayoutCategoryEntity> getSubcategoriesForOrder(Long layoutId , Long parentId);
-
-    @Query(value = "select * " +
-            "from list_category lc " +
-            "  join category_relation cr on cr.child_category_id = lc.category_id " +
-            "where lc.layout_id = ?1 " +
-            "  and cr.parent_category_id is null " +
-            "order by display_order desc", nativeQuery = true)
-    List<ListLayoutCategoryEntity> getCategoriesForOrder(Long layoutId);
 
     @Query(value = "select * " +
             "from list_category lc " +
@@ -77,6 +62,12 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
             "       and c.layout_id = :layoutId;", nativeQuery = true)
     List<Object[]> getTagRelationshipsForIds(@Param("tagIds") Set<Long> tagIds, @Param("layoutId") Long layoutId);
 
+    @Query(value = "select * from list_category c " +
+            "join list_layout l on l.layout_id = c.layout_id " +
+            "join category_tags ct on c.category_id = ct.category_id " +
+            "where tag_id = :tagId " +
+            "and l.user_id is null", nativeQuery = true)
+    ListLayoutCategoryEntity getStandardCategoryForTag(Long tagId);
 
     List<ListLayoutCategoryEntity> findByTagsContains(TagEntity tagEntity);
 
