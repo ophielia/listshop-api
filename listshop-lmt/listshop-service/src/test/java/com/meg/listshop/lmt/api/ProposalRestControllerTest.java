@@ -2,8 +2,8 @@ package com.meg.listshop.lmt.api;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Before;
@@ -61,7 +61,7 @@ public class ProposalRestControllerTest {
 
 
         UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
-        userDetails = new JwtUser(userAccount.getId(),
+        userDetails = new CustomUserDetails(userAccount.getId(),
                 TestConstants.USER_3_NAME,
                 null,
                 null,
@@ -77,8 +77,8 @@ public class ProposalRestControllerTest {
     public void testGenerateProposal() throws Exception {
         String url = "/proposal/target/" + TestConstants.TARGET_1_ID;
         this.mockMvc.perform(post(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isCreated());
 
     }
@@ -88,8 +88,8 @@ public class ProposalRestControllerTest {
     public void testGetProposal() throws Exception {
         String url = "/proposal/" + TestConstants.PROPOSAL_1_ID;
         this.mockMvc.perform(get(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isOk());
     }
 
@@ -98,8 +98,8 @@ public class ProposalRestControllerTest {
     public void testRefreshProposal() throws Exception {
         String url = "/proposal/" + TestConstants.PROPOSAL_2_ID;
         this.mockMvc.perform(put(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
 
@@ -111,8 +111,8 @@ public class ProposalRestControllerTest {
                 + "/slot/" + TestConstants.PROPOSAL_1_SLOT_4_ID
                 + "/dish/" + TestConstants.PROPOSAL_1_SLOT_4_DISH_ID;
         this.mockMvc.perform(post(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
 
 
@@ -125,8 +125,8 @@ public class ProposalRestControllerTest {
                 + "/slot/" + TestConstants.PROPOSAL_3_SLOT_4_ID
                 + "/dish/" + TestConstants.PROPOSAL_3_SLOT_4_DISH_ID;
         this.mockMvc.perform(delete(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
 
     }
@@ -137,8 +137,8 @@ public class ProposalRestControllerTest {
         String url = "/proposal/" + TestConstants.PROPOSAL_2_ID
                 + "/slot/3";
         this.mockMvc.perform(put(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
 

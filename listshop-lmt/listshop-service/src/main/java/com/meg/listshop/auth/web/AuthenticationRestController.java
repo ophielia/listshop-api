@@ -7,7 +7,7 @@ import com.meg.listshop.auth.api.model.UserResource;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.JwtService;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.ListShopUserDetailsService;
+import com.meg.listshop.auth.service.impl.UserDetailsServiceImpl;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
@@ -41,17 +41,18 @@ public class AuthenticationRestController implements AuthenticationRestControlle
 
     private final JwtService jwtService;
 
-    private final ListShopUserDetailsService userDetailsService;
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     public AuthenticationRestController(UserService userService,
                                         AuthenticationManager authenticationManager,
                                         JwtService jwtService,
-                                        ListShopUserDetailsService userDetailsService) {
+                                        UserDetailsServiceImpl userDetailsService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
     }
 
     public ResponseEntity<Object> authorizeUser(@RequestBody JwtAuthorizationRequest authorizationRequest) throws BadParameterException {

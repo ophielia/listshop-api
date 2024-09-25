@@ -1,8 +1,8 @@
 package com.meg.listshop.lmt.service.proposal.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.data.entity.DishSlotEntity;
@@ -111,7 +111,7 @@ public class ProposalServiceImpl implements ProposalService {
 
     @Override
     public void clearDishFromSlot(Authentication authentication, Long proposalId, Long slotId, Long dishId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         ProposalEntity proposalEntity = getProposalById(userDetails.getUsername(), proposalId);
         if (proposalEntity == null ||
                 proposalEntity.getSlots() == null) {

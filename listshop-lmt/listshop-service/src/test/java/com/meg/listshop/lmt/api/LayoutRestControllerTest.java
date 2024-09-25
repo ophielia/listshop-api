@@ -2,8 +2,8 @@ package com.meg.listshop.lmt.api;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
 import org.hamcrest.Matchers;
@@ -81,7 +81,7 @@ public class LayoutRestControllerTest {
                 .findAny()
                 .orElse(null);
 
-        assertNotNull("the JSON message converter must not be null",mappingJackson2HttpMessageConverter);
+        assertNotNull("the JSON message converter must not be null", mappingJackson2HttpMessageConverter);
     }
 
     @Before
@@ -94,7 +94,7 @@ public class LayoutRestControllerTest {
 
         String baseUserEmail = "username@testitytest.com";
         UserEntity baseUserAccount = userService.getUserByUserEmail(baseUserEmail);
-        baseUserDetails = new JwtUser(baseUserAccount.getId(),
+        baseUserDetails = new CustomUserDetails(baseUserAccount.getId(),
                 baseUserEmail,
                 null,
                 null,
@@ -104,7 +104,7 @@ public class LayoutRestControllerTest {
 
         Long emptyUserId = 101010L;
         String emptyUserEmail = "user@emptyuser.com";
-        emptyUserDetails = new JwtUser(emptyUserId,
+        emptyUserDetails = new CustomUserDetails(emptyUserId,
                 emptyUserEmail,
                 null,
                 null,
@@ -115,7 +115,7 @@ public class LayoutRestControllerTest {
 
         Long newUserId = 121212L;
         String newUserEmail = "user@brandnewuser.com";
-        newUserDetails = new JwtUser(newUserId,
+        newUserDetails = new CustomUserDetails(newUserId,
                 newUserEmail,
                 null,
                 null,
@@ -638,8 +638,6 @@ public class LayoutRestControllerTest {
 
         Assert.assertNotNull(result);
     }
-
-
 
 
     private String extractResultId(MvcResult result) {

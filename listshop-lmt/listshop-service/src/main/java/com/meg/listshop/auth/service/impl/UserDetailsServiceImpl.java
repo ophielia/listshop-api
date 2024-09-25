@@ -51,6 +51,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // load by token
         LOG.debug(String.format("loading user for token [%s]", token));
         UserEntity user = userRepository.findByToken(token);
+        if (user == null) {
+            return null;
+        }
         List<AuthorityEntity> authorities = authorityRepository.findByUserId(user.getId());
         return new CustomUserDetails(user,authorities);
     }

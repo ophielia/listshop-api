@@ -9,7 +9,7 @@ package com.meg.listshop.lmt.api;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.api.model.TargetType;
-import com.meg.listshop.auth.service.impl.JwtUser;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.Target;
@@ -94,14 +94,14 @@ public class TargetRestControllerTest {
                 .build();
 
 
-        userDetails = new JwtUser(TestConstants.USER_1_ID,
+        userDetails = new CustomUserDetails(TestConstants.USER_1_ID,
                 TestConstants.USER_1_EMAIL,
                 null,
                 null,
                 null,
                 true,
                 null);
-        newUserDetails = new JwtUser(TestConstants.USER_3_ID,
+        newUserDetails = new CustomUserDetails(TestConstants.USER_3_ID,
                 TestConstants.USER_3_NAME,
                 null,
                 null,
@@ -116,8 +116,8 @@ public class TargetRestControllerTest {
     public void testReadTarget() throws Exception {
         Long testId = TestConstants.TARGET_1_ID;
         mockMvc.perform(get("/target/"
-                + testId)
-                .with(user(newUserDetails)))
+                        + testId)
+                        .with(user(newUserDetails)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
@@ -132,7 +132,7 @@ public class TargetRestControllerTest {
     public void testRetrieveTargets() throws Exception {
 
         mockMvc.perform(get("/target")
-                .with(user(newUserDetails)))
+                        .with(user(newUserDetails)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentType(contentType))
@@ -144,8 +144,8 @@ public class TargetRestControllerTest {
     public void testDeleteTarget() throws Exception {
         Long testId = TestConstants.TARGET_2_ID;
         mockMvc.perform(delete("/target/"
-                + testId)
-                .with(user(userDetails)))
+                        + testId)
+                        .with(user(userDetails)))
                 .andExpect(status().isNoContent());
 
     }
@@ -161,9 +161,9 @@ public class TargetRestControllerTest {
         String targetJson = json(target);
 
         this.mockMvc.perform(post("/target")
-                .with(user(newUserDetails))
-                .contentType(contentType)
-                .content(targetJson))
+                        .with(user(newUserDetails))
+                        .contentType(contentType)
+                        .content(targetJson))
                 .andExpect(status().isCreated());
     }
 
@@ -180,9 +180,9 @@ public class TargetRestControllerTest {
         String tagids = "?pickupTags=" + TestConstants.TAG_CARROTS + "," + TestConstants.TAG_MEAT;
         String url = "/target/pickup" + tagids;
         this.mockMvc.perform(post(url)
-                .with(user(newUserDetails))
-                .contentType(contentType)
-                .content(targetJson))
+                        .with(user(newUserDetails))
+                        .contentType(contentType)
+                        .content(targetJson))
                 .andExpect(status().isCreated());
     }
 
@@ -197,9 +197,9 @@ public class TargetRestControllerTest {
         String targetJson = json(toUpdate);
 
         this.mockMvc.perform(put("/target/" + targetEntity.getTargetId())
-                .with(user(newUserDetails))
-                .contentType(contentType)
-                .content(targetJson))
+                        .with(user(newUserDetails))
+                        .contentType(contentType)
+                        .content(targetJson))
                 .andExpect(status().isCreated());
     }
 
@@ -215,9 +215,9 @@ public class TargetRestControllerTest {
         String url = "/target/" + TestConstants.TARGET_3_ID
                 + "/slot";
         this.mockMvc.perform(post(url)
-                .with(user(newUserDetails))
-                .contentType(contentType)
-                .content(targetJson))
+                        .with(user(newUserDetails))
+                        .contentType(contentType)
+                        .content(targetJson))
                 .andExpect(status().isNoContent());
     }
 
@@ -229,8 +229,8 @@ public class TargetRestControllerTest {
         String url = "/target/" + TestConstants.TARGET_3_ID + "/slot/"
                 + slot.getId();
         this.mockMvc.perform(delete(url)
-                .with(user(newUserDetails))
-                .contentType(contentType))
+                        .with(user(newUserDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
 
@@ -243,8 +243,8 @@ public class TargetRestControllerTest {
         String url = "/target/" + TestConstants.TARGET_3_ID + "/slot/"
                 + slot.getId() + "/tag/" + TestConstants.TAG_CROCKPOT;
         this.mockMvc.perform(post(url)
-                .with(user(newUserDetails))
-                .contentType(contentType))
+                        .with(user(newUserDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
 
@@ -254,8 +254,8 @@ public class TargetRestControllerTest {
         String url = "/target/" + TestConstants.TARGET_3_ID + "/slot/"
                 + TestConstants.TARGET_3_SLOT_ID + "/tag/" + TestConstants.TAG_CARROTS;
         this.mockMvc.perform(delete(url)
-                .with(user(newUserDetails))
-                .contentType(contentType))
+                        .with(user(newUserDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
 
@@ -265,8 +265,8 @@ public class TargetRestControllerTest {
         String url = "/target/" + TestConstants.TARGET_3_ID
                 + "/tag/" + TestConstants.CHILD_TAG_ID_1;
         this.mockMvc.perform(post(url)
-                .with(user(newUserDetails))
-                .contentType(contentType))
+                        .with(user(newUserDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
 
@@ -276,8 +276,8 @@ public class TargetRestControllerTest {
         String url = "/target/" + TestConstants.TARGET_3_ID
                 + "/tag/" + TestConstants.TAG_EASE_OF_PREP;
         this.mockMvc.perform(delete(url)
-                .with(user(newUserDetails))
-                .contentType(contentType))
+                        .with(user(newUserDetails))
+                        .contentType(contentType))
                 .andExpect(status().isNoContent());
     }
 

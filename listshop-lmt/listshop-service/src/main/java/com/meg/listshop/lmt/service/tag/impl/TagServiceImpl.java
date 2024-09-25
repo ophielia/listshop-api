@@ -9,10 +9,12 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
+import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.*;
 import com.meg.listshop.lmt.data.repository.CustomTagInfoRepository;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
+import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
@@ -52,6 +54,7 @@ public class TagServiceImpl implements TagService {
     private final TagStructureService tagStructureService;
     private final DishSearchService dishSearchService;
     private final CustomTagInfoRepository tagInfoCustomRepository;
+    private final ListLayoutCategoryRepository listLayoutCategoryRepository;
 
     @Value("${shopping.list.properties.default_list_layout_id:5}")
     private Long defaultLayoutId;
@@ -68,7 +71,8 @@ public class TagServiceImpl implements TagService {
                           TagRepository tagRepository,
                           CustomTagInfoRepository tagInfoCustomRepository,
                           DishSearchService dishSearchService,
-                          DishItemRepository dishItemRepository
+                          DishItemRepository dishItemRepository,
+                          ListLayoutCategoryRepository listLayoutCategoryRepository
     ) {
         this.dishService = dishService;
         this.tagStatisticService = tagStatisticService;
@@ -78,7 +82,7 @@ public class TagServiceImpl implements TagService {
         this.dishSearchService = dishSearchService;
         this.tagInfoCustomRepository = tagInfoCustomRepository;
         this.dishItemRepository = dishItemRepository;
-
+        this.listLayoutCategoryRepository = listLayoutCategoryRepository;
     }
 
 
@@ -565,6 +569,12 @@ public class TagServiceImpl implements TagService {
             fullInfo.setParentId(String.valueOf(parent.getId()));
         }
 
+        // fill in category
+        ListLayoutCategoryEntity layoutCategory = listLayoutCategoryRepository.getStandardCategoryForTag(tagId);
+        if (layoutCategory != null) {
+            fullInfo.setLayoutCategory(layoutCategory.getName());
+            fullInfo.setLayoutCategoryId(layoutCategory.getId());
+        }
 
         // construct status display
         Long internalStatus = tag.getInternalStatus();

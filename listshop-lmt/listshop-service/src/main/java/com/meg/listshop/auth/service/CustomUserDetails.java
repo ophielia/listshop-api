@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,12 +17,14 @@ public class CustomUserDetails implements UserDetails {
     private Long id;
     private String username;
     private String password;
+    private boolean expired = false;
+    private boolean locked = false;
     Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(UserEntity byUsername) {
         this.id = byUsername.getId();
         this.username = byUsername.getUsername();
-        this.password= byUsername.getPassword();
+        this.password = byUsername.getPassword();
         List<GrantedAuthority> auths = mapToGrantedAuthorities(byUsername.getAuthorities());
 
         this.authorities = auths;
@@ -30,10 +33,22 @@ public class CustomUserDetails implements UserDetails {
     public CustomUserDetails(UserEntity byUsername, List<AuthorityEntity> authorities) {
         this.id = byUsername.getId();
         this.username = byUsername.getUsername();
-        this.password= byUsername.getPassword();
+        this.password = byUsername.getPassword();
         List<GrantedAuthority> auths = mapToGrantedAuthorities(authorities);
 
         this.authorities = auths;
+    }
+
+    public CustomUserDetails(Long id,
+                             String username,
+                             String email,
+                             String password, Collection<? extends GrantedAuthority> authorities,
+                             boolean enabled,
+                             Date lastPasswordResetDate) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.authorities = authorities;
     }
 
     @Override

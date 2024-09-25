@@ -8,9 +8,10 @@
 package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.auth.data.entity.AuthorityName;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
 import com.meg.listshop.test.TestConstants;
@@ -25,6 +26,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -37,6 +40,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -100,12 +105,15 @@ public class AdminUserRestControllerTest {
                 .apply(springSecurity())
                 .build();
 
+        GrantedAuthority auth = new SimpleGrantedAuthority(AuthorityName.ROLE_ADMIN.name());
+        List<GrantedAuthority> authorities = Collections.singletonList(auth);
+
         UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
-        adminUser = new JwtUser(userAccount.getId(),
+        adminUser = new CustomUserDetails(userAccount.getId(),
                 TestConstants.USER_3_NAME,
                 null,
                 "Passw0rd", // $2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK
-                null,
+                authorities ,
                 true,
                 null);
     }

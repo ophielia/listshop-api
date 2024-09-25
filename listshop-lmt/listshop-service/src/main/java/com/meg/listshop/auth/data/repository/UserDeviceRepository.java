@@ -13,6 +13,8 @@ public interface UserDeviceRepository extends JpaRepository<UserDeviceEntity, Lo
 
     UserDeviceEntity findByToken(String token);
 
+    List<UserDeviceEntity> findAllByToken(String token);
+
     List<UserDeviceEntity> findByUserIdAndClientTypeAndName(Long userId, ClientType clientType, String name);
 
     long deleteByLastLoginBeforeAndClientTypeEquals(Date valueOf, ClientType clientType);

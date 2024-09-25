@@ -10,6 +10,7 @@ package com.meg.listshop.lmt.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
@@ -124,7 +125,7 @@ public class ShoppingListRestControllerTest {
                 .build();
 
 
-        userDetails = new JwtUser(TestConstants.USER_1_ID,
+        userDetails = new CustomUserDetails(TestConstants.USER_1_ID,
                 TestConstants.USER_1_EMAIL,
                 null,
                 null,
@@ -132,7 +133,7 @@ public class ShoppingListRestControllerTest {
                 true,
                 null);
 
-        meUserDetails = new JwtUser(TestConstants.USER_3_ID,
+        meUserDetails = new CustomUserDetails(TestConstants.USER_3_ID,
                 TestConstants.USER_3_NAME,
                 null,
                 null,
@@ -140,7 +141,7 @@ public class ShoppingListRestControllerTest {
                 true,
                 null);
 
-        lastListUserDetails = new JwtUser(99999L,
+        lastListUserDetails = new CustomUserDetails(99999L,
                 "username@testitytest.com",
                 "username@testitytest.com",
                 null,
@@ -148,7 +149,7 @@ public class ShoppingListRestControllerTest {
                 true,
                 null);
 
-        noStarterUserDetails = new JwtUser(TestConstants.USER_4_ID,
+        noStarterUserDetails = new CustomUserDetails(TestConstants.USER_4_ID,
                 TestConstants.USER_4_NAME,
                 null,
                 null,
@@ -156,7 +157,7 @@ public class ShoppingListRestControllerTest {
                 true,
                 null);
 
-        dadStarterUserDetails = new JwtUser(34L,
+        dadStarterUserDetails = new CustomUserDetails(34L,
                 "dad@userdetails.com",
                 null,
                 null,
