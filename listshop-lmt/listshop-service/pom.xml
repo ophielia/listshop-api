@@ -239,11 +239,7 @@
             <version>16.0.3</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.5.1</version>
-        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
