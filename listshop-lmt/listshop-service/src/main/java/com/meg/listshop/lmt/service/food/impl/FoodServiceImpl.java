@@ -240,11 +240,16 @@ public class FoodServiceImpl implements FoodService {
             return result;
         }
 
+        // pull "single" unit ids
+        Set<Long> singleUnitIds = pullSingleUnitIds(factors);
+        // pull unit map
+        Map<Long, UnitEntity> unitsForFactors = getUnitsForFactorsWithGenerics(factors);
+
         // get target units - grams or unit
-        List<TargetUnit> targets = determineSampleTargets(factors);
+        List<TargetUnit> targets = determineSampleTargets(factors,singleUnitIds, unitsForFactors);
 
         // get sample sources
-        List<ConvertibleAmount> unitsToConvert = determineSampleSources(factors, conversionId);
+        List<ConvertibleAmount> unitsToConvert = determineSampleSources(factors, conversionId, singleUnitIds, unitsForFactors);
 
         // do conversions
         // for each target
@@ -268,12 +273,19 @@ public class FoodServiceImpl implements FoodService {
         return result;
     }
 
+    private Set<Long> pullSingleUnitIds(List<FoodConversionEntity> factors) {
+        Set<Long> factorUnitIds = factors.stream()
+                .map(FoodConversionEntity::getFromUnitId)
+                .collect(Collectors.toSet());
+        return unitRepository.findIntegralUnits(factorUnitIds);
+    }
 
-    private List<ConvertibleAmount> determineSampleSources(List<FoodConversionEntity> factors, Long conversionId) {
-        Map<Long, UnitEntity> unitIdsForFactors = getUnitsForFactorsWithGenerics(factors);
+
+    private List<ConvertibleAmount> determineSampleSources(List<FoodConversionEntity> factors, Long conversionId, Set<Long> singleUnitIds, Map<Long, UnitEntity> unitsForFactors) {
+
         // handle case of single factor with unit - think chicken breasts
-        if (factors.size() == 1 && factors.get(0).getFromUnitId().equals(SINGLE_UNIT_ID)) {
-            UnitEntity unit = unitIdsForFactors.get(SINGLE_UNIT_ID);
+        if (factors.size() == 1 && isSingleUnit(factors.get(0).getFromUnitId(), singleUnitIds)) {
+            UnitEntity unit = unitsForFactors.get(factors.get(0).getFromUnitId());
             ConvertibleAmount toConvert = new SimpleAmount(1.0, unit, conversionId, unit.isLiquid(), null);
             return Collections.singletonList(toConvert);
         }
@@ -281,7 +293,7 @@ public class FoodServiceImpl implements FoodService {
         List<ConvertibleAmount> results = new ArrayList<>();
         Map<String, List<FoodConversionEntity>> factorsPerMarker = new HashMap<>();
         factors.stream()
-                .filter(f -> !f.getFromUnitId().equals(SINGLE_UNIT_ID))
+                .filter(f -> !isSingleUnit(f.getFromUnitId(), singleUnitIds))
                 .forEach(foodConversionEntity -> {
                     if (!factorsPerMarker.keySet().contains(foodConversionEntity.getMarker())) {
                         factorsPerMarker.put(foodConversionEntity.getMarker(), new ArrayList<>());
@@ -332,15 +344,15 @@ public class FoodServiceImpl implements FoodService {
                 .collect(Collectors.toMap(UnitEntity::getId, Function.identity()));
     }
 
-    private List<TargetUnit> determineSampleTargets(List<FoodConversionEntity> factors) {
+    private List<TargetUnit> determineSampleTargets(List<FoodConversionEntity> factors, Set<Long> singleUnitIds, Map<Long, UnitEntity> unitsForFactors) {
         List<TargetUnit> results = new ArrayList<>();
-        UnitEntity singleUnit = unitRepository.findById(SINGLE_UNIT_ID).orElse(null);
         UnitEntity gramUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
-        if (factors.size() == 1) {
+        if (factors.size() == 1 && factors.get(0).getFromUnitId().equals(GRAM_UNIT_ID)) {
             return Collections.singletonList(new TargetUnit(gramUnit, null));
         }
         for (FoodConversionEntity foodConversionEntity : factors) {
-            if (foodConversionEntity.getFromUnitId().equals(SINGLE_UNIT_ID)) {
+            if (isSingleUnit(foodConversionEntity.getFromUnitId(), singleUnitIds))  {
+                UnitEntity singleUnit = unitsForFactors.get(foodConversionEntity.getFromUnitId());
                 results.add(new TargetUnit(singleUnit, foodConversionEntity.getUnitSize()));
             }
         }
@@ -349,6 +361,14 @@ public class FoodServiceImpl implements FoodService {
         }
 
         return results;
+    }
+
+    private boolean isSingleUnit(Long fromUnitId, Set<Long> singleUnitIds) {
+        Long foundId = singleUnitIds.stream()
+                .filter(fid -> fid.equals(fromUnitId))
+                .findFirst()
+                .orElse(null);
+        return foundId != null;
     }
 
     private void addOrUpdateFoodForTag(TagEntity tag, Long foodId, boolean fromAdmin) {
