@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.food.impl;
 
+import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
@@ -125,7 +126,9 @@ class FoodServiceImplMockTest {
         testUnitLookups.put(TABLESPOON_ID, buildUnit(TABLESPOON_ID, "tablespoon"));
         testUnitLookups.put(TEASPOON_ID, buildUnit(TEASPOON_ID, "teaspoon"));
         testUnitLookups.put(GRAM_ID, buildUnit(GRAM_ID, "gram"));
-        testUnitLookups.put(SINGLE_UNIT_ID, buildUnit(SINGLE_UNIT_ID, "unit"));
+        UnitEntity singleUnit = buildUnit(SINGLE_UNIT_ID, "unit");
+        singleUnit.setType(UnitType.UNIT);
+        testUnitLookups.put(SINGLE_UNIT_ID, singleUnit);
     }
 
 
@@ -348,6 +351,7 @@ class FoodServiceImplMockTest {
         unitIdsSearch.add(TABLESPOON_ID);
         unitIdsSearch.add(TEASPOON_ID);
         unitIdsSearch.add(CUP_ID);
+        unitIdsSearch.add(SINGLE_UNIT_ID);
         List<UnitEntity> foundUnits = unitIdsSearch.stream()
                 .map(s -> testUnitLookups.get(s))
                 .collect(Collectors.toList());
@@ -359,12 +363,14 @@ class FoodServiceImplMockTest {
 
         Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
                 .thenReturn(Collections.singletonList(teaspoonFactor));
-        Mockito.when(unitRepository.findById(SINGLE_UNIT_ID))
-                .thenReturn(Optional.of(testUnitLookups.get(SINGLE_UNIT_ID)));
-        Mockito.when(unitRepository.findById(GRAM_ID))
-                .thenReturn(Optional.of(testUnitLookups.get(GRAM_ID)));
+        HashSet<Long> fromFactorUnitIds = new HashSet<>();
+        fromFactorUnitIds.add(TEASPOON_ID);
+        Mockito.when(unitRepository.findIntegralUnits(fromFactorUnitIds))
+                .thenReturn(new HashSet<Long>());
         Mockito.when(unitRepository.findAllById(unitIdsSearch))
                 .thenReturn(foundUnits);
+        Mockito.when(unitRepository.findById(GRAM_ID))
+                .thenReturn(Optional.of(testUnitLookups.get(GRAM_ID)));
 
         Mockito.when(conversionService.convertToUnit(toConvertTeaspoon, testUnitLookups.get(GRAM_ID), null))
                 .thenReturn(dummyConvert(testUnitLookups.get(GRAM_ID), null));
@@ -428,14 +434,19 @@ class FoodServiceImplMockTest {
         unitIdsSearch.add(TABLESPOON_ID);
         unitIdsSearch.add(TEASPOON_ID);
         unitIdsSearch.add(CUP_ID);
+        unitIdsSearch.add(SINGLE_UNIT_ID);
         List<UnitEntity> foundUnits = unitIdsSearch.stream()
                 .map(s -> testUnitLookups.get(s))
                 .collect(Collectors.toList());
 
+        List<FoodConversionEntity> allFactors = Arrays.asList(dicedTeaspoonFactor, slicedCupFactor, noMarkerCupFactor, largeUnitFactor, mediumUnitFactor);
+        Set<Long> singleUnitId = new HashSet<>();
+        singleUnitId.add(SINGLE_UNIT_ID);
+
         Mockito.when(foodConversionRepository.findAllByConversionId(conversionId))
                 .thenReturn(Arrays.asList(dicedTeaspoonFactor, slicedCupFactor, noMarkerCupFactor, largeUnitFactor, mediumUnitFactor));
-        Mockito.when(unitRepository.findById(SINGLE_UNIT_ID))
-                .thenReturn(Optional.of(testUnitLookups.get(SINGLE_UNIT_ID)));
+        Mockito.when(unitRepository.findIntegralUnits(allFactors.stream().map(FoodConversionEntity::getFromUnitId).collect(Collectors.toSet())))
+                .thenReturn(singleUnitId);
         Mockito.when(unitRepository.findById(GRAM_ID))
                 .thenReturn(Optional.of(testUnitLookups.get(GRAM_ID)));
         Mockito.when(unitRepository.findAllById(unitIdsSearch))
@@ -509,6 +520,7 @@ class FoodServiceImplMockTest {
     private UnitEntity buildUnit(Long unitId, String unitName) {
         UnitEntity unit = new UnitEntity();
         unit.setId(unitId);
+        unit.setType(UnitType.HYBRID);
         unit.setName(unitName);
         return unit;
     }

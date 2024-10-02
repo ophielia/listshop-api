@@ -3,6 +3,7 @@
  */
 package com.meg.listshop.lmt.service.food.impl;
 
+import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
@@ -243,19 +244,22 @@ public class FoodServiceImpl implements FoodService {
         // pull "single" unit ids
         Set<Long> singleUnitIds = pullSingleUnitIds(factors);
         // pull unit map
-        Map<Long, UnitEntity> unitsForFactors = getUnitsForFactorsWithGenerics(factors);
+        Map<Long, UnitEntity> allUnits = getAllUnitsForFactors(factors);
+        Map<Long, UnitEntity> unitsToConvert = allUnits.entrySet().stream()
+                .filter(e -> !singleUnitIds.contains(e.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         // get target units - grams or unit
-        List<TargetUnit> targets = determineSampleTargets(factors,singleUnitIds, unitsForFactors);
+        List<TargetUnit> targets = determineSampleTargets(factors,singleUnitIds, allUnits);
 
         // get sample sources
-        List<ConvertibleAmount> unitsToConvert = determineSampleSources(factors, conversionId, singleUnitIds, unitsForFactors);
+        List<ConvertibleAmount> sourceAmounts = determineSampleSources(factors, conversionId, singleUnitIds, allUnits);
 
         // do conversions
         // for each target
         for (TargetUnit target : targets) {
             // for each source
-            for (ConvertibleAmount toConvert : unitsToConvert) {
+            for (ConvertibleAmount toConvert : sourceAmounts) {
                 try {
                     ConvertibleAmount converted = conversionService.convertToUnit(toConvert, target.unitEntity, target.unitSize);
                     Double roundedQuantity = RoundingUtils.roundToHundredths(converted.getQuantity());
@@ -301,18 +305,38 @@ public class FoodServiceImpl implements FoodService {
                     factorsPerMarker.get(foodConversionEntity.getMarker()).add(foodConversionEntity);
                 });
         for (Map.Entry<String, List<FoodConversionEntity>> markerEntry : factorsPerMarker.entrySet()) {
-            results.addAll(determineSampleSourcesForMarker(markerEntry.getKey(), conversionId, markerEntry.getValue()));
+            results.addAll(determineSampleSourcesForMarker(markerEntry.getKey(), conversionId,
+                    markerEntry.getValue(),unitsForFactors,singleUnitIds));
         }
 
         return results;
     }
 
-    private List<ConvertibleAmount> determineSampleSourcesForMarker(String marker, Long conversionId, List<FoodConversionEntity> factors) {
-        Map<Long, UnitEntity> unitIdsForFactors = getUnitsForFactorsWithGenerics(factors);
+    private List<ConvertibleAmount> determineSampleSourcesForMarker(String marker, Long conversionId, List<FoodConversionEntity> factors,
+                                                                    Map<Long, UnitEntity> unitsForFactors, Set<Long> singleUnitIds) {
+        Set<Long> unitIdsForFactors = factors.stream()
+                .map(FoodConversionEntity::getFromUnitId)
+                .filter(u -> !singleUnitIds.contains(u))
+                .collect(Collectors.toSet());
+        Long genericId = unitIdsForFactors.stream()
+                .filter(u -> GENERIC_IDS.contains(u))
+                .findFirst()
+                .orElse(null);
+
+        if (genericId != null) {
+            for (Long unitId : GENERIC_IDS) {
+                if (!unitIdsForFactors.contains(unitId)) {
+                    unitIdsForFactors.add(unitId);
+                }
+            }
+        }
 
         List<ConvertibleAmount> results = new ArrayList<>();
-        for (Map.Entry<Long, UnitEntity> entry : unitIdsForFactors.entrySet()) {
-            results.add(amountForMarkerConversionIdUnit(marker, conversionId, entry.getValue()));
+        for (Long unitId : unitIdsForFactors) {
+            UnitEntity unit = unitsForFactors.get(unitId);
+            if (unit != null) {
+                results.add(amountForMarkerConversionIdUnit(marker, conversionId, unit));
+            }
         }
         return results;
     }
@@ -321,7 +345,7 @@ public class FoodServiceImpl implements FoodService {
         return new SimpleAmount(1.0, unit, conversionId, unit.isLiquid(), marker);
     }
 
-    private Map<Long, UnitEntity> getUnitsForFactorsWithGenerics(List<FoodConversionEntity> factors) {
+    private Map<Long, UnitEntity> getAllUnitsForFactors(List<FoodConversionEntity> factors) {
         Set<Long> unitIds = factors.stream()
                 .map(FoodConversionEntity::getFromUnitId)
                 .collect(Collectors.toSet());
@@ -337,6 +361,8 @@ public class FoodServiceImpl implements FoodService {
                 }
             }
         }
+
+        unitIds.add(SINGLE_UNIT_ID);
 
 
         List<UnitEntity> units = unitRepository.findAllById(unitIds);

@@ -317,7 +317,7 @@ public class AdminTagRestControllerTest {
         // so we should have 15 (3 x 5) samples, converting to units, with markers and unit sizes
         ConversionGrid grid = resultObject.getTag().getConversionGrid();
         Assertions.assertNotNull(grid);
-        Assertions.assertEquals(15, grid.getSamples().size(), "expected 3 samples");
+        Assertions.assertEquals(15, grid.getSamples().size(), "expected 45 samples");
         long commaCount = grid.getSamples().stream()
                 .filter( s -> s.getFromUnit().contains(",") ||
                         s.getToUnit().contains(","))
