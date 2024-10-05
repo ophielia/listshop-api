@@ -1,5 +1,6 @@
 package com.meg.listshop.conversion.data.pojo;
 
+import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 
@@ -93,6 +94,10 @@ public class SimpleAmount implements ConvertibleAmount {
 
     public void setUnitSize(String unitSize) {
         this.unitSize = unitSize;
+    }
+
+    public double getQuantityRoundedUp() {
+        return RoundingUtils.roundUpToNearestFraction(quantity);
     }
 
     @Override

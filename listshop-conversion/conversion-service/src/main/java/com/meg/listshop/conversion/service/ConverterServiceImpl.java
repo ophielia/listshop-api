@@ -1,6 +1,7 @@
 package com.meg.listshop.conversion.service;
 
 
+import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.common.UnitSubtype;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
@@ -42,7 +43,6 @@ public class ConverterServiceImpl implements ConverterService {
     }
 
 
-
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, DomainType domain) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for domain [{}], amount [{}]", domain, amount);
@@ -55,18 +55,13 @@ public class ConverterServiceImpl implements ConverterService {
     }
 
     @Override
-    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest context) throws ConversionPathException, ConversionFactorException {
-        return convert(amount, context, null);
-    }
-
-    @Override
-    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest context, String unitSize) throws ConversionPathException, ConversionFactorException {
-        LOG.debug("Beginning convert for context [{}], amount [{}, unitSize [{}]", context, amount, unitSize);
-        if (context == null) {
+    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest conversionRequest) throws ConversionPathException, ConversionFactorException {
+        LOG.debug("Beginning convert for context [{}], amount [{}, unitSize [{}]", conversionRequest, amount, conversionRequest.getUnitSize());
+        if (conversionRequest == null) {
             throw new ConversionPathException("Cannot convert, context is null");
         }
-        UnitSubtype targetSubtype = determineSubtypeFromContext(amount, context);
-        ConversionSpec conversionSpec = ConversionSpec.specForContext(context.getDomainType(), targetSubtype, context.getContextType(), unitSize);
+        UnitSubtype targetSubtype = determineSubtypeFromContext(amount, conversionRequest);
+        ConversionSpec conversionSpec = ConversionSpec.specForConversionRequest(conversionRequest, targetSubtype);
 
         return doConversion(amount, conversionSpec);
     }
@@ -86,6 +81,40 @@ public class ConverterServiceImpl implements ConverterService {
         ConversionSpec target = createConversionSpec(targetUnit, unitSize);
 
         return doConversion(amount, target);
+    }
+
+    public ConvertibleAmount add(ConvertibleAmount amountToAdd, ConvertibleAmount addTo, AddRequest request) throws ConversionPathException, ConversionFactorException {
+        // create context
+        ConversionSpec spec = ConversionSpec.specForAddRequest( request);
+        ConversionContext context = new ConversionContext(amountToAdd, spec);
+
+        // check if the units are the same
+        //      otherwise throw error
+        // check if the sizes are the same
+        //      otherwise convert amountToAdd size to addTo size
+        // check if the markers are the same
+        //      otherwise error - this would be an edge case, since this will primarily be used in the context
+        //      of adding a dish ingredient to a list - so the units should be list units, which typically don't have
+        //      markers
+
+        // do the adding
+        double quantity = addTo.getQuantity();
+        quantity += amountToAdd.getQuantity();
+        ConvertibleAmount summedAmount = new SimpleAmount(quantity,
+                addTo.getUnit(),
+                addTo.getConversionId(),
+                addTo.getIsLiquid(),
+                addTo.getMarker(),
+                addTo.getUnitSize());
+
+        // do scaling
+        ScalingHandler scalingHandler = getScalerForContext(context);
+        if (scalingHandler != null) {
+            return scalingHandler.scale(summedAmount, context);
+        }
+
+        // return result
+        return summedAmount;
     }
 
     private UnitSubtype determineSubtypeFromContext(ConvertibleAmount toConvert, ConversionRequest context) {
@@ -181,14 +210,12 @@ public class ConverterServiceImpl implements ConverterService {
                 conversionSpec.getUnitType().equals(amount.getUnit().getType());
     }
 
-
     private ScalingHandler getScalerForContext(ConversionContext context) {
         if (context.shouldScaleToUnit()) {
             return new UnitScalingHandler();
         }
         return scalerList.stream().filter(s -> s.scalerFor(context)).findFirst().orElse(null);
     }
-
 
     private ConvertibleAmount convertDomain(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
         UnitType domainType = context.getTargetUnitType();

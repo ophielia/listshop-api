@@ -56,6 +56,11 @@ public class ConversionSpec {
         return new ConversionSpec(unitSource.getId(), unitSource.getType(), unitSource.getSubtype(), null, null, null, ConversionTools.flavorsForUnit(unitSource));
     }
 
+//MM REVISIT THIS
+    public static ConversionSpec fromUnitWithContext(ConvertibleAmount amount, ConversionTargetType contextType) {
+        UnitEntity unit = amount.getUnit();
+        return new ConversionSpec(null, unit.getType(), unit.getSubtype(), contextType, amount.getUnitSize(), null, null);
+    }
 
     public static ConversionSpec basicSpec(UnitType type, UnitSubtype subtype, UnitFlavor... flavors) {
         Set<UnitFlavor> flavorSet = new HashSet<>(Arrays.asList(flavors));
@@ -70,9 +75,15 @@ public class ConversionSpec {
         return new ConversionSpec(unitId, type, subtype, null, unitSize, null, flavorSet);
     }
 
-    public static ConversionSpec specForContext(DomainType domainType, UnitSubtype subtype, ConversionTargetType contextType, String unitSize) {
-        UnitType mainType = unitTypeForDomain(domainType);
-        return new ConversionSpec(null, mainType, subtype, contextType, unitSize, domainType, new HashSet<>());
+    public static ConversionSpec specForConversionRequest(ConversionRequest request, UnitSubtype subtype) {
+        UnitType mainType = unitTypeForDomain(request.getDomainType());
+        return new ConversionSpec(null, mainType, subtype, request.getContextType(),
+                request.getUnitSize(), request.getDomainType(), new HashSet<>());
+    }
+
+    public static ConversionSpec specForAddRequest(AddRequest request) {
+        return new ConversionSpec(null, request.getUnitType(), request.getSubtype(),
+                request.getContextType(), request.getUnitSize(), null, null);
     }
 
     public boolean matches(UnitEntity unit) {

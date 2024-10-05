@@ -3,7 +3,7 @@ package com.meg.listshop.common;
 public class RoundingUtils {
 
     public static double roundToHundredths(double value) {
-        return Math.round(value * 100D) / 100D;
+        return RoundingType.HUNDREDTH.round(value);
     }
 
     public static double roundToUnits(double value) {
@@ -11,7 +11,39 @@ public class RoundingUtils {
     }
 
     public static double roundToThousandths(double value) {
-        return Math.round(value * 1000D) / 1000D;
+        return RoundingType.THOUSANDTH.round(value);
+    }
+
+    public static double roundToNearestFraction(double value) {
+        double roundedToEights = RoundingUtils.round(value,RoundingType.EIGHTH);
+        double roundedToThirds = RoundingUtils.round(value,RoundingType.THIRD);
+
+        double eighthsDistance = Math.abs(value - roundedToEights);
+        double thirdsDistance = Math.abs(value - roundedToThirds);
+
+        if (eighthsDistance > thirdsDistance) {
+            return RoundingUtils.round(roundedToThirds,RoundingType.THOUSANDTH);
+        }
+
+        return RoundingUtils.round(roundedToEights,RoundingType.THOUSANDTH);
+    }
+
+    public static double roundUpToNearestFraction(double value) {
+        double roundedToEights = RoundingType.EIGHTH.roundUp(value);
+        double roundedToThirds = RoundingType.THIRD.roundUp(value);
+
+        double eighthsDistance = Math.abs(value - roundedToEights);
+        double thirdsDistance = Math.abs(value - roundedToThirds);
+
+        if (eighthsDistance > thirdsDistance) {
+            return RoundingUtils.round(roundedToThirds,RoundingType.THOUSANDTH);
+        }
+
+        return RoundingUtils.round(roundedToEights,RoundingType.THOUSANDTH);
+    }
+
+    public static double round(double value, RoundingType roundingType) {
+        return roundingType.round(value);
     }
 
     public static double doubleFromStringFraction(String fractionString) {

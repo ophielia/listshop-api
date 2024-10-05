@@ -15,4 +15,6 @@ public interface ConvertibleAmount {
     Boolean getIsLiquid();
 
     String getUnitSize();
+
+    double getQuantityRoundedUp();
 }
