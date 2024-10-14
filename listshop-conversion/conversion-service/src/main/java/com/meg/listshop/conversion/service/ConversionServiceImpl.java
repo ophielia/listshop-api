@@ -28,7 +28,6 @@ public class ConversionServiceImpl implements ConversionService {
     @Value("${conversionservice.gram.unit.id:1013}")
     private Long GRAM_UNIT_ID;
 
-
     @Autowired
     public ConversionServiceImpl(ConversionFactorRepository conversionFactorRepository,
                                  UnitRepository unitRepository,
@@ -74,6 +73,17 @@ public class ConversionServiceImpl implements ConversionService {
     @Override
     public ConvertibleAmount convertToUnit(ConvertibleAmount amount, UnitEntity targetUnit, String unitSize) throws ConversionPathException, ConversionFactorException {
         return converterService.convert(amount, targetUnit, unitSize);
+    }
+
+    public String getDefaultUnitSizeForConversionId(Long conversionId, Long unitId) {
+        if (conversionId == null) {
+            return null;
+        }
+        ConversionFactorEntity factor = conversionFactorRepository.findUnitDefault(conversionId, unitId);
+        if (factor == null) {
+            return null;
+        }
+        return factor.getUnitSize();
     }
 
 }

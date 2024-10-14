@@ -33,7 +33,7 @@ insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, refer
 values  (1055, 180, 1013, 1000, 225744, 104748, 'chopped', null, false),
         (1056, 182, 1013, 1011, 225744, 105738, null, 'large', false),
         (1057, 123, 1013, 1011, 225744, 105738, null, 'medium', true),
-        (1058, 148, 1013, 1011, 225744, 105738, null, 'medium', true),
+        (1058, 148, 1013, 1011, 225744, 105738, null, 'medium', false),
         (1059, 91, 1013, 1011, 225744, 105738, null, 'small', false),
         (1060, 27, 1013, 1022, 225744, 105738, null, null, false),
         (1061, 31, 1013, 1050, 225744, 104539, 'wedge', null, false),

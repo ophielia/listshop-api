@@ -94,4 +94,11 @@ public class StringTools {
         }
         return text;
     }
+
+    public static boolean stringIsEmpty(String value) {
+        if (value == null) {
+            return true;
+        }
+        return value.isEmpty();
+    }
 }

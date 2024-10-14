@@ -11,4 +11,6 @@ public interface ConversionService {
     void saveConversionFactors(Long conversionId, List<FoodFactor> foodFactors);
 
     ConvertibleAmount convertToUnit(ConvertibleAmount amount, UnitEntity targetUnit, String unitSize) throws ConversionPathException, ConversionFactorException;
+
+    String getDefaultUnitSizeForConversionId(Long conversionId, Long unitId);
 }

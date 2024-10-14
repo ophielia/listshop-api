@@ -1448,1544 +1448,1544 @@ COPY public.dish (dish_id, description, dish_name, user_id, last_added, auto_tag
 -- Data for Name: dish_items; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.dish_items (dish_item_id, dish_id, tag_id, whole_quantity, fractional_quantity, quantity, unit_id, marker, unit_size, raw_modifiers, raw_entry, modifiers_processed) FROM stdin;
-1000	109	13	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1001	109	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1002	115	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1003	109	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1004	115	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1005	109	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1006	109	21	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1007	114	25	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1008	115	25	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1009	112	32	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1010	110	33	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1011	112	33	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1012	110	34	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1013	112	34	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1014	110	36	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1015	109	41	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1016	115	59	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1017	109	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1018	112	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1019	114	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1020	115	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1021	115	101	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1022	115	110	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1023	113	123	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1024	114	155	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1025	115	165	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1026	115	185	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1027	115	187	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1028	111	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1029	112	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1030	113	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1031	114	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1032	109	212	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1033	109	217	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1034	114	245	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1035	115	251	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1036	109	256	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1037	115	301	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1038	115	307	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1039	115	315	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1040	109	318	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1041	109	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1042	111	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1043	115	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1044	115	321	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1045	115	328	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1046	110	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1047	108	337	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1048	108	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1049	109	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1050	110	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1051	111	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1052	112	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1053	113	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1054	114	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1055	115	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1056	115	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1057	108	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1058	108	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1059	108	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1060	115	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1061	108	361	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1062	115	397	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1063	115	400	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1064	115	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1065	115	426	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1066	110	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1067	112	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1068	113	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1069	114	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1070	108	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1071	96	1	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1072	74	2	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1073	101	2	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1074	101	2	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1075	103	2	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1076	103	2	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1077	106	4	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1078	105	11	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1079	28	12	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1080	5	13	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1081	27	13	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1082	28	13	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1083	56	13	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1084	88	13	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1085	5	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1086	10	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1087	26	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1088	28	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1089	40	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1090	77	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1091	81	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1092	82	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1093	92	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1094	101	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1095	101	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1096	107	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1097	4	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1098	5	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1099	6	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1100	8	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1101	10	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1102	11	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1103	12	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1104	13	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1105	16	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1106	19	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1107	20	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1108	22	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1109	24	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1110	26	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1111	28	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1112	37	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1113	38	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1114	40	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1115	42	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1116	44	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1117	46	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1118	47	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1119	49	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1120	55	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1121	56	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1122	61	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1123	63	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1124	65	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1125	66	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1126	69	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1127	77	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1128	78	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1129	80	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1130	81	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1131	82	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1132	86	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1133	88	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1134	91	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1135	92	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1136	93	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1137	95	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1138	99	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1139	103	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1140	105	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1141	107	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1142	28	17	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1143	2	18	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1144	13	18	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1145	16	18	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1146	44	18	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1147	56	18	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1148	95	18	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1149	96	18	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1150	107	18	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1151	4	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1152	6	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1153	8	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1154	10	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1155	12	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1156	13	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1157	16	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1158	18	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1159	19	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1160	20	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1161	22	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1162	23	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1163	26	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1164	37	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1165	39	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1166	40	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1167	42	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1168	44	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1169	47	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1170	48	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1171	50	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1172	53	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1173	1009	1088	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1174	55	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1175	61	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1176	64	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1177	65	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1178	66	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1179	77	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1180	78	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1181	80	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1182	84	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1183	86	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1184	91	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1185	103	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1186	105	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1187	107	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1188	16	20	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1189	45	21	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1190	1009	1089	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1191	90	21	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1192	90	22	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1193	6	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1194	6	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1195	12	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1196	17	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1197	18	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1198	51	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1199	60	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1200	70	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1201	86	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1202	90	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1203	91	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1204	93	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1205	103	23	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1206	9	24	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1207	17	24	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1208	38	24	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1209	39	24	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1210	43	24	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1211	48	24	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1212	53	24	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1213	78	24	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1214	82	24	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1215	86	24	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1216	89	25	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1217	101	25	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1218	101	25	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1219	5	26	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1220	17	27	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1221	84	27	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1222	56	28	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1223	5	28	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1224	65	29	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1225	82	29	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1226	5	29	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1227	19	30	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1228	94	31	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1229	94	32	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1230	94	34	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1231	105	36	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1232	1010	1097	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1233	29	38	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1234	60	38	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1235	18	46	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1236	23	46	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1237	70	46	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1238	84	46	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1239	85	46	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1240	15	47	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1241	55	47	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1242	64	47	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1243	79	47	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1244	81	47	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1245	89	47	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1246	21	48	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1247	21	48	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1248	91	49	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1249	6	49	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1250	6	49	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1251	80	50	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1252	91	50	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1253	6	50	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1254	6	50	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1255	6	51	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1256	6	51	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1257	23	52	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1258	6	52	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1259	6	52	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1260	10	52	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1261	6	53	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1262	6	53	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1263	34	54	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1264	55	54	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1265	10	55	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1266	51	55	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1267	70	55	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1268	85	55	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1269	1010	1098	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1270	10	56	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1271	10	57	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1272	18	57	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1273	40	57	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1274	42	57	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1275	55	57	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1276	103	57	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1277	10	58	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1278	17	58	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1279	40	58	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1280	70	58	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1281	77	58	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1282	93	58	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1283	10	59	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1284	21	59	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1285	21	59	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1286	23	59	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1287	10	60	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1288	55	61	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1289	76	61	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1290	107	61	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1291	9	61	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1292	14	62	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1293	15	62	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1294	23	62	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1295	27	62	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1296	52	62	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1297	64	62	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1298	104	62	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1299	107	62	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1300	31	64	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1301	42	64	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1302	66	64	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1303	105	64	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1304	106	64	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1305	5	64	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1306	27	67	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1307	32	67	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1308	33	67	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1309	57	67	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1310	72	67	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1311	73	67	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1312	89	67	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1313	101	67	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1314	101	67	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1315	107	67	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1316	2	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1317	15	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1318	30	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1319	32	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1320	33	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1321	57	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1322	64	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1323	68	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1324	72	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1325	79	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1326	92	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1327	96	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1328	102	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1329	104	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1330	106	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1331	27	71	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1332	102	71	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1333	106	71	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1334	102	72	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1335	106	73	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1336	40	74	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1337	77	74	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1338	78	74	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1339	102	74	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1340	100	75	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1341	94	76	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1342	100	76	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1343	100	77	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1344	37	78	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1345	57	79	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1346	79	79	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1347	108	79	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1348	108	80	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1349	5	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1350	10	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1351	26	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1352	34	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1353	40	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1354	45	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1355	61	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1356	63	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1357	66	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1358	76	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1359	77	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1360	82	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1361	87	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1362	88	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1363	103	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1364	26	82	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1365	32	84	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1366	105	85	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1367	106	85	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1368	37	89	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1369	96	89	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1370	98	90	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1371	98	91	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1372	98	92	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1373	15	95	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1374	75	97	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1375	18	99	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1376	85	99	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1377	85	100	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1378	4	101	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1379	19	101	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1380	22	101	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1381	41	101	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1382	85	101	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1383	86	101	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1384	15	102	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1385	38	102	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1386	84	102	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1387	85	102	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1388	85	103	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1389	1011	1106	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1390	20	104	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1391	23	104	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1392	27	104	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1393	42	104	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1394	48	104	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1395	53	104	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1396	70	104	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1397	85	104	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1398	82	105	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1399	94	105	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1400	94	106	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1401	94	107	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1402	48	108	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1403	48	109	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1404	53	109	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1405	60	109	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1406	48	110	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1407	78	110	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1408	17	111	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1409	48	111	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1410	49	112	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1411	49	113	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1412	80	113	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1413	83	113	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1414	1011	1107	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1415	49	114	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1416	74	114	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1417	49	115	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1418	17	116	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1419	17	117	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1420	53	117	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1421	18	118	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1422	18	119	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1423	19	120	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1424	19	121	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1425	19	122	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1426	50	122	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1427	20	123	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1428	62	47	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1429	21	124	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1430	21	124	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1431	21	125	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1432	21	125	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1433	3	126	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1434	22	126	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1435	66	126	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1436	72	126	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1437	22	127	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1438	22	128	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1439	23	129	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1440	52	129	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1441	50	130	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1442	50	131	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1443	53	131	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1444	86	131	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1445	91	131	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1446	50	132	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1447	50	133	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1448	55	133	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1449	50	134	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1450	78	134	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1451	62	69	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1452	50	135	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1453	67	142	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1454	68	142	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1455	72	142	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1456	75	142	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1457	89	142	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1458	92	142	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1459	93	142	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1460	24	155	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1461	31	155	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1462	37	155	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1463	39	155	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1464	39	155	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1465	39	155	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1466	39	155	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1467	39	155	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1468	69	155	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1469	107	155	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1470	93	159	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1471	86	161	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1472	86	162	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1473	86	163	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1474	82	164	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1475	62	102	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1476	61	165	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1477	82	165	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1478	95	165	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1479	38	166	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1480	41	166	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1481	82	166	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1482	61	167	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1483	68	167	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1484	80	167	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1485	27	168	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1486	44	168	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1487	55	168	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1488	65	168	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1489	65	169	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1490	89	170	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1491	89	171	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1492	92	172	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1493	92	173	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1494	79	174	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1495	73	175	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1496	73	176	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1497	73	177	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1498	35	178	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1499	35	179	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1500	62	129	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1501	55	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1502	57	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1503	67	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1504	68	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1505	71	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1506	73	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1507	75	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1508	77	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1509	79	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1510	89	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1511	95	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1512	100	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1513	108	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1514	62	185	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1515	14	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1516	30	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1517	32	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1518	33	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1519	35	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1520	57	182	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1521	68	182	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1522	71	182	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1523	73	182	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1524	108	182	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1525	30	182	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1526	33	182	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1527	35	182	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1528	26	183	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1529	65	184	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1530	8	184	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1531	13	184	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1532	26	184	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1533	44	184	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1534	81	185	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1535	82	185	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1536	26	185	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1537	80	186	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1538	103	186	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1539	26	186	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1540	43	186	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1541	66	187	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1542	81	187	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1543	87	187	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1544	8	187	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1545	44	187	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1546	82	188	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1547	8	188	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1548	44	188	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1549	65	189	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1550	8	189	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1551	66	190	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1552	76	190	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1553	8	190	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1554	72	191	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1555	8	191	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1556	61	192	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1557	68	192	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1558	72	192	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1559	102	192	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1560	106	192	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1561	8	192	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1562	33	192	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1563	43	192	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1564	53	193	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1565	72	193	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1566	8	193	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1567	14	193	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1568	72	194	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1569	79	194	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1570	8	194	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1571	14	194	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1572	34	194	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1573	105	198	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1574	62	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1575	57	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1576	58	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1577	60	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1578	63	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1579	66	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1580	74	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1581	80	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1582	83	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1583	95	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1584	99	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1585	62	204	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1586	9	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1587	14	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1588	15	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1589	27	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1590	31	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1591	33	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1592	38	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1593	41	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1594	43	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1595	45	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1596	43	200	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1597	43	201	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1598	43	202	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1599	52	203	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1600	65	203	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1601	99	203	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1602	100	203	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1603	21	203	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1604	21	203	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1605	43	203	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1606	60	204	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1607	70	204	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1608	84	204	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1609	85	204	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1610	18	204	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1611	23	204	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1612	29	204	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1613	29	205	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1614	29	206	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1615	92	206	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1616	2	206	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1617	29	207	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1618	20	208	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1619	29	208	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1620	70	208	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1621	31	209	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1622	27	210	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1623	31	210	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1624	38	210	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1625	83	210	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1626	107	210	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1627	31	211	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1628	83	211	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1629	100	211	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1630	4	212	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1631	9	212	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1632	62	238	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1633	66	212	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1634	75	212	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1635	76	212	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1636	80	212	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1637	75	213	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1638	16	218	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1639	66	219	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1640	104	219	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1641	66	227	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1642	97	227	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1643	101	227	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1644	101	227	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1645	14	229	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1646	35	229	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1647	68	229	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1648	71	229	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1649	81	230	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1650	81	231	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1651	81	232	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1652	40	233	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1653	40	234	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1654	9	237	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1655	59	237	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1656	13	238	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1657	41	238	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1658	96	238	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1659	79	242	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1660	80	242	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1661	88	242	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1662	14	243	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1663	57	243	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1664	80	243	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1665	24	244	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1666	20	245	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1667	48	245	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1668	66	245	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1669	86	245	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1670	107	245	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1671	62	255	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1672	10	245	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1673	42	247	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1674	51	247	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1675	64	247	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1676	70	247	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1677	76	247	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1678	82	247	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1679	91	247	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1680	92	247	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1681	93	247	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1682	51	248	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1683	52	249	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1684	60	249	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1685	52	250	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1686	9	251	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1687	61	251	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1688	76	251	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1689	77	251	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1690	99	251	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1691	77	252	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1692	13	255	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1693	80	255	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1694	4	256	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1695	9	256	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1696	62	284	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1697	62	293	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1698	55	258	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1699	55	259	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1700	56	260	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1701	62	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1702	62	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1703	62	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1704	88	263	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1705	104	264	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1706	2	267	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1707	30	267	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1708	32	267	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1709	33	267	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1710	59	267	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1711	71	267	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1712	68	268	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1713	75	268	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1714	89	268	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1715	92	268	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1716	42	271	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1717	58	271	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1718	58	272	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1719	79	272	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1720	58	273	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1721	30	274	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1722	95	278	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1723	95	279	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1724	95	282	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1725	13	284	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1726	66	284	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1727	66	285	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1728	46	286	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1729	66	286	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1730	88	286	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1731	42	287	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1732	66	287	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1733	3	288	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1734	76	289	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1735	30	293	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1736	30	294	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1737	59	294	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1738	71	294	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1739	59	295	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1740	79	296	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1741	79	297	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1742	10	301	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1743	61	301	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1744	66	301	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1745	69	301	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1746	76	301	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1747	80	301	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1748	82	301	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1749	95	301	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1750	95	301	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1751	17	303	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1752	43	303	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1753	50	303	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1754	53	303	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1755	86	303	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1756	76	308	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1757	76	309	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1758	14	310	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1759	42	310	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1760	76	310	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1761	13	311	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1762	13	312	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1763	15	315	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1764	36	315	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1765	77	315	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1766	85	315	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1767	39	316	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1768	44	317	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1769	101	317	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1770	101	317	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1771	2	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1772	3	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1773	4	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1774	5	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1775	6	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1776	7	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1777	8	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1778	9	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1779	10	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1780	11	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1781	12	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1782	13	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1783	14	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1784	15	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1785	16	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1786	17	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1787	18	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1788	19	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1789	20	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1790	21	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1791	21	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1792	22	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1793	23	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1794	26	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1795	27	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1796	28	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1797	29	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1798	36	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1799	37	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1800	38	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1801	39	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1802	40	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1803	41	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1804	42	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1805	43	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1806	44	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1807	46	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1808	47	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1809	48	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1810	49	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1811	50	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1812	50	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1813	51	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1814	52	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1815	53	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1816	62	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1817	55	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1818	56	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1819	60	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1820	61	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1821	63	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1822	64	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1823	65	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1824	66	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1825	69	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1826	70	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1827	76	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1828	77	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1829	78	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1830	80	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1831	81	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1832	82	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1833	84	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1834	85	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1835	86	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1836	88	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1837	90	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1838	91	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1839	94	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1840	95	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1841	96	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1842	98	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1843	99	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1844	101	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1845	101	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1846	103	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1847	104	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1848	105	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1849	106	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1850	107	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1851	39	321	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1852	66	321	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1853	103	321	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1854	106	321	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1855	65	322	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1856	105	322	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1857	5	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1858	26	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1859	47	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1860	61	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1861	65	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1862	76	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1863	77	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1864	80	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1865	81	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1866	82	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1867	99	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1868	101	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1869	101	323	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1870	16	324	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1871	76	324	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1872	104	324	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1873	77	325	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1874	16	327	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1875	39	327	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1876	104	327	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1877	103	328	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1878	106	328	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1879	39	330	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1880	62	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1881	12	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1882	15	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1883	28	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1884	42	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1885	43	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1886	51	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1887	52	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1888	53	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1889	55	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1890	56	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1891	60	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1892	61	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1893	63	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1894	64	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1895	65	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1896	68	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1897	70	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1898	76	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1899	77	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1900	80	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1901	82	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1902	86	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1903	91	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1904	92	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1905	97	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1906	99	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1907	100	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1908	102	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1909	103	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1910	62	460	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1911	4	335	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1912	8	335	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1913	9	335	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1914	38	335	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1915	39	335	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1916	56	335	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1917	62	461	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1918	3	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1919	4	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1920	9	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1921	12	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1922	15	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1923	18	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1924	19	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1925	23	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1926	29	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1927	31	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1928	38	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1929	39	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1930	42	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1931	47	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1932	48	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1933	52	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1934	55	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1935	61	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1936	63	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1937	74	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1938	83	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1939	85	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1940	91	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1941	28	337	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1942	39	337	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1943	8	338	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1944	47	338	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1945	65	338	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1946	2	340	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1947	5	340	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1948	46	340	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1949	47	340	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1950	47	341	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1951	55	341	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1952	77	341	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1953	86	341	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1954	42	342	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1955	49	342	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1956	69	342	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1957	87	342	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1958	8	343	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1959	26	343	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1960	65	343	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1961	69	343	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1962	62	462	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1963	2	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1964	3	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1965	4	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1966	6	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1967	7	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1968	8	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1969	9	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1970	10	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1971	11	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1972	12	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1973	13	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1974	14	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1975	16	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1976	17	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1977	18	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1978	19	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1979	20	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1980	21	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1981	22	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1982	23	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1983	24	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1984	26	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1985	27	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1986	28	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1987	30	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1988	32	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1989	33	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1990	34	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1991	35	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1992	37	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1993	38	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1994	39	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1995	40	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1996	41	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1997	43	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1998	44	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1999	45	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2000	47	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2001	48	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2002	49	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2003	50	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2004	51	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2005	52	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2006	53	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2007	62	463	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2008	55	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2009	56	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2010	57	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2011	58	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2012	61	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2013	63	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2014	64	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2015	65	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2016	67	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2017	68	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2018	69	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2019	70	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2020	71	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2021	72	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2022	73	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2023	75	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2024	76	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2025	78	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2026	79	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2027	80	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2028	81	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2029	82	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2030	83	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2031	86	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2032	87	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2033	88	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2034	89	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2035	90	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2036	91	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2037	92	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2038	93	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2039	94	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2040	95	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2041	96	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2042	97	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2043	98	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2044	99	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2045	100	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2046	102	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2047	104	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2048	107	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2049	69	345	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2050	2	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2051	3	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2052	4	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2053	8	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2054	9	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2055	11	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2056	13	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2057	42	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2058	44	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2059	55	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2060	61	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2061	64	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2062	76	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2063	78	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2064	88	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2065	91	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2066	96	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2067	99	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2068	104	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2069	105	346	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2070	11	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2071	13	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2072	14	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2073	20	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2074	21	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2075	21	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2076	22	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2077	30	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2078	49	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2079	55	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2080	64	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2081	65	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2082	66	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2083	70	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2084	76	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2085	84	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2086	88	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2087	93	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2088	103	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2089	105	347	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2090	3	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2091	6	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2092	6	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2093	11	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2094	15	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2095	17	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2096	20	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2097	21	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2098	21	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2099	27	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2100	32	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2101	34	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2102	35	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2103	40	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2104	40	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2105	51	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2106	53	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2107	57	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2108	59	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2109	60	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2110	61	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2111	64	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2112	67	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2113	68	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2114	70	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2115	71	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2116	73	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2117	76	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2118	79	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2119	84	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2120	89	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2121	92	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2122	93	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2123	95	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2124	97	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2125	101	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2126	101	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2127	104	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2128	107	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2129	11	349	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2130	51	349	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2131	107	349	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2132	11	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2133	13	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2134	27	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2135	30	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2136	32	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2137	35	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2138	62	464	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2139	57	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2140	61	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2141	64	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2142	67	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2143	68	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2144	70	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2145	71	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2146	76	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2147	79	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2148	89	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2149	93	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2150	99	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2151	104	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2152	107	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2153	11	351	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2154	47	351	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2155	55	351	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2156	62	465	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2157	3	352	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2158	11	352	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2159	23	352	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2160	29	352	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2161	52	352	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2162	8	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2163	13	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2164	18	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2165	19	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2166	44	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2167	47	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2168	49	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2169	65	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2170	80	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2171	82	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2172	86	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2173	6	354	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2174	6	354	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2175	10	354	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2176	12	354	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2177	47	354	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2178	53	354	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2179	63	354	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2180	92	354	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2181	8	355	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2182	12	355	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2183	66	355	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2184	80	355	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2185	91	355	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2186	12	356	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2187	38	356	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2188	94	356	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2189	12	357	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2190	15	357	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2191	68	357	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2192	84	357	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2193	8	358	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2194	12	358	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2195	72	358	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2196	75	358	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2197	79	358	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2198	12	359	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2199	79	359	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2200	62	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2201	8	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2202	12	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2203	15	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2204	30	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2205	32	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2206	42	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2207	51	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2208	52	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2209	53	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2210	55	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2211	56	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2212	57	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2213	60	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2214	61	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2215	63	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2216	64	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2217	66	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2218	67	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2219	68	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2220	70	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2221	71	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2222	72	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2223	75	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2224	76	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2225	77	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2226	80	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2227	88	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2228	89	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2229	91	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2230	92	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2231	97	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2232	99	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2233	100	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2234	102	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2235	103	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2236	58	361	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2237	68	361	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2238	72	361	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2239	76	361	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2240	80	361	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2241	44	363	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2242	65	363	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2243	105	363	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2244	66	364	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2245	42	368	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2246	64	368	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2247	99	368	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2248	104	395	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2249	39	396	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2250	66	396	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2251	103	396	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2252	105	396	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2253	106	396	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2254	16	397	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2255	44	397	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2256	65	397	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2257	101	397	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2258	16	399	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2259	65	399	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2260	66	400	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2261	104	400	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2262	103	401	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2263	105	401	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2264	106	401	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2265	3	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2266	4	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2267	6	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2268	6	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2269	12	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2270	20	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2271	51	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2272	52	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2273	53	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2274	64	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2275	65	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2276	81	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2277	88	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2278	104	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2279	105	406	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2280	29	415	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2281	59	415	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2282	60	415	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2283	84	415	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2284	65	416	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2285	39	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2286	65	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2287	66	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2288	101	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2289	103	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2290	104	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2291	106	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2292	16	422	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2293	105	422	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2294	44	425	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2295	16	426	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2296	106	426	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2297	66	427	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2298	103	427	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2299	104	427	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2300	105	427	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2301	65	428	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2302	101	428	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2303	62	218	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2304	24	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2305	31	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2306	34	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2307	45	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2308	56	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2309	63	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2310	68	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2311	74	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2312	75	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2313	83	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2314	89	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2315	91	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2316	92	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2317	93	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2318	97	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2319	100	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2320	30	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2321	32	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2322	33	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2323	35	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2324	57	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2325	58	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2326	59	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2327	67	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2328	71	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2329	72	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2330	73	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2331	79	433	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2332	3	434	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2333	4	434	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2334	13	434	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2335	90	434	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2336	91	434	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2337	8	435	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2338	16	435	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2339	28	435	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2340	44	435	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2341	82	435	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2342	16	436	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2343	6	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2344	6	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2345	10	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2346	13	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2347	22	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2348	24	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2349	41	453	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2350	9	454	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2351	42	455	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2352	42	456	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2353	46	456	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2354	61	457	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2355	14	458	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2356	15	459	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2357	109	460	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2358	99	464	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2359	115	465	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2360	63	466	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2361	63	467	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2362	36	468	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2363	41	472	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2364	14	473	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2365	11	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2366	16	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2367	17	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2368	20	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2369	37	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2370	42	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2371	46	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2372	49	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2373	55	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2374	65	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2375	69	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2376	77	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2377	81	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2378	88	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2379	91	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2380	93	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2381	99	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2382	101	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2383	101	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2384	103	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2385	109	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2386	115	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2387	48	438	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2388	90	438	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2389	38	439	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2390	39	439	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2391	39	440	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2392	47	441	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2393	11	442	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2394	22	442	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2395	47	443	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2396	109	443	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2397	115	443	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2398	21	444	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2399	21	444	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2400	68	444	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2401	97	444	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2402	103	444	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2403	88	446	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2404	4	447	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2405	4	448	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2406	4	449	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2407	4	450	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2408	4	451	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2409	4	452	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2410	9	452	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2411	500	500	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2412	500	501	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2413	501	502	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2414	502	503	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2415	62	363	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2416	62	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2417	62	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2418	62	322	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2419	62	396	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2420	62	426	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2421	62	400	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2422	1012	1115	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2423	1012	1116	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2424	1013	1124	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2425	1013	1125	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2426	1014	1134	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2427	1014	1135	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2428	1015	1143	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2429	1015	1144	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2430	1016	1152	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2431	1016	1153	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2432	1017	1162	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2433	1017	1163	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2434	1018	1171	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2435	1018	1172	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2436	1000	1007	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2437	1000	1008	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2438	503	218	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2439	503	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2440	503	363	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2441	503	322	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2442	503	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2443	503	396	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2444	503	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2445	503	426	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2446	503	401	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2447	1001	1016	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2448	1001	1017	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2449	1002	1025	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2450	1002	1026	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2451	54	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2452	54	21	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2453	54	110	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2454	54	123	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2455	54	165	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2456	54	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2457	54	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2458	54	212	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2459	54	218	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2460	54	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2461	54	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2462	54	363	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2463	54	256	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2464	54	257	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2465	54	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2466	54	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2467	54	396	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2468	54	400	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2469	54	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2470	54	426	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2471	54	322	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2472	1003	1034	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2473	1003	1035	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2474	1	37	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2475	1	55	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2476	1	104	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2477	1	114	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2478	1	135	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2479	1	181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2480	1	199	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2481	1	245	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2482	1	352	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2483	1	360	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2484	1	261	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2485	1	262	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2486	1	263	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2487	1	334	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2488	1	335	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2489	1	336	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2490	1	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2491	1	432	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2492	1004	1043	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2493	1004	1044	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2494	1005	1052	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2495	1005	1053	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2496	1006	1061	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2497	1006	1062	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2498	1007	1070	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2499	1007	1071	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2500	1008	1079	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2501	1008	1080	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2502	25	15	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2503	25	16	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2504	25	19	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2505	25	20	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2506	25	47	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2507	25	48	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2508	25	81	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2509	25	227	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2510	25	228	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2511	25	301	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2512	25	320	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2513	25	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2514	25	348	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2515	25	350	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2516	25	437	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2517	25	426	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2518	25	396	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2519	25	218	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2520	25	400	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2521	25	363	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2522	25	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2523	25	322	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2524	1019	1180	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2525	1019	1181	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2526	603	353	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2527	603	218	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2528	603	363	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2529	603	419	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2530	603	344	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2531	603	322	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2532	603	396	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2533	603	426	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2534	603	399	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2535	1020	1189	\N	\N	\N	\N	\N	\N	\N	\N	\N
-2536	1020	1190	\N	\N	\N	\N	\N	\N	\N	\N	\N
+COPY public.dish_items (dish_item_id, dish_id, tag_id, whole_quantity, fractional_quantity, quantity, unit_id, marker, unit_size, raw_modifiers, raw_entry, modifiers_processed, user_size) FROM stdin;
+1000	109	13	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1001	109	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1002	115	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1003	109	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1004	115	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1005	109	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1006	109	21	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1007	114	25	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1008	115	25	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1009	112	32	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1010	110	33	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1011	112	33	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1012	110	34	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1013	112	34	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1014	110	36	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1015	109	41	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1016	115	59	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1017	109	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1018	112	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1019	114	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1020	115	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1021	115	101	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1022	115	110	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1023	113	123	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1024	114	155	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1025	115	165	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1026	115	185	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1027	115	187	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1028	111	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1029	112	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1030	113	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1031	114	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1032	109	212	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1033	109	217	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1034	114	245	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1035	115	251	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1036	109	256	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1037	115	301	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1038	115	307	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1039	115	315	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1040	109	318	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1041	109	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1042	111	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1043	115	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1044	115	321	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1045	115	328	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1046	110	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1047	108	337	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1048	108	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1049	109	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1050	110	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1051	111	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1052	112	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1053	113	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1054	114	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1055	115	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1056	115	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1057	108	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1058	108	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1059	108	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1060	115	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1061	108	361	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1062	115	397	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1063	115	400	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1064	115	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1065	115	426	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1066	110	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1067	112	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1068	113	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1069	114	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1070	108	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1071	96	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1072	74	2	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1073	101	2	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1074	101	2	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1075	103	2	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1076	103	2	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1077	106	4	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1078	105	11	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1079	28	12	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1080	5	13	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1081	27	13	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1082	28	13	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1083	56	13	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1084	88	13	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1085	5	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1086	10	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1087	26	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1088	28	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1089	40	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1090	77	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1091	81	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1092	82	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1093	92	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1094	101	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1095	101	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1096	107	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1097	4	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1098	5	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1099	6	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1100	8	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1101	10	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1102	11	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1103	12	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1104	13	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1105	16	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1106	19	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1107	20	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1108	22	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1109	24	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1110	26	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1111	28	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1112	37	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1113	38	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1114	40	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1115	42	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1116	44	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1117	46	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1118	47	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1119	49	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1120	55	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1121	56	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1122	61	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1123	63	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1124	65	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1125	66	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1126	69	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1127	77	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1128	78	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1129	80	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1130	81	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1131	82	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1132	86	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1133	88	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1134	91	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1135	92	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1136	93	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1137	95	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1138	99	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1139	103	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1140	105	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1141	107	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1142	28	17	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1143	2	18	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1144	13	18	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1145	16	18	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1146	44	18	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1147	56	18	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1148	95	18	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1149	96	18	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1150	107	18	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1151	4	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1152	6	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1153	8	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1154	10	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1155	12	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1156	13	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1157	16	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1158	18	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1159	19	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1160	20	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1161	22	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1162	23	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1163	26	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1164	37	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1165	39	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1166	40	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1167	42	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1168	44	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1169	47	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1170	48	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1171	50	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1172	53	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1173	1009	1088	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1174	55	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1175	61	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1176	64	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1177	65	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1178	66	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1179	77	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1180	78	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1181	80	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1182	84	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1183	86	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1184	91	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1185	103	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1186	105	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1187	107	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1188	16	20	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1189	45	21	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1190	1009	1089	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1191	90	21	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1192	90	22	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1193	6	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1194	6	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1195	12	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1196	17	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1197	18	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1198	51	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1199	60	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1200	70	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1201	86	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1202	90	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1203	91	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1204	93	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1205	103	23	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1206	9	24	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1207	17	24	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1208	38	24	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1209	39	24	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1210	43	24	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1211	48	24	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1212	53	24	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1213	78	24	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1214	82	24	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1215	86	24	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1216	89	25	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1217	101	25	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1218	101	25	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1219	5	26	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1220	17	27	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1221	84	27	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1222	56	28	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1223	5	28	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1224	65	29	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1225	82	29	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1226	5	29	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1227	19	30	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1228	94	31	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1229	94	32	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1230	94	34	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1231	105	36	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1232	1010	1097	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1233	29	38	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1234	60	38	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1235	18	46	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1236	23	46	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1237	70	46	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1238	84	46	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1239	85	46	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1240	15	47	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1241	55	47	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1242	64	47	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1243	79	47	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1244	81	47	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1245	89	47	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1246	21	48	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1247	21	48	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1248	91	49	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1249	6	49	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1250	6	49	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1251	80	50	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1252	91	50	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1253	6	50	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1254	6	50	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1255	6	51	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1256	6	51	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1257	23	52	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1258	6	52	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1259	6	52	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1260	10	52	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1261	6	53	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1262	6	53	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1263	34	54	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1264	55	54	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1265	10	55	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1266	51	55	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1267	70	55	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1268	85	55	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1269	1010	1098	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1270	10	56	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1271	10	57	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1272	18	57	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1273	40	57	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1274	42	57	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1275	55	57	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1276	103	57	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1277	10	58	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1278	17	58	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1279	40	58	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1280	70	58	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1281	77	58	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1282	93	58	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1283	10	59	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1284	21	59	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1285	21	59	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1286	23	59	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1287	10	60	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1288	55	61	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1289	76	61	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1290	107	61	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1291	9	61	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1292	14	62	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1293	15	62	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1294	23	62	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1295	27	62	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1296	52	62	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1297	64	62	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1298	104	62	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1299	107	62	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1300	31	64	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1301	42	64	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1302	66	64	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1303	105	64	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1304	106	64	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1305	5	64	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1306	27	67	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1307	32	67	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1308	33	67	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1309	57	67	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1310	72	67	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1311	73	67	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1312	89	67	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1313	101	67	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1314	101	67	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1315	107	67	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1316	2	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1317	15	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1318	30	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1319	32	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1320	33	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1321	57	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1322	64	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1323	68	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1324	72	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1325	79	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1326	92	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1327	96	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1328	102	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1329	104	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1330	106	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1331	27	71	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1332	102	71	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1333	106	71	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1334	102	72	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1335	106	73	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1336	40	74	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1337	77	74	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1338	78	74	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1339	102	74	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1340	100	75	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1341	94	76	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1342	100	76	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1343	100	77	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1344	37	78	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1345	57	79	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1346	79	79	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1347	108	79	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1348	108	80	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1349	5	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1350	10	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1351	26	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1352	34	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1353	40	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1354	45	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1355	61	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1356	63	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1357	66	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1358	76	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1359	77	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1360	82	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1361	87	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1362	88	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1363	103	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1364	26	82	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1365	32	84	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1366	105	85	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1367	106	85	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1368	37	89	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1369	96	89	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1370	98	90	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1371	98	91	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1372	98	92	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1373	15	95	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1374	75	97	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1375	18	99	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1376	85	99	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1377	85	100	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1378	4	101	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1379	19	101	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1380	22	101	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1381	41	101	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1382	85	101	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1383	86	101	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1384	15	102	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1385	38	102	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1386	84	102	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1387	85	102	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1388	85	103	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1389	1011	1106	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1390	20	104	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1391	23	104	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1392	27	104	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1393	42	104	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1394	48	104	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1395	53	104	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1396	70	104	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1397	85	104	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1398	82	105	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1399	94	105	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1400	94	106	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1401	94	107	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1402	48	108	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1403	48	109	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1404	53	109	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1405	60	109	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1406	48	110	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1407	78	110	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1408	17	111	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1409	48	111	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1410	49	112	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1411	49	113	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1412	80	113	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1413	83	113	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1414	1011	1107	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1415	49	114	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1416	74	114	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1417	49	115	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1418	17	116	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1419	17	117	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1420	53	117	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1421	18	118	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1422	18	119	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1423	19	120	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1424	19	121	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1425	19	122	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1426	50	122	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1427	20	123	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1428	62	47	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1429	21	124	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1430	21	124	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1431	21	125	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1432	21	125	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1433	3	126	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1434	22	126	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1435	66	126	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1436	72	126	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1437	22	127	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1438	22	128	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1439	23	129	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1440	52	129	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1441	50	130	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1442	50	131	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1443	53	131	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1444	86	131	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1445	91	131	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1446	50	132	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1447	50	133	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1448	55	133	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1449	50	134	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1450	78	134	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1451	62	69	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1452	50	135	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1453	67	142	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1454	68	142	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1455	72	142	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1456	75	142	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1457	89	142	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1458	92	142	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1459	93	142	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1460	24	155	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1461	31	155	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1462	37	155	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1463	39	155	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1464	39	155	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1465	39	155	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1466	39	155	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1467	39	155	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1468	69	155	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1469	107	155	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1470	93	159	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1471	86	161	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1472	86	162	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1473	86	163	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1474	82	164	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1475	62	102	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1476	61	165	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1477	82	165	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1478	95	165	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1479	38	166	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1480	41	166	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1481	82	166	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1482	61	167	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1483	68	167	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1484	80	167	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1485	27	168	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1486	44	168	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1487	55	168	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1488	65	168	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1489	65	169	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1490	89	170	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1491	89	171	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1492	92	172	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1493	92	173	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1494	79	174	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1495	73	175	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1496	73	176	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1497	73	177	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1498	35	178	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1499	35	179	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1500	62	129	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1501	55	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1502	57	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1503	67	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1504	68	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1505	71	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1506	73	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1507	75	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1508	77	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1509	79	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1510	89	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1511	95	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1512	100	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1513	108	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1514	62	185	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1515	14	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1516	30	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1517	32	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1518	33	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1519	35	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1520	57	182	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1521	68	182	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1522	71	182	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1523	73	182	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1524	108	182	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1525	30	182	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1526	33	182	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1527	35	182	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1528	26	183	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1529	65	184	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1530	8	184	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1531	13	184	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1532	26	184	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1533	44	184	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1534	81	185	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1535	82	185	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1536	26	185	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1537	80	186	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1538	103	186	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1539	26	186	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1540	43	186	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1541	66	187	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1542	81	187	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1543	87	187	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1544	8	187	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1545	44	187	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1546	82	188	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1547	8	188	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1548	44	188	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1549	65	189	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1550	8	189	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1551	66	190	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1552	76	190	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1553	8	190	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1554	72	191	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1555	8	191	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1556	61	192	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1557	68	192	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1558	72	192	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1559	102	192	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1560	106	192	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1561	8	192	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1562	33	192	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1563	43	192	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1564	53	193	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1565	72	193	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1566	8	193	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1567	14	193	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1568	72	194	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1569	79	194	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1570	8	194	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1571	14	194	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1572	34	194	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1573	105	198	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1574	62	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1575	57	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1576	58	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1577	60	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1578	63	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1579	66	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1580	74	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1581	80	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1582	83	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1583	95	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1584	99	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1585	62	204	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1586	9	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1587	14	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1588	15	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1589	27	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1590	31	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1591	33	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1592	38	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1593	41	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1594	43	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1595	45	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1596	43	200	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1597	43	201	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1598	43	202	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1599	52	203	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1600	65	203	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1601	99	203	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1602	100	203	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1603	21	203	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1604	21	203	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1605	43	203	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1606	60	204	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1607	70	204	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1608	84	204	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1609	85	204	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1610	18	204	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1611	23	204	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1612	29	204	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1613	29	205	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1614	29	206	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1615	92	206	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1616	2	206	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1617	29	207	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1618	20	208	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1619	29	208	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1620	70	208	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1621	31	209	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1622	27	210	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1623	31	210	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1624	38	210	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1625	83	210	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1626	107	210	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1627	31	211	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1628	83	211	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1629	100	211	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1630	4	212	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1631	9	212	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1632	62	238	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1633	66	212	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1634	75	212	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1635	76	212	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1636	80	212	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1637	75	213	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1638	16	218	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1639	66	219	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1640	104	219	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1641	66	227	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1642	97	227	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1643	101	227	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1644	101	227	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1645	14	229	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1646	35	229	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1647	68	229	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1648	71	229	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1649	81	230	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1650	81	231	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1651	81	232	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1652	40	233	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1653	40	234	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1654	9	237	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1655	59	237	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1656	13	238	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1657	41	238	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1658	96	238	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1659	79	242	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1660	80	242	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1661	88	242	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1662	14	243	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1663	57	243	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1664	80	243	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1665	24	244	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1666	20	245	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1667	48	245	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1668	66	245	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1669	86	245	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1670	107	245	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1671	62	255	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1672	10	245	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1673	42	247	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1674	51	247	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1675	64	247	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1676	70	247	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1677	76	247	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1678	82	247	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1679	91	247	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1680	92	247	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1681	93	247	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1682	51	248	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1683	52	249	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1684	60	249	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1685	52	250	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1686	9	251	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1687	61	251	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1688	76	251	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1689	77	251	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1690	99	251	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1691	77	252	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1692	13	255	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1693	80	255	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1694	4	256	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1695	9	256	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1696	62	284	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1697	62	293	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1698	55	258	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1699	55	259	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1700	56	260	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1701	62	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1702	62	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1703	62	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1704	88	263	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1705	104	264	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1706	2	267	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1707	30	267	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1708	32	267	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1709	33	267	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1710	59	267	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1711	71	267	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1712	68	268	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1713	75	268	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1714	89	268	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1715	92	268	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1716	42	271	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1717	58	271	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1718	58	272	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1719	79	272	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1720	58	273	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1721	30	274	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1722	95	278	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1723	95	279	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1724	95	282	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1725	13	284	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1726	66	284	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1727	66	285	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1728	46	286	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1729	66	286	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1730	88	286	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1731	42	287	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1732	66	287	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1733	3	288	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1734	76	289	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1735	30	293	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1736	30	294	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1737	59	294	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1738	71	294	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1739	59	295	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1740	79	296	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1741	79	297	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1742	10	301	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1743	61	301	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1744	66	301	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1745	69	301	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1746	76	301	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1747	80	301	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1748	82	301	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1749	95	301	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1750	95	301	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1751	17	303	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1752	43	303	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1753	50	303	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1754	53	303	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1755	86	303	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1756	76	308	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1757	76	309	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1758	14	310	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1759	42	310	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1760	76	310	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1761	13	311	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1762	13	312	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1763	15	315	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1764	36	315	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1765	77	315	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1766	85	315	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1767	39	316	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1768	44	317	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1769	101	317	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1770	101	317	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1771	2	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1772	3	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1773	4	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1774	5	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1775	6	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1776	7	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1777	8	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1778	9	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1779	10	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1780	11	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1781	12	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1782	13	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1783	14	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1784	15	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1785	16	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1786	17	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1787	18	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1788	19	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1789	20	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1790	21	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1791	21	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1792	22	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1793	23	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1794	26	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1795	27	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1796	28	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1797	29	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1798	36	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1799	37	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1800	38	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1801	39	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1802	40	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1803	41	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1804	42	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1805	43	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1806	44	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1807	46	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1808	47	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1809	48	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1810	49	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1811	50	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1812	50	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1813	51	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1814	52	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1815	53	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1816	62	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1817	55	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1818	56	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1819	60	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1820	61	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1821	63	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1822	64	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1823	65	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1824	66	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1825	69	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1826	70	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1827	76	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1828	77	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1829	78	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1830	80	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1831	81	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1832	82	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1833	84	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1834	85	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1835	86	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1836	88	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1837	90	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1838	91	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1839	94	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1840	95	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1841	96	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1842	98	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1843	99	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1844	101	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1845	101	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1846	103	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1847	104	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1848	105	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1849	106	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1850	107	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1851	39	321	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1852	66	321	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1853	103	321	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1854	106	321	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1855	65	322	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1856	105	322	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1857	5	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1858	26	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1859	47	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1860	61	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1861	65	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1862	76	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1863	77	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1864	80	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1865	81	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1866	82	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1867	99	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1868	101	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1869	101	323	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1870	16	324	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1871	76	324	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1872	104	324	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1873	77	325	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1874	16	327	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1875	39	327	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1876	104	327	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1877	103	328	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1878	106	328	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1879	39	330	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1880	62	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1881	12	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1882	15	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1883	28	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1884	42	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1885	43	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1886	51	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1887	52	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1888	53	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1889	55	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1890	56	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1891	60	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1892	61	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1893	63	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1894	64	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1895	65	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1896	68	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1897	70	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1898	76	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1899	77	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1900	80	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1901	82	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1902	86	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1903	91	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1904	92	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1905	97	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1906	99	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1907	100	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1908	102	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1909	103	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1910	62	460	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1911	4	335	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1912	8	335	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1913	9	335	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1914	38	335	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1915	39	335	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1916	56	335	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1917	62	461	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1918	3	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1919	4	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1920	9	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1921	12	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1922	15	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1923	18	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1924	19	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1925	23	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1926	29	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1927	31	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1928	38	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1929	39	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1930	42	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1931	47	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1932	48	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1933	52	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1934	55	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1935	61	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1936	63	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1937	74	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1938	83	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1939	85	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1940	91	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1941	28	337	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1942	39	337	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1943	8	338	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1944	47	338	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1945	65	338	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1946	2	340	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1947	5	340	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1948	46	340	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1949	47	340	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1950	47	341	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1951	55	341	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1952	77	341	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1953	86	341	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1954	42	342	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1955	49	342	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1956	69	342	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1957	87	342	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1958	8	343	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1959	26	343	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1960	65	343	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1961	69	343	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1962	62	462	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1963	2	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1964	3	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1965	4	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1966	6	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1967	7	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1968	8	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1969	9	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1970	10	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1971	11	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1972	12	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1973	13	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1974	14	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1975	16	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1976	17	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1977	18	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1978	19	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1979	20	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1980	21	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1981	22	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1982	23	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1983	24	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1984	26	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1985	27	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1986	28	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1987	30	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1988	32	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1989	33	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1990	34	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1991	35	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1992	37	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1993	38	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1994	39	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1995	40	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1996	41	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1997	43	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1998	44	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+1999	45	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2000	47	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2001	48	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2002	49	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2003	50	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2004	51	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2005	52	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2006	53	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2007	62	463	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2008	55	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2009	56	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2010	57	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2011	58	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2012	61	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2013	63	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2014	64	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2015	65	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2016	67	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2017	68	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2018	69	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2019	70	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2020	71	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2021	72	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2022	73	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2023	75	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2024	76	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2025	78	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2026	79	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2027	80	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2028	81	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2029	82	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2030	83	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2031	86	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2032	87	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2033	88	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2034	89	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2035	90	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2036	91	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2037	92	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2038	93	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2039	94	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2040	95	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2041	96	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2042	97	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2043	98	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2044	99	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2045	100	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2046	102	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2047	104	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2048	107	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2049	69	345	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2050	2	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2051	3	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2052	4	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2053	8	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2054	9	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2055	11	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2056	13	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2057	42	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2058	44	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2059	55	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2060	61	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2061	64	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2062	76	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2063	78	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2064	88	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2065	91	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2066	96	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2067	99	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2068	104	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2069	105	346	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2070	11	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2071	13	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2072	14	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2073	20	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2074	21	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2075	21	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2076	22	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2077	30	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2078	49	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2079	55	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2080	64	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2081	65	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2082	66	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2083	70	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2084	76	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2085	84	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2086	88	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2087	93	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2088	103	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2089	105	347	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2090	3	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2091	6	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2092	6	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2093	11	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2094	15	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2095	17	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2096	20	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2097	21	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2098	21	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2099	27	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2100	32	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2101	34	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2102	35	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2103	40	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2104	40	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2105	51	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2106	53	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2107	57	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2108	59	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2109	60	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2110	61	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2111	64	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2112	67	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2113	68	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2114	70	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2115	71	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2116	73	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2117	76	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2118	79	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2119	84	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2120	89	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2121	92	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2122	93	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2123	95	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2124	97	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2125	101	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2126	101	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2127	104	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2128	107	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2129	11	349	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2130	51	349	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2131	107	349	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2132	11	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2133	13	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2134	27	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2135	30	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2136	32	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2137	35	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2138	62	464	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2139	57	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2140	61	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2141	64	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2142	67	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2143	68	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2144	70	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2145	71	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2146	76	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2147	79	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2148	89	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2149	93	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2150	99	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2151	104	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2152	107	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2153	11	351	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2154	47	351	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2155	55	351	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2156	62	465	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2157	3	352	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2158	11	352	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2159	23	352	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2160	29	352	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2161	52	352	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2162	8	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2163	13	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2164	18	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2165	19	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2166	44	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2167	47	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2168	49	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2169	65	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2170	80	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2171	82	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2172	86	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2173	6	354	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2174	6	354	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2175	10	354	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2176	12	354	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2177	47	354	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2178	53	354	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2179	63	354	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2180	92	354	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2181	8	355	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2182	12	355	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2183	66	355	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2184	80	355	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2185	91	355	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2186	12	356	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2187	38	356	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2188	94	356	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2189	12	357	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2190	15	357	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2191	68	357	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2192	84	357	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2193	8	358	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2194	12	358	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2195	72	358	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2196	75	358	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2197	79	358	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2198	12	359	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2199	79	359	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2200	62	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2201	8	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2202	12	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2203	15	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2204	30	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2205	32	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2206	42	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2207	51	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2208	52	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2209	53	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2210	55	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2211	56	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2212	57	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2213	60	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2214	61	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2215	63	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2216	64	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2217	66	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2218	67	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2219	68	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2220	70	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2221	71	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2222	72	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2223	75	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2224	76	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2225	77	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2226	80	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2227	88	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2228	89	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2229	91	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2230	92	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2231	97	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2232	99	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2233	100	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2234	102	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2235	103	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2236	58	361	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2237	68	361	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2238	72	361	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2239	76	361	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2240	80	361	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2241	44	363	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2242	65	363	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2243	105	363	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2244	66	364	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2245	42	368	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2246	64	368	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2247	99	368	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2248	104	395	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2249	39	396	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2250	66	396	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2251	103	396	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2252	105	396	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2253	106	396	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2254	16	397	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2255	44	397	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2256	65	397	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2257	101	397	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2258	16	399	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2259	65	399	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2260	66	400	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2261	104	400	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2262	103	401	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2263	105	401	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2264	106	401	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2265	3	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2266	4	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2267	6	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2268	6	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2269	12	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2270	20	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2271	51	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2272	52	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2273	53	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2274	64	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2275	65	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2276	81	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2277	88	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2278	104	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2279	105	406	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2280	29	415	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2281	59	415	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2282	60	415	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2283	84	415	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2284	65	416	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2285	39	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2286	65	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2287	66	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2288	101	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2289	103	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2290	104	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2291	106	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2292	16	422	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2293	105	422	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2294	44	425	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2295	16	426	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2296	106	426	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2297	66	427	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2298	103	427	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2299	104	427	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2300	105	427	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2301	65	428	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2302	101	428	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2303	62	218	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2304	24	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2305	31	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2306	34	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2307	45	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2308	56	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2309	63	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2310	68	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2311	74	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2312	75	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2313	83	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2314	89	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2315	91	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2316	92	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2317	93	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2318	97	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2319	100	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2320	30	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2321	32	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2322	33	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2323	35	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2324	57	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2325	58	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2326	59	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2327	67	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2328	71	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2329	72	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2330	73	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2331	79	433	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2332	3	434	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2333	4	434	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2334	13	434	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2335	90	434	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2336	91	434	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2337	8	435	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2338	16	435	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2339	28	435	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2340	44	435	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2341	82	435	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2342	16	436	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2343	6	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2344	6	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2345	10	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2346	13	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2347	22	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2348	24	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2349	41	453	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2350	9	454	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2351	42	455	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2352	42	456	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2353	46	456	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2354	61	457	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2355	14	458	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2356	15	459	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2357	109	460	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2358	99	464	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2359	115	465	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2360	63	466	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2361	63	467	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2362	36	468	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2363	41	472	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2364	14	473	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2365	11	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2366	16	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2367	17	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2368	20	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2369	37	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2370	42	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2371	46	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2372	49	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2373	55	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2374	65	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2375	69	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2376	77	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2377	81	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2378	88	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2379	91	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2380	93	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2381	99	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2382	101	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2383	101	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2384	103	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2385	109	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2386	115	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2387	48	438	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2388	90	438	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2389	38	439	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2390	39	439	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2391	39	440	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2392	47	441	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2393	11	442	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2394	22	442	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2395	47	443	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2396	109	443	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2397	115	443	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2398	21	444	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2399	21	444	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2400	68	444	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2401	97	444	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2402	103	444	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2403	88	446	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2404	4	447	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2405	4	448	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2406	4	449	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2407	4	450	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2408	4	451	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2409	4	452	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2410	9	452	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2411	500	500	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2412	500	501	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2413	501	502	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2414	502	503	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2415	62	363	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2416	62	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2417	62	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2418	62	322	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2419	62	396	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2420	62	426	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2421	62	400	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2422	1012	1115	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2423	1012	1116	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2424	1013	1124	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2425	1013	1125	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2426	1014	1134	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2427	1014	1135	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2428	1015	1143	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2429	1015	1144	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2430	1016	1152	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2431	1016	1153	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2432	1017	1162	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2433	1017	1163	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2434	1018	1171	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2435	1018	1172	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2436	1000	1007	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2437	1000	1008	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2438	503	218	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2439	503	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2440	503	363	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2441	503	322	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2442	503	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2443	503	396	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2444	503	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2445	503	426	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2446	503	401	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2447	1001	1016	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2448	1001	1017	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2449	1002	1025	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2450	1002	1026	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2451	54	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2452	54	21	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2453	54	110	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2454	54	123	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2455	54	165	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2456	54	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2457	54	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2458	54	212	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2459	54	218	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2460	54	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2461	54	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2462	54	363	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2463	54	256	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2464	54	257	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2465	54	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2466	54	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2467	54	396	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2468	54	400	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2469	54	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2470	54	426	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2471	54	322	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2472	1003	1034	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2473	1003	1035	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2474	1	37	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2475	1	55	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2476	1	104	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2477	1	114	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2478	1	135	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2479	1	181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2480	1	199	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2481	1	245	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2482	1	352	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2483	1	360	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2484	1	261	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2485	1	262	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2486	1	263	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2487	1	334	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2488	1	335	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2489	1	336	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2490	1	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2491	1	432	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2492	1004	1043	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2493	1004	1044	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2494	1005	1052	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2495	1005	1053	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2496	1006	1061	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2497	1006	1062	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2498	1007	1070	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2499	1007	1071	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2500	1008	1079	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2501	1008	1080	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2502	25	15	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2503	25	16	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2504	25	19	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2505	25	20	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2506	25	47	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2507	25	48	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2508	25	81	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2509	25	227	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2510	25	228	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2511	25	301	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2512	25	320	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2513	25	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2514	25	348	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2515	25	350	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2516	25	437	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2517	25	426	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2518	25	396	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2519	25	218	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2520	25	400	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2521	25	363	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2522	25	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2523	25	322	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2524	1019	1180	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2525	1019	1181	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2526	603	353	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2527	603	218	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2528	603	363	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2529	603	419	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2530	603	344	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2531	603	322	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2532	603	396	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2533	603	426	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2534	603	399	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2535	1020	1189	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
+2536	1020	1190	\N	\N	\N	\N	\N	\N	\N	\N	\N	f
 \.
 
 

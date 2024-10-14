@@ -3,7 +3,7 @@
  */
 package com.meg.listshop.lmt.service.food.impl;
 
-import com.meg.listshop.common.UnitType;
+import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
@@ -13,7 +13,6 @@ import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.FoodFactor;
-import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.data.entity.*;
@@ -250,7 +249,7 @@ public class FoodServiceImpl implements FoodService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         // get target units - grams or unit
-        List<TargetUnit> targets = determineSampleTargets(factors,singleUnitIds, allUnits);
+        List<TargetUnit> targets = determineSampleTargets(factors, singleUnitIds, allUnits);
 
         // get sample sources
         List<ConvertibleAmount> sourceAmounts = determineSampleSources(factors, conversionId, singleUnitIds, allUnits);
@@ -263,7 +262,7 @@ public class FoodServiceImpl implements FoodService {
                 try {
                     ConvertibleAmount converted = conversionService.convertToUnit(toConvert, target.unitEntity, target.unitSize);
                     Double roundedQuantity = RoundingUtils.roundToHundredths(converted.getQuantity());
-                    SimpleAmount roundedResult = new SimpleAmount(roundedQuantity, converted.getUnit(), conversionId, isLiquid, converted.getMarker(), converted.getUnitSize());
+                    SimpleAmount roundedResult = new SimpleAmount(roundedQuantity, converted.getUnit(), conversionId, isLiquid, converted.getMarker(), converted.getUnitSize(), true);
                     if (roundedResult.getUnit().getId().equals(target.unitEntity.getId())) {
                         result.add(new ConversionSampleDTO(toConvert, roundedResult));
                     }
@@ -306,7 +305,7 @@ public class FoodServiceImpl implements FoodService {
                 });
         for (Map.Entry<String, List<FoodConversionEntity>> markerEntry : factorsPerMarker.entrySet()) {
             results.addAll(determineSampleSourcesForMarker(markerEntry.getKey(), conversionId,
-                    markerEntry.getValue(),unitsForFactors,singleUnitIds));
+                    markerEntry.getValue(), unitsForFactors, singleUnitIds));
         }
 
         return results;
@@ -377,7 +376,7 @@ public class FoodServiceImpl implements FoodService {
             return Collections.singletonList(new TargetUnit(gramUnit, null));
         }
         for (FoodConversionEntity foodConversionEntity : factors) {
-            if (isSingleUnit(foodConversionEntity.getFromUnitId(), singleUnitIds))  {
+            if (isSingleUnit(foodConversionEntity.getFromUnitId(), singleUnitIds)) {
                 UnitEntity singleUnit = unitsForFactors.get(foodConversionEntity.getFromUnitId());
                 results.add(new TargetUnit(singleUnit, foodConversionEntity.getUnitSize()));
             }

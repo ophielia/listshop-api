@@ -677,7 +677,8 @@ public class ConversionTest {
 
         // to metric list, with size
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
-        converted = converterService.convert(bigAmount, listContext, "small");
+        ConversionRequest listContextSmall = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC, "small");
+        converted = converterService.convert(bigAmount, listContextSmall);
         System.out.println(converted);
         assertNotNull(converted);
         assertEquals(11.868, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -686,7 +687,8 @@ public class ConversionTest {
         // to us list, with size
         listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         bigAmount = new SimpleAmount(6.0, cup, tomatoConversionId, false, "chopped");
-        converted = converterService.convert(bigAmount, listContext, "large");
+        ConversionRequest listContextLarge = new ConversionRequest(ConversionTargetType.List, DomainType.US, "large");
+        converted = converterService.convert(bigAmount, listContextLarge);
         System.out.println(converted);
         assertNotNull(converted);
         assertEquals(5.934, RoundingUtils.roundToThousandths(converted.getQuantity()));

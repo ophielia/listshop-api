@@ -52,6 +52,9 @@ public class DishItemEntity {
     @Column(name = "raw_entry")
     private String rawEntry;
 
+    @Column(name = "user_size")
+    private Boolean userSize;
+
     public DishItemEntity(Long id) {
         dishItemId = id;
     }
@@ -155,6 +158,14 @@ public class DishItemEntity {
 
     public void setModifiersProcessed(Boolean modifiersProcessed) {
         this.modifiersProcessed = modifiersProcessed;
+    }
+
+    public Boolean getUserSize() {
+        return userSize != null && userSize;
+    }
+
+    public void setUserSize(Boolean userSize) {
+        this.userSize = userSize;
     }
 
     @Override

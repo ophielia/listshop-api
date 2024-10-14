@@ -8,10 +8,11 @@ import com.meg.listshop.conversion.service.ConversionContext;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-
+@Component
 public class UnitScalingHandler extends AbstractScalingHandler {
     private static final Logger LOG = LoggerFactory.getLogger(UnitScalingHandler.class);
 
@@ -21,6 +22,7 @@ public class UnitScalingHandler extends AbstractScalingHandler {
         setConversionSource(null);
         setScalerType(ConversionTargetType.List);
         setSkipNoConversionRequiredCheck(true);
+        setScalarWeight(1);
     }
 
 
@@ -54,6 +56,11 @@ public class UnitScalingHandler extends AbstractScalingHandler {
         return returnDefaultFactor(factors);
     }
 
+    @Override
+    public boolean doesScaleToUnit() {
+        return true;
+    }
+
     private List<ConversionFactor> returnDefaultFactor(List<ConversionFactor> factors) {
         ConversionFactor defaultFactor = factors.stream()
                 .filter(ConversionFactor::isUnitDefault)
@@ -78,6 +85,11 @@ public class UnitScalingHandler extends AbstractScalingHandler {
             }
         }
         return reversedFactors;
+    }
+
+    public boolean scalerFor(ConversionContext context) {
+
+        return context.shouldScaleToUnit() && !context.isUnitToUnit();
     }
 }
 

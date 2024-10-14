@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.common.FlatStringUtils;
+import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
@@ -51,6 +52,8 @@ public class DishServiceImplMockTest {
     private DishItemRepository dishItemRepository;
     @MockBean
     private AmountService amountService;
+    @MockBean
+    private ConversionService conversionService;
 
 
     @Before
@@ -61,7 +64,8 @@ public class DishServiceImplMockTest {
                 autoTagService,
                 tagService,
                 dishItemRepository,
-                amountService
+                amountService,
+                conversionService
         );
     }
 
@@ -184,7 +188,8 @@ public class DishServiceImplMockTest {
         Assert.assertEquals(1.5, dishResult.getItems().get(0).getQuantity(), 0.001);
         // check ingredient
         Assert.assertNull(ingredientResult.getMarker());
-        Assert.assertNull(ingredientResult.getUnitSize());
+        Assert.assertEquals("medium",ingredientResult.getUnitSize());
+        Assert.assertFalse(ingredientResult.getUserSize());
         Assert.assertNull(ingredientResult.getRawModifiers());
         Assert.assertEquals(ingredientResult.getWholeQuantity(), (Integer) 1);
         Assert.assertEquals(FractionType.OneHalf, ingredientResult.getFractionalQuantity());
@@ -241,7 +246,8 @@ public class DishServiceImplMockTest {
         Assert.assertEquals(1.0, dishResult.getItems().get(0).getQuantity(), 0.001);
         // check ingredient
         Assert.assertNull(ingredientResult.getMarker());
-        Assert.assertNull(ingredientResult.getUnitSize());
+        Assert.assertNotNull(ingredientResult.getUnitSize());
+        Assert.assertEquals("medium",ingredientResult.getUnitSize());
         Assert.assertNull(ingredientResult.getRawModifiers());
         Assert.assertNotNull(dishResult.getItems().get(0).getTag().getConversionId());
         Assert.assertNotNull(ingredientResult.getUnitId());
@@ -342,6 +348,7 @@ public class DishServiceImplMockTest {
         dishItemDto.setWholeQuantity(1);
         dishItemDto.setFractionalQuantity(FractionType.OneEighth);
         dishItemDto.setUnitId(unitId);
+        dishItemDto.setUnitSize(unitSize);
         dishItemDto.setRawModifiers(modifierTokens);
 
         DishEntity dishEntity = new DishEntity();
@@ -554,7 +561,8 @@ public class DishServiceImplMockTest {
         Assert.assertEquals(1.0, dishResult.getItems().get(0).getQuantity(), 0.001);
         // check ingredient
         Assert.assertNull(ingredientResult.getMarker());
-        Assert.assertNull(ingredientResult.getUnitSize());
+        Assert.assertNotNull(ingredientResult.getUnitSize());
+        Assert.assertEquals("medium",ingredientResult.getUnitSize());
         Assert.assertNull(ingredientResult.getRawModifiers());
         Assert.assertNotNull(dishResult.getItems().get(0).getTag().getConversionId());
         Assert.assertNotNull(ingredientResult.getUnitId());
@@ -627,7 +635,7 @@ public class DishServiceImplMockTest {
         Assert.assertEquals(1.0, dishResult.getItems().get(0).getQuantity(), 0.001);
         // check ingredient
         Assert.assertNull(ingredientResult.getMarker());
-        Assert.assertNull(ingredientResult.getUnitSize());
+        Assert.assertEquals("medium",ingredientResult.getUnitSize());
         Assert.assertNull(ingredientResult.getRawModifiers());
         Assert.assertNotNull(dishResult.getItems().get(0).getTag().getConversionId());
         Assert.assertNotNull(ingredientResult.getUnitId());

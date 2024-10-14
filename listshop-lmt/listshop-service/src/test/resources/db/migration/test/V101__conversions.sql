@@ -1,4 +1,6 @@
 -- reinsert units and factors
+--alter table dish_items add column user_size boolean default false;
+
 delete from factors;
 delete from units;
 delete from modifier_mappings;

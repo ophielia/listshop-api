@@ -23,8 +23,10 @@ public class TagSpecificDishScalingHandler extends DishScalingHandler {
     @Autowired
     public TagSpecificDishScalingHandler(ConversionFactorRepository factorRepository) {
         super(factorRepository);
+        setScalarWeight(2);
         LOG.info("initializing TagSpecificDishScalingHandler");
     }
+
 
 
     @Override

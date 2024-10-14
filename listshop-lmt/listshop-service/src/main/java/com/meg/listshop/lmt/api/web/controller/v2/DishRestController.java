@@ -38,11 +38,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Controller
+@Controller(value="V2DishRestController")
 @CrossOrigin
-public class V2DishRestController implements V2DishRestControllerApi {
+public class DishRestController implements V2DishRestControllerApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(V2DishRestController.class);
+    private static final Logger logger = LoggerFactory.getLogger(DishRestController.class);
 
     private final DishService dishService;
     private final DishSearchService dishSearchService;
@@ -51,8 +51,8 @@ public class V2DishRestController implements V2DishRestControllerApi {
     private Long defaultUnitId;
 
     @Autowired
-    V2DishRestController(DishService dishService,
-                         DishSearchService dishSearchService) {
+    DishRestController(DishService dishService,
+                       DishSearchService dishSearchService) {
         this.dishService = dishService;
         this.dishSearchService = dishSearchService;
     }

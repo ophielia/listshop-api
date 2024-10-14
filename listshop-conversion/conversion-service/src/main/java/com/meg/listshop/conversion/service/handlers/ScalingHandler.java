@@ -16,4 +16,8 @@ public interface ScalingHandler extends ConversionHandler {
     void setSkipNoConversionRequiredCheck(boolean b);
 
     boolean isTagSpecific();
+
+    boolean doesScaleToUnit();
+
+    Integer scalarWeight();
 }

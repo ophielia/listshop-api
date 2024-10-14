@@ -19,8 +19,4 @@ public enum UnitType {
         return result;
     }
 }
-//MM need - domaintype enum
-// unitdomain table, filled
-// new specifier for those with unit domain
 
-//

@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Qualifier("tagSpecificHandler")
-public class TagSpecificHandler extends AbstractConversionHandler {
+public class TagSpecificHandler extends AbstractConversionHandler implements FactorProvider {
     private static final Logger LOG = LoggerFactory.getLogger(TagSpecificHandler.class);
 
     @Value("${conversionservice.gram.unit.id:1013}")
@@ -78,4 +78,8 @@ public class TagSpecificHandler extends AbstractConversionHandler {
         return amount;
     }
 
+    @Override
+    public List<ConversionFactor> provideFactors(Long conversionId) {
+        return conversionSource.getAllPossibleFactors(null,conversionId);
+    }
 }

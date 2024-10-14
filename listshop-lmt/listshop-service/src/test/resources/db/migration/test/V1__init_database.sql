@@ -393,7 +393,8 @@ CREATE TABLE public.dish_items (
     unit_size character varying(256),
     raw_modifiers character varying(256),
     raw_entry text,
-    modifiers_processed boolean
+    modifiers_processed boolean,
+    user_size boolean default false
 );
 
 
