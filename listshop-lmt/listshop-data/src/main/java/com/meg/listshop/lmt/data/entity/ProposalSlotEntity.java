@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
 public class ProposalSlotEntity {
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "proposal_slot_sequence")
+    @SequenceGenerator(name = "proposal_slot_sequence", sequenceName = "proposal_slot_sequence", allocationSize = 1)
     private Long slotId;
 
     private Integer slotNumber;

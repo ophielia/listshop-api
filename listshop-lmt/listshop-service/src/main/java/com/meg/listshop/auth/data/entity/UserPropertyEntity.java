@@ -1,6 +1,5 @@
 package com.meg.listshop.auth.data.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -11,7 +10,8 @@ public class UserPropertyEntity {
 
     @Id
     @Column(name = "user_property_id")
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_properties_id_seq")
+    @SequenceGenerator(name = "user_properties_id_seq", sequenceName = "user_properties_id_seq", allocationSize = 1)
     private Long id;
 
     @ManyToOne

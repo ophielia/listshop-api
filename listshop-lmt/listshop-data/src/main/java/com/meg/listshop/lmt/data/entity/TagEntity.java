@@ -3,7 +3,6 @@ package com.meg.listshop.lmt.data.entity;
 import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -55,7 +54,8 @@ import java.util.Objects;
 public class TagEntity {
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tag_sequence")
+    @SequenceGenerator(name = "tag_sequence", sequenceName = "tag_sequence", allocationSize = 1)
     @Column(name = "tag_id")
     private Long tag_id;
 
@@ -250,14 +250,6 @@ public class TagEntity {
         this.internalStatus = internalStatus;
     }
 
-    public String getMarker() {
-        return marker;
-    }
-
-    public void setMarker(String marker) {
-        this.marker = marker;
-    }
-
     public void setInternalStatus(TagInternalStatus status) {
         long newStatus = status.value();
         if (this.internalStatus == null) {
@@ -267,6 +259,14 @@ public class TagEntity {
             return;
         }
         this.internalStatus = this.internalStatus * newStatus;
+    }
+
+    public String getMarker() {
+        return marker;
+    }
+
+    public void setMarker(String marker) {
+        this.marker = marker;
     }
 
     public Boolean getIsLiquid() {

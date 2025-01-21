@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.data.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -17,7 +16,8 @@ import java.util.Set;
         subgraphs = @NamedSubgraph(name = "tags", attributeNodes = @NamedAttributeNode("tags")))
 public class ListLayoutEntity {
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_layout_sequence")
+    @SequenceGenerator(name = "list_layout_sequence", sequenceName = "list_layout_sequence", allocationSize = 1)
     @Column(name = "layout_id")
     private Long layoutId;
 

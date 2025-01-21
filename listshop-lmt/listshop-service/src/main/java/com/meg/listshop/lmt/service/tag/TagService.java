@@ -90,4 +90,6 @@ public interface TagService {
     List<TagEntity> getTagsForIdList(List<Long> tagIds);
 
     void countTagAddedToDish(Long userId, Long tagId);
+
+    void updateTagName(Long tagId, String tagName);
 }

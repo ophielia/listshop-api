@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.data.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -15,7 +14,8 @@ import java.util.Set;
 public class ListItemEntity {
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_item_sequence")
+    @SequenceGenerator(name = "list_item_sequence", sequenceName = "list_item_sequence", allocationSize = 1)
     @Column(name = "item_id")
     private Long item_id;
 

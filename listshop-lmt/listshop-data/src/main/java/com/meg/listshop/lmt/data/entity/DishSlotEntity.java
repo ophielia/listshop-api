@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.common.FlatStringUtils;
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -12,7 +11,8 @@ import java.util.stream.Collectors;
 @Table(name = "proposal_dish")
 public class DishSlotEntity {
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "proposal_dish_sequence")
+    @SequenceGenerator(name = "proposal_dish_sequence", sequenceName = "proposal_dish_sequence", allocationSize = 1)
     private Long dishSlotId;
 
     private Long dishId;

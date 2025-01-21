@@ -1,6 +1,5 @@
 package com.meg.listshop.auth.data.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -9,8 +8,9 @@ import jakarta.validation.constraints.NotNull;
 public class AuthorityEntity {
 
     @Id
-    @Tsid
     @Column(name = "authority_id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "authority_id_seq")
+    @SequenceGenerator(name = "authority_id_seq", sequenceName = "authority_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "NAME", length = 50)

@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.data.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 /**
@@ -12,7 +11,8 @@ import jakarta.persistence.*;
 @Table(name = "auto_tag_instructions")
 public class AutoTagInstructionEntity {
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auto_tag_instructions_sequence")
+    @SequenceGenerator(name = "auto_tag_instructions_sequence", sequenceName = "auto_tag_instructions_sequence", allocationSize = 1)
     @Column(name = "instruction_id")
     private Long instructionId;
 

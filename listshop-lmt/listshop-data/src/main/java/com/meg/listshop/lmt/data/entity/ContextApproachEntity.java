@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.data.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,7 +7,8 @@ import jakarta.persistence.*;
 public class ContextApproachEntity {
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "proposal_approach_sequence")
+    @SequenceGenerator(name = "proposal_approach_sequence", sequenceName = "proposal_approach_sequence", allocationSize = 1)
     private Long proposalApproachId;
 
     @ManyToOne

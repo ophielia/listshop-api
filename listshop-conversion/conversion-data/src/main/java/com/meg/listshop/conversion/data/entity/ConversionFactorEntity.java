@@ -1,14 +1,14 @@
 package com.meg.listshop.conversion.data.entity;
 
 import com.meg.listshop.common.data.entity.UnitEntity;
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "factors")
 public class ConversionFactorEntity implements ConversionFactor {
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "factor_sequence")
+    @SequenceGenerator(name = "factor_sequence", sequenceName = "factor_sequence", allocationSize = 1)
     @Column(name = "FACTOR_ID")
     private Long factorId;
 

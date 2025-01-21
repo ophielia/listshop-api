@@ -1,10 +1,6 @@
 package com.meg.listshop.lmt.data.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
@@ -16,7 +12,8 @@ import java.util.Objects;
 public class FoodCategoryMappingEntity {
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "food_category_mapping_seq")
+    @SequenceGenerator(name = "food_category_mapping_seq", sequenceName = "food_category_mapping_seq", allocationSize = 1)
     @Column(name = "food_category_mapping_id")
     Long id;
 

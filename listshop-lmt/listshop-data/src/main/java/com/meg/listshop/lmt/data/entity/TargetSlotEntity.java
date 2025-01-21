@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.lmt.data.pojos.TargetServiceConstants;
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -14,26 +13,20 @@ import java.util.stream.Collectors;
 @Table(name = "target_slot")
 public class TargetSlotEntity {
 
+    public final static String IDENTIFIER = "TargetSlotEntity";
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "target_slot_sequence")
+    @SequenceGenerator(name = "target_slot_sequence", sequenceName = "target_slot_sequence", allocationSize = 2)
     private Long targetSlotId;
-
     @Column(name = "target_id")
     private Long targetId;
-
     private Long slotDishTagId;
-
     @Transient
     private TagEntity slotDishTag;
-
     private String targetTagIds;
-
     private Integer slotOrder;
-
     @Transient
     private List<TagEntity> tags;
-
-    public final static String IDENTIFIER = "TargetSlotEntity";
 
     public TargetSlotEntity() {
         // for JPA

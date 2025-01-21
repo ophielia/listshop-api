@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.data.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -31,7 +30,8 @@ public class DishEntity {
     private Long userId;
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dish_sequence")
+    @SequenceGenerator(name = "dish_sequence", sequenceName = "dish_sequence", allocationSize = 1)
     @Column(name = "dish_id")
     private Long dish_id;
 

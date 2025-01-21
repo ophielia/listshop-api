@@ -19,7 +19,8 @@ public class ProposalEntity {
 
 
     @Id
-    @Tsid
+    @GeneratedValue( strategy= GenerationType.SEQUENCE, generator="proposal_sequence")
+    @SequenceGenerator(name = "proposal_sequence", sequenceName = "proposal_sequence", allocationSize = 1)
     private Long proposalId;
 
     private Long userId;

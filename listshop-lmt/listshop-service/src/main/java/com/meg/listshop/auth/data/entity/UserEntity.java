@@ -1,7 +1,6 @@
 package com.meg.listshop.auth.data.entity;
 
 
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -13,7 +12,8 @@ import java.util.List;
 public class UserEntity {
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_sequence")
+    @SequenceGenerator(name = "user_id_sequence", sequenceName = "user_id_sequence", allocationSize = 1)
     @Column(name = "user_id")
     private Long id;
 

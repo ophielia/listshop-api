@@ -36,7 +36,8 @@ import jakarta.persistence.*;
 public class ModifierMappingEntity {
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "modifier_mapping_sequence")
+    @SequenceGenerator(name = "modifier_mapping_sequence", sequenceName = "modifier_mapping_sequence", allocationSize = 1)
     @Column(name = "mapping_id")
     private Long mappingId;
     @Enumerated(EnumType.STRING)

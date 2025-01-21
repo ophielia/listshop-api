@@ -9,7 +9,6 @@ package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.auth.api.model.TargetType;
 import com.meg.listshop.lmt.data.pojos.TargetServiceConstants;
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -21,7 +20,8 @@ import java.util.stream.Collectors;
 public class TargetEntity extends AbstractInflateAndFlatten {
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "target_sequence")
+    @SequenceGenerator(name = "target_sequence", sequenceName = "target_sequence", allocationSize = 1)
     private Long targetId;
 
     private Long userId;

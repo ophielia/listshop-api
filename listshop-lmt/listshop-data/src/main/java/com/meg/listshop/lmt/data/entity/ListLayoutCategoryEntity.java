@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.data.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -45,26 +44,21 @@ import java.util.Set;
 )
 public class ListLayoutCategoryEntity {
 
+    @Transient
+    private final List<ListItemEntity> items = new ArrayList<>();
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_layout_category_sequence")
+    @SequenceGenerator(name = "list_layout_category_sequence", sequenceName = "list_layout_category_sequence", allocationSize = 1)
     @Column(name = "category_id")
     private Long categoryId;
-
     private String name;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "CATEGORY_TAGS",
             joinColumns = @JoinColumn(name = "CATEGORY_ID"),
             inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
     private Set<TagEntity> tags = new HashSet<>();
-
     @Column(name = "layout_id")
     private Long layoutId;
-
-    @Transient
-    private final List<ListItemEntity> items = new ArrayList<>();
-
-
     private Integer displayOrder;
 
     private Boolean isDefault;

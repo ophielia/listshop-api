@@ -127,7 +127,7 @@ select count(*) from finder;
 
 
 -- add sequence for food_conversion
-create sequence food_conversion_sequence
+create sequence if not exists food_conversion_sequence
     start with 1000;
 
 -- take care of duplicate ids

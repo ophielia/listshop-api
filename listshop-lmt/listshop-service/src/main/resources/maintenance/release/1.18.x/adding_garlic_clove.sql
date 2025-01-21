@@ -1,4 +1,6 @@
 
+create sequence if not exists food_conversion_sequence
+    start with 1000;
 
 
 -- remove all assignments to garlic

@@ -1,9 +1,7 @@
 package com.meg.listshop.lmt.data.entity;
 
 import io.hypersistence.utils.hibernate.id.Tsid;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 /**
  * Created by margaretmartin on 08/12/2017.
@@ -13,7 +11,8 @@ import jakarta.persistence.Table;
 public class ShadowTags {
 
     @Id
-    @Tsid
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="shadow_tags_sequence")
+    @SequenceGenerator(name = "shadow_tags_sequence", sequenceName = "shadow_tags_sequence", allocationSize = 1)
     private Long shadowTagId;
 
     private Long tagId;

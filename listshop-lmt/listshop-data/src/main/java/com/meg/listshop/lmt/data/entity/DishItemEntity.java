@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.lmt.api.model.FractionType;
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -14,7 +13,8 @@ import java.util.Objects;
 public class DishItemEntity {
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dish_item_sequence")
+    @SequenceGenerator(name = "dish_item_sequence", sequenceName = "dish_item_sequence", allocationSize = 1)
     @Column(name = "dish_item_id")
     private Long dishItemId;
 
@@ -148,16 +148,16 @@ public class DishItemEntity {
         return modifiersProcessed;
     }
 
+    public void setModifiersProcessed(Boolean modifiersProcessed) {
+        this.modifiersProcessed = modifiersProcessed;
+    }
+
     public String getRawEntry() {
         return rawEntry;
     }
 
     public void setRawEntry(String rawEntry) {
         this.rawEntry = rawEntry;
-    }
-
-    public void setModifiersProcessed(Boolean modifiersProcessed) {
-        this.modifiersProcessed = modifiersProcessed;
     }
 
     public Boolean getUserSize() {

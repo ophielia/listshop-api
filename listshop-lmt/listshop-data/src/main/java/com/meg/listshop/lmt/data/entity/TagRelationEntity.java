@@ -11,7 +11,8 @@ import jakarta.persistence.*;
 public class TagRelationEntity {
 
     @Id
-    @Tsid
+    @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="tag_relation_sequence")
+    @SequenceGenerator(name = "tag_relation_sequence", sequenceName = "tag_relation_sequence", allocationSize = 1)
     @Column(name = "tag_relation_id")
     Long id;
 

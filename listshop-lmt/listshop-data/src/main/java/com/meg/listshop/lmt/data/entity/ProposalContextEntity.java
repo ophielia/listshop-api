@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.lmt.api.model.ApproachType;
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -11,7 +10,8 @@ import java.util.List;
 public class ProposalContextEntity {
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "proposal_context_sequence")
+    @SequenceGenerator(name = "proposal_context_sequence", sequenceName = "proposal_context_sequence", allocationSize = 1)
     @Column(name = "proposal_context_id")
     private Long proposalContextId;
 
@@ -100,12 +100,11 @@ public class ProposalContextEntity {
         this.mealPlanId = mealPlanId;
     }
 
+    public ApproachType getCurrentApproachType() {
+        return currentApproachType;
+    }
 
     public void setCurrentApproachType(ApproachType currentApproachType) {
         this.currentApproachType = currentApproachType;
-    }
-
-    public ApproachType getCurrentApproachType() {
-        return currentApproachType;
     }
 }

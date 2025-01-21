@@ -1,17 +1,14 @@
 package com.meg.listshop.lmt.data.entity;
 
-import io.hypersistence.utils.hibernate.id.Tsid;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "list_tag_stats")
 public class ListTagStatistic {
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_tag_stats_sequence")
+    @SequenceGenerator(name = "list_tag_stats_sequence", sequenceName = "list_tag_stats_sequence", allocationSize = 1)
     @Column(name = "list_tag_stat_id")
     private Long listTagStatId;
 

@@ -4,10 +4,7 @@ package com.meg.listshop.lmt.api.web.controller;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.lmt.api.controller.TagRestControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.model.ModelMapper;
-import com.meg.listshop.lmt.api.model.Tag;
-import com.meg.listshop.lmt.api.model.TagListResource;
-import com.meg.listshop.lmt.api.model.TagResource;
+import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -19,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -102,6 +100,13 @@ public class TagRestController implements TagRestControllerApi {
 
         return new ResponseEntity(new TagResource(tagModel), HttpStatus.OK);
 
+    }
+
+    @PutMapping(value = "{tagId}", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<Object> updateTag(Authentication authentication, HttpServletRequest request, @PathVariable Long tagId, @RequestBody TagPut input) throws BadParameterException {
+        String tagName = input.getName();
+        tagService.updateTagName(tagId, tagName);
+        return ResponseEntity.noContent().build();
     }
 
 }

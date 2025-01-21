@@ -3,6 +3,7 @@ package com.meg.listshop.lmt.api.controller;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.Tag;
 import com.meg.listshop.lmt.api.model.TagListResource;
+import com.meg.listshop.lmt.api.model.TagPut;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,9 @@ public interface TagRestControllerApi {
     @GetMapping( value = "/{tagId}", produces = "application/json")
     ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId);
 
+    @PutMapping(value = "{tagId}", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> updateTag(Authentication authentication, HttpServletRequest request, @PathVariable Long tagId,
+                                     @RequestBody TagPut input) throws BadParameterException;
 
 
 }

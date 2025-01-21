@@ -12,7 +12,8 @@ import java.util.Date;
 public class UserDeviceEntity {
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_device_sequence")
+    @SequenceGenerator(name = "user_device_sequence", sequenceName = "user_device_sequence", allocationSize = 1)
     @Column(name = "user_device_id")
     private Long id;
 

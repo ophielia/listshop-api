@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.lmt.api.model.TokenType;
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -14,7 +13,8 @@ public class TokenEntity {
     private Long userId;
 
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "token_sequence")
+    @SequenceGenerator(name = "token_sequence", sequenceName = "token_sequence", allocationSize = 1)
     @Column(name = "token_id")
     private Long token_id;
 
