@@ -71,12 +71,19 @@ public class LayoutServiceImpl implements LayoutService {
 
     @Override
     public List<ListLayoutEntity> getUserLayouts(UserEntity user) {
-        return listLayoutRepository.getFilledUserLayouts(user.getId());
+        List<ListLayoutEntity> rawUserLayouts = listLayoutRepository.getUserLayouts(user.getId());
+
+        List<ListLayoutEntity> filledLayouts = rawUserLayouts.stream()
+                .map( layout -> listLayoutRepository.fillLayout(user.getId(),layout))
+                .toList();
+        return filledLayouts;
     }
 
     @Override
-    public ListLayoutEntity getFilledDefaultLayout(Long userId) {
-        return listLayoutRepository.getFilledDefaultLayout(userId);
+    public ListLayoutEntity getFilledStandardLayout(Long userId) {
+        ListLayoutEntity standardLayout = getStandardLayout();
+
+        return listLayoutRepository.fillLayout(userId, standardLayout);
     }
 
     @Override

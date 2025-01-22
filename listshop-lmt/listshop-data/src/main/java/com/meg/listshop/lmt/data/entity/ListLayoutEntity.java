@@ -23,6 +23,7 @@ public class ListLayoutEntity {
 
     private String name;
 
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "layout_id", referencedColumnName = "layout_id")
     private Set<ListLayoutCategoryEntity> categories;

@@ -114,7 +114,7 @@ public class LayoutRestController implements LayoutRestControllerApi {
             userId = user.getId();
         }
         try {
-            ListLayout layout = ModelMapper.toShortModel(layoutService.getFilledDefaultLayout(userId));
+            ListLayout layout = ModelMapper.toShortModel(layoutService.getFilledStandardLayout(userId));
             ListLayoutResource layoutResource = new ListLayoutResource(layout);
             layoutResource.fillLinks(request, layoutResource);
             return new ResponseEntity<>(layoutResource, HttpStatus.OK);
@@ -123,6 +123,8 @@ public class LayoutRestController implements LayoutRestControllerApi {
             return ResponseEntity.badRequest().build();
         }
     }
+
+
 
 
 }

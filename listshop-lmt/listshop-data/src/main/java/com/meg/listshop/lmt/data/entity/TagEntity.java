@@ -50,7 +50,9 @@ import java.util.Objects;
                                 @ColumnResult(name = "unit_size", type = String.class),
                                 @ColumnResult(name = "raw_entry", type = String.class)
                         })})
-
+@NamedEntityGraph(
+        name = "graph.TagCategories",
+        attributeNodes = @NamedAttributeNode(value = "categories"))
 public class TagEntity {
 
     @Id
