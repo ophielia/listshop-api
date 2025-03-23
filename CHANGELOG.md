@@ -10,8 +10,10 @@ All notable changes to this project will be documented in this file.
 - bad query for layouts which shot the memory usage through the roof
 - additional fixes for unit conversions
 - Bad layout query which led to error while creating tags
+- some dependency vulnerabilities
 ### Added
 - unit sizes
+- ConversionService add method
 
 ## [1.17.0]  - June 2024
 ### Added

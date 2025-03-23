@@ -869,17 +869,17 @@ public class TagServiceImpl implements TagService {
         // get sibling tags for dish
         List<Long> siblings = tagStructureService.getSiblingTags(tag).stream()
                 .map(TagEntity::getId)
-                .toList();
+                .collect(Collectors.toList());
 
         List<DishItemEntity> itemsToRemove = dishItems.stream()
                 .filter(t -> siblings.contains(t.getTag().getId()))
-                .toList();
+                .collect(Collectors.toList());
 
         dishItemRepository.deleteAll(itemsToRemove);
 
         return dishItems.stream()
                 .filter(t -> !siblings.contains(t.getTag().getId()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
 

@@ -29,7 +29,6 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
     @Override
     public ListLayoutEntity fillLayout(Long userId, ListLayoutEntity layout) {
         logger.debug("Filling layout [{}]", layout.getId());
-        entityManager.detach(layout);
         // get layout
         List<Predicate> predicates = new ArrayList<Predicate>();
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
