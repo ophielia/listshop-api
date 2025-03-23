@@ -87,10 +87,9 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
         Query query = entityManager.createNamedQuery("ListLayoutCategoryEntity.userCategoriesForSiblings");
         query.setParameter("sibling_ids", siblingIds);
         query.setParameter("user_id", userId);
-        List<BigInteger> resultList = query.getResultList();
+        List<Long> resultList = query.getResultList();
         if (!resultList.isEmpty()) {
             return resultList.stream()
-                    .map(BigInteger::longValue)
                     .collect(Collectors.toSet());
         }
         return new HashSet<>();
