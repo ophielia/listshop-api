@@ -5,7 +5,7 @@
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>listshop-conversion</artifactId>
-    <version>listshop-api-1.18.1</version>
+    <version>1.18.2</version>
     <packaging>pom</packaging>
 
     <name>conversion</name>
@@ -14,7 +14,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-parent</artifactId>
-        <version>listshop-api-1.18.1</version>
+        <version>1.18.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
