@@ -3,8 +3,8 @@ package com.meg.listshop.lmt.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.MealPlanEntity;
@@ -92,21 +92,21 @@ public class MealPlanRestControllerTest {
         userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
         var differentUser = userService.getUserByUserEmail(TestConstants.USER_2_NAME);
         String userName = TestConstants.USER_3_NAME;
-        userDetails = new JwtUser(userAccount.getId(),
+        userDetails = new CustomUserDetails(userAccount.getId(),
                 userName,
                 null,
                 null,
                 null,
                 true,
                 null);
-        differentAccount = new JwtUser(differentUser.getId(),
+        differentAccount = new CustomUserDetails(differentUser.getId(),
                 differentUser.getUsername(),
                 differentUser.getEmail(),
                 null,
                 null,
                 true,
                 null);
-        userDetailsDelete = new JwtUser(TestConstants.USER_2_ID,
+        userDetailsDelete = new CustomUserDetails(TestConstants.USER_2_ID,
                 TestConstants.USER_2_NAME,
                 null,
                 null,
@@ -122,8 +122,8 @@ public class MealPlanRestControllerTest {
     public void readSingleMealPlan() throws Exception {
         Long testId = TestConstants.MENU_PLAN_3_ID;
         mockMvc.perform(get("/mealplan/"
-                + testId)
-                .with(user(userDetails)))
+                        + testId)
+                        .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.meal_plan.meal_plan_id", Matchers.isA(Number.class)))
@@ -139,8 +139,8 @@ public class MealPlanRestControllerTest {
     public void readMealPlanRatings() throws Exception {
         Long testId = 50485L;
         mockMvc.perform(get("/mealplan/"
-                + testId + "/ratings")
-                .with(user(userDetails)))
+                        + testId + "/ratings")
+                        .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.ratingUpdateInfo.dish_ratings", Matchers.hasSize(5)))
@@ -167,7 +167,7 @@ public class MealPlanRestControllerTest {
     public void readMealPlanBadUser() throws Exception {
         Long testId = TestConstants.MENU_PLAN_3_ID;
         mockMvc.perform(get("/mealplan" + "/" + testId)
-                .with(user(userDetailsDelete)))
+                        .with(user(userDetailsDelete)))
                 .andExpect(status().is4xxClientError());
     }
 
@@ -176,8 +176,8 @@ public class MealPlanRestControllerTest {
     public void testDeleteMealPlan() throws Exception {
         Long testId = 506L; //TestConstants.MENU_PLAN_2_ID;
         mockMvc.perform(delete("/mealplan/"
-                + testId)
-                .with(user(userDetails)))
+                        + testId)
+                        .with(user(userDetails)))
                 .andExpect(status().isNoContent());
 
     }
@@ -194,9 +194,9 @@ public class MealPlanRestControllerTest {
         String mealPlanJson = json(mealPlan);
 
         this.mockMvc.perform(post("/mealplan")
-                .with(user(userDetails))
-                .contentType(contentType)
-                .content(mealPlanJson))
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(mealPlanJson))
                 .andExpect(status().isCreated());
     }
 
@@ -210,9 +210,9 @@ public class MealPlanRestControllerTest {
         String mealPlanJson = json(mealPlan);
 
         this.mockMvc.perform(post("/mealplan")
-                .with(user(userDetails))
-                .contentType(contentType)
-                .content(mealPlanJson))
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(mealPlanJson))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.meal_plan.name", Matchers.isA(String.class)));
@@ -262,8 +262,8 @@ public class MealPlanRestControllerTest {
         String url = "/mealplan/proposal/" + TestConstants.PROPOSAL_3_ID;
 
         this.mockMvc.perform(post(url)
-                .with(user(userDetails))
-                .contentType(contentType))
+                        .with(user(userDetails))
+                        .contentType(contentType))
                 .andExpect(status().isCreated());
 
     }

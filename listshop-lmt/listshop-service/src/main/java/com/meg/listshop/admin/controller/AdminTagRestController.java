@@ -1,7 +1,7 @@
 package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.admin.model.PostSearchTags;
-import com.meg.listshop.auth.service.impl.JwtUser;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.FoodConversionEntity;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -314,7 +314,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
 
     public ResponseEntity<Object> replaceTagsInDishes(HttpServletRequest request, Authentication authentication, @PathVariable("fromTagId") Long tagId, @PathVariable("toTagId") Long toTagId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Admin - replace tag in dishes, admin user [%S]", userDetails.getId());
         logger.info(message);
 

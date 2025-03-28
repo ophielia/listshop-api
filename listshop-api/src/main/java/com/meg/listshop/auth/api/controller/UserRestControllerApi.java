@@ -11,6 +11,7 @@ import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.TokenException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -29,10 +30,10 @@ public interface UserRestControllerApi {
     ResponseEntity<Object> createUser(@RequestBody PutCreateUser input) throws BadParameterException;
 
     @DeleteMapping(produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> deleteUser(Principal principal) ;
+    ResponseEntity<Object> deleteUser(Authentication authentication) ;
 
     @GetMapping(produces = "application/json")
-    ResponseEntity<UserResource> getUser(Principal principal);
+    ResponseEntity<UserResource> getUser(Authentication authentication);
 
     @PostMapping(value = "name", produces = "application/json")
     ResponseEntity<Object> userNameIsTaken(@RequestBody ListShopPayload payload) throws BadParameterException;
@@ -45,17 +46,17 @@ public interface UserRestControllerApi {
 
 
     @PostMapping(value = "password", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> changeUserPassword(Principal principal, @RequestBody PostChangePassword input) throws BadParameterException;
+    ResponseEntity<Object> changeUserPassword(Authentication authentication, @RequestBody PostChangePassword input) throws BadParameterException;
 
     @GetMapping(value = "client/version", produces = "application/json")
     ResponseEntity<Object> getMinimumClientVersion();
 
     @GetMapping(value = "properties", produces = "application/json")
-    ResponseEntity<Object> getUserProperties(Principal principal) throws BadParameterException;
+    ResponseEntity<Object> getUserProperties(Authentication authentication) throws BadParameterException;
 
     @GetMapping(value = "properties/key/{key}", produces = "application/json")
-    ResponseEntity<Object> getUserProperty(Principal principal, @PathVariable String key) throws BadParameterException;
+    ResponseEntity<Object> getUserProperty(Authentication authentication, @PathVariable String key) throws BadParameterException;
 
     @PostMapping(value = "properties", produces = "application/json")
-    ResponseEntity<Object> setUserProperties(Principal principal, @RequestBody PostUserProperties properties) throws BadParameterException, IOException;
+    ResponseEntity<Object> setUserProperties(Authentication authentication, @RequestBody PostUserProperties properties) throws BadParameterException, IOException;
 }

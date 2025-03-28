@@ -21,6 +21,7 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
     private static final double DEFAULT_MAX_RANGE = 500;
 
     private ConversionTargetType scalerType;
+    private int scalarWeight;
 
     private ConversionSpec source;
     private ConversionSpec target;
@@ -58,6 +59,15 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
                 return best;
             }
         return nearestUnitResult;
+    }
+
+    void setScalarWeight(int scalarWeight) {
+        this.scalarWeight = scalarWeight;
+    }
+
+    @Override
+    public Integer scalarWeight() {
+        return this.scalarWeight;
     }
 
     @Override
@@ -110,6 +120,11 @@ public abstract class AbstractScalingHandler extends AbstractConversionHandler i
 
     @Override
     public boolean isTagSpecific() {
+        return false;
+    }
+
+    @Override
+    public boolean doesScaleToUnit() {
         return false;
     }
 }

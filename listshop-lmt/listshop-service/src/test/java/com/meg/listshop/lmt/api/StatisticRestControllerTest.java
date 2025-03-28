@@ -8,7 +8,7 @@
 package com.meg.listshop.lmt.api;
 
 import com.meg.listshop.Application;
-import com.meg.listshop.auth.service.impl.JwtUser;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
@@ -90,14 +90,14 @@ public class StatisticRestControllerTest {
                 .build();
 
 
-        userDetails = new JwtUser(TestConstants.USER_3_ID,
+        userDetails = new CustomUserDetails(TestConstants.USER_3_ID,
                 TestConstants.USER_1_EMAIL,
                 null,
                 null,
                 null,
                 true,
                 null);
-        emptyUserDetails = new JwtUser(TestConstants.USER_4_ID,
+        emptyUserDetails = new CustomUserDetails(TestConstants.USER_4_ID,
                 TestConstants.USER_4_NAME,
                 null,
                 null,
@@ -114,9 +114,9 @@ public class StatisticRestControllerTest {
         String testUploadStatistics = StreamUtils.copyToString(resourceFile.getInputStream(), Charset.forName("utf8"));
 
         this.mockMvc.perform(post("/statistics")
-                .with(user(emptyUserDetails))
-                .contentType(contentType)
-                .content(testUploadStatistics))
+                        .with(user(emptyUserDetails))
+                        .contentType(contentType)
+                        .content(testUploadStatistics))
                 .andExpect(status().isCreated());
 
 

@@ -1,28 +1,18 @@
 package com.meg.listshop.lmt.data.entity;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
+import io.hypersistence.utils.hibernate.id.Tsid;
+import jakarta.persistence.*;
 
 /**
  * Created by margaretmartin on 08/12/2017.
  */
 @Entity
-@Table(name="shadow_tags")
-@GenericGenerator(
-        name = "shadow_tags_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value="shadow_tags_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value="1")}
-)
+@Table(name = "shadow_tags")
 public class ShadowTags {
 
     @Id
     @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="shadow_tags_sequence")
+    @SequenceGenerator(name = "shadow_tags_sequence", sequenceName = "shadow_tags_sequence", allocationSize = 1)
     private Long shadowTagId;
 
     private Long tagId;

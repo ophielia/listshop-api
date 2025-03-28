@@ -3,9 +3,8 @@ package com.meg.listshop.lmt.data.entity;
 import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
-import org.hibernate.annotations.GenericGenerator;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,16 +12,6 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tag")
-@GenericGenerator(
-        name = "tag_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "tag_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 @NamedEntityGraph(
         name = "graph.TagCategory",
         attributeNodes = @NamedAttributeNode(value = "categories"))
@@ -61,11 +50,14 @@ import java.util.Objects;
                                 @ColumnResult(name = "unit_size", type = String.class),
                                 @ColumnResult(name = "raw_entry", type = String.class)
                         })})
-
+@NamedEntityGraph(
+        name = "graph.TagCategories",
+        attributeNodes = @NamedAttributeNode(value = "categories"))
 public class TagEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tag_sequence")
+    @SequenceGenerator(name = "tag_sequence", sequenceName = "tag_sequence", allocationSize = 1)
     @Column(name = "tag_id")
     private Long tag_id;
 
@@ -260,14 +252,6 @@ public class TagEntity {
         this.internalStatus = internalStatus;
     }
 
-    public String getMarker() {
-        return marker;
-    }
-
-    public void setMarker(String marker) {
-        this.marker = marker;
-    }
-
     public void setInternalStatus(TagInternalStatus status) {
         long newStatus = status.value();
         if (this.internalStatus == null) {
@@ -277,6 +261,14 @@ public class TagEntity {
             return;
         }
         this.internalStatus = this.internalStatus * newStatus;
+    }
+
+    public String getMarker() {
+        return marker;
+    }
+
+    public void setMarker(String marker) {
+        this.marker = marker;
     }
 
     public Boolean getIsLiquid() {
@@ -376,7 +368,7 @@ public class TagEntity {
 
 
     public AdminTagFullInfo toAdminFullInfo() {
-        AdminTagFullInfo fullInfo = new AdminTagFullInfo( );
+        AdminTagFullInfo fullInfo = new AdminTagFullInfo();
         fullInfo.setTagId(nullOrValueAsString(getId()));
         fullInfo.setName(getName());
         fullInfo.setUserId(nullOrValueAsString(getUserId()));

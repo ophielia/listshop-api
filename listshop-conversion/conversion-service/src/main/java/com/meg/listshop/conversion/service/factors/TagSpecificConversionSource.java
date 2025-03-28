@@ -48,8 +48,9 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         return null;
     }
 
-    private List<ConversionFactor> getAllPossibleFactors(ConvertibleAmount convertibleAmount, Long conversionId) {
-        LOG.trace("... getting all possiblefactors from db for conversionId: [{}], unitId [{}]", conversionId, convertibleAmount.getUnit().getId());
+    public List<ConversionFactor> getAllPossibleFactors(ConvertibleAmount convertibleAmount, Long conversionId) {
+        String unitId = convertibleAmount != null ? String.valueOf(convertibleAmount.getUnit().getId()) : "unknown";
+        LOG.trace("... getting all possiblefactors from db for conversionId: [{}], unitId [{}]", conversionId, unitId);
 
         // get factors from database for conversion id
         List<ConversionFactor> tagFactors = factorRepository.findAll(where(matchingFromConversionId(conversionId))).stream()
@@ -87,7 +88,7 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         List<ConversionFactor> unitFactors = new ArrayList<>();
         Map<String, List<ConversionFactor>> factorsByMarker = new HashMap<>();
         for (ConversionFactor f : possibleFactors) {
-            if (f.getFromUnit().getId().equals(SINGLE_UNIT_ID)) {
+            if (f.getFromUnit().getType().equals(UnitType.UNIT)) {
                 unitFactors.add(f);
                 continue;
             }
@@ -104,12 +105,12 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         // inflate factors
         List<ConversionFactor> inflatedFactors = inflateFactors(markerFactors);
         List<ConversionFactor> scalingFactors = new ArrayList<>();
+        List<ConversionFactor> conversionFactors = new ArrayList<>();
         // find conversion factor and tag specific scaling factors
-        ConversionFactor conversionFactor = null;
         for (ConversionFactor f : inflatedFactors) {
             // look for conversion factor
             if (f.getFromUnit().getId().equals(unitId)) {
-                conversionFactor = f;
+                conversionFactors.add(f);
                 continue;
             }
             if (f.getFromUnit().isTagSpecific()) {
@@ -121,8 +122,8 @@ public class TagSpecificConversionSource extends AbstractConversionFactorSource 
         if (!unitFactors.isEmpty()) {
             scalingFactors.addAll(unitFactors);
         }
-        if (conversionFactor != null) {
-            scalingFactors.add(conversionFactor);
+        if (!conversionFactors.isEmpty()) {
+            scalingFactors.addAll(conversionFactors);
         }
         return scalingFactors;
     }

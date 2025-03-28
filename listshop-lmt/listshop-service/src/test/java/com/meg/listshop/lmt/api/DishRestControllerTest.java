@@ -3,8 +3,8 @@ package com.meg.listshop.lmt.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
@@ -95,7 +95,7 @@ public class DishRestControllerTest {
                 .build();
 
         UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
-        userDetails = new JwtUser(userAccount.getId(),
+        userDetails = new CustomUserDetails(userAccount.getId(),
                 TestConstants.USER_3_NAME,
                 null,
                 null,

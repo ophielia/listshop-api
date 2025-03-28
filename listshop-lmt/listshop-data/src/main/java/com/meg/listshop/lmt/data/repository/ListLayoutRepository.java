@@ -30,4 +30,6 @@ public interface ListLayoutRepository extends JpaRepository<ListLayoutEntity, Lo
             "and e.tag_id in (?2)")
     List<TagEntity> getTagsToDeleteFromLayout(Long layoutId, Set<Long> tagIds);
 
+    @Query("select e from ListLayoutEntity e where e.userId = ?1")
+    List<ListLayoutEntity> getUserLayouts(Long userId);
 }

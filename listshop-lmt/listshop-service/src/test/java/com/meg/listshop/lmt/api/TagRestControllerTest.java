@@ -10,7 +10,7 @@ package com.meg.listshop.lmt.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.meg.listshop.Application;
-import com.meg.listshop.auth.service.impl.JwtUser;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.Tag;
 import com.meg.listshop.lmt.api.model.TagListResource;
@@ -90,7 +90,7 @@ public class TagRestControllerTest {
                 .build();
 
 
-        userDetails = new JwtUser(TestConstants.USER_1_ID,
+        userDetails = new CustomUserDetails(TestConstants.USER_1_ID,
                 TestConstants.USER_1_EMAIL,
                 null,
                 null,
@@ -210,8 +210,6 @@ public class TagRestControllerTest {
         Assert.assertEquals("0", newTag.getUserId());
 
     }
-
-
 
 
     @Test
@@ -375,8 +373,6 @@ public class TagRestControllerTest {
 
         Assert.assertEquals(idString, recreateId);
     }
-
-
 
 
     private String json(Object o) throws IOException {

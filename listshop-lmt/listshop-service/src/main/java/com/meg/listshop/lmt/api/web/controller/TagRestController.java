@@ -1,12 +1,10 @@
 package com.meg.listshop.lmt.api.web.controller;
 
-import com.meg.listshop.auth.service.impl.JwtUser;
+
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.lmt.api.controller.TagRestControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.model.ModelMapper;
-import com.meg.listshop.lmt.api.model.Tag;
-import com.meg.listshop.lmt.api.model.TagListResource;
-import com.meg.listshop.lmt.api.model.TagResource;
+import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -18,10 +16,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,7 +50,7 @@ public class TagRestController implements TagRestControllerApi {
             String message = String.format("Retrieving tags for anonymous user");
             logger.info(message);
         } else {
-            JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             userId = userDetails.getId();
             String message = String.format("Retrieving tags for user [%S]", userId);
             logger.info(message);
@@ -68,7 +67,7 @@ public class TagRestController implements TagRestControllerApi {
 
     public ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
                                           @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Creating add tag for user [%S]", userDetails.getId());
         logger.info(message);
 
@@ -101,6 +100,13 @@ public class TagRestController implements TagRestControllerApi {
 
         return new ResponseEntity(new TagResource(tagModel), HttpStatus.OK);
 
+    }
+
+    @PutMapping(value = "{tagId}", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<Object> updateTag(Authentication authentication, HttpServletRequest request, @PathVariable Long tagId, @RequestBody TagPut input) throws BadParameterException {
+        String tagName = input.getName();
+        tagService.updateTagName(tagId, tagName);
+        return ResponseEntity.noContent().build();
     }
 
 }

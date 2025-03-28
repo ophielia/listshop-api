@@ -1,8 +1,11 @@
 package com.meg.listshop.auth.data.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -10,7 +13,6 @@ import java.util.Date;
 @Immutable
 public class AdminUserDetailsEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id")
     private Long userId;
 

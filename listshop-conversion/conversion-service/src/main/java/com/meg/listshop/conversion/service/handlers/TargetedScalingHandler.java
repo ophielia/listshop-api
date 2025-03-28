@@ -27,6 +27,7 @@ public class TargetedScalingHandler extends AbstractScalingHandler {
     @Autowired
     public TargetedScalingHandler(ConversionFactorRepository factorRepository) {
         super();
+        setScalarWeight(4);
         LOG.info("initializing TargetedScalingHandler");
         // metric targets
         ConversionSpec metricSource = ConversionSpec.basicSpec(UnitType.METRIC, null);

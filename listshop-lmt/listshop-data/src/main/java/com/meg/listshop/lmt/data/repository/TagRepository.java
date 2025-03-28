@@ -29,9 +29,6 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
             "tag t where t.tag_id = dt.tag_id and  t.tag_type = 'Ingredient' and dt.dish_id in (:dishIdList) ", nativeQuery = true)
     List<TagEntity> getIngredientTagsForDishes(@Param("dishIdList") List<Long> dishIdList);
 
-    @Query(value = "select t.*  from tag t join category_tags ct on ct.tag_id = t.tag_id and ct.category_id = :layoutCategoryId order by t.name ", nativeQuery = true)
-    List<TagEntity> getTagsForLayoutCategory(@Param("layoutCategoryId") Long layoutCategoryId);
-
     @Query(value = "select distinct tag_id from dish_items where dish_id = ?1", nativeQuery = true)
     Set<Long> getTagIdsForDish(Long dishId);
 

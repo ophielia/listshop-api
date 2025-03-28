@@ -1,9 +1,8 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.lmt.api.model.ModifierType;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
+import io.hypersistence.utils.hibernate.id.Tsid;
+import jakarta.persistence.*;
 
 /**
  * Created by margaretmartin on 24/10/2017.
@@ -14,12 +13,12 @@ import javax.persistence.*;
         @NamedNativeQuery(name = "NonUnitSuggestions",
                 query = "select distinct modifier_type, modifier , reference_id , mapping_id as discard from modifier_mappings " +
                         " where modifier_type <> 'Unit'" +
-                        " order by mapping_id " ,
+                        " order by mapping_id ",
                 resultSetMapping = "Mapping.SuggestionDTO"),
         @NamedNativeQuery(name = "UnitSuggestions",
                 query = "select distinct modifier_type, modifier , reference_id, mapping_id as discard  from modifier_mappings " +
                         " where modifier_type = 'Unit' and reference_id in (:unitIds)" +
-                        " order by mapping_id " ,
+                        " order by mapping_id ",
                 resultSetMapping = "Mapping.SuggestionDTO")
 })
 @SqlResultSetMapping(
@@ -34,20 +33,11 @@ import javax.persistence.*;
                                 @ColumnResult(name = "discard", type = Long.class)
                         })})
 
-@GenericGenerator(
-        name = "modifier_mapping_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "modifier_mapping_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 public class ModifierMappingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "modifier_mapping_sequence")
+    @SequenceGenerator(name = "modifier_mapping_sequence", sequenceName = "modifier_mapping_sequence", allocationSize = 1)
     @Column(name = "mapping_id")
     private Long mappingId;
     @Enumerated(EnumType.STRING)

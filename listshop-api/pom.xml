@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>listshop-api</artifactId>
-    <version>1.17.0</version>
+    <version>1.17.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>listshop-api</name>
@@ -13,7 +13,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-parent</artifactId>
-        <version>1.17.0</version>
+        <version>1.17.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -46,7 +46,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
-            <version>${spring-boot-version}</version>
         </dependency>
     </dependencies>
 

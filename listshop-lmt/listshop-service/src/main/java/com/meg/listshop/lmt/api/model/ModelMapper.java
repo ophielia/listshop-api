@@ -863,7 +863,7 @@ public class ModelMapper {
 
     public static com.meg.listshop.lmt.api.model.v2.Dish toV2DishModel(DishEntity dishEntity, boolean includeTags) {
         // tags and ingredients - to do....
-//MM TODO
+
         return new com.meg.listshop.lmt.api.model.v2.Dish(dishEntity.getId())
                 .description(dishEntity.getDescription())
                 .dishName(dishEntity.getDishName())
@@ -877,7 +877,7 @@ public class ModelMapper {
         suggestion.setText(suggestionDTO.getText());
         suggestion.setReferenceId(String.valueOf(suggestionDTO.getReferenceId()));
         if (suggestionDTO.getModifierType() != null) {
-        suggestion.setModifierType(suggestionDTO.getModifierType().name());
+            suggestion.setModifierType(suggestionDTO.getModifierType().name());
         }
         return suggestion;
     }

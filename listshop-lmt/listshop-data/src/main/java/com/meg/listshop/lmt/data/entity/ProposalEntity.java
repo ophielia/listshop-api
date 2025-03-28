@@ -1,10 +1,10 @@
 package com.meg.listshop.lmt.data.entity;
 
-import org.hibernate.annotations.GenericGenerator;
+import io.hypersistence.utils.hibernate.id.Tsid;
+import jakarta.persistence.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,21 +15,12 @@ import java.util.Map;
  */
 @Entity
 @Table(name = "proposal")
-@GenericGenerator(
-        name = "proposal_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value="proposal_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value="1")}
-)
 public class ProposalEntity {
 
 
     @Id
     @GeneratedValue( strategy= GenerationType.SEQUENCE, generator="proposal_sequence")
+    @SequenceGenerator(name = "proposal_sequence", sequenceName = "proposal_sequence", allocationSize = 1)
     private Long proposalId;
 
     private Long userId;
@@ -59,16 +50,19 @@ public class ProposalEntity {
     public boolean isRefreshable() {
         return isRefreshable;
     }
+
     public void setIsRefreshable(boolean isRefreshable) {
         this.isRefreshable = isRefreshable;
     }
+
     public List<ProposalSlotEntity> getSlots() {
-        return slots!=null?slots:new ArrayList<>();
+        return slots != null ? slots : new ArrayList<>();
     }
 
     public void setSlots(List<ProposalSlotEntity> slots) {
         this.slots = slots;
     }
+
     public Long getUserId() {
         return userId;
     }
@@ -76,13 +70,15 @@ public class ProposalEntity {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
     public String getPickedHashCode() {
         // this is used to decide if the slots have changed since the last proposal has been run
         // slots changed == different picked dishes
-        StringBuilder hashCode = new StringBuilder(getId().hashCode());
+        int hc = getId().hashCode();
+        StringBuilder hashCode = new StringBuilder(String.valueOf(hc));
         for (ProposalSlotEntity slot : getSlots()) {
             if (slot.getPickedDishId() != null) {
-                hashCode.append(slot.getPickedDishId().hashCode());
+                hashCode.append(String.valueOf(slot.getPickedDishId().hashCode()));
             }
         }
 
@@ -101,7 +97,7 @@ public class ProposalEntity {
 
     public void fillSlotTags(Integer slotOrder, List<String> tagIdsAsList, Map<Long, TagEntity> tagDictionary) {
         ProposalSlotEntity slotToFill = null;
-        for (ProposalSlotEntity slot: getSlots()) {
+        for (ProposalSlotEntity slot : getSlots()) {
             if (slot.getSlotNumber().equals(slotOrder)) {
                 slotToFill = slot;
                 break;
@@ -110,7 +106,7 @@ public class ProposalEntity {
         if (slotToFill == null) {
             return;
         }
-        slotToFill.fillInTags(tagIdsAsList,tagDictionary);
+        slotToFill.fillInTags(tagIdsAsList, tagDictionary);
     }
 
     public List<Long> getAllDishIds() {

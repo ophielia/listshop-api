@@ -1,9 +1,8 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.lmt.api.model.FractionType;
-import org.hibernate.annotations.GenericGenerator;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.Objects;
 
 /**
@@ -11,20 +10,11 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "dish_items")
-@GenericGenerator(
-        name = "dish_item_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "dish_item_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 public class DishItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dish_item_sequence")
+    @SequenceGenerator(name = "dish_item_sequence", sequenceName = "dish_item_sequence", allocationSize = 1)
     @Column(name = "dish_item_id")
     private Long dishItemId;
 
@@ -61,6 +51,9 @@ public class DishItemEntity {
 
     @Column(name = "raw_entry")
     private String rawEntry;
+
+    @Column(name = "user_size")
+    private Boolean userSize;
 
     public DishItemEntity(Long id) {
         dishItemId = id;
@@ -155,6 +148,10 @@ public class DishItemEntity {
         return modifiersProcessed;
     }
 
+    public void setModifiersProcessed(Boolean modifiersProcessed) {
+        this.modifiersProcessed = modifiersProcessed;
+    }
+
     public String getRawEntry() {
         return rawEntry;
     }
@@ -163,8 +160,12 @@ public class DishItemEntity {
         this.rawEntry = rawEntry;
     }
 
-    public void setModifiersProcessed(Boolean modifiersProcessed) {
-        this.modifiersProcessed = modifiersProcessed;
+    public Boolean getUserSize() {
+        return userSize != null && userSize;
+    }
+
+    public void setUserSize(Boolean userSize) {
+        this.userSize = userSize;
     }
 
     @Override

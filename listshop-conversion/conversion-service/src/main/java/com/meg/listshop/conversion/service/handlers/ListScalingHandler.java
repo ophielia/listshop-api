@@ -29,6 +29,7 @@ public class ListScalingHandler extends AbstractScalingHandler {
     @Autowired
     public ListScalingHandler(ConversionFactorRepository factorRepository) {
         super();
+        setScalarWeight(3);
         LOG.info("initializing MetricVolumeForDishHandler");
         // metric targets
         ConversionSpec metricSource = ConversionSpec.basicSpec(UnitType.METRIC, null);

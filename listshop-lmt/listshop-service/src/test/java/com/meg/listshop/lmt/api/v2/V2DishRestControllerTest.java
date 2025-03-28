@@ -3,14 +3,10 @@ package com.meg.listshop.lmt.api.v2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.lmt.api.model.v2.IngredientListResource;
-import com.meg.listshop.lmt.api.model.v2.Dish;
-import com.meg.listshop.lmt.api.model.v2.DishResource;
-import com.meg.listshop.lmt.api.model.v2.Ingredient;
-import com.meg.listshop.lmt.api.model.v2.IngredientPut;
+import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;
@@ -95,7 +91,7 @@ public class V2DishRestControllerTest {
                 .build();
 
         UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
-        userDetails = new JwtUser(userAccount.getId(),
+        userDetails = new CustomUserDetails(userAccount.getId(),
                 TestConstants.USER_3_NAME,
                 null,
                 null,
@@ -142,7 +138,7 @@ public class V2DishRestControllerTest {
         dish.setDishName("Yummy new dish");
 
 
-        Long testId =         createDish(userDetails,dish);
+        Long testId = createDish(userDetails, dish);
 
         IngredientPut ingredientPut = new IngredientPut();
         ingredientPut.setTagId("12");
@@ -158,14 +154,14 @@ public class V2DishRestControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        Dish dishResult = retrieveDish(userDetails,testId);
+        Dish dishResult = retrieveDish(userDetails, testId);
         Assert.assertNotNull(dishResult);
         Assert.assertEquals("should be 1 ingredient", 1, dishResult.getIngredients().size());
         Ingredient ingredient = dishResult.getIngredients().get(0);
         Assert.assertEquals(ingredient.getUnitId(), ingredientPut.getUnitId());
         Assert.assertEquals(ingredient.getWholeQuantity(), ingredientPut.getWholeQuantity());
         Assert.assertEquals(ingredient.getFractionalQuantity(), ingredientPut.getFractionalQuantity());
-        Assert.assertEquals("1 1/2",ingredient.getQuantityDisplay());
+        Assert.assertEquals("1 1/2", ingredient.getQuantityDisplay());
     }
 
 
@@ -175,7 +171,7 @@ public class V2DishRestControllerTest {
         Dish dish = new Dish();
         dish.setDishName("update new dish");
 
-        Long testId =         createDish(userDetails,dish);
+        Long testId = createDish(userDetails, dish);
 
         IngredientPut ingredientPut = new IngredientPut();
         ingredientPut.setTagId("12");
@@ -191,7 +187,7 @@ public class V2DishRestControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        Dish dishResult = retrieveDish(userDetails,testId);
+        Dish dishResult = retrieveDish(userDetails, testId);
         Assert.assertNotNull(dishResult);
         Assert.assertEquals("should be 1 ingredient", 1, dishResult.getIngredients().size());
         Ingredient ingredient = dishResult.getIngredients().get(0);
@@ -213,15 +209,15 @@ public class V2DishRestControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-         dishResult = retrieveDish(userDetails,testId);
+        dishResult = retrieveDish(userDetails, testId);
         Assert.assertNotNull(dishResult);
         Assert.assertEquals("should be 1 ingredient", 1, dishResult.getIngredients().size());
-         ingredient = dishResult.getIngredients().get(0);
+        ingredient = dishResult.getIngredients().get(0);
 
         Assert.assertEquals(ingredient.getUnitId(), ingredientUpdate.getUnitId());
         Assert.assertEquals(ingredient.getWholeQuantity(), ingredientUpdate.getWholeQuantity());
         Assert.assertEquals(ingredient.getFractionalQuantity(), ingredientUpdate.getFractionalQuantity());
-        Assert.assertEquals("101",ingredient.getQuantityDisplay());
+        Assert.assertEquals("101", ingredient.getQuantityDisplay());
     }
 
     @Test
@@ -230,7 +226,7 @@ public class V2DishRestControllerTest {
         Dish dish = new Dish();
         dish.setDishName("update new dish");
 
-        Long testId =         createDish(userDetails,dish);
+        Long testId = createDish(userDetails, dish);
 
         IngredientPut ingredientPut = new IngredientPut();
         ingredientPut.setTagId("12");
@@ -246,7 +242,7 @@ public class V2DishRestControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        Dish dishResult = retrieveDish(userDetails,testId);
+        Dish dishResult = retrieveDish(userDetails, testId);
         Assert.assertNotNull(dishResult);
         Assert.assertEquals("should be 1 ingredient", 1, dishResult.getIngredients().size());
         Ingredient ingredient = dishResult.getIngredients().get(0);
@@ -261,7 +257,7 @@ public class V2DishRestControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        dishResult = retrieveDish(userDetails,testId);
+        dishResult = retrieveDish(userDetails, testId);
         Assert.assertNotNull(dishResult);
         Assert.assertEquals("ingredients should be empty", 0, dishResult.getIngredients().size());
     }
@@ -274,7 +270,7 @@ public class V2DishRestControllerTest {
         dish.setDishName("Yummy new dish");
 
 
-        Long testId =         createDish(userDetails,dish);
+        Long testId = createDish(userDetails, dish);
 
         IngredientPut ingredientPut = new IngredientPut();
         ingredientPut.setTagId("12");
@@ -293,7 +289,7 @@ public class V2DishRestControllerTest {
         ingredientPut.setTagId("112");
         ingredientPut.setWholeQuantity(12);
         ingredientPut.setUnitId("1000");
-         payload = json(ingredientPut);
+        payload = json(ingredientPut);
 
         this.mockMvc.perform(post(url)
                         .with(user(userDetails))
@@ -322,10 +318,8 @@ public class V2DishRestControllerTest {
         String jsonList = listResultsAfter.getResponse().getContentAsString();
         IngredientListResource afterList = objectMapper.readValue(jsonList, IngredientListResource.class);
         Assert.assertNotNull(afterList);
-        Assert.assertEquals(3,afterList.getEmbeddedList().getIngredientResourceList().size());
+        Assert.assertEquals(3, afterList.getEmbeddedList().getIngredientResourceList().size());
     }
-
-
 
 
     private Long createDish(UserDetails userDetails, Dish dish) throws Exception {

@@ -2,7 +2,8 @@ package com.meg.listshop.lmt.api.web.controller.v2;
 
 import com.github.dockerjava.api.exception.BadRequestException;
 import com.google.common.base.Enums;
-import com.meg.listshop.auth.service.impl.JwtUser;
+
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.common.FractionUtils;
 import com.meg.listshop.common.RoundingUtils;
@@ -31,17 +32,17 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Controller
+@Controller(value="V2DishRestController")
 @CrossOrigin
-public class V2DishRestController implements V2DishRestControllerApi {
+public class DishRestController implements V2DishRestControllerApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(V2DishRestController.class);
+    private static final Logger logger = LoggerFactory.getLogger(DishRestController.class);
 
     private final DishService dishService;
     private final DishSearchService dishSearchService;
@@ -50,8 +51,8 @@ public class V2DishRestController implements V2DishRestControllerApi {
     private Long defaultUnitId;
 
     @Autowired
-    V2DishRestController(DishService dishService,
-                         DishSearchService dishSearchService) {
+    DishRestController(DishService dishService,
+                       DishSearchService dishSearchService) {
         this.dishService = dishService;
         this.dishSearchService = dishSearchService;
     }
@@ -64,7 +65,7 @@ public class V2DishRestController implements V2DishRestControllerApi {
                                                            @RequestParam(value = "sortKey", required = false) String sortKey,
                                                            @RequestParam(value = "sortDirection", required = false) String sortDirection
     ) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Entered retrieveDishes includedTags: [{}], excludedTags: [{}], sortKey: [{}], sortDirection: [{}]", includedTags, excludedTags, sortKey, sortDirection);
         List<DishResource> dishList;
         if (ObjectUtils.isEmpty(includedTags) && ObjectUtils.isEmpty(excludedTags)
@@ -83,7 +84,7 @@ public class V2DishRestController implements V2DishRestControllerApi {
     @Override
     public ResponseEntity<DishResource> retrieveDish(HttpServletRequest request, Authentication authentication, Long dishId) {
         //@GetMapping(value = "/{dishId}", produces = "application/json")
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("retrieving dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
 
@@ -101,7 +102,7 @@ public class V2DishRestController implements V2DishRestControllerApi {
     @Override
     public ResponseEntity<IngredientListResource> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, Long dishId) throws BadParameterException {
         //@GetMapping(value = "/{dishId}/ingredients", produces = "application/json")
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         if (dishId == null) {
             throw new BadParameterException("Dish id cannot be null in getIngredientsByDishId");
@@ -118,7 +119,7 @@ public class V2DishRestController implements V2DishRestControllerApi {
     @Override
     public ResponseEntity<Object> addIngredientToDish(Authentication authentication, Long dishId, IngredientPut ingredient) {
         //@PostMapping(value = "/{dishId}/ingredient", produces = "application/json")
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         // validate / translate ingredient to dishItem => strings to long, resolving fraction
         DishItemDTO validatedEntry = validateIngredient(ingredient, false);
         // sent to service with dishId, dishItemDTO
@@ -130,7 +131,7 @@ public class V2DishRestController implements V2DishRestControllerApi {
     @Override
     public ResponseEntity<Object> updateIngredientInDish(Authentication authentication, Long dishId, IngredientPut ingredient) {
         //@PutMapping(value = "/{dishId}/ingredient", produces = "application/json")
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         // validate / translate ingredient to dishItem => strings to long, resolving fraction
         DishItemDTO validatedEntry = validateIngredient(ingredient, true);
         // sent to service with dishId, dishItemDTO
@@ -141,7 +142,7 @@ public class V2DishRestController implements V2DishRestControllerApi {
     @Override
     public ResponseEntity<Object> deleteIngredientFromDish(Authentication authentication, Long dishId, Long ingredientId) throws BadParameterException {
         //@DeleteMapping(value = "/{dishId}/ingredients/{ingredientId}", produces = "application/json")
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         if (ingredientId == null || dishId == null) {
             String message = String.format("can't delete ingredient without ingredientId [%s] or dishId [%s]", ingredientId, dishId);

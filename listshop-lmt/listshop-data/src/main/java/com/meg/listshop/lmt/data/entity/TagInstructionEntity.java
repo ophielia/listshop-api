@@ -3,9 +3,9 @@ package com.meg.listshop.lmt.data.entity;
 import com.meg.listshop.lmt.data.pojos.AutoTagSubject;
 import com.meg.listshop.lmt.data.pojos.Instruction;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 import java.util.*;
 import java.util.stream.Collectors;
 

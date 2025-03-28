@@ -1,16 +1,20 @@
 package com.meg.listshop.conversion.service;
 
 
+import com.meg.listshop.common.StringTools;
 import com.meg.listshop.common.UnitSubtype;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.pojo.*;
+import com.meg.listshop.conversion.exceptions.ConversionAddException;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.handlers.ChainConversionHandler;
 import com.meg.listshop.conversion.service.handlers.ConversionHandler;
+import com.meg.listshop.conversion.service.handlers.FactorProvider;
 import com.meg.listshop.conversion.service.handlers.ScalingHandler;
-import com.meg.listshop.conversion.service.handlers.UnitScalingHandler;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +39,17 @@ public class ConverterServiceImpl implements ConverterService {
     @Autowired
     public ConverterServiceImpl(List<ChainConversionHandler> handlerList,
                                 List<ScalingHandler> scalerList,
-                                @Qualifier("tagSpecificHandler") ConversionHandler weightVolumeHandler) {
+                                @Qualifier("tagSpecificHandler") ConversionHandler tagSpecificHandler) {
         this.handlerList = handlerList;
         this.scalerList = scalerList;
-        this.tagSpecificHandler = weightVolumeHandler;
+        this.tagSpecificHandler = tagSpecificHandler;
     }
 
-
+    @PostConstruct
+    public void initialize() {
+        scalerList.sort(
+                (ScalingHandler h1, ScalingHandler h2) -> h1.scalarWeight().compareTo(h2.scalarWeight()));
+    }
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, DomainType domain) throws ConversionPathException, ConversionFactorException {
@@ -55,18 +63,13 @@ public class ConverterServiceImpl implements ConverterService {
     }
 
     @Override
-    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest context) throws ConversionPathException, ConversionFactorException {
-        return convert(amount, context, null);
-    }
-
-    @Override
-    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest context, String unitSize) throws ConversionPathException, ConversionFactorException {
-        LOG.debug("Beginning convert for context [{}], amount [{}, unitSize [{}]", context, amount, unitSize);
-        if (context == null) {
+    public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest conversionRequest) throws ConversionPathException, ConversionFactorException {
+        LOG.debug("Beginning convert for context [{}], amount [{}, unitSize [{}]", conversionRequest, amount, conversionRequest.getUnitSize());
+        if (conversionRequest == null) {
             throw new ConversionPathException("Cannot convert, context is null");
         }
-        UnitSubtype targetSubtype = determineSubtypeFromContext(amount, context);
-        ConversionSpec conversionSpec = ConversionSpec.specForContext(context.getDomainType(), targetSubtype, context.getContextType(), unitSize);
+        UnitSubtype targetSubtype = determineSubtypeFromContext(amount, conversionRequest);
+        ConversionSpec conversionSpec = ConversionSpec.specForConversionRequest(conversionRequest, targetSubtype);
 
         return doConversion(amount, conversionSpec);
     }
@@ -86,6 +89,110 @@ public class ConverterServiceImpl implements ConverterService {
         ConversionSpec target = createConversionSpec(targetUnit, unitSize);
 
         return doConversion(amount, target);
+    }
+
+    public ConvertibleAmount add(ConvertibleAmount amountToAdd, ConvertibleAmount addTo, AddRequest request) throws ConversionPathException, ConversionFactorException, ConversionAddException {
+        // check if the units are the same
+        if (amountToAdd.getUnit() == null || addTo.getUnit() == null) {
+            String message = String.format("Cannot add unit, from [%s] or to unit [%s] is null", amountToAdd.getUnit(), addTo.getUnit());
+            throw new ConversionAddException(message);
+        }
+        if (!amountToAdd.getUnit().getId().equals(addTo.getUnit().getId())) {
+            String message = String.format("Cannot add unit, units are not the same: from unit [%s], to unit [%s] ", amountToAdd.getUnit().getId(), addTo.getUnit().getId());
+            throw new ConversionAddException(message);
+        }
+        // check if the markers are the same
+        if (!StringTools.stringIsEmpty(amountToAdd.getMarker()) &&
+                !StringTools.stringIsEmpty(addTo.getMarker()) &&
+                !amountToAdd.getMarker().equals(addTo.getMarker())) {
+            //      otherwise error - this would be an edge case, since this will primarily be used in the context
+            //      of adding a dish ingredient to a list - so the units should be list units, which typically don't have
+            //      markers
+            String message = String.format("Cannot add unit, unit markers are not the same: from unit [%s], to unit [%s] ", amountToAdd.getMarker(), addTo.getMarker());
+            throw new ConversionAddException(message);
+        }
+
+        // check if the sizes are the same
+        // we use the addTo size if it's user entered
+        // otherwise we use the addFrom size, if it's user entered
+        String targetUnitSize = determineUnitSizePrecedenceForAdd(amountToAdd, addTo);
+        request.setUnitSize(targetUnitSize);
+
+        // do the adding
+        // create context
+        ConversionSpec spec = ConversionSpec.specForAddRequest(request);
+        ConversionContext context = new ConversionContext(amountToAdd, spec);
+        prepareContextForTagSpecificScaling(context);
+        ScalingHandler scalingHandler = getScalerForContext(context);
+
+        // scale to equalize sizes, if sizes are different
+        amountToAdd = equalizeSize(amountToAdd, context, scalingHandler);
+        addTo = equalizeSize(addTo, context, scalingHandler);
+
+        double quantity = addTo.getQuantity();
+        quantity += amountToAdd.getQuantity();
+        boolean userSize = addTo.getUserSize() || amountToAdd.getUserSize();
+        String summedUnitSize = targetUnitSize != null ? targetUnitSize : addTo.getUnitSize();
+        ConvertibleAmount summedAmount = new SimpleAmount(quantity,
+                addTo.getUnit(),
+                addTo.getConversionId(),
+                addTo.getIsLiquid(),
+                addTo.getMarker(),
+                summedUnitSize,
+                userSize);
+
+        // do scaling
+        if (scalingHandler != null && !context.isUnitToUnit()) {
+            return scalingHandler.scale(summedAmount, context);
+        }
+
+        // return result
+        return summedAmount;
+    }
+
+    private ConvertibleAmount equalizeSize(ConvertibleAmount possibleScale, ConversionContext context, ScalingHandler scalingHandler) throws ConversionFactorException {
+        if (!context.isUnitToUnit() ||
+                possibleScale.getUnitSize() == null && context.getTargetUnitSize() == null ||
+                scalingHandler == null
+        ) {
+            // not unit to unit or both are empty - both go to default, no size equalization necessary
+            return possibleScale;
+        }
+
+        String targetSize = context.getTargetUnitSize() != null ? context.getTargetUnitSize() : "default";
+        String possibleScaleSize = possibleScale.getUnitSize() != null ? possibleScale.getUnitSize() : "default";
+        if (possibleScaleSize.equals(targetSize)) {
+            // null or not, the sizes are equal - no equalizing to be done
+            return possibleScale;
+        }
+
+        // now - we expect that only one of the two sizes will be equalized
+        if (targetSize.equals(possibleScaleSize)) {
+            return possibleScale;
+        }
+        // convert sizes => amountToAdd to target size
+        return scalingHandler.scale(possibleScale, context);
+    }
+
+    private void prepareContextForTagSpecificScaling(ConversionContext context) {
+        if (!context.isTagSpecfic()) {
+            return;
+        }
+        List<ConversionFactor> factors = ((FactorProvider) tagSpecificHandler).provideFactors(context.getConversionId());
+        context.conversionFactorsFound(factors);
+    }
+
+    private String determineUnitSizePrecedenceForAdd(ConvertibleAmount amountToAdd, ConvertibleAmount addTo) {
+        boolean toAddIsUserEntered = amountToAdd.getUserSize() != null && amountToAdd.getUserSize();
+        boolean addToIsUserEntered = addTo.getUserSize() != null && addTo.getUserSize();
+
+        if (addToIsUserEntered) {
+            return addTo.getUnitSize();
+        }
+        if (toAddIsUserEntered) {
+            return amountToAdd.getUnitSize();
+        }
+        return null;
     }
 
     private UnitSubtype determineSubtypeFromContext(ConvertibleAmount toConvert, ConversionRequest context) {
@@ -181,14 +288,9 @@ public class ConverterServiceImpl implements ConverterService {
                 conversionSpec.getUnitType().equals(amount.getUnit().getType());
     }
 
-
     private ScalingHandler getScalerForContext(ConversionContext context) {
-        if (context.shouldScaleToUnit()) {
-            return new UnitScalingHandler();
-        }
         return scalerList.stream().filter(s -> s.scalerFor(context)).findFirst().orElse(null);
     }
-
 
     private ConvertibleAmount convertDomain(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
         UnitType domainType = context.getTargetUnitType();

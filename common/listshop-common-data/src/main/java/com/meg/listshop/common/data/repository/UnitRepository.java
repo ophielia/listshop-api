@@ -8,14 +8,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UnitRepository extends JpaRepository<UnitEntity, Long>, JpaSpecificationExecutor<UnitEntity> {
 
-    List<UnitEntity> findByType(UnitType type);
-
-    List<UnitEntity> findUnitEntitiesByTypeAndSubtypeIsNot(UnitType unitType, UnitSubtype subtype);
-
-    @Query("select d FROM UnitEntity d where d.type = ?1 and d.subtype <> ?2 and d.isTagSpecific = false")
-    List<UnitEntity> findGenericWeightHybrids(UnitType unitType, UnitSubtype subtype);
+    @Query("select d.id FROM UnitEntity d where d.id in (?1) and d.type = 'UNIT'")
+    Set<Long> findIntegralUnits(Set<Long> unitIds);
 
 }

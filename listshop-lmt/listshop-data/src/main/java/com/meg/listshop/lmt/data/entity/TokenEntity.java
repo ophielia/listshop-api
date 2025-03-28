@@ -1,26 +1,12 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.lmt.api.model.TokenType;
-import org.hibernate.annotations.GenericGenerator;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "tokens")
-@GenericGenerator(
-        name = "token_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "token_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "initial_value",
-                        value = "57000"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 public class TokenEntity {
 
     @Column(name = "user_id")
@@ -28,6 +14,7 @@ public class TokenEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "token_sequence")
+    @SequenceGenerator(name = "token_sequence", sequenceName = "token_sequence", allocationSize = 1)
     @Column(name = "token_id")
     private Long token_id;
 

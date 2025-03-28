@@ -54,9 +54,9 @@ public enum FractionType {
             case SevenEighths:
                 return 0.875;
             case OneThird:
-                return 0.333333;
+                return 0.333;
             case TwoThirds:
-                return 0.666666;
+                return 0.667;
         }
         return 0.0;
     }

@@ -9,29 +9,19 @@ package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.auth.api.model.TargetType;
 import com.meg.listshop.lmt.data.pojos.TargetServiceConstants;
-import org.hibernate.annotations.GenericGenerator;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "target")
-@GenericGenerator(
-        name = "target_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "target_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 public class TargetEntity extends AbstractInflateAndFlatten {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "target_sequence")
+    @SequenceGenerator(name = "target_sequence", sequenceName = "target_sequence", allocationSize = 1)
     private Long targetId;
 
     private Long userId;
@@ -246,12 +236,12 @@ public class TargetEntity extends AbstractInflateAndFlatten {
 // this is used to decide if the tags for this target have changed since the last proposal was run
         // this is used to decide if the slots have changed since the last proposal has been run
         // slots changed == different picked dishes
-        StringBuilder hashCode = new StringBuilder(getTargetId().hashCode());
+        StringBuilder hashCode = new StringBuilder(String.valueOf(getTargetId().hashCode()));
         // make list of all tagList strings for target and contained slots
         // also include dish type tags
         List<String> targetTags = inflateStringToList(getTargetTagIds(), TargetServiceConstants.TARGET_TAG_DELIMITER);
         if (targetTags != null) {
-            targetTags.forEach(t -> hashCode.append(t.hashCode()));
+            targetTags.forEach(t -> hashCode.append(String.valueOf(t.hashCode())));
         }
 
         if (slots != null && !slots.isEmpty()) {

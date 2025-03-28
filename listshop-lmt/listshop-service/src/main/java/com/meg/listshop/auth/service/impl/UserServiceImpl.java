@@ -152,6 +152,12 @@ public class UserServiceImpl implements UserService {
             throw new ObjectNotFoundException("Can't retrieve user for userId [" + userId + "]");
         }
 
+        // don't create user device if one already exists for the token
+        List<UserDeviceEntity> userDevices = userDeviceRepository.findAllByToken(token);
+        if (!userDevices.isEmpty()) {
+            return;
+        }
+
         // create device info
         var userDeviceEntity = new UserDeviceEntity();
         userDeviceEntity.setUserId(userId);

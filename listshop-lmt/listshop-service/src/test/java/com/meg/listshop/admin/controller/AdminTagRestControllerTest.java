@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.meg.listshop.Application;
 import com.meg.listshop.admin.model.PostSearchTags;
+import com.meg.listshop.auth.data.entity.AuthorityName;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
@@ -30,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -42,9 +46,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.fasterxml.jackson.databind.type.LogicalType.Collection;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -87,13 +93,14 @@ public class AdminTagRestControllerTest {
         this.mockMvc = webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
                 .build();
+        GrantedAuthority auth = new SimpleGrantedAuthority(AuthorityName.ROLE_ADMIN.name());
+        List<GrantedAuthority> authorities = Collections.singletonList(auth);
 
-
-        userDetails = new JwtUser(TestConstants.USER_1_ID,
+        userDetails = new CustomUserDetails(TestConstants.USER_1_ID,
                 TestConstants.USER_1_EMAIL,
                 null,
                 null,
-                null,
+                authorities,
                 true,
                 null);
     }
@@ -310,7 +317,7 @@ public class AdminTagRestControllerTest {
         // so we should have 15 (3 x 5) samples, converting to units, with markers and unit sizes
         ConversionGrid grid = resultObject.getTag().getConversionGrid();
         Assertions.assertNotNull(grid);
-        Assertions.assertEquals(15, grid.getSamples().size(), "expected 3 samples");
+        Assertions.assertEquals(15, grid.getSamples().size(), "expected 45 samples");
         long commaCount = grid.getSamples().stream()
                 .filter( s -> s.getFromUnit().contains(",") ||
                         s.getToUnit().contains(","))

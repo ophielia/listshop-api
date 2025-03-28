@@ -1,10 +1,10 @@
 package com.meg.listshop.lmt.data.entity;
 
-import org.hibernate.annotations.GenericGenerator;
+import io.hypersistence.utils.hibernate.id.Tsid;
+import jakarta.persistence.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,20 +13,11 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "proposal_slot")
-@GenericGenerator(
-        name = "proposal_slot_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "proposal_slot_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 public class ProposalSlotEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "proposal_slot_sequence")
+    @SequenceGenerator(name = "proposal_slot_sequence", sequenceName = "proposal_slot_sequence", allocationSize = 1)
     private Long slotId;
 
     private Integer slotNumber;

@@ -10,9 +10,10 @@ package com.meg.listshop.auth.api.controller;
 import com.meg.listshop.auth.api.model.ProposalResource;
 import com.meg.listshop.lmt.api.exception.ProposalProcessingException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 /**
@@ -24,23 +25,23 @@ import java.security.Principal;
 public interface ProposalRestControllerApi {
 
     @RequestMapping(method = RequestMethod.POST, value = "/target/{targetId}", produces = "application/json")
-    ResponseEntity<Object> generateProposal(HttpServletRequest request, Principal principal, @PathVariable Long targetId) throws ProposalProcessingException;
+    ResponseEntity<Object> generateProposal(HttpServletRequest request, Authentication authentication, @PathVariable Long targetId) throws ProposalProcessingException;
 
     @RequestMapping(method = RequestMethod.GET, value = "/{proposalId}", produces = "application/json")
-    ResponseEntity<ProposalResource> getProposal(Principal principal, @PathVariable("proposalId") Long proposalId);
+    ResponseEntity<ProposalResource> getProposal(Authentication authentication, @PathVariable("proposalId") Long proposalId);
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{proposalId}", produces = "application/json")
-    ResponseEntity<Object> refreshProposal(Principal principal, @PathVariable("proposalId") Long proposalId,
+    ResponseEntity<Object> refreshProposal(Authentication authentication, @PathVariable("proposalId") Long proposalId,
                                            @RequestParam(value = "direction", required = false) String direction) throws ProposalProcessingException;
 
     @RequestMapping(method = RequestMethod.POST, value = "/{proposalId}/slot/{slotId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> selectDishInSlot(Principal principal, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId);
+    ResponseEntity<Object> selectDishInSlot(Authentication authentication, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{proposalId}/slot/{slotId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> clearDishFromSlot(Principal principal, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId);
+    ResponseEntity<Object> clearDishFromSlot(Authentication authentication, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId);
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{proposalId}/slot/{slotId}", produces = "application/json")
-    ResponseEntity<Object> refreshProposalSlot(Principal principal, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) throws ProposalProcessingException;
+    ResponseEntity<Object> refreshProposalSlot(Authentication authentication, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) throws ProposalProcessingException;
 
 
 }

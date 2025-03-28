@@ -1,28 +1,18 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.common.FlatStringUtils;
-import org.hibernate.annotations.GenericGenerator;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "proposal_dish")
-@GenericGenerator(
-        name = "proposal_dish_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "proposal_dish_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 public class DishSlotEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "proposal_dish_sequence")
+    @SequenceGenerator(name = "proposal_dish_sequence", sequenceName = "proposal_dish_sequence", allocationSize = 1)
     private Long dishSlotId;
 
     private Long dishId;

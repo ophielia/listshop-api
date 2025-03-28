@@ -1,9 +1,5 @@
 package com.meg.listshop.lmt.data.repository.impl;
 
-import com.meg.listshop.lmt.api.model.TagFilterType;
-import com.meg.listshop.lmt.api.model.TagType;
-import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.entity.TagRelationEntity;
 import com.meg.listshop.lmt.data.pojos.*;
 import com.meg.listshop.lmt.data.repository.CustomTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +8,13 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -69,10 +63,10 @@ public class CustomTagRepositoryImpl implements CustomTagRepository {
         Query query = em.createNamedQuery("TagEntity.findRatingByParent");
         query.setParameter("rating_parent", ratingId);
         query.setMaxResults(step);
-        List<BigInteger> ratingTags = query.getResultList();
+        List<Long> ratingTags = query.getResultList();
         if (!ratingTags.isEmpty() && (ratingTags.size() == step)) {
-            BigInteger tagId = ratingTags.get(ratingTags.size() - 1);
-            return tagId.longValue();
+            Long tagId = ratingTags.get(ratingTags.size() - 1);
+            return tagId;
         }
         return null;
     }

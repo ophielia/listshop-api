@@ -1,9 +1,10 @@
 package com.meg.listshop.conversion.service;
 
-import com.meg.listshop.conversion.data.entity.ConversionFactor;
-import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.common.UnitSubtype;
 import com.meg.listshop.common.UnitType;
+import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.entity.ConversionFactor;
+import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,11 +20,26 @@ public class ConversionContext {
     List<ConversionFactor> unitFactors = new ArrayList<>();
     List<ConversionFactor> destinationFactors = new ArrayList<>();
     private double gramWeight;
+    private boolean isUnitToUnit;
 
 
     public ConversionContext(ConvertibleAmount amount, ConversionSpec conversionSpec) {
         conversionId = amount.getConversionId();
         targetSpec = conversionSpec;
+        UnitEntity unit = amount.getUnit();
+        boolean sourceIsUnit = unit.getType() == UnitType.UNIT;
+        if (sourceIsUnit && conversionSpec.getUnitType() != null) {
+            isUnitToUnit = sourceIsUnit && conversionSpec.getUnitType().equals(UnitType.UNIT);
+        }
+    }
+
+    public boolean isTagSpecfic() {
+        return conversionId != null;
+    }
+
+
+    public boolean isUnitToUnit() {
+        return isUnitToUnit;
     }
 
     public boolean requiresAndCanDoTagSpecificConversion(ConvertibleAmount amount) {
@@ -89,19 +105,39 @@ public class ConversionContext {
     }
 
     public void conversionFactorsFound(List<ConversionFactor> factors) {
-        if (conversionId != null) {
-            this.unitFactors = new ArrayList<>();
-            this.destinationFactors = new ArrayList<>();
-            for (ConversionFactor factor : factors) {
-                if (factor.getFromUnit().getType().equals(UnitType.UNIT) ||
-                        factor.getToUnit().getType().equals(UnitType.UNIT)) {
-                    this.unitFactors.add(factor);
-                } else {
-                    this.destinationFactors.add(factor);
+        if (conversionId == null) {
+            return;
+        }
+        this.unitFactors = new ArrayList<>();
+        this.destinationFactors = new ArrayList<>();
+        String defaultUnitSize = null;
+        for (ConversionFactor factor : factors) {
+            if (factor.getFromUnit().getType().equals(UnitType.UNIT) ||
+                    factor.getToUnit().getType().equals(UnitType.UNIT)) {
+                this.unitFactors.add(factor);
+                if (defaultUnitSize == null && factor.isUnitDefault()) {
+                    defaultUnitSize = factor.getUnitSize();
                 }
+            } else {
+                this.destinationFactors.add(factor);
             }
-            this.destinationFactors = pullScalingFactorsByTargetType(targetSpec.getContextType(), this.destinationFactors);
+        }
+        this.destinationFactors = pullScalingFactorsByTargetType(targetSpec.getContextType(), this.destinationFactors);
 
+        // check unit size default
+        checkUnitSizeDefaultAndTarget(defaultUnitSize);
+    }
+
+    private void checkUnitSizeDefaultAndTarget(String defaultUnitSize) {
+        if (defaultUnitSize == null) {
+            return;
+        }
+        // target may have null unit size  - this should be filled in, so we
+        // check it with the default here
+        if (targetSpec.getUnitSize() == null) {
+            // remake the target with the unit size
+            ConversionSpec correctedSpec = ConversionSpec.specWithUnitSize(targetSpec, defaultUnitSize);
+            targetSpec = correctedSpec;
         }
     }
 
@@ -130,9 +166,9 @@ public class ConversionContext {
 
     public boolean shouldScaleToUnit() {
         // unit factors exits, and target is list (or unit)
-        boolean unitFactorsExist = unitFactors != null  && !unitFactors.isEmpty();
-        boolean contextIsList = targetSpec.getContextType() != null  && targetSpec.getContextType().equals(ConversionTargetType.List);
-        boolean targetIsUnit = targetSpec.getUnitType() != null  && targetSpec.getUnitType().equals(UnitType.UNIT);
+        boolean unitFactorsExist = unitFactors != null && !unitFactors.isEmpty();
+        boolean contextIsList = targetSpec.getContextType() != null && targetSpec.getContextType().equals(ConversionTargetType.List);
+        boolean targetIsUnit = targetSpec.getUnitType() != null && targetSpec.getUnitType().equals(UnitType.UNIT);
         return unitFactorsExist && (contextIsList || targetIsUnit);
     }
 

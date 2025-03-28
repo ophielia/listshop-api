@@ -10,8 +10,8 @@ package com.meg.listshop.auth.web;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
@@ -113,7 +113,7 @@ public class UserRestControllerTest {
                 .build();
 
         UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_1_EMAIL);
-        userDetailsChangePassword = new JwtUser(userAccount.getId(),
+        userDetailsChangePassword = new CustomUserDetails(userAccount.getId(),
                 TestConstants.USER_1_EMAIL,
                 null,
                 "Passw0rd", // $2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK
@@ -121,7 +121,7 @@ public class UserRestControllerTest {
                 true,
                 null);
 
-        userDetailsAnotherChangePassword = new JwtUser(TestConstants.USER_5_ID,
+        userDetailsAnotherChangePassword = new CustomUserDetails(TestConstants.USER_5_ID,
                 TestConstants.USER_5_NAME,
                 null,
                 "Passw0rd",
@@ -129,7 +129,7 @@ public class UserRestControllerTest {
                 true,
                 null);
 
-        userWithoutProperties = new JwtUser(TestConstants.USER_4_ID,
+        userWithoutProperties = new CustomUserDetails(TestConstants.USER_4_ID,
                 TestConstants.USER_4_NAME,
                 null,
                 "Passw0rd",
@@ -137,7 +137,7 @@ public class UserRestControllerTest {
                 true,
                 null);
 
-        userWithProperties = new JwtUser(USER_WITH_PROPERTIES_ID,
+        userWithProperties = new CustomUserDetails(USER_WITH_PROPERTIES_ID,
                 USER_WITH_PROPERTIES_NAME,
                 null,
                 "Passw0rd",
@@ -145,7 +145,7 @@ public class UserRestControllerTest {
                 true,
                 null);
 
-        userToDelete = new JwtUser(userAccount.getId(),
+        userToDelete = new CustomUserDetails(userAccount.getId(),
                 "bravenewworld@test.com",
                 "bravenewworld@test.com",
                 "Passw0rd",
@@ -153,7 +153,7 @@ public class UserRestControllerTest {
                 true,
                 null);
 
-        userNotFound = new JwtUser(userAccount.getId(),
+        userNotFound = new CustomUserDetails(userAccount.getId(),
                 "notappearinginthisfilm",
                 "notappearinginthisfilm",
                 "Passw0rd",

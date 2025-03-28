@@ -9,10 +9,12 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
+import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.*;
 import com.meg.listshop.lmt.data.repository.CustomTagInfoRepository;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
+import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.DishSearchCriteria;
 import com.meg.listshop.lmt.service.DishSearchService;
@@ -39,11 +41,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class TagServiceImpl implements TagService {
 
-    @Value("${service.tagservice.delete.tag.immediately:false}")
-    boolean deleteImmediately;
-
     private final List<TagChangeListener> listeners = new CopyOnWriteArrayList<>();
-
     private final DishService dishService;
     private final ListTagStatisticService tagStatisticService;
     private final TagReplaceService tagReplaceService;
@@ -52,7 +50,9 @@ public class TagServiceImpl implements TagService {
     private final TagStructureService tagStructureService;
     private final DishSearchService dishSearchService;
     private final CustomTagInfoRepository tagInfoCustomRepository;
-
+    private final ListLayoutCategoryRepository listLayoutCategoryRepository;
+    @Value("${service.tagservice.delete.tag.immediately:false}")
+    boolean deleteImmediately;
     @Value("${shopping.list.properties.default_list_layout_id:5}")
     private Long defaultLayoutId;
     private long cachedRatingStructureExpires;
@@ -68,7 +68,8 @@ public class TagServiceImpl implements TagService {
                           TagRepository tagRepository,
                           CustomTagInfoRepository tagInfoCustomRepository,
                           DishSearchService dishSearchService,
-                          DishItemRepository dishItemRepository
+                          DishItemRepository dishItemRepository,
+                          ListLayoutCategoryRepository listLayoutCategoryRepository
     ) {
         this.dishService = dishService;
         this.tagStatisticService = tagStatisticService;
@@ -78,7 +79,7 @@ public class TagServiceImpl implements TagService {
         this.dishSearchService = dishSearchService;
         this.tagInfoCustomRepository = tagInfoCustomRepository;
         this.dishItemRepository = dishItemRepository;
-
+        this.listLayoutCategoryRepository = listLayoutCategoryRepository;
     }
 
 
@@ -173,6 +174,17 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public void updateTagName(Long tagId, String tagName) {
+        // get tag from db
+        TagEntity dbTag = tagRepository.findById(tagId).orElse(null);
+        if (dbTag == null || tagName == null || tagName.trim().isEmpty()) {
+            return;
+        }
+        dbTag.setName(tagName);
+        tagRepository.save(dbTag);
+    }
+
+    @Override
     public TagEntity updateTag(Long tagId, TagEntity toUpdate) {
         // get tag from db
         Optional<TagEntity> dbTagOpt = tagRepository.findById(tagId);
@@ -232,7 +244,7 @@ public class TagServiceImpl implements TagService {
         return tagInfoCustomRepository.retrieveTagInfoByUser(userId, tagTypes);
     }
 
-    public List<TagInfoDTO> getTagInfoList(TagSearchCriteria criteria){
+    public List<TagInfoDTO> getTagInfoList(TagSearchCriteria criteria) {
         return tagInfoCustomRepository.findTagInfoByCriteria(criteria);
     }
 
@@ -521,7 +533,7 @@ public class TagServiceImpl implements TagService {
         List<DishItemEntity> dishItems = dish.getItems();
         List<DishItemEntity> dishItemsToRemove = dishItems.stream()
                 .filter(t -> (validatedRemovals.contains(t.getTag().getId())))
-                .collect(Collectors.toList());
+                .toList();
 
         // if nothing to remove, return
         if (dishItemsToRemove.isEmpty()) {
@@ -565,19 +577,35 @@ public class TagServiceImpl implements TagService {
             fullInfo.setParentId(String.valueOf(parent.getId()));
         }
 
+        // fill in category
+        ListLayoutCategoryEntity layoutCategory = listLayoutCategoryRepository.getStandardCategoryForTag(tagId);
+        if (layoutCategory != null) {
+            fullInfo.setLayoutCategory(layoutCategory.getName());
+            fullInfo.setLayoutCategoryId(layoutCategory.getId());
+        }
 
         // construct status display
         Long internalStatus = tag.getInternalStatus();
         List<String> statuses = new ArrayList<>();
-        if (tagHasStatus(internalStatus,TagInternalStatus.CHECKED)) {statuses.add(TagInternalStatus.CHECKED.toString());}
-        if (tagHasStatus(internalStatus,TagInternalStatus.LIQUID_ASSIGNED)) {statuses.add(TagInternalStatus.LIQUID_ASSIGNED.toString());}
-        if (tagHasStatus(internalStatus,TagInternalStatus.FOOD_ASSIGNED)) {statuses.add(TagInternalStatus.FOOD_ASSIGNED.toString());}
-        if (tagHasStatus(internalStatus,TagInternalStatus.FOOD_VERIFIED)) {statuses.add(TagInternalStatus.FOOD_VERIFIED.toString());}
-        if (tagHasStatus(internalStatus,TagInternalStatus.CATEGORY_ASSIGNED)) {statuses.add(TagInternalStatus.CATEGORY_ASSIGNED.toString());}
+        if (tagHasStatus(internalStatus, TagInternalStatus.CHECKED)) {
+            statuses.add(TagInternalStatus.CHECKED.toString());
+        }
+        if (tagHasStatus(internalStatus, TagInternalStatus.LIQUID_ASSIGNED)) {
+            statuses.add(TagInternalStatus.LIQUID_ASSIGNED.toString());
+        }
+        if (tagHasStatus(internalStatus, TagInternalStatus.FOOD_ASSIGNED)) {
+            statuses.add(TagInternalStatus.FOOD_ASSIGNED.toString());
+        }
+        if (tagHasStatus(internalStatus, TagInternalStatus.FOOD_VERIFIED)) {
+            statuses.add(TagInternalStatus.FOOD_VERIFIED.toString());
+        }
+        if (tagHasStatus(internalStatus, TagInternalStatus.CATEGORY_ASSIGNED)) {
+            statuses.add(TagInternalStatus.CATEGORY_ASSIGNED.toString());
+        }
 
         String status = "empty";
         if (!statuses.isEmpty()) {
-            status = String.join(",",statuses);
+            status = String.join(",", statuses);
         }
         fullInfo.setStatusDisplay(status);
         return fullInfo;
@@ -586,8 +614,6 @@ public class TagServiceImpl implements TagService {
     private boolean tagHasStatus(Long status, TagInternalStatus tagInternalStatus) {
         return status % tagInternalStatus.value() == 0;
     }
-
-
 
 
     private Set<Long> determineValidTagsToRemove(Long dishId, Set<Long> tagIds) {
@@ -622,7 +648,7 @@ public class TagServiceImpl implements TagService {
             // this is a request to assign unassigned tags
             TagEntity parent = tagStructureService.getParentTag(toTag);
             List<TagEntity> allChildren = tagStructureService.getChildren(parent);
-            List<Long> excludeTags = allChildren.stream().map(TagEntity::getId).collect(Collectors.toList());
+            List<Long> excludeTags = allChildren.stream().map(TagEntity::getId).toList();
             var criteria = new DishSearchCriteria(userId);
             criteria.setExcludedTagIds(excludeTags);
             dishes = dishSearchService.findDishes(criteria);
@@ -646,7 +672,7 @@ public class TagServiceImpl implements TagService {
             if (!fromTagId.equals(0L)) {
                 items = items.stream()
                         .filter(t -> !t.getTag().getId().equals(fromTagId))
-                        .collect(Collectors.toList());
+                        .toList();
             }
             dish.setItems(items);
             dishService.save(dish, false);
@@ -661,11 +687,12 @@ public class TagServiceImpl implements TagService {
 
     public void assignTagsToUser(Long userId, List<Long> tagIds) {
         List<Long> tagsToUpdate = tagIds.stream()
-                        .filter(t -> !usedByOtherUsers(userId, t))
-                                .collect(Collectors.toList());
+                .filter(t -> !usedByOtherUsers(userId, t))
+                .toList();
 
         tagRepository.assignTagsToUser(userId, tagsToUpdate);
     }
+
     private boolean usedByOtherUsers(Long userId, Long tagId) {
         if (tagRepository.findUsersWithTagInDish(userId, tagId) > 0) {
             return true;
@@ -726,7 +753,7 @@ public class TagServiceImpl implements TagService {
         }
         // get tags to set
         List<TagEntity> tags = tagRepository.getTagsForIdList(new HashSet<>(tagIds));
-        for ( TagEntity tag : tags) {
+        for (TagEntity tag : tags) {
             addOrUpdateLiquidPropertyForTag(tag, isLiquid);
         }
     }
@@ -756,7 +783,7 @@ public class TagServiceImpl implements TagService {
     }
 
     private Set<Long> determineTagsEligibleForStandard(List<Long> tagIds) {
-        List<Long> alreadyExisting =  tagRepository.findDuplicateStandardTags(tagIds );
+        List<Long> alreadyExisting = tagRepository.findDuplicateStandardTags(tagIds);
         return tagIds.stream()
                 .filter(t -> !alreadyExisting.contains(t))
                 .collect(Collectors.toSet());
@@ -895,7 +922,7 @@ public class TagServiceImpl implements TagService {
     private List<TagEntity> getTagsForDish(DishEntity dish, List<TagType> tagtypes) {
         return filterItemsByTagType(dish.getItems(), tagtypes).stream()
                 .map(DishItemEntity::getTag)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<DishItemEntity> getItemsForDish(DishEntity dish, List<TagType> tagtypes) {
@@ -911,7 +938,7 @@ public class TagServiceImpl implements TagService {
         }
         return dishItems.stream()
                 .filter(t -> tagtypes.contains(t.getTag().getTagType()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void assignTagToParent(TagEntity childTag, TagEntity newParentTag) {

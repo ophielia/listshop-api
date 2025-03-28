@@ -1,5 +1,6 @@
 package com.meg.listshop.conversion.data.pojo;
 
+import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 
@@ -16,6 +17,7 @@ public class SimpleAmount implements ConvertibleAmount {
 
     private String marker;
     private String unitSize;
+    private Boolean userSize = false;
 
 
     public SimpleAmount(double quantity, UnitEntity unit, Long conversionId, Boolean isLiquid, String marker) {
@@ -26,13 +28,14 @@ public class SimpleAmount implements ConvertibleAmount {
         this.marker = marker;
     }
 
-    public SimpleAmount(double quantity, UnitEntity unit, Long conversionId, Boolean isLiquid, String marker, String unitSize) {
+    public SimpleAmount(double quantity, UnitEntity unit, Long conversionId, Boolean isLiquid, String marker, String unitSize, Boolean userSize) {
         this.quantity = quantity;
         this.unit = unit;
         this.conversionId = conversionId;
         this.isLiquid = isLiquid;
         this.marker = marker;
         this.unitSize = unitSize;
+        this.userSize = userSize;
     }
 
     public SimpleAmount(double quantity, UnitEntity unit) {
@@ -93,6 +96,19 @@ public class SimpleAmount implements ConvertibleAmount {
 
     public void setUnitSize(String unitSize) {
         this.unitSize = unitSize;
+    }
+
+    public double getQuantityRoundedUp() {
+        return RoundingUtils.roundUpToNearestFraction(quantity);
+    }
+
+    @Override
+    public Boolean getUserSize() {
+        return userSize != null ? userSize : false;
+    }
+
+    public void setUserSize(Boolean userSize) {
+        this.userSize = userSize;
     }
 
     @Override

@@ -5,7 +5,7 @@
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>listshop-parent</artifactId>
-    <version>1.17.0</version>
+    <version>1.17.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>listshop-parent</name>
@@ -14,17 +14,28 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <project.container.name>com.meg.listshop.listshop</project.container.name>
-        <spring-boot-version>2.7.0</spring-boot-version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <spring-boot-version>3.0.13</spring-boot-version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring.boot.mainClass>com.meg.listshop.Application</spring.boot.mainClass>
         <springdoc.version>1.7.0</springdoc.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-properties-migrator</artifactId>
+                <scope>runtime</scope>
+                <version>3.3.3</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>3.1.0</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-parent</artifactId>
@@ -48,11 +59,55 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-jpa</artifactId>
                 <version>${spring-boot-version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>hibernate-core</artifactId>
+                        <groupId>org.hibernate.orm</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
+                <version>${spring-boot-version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>log4j-to-slf4j</artifactId>
+                        <groupId>org.apache.logging.log4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jul-to-slf4j</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>logback-classic</artifactId>
+                        <groupId>ch.qos.logback</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>logback-core</artifactId>
+                        <groupId>ch.qos.logback</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <artifactId>logback-classic</artifactId>
+                <groupId>ch.qos.logback</groupId>
+                <version>1.4.12</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.4.12</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>${spring-boot-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.hateoas</groupId>
+                <artifactId>spring-hateoas</artifactId>
+                <version>2.1.1</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -67,14 +122,29 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-hateoas</artifactId>
-                <version>${spring-boot-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring-boot-version}</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                            <groupId>org.xmlunit</groupId>
+                            <artifactId>xmlunit-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.jayway.jsonpath</groupId>
+                        <artifactId>json-path</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.xmlunit</groupId>
+                <artifactId>xmlunit-core</artifactId>
+                <version>2.10.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path</artifactId>
+                <version>2.9.0</version>
             </dependency>
 
             <dependency>
@@ -103,11 +173,42 @@
                 <artifactId>spring-boot-starter-actuator</artifactId>
                 <version>${spring-boot-version}</version>
             </dependency>
+            <!-- hibernate -->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>6.3.0.Final</version>
+            </dependency>
+            <!-- tsid, vlad -->
+            <dependency>
+                <groupId>io.hypersistence</groupId>
+                <artifactId>hypersistence-utils-hibernate-63</artifactId>
+                <version>3.8.1</version>
+            </dependency>
+
+
             <!-- testcontainers -->
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>1.15.3</version>
+                <version>1.16.1</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>commons-compress</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>1.26.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna</artifactId>
+                <version>5.7.0</version>
                 <scope>test</scope>
             </dependency>
 
@@ -118,26 +219,68 @@
                 <version>${springdoc.version}</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
+            <!-- https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-api -->
+            <dependency>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-api</artifactId>
+                <version>9.1.0</version>
+                <!--<scope>provided</scope>-->
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/jakarta.servlet.jsp.jstl/jakarta.servlet.jsp.jstl-api -->
+            <dependency>
+                <groupId>jakarta.servlet.jsp.jstl</groupId>
+                <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+                <version>3.0.0</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>6.0.0</version>
+
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>jakarta.mail</artifactId>
+                <version>2.0.1</version>
+            </dependency>
+
+
+
+            <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt</artifactId>
-                <version>0.7.0</version>
+                <artifactId>jjwt-api</artifactId>
+                <version>0.12.6</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>0.12.6</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+                <version>0.12.6</version>
+                <scope>runtime</scope>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-test</artifactId>
-                <version>4.0.0.RELEASE</version>
+                <version>6.3.1</version>
                 <scope>test</scope>
             </dependency>
+
 
             <!-- flyway -->
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>5.2.4</version>
+                <version>9.0.1</version>
             </dependency>
 
 
@@ -203,6 +346,11 @@
                 <artifactId>swagger-models</artifactId>
                 <version>2.2.9</version>
             </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>42.7.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -213,13 +361,20 @@
                 <plugin>
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-maven-plugin</artifactId>
-                    <version>5.2.4</version>
+                    <version>9.0.1</version>
                     <configuration>
-                        <url>jdbc:postgresql://localhost:5432/mt2</url>
-                        <user>postgres</user>
-                        <password>postgres</password>
+                        <url>jdbc:postgresql://localhost:5432/dishdev</url>
+                        <user>listshopstarter</user>
+                        <password>rainyM0rning202498tb</password>
                         <table>flyway_schema_history</table>
                     </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.postgresql</groupId>
+                            <artifactId>postgresql</artifactId>
+                            <version>42.5.1</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
 
                 <plugin>

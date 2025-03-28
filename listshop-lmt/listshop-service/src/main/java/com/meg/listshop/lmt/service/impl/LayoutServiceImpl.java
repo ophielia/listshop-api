@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class LayoutServiceImpl implements LayoutService {
 
-    private static final Logger  LOG = LoggerFactory.getLogger(LayoutServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LayoutServiceImpl.class);
 
     private final ListLayoutRepository listLayoutRepository;
     private final ListLayoutCategoryRepository categoryRepository;
@@ -43,6 +43,18 @@ public class LayoutServiceImpl implements LayoutService {
         this.categoryRepository = categoryRepository;
         this.tagRepository = tagRepository;
         this.userService = userService;
+    }
+
+    private static Map<String, ListLayoutCategoryEntity> layoutCategoriesToMap(ListLayoutEntity layout) {
+        Map<String, ListLayoutCategoryEntity> categoryMap = new HashMap<>();
+        if (layout == null) {
+            return categoryMap;
+        }
+        layout.getCategories().forEach(c -> {
+            String name = c.getName();
+            categoryMap.put(name.trim().toLowerCase(), c);
+        });
+        return categoryMap;
     }
 
     @Override
@@ -71,12 +83,14 @@ public class LayoutServiceImpl implements LayoutService {
 
     @Override
     public List<ListLayoutEntity> getUserLayouts(UserEntity user) {
-        return listLayoutRepository.getFilledUserLayouts(user.getId());
+        return listLayoutRepository.getUserLayouts(user.getId());
     }
 
     @Override
-    public ListLayoutEntity getFilledDefaultLayout(Long userId) {
-        return listLayoutRepository.getFilledDefaultLayout(userId);
+    public ListLayoutEntity getFilledStandardLayout(Long userId) {
+        ListLayoutEntity standardLayout = getStandardLayout();
+
+        return listLayoutRepository.fillLayout(userId, standardLayout);
     }
 
     @Override
@@ -87,14 +101,14 @@ public class LayoutServiceImpl implements LayoutService {
             idToAssign = listLayoutRepository.getDefaultCategoryForSiblings(siblingsTagIds);
         }
 
-        if (idToAssign == null)  {
+        if (idToAssign == null) {
             idToAssign = categoryRepository.getDefaultCategoryId();
         }
 
         Optional<ListLayoutCategoryEntity> toAssign = categoryRepository.findById(idToAssign);
 
         if (toAssign.isPresent()) {
-        toAssign.get().addTag(tagToAssign);
+            toAssign.get().addTag(tagToAssign);
         }
 
     }
@@ -125,7 +139,7 @@ public class LayoutServiceImpl implements LayoutService {
     public List<ListLayoutCategoryEntity> getUserCategories(String userName) {
         UserEntity user = userService.getUserByUserEmail(userName);
         if (user == null) {
-            LOG.error("No user found for username [{}]",userName);
+            LOG.error("No user found for username [{}]", userName);
             return new ArrayList<>();
         }
         // get default layout for user
@@ -145,24 +159,12 @@ public class LayoutServiceImpl implements LayoutService {
 
         // produce sorted list of categories
         List<ListLayoutCategoryEntity> result = new ArrayList<>();
-        userSortedKeys.forEach( key -> result.add(userCategoryMap.get(key)));
+        userSortedKeys.forEach(key -> result.add(userCategoryMap.get(key)));
         defaultSortedKeys.stream()
-                .filter( key -> !userSortedKeys.contains(key))
-                .forEach( key -> result.add(defaultCategoryMap.get(key)));
+                .filter(key -> !userSortedKeys.contains(key))
+                .forEach(key -> result.add(defaultCategoryMap.get(key)));
 
         return result;
-    }
-
-    private static Map<String, ListLayoutCategoryEntity> layoutCategoriesToMap(ListLayoutEntity layout) {
-        Map<String, ListLayoutCategoryEntity> categoryMap = new HashMap<>();
-        if (layout == null) {
-            return categoryMap;
-        }
-        layout.getCategories().forEach( c -> {
-                String name = c.getName();
-                categoryMap.put(name.trim().toLowerCase(), c);
-                });
-        return categoryMap;
     }
 
     private ListLayoutEntity getOrCreateDefaultUserLayout(Long userId) {
@@ -196,6 +198,7 @@ public class LayoutServiceImpl implements LayoutService {
         // map the categories
         List<TagEntity> tagsToAssign = tagRepository.getTagsForIdList(mappingTagIds);
         tagsToAssign.forEach(tagEntity -> tagEntity.addCategory(mappingCategory));
+        String beep = "bop";
     }
 
     private ListLayoutCategoryEntity createNewCategoryIfNecessary(ListLayoutCategoryEntity categoryTemplate, ListLayoutEntity layout) {

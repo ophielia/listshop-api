@@ -23,6 +23,7 @@ public class TagSpecificListScalingHandler extends ListScalingHandler {
     public TagSpecificListScalingHandler(ConversionFactorRepository factorRepository) {
         super(factorRepository);
         LOG.info("initializing TagSpecificDishScalingHandler");
+        setScalarWeight(2);
     }
 
 

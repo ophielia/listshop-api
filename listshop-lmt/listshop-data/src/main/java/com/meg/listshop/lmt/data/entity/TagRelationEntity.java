@@ -1,28 +1,18 @@
 package com.meg.listshop.lmt.data.entity;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
+import io.hypersistence.utils.hibernate.id.Tsid;
+import jakarta.persistence.*;
 
 /**
  * Created by margaretmartin on 22/05/2017.
  */
 @Entity
-@Table(name="tag_relation")
-@GenericGenerator(
-        name = "tag_relation_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value="tag_relation_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value="1")}
-)
+@Table(name = "tag_relation")
 public class TagRelationEntity {
 
     @Id
     @GeneratedValue( strategy=GenerationType.SEQUENCE, generator="tag_relation_sequence")
+    @SequenceGenerator(name = "tag_relation_sequence", sequenceName = "tag_relation_sequence", allocationSize = 1)
     @Column(name = "tag_relation_id")
     Long id;
 

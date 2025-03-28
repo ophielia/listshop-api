@@ -1,8 +1,7 @@
 package com.meg.listshop.lmt.data.entity;
 
-import org.hibernate.annotations.GenericGenerator;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,16 +12,6 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "list_category")
-@GenericGenerator(
-        name = "list_layout_category_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value="list_layout_category_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value="1")}
-)
 @NamedNativeQuery(
         name = "ListLayoutCategoryEntity.defaultCategoryForSiblings",
         query = "with default_categories as (select distinct ll.layout_id, lc.name, lc.category_id, count(*) " +
@@ -55,26 +44,21 @@ import java.util.Set;
 )
 public class ListLayoutCategoryEntity {
 
+    @Transient
+    private final List<ListItemEntity> items = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_layout_category_sequence")
+    @SequenceGenerator(name = "list_layout_category_sequence", sequenceName = "list_layout_category_sequence", allocationSize = 1)
     @Column(name = "category_id")
     private Long categoryId;
-
     private String name;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "CATEGORY_TAGS",
             joinColumns = @JoinColumn(name = "CATEGORY_ID"),
             inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
     private Set<TagEntity> tags = new HashSet<>();
-
     @Column(name = "layout_id")
     private Long layoutId;
-
-    @Transient
-    private final List<ListItemEntity> items = new ArrayList<>();
-
-
     private Integer displayOrder;
 
     private Boolean isDefault;
@@ -122,8 +106,6 @@ public class ListLayoutCategoryEntity {
     public List<ListItemEntity> getItems() {
         return items;
     }
-
-
 
 
     public Integer getDisplayOrder() {

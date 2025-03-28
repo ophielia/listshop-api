@@ -1,25 +1,14 @@
 package com.meg.listshop.lmt.data.entity;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "proposal_approach")
-@GenericGenerator(
-        name = "proposal_approach_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "proposal_approach_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "1")}
-)
 public class ContextApproachEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "proposal_approach_sequence")
+    @SequenceGenerator(name = "proposal_approach_sequence", sequenceName = "proposal_approach_sequence", allocationSize = 1)
     private Long proposalApproachId;
 
     @ManyToOne

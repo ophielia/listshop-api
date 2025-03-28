@@ -16,5 +16,5 @@ drop SEQUENCE if exists modifier_mapping_sequence;
 drop table if exists domain_unit;
 drop SEQUENCE if exists domain_unit_sequence;
 
-select * from flyway_schema_history;
+select * from oow_flyway_schema_history;
 

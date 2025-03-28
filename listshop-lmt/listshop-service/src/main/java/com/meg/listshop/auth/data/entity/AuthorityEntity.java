@@ -1,30 +1,16 @@
 package com.meg.listshop.auth.data.entity;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "AUTHORITY")
-@GenericGenerator(
-        name = "authority_id_seq",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value="authority_id_seq"),
-                @org.hibernate.annotations.Parameter(
-                        name = "initial_value",
-                        value="500"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value="1")}
-)
 public class AuthorityEntity {
 
     @Id
     @Column(name = "authority_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "authority_id_seq")
+    @SequenceGenerator(name = "authority_id_seq", sequenceName = "authority_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "NAME", length = 50)
@@ -34,7 +20,7 @@ public class AuthorityEntity {
 
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private UserEntity user;
 
     public Long getId() {

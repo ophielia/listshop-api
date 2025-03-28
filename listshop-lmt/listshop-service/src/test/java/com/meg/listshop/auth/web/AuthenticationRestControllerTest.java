@@ -5,8 +5,8 @@ import com.meg.listshop.auth.api.model.ClientDeviceInfo;
 import com.meg.listshop.auth.api.model.ClientType;
 import com.meg.listshop.auth.api.model.JwtAuthorizationRequest;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Before;
@@ -26,6 +26,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -61,7 +62,9 @@ public class AuthenticationRestControllerTest {
     private MockMvc mockMvc;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private UserDetails userDetails;
-    private final String validToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZSIsImF1ZGllbmNlIjoibW9iaWxlIiwiY3JlYXRlZCI6MTU5MTQ0MzI2NzE3MX0.YWjx1Y2vANS_MyGn2BsSKSi7WGBji5DT5b6hao9fdC3MPOwF_syTRNyqcoJO9J9Joj9X5DX7-0cuXRNOnC6cpQ";
+    private final String validToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZSIsImlhdCI6MTcyNzI2OTcyNn0.xaMCYE6qKCH7pB6zMNMhn-RyVoqVgLhpnmRAECmSNA0";
+    //private final String validToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtZSIsImF1ZGllbmNlIjoibW9iaWxlIiwiY3JlYXRlZCI6MTcyNjEzNTI5NTk1MX0.yYkoSHttcOve_AoU-8FIpzNoP9f5Qhfg8dIk7GxadlskHpFN5hrOYnxzcMQE5lSB";
+    //private final String validToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZSIsImF1ZGllbmNlIjoibW9iaWxlIiwiY3JlYXRlZCI6MTU5MTQ0MzI2NzE3MX0.YWjx1Y2vANS_MyGn2BsSKSi7WGBji5DT5b6hao9fdC3MPOwF_syTRNyqcoJO9J9Joj9X5DX7-0cuXRNOnC6cpQ";
 
 
     @Autowired
@@ -88,7 +91,7 @@ public class AuthenticationRestControllerTest {
                 .build();
 
         UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
-        userDetails = new JwtUser(userAccount.getId(),
+        userDetails = new CustomUserDetails(userAccount.getId(),
                 TestConstants.USER_3_NAME,
                 null,
                 "admin",
@@ -110,8 +113,8 @@ public class AuthenticationRestControllerTest {
         String authReqJson = json(jwtAuthenticationRequest);
 
         mockMvc.perform(post("/auth")
-                .contentType(contentType)
-                .content(authReqJson))
+                        .contentType(contentType)
+                        .content(authReqJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.user.email").value(TestConstants.USER_3_NAME))
                 .andExpect(jsonPath("$.user.token").exists())
@@ -119,31 +122,75 @@ public class AuthenticationRestControllerTest {
 
     }
 
-    @Test
-    @WithMockUser
-    public void testLogout() throws Exception {
 
-        mockMvc.perform(get("/auth/logout")
-                .header("Authorization", validToken))
-                .andExpect(status().isOk())
-                .andDo(print());
-
-    }
 
     @Test
     public void testLogin() throws Exception {
         ClientDeviceInfo deviceInfo = new ClientDeviceInfo();
         deviceInfo.setClientType(ClientType.Mobile);
-        JwtAuthorizationRequest jwtAuthenticationRequest = new JwtAuthorizationRequest(TestConstants.USER_3_NAME,
+        JwtAuthorizationRequest jwtAuthenticationRequest = new JwtAuthorizationRequest("rufus",
                 "admin");
         jwtAuthenticationRequest.setDeviceInfo(deviceInfo);
+        mockMvc.perform(post("/auth")
+                        .contentType(contentType)
+                        .content(json(jwtAuthenticationRequest)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testAuthorize() throws Exception {
+        ClientDeviceInfo deviceInfo = new ClientDeviceInfo();
+        deviceInfo.setClientType(ClientType.Mobile);
+        JwtAuthorizationRequest jwtAuthenticationRequest = new JwtAuthorizationRequest("rufus",
+                "admin");
+        jwtAuthenticationRequest.setDeviceInfo(deviceInfo);
+        MvcResult result =  mockMvc.perform(post("/auth")
+                        .contentType(contentType)
+                        .content(json(jwtAuthenticationRequest)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        String token = pullToken(content);
 
         mockMvc.perform(post("/auth/authenticate")
                         .contentType(contentType)
                         .content(json(deviceInfo))
-                        .header("Authorization", validToken))
+                .header("Authorization", "Bearer " + token))
                 .andDo(print())
                 .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void testLogout() throws Exception {
+        ClientDeviceInfo deviceInfo = new ClientDeviceInfo();
+        deviceInfo.setClientType(ClientType.Mobile);
+        JwtAuthorizationRequest jwtAuthenticationRequest = new JwtAuthorizationRequest("rufus",
+                "admin");
+        jwtAuthenticationRequest.setDeviceInfo(deviceInfo);
+        MvcResult result =  mockMvc.perform(post("/auth")
+                        .contentType(contentType)
+                        .content(json(jwtAuthenticationRequest)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        String token = pullToken(content);
+
+        mockMvc.perform(get("/auth/logout")
+                        .header("Authorization", "Bearer " + token))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/auth/authenticate")
+                        .header("Authorization", "Bearer " + token))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+
     }
 
 

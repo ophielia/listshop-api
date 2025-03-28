@@ -10,9 +10,8 @@ package com.meg.listshop.lmt.service.impl;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.common.FlatStringUtils;
-import com.meg.listshop.common.FractionUtils;
-import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.common.StringTools;
+import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import com.meg.listshop.lmt.api.model.FractionType;
@@ -32,12 +31,12 @@ import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -60,8 +59,11 @@ public class DishServiceImpl implements DishService {
 
     private final AmountService amountService;
 
+    private final ConversionService conversionService;
+
 
     private static final Logger logger = LoggerFactory.getLogger(DishServiceImpl.class);
+    private static final String DEFAULT_UNIT_SIZE = "medium";
 
     Function<DishItemEntity, TagEntity> functionGetTag = DishItemEntity::getTag;
     Function<DishItemEntity, String> functionGetTagName = functionGetTag.andThen(TagEntity::getName);
@@ -75,8 +77,8 @@ public class DishServiceImpl implements DishService {
             @Lazy AutoTagService autoTagService,
             TagService tagService,
             DishItemRepository dishItemRepository,
-            AmountService amountService
-    ) {
+            AmountService amountService,
+            ConversionService conversionService) {
         this.dishRepository = dishRepository;
         this.userRepository = userRepository;
         this.autoTagService = autoTagService;
@@ -85,6 +87,7 @@ public class DishServiceImpl implements DishService {
         this.amountService = amountService;
 
         this.includedInStandard = Set.of(TagType.DishType, TagType.TagType);
+        this.conversionService = conversionService;
     }
 
     @Override
@@ -406,7 +409,7 @@ public class DishServiceImpl implements DishService {
 
         Double calculatedQuantity = 0.0;
         if (dtoWhole != null) {
-            calculatedQuantity += new Double(dtoWhole);
+            calculatedQuantity += Double.valueOf(dtoWhole);
         }
         if (dtoFraction != null) {
             double fractionDouble = FractionType.doubleValueOf(dtoFraction);
@@ -418,7 +421,7 @@ public class DishServiceImpl implements DishService {
         dishItemEntity.setQuantity(dishItemDTO.getQuantity());
 
         if (!calculatedQuantity.equals(dtoQuantity)) {
-        dishItemEntity.setQuantity(calculatedQuantity);
+            dishItemEntity.setQuantity(calculatedQuantity);
         }
 
     }
@@ -436,9 +439,11 @@ public class DishServiceImpl implements DishService {
     private void setModifiersFromRawModifiers(DishItemDTO dishItemDTO, DishItemEntity dishItemEntity, TagEntity tag) {
         List<String> rawModifiers = dishItemDTO.getRawModifiers();
         if (rawModifiers == null || rawModifiers.isEmpty()) {
+
+
             dishItemEntity.setRawModifiers(null);
             dishItemEntity.setMarker(null);
-            dishItemEntity.setUnitSize(null);
+            dishItemEntity.setUnitSize(DEFAULT_UNIT_SIZE);
             dishItemEntity.setModifiersProcessed(true);
             return;
         }
@@ -449,24 +454,37 @@ public class DishServiceImpl implements DishService {
         } else {
             dishItemEntity.setModifiersProcessed(false);
         }
-    }
+        if (dishItemEntity.getUnitSize() != null) {
+            dishItemEntity.setUserSize(true);
+        } else {
+            // unitSize
+            if (dishItemDTO.getUnitSize() == null) {
+                String  defaultUnitSize = conversionService.getDefaultUnitSizeForConversionId(tag.getConversionId(),dishItemDTO.getUnitId());
+                dishItemEntity.setUnitSize(defaultUnitSize);
+                dishItemEntity.setUserSize(false);
+            }
+        }
 
-    private void fillIngredientModifiers(Long conversionId, List<String> rawModifiers, DishItemEntity dishItemEntity) {
-        if (rawModifiers == null) {
-            dishItemEntity.setMarker(null);
-            dishItemEntity.setUnitSize(null);
-            return;
-        }
-        List<String> markers = amountService.pullMarkersForModifers(rawModifiers, conversionId);
-        if (markers != null && !markers.isEmpty()) {
-            String firstMarker = markers.get(0);
-            dishItemEntity.setMarker(firstMarker);
-        }
-        List<String> unitSizes = amountService.pullUnitSizesForModifiers(rawModifiers, conversionId);
-        if (unitSizes != null && !unitSizes.isEmpty()) {
-            String firstUnit = unitSizes.get(0);
-            dishItemEntity.setUnitSize(firstUnit);
-        }
+
+
+}
+
+private void fillIngredientModifiers(Long conversionId, List<String> rawModifiers, DishItemEntity dishItemEntity) {
+    if (rawModifiers == null) {
+        dishItemEntity.setMarker(null);
+        dishItemEntity.setUnitSize(null);
+        return;
     }
+    List<String> markers = amountService.pullMarkersForModifers(rawModifiers, conversionId);
+    if (markers != null && !markers.isEmpty()) {
+        String firstMarker = markers.get(0);
+        dishItemEntity.setMarker(firstMarker);
+    }
+    List<String> unitSizes = amountService.pullUnitSizesForModifiers(rawModifiers, conversionId);
+    if (unitSizes != null && !unitSizes.isEmpty()) {
+        String firstUnit = unitSizes.get(0);
+        dishItemEntity.setUnitSize(firstUnit);
+    }
+}
 
 }

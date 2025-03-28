@@ -1,4 +1,6 @@
 -- reinsert units and factors
+--alter table dish_items add column user_size boolean default false;
+
 delete from factors;
 delete from units;
 delete from modifier_mappings;
@@ -53,6 +55,9 @@ insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1050, 'wedge', 'HYBRID', 'WEIGHT',FALSE, TRUE,FALSE,TRUE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1051, 'teaspoon (fluid) (UK)', 'UK', 'VOLUME',FALSE, TRUE,TRUE,FALSE,'', FALSE);
 insert into units (unit_id, name, type, subtype, is_list_unit, is_dish_unit, is_liquid, is_tag_specific, excluded_domains, one_way_conversion) values (1052, 'tablespoon (fluid) (UK)', 'UK', 'VOLUME',FALSE, TRUE,TRUE,FALSE,'', FALSE);
+
+
+
 
 
 insert into factors (factor_id, from_unit, to_unit, factor) select 1, f.unit_id, t.unit_id, 0.0625 as factor from units f,units t where lower(f.name) = lower('cup (fluid)') and lower(t.name) = lower('gallon');
@@ -254,32 +259,10 @@ delete
 from domain_unit;
 
 -- metric
-insert into domain_unit
-select nextval('domain_unit_sequence'), 'METRIC', unit_id
-from units
-where type in ('METRIC', 'HYBRID', 'UNIT');
--- us
-insert into domain_unit
-select nextval('domain_unit_sequence'), 'US', unit_id
-from units
-where type in ('US', 'HYBRID', 'UNIT');
---uk
-insert into domain_unit
-select nextval('domain_unit_sequence'),
-       'UK',
-       unit_id
-from units
-where type = 'UK';
-insert into domain_unit
-select nextval('domain_unit_sequence'),
-       'UK',
-       unit_id
-from units
-where type = 'METRIC'
-  and is_liquid = false;
-insert into domain_unit
-select nextval('domain_unit_sequence'),
-       'UK',
-       unit_id
-from units
-where type in ('HYBRID', 'UNIT');
+insert into domain_unit select nextval('domain_unit_sequence'), 'METRIC', unit_id from units where type in ('METRIC', 'HYBRID', 'UNIT');
+/*us*/ insert into domain_unit select nextval('domain_unit_sequence'), 'US', unit_id from units where type in ('US', 'HYBRID', 'UNIT');
+/*--uk*/ insert into domain_unit select nextval('domain_unit_sequence'), 'UK', unit_id from units where type = 'UK';
+insert into domain_unit select nextval('domain_unit_sequence'), 'UK', unit_id from units where type = 'METRIC' and is_liquid = false;
+insert into domain_unit select nextval('domain_unit_sequence'), 'UK', unit_id from units where type in ('HYBRID', 'UNIT');
+
+

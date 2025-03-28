@@ -1,9 +1,8 @@
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.lmt.data.pojos.TargetServiceConstants;
-import org.hibernate.annotations.GenericGenerator;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,38 +11,22 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "target_slot")
-@GenericGenerator(
-        name = "target_slot_sequence",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {@org.hibernate.annotations.Parameter(
-                name = "sequence_name",
-                value = "target_slot_sequence"),
-                @org.hibernate.annotations.Parameter(
-                        name = "increment_size",
-                        value = "2")}
-)
 public class TargetSlotEntity {
 
+    public final static String IDENTIFIER = "TargetSlotEntity";
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "target_slot_sequence")
+    @SequenceGenerator(name = "target_slot_sequence", sequenceName = "target_slot_sequence", allocationSize = 2)
     private Long targetSlotId;
-
     @Column(name = "target_id")
     private Long targetId;
-
     private Long slotDishTagId;
-
     @Transient
     private TagEntity slotDishTag;
-
     private String targetTagIds;
-
     private Integer slotOrder;
-
     @Transient
     private List<TagEntity> tags;
-
-    public final static String IDENTIFIER = "TargetSlotEntity";
 
     public TargetSlotEntity() {
         // for JPA

@@ -5,11 +5,12 @@ import com.meg.listshop.auth.api.model.ClientDeviceInfo;
 import com.meg.listshop.auth.api.model.JwtAuthorizationRequest;
 import com.meg.listshop.auth.api.model.UserResource;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.JwtService;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtTokenUtil;
-import com.meg.listshop.auth.service.impl.ListShopUserDetailsService;
+import com.meg.listshop.auth.service.impl.UserDetailsServiceImpl;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import com.meg.listshop.lmt.api.model.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +20,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 @Controller
@@ -39,18 +39,19 @@ public class AuthenticationRestController implements AuthenticationRestControlle
 
     private final AuthenticationManager authenticationManager;
 
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtService jwtService;
 
-    private final ListShopUserDetailsService userDetailsService;
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     public AuthenticationRestController(UserService userService,
                                         AuthenticationManager authenticationManager,
-                                        JwtTokenUtil jwtTokenUtil,
-                                        ListShopUserDetailsService userDetailsService) {
+                                        JwtService jwtService,
+                                        UserDetailsServiceImpl userDetailsService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
+        this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
 
@@ -76,12 +77,13 @@ public class AuthenticationRestController implements AuthenticationRestControlle
                         authorizationRequest.getPassword()
                 )
         );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (!authentication.isAuthenticated()) {
+            throw new UserNotFoundException("login not successful");
+        }
 
         // Reload password post-security so we can generate token
         UserEntity userEntity = userService.getUserByUserEmail(email);
-        final String token = jwtTokenUtil.generateExpiringToken(userEntity, deviceInfo);
-
+        final String token = jwtService.generateToken(email, deviceInfo);
         // save token for user
         userService.saveTokenForUserAndDevice(userEntity, deviceInfo, token);
 
@@ -93,7 +95,6 @@ public class AuthenticationRestController implements AuthenticationRestControlle
     public ResponseEntity<Object> authenticateUser(HttpServletRequest request, @RequestBody ClientDeviceInfo deviceInfo) throws BadParameterException {
 
         String token = request.getHeader(tokenHeader);
-
         String ipAddress = request.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
             ipAddress = request.getRemoteAddr();
@@ -114,7 +115,7 @@ public class AuthenticationRestController implements AuthenticationRestControlle
             throw new AuthenticationException("user not found for token.");
         }
         // validate token
-        if (!jwtTokenUtil.validateToken(token, userDetails)) {
+        if (!jwtService.validateToken(token, userDetails)) {
             LOG.warn(String.format("Token [%s] invalid for user.", token));
             throw new AuthenticationException("Token invalid for user.");
         }

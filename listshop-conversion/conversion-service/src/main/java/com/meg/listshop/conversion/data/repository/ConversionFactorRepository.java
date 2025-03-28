@@ -17,4 +17,8 @@ public interface ConversionFactorRepository extends JpaRepository<ConversionFact
             "tu.unit_id = f.to_unit where fdu.domain_type = ?1 and tdu.domain_type = ?2 and tu.type <> 'HYBRID' " +
             "and fu.type <> 'HYBRID' ", nativeQuery = true)
     List<ConversionFactorEntity> findAllByDomains(String fromDomain, String toDomain);
+
+    @Query(value = "select f.* from factors f join units u on u.unit_id = f.from_unit" +
+            " and u.type = 'UNIT' and f.unit_default = true", nativeQuery = true)
+    ConversionFactorEntity findUnitDefault(Long conversionId, Long unitId);
 }

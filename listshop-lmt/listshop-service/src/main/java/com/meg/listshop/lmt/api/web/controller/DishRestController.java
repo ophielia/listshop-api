@@ -1,7 +1,7 @@
 package com.meg.listshop.lmt.api.web.controller;
 
 import com.google.common.base.Enums;
-import com.meg.listshop.auth.service.impl.JwtUser;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.lmt.api.controller.DishRestControllerApi;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
@@ -25,13 +25,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Controller
+@Controller(value = "dishRestController")
 @CrossOrigin
 public class DishRestController implements DishRestControllerApi {
 
@@ -59,7 +59,7 @@ public class DishRestController implements DishRestControllerApi {
                                                            @RequestParam(value = "sortKey", required = false) String sortKey,
                                                            @RequestParam(value = "sortDirection", required = false) String sortDirection
     ) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Entered retrieveDishes includedTags: [{}], excludedTags: [{}], sortKey: [{}], sortDirection: [{}]", includedTags, excludedTags, sortKey, sortDirection);
         List<DishResource> dishList;
         if (ObjectUtils.isEmpty(includedTags) && ObjectUtils.isEmpty(excludedTags)
@@ -115,7 +115,7 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     public ResponseEntity<Object> createDish(HttpServletRequest request, Authentication authentication, @RequestBody Dish input) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("create new dish for user [%S]", userDetails.getId());
         logger.info(message);
         DishEntity inputDish = ModelMapper.toEntity(input);
@@ -137,7 +137,7 @@ public class DishRestController implements DishRestControllerApi {
 
 
     public ResponseEntity<Object> updateDish(Authentication authentication, @PathVariable Long dishId, @RequestBody Dish input) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("updating dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
 
@@ -155,7 +155,7 @@ public class DishRestController implements DishRestControllerApi {
 
 
     public ResponseEntity<DishResource> readDish(HttpServletRequest request, Authentication authentication, @PathVariable Long dishId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("retrieving dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
         DishEntity dish = this.dishService
@@ -175,7 +175,7 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     public ResponseEntity<CollectionModel<TagResource>> getTagsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable Long dishId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("retrieving dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
         List<TagResource> tagList = tagService
@@ -188,7 +188,7 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     public ResponseEntity<Object> addTagToDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long tagId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("adding tag [%S] dish [%S] for user [%S]", tagId, dishId, userDetails.getId());
         logger.info(message);
 
@@ -200,7 +200,7 @@ public class DishRestController implements DishRestControllerApi {
 
     @Override
     public ResponseEntity<Object> deleteTagFromDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long tagId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("deleting tag [%S] from dish [%S] for user [%S]", tagId, dishId, userDetails.getId());
         logger.info(message);
 
@@ -218,7 +218,7 @@ public class DishRestController implements DishRestControllerApi {
                                                    @RequestParam(value = "addTags", required = false) String addTags,
                                                    @RequestParam(value = "removeTags", required = false) String removeTags) {
 
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("add and remove tags from dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
         if (addTags != null && !addTags.isEmpty()) {
@@ -243,7 +243,7 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     public ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Authentication authentication, @PathVariable Long dishId) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("get rating update info for dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
         var ratingUpdateInfo = tagService.getRatingUpdateInfoForDishIds(Collections.singletonList(dishId));
@@ -256,7 +256,7 @@ public class DishRestController implements DishRestControllerApi {
     public ResponseEntity<Object> incrementRatingForDish(Authentication authentication, @PathVariable Long dishId,
                                                          @PathVariable Long ratingId,
                                                          @RequestParam(value = "direction") String direction) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("increment rating for dish [%S],  user [%S] direction [%S]", dishId, userDetails.getId(), direction);
         logger.info(message);
         var moveDirection = SortOrMoveDirection.valueOf(direction);
@@ -267,7 +267,7 @@ public class DishRestController implements DishRestControllerApi {
     public ResponseEntity<Object> setRatingForDish(Authentication authentication, @PathVariable Long dishId,
                                                    @PathVariable Long ratingId,
                                                    @PathVariable Integer step) {
-        JwtUser userDetails = (JwtUser) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("set rating for dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
         tagService.setDishRating(userDetails.getId(), dishId, ratingId, step);

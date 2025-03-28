@@ -11,9 +11,10 @@ import com.meg.listshop.auth.api.controller.UserRestControllerApi;
 import com.meg.listshop.auth.api.model.*;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
+import com.meg.listshop.auth.service.CustomUserDetails;
+import com.meg.listshop.auth.service.JwtService;
 import com.meg.listshop.auth.service.UserPropertyService;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.auth.service.impl.JwtTokenUtil;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ProcessingException;
@@ -22,6 +23,7 @@ import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.service.TokenService;
 import freemarker.template.TemplateException;
+import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
@@ -37,16 +40,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.mail.MessagingException;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
 public class UserRestController implements UserRestControllerApi {
-    private static final Logger  LOG = LoggerFactory.getLogger(UserRestController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserRestController.class);
 
     private final TokenService tokenService;
 
@@ -56,7 +57,7 @@ public class UserRestController implements UserRestControllerApi {
 
     private final AuthenticationManager authenticationManager;
 
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtService jwtService;
 
     @Value("${listshop.min.ios.version:1.0}")
     private String minIosClient;
@@ -66,10 +67,10 @@ public class UserRestController implements UserRestControllerApi {
 
     @Autowired
     public UserRestController(UserService userService, AuthenticationManager authenticationManager,
-                              JwtTokenUtil jwtTokenUtil, TokenService tokenService, UserPropertyService userPropertyService) {
+                              JwtService jwtService, TokenService tokenService, UserPropertyService userPropertyService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
+        this.jwtService = jwtService;
         this.tokenService = tokenService;
         this.userPropertyService = userPropertyService;
     }
@@ -102,7 +103,7 @@ public class UserRestController implements UserRestControllerApi {
 
         // Reload password post-security so we can generate token
         final UserEntity userDetails = userService.getUserByUserEmail(newUser.getEmail());
-        final String token = jwtTokenUtil.generateExpiringToken(newUser, deviceInfo);
+        final String token = jwtService.generateToken(newUser.getEmail(), deviceInfo);
 
         // create user device
         this.userService.createDeviceForUserAndDevice(newUser.getId(), deviceInfo, token);
@@ -143,14 +144,16 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteUser(Principal principal) {
-        LOG.info("Begin delete user [{}]", principal.getName());
-        this.userService.deleteUser(principal.getName());
+    public ResponseEntity<Object> deleteUser(Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        LOG.info("Begin delete user [{}]", userDetails.getUsername());
+        this.userService.deleteUser(userDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<UserResource> getUser(Principal principal) {
-        UserEntity user = this.userService.getUserByUserEmail(principal.getName());
+    public ResponseEntity<UserResource> getUser(Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        UserEntity user = this.userService.getUserByUserEmail(userDetails.getUsername());
         var userResource = new UserResource(ModelMapper.toModel(user, ""));
 
         return new ResponseEntity<>(userResource, HttpStatus.OK);
@@ -159,7 +162,7 @@ public class UserRestController implements UserRestControllerApi {
     @Override
     public ResponseEntity<Object> userNameIsTaken(@RequestBody ListShopPayload payload) throws BadParameterException {
         var parameters = payload.getParameters();
-        if (ObjectUtils.isEmpty(parameters) ) {
+        if (ObjectUtils.isEmpty(parameters)) {
             throw new BadParameterException("User email is required as first parameter");
         }
         var rawName = parameters.get(0);
@@ -203,10 +206,11 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> changeUserPassword(Principal principal, @RequestBody PostChangePassword input) throws BadParameterException {
-        LOG.debug("Begin changeUserPassword, user[{}]", principal.getName());
+    public ResponseEntity<Object> changeUserPassword(Authentication authentication, @RequestBody PostChangePassword input) throws BadParameterException {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        LOG.debug("Begin changeUserPassword, user[{}]", userDetails.getUsername());
         // get username from principal
-        String principalUsername = principal.getName();
+        String principalUsername = userDetails.getUsername();
         validatateUserForPasswordChange(input, principalUsername);
 
         // get new password from input
@@ -216,7 +220,7 @@ public class UserRestController implements UserRestControllerApi {
         byte[] origPasswordBytes = Base64.getDecoder().decode(input.getOriginalPassword());
         var originalPassword = new String(origPasswordBytes);
         userService.changePassword(principalUsername, newPassword, originalPassword);
-        LOG.debug("Finished changeUserPassword, user[{}]", principal.getName());
+        LOG.debug("Finished changeUserPassword, user[{}]", userDetails.getUsername());
         return ResponseEntity.ok().build();
 
     }
@@ -230,8 +234,9 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> getUserProperties(Principal principal) throws BadParameterException {
-        List<UserPropertyEntity> propertyEntities = this.userPropertyService.getPropertiesForUser(principal.getName());
+    public ResponseEntity<Object> getUserProperties(Authentication authentication) throws BadParameterException {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        List<UserPropertyEntity> propertyEntities = this.userPropertyService.getPropertiesForUser(userDetails.getUsername());
         List<UserProperty> properties = propertyEntities.stream()
                 .map(ModelMapper::toModel)
                 .collect(Collectors.toList());
@@ -242,11 +247,12 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> getUserProperty(Principal principal, @PathVariable String key) throws BadParameterException {
+    public ResponseEntity<Object> getUserProperty(Authentication authentication, @PathVariable String key) throws BadParameterException {
         if (key == null) {
             throw new BadParameterException("key is required for /user/property/key");
         }
-        UserPropertyEntity propertyEntity = this.userPropertyService.getPropertyForUser(principal.getName(), key);
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        UserPropertyEntity propertyEntity = this.userPropertyService.getPropertyForUser(userDetails.getUsername(), key);
         if (propertyEntity == null) {
             throw new ObjectNotFoundException(String.format("key [%s] not found for user", key));
         }
@@ -258,13 +264,14 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> setUserProperties(Principal principal, @RequestBody PostUserProperties properties) throws BadParameterException, IOException {
+    public ResponseEntity<Object> setUserProperties(Authentication authentication, @RequestBody PostUserProperties properties) throws BadParameterException, IOException {
         validateUserProperties(properties);
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         List<UserPropertyEntity> propertyEntities = properties.getProperties().stream()
                 .map(ModelMapper::toEntity)
                 .collect(Collectors.toList());
 
-        this.userPropertyService.setPropertiesForUser(principal.getName(), propertyEntities);
+        this.userPropertyService.setPropertiesForUser(userDetails.getUsername(), propertyEntities);
 
         return ResponseEntity.ok().build();
     }
@@ -290,8 +297,8 @@ public class UserRestController implements UserRestControllerApi {
         if (!StringUtils.hasText(postChangePassword.getOriginalPassword())) {
             throw new BadParameterException("Input for change password does not include the original password");
         }
-        if (principalUsername.length()>255 || postChangePassword.getNewPassword().length() > 255 ||
-        postChangePassword.getOriginalPassword().length() > 255) {
+        if (principalUsername.length() > 255 || postChangePassword.getNewPassword().length() > 255 ||
+                postChangePassword.getOriginalPassword().length() > 255) {
             throw new BadParameterException("Input for change passowrd (userName, newPassword, oldPassword) contains an entry longer tahn 255 characters");
         }
     }

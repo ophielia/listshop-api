@@ -5,7 +5,7 @@
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>listshop-data</artifactId>
-    <version>1.17.0</version>
+    <version>1.17.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>listshop-data</name>
@@ -15,7 +15,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-lmt</artifactId>
-        <version>1.17.0</version>
+        <version>1.17.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -29,6 +29,12 @@
             <groupId>com.meg.listshop</groupId>
             <artifactId>listshop-common-data</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hibernate-core</artifactId>
+                    <groupId>org.hibernate.orm</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.meg.listshop</groupId>
@@ -62,6 +68,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hibernate-core</artifactId>
+                    <groupId>org.hibernate.orm</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -99,23 +111,35 @@
             <scope>runtime</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-        </dependency>
         <!-- Micrometer Prometheus registry  -->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
             <version>1.11.1</version>
         </dependency>
+        <!-- hibernate -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+        <!-- tsid, vlad -->
+        <dependency>
+            <groupId>io.hypersistence</groupId>
+            <artifactId>hypersistence-utils-hibernate-63</artifactId>
+        </dependency>
+
+
         <!-- testcontainers -->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- swagger dependencies -->
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -125,14 +149,7 @@
         <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
+            <artifactId>jjwt-api</artifactId>
         </dependency>
 
         <!-- flyway -->
@@ -203,7 +220,7 @@
         <dependency>
             <groupId>com.meg.listshop</groupId>
             <artifactId>conversion-data</artifactId>
-            <version>1.17.0</version>
+            <version>1.17.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 

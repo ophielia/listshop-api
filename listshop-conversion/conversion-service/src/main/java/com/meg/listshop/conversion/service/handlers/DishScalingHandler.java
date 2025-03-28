@@ -30,6 +30,7 @@ public class DishScalingHandler extends AbstractScalingHandler {
     public DishScalingHandler(ConversionFactorRepository factorRepository) {
         super();
         LOG.info("initializing MetricVolumeForDishHandler");
+        setScalarWeight(3);
         // metric targets
         ConversionSpec metricSource = ConversionSpec.basicSpec(UnitType.METRIC, null);
         ConversionSpec metricTarget = ConversionSpec.basicSpec(UnitType.METRIC, null, UnitFlavor.DishUnit);
