@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.18.1]  - March 2025
+### Fixed
+- Dockerfile to use java 17
+
 ## [1.18.0]  - March 2025
 ### Changed
 - upgrade to springboot 3, java 17

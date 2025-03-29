@@ -1,4 +1,4 @@
-FROM openjdk:11.0.7-jre-slim
+FROM openjdk:17-jdk-slim
 RUN addgroup --system listshop && adduser --system listshop --ingroup listshop
 USER listshop:listshop
 ARG DEPENDENCY=target/dependency
