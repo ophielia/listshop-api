@@ -2,9 +2,7 @@ package com.meg.listshop.lmt.data.entity;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by margaretmartin on 24/10/2017.
@@ -18,6 +16,9 @@ public class ListItemEntity {
     @SequenceGenerator(name = "list_item_sequence", sequenceName = "list_item_sequence", allocationSize = 1)
     @Column(name = "item_id")
     private Long item_id;
+
+    @OneToMany(mappedBy = "item")
+    private List<ListItemDetailEntity> details = new ArrayList<>();
 
     @OneToOne
     @JoinColumn(name = "tagId")
@@ -66,7 +67,6 @@ public class ListItemEntity {
     }
 
     public void setId(Long itemId) {
-        // TODO - this is just for tests - make a DaoUtils so we can remove this method
         this.item_id = itemId;
     }
 
@@ -164,6 +164,14 @@ public class ListItemEntity {
         return handles != null ? handles : new HashSet<>();
     }
 
+    public List<ListItemDetailEntity> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<ListItemDetailEntity> details) {
+        this.details = details;
+    }
+
     @Override
     public String toString() {
         return "ItemEntity{" +
@@ -198,5 +206,9 @@ public class ListItemEntity {
             return this.tag.getName();
         }
         return this.freeText;
+    }
+
+    public void addDetailToItem(ListItemDetailEntity detail) {
+        details.add(detail);
     }
 }
