@@ -22,7 +22,7 @@ public class ListItemDetailEntity {
     @JoinColumn(name = "item_id", nullable = false)
     private ListItemEntity item;
 
-    @Column(name = "count")
+    @Column(name = "used_count")
     private int count;
 
     @Column(name = "linked_list_id")
@@ -56,6 +56,13 @@ public class ListItemDetailEntity {
     @Column(name = "orig_unit_id")
     private Long originalUnitId;
 
+    private String marker;
+
+    @Column(name = "unit_size")
+    private String unitSize;
+
+    @Column(name = "raw_entry")
+    private String rawEntry;
 
     public ListItemDetailEntity() {
         // necessary for jpa construction

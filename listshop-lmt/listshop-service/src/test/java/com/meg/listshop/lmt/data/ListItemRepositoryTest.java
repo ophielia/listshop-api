@@ -61,7 +61,7 @@ public class ListItemRepositoryTest {
         Assert.assertNotNull("item should not be null", retrievedItem);
         Assert.assertNotNull("details should not be null", retrievedItem.getDetails());
         Assert.assertFalse("details should not be empty", retrievedItem.getDetails().isEmpty());
-        Assert.assertEquals("there should be one detail", 1,retrievedItem.getDetails().size() == 1);
+        Assert.assertEquals("there should be one detail", 1,retrievedItem.getDetails().size());
 
 
     }
