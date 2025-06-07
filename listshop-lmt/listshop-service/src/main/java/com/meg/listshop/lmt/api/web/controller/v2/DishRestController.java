@@ -12,7 +12,7 @@ import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.DishSortDirection;
 import com.meg.listshop.lmt.api.model.DishSortKey;
 import com.meg.listshop.lmt.api.model.FractionType;
-import com.meg.listshop.lmt.api.model.ModelMapper;
+import com.meg.listshop.lmt.api.model.V2ModelMapper;
 import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.lmt.api.model.v2.DishListResource;
 import com.meg.listshop.lmt.data.pojos.DishDTO;
@@ -90,11 +90,11 @@ public class DishRestController implements V2DishRestControllerApi {
 
         // get dish, with tags, ingredients and ratings
         // sub objects sorted, but in "raw" form
-        // will be "translated" in ModelMapper
+        // will be "translated" in V2ModelMapper
         DishDTO dish = this.dishService
                 .getDishForV2Display(userDetails.getId(), dishId);
 
-        DishResource resource = new DishResource(ModelMapper.toModel(dish, true));
+        DishResource resource = new DishResource(V2ModelMapper.toModel(dish, true));
 
         return new ResponseEntity(resource, HttpStatus.OK);
     }
@@ -109,7 +109,7 @@ public class DishRestController implements V2DishRestControllerApi {
         }
         List<DishItemDTO> rawIngredients = dishService.getDishIngredients(userDetails.getId(), dishId);
         List<IngredientResource> ingredients = rawIngredients.stream()
-                .map(ModelMapper::toModel)
+                .map(V2ModelMapper::toModel)
                 .map(IngredientResource::new)
                 .collect(Collectors.toList());
         var returnValue = new IngredientListResource(ingredients);
@@ -315,14 +315,14 @@ public class DishRestController implements V2DishRestControllerApi {
         }
         logger.debug("Searching for dishes with criteria [{}]. ", criteria);
         return dishSearchService.findDishes(criteria).stream()
-                .map(d -> ModelMapper.toV2DishModel(d, false))
+                .map(d -> V2ModelMapper.toV2DishModel(d))
                 .map(DishResource::new)
                 .collect(Collectors.toList());
     }
 
     private List<DishResource> getAllDishes(Long userId) {
         return dishService.getDishesForUser(userId).stream()
-                .map(d -> ModelMapper.toV2DishModel(d, false))
+                .map(d -> V2ModelMapper.toV2DishModel(d))
                 .map(DishResource::new)
                 .collect(Collectors.toList());
 

@@ -5,7 +5,7 @@ import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.conversion.data.pojo.DomainType;
 import com.meg.listshop.lmt.api.controller.v2.AmountRestControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.model.ModelMapper;
+import com.meg.listshop.lmt.api.model.V2ModelMapper;
 import com.meg.listshop.lmt.api.model.SuggestionListResource;
 import com.meg.listshop.lmt.data.pojos.SuggestionDTO;
 import com.meg.listshop.lmt.service.food.AmountService;
@@ -63,7 +63,7 @@ public class AmountRestController implements AmountRestControllerApi {
         List<SuggestionDTO> suggestionDTOS = amountService.getTextSuggestions(userDetails.getId(),longTagId,isLiquid, domainType);
 
         SuggestionListResource listResource = new SuggestionListResource(suggestionDTOS.stream()
-                .map(ModelMapper::toModel)
+                .map(V2ModelMapper::toModel)
                 .collect(Collectors.toList()));
         return ResponseEntity.ok(listResource);
     }

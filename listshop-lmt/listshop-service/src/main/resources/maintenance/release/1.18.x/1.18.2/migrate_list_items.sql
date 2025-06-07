@@ -18,13 +18,28 @@ from list_item
 where list_sources is not null
   and list_sources like '%;%';
 
--- insert from dish source and list source null
-insert into list_item_details (item_detail_id, item_id, used_count)
+-- insert from dish sources - not null but singular
+insert into list_item_details (item_detail_id, item_id, linked_dish_id, used_count)
 select nextval('list_item_detail_sequence')                     as item_detail_id,
        item_id,
-       used_count
+      dish_sources::bigint,
+       1 as used_count
 from list_item
-where dish_sources is  null and list_sources is null;
+where dish_sources is not null
+  and length(trim(dish_sources)) > 1
+  and dish_sources not like '%;%';
+
+
+-- insert from list sources - not null but singular
+insert into list_item_details (item_detail_id, item_id, linked_list_id, used_count)
+select nextval('list_item_detail_sequence')                     as item_detail_id,
+       item_id,
+       list_sources::bigint,
+       1 as used_count
+from list_item
+where list_sources is not null
+  and length(trim(list_sources)) > 1
+  and list_sources not like '%;%';
 
 -- update dish original amounts from dish - for those available
 update list_item_details d
@@ -45,4 +60,4 @@ and d.linked_dish_id is not null
   and di.raw_entry is not null;
 
 
-
+--truncate table list_item_details;

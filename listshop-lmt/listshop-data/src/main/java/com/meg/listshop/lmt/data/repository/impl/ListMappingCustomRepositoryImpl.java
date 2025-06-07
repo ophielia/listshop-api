@@ -1,6 +1,9 @@
 package com.meg.listshop.lmt.data.repository.impl;
 
+import com.meg.listshop.lmt.api.model.ListItemSource;
+import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
 import com.meg.listshop.lmt.data.pojos.ItemMappingDTO;
+import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.lmt.data.repository.ListMappingCustomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,12 +14,16 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class ListMappingCustomRepositoryImpl implements ListMappingCustomRepository {
 
+    public static final String USER_MAPPING_QUERY_PART_2 =
+            " where list_id = :list_id " +
+                    "  and ll.user_id is null " +
+                    "  and ll.is_default = true " +
+                    "group by 1,2,3,4,5,6,7,8,9,10 ,11";
     private static final String STANDARD_MAPPING_QUERY =
             "select i.item_id, i.added_on, i.removed_on, i.crossed_off, i.updated_on, i.tag_id, " +
                     "       t.name as tagname, t.tag_type, i.used_count, i.dish_sources, i.list_sources,lc.category_id, " +
@@ -40,18 +47,16 @@ public class ListMappingCustomRepositoryImpl implements ListMappingCustomReposit
                     "         join list_layout ll on lc.layout_id = ll.layout_id " +
                     "         left outer join category_tags ut on t.tag_id = ut.tag_id " +
                     "         left outer join list_category uc on ut.category_id = uc.category_id and uc.layout_id =   ";
-
-    public static final String USER_MAPPING_QUERY_PART_2 =
-            " where list_id = :list_id " +
-                    "  and ll.user_id is null " +
-                    "  and ll.is_default = true " +
-                    "group by 1,2,3,4,5,6,7,8,9,10 ,11";
     NamedParameterJdbcTemplate jdbcTemplate;
+
+    private ListItemDetailRepository listItemDetailRepository;
 
     @Autowired
     public ListMappingCustomRepositoryImpl(
-            DataSource dataSource) {
+            DataSource dataSource,
+            ListItemDetailRepository listItemDetailRepository) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.listItemDetailRepository = listItemDetailRepository;
     }
 
     @Override
@@ -62,7 +67,43 @@ public class ListMappingCustomRepositoryImpl implements ListMappingCustomReposit
 
         parameters.addValue("list_id", shoppingListId);
 
-        return this.jdbcTemplate.query(sql, parameters, new ListMappingCustomRepositoryImpl.ItemMappingDTOMapper());
+        List<ItemMappingDTO> itemMappings = this.jdbcTemplate.query(sql, parameters, new ListMappingCustomRepositoryImpl.ItemMappingDTOMapper());
+
+        // now add details to the item mappings
+        List<ListItemDetailEntity> details = listItemDetailRepository.findDetailsByListId(shoppingListId);
+        Map<Long, List<ListItemSource>> detailMap = new HashMap<>();
+        details.stream()
+                .forEach(listItemDetailEntity -> {
+                    Long key = listItemDetailEntity.getItem().getId();
+                    detailMap.computeIfAbsent(key, k -> new ArrayList<>());
+                    detailMap.get(key).add(mapToSourceDTO(listItemDetailEntity));
+                });
+
+        itemMappings.forEach(itemMappingDTO -> {
+            List<ListItemSource> detailList = detailMap.get(itemMappingDTO.getItemId());
+            itemMappingDTO.setDetails(detailList);
+        });
+
+        return itemMappings;
+    }
+
+    private ListItemSource mapToSourceDTO(ListItemDetailEntity listItemDetailEntity) {
+        return new ListItemSource()
+                .linkedDishId(stringValueOrNull(listItemDetailEntity.getLinkedDishId()))
+                .linkedListId(stringValueOrNull(listItemDetailEntity.getLinkedListId()))
+                .wholeQuantity(listItemDetailEntity.getWholeQuantity())
+                .fractionalQuantity(listItemDetailEntity.getFractionalQuantity())
+                .unitId(listItemDetailEntity.getUnitId())
+                .marker(listItemDetailEntity.getMarker())
+                .unitSize(listItemDetailEntity.getUnitSize())
+                .amountDisplay(listItemDetailEntity.getRawEntry());
+    }
+
+    private String stringValueOrNull(Long longValue) {
+        if (longValue == null) {
+            return null;
+        }
+        return String.valueOf(longValue);
     }
 
     private String retrieveAppropriateSQL(Long userLayoutId) {

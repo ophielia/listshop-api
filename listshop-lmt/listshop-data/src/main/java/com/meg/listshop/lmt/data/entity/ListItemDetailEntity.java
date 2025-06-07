@@ -10,6 +10,14 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "list_item_details")
+
+@NamedEntityGraph(
+        name = "detail-item-tag-entity-graph",
+        attributeNodes = @NamedAttributeNode(value = "item", subgraph = "subgraph.tag"),
+        subgraphs = {
+                @NamedSubgraph(name = "subgraph.tag",
+                        attributeNodes = @NamedAttributeNode(value = "tag"))})
+
 public class ListItemDetailEntity {
 
     @Id
@@ -92,6 +100,10 @@ public class ListItemDetailEntity {
         this.count = count;
     }
 
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     public Long getLinkedListId() {
         return linkedListId;
     }
@@ -170,6 +182,30 @@ public class ListItemDetailEntity {
 
     public void setOriginalUnitId(Long originalUnitId) {
         this.originalUnitId = originalUnitId;
+    }
+
+    public String getMarker() {
+        return marker;
+    }
+
+    public void setMarker(String marker) {
+        this.marker = marker;
+    }
+
+    public String getUnitSize() {
+        return unitSize;
+    }
+
+    public void setUnitSize(String unitSize) {
+        this.unitSize = unitSize;
+    }
+
+    public String getRawEntry() {
+        return rawEntry;
+    }
+
+    public void setRawEntry(String rawEntry) {
+        this.rawEntry = rawEntry;
     }
 
     @Override

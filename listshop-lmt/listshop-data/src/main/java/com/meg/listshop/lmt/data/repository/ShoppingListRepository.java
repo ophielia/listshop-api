@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity, Long>, ListMappingCustomRepository {
 
-    List<ShoppingListEntity> findByListIdAndUserId(Long listId, Long userId);
+    Optional<ShoppingListEntity> findByListIdAndUserId(Long listId, Long userId);
 
     @EntityGraph(value = "list-tag-entity-graph")
     Optional<ShoppingListEntity> getWithItemsByListId(Long listid);

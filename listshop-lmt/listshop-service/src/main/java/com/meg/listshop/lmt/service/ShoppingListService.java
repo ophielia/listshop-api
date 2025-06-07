@@ -22,6 +22,8 @@ public interface ShoppingListService {
 
     ShoppingListEntity getListForUserById(Long userId, Long listId);
 
+    ShoppingListEntity getSimpleListForUserById(Long userId, Long listId);
+
     void deleteList(Long userId, Long listId);
 
     ShoppingListEntity updateList(Long userId, Long listId, ShoppingListEntity updateFrom);

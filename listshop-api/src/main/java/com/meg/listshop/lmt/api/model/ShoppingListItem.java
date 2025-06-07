@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShoppingListItem {
@@ -52,6 +49,9 @@ public class ShoppingListItem {
 
     @JsonIgnore
     private String rawDishSources;
+
+    @JsonIgnore
+    private List<ListItemSource> sources = new ArrayList<>();
 
     public ShoppingListItem(Long id) {
         this.item_id = id;
@@ -212,4 +212,15 @@ public class ShoppingListItem {
     }
 
 
+    public List<ListItemSource> getSources() {
+        return sources;
+    }
+
+    public ShoppingListItem sources(List<ListItemSource> sources) {
+        if (sources == null || sources.size() == 0) {
+            return this;
+        }
+        this.sources = sources;
+        return this;
+    }
 }

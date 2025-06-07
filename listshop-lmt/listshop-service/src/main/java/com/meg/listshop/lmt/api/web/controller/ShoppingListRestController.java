@@ -176,7 +176,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<ShoppingListResource> retrieveListById(HttpServletRequest request, Authentication authentication, @PathVariable("listId") Long listId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Retrieving list [{}] by id for user [{}]", listId, userDetails.getId());
-        ShoppingListEntity result = shoppingListService.getListForUserById(userDetails.getId(), listId);
+
+        ShoppingListEntity result = shoppingListService.getSimpleListForUserById(userDetails.getId(), listId);
         if (result == null) {
             return ResponseEntity.notFound().build();
         }

@@ -83,11 +83,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     public ShoppingListEntity updateList(Long userId, Long listId, ShoppingListEntity updateFrom) {
         // get list
-        List<ShoppingListEntity> byUserNameAndId = shoppingListRepository.findByListIdAndUserId(listId, userId);
-        if (byUserNameAndId.isEmpty()) {
+        Optional<ShoppingListEntity> byUserNameAndId = shoppingListRepository.findByListIdAndUserId(listId, userId);
+        if (!byUserNameAndId.isPresent()) {
             throw new ObjectNotFoundException(String.format("List [%s] not found for user [%s] in updateList", listId, userId));
         }
-        ShoppingListEntity copyTo = byUserNameAndId.get(0);
+        ShoppingListEntity copyTo = byUserNameAndId.get();
 
         // check starter list change
         boolean starterListChanged = updateFrom.getIsStarterList() && !copyTo.getIsStarterList();
@@ -377,6 +377,17 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
+    public ShoppingListEntity getSimpleListForUserById(Long userId, Long listId) {
+        final String message = String.format("Retrieving List for id %d and user_id %s", listId, userId);
+        logger.debug(message);
+
+        Optional<ShoppingListEntity> shoppingListEntityOpt;
+        shoppingListEntityOpt = shoppingListRepository.findByListIdAndUserId(listId, userId);
+
+        return shoppingListEntityOpt.orElse(null);
+    }
+
+    @Override
     @Transactional
     public void deleteList(Long userId, Long listId) {
         List<ShoppingListEntity> allLists = getListsByUserId(userId);
@@ -397,7 +408,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         itemRepository.deleteAll(items);
         toDelete.setItems(new ArrayList<>());
         shoppingListRepository.save(toDelete);
-        toDelete = getListForUserById(userId, listId);
+        toDelete = getSimpleListForUserById(userId, listId);
         shoppingListRepository.delete(toDelete.getId());
         shoppingListRepository.flush();
     }
@@ -457,7 +468,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public void deleteAllItemsFromList(Long userId, Long listId) {
-        ShoppingListEntity shoppingListEntity = getListForUserById(userId, listId);
+        ShoppingListEntity shoppingListEntity = getSimpleListForUserById(userId, listId);
         if (shoppingListEntity == null) {
             return;
         }
@@ -750,6 +761,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public void fillSources(ShoppingListEntity result) {
+        //MM rework this to look at new tables.  Should be a bit more direct
+
         // dish sources
         // gather distinct dish sources for list
         List<String> rawSources = itemRepository.findDishSourcesForList(result.getId());
@@ -800,7 +813,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public void changeListLayout(Long userId, Long listId, Long layoutId) {
         // get shopping list
-        ShoppingListEntity shoppingList = getListForUserById(userId, listId);
+        ShoppingListEntity shoppingList = getSimpleListForUserById(userId, listId);
         // set new layout id in shopping list
         shoppingList.setListLayoutId(layoutId);
         // save shopping list
