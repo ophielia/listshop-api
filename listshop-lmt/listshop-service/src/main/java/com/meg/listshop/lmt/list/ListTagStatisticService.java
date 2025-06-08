@@ -1,8 +1,10 @@
-package com.meg.listshop.lmt.service;
+package com.meg.listshop.lmt.list;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.lmt.api.model.Statistic;
 import com.meg.listshop.lmt.data.entity.ListTagStatistic;
+import com.meg.listshop.lmt.service.CollectorContext;
+import com.meg.listshop.lmt.service.ItemCollector;
 
 import java.util.List;
 

@@ -19,7 +19,7 @@ import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.dish.DishSearchCriteria;
 import com.meg.listshop.lmt.dish.DishSearchService;
 import com.meg.listshop.lmt.dish.DishService;
-import com.meg.listshop.lmt.service.ListTagStatisticService;
+import com.meg.listshop.lmt.list.ListTagStatisticService;
 import com.meg.listshop.lmt.service.tag.TagChangeListener;
 import com.meg.listshop.lmt.service.tag.TagReplaceService;
 import com.meg.listshop.lmt.service.tag.TagService;

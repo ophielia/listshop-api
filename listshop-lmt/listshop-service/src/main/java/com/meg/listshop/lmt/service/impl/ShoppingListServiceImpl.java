@@ -13,6 +13,8 @@ import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.dish.DishService;
+import com.meg.listshop.lmt.list.ListItemCollector;
+import com.meg.listshop.lmt.list.ListTagStatisticService;
 import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;

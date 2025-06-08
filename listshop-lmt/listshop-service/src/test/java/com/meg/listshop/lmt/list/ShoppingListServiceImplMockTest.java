@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.service.impl;
+package com.meg.listshop.lmt.list;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
@@ -12,6 +12,7 @@ import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.*;
+import com.meg.listshop.lmt.service.impl.ShoppingListServiceImpl;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.junit.Assert;
 import org.junit.Before;

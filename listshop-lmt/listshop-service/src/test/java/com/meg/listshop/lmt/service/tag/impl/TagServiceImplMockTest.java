@@ -17,6 +17,7 @@ import com.meg.listshop.lmt.dish.DishSearchCriteria;
 import com.meg.listshop.lmt.dish.DishSearchService;
 import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.dish.DishTestBuilder;
+import com.meg.listshop.lmt.list.ListTagStatisticService;
 import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.TagReplaceService;

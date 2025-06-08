@@ -8,6 +8,8 @@ import com.meg.listshop.lmt.api.model.Statistic;
 import com.meg.listshop.lmt.api.model.StatisticCountType;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.list.ListItemCollector;
+import com.meg.listshop.lmt.list.ListTagStatisticService;
 import com.meg.listshop.lmt.service.*;
 import org.junit.Assert;
 import org.junit.ClassRule;

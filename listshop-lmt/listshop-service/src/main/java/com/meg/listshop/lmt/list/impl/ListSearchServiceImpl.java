@@ -1,8 +1,8 @@
-package com.meg.listshop.lmt.service.impl;
+package com.meg.listshop.lmt.list.impl;
 
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.service.ListSearchService;
+import com.meg.listshop.lmt.list.ListSearchService;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityManager;

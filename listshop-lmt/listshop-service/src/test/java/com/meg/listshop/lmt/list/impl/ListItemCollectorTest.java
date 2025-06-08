@@ -1,8 +1,11 @@
-package com.meg.listshop.lmt.service;
+package com.meg.listshop.lmt.list.impl;
 
 import com.meg.listshop.lmt.api.model.ContextType;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.list.ListItemCollector;
+import com.meg.listshop.lmt.service.CollectorContext;
+import com.meg.listshop.lmt.service.CollectorContextBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ActiveProfiles;

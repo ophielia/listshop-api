@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.service;
+package com.meg.listshop.lmt.list;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.service.impl;
+package com.meg.listshop.lmt.list.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.lmt.api.model.Statistic;
@@ -8,7 +8,7 @@ import com.meg.listshop.lmt.data.repository.ListTagStatisticRepository;
 import com.meg.listshop.lmt.service.CollectedItem;
 import com.meg.listshop.lmt.service.CollectorContext;
 import com.meg.listshop.lmt.service.ItemCollector;
-import com.meg.listshop.lmt.service.ListTagStatisticService;
+import com.meg.listshop.lmt.list.ListTagStatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
