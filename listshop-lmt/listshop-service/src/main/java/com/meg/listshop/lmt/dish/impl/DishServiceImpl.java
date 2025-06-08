@@ -5,7 +5,7 @@
  *
  */
 
-package com.meg.listshop.lmt.service.impl;
+package com.meg.listshop.lmt.dish.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.repository.UserRepository;
@@ -24,14 +24,13 @@ import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
-import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.food.AmountService;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

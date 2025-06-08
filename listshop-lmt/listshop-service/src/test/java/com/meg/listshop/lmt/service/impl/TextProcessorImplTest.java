@@ -5,7 +5,7 @@ import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.pojos.AutoTagSubject;
 import com.meg.listshop.lmt.data.pojos.Instruction;
-import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
 import org.junit.ClassRule;

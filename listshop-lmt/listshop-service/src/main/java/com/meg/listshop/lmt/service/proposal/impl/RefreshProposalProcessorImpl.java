@@ -10,7 +10,7 @@ package com.meg.listshop.lmt.service.proposal.impl;
 import com.meg.listshop.auth.api.model.TargetType;
 import com.meg.listshop.lmt.api.exception.ProposalProcessingException;
 import com.meg.listshop.lmt.data.entity.*;
-import com.meg.listshop.lmt.service.DishSearchService;
+import com.meg.listshop.lmt.dish.DishSearchService;
 import com.meg.listshop.lmt.service.NewRawSlotResult;
 import com.meg.listshop.lmt.service.proposal.ProcessInformation;
 import com.meg.listshop.lmt.service.proposal.ProcessResult;

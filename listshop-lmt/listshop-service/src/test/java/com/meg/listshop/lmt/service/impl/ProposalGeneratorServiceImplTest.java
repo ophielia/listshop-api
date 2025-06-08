@@ -5,7 +5,7 @@ import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.exception.ProposalProcessingException;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.repository.ProposalContextRepository;
-import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.MealPlanService;
 import com.meg.listshop.lmt.service.TargetService;
 import com.meg.listshop.lmt.service.proposal.*;

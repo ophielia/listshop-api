@@ -1,5 +1,7 @@
 package com.meg.listshop.lmt.service;
 
+import com.meg.listshop.lmt.dish.DishTagSearchResult;
+
 import java.util.ArrayList;
 import java.util.List;
 

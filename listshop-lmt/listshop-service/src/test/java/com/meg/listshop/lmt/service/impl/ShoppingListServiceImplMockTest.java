@@ -10,6 +10,7 @@ import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
+import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.junit.Assert;

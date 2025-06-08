@@ -9,7 +9,7 @@ import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.AutoTagSubject;
 import com.meg.listshop.lmt.data.pojos.Instruction;
-import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;

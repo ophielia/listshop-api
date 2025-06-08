@@ -5,15 +5,15 @@
  *
  */
 
-package com.meg.listshop.lmt.service.impl;
+package com.meg.listshop.lmt.dish.impl;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.DishEntity;
-import com.meg.listshop.lmt.service.DishSearchCriteria;
-import com.meg.listshop.lmt.service.DishSearchService;
+import com.meg.listshop.lmt.dish.DishSearchCriteria;
+import com.meg.listshop.lmt.dish.DishSearchService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;
 import org.junit.Before;

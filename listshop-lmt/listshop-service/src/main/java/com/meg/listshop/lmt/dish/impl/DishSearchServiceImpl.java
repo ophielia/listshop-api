@@ -1,12 +1,12 @@
-package com.meg.listshop.lmt.service.impl;
+package com.meg.listshop.lmt.dish.impl;
 
 import com.meg.listshop.lmt.api.model.DishSortDirection;
 import com.meg.listshop.lmt.api.model.DishSortKey;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.TargetSlotEntity;
-import com.meg.listshop.lmt.service.DishSearchCriteria;
-import com.meg.listshop.lmt.service.DishSearchService;
-import com.meg.listshop.lmt.service.DishTagSearchResult;
+import com.meg.listshop.lmt.dish.DishSearchCriteria;
+import com.meg.listshop.lmt.dish.DishSearchService;
+import com.meg.listshop.lmt.dish.DishTagSearchResult;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

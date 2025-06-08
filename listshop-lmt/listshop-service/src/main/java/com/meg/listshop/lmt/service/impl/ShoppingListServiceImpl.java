@@ -12,6 +12,7 @@ import com.meg.listshop.lmt.data.pojos.ItemMappingDTO;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
+import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
@@ -415,6 +416,29 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public void addItemToListByTag(Long userId, Long listId, Long tagId) {
+        ShoppingListEntity shoppingListEntity = getListForUserById(userId, listId);
+        if (shoppingListEntity == null) {
+            return;
+        }
+
+        List<ListItemEntity> items = shoppingListEntity.getItems();
+        ListItemCollector collector = createListItemCollector(listId, items);
+        // fill in tag, if item contains tag
+        TagEntity tag;
+        tag = tagService.getTagById(tagId);
+        ListItemEntity item = new ListItemEntity();
+        item.setTag(tag);
+
+        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
+                .withStatisticCountType(StatisticCountType.Single).build();
+        collector.addItem(item, context);
+
+        saveListChanges(shoppingListEntity, collector, context);
+
+    }
+
+    //@Override
+    public void NEWaddItemToListByTag(Long userId, Long listId, Long tagId) {
         ShoppingListEntity shoppingListEntity = getListForUserById(userId, listId);
         if (shoppingListEntity == null) {
             return;

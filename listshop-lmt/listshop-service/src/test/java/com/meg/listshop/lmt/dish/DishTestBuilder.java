@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.service;
+package com.meg.listshop.lmt.dish;
 
 
 import com.meg.listshop.lmt.api.model.Dish;

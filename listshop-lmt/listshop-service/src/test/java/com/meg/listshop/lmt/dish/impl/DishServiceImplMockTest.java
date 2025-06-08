@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.service.impl;
+package com.meg.listshop.lmt.dish.impl;
 
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.common.FlatStringUtils;
@@ -13,7 +13,7 @@ import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
-import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.ServiceTestUtils;
 import com.meg.listshop.lmt.service.food.AmountService;
 import com.meg.listshop.lmt.service.tag.AutoTagService;

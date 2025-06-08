@@ -7,7 +7,7 @@ import com.meg.listshop.lmt.data.entity.ShadowTags;
 import com.meg.listshop.lmt.data.pojos.AutoTagSubject;
 import com.meg.listshop.lmt.data.repository.ShadowTagRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.ServiceTestUtils;
 import com.meg.listshop.lmt.service.tag.AutoTagProcessor;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
