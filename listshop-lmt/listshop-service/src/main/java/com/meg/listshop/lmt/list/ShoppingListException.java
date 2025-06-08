@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.service;
+package com.meg.listshop.lmt.list;
 
 /**
  * Created by margaretmartin on 13/03/2018.

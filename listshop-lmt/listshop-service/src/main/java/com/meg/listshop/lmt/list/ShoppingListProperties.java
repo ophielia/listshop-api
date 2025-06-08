@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.service;
+package com.meg.listshop.lmt.list;
 
 import com.meg.listshop.lmt.api.model.CategoryType;
 import org.springframework.boot.context.properties.ConfigurationProperties;

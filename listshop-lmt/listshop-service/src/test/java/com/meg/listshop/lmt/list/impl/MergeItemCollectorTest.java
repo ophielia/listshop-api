@@ -13,7 +13,7 @@ import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.service.MergeItemCollector;
-import com.meg.listshop.lmt.service.ShoppingListService;
+import com.meg.listshop.lmt.list.ShoppingListService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.Assert;

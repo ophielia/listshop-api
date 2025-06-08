@@ -1,4 +1,4 @@
-package com.meg.listshop.lmt.service.impl;
+package com.meg.listshop.lmt.list.impl;
 
 import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.common.FlatStringUtils;
@@ -15,6 +15,8 @@ import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.list.ListItemCollector;
 import com.meg.listshop.lmt.list.ListTagStatisticService;
+import com.meg.listshop.lmt.list.ShoppingListException;
+import com.meg.listshop.lmt.list.ShoppingListService;
 import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
