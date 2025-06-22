@@ -793,6 +793,7 @@ COPY public.category_tags (category_id, tag_id) FROM stdin;
 6	15
 6	16
 8	17
+8	24
 7	18
 6	19
 7	20

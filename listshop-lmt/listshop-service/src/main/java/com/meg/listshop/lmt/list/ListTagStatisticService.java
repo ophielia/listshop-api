@@ -1,7 +1,10 @@
 package com.meg.listshop.lmt.list;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.lmt.api.model.ListOperationType;
 import com.meg.listshop.lmt.api.model.Statistic;
+import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.ListTagStatistic;
 import com.meg.listshop.lmt.service.CollectorContext;
 import com.meg.listshop.lmt.service.ItemCollector;
@@ -19,7 +22,9 @@ public interface ListTagStatisticService {
 
     void countTagAddedToDish(Long userId, Long tagId);
 
-    void processCollectorStatistics(Long userId, ItemCollector collector, CollectorContext context);
+    void legacyProcessCollectorStatistics(Long userId, ItemCollector collector, CollectorContext context);
+
+    void processStatistics(Long userId, List<ListItemEntity> items, ListOperationType operationType);
 
     List<ListTagStatistic> getStatisticsForUser(Long id, int resultLimit);
 

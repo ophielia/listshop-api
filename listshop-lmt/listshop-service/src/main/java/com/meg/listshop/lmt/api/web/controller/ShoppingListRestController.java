@@ -4,6 +4,7 @@ import com.google.common.base.Enums;
 import com.meg.listshop.auth.service.CustomUserDetails;
 
 import com.meg.listshop.lmt.api.controller.ShoppingListRestControllerApi;
+import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
@@ -177,7 +178,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Retrieving list [{}] by id for user [{}]", listId, userDetails.getId());
 
-        ShoppingListEntity result = shoppingListService.getSimpleListForUserById(userDetails.getId(), listId);
+        ShoppingListEntity result = shoppingListService.getListForUserById(userDetails.getId(), listId);
         if (result == null) {
             return ResponseEntity.notFound().build();
         }
@@ -208,7 +209,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> addItemToListByTag(Authentication authentication, @PathVariable Long listId, @PathVariable Long tagId) {
+    public ResponseEntity<Object> addItemToListByTag(Authentication authentication, @PathVariable Long listId, @PathVariable Long tagId) throws ItemProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding tag [{}] to list [{}] for user [{}]", tagId, listId, userDetails.getId());
         this.shoppingListService.addItemToListByTag(userDetails.getId(), listId, tagId);

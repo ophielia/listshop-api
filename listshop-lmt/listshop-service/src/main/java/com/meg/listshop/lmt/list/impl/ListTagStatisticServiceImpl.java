@@ -1,9 +1,12 @@
 package com.meg.listshop.lmt.list.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.lmt.api.model.ListOperationType;
 import com.meg.listshop.lmt.api.model.Statistic;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.ListTagStatistic;
 import com.meg.listshop.lmt.data.entity.StatisticOperationType;
+import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.repository.ListTagStatisticRepository;
 import com.meg.listshop.lmt.service.CollectedItem;
 import com.meg.listshop.lmt.service.CollectorContext;
@@ -48,7 +51,7 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
     }
 
     @Override
-    public void processCollectorStatistics(Long userId, ItemCollector collector, CollectorContext context) {
+    public void legacyProcessCollectorStatistics(Long userId, ItemCollector collector, CollectorContext context) {
         // pull tagIds for removed and created tags
         List<Long> removedIds = new ArrayList<>();
         List<Long> addedIds = new ArrayList<>();
@@ -71,12 +74,24 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
 
         // update removed
         if (!removedIds.isEmpty()) {
-            listTagStatisticRepo.updateUserStatistics(userId, removedIds, StatisticOperationType.remove, context.getStatisticCountType());
+            listTagStatisticRepo.legacyUpdateUserStatistics(userId, removedIds, StatisticOperationType.remove, context.getStatisticCountType());
         }
         // update added
         if (!addedIds.isEmpty()) {
-            listTagStatisticRepo.updateUserStatistics(userId, addedIds, StatisticOperationType.add, context.getStatisticCountType());
+            listTagStatisticRepo.legacyUpdateUserStatistics(userId, addedIds, StatisticOperationType.add, context.getStatisticCountType());
         }
+    }
+
+    @Override
+    public void processStatistics(Long userId, List<ListItemEntity> items, ListOperationType operationType) {
+        List<Long> tagIds = items.stream().map(ListItemEntity::getTag)
+                .map(TagEntity::getId)
+                .toList();
+
+        // check for and create missing statistics
+        checkForAndCreateMissingStatistics(tagIds, userId);
+
+        listTagStatisticRepo.updateUserStatistics(userId, tagIds, operationType);
     }
 
     @Override

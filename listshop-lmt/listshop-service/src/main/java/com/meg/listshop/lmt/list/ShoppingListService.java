@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.list;
 
+import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 
@@ -29,8 +30,6 @@ public interface ShoppingListService {
     ShoppingListEntity updateList(Long userId, Long listId, ShoppingListEntity updateFrom);
 
     void performItemOperation(Long userId, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId);
-
-    void addItemToListByTag(Long userId, Long listId, Long tagId);
 
     void deleteItemFromList(Long userId, Long listId, Long itemId, Boolean removeEntireItem, Long dishSourceId);
 
@@ -66,6 +65,8 @@ public interface ShoppingListService {
     void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException;
 
     void addToListFromMealPlan(Long userId, Long listId, Long mealPlanId);
+
+    void addItemToListByTag(Long userId, Long listId, Long tagId) throws ItemProcessingException;
 
     void updateItemCount(Long userId, Long listId, Long tagId, Integer usedCount);
 }

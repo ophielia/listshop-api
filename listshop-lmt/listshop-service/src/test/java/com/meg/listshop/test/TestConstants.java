@@ -43,6 +43,7 @@ public final class TestConstants {
     public static final Long LIST_1_ID = 500L;  // test status
     public static final Long LIST_2_ID = 501L;  // test modification
     public static final Long LIST_3_ID = 502L;
+    public static final Long LIST_4_ID = 402L;
 
     public static final Long LIST_LAYOUT_1_ID = 1L;
     public static final String LIST_LAYOUT_1_NAME = "FineGrained";  // test status

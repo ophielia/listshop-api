@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.controller;
 
+import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -48,7 +49,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<ShoppingList> deleteList(Authentication principal, @PathVariable("listId") Long listId);
 
     @PostMapping(value = "/{listId}/tag/{tagId}", produces = "application/json")
-    ResponseEntity<Object> addItemToListByTag(Authentication principal, @PathVariable Long listId, @PathVariable Long tagId);
+    ResponseEntity<Object> addItemToListByTag(Authentication principal, @PathVariable Long listId, @PathVariable Long tagId) throws ItemProcessingException;
 
     @DeleteMapping(value = "/{listId}/item/{itemId}", produces = "application/json")
     ResponseEntity<Object> deleteItemFromList(Authentication principal, @PathVariable Long listId, @PathVariable Long itemId,

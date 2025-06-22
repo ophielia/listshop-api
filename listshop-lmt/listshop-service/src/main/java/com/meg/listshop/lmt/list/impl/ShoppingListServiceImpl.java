@@ -4,6 +4,7 @@ import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
+import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.ItemChangeRepository;
@@ -17,6 +18,9 @@ import com.meg.listshop.lmt.list.ListItemCollector;
 import com.meg.listshop.lmt.list.ListTagStatisticService;
 import com.meg.listshop.lmt.list.ShoppingListException;
 import com.meg.listshop.lmt.list.ShoppingListService;
+import com.meg.listshop.lmt.list.state.ItemStateContext;
+import com.meg.listshop.lmt.list.state.ListItemEvent;
+import com.meg.listshop.lmt.list.state.ListItemStateMachine;
 import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
@@ -40,16 +44,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     private final TagService tagService;
     private final DishService dishService;
-    private final
-    ShoppingListRepository shoppingListRepository;
-    private final
-    LayoutService listLayoutService;
-    private final
-    MealPlanService mealPlanService;
-    private final
-    ItemRepository itemRepository;
-    private final
-    ListTagStatisticService listTagStatisticService;
+    private final ShoppingListRepository shoppingListRepository;
+    private final LayoutService listLayoutService;
+    private final MealPlanService mealPlanService;
+    private final ItemRepository itemRepository;
+    private final ListTagStatisticService listTagStatisticService;
+    private final ListItemStateMachine listItemStateMachine;
 
     private final
     ItemChangeRepository itemChangeRepository;
@@ -68,7 +68,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                                    MealPlanService mealPlanService,
                                    ItemRepository itemRepository,
                                    ItemChangeRepository itemChangeRepository,
-                                   ListTagStatisticService listTagStatisticService) {
+                                   ListTagStatisticService listTagStatisticService,
+                                   ListItemStateMachine listItemStateMachine) {
         this.tagService = tagService;
         this.dishService = dishService;
         this.shoppingListRepository = shoppingListRepository;
@@ -77,6 +78,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         this.itemRepository = itemRepository;
         this.itemChangeRepository = itemChangeRepository;
         this.listTagStatisticService = listTagStatisticService;
+        this.listItemStateMachine = listItemStateMachine;
     }
 
 
@@ -184,7 +186,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                     .build();
             ListItemCollector collector = createListItemCollector(destinationListId, items);
             collector.copyExistingItemsIntoList(itemsForTags(tagList, sourceList.getId()), context);
-            saveListChanges(targetList, collector, context);
+            legacySaveListChanges(targetList, collector, context);
         }
 
         // if operation requires remove, remove from source
@@ -200,7 +202,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                     .withRemoveEntireItem(true).build();
             ListItemCollector collector = createListItemCollector(sourceListId, items);
             collector.removeItemsByTagIds(tagIds, context);
-            saveListChanges(sourceList, collector, context);
+            legacySaveListChanges(sourceList, collector, context);
         }
 
     }
@@ -254,7 +256,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withStatisticCountType(StatisticCountType.Dish)
                 .build();
-        saveListChanges(newList, collector, context);
+        legacySaveListChanges(newList, collector, context);
     }
 
 
@@ -310,7 +312,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
                 .withStatisticCountType(StatisticCountType.List)
                 .build();
-        saveListChanges(newList, collector, context);
+        legacySaveListChanges(newList, collector, context);
         return newList;
 
     }
@@ -419,51 +421,32 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public void addItemToListByTag(Long userId, Long listId, Long tagId) {
+    public void addItemToListByTag(Long userId, Long listId, Long tagId) throws ItemProcessingException {
         ShoppingListEntity shoppingListEntity = getListForUserById(userId, listId);
         if (shoppingListEntity == null) {
             return;
         }
 
-        List<ListItemEntity> items = shoppingListEntity.getItems();
-        ListItemCollector collector = createListItemCollector(listId, items);
-        // fill in tag, if item contains tag
-        TagEntity tag;
-        tag = tagService.getTagById(tagId);
-        ListItemEntity item = new ListItemEntity();
-        item.setTag(tag);
+        ListItemEntity item = shoppingListEntity.getItems().stream()
+                .filter(l -> l.getTag().getId().equals(tagId))
+                .findFirst()
+                .orElse(null);
+        boolean isNew = item == null;
 
-        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
-                .withStatisticCountType(StatisticCountType.Single).build();
-        collector.addItem(item, context);
+        TagEntity tag = tagService.getTagById(tagId);
+        ItemStateContext itemStateContext = new ItemStateContext(item, listId);
+        itemStateContext.setTag(tag);
 
-        saveListChanges(shoppingListEntity, collector, context);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext);
 
-    }
-
-    //@Override
-    public void NEWaddItemToListByTag(Long userId, Long listId, Long tagId) {
-        ShoppingListEntity shoppingListEntity = getListForUserById(userId, listId);
-        if (shoppingListEntity == null) {
-            return;
+        if (isNew) {
+            shoppingListEntity.getItems().add(result);
         }
 
-        List<ListItemEntity> items = shoppingListEntity.getItems();
-        ListItemCollector collector = createListItemCollector(listId, items);
-        // fill in tag, if item contains tag
-        TagEntity tag;
-        tag = tagService.getTagById(tagId);
-        ListItemEntity item = new ListItemEntity();
-        item.setTag(tag);
-
-        CollectorContext context = new CollectorContextBuilder().create(ContextType.NonSpecified)
-                .withStatisticCountType(StatisticCountType.Single).build();
-        collector.addItem(item, context);
-
-        saveListChanges(shoppingListEntity, collector, context);
-
+        saveListChanges(shoppingListEntity, userId,
+                Collections.singletonList(result),
+                ListOperationType.TAG_ADD);
     }
-
 
     public void updateItemCount(Long userId, Long listId, Long tagId, Integer usedCount) {
         if (usedCount == null) {
@@ -515,7 +498,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .build();
         collector.removeItemsFromList(itemEntities, context);
 
-        saveListChanges(shoppingListEntity, collector, context);
+        legacySaveListChanges(shoppingListEntity, collector, context);
     }
 
     @Override
@@ -541,7 +524,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .build();
         collector.removeItemByTagId(item.getTag().getId(), context);
 
-        saveListChanges(shoppingListEntity, collector, context);
+        legacySaveListChanges(shoppingListEntity, collector, context);
     }
 
     @Override
@@ -590,7 +573,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
                 .withStatisticCountType(StatisticCountType.Dish)
                 .build();
-        saveListChanges(shoppingList, collector, context);
+        legacySaveListChanges(shoppingList, collector, context);
         Optional<ShoppingListEntity> shoppingListEntity = shoppingListRepository.getWithItemsByListIdAndItemsRemovedOnIsNull(shoppingList.getId());
         return shoppingListEntity.orElse(null);
 
@@ -722,7 +705,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Merge)
                 .withStatisticCountType(StatisticCountType.Single)
                 .build();
-        saveListChanges(list, mergeCollector, context);
+        legacySaveListChanges(list, mergeCollector, context);
 
         // delete tags by removed on
         LocalDate removedBeforeDate = LocalDate.now().minusDays(mergeDeleteAfterDays);
@@ -768,7 +751,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         collector.copyExistingItemsIntoList(toAdd.getItems(), context);
 
         // save list
-        saveListChanges(list, collector, context);
+        legacySaveListChanges(list, collector, context);
     }
 
     public void addDishToList(Long userId, Long listId, Long dishId) throws ShoppingListException {
@@ -784,7 +767,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .withDishId(dishId)
                 .withStatisticCountType(StatisticCountType.Dish)
                 .build();
-        saveListChanges(list, collector, context);
+        legacySaveListChanges(list, collector, context);
     }
 
     @Override
@@ -867,7 +850,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .withStatisticCountType(StatisticCountType.Dish)
                 .build();
         collector.removeTagsForDish(dishId, tagsToRemove, context);
-        saveListChanges(shoppingList, collector, context);
+        legacySaveListChanges(shoppingList, collector, context);
 
     }
 
@@ -889,7 +872,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         collector.removeItemsFromList(listToRemove.getItems(), context);
 
-        saveListChanges(shoppingList, collector, context);
+        legacySaveListChanges(shoppingList, collector, context);
     }
 
     @Override
@@ -948,8 +931,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         itemRepository.saveAll(items);
     }
 
-    private void saveListChanges(ShoppingListEntity shoppingList, ItemCollector collector, CollectorContext context) {
-        itemChangeRepository.saveItemChanges(shoppingList, collector, shoppingList.getUserId(), context);
+    private void legacySaveListChanges(ShoppingListEntity shoppingList, ItemCollector collector, CollectorContext context) {
+        itemChangeRepository.legacySaveItemChanges(shoppingList, collector, shoppingList.getUserId(), context);
         // make changes in list object
         shoppingList.setItems(collector.getAllItems());
         if (collector.hasChanges()) {
@@ -957,6 +940,18 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
         shoppingListRepository.save(shoppingList);
     }
+
+    private void saveListChanges(ShoppingListEntity shoppingList, Long userId, List<ListItemEntity> items,
+                                 ListOperationType operationType) {
+        itemChangeRepository.saveItemChangeStatistics(shoppingList, items, shoppingList.getUserId(), operationType);
+        // make changes in list object
+        if (items != null && !items.isEmpty()) {
+            shoppingList.setLastUpdate(new Date());
+        }
+        shoppingListRepository.save(shoppingList);
+    }
+
+
 
     private void checkReplaceTagsInCollector(ItemCollector mergeCollector) {
         Set<Long> allServerTagIds = new HashSet<>(mergeCollector.getAllTagIds());
