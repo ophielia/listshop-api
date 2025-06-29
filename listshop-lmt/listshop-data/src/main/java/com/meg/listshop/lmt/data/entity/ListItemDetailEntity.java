@@ -1,5 +1,7 @@
 package com.meg.listshop.lmt.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meg.listshop.lmt.api.model.FractionType;
 import jakarta.persistence.*;
 
@@ -28,6 +30,7 @@ public class ListItemDetailEntity {
 
     @ManyToOne
     @JoinColumn(name = "item_id", nullable = false)
+    @JsonIgnore
     private ListItemEntity item;
 
     @Column(name = "used_count")

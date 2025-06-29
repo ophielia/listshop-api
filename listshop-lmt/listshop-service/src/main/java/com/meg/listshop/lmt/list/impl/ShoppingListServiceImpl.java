@@ -249,7 +249,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // now, add all dish ids
         for (Long id : dishIds) {
-            addDishToList(userId, collector, id);
+            legacyAddDishToList(userId, collector, id);
         }
 
         // save changes
@@ -289,7 +289,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // now, add all dish ids
         for (Long id : dishIds) {
-            addDishToList(userId, collector, id);
+            legacyAddDishToList(userId, collector, id);
         }
 
         // add starter list - if desired
@@ -754,20 +754,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         legacySaveListChanges(list, collector, context);
     }
 
-    public void addDishToList(Long userId, Long listId, Long dishId) throws ShoppingListException {
+    public void addDishToList(Long userId, Long listId, Long dishId) throws ShoppingListException, ItemProcessingException {
         // get the list
         ShoppingListEntity list = getListForUserById(userId, listId);
 
-        // create collector
-        ListItemCollector collector = createListItemCollector(listId, list.getItems());
+        List<ListItemEntity> changedItems = addDishToList(list, userId, list.getItems(), dishId);
 
-        addDishToList(userId, collector, dishId);
-
-        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
-                .withDishId(dishId)
-                .withStatisticCountType(StatisticCountType.Dish)
-                .build();
-        legacySaveListChanges(list, collector, context);
+        saveListChanges(list,userId, changedItems, ListOperationType.DISH_ADD);
     }
 
     @Override
@@ -948,7 +941,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (items != null && !items.isEmpty()) {
             shoppingList.setLastUpdate(new Date());
         }
-        shoppingListRepository.save(shoppingList);
     }
 
 
@@ -1051,7 +1043,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         itemMap.put(tagId, item);
     }
 
-    private void addDishToList(Long userId, ListItemCollector collector, Long dishId) throws ShoppingListException {
+    private void legacyAddDishToList(Long userId, ListItemCollector collector, Long dishId) throws ShoppingListException {
         // gather tags for dish to add
         if (dishId == null) {
             logger.error("No dish found for null dishId");
@@ -1080,6 +1072,44 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // update last added date for dish
         this.dishService.updateLastAddedForDish(dishId);
+    }
+    private List<ListItemEntity> addDishToList(ShoppingListEntity shoppingList, Long userId, List<ListItemEntity> items, Long dishId) throws ShoppingListException, ItemProcessingException {
+        // gather tags for dish to add
+        if (dishId == null) {
+            logger.error("No dish found for null dishId");
+            throw new ShoppingListException("No dish found for null dishId.");
+        }
+
+        List<DishItemEntity> dishItems = tagService.getItemsForDish(userId, dishId);
+
+        // tag ids for dish items
+        Set<Long> tagIdsInDish = dishItems.stream()
+                .map(DishItemEntity::getTag)
+                .map(TagEntity::getId)
+                .collect(Collectors.toSet());
+
+        // create hash of tag_id to list_items
+        Map<Long,ListItemEntity> tagToItem = items.stream()
+                .filter(item -> tagIdsInDish.contains(item.getTag().getId()))
+                .collect(Collectors.toMap(i -> i.getTag().getId(), item -> item));
+
+        List<ListItemEntity> newOrUpdatedListItems = new ArrayList<>();
+        for (DishItemEntity dishItemToAdd : dishItems) {
+            ListItemEntity item = tagToItem.get(dishItemToAdd.getTag().getId());
+            boolean isNew = item == null;
+            ItemStateContext context = new ItemStateContext(item, shoppingList.getId());
+            context.setDishItem(dishItemToAdd);
+            ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM,context);
+
+            newOrUpdatedListItems.add(result);
+            if (isNew) {
+                shoppingList.getItems().add(result);
+            }
+        }
+        // update last added date for dish
+        this.dishService.updateLastAddedForDish(dishId);
+
+        return newOrUpdatedListItems;
     }
 
     private ShoppingListEntity createList(Long userId, String listName) {

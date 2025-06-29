@@ -306,8 +306,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         logger.info("Adding dish [{}] to list [{}] for user [{}]", dishId, listId, userDetails.getId());
         try {
             this.shoppingListService.addDishToList(userDetails.getId(), listId, dishId);
-        } catch (ShoppingListException s) {
-            logger.error("Unable to add Dish [{}] to List [{}]", dishId, listId);
+        } catch (ShoppingListException | ItemProcessingException s ) {
+            logger.error("Unable to add Dish [{}] to List [{}]", dishId, listId, s);
             return ResponseEntity.badRequest().build();
         }
 

@@ -26,6 +26,13 @@ public class ServiceTestUtils {
         return itemEntity;
     }
 
+    public static DishItemEntity buildDishItemFromTag(Long id, DishEntity dish, TagEntity tag) {
+        DishItemEntity itemEntity = new DishItemEntity(id);
+        itemEntity.setTag(tag);
+        itemEntity.setDish(dish);
+        return itemEntity;
+    }
+
     public static  SlotEntity buildDishSlot(MealPlanEntity mealplan, DishEntity dish) {
         SlotEntity slot = new SlotEntity();
         slot.setDish(dish);
@@ -39,6 +46,15 @@ public class ServiceTestUtils {
         dish.setUserId(userId);
         dish.setDishName(dishName);
         dish.setItems(tags.stream().map(t -> buildDishItemFromTag(t.getId(), t)).collect(Collectors.toList()));
+        return dish;
+    }
+
+    public static DishEntity buildDishWithTags(Long userId, Long dishId, String dishName, List<TagEntity> tags) {
+        DishEntity dish = new DishEntity();
+        dish.setUserId(userId);
+        dish.setDishName(dishName);
+        dish.setId(dishId);
+        dish.setItems(tags.stream().map(t -> buildDishItemFromTag(t.getId(),dish, t)).collect(Collectors.toList()));
         return dish;
     }
 

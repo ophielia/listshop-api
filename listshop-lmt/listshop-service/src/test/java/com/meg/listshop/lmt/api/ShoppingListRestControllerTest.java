@@ -565,11 +565,67 @@ public class ShoppingListRestControllerTest {
     @WithMockUser
     public void testAddDishToList() throws Exception {
         Long listId = TestConstants.LIST_1_ID;
+        Long tagId1 = 500L;
+        Long tagId2 = 501L;
         String url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_7_ID;
         mockMvc.perform(post(url)
                         .with(user(userDetails))
                         .contentType(contentType))
                 .andExpect(status().isNoContent());
+
+        ShoppingList result = retrieveList(userDetails, listId);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.getCategories().size() > 0);
+
+        Map<String, ShoppingListItem> standardResultMap = result.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .filter( i -> i.getSourceKeys() != null &&
+                        i.getSourceKeys().contains("d" + TestConstants.DISH_7_ID))
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(standardResultMap);
+        Assert.assertEquals(2, standardResultMap.keySet().size());
+        Assert.assertTrue(standardResultMap.containsKey(String.valueOf(tagId1)));
+        Assert.assertTrue(standardResultMap.containsKey(String.valueOf(tagId2)));
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testAddDishToNewList() throws Exception {
+        ListGenerateProperties properties = new ListGenerateProperties();
+        properties.setAddFromStarter(true);
+        properties.setGenerateMealplan(false);
+        String jsonProperties = json(properties);
+        MvcResult newResult = this.mockMvc.perform(post("/shoppinglist")
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(jsonProperties))
+                .andReturn();
+        List<String> headers = newResult.getResponse().getHeaders("Location");
+        String listIdString = headers.get(0).replace("http://localhost/tag/","");
+        Long newListId = Long.valueOf(listIdString);
+
+        Long tagId1 = 500L;
+        Long tagId2 = 501L;
+        String url = "/shoppinglist/" + newListId + "/dish/" + TestConstants.DISH_7_ID;
+        mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType))
+                .andExpect(status().isNoContent());
+
+        ShoppingList result = retrieveList(userDetails, newListId);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.getCategories().size() > 0);
+
+        Map<String, ShoppingListItem> standardResultMap = result.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .filter( i -> i.getSourceKeys() != null &&
+                        i.getSourceKeys().contains("d" + TestConstants.DISH_7_ID))
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(standardResultMap);
+        Assert.assertEquals(2, standardResultMap.keySet().size());
+        Assert.assertTrue(standardResultMap.containsKey(String.valueOf(tagId1)));
+        Assert.assertTrue(standardResultMap.containsKey(String.valueOf(tagId2)));
 
     }
 
