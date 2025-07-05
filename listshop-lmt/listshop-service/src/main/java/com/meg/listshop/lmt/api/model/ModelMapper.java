@@ -17,7 +17,10 @@ import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.api.model.v2.Ingredient;
 import com.meg.listshop.lmt.data.entity.*;
-import com.meg.listshop.lmt.data.pojos.*;
+import com.meg.listshop.lmt.data.pojos.DishItemDTO;
+import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
+import com.meg.listshop.lmt.data.pojos.SuggestionDTO;
+import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 
 import java.util.*;
@@ -400,36 +403,38 @@ public class ModelMapper {
     }
 
 
-    private static void enhanceSources(List<ShoppingListItem> items) {
+    private static void enhanceSources(String listId, List<ShoppingListItem> items) {
         if (items == null) {
             return;
         }
 
         items.forEach(i -> {
-            List<String> sourceList = toListItemSourceKeys(ModelMapper.SPECIAL_PREFIX, i.getHandles());
+            Set<String> sourceList = toListItemSourceKeys(ModelMapper.SPECIAL_PREFIX, i.getHandles());
             List<String> dishAndListSources = i.getSources().stream()
-                    .map(s -> toV1SourceTags(s))
+                    .map(s -> toV1SourceTags(listId, s))
                     .flatMap(List::stream)
                     .toList();
             sourceList.addAll(dishAndListSources);
-            i.sourceKeys(sourceList);
+            i.sourceKeys(new ArrayList<>(sourceList));
         });
 
     }
 
-    private static List<String> toV1SourceTags(ListItemSource s) {
+    private static List<String> toV1SourceTags(String listId, ListItemSource s) {
         List<String> tags = new ArrayList<>();
         if (s.getLinkedDishId() != null && !s.getLinkedDishId().isEmpty()) {
-            tags.add(ItemSourceType.Dish.getPrefix()+ s.getLinkedDishId());
+            tags.add(ItemSourceType.Dish.getPrefix() + s.getLinkedDishId());
         }
-        if (s.getLinkedListId() != null && !s.getLinkedListId().isEmpty()) {
-            tags.add(ItemSourceType.List.getPrefix()+ s.getLinkedListId());
+        if (s.getLinkedListId() != null
+                && !s.getLinkedListId().isEmpty()
+                && !s.getLinkedListId().equals(listId)) {
+            tags.add(ItemSourceType.List.getPrefix() + s.getLinkedListId());
         }
         return tags;
     }
 
-    private static List<String> toListItemSourceKeys(String keyPrefix, Set<String> idSet) {
-        List<String> sources = new ArrayList<>();
+    private static Set<String> toListItemSourceKeys(String keyPrefix, Set<String> idSet) {
+        Set<String> sources = new HashSet<>();
 
         for (String id : idSet) {
             String key = keyPrefix + id;
@@ -437,14 +442,6 @@ public class ModelMapper {
 
         }
         return sources;
-    }
-
-    private static List<String> toListItemSourceKeys(String keyPrefix, String delimitedIdList) {
-        if (delimitedIdList == null || delimitedIdList.isEmpty()) {
-            return new ArrayList<>();
-        }
-        Set<String> idSet = FlatStringUtils.inflateStringToSet(delimitedIdList, ";");
-        return toListItemSourceKeys(keyPrefix, idSet);
     }
 
     private static List<Tag> toModel(List<TagEntity> tagEntities) {
@@ -463,17 +460,6 @@ public class ModelMapper {
             return new ArrayList<>();
         }
         return toModel(itemEntities.stream().map(DishItemEntity::getTag).collect(Collectors.toList()));
-    }
-
-    private static List<Ingredient> toModelIngredients(List<DishItemDTO> ingredientDTOs) {
-        if (ingredientDTOs == null) {
-            return new ArrayList<>();
-        }
-        List<Ingredient> ingredients = new ArrayList<>();
-        for (DishItemDTO dishItemDTO : ingredientDTOs) {
-            ingredients.add(toModel(dishItemDTO));
-        }
-        return ingredients;
     }
 
     private static List<Tag> toModel(Set<TagEntity> tagEntities) {
@@ -656,12 +642,12 @@ public class ModelMapper {
 
     public static ShoppingList toModel(ShoppingListEntity shoppingListEntity, List<ShoppingListCategory> itemCategories) {
         List<LegendSource> legendSources = new ArrayList<>();
+        String listId = shoppingListEntity.getId().toString();
         if (shoppingListEntity.getDishSources() != null &&
                 !shoppingListEntity.getDishSources().isEmpty()) {
             Set<LegendSource> dishLegends = new HashSet<>();
             shoppingListEntity.getDishSources().forEach(d -> {
                 String key = ModelMapper.DISH_PREFIX + d.getId();
-
                 dishLegends.add(new LegendSource(key, d.getDishName()));
             });
             legendSources.addAll(dishLegends);
@@ -669,15 +655,16 @@ public class ModelMapper {
         if (shoppingListEntity.getListSources() != null &&
                 !shoppingListEntity.getListSources().isEmpty()) {
             Set<LegendSource> listLegends = new HashSet<>();
-            shoppingListEntity.getListSources().forEach(d -> {
-                String key = ModelMapper.LIST_PREFIX + d.getId();
-
-                listLegends.add(new LegendSource(key, d.getName()));
-            });
+            shoppingListEntity.getListSources().stream()
+                    .filter(s -> !s.equals(listId))
+                    .forEach(d -> {
+                        String key = ModelMapper.LIST_PREFIX + d.getId();
+                        listLegends.add(new LegendSource(key, d.getName()));
+                    });
             legendSources.addAll(listLegends);
         }
 
-        enhanceCategories(itemCategories);
+        enhanceCategories(listId, itemCategories);
 
         long itemCount = 0;
         if (itemCategories != null) {
@@ -702,13 +689,13 @@ public class ModelMapper {
     }
 
 
-    private static void enhanceCategories(List<ShoppingListCategory> filledCategories
+    private static void enhanceCategories(String listId, List<ShoppingListCategory> filledCategories
     ) {
         if (filledCategories == null) {
             return;
         }
         // go through list, converting items in categories to Items
-        filledCategories.forEach(c -> enhanceSources(c.getItems()));
+        filledCategories.forEach(c -> enhanceSources(listId, c.getItems()));
     }
 
     public static Item toModel(ListItemEntity listItemEntity) {

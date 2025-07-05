@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.CustomUserDetails;
-import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
@@ -44,7 +43,6 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
@@ -70,7 +68,6 @@ public class ShoppingListRestControllerTest {
 
     @ClassRule
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
-
 
     private static UserDetails userDetails;
     private static UserDetails meUserDetails;
@@ -587,6 +584,68 @@ public class ShoppingListRestControllerTest {
         Assert.assertTrue(standardResultMap.containsKey(String.valueOf(tagId1)));
         Assert.assertTrue(standardResultMap.containsKey(String.valueOf(tagId2)));
 
+    }
+
+
+    @Test
+    @WithMockUser
+    public void testAddDishesToList() throws Exception {
+        Long broccoliId = 21L;
+        Long fetaId = 37L;
+        ListGenerateProperties properties = new ListGenerateProperties();
+        properties.setAddFromStarter(true);
+        properties.setGenerateMealplan(false);
+        String jsonProperties = json(properties);
+        String listId = createList(jsonProperties, meUserDetails);
+
+        ListAddProperties addProperties = new ListAddProperties();
+
+        Long[] dishSourceArray = {TestConstants.DISH_8_ID, TestConstants.DISH_2_ID, TestConstants.DISH_1_ID};
+        List<String> dishIdsAsStrings = Arrays.stream(dishSourceArray)
+        .map(String::valueOf)
+                .toList();
+        addProperties.setDishSources(dishIdsAsStrings);
+        String addDishProperties = json(addProperties);
+
+        String url = "/shoppinglist/" + listId + "/dish";
+        mockMvc.perform(post(url)
+                        .with(user(meUserDetails))
+                        .contentType(contentType)
+                .content(addDishProperties))
+                .andExpect(status().is2xxSuccessful());
+
+        ShoppingList result = retrieveList(meUserDetails, Long.valueOf(listId));
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.getCategories().size() > 0);
+
+        Map<String, ShoppingListItem> standardResultMap = result.getCategories().stream()
+                .flatMap(c -> c.getItems().stream())
+                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+        Assert.assertNotNull(standardResultMap);
+        // test brocolli is there, twice, with sources 109, and 45 (dish)
+        ShoppingListItem broccoliItem = standardResultMap.get(String.valueOf(broccoliId));
+        Assert.assertNotNull("broccoli item should be present",broccoliItem);
+        Assert.assertEquals(2, broccoliItem.getSourceKeys().size());
+        Assert.assertTrue(broccoliItem.getSourceKeys().contains("d" + TestConstants.DISH_8_ID));
+        Assert.assertTrue(broccoliItem.getSourceKeys().contains("d" + TestConstants.DISH_2_ID));
+        // test feta cheese is there, from dish 1, tag_id 37
+        ShoppingListItem fetaItem = standardResultMap.get(String.valueOf(fetaId));
+        Assert.assertNotNull("feta item should be present",fetaItem);
+        Assert.assertEquals(1, fetaItem.getSourceKeys().size());
+        Assert.assertTrue(fetaItem.getSourceKeys().contains("d" + TestConstants.DISH_1_ID));
+    }
+
+    private String createList(String jsonProperties, UserDetails userDetails) throws Exception {
+        String url = "/shoppinglist";
+        MvcResult result = this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(jsonProperties))
+                .andExpect(status().isCreated())
+                .andReturn();
+        List<String> locations = result.getResponse().getHeaders("Location");
+        String[] splitLocation = locations.get(0).split("/");
+        return splitLocation[splitLocation.length - 1];
     }
 
     @Test

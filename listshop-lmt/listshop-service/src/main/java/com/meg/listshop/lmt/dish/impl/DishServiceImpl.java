@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
@@ -44,6 +45,7 @@ import java.util.stream.Collectors;
  * Created by margaretmartin on 13/05/2017.
  */
 @Service
+@Transactional
 public class DishServiceImpl implements DishService {
 
     private final DishRepository dishRepository;
@@ -197,6 +199,12 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
+    public List<DishItemEntity> getDishItems(Long userId, List<Long> dishIds) {
+        return dishItemRepository.findByDishAndUser(userId, dishIds);
+    }
+
+
+    @Override
     public List<DishEntity> getDishes(List<Long> dishIds) {
         return dishRepository.findAllById(dishIds);
     }
@@ -219,6 +227,15 @@ public class DishServiceImpl implements DishService {
         dish.ifPresent(d -> {
             d.setLastAdded(new Date());
             dishRepository.save(d);
+        });
+    }
+
+    @Override
+    public void updateLastAddedForDishes(List<Long> dishIds) {
+        List<DishEntity> dishes = getDishes(dishIds);
+
+        dishes.forEach(d -> {
+            d.setLastAdded(new Date());
         });
     }
 

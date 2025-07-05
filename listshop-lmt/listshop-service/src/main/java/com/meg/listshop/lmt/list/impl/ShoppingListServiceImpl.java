@@ -207,39 +207,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     }
 
-    private List<ListItemEntity> itemsForTags(List<TagEntity> tagList, Long sourceListId) {
-        Map<Long, Long> tagMap = tagList.stream().collect(Collectors.toMap(TagEntity::getId, TagEntity::getId));
-        List<ListItemEntity> listItems = itemRepository.findByListId(sourceListId);
-        return listItems.stream()
-                .filter(t -> t.getTag() != null)
-                .filter(t -> tagMap.containsKey(t.getTag().getId())).collect(Collectors.toList());
-    }
-
-    private List<Long> getTagIdsForOperationType(ItemOperationType operationType, ShoppingListEntity sourceList) {
-        if (operationType.equals(ItemOperationType.RemoveCrossedOff)) {
-            return sourceList.getItems().stream()
-                    .filter(item -> item.getCrossedOff() != null)
-                    .map(ListItemEntity::getTag)
-                    .filter(Objects::nonNull)
-                    .map(TagEntity::getId)
-                    .collect(Collectors.toList());
-        } else if (operationType.equals(ItemOperationType.RemoveAll)) {
-            return sourceList.getItems().stream()
-                    .map(ListItemEntity::getTag)
-                    .filter(Objects::nonNull)
-                    .map(TagEntity::getId)
-                    .collect(Collectors.toList());
-        }
-        return new ArrayList<>();
-    }
-
-    public void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException {
+    @Override
+    public void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException, ItemProcessingException {
         // retrieve list
-        ShoppingListEntity newList = getListForUserById(userId, listId);
-        if (newList == null) {
+        ShoppingListEntity list = getListForUserById(userId, listId);
+        if (list == null) {
             throw new ObjectNotFoundException(String.format("No list found for user [%s] with list id [%s])", userId, listId));
         }
-        ListItemCollector collector = createListItemCollector(newList.getId(), null);
 
         // get dishes to add
         List<Long> dishIds = listAddProperties.getDishSourceIds();
@@ -247,16 +221,12 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             return;
         }
 
-        // now, add all dish ids
-        for (Long id : dishIds) {
-            legacyAddDishToList(userId, collector, id);
-        }
+        // get dish items
+        List<DishItemEntity> dishItems = dishService.getDishItems(userId, dishIds);
 
-        // save changes
-        CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
-                .withStatisticCountType(StatisticCountType.Dish)
-                .build();
-        legacySaveListChanges(newList, collector, context);
+        List<ListItemEntity> changedItems = addDishItemsToList(list, dishItems);
+
+        saveListChanges(list, userId, changedItems, ListOperationType.DISH_ADD);
     }
 
 
@@ -664,10 +634,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         category.setUserDisplayOrder(itemMappingDTO.getUserDisplayOrder());
     }
 
-    // Note - this method doesn't check yet for MergeConflicts.  But the signature
-    // is there to build the interface, so that MergeConflicts can be added later
-    // less painfully.  Right now just going for basic functionality - taking the
-    // last modified item.
     @Override
     public MergeResult mergeFromClient(Long userId, MergeRequest mergeRequest) {
         Long listToMergeId = mergeRequest.getListId();
@@ -724,7 +690,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         if (mergeRequest.getLastOfflineChange() == null) {
             return false;
         }
-            // last offline change more recent than last synced - we need to merge the offline changes
+        // last offline change more recent than last synced - we need to merge the offline changes
         return (mergeRequest.getLastSynced() != null &&
                 mergeRequest.getLastOfflineChange().after(mergeRequest.getLastSynced()));
     }
@@ -758,9 +724,16 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // get the list
         ShoppingListEntity list = getListForUserById(userId, listId);
 
-        List<ListItemEntity> changedItems = addDishToList(list, userId, list.getItems(), dishId);
+        // gather tags for dish to add
+        if (dishId == null) {
+            logger.error("No dish found for null dishId");
+            throw new ShoppingListException("No dish found for null dishId.");
+        }
+        List<DishItemEntity> dishItems = tagService.getItemsForDish(userId, dishId);
 
-        saveListChanges(list,userId, changedItems, ListOperationType.DISH_ADD);
+        List<ListItemEntity> changedItems = addDishItemsToList(list, dishItems);
+
+        saveListChanges(list, userId, changedItems, ListOperationType.DISH_ADD);
     }
 
     @Override
@@ -940,9 +913,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // make changes in list object
         if (items != null && !items.isEmpty()) {
             shoppingList.setLastUpdate(new Date());
+            shoppingListRepository.save(shoppingList);
         }
     }
-
 
 
     private void checkReplaceTagsInCollector(ItemCollector mergeCollector) {
@@ -1073,14 +1046,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // update last added date for dish
         this.dishService.updateLastAddedForDish(dishId);
     }
-    private List<ListItemEntity> addDishToList(ShoppingListEntity shoppingList, Long userId, List<ListItemEntity> items, Long dishId) throws ShoppingListException, ItemProcessingException {
-        // gather tags for dish to add
-        if (dishId == null) {
-            logger.error("No dish found for null dishId");
-            throw new ShoppingListException("No dish found for null dishId.");
-        }
 
-        List<DishItemEntity> dishItems = tagService.getItemsForDish(userId, dishId);
+    private List<ListItemEntity> addDishItemsToList(ShoppingListEntity shoppingList, List<DishItemEntity> dishItems) throws ShoppingListException, ItemProcessingException {
+        List<ListItemEntity> items = shoppingList.getItems();
+        // gather tags for dish to add
+        if (dishItems == null || dishItems.isEmpty()) {
+            return new ArrayList<>();
+        }
 
         // tag ids for dish items
         Set<Long> tagIdsInDish = dishItems.stream()
@@ -1089,25 +1061,30 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .collect(Collectors.toSet());
 
         // create hash of tag_id to list_items
-        Map<Long,ListItemEntity> tagToItem = items.stream()
+        Map<Long, ListItemEntity> tagToItem = items.stream()
                 .filter(item -> tagIdsInDish.contains(item.getTag().getId()))
                 .collect(Collectors.toMap(i -> i.getTag().getId(), item -> item));
 
         List<ListItemEntity> newOrUpdatedListItems = new ArrayList<>();
+        List<Long> addedDishIds = new ArrayList<>();
         for (DishItemEntity dishItemToAdd : dishItems) {
+
             ListItemEntity item = tagToItem.get(dishItemToAdd.getTag().getId());
             boolean isNew = item == null;
             ItemStateContext context = new ItemStateContext(item, shoppingList.getId());
             context.setDishItem(dishItemToAdd);
-            ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM,context);
+            ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
 
+            addedDishIds.add(dishItemToAdd.getDish().getId());
             newOrUpdatedListItems.add(result);
             if (isNew) {
                 shoppingList.getItems().add(result);
+                tagToItem.put(dishItemToAdd.getTag().getId(), result);
             }
+
         }
         // update last added date for dish
-        this.dishService.updateLastAddedForDish(dishId);
+        this.dishService.updateLastAddedForDishes(addedDishIds);
 
         return newOrUpdatedListItems;
     }
@@ -1124,6 +1101,32 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         newList.setCreatedOn(new Date());
         newList.setUserId(userId);
         return shoppingListRepository.save(newList);
+    }
+
+    private List<ListItemEntity> itemsForTags(List<TagEntity> tagList, Long sourceListId) {
+        Map<Long, Long> tagMap = tagList.stream().collect(Collectors.toMap(TagEntity::getId, TagEntity::getId));
+        List<ListItemEntity> listItems = itemRepository.findByListId(sourceListId);
+        return listItems.stream()
+                .filter(t -> t.getTag() != null)
+                .filter(t -> tagMap.containsKey(t.getTag().getId())).collect(Collectors.toList());
+    }
+
+    private List<Long> getTagIdsForOperationType(ItemOperationType operationType, ShoppingListEntity sourceList) {
+        if (operationType.equals(ItemOperationType.RemoveCrossedOff)) {
+            return sourceList.getItems().stream()
+                    .filter(item -> item.getCrossedOff() != null)
+                    .map(ListItemEntity::getTag)
+                    .filter(Objects::nonNull)
+                    .map(TagEntity::getId)
+                    .collect(Collectors.toList());
+        } else if (operationType.equals(ItemOperationType.RemoveAll)) {
+            return sourceList.getItems().stream()
+                    .map(ListItemEntity::getTag)
+                    .filter(Objects::nonNull)
+                    .map(TagEntity::getId)
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
     }
 
 }

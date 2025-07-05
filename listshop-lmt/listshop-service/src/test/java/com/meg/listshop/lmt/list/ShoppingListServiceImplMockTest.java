@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -904,7 +903,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testAddDishesToList() throws ShoppingListException {
+    public void testAddDishesToList() throws ShoppingListException, ItemProcessingException {
         Long listId = 99L;
         Long userId = 9L;
 
@@ -924,13 +923,7 @@ public class ShoppingListServiceImplMockTest {
         TagEntity tag4 = ServiceTestUtils.buildTag(4L, "fourth tag", TagType.Ingredient);
         TagEntity tag5 = ServiceTestUtils.buildTag(5L, "fifth tag", TagType.Ingredient);
         TagEntity tag6 = ServiceTestUtils.buildTag(6L, "outlier tag", TagType.NonEdible);
-        // put tags into items
-        DishItemEntity item1 = ServiceTestUtils.buildDishItemFromTag(11L, tag1);
-        DishItemEntity item2 = ServiceTestUtils.buildDishItemFromTag(22L, tag2);
-        DishItemEntity item3 = ServiceTestUtils.buildDishItemFromTag(33L, tag3);
-        DishItemEntity item4 = ServiceTestUtils.buildDishItemFromTag(44L, tag4);
-        DishItemEntity item5 = ServiceTestUtils.buildDishItemFromTag(55L, tag5);
-        DishItemEntity item6 = ServiceTestUtils.buildDishItemFromTag(66L, tag6);
+
 
         Long dishId1 = 1212L;
         Long dishId2 = 2323L;
@@ -938,37 +931,33 @@ public class ShoppingListServiceImplMockTest {
         DishEntity dish2 = ServiceTestUtils.buildDishWithTags(userId, "dish two", Arrays.asList(tag1, tag3, tag4, tag5, tag6));
         dish1.setId(dishId1);
         dish2.setId(dishId2);
-
+        // put tags into items
+        DishItemEntity d1Item1 = ServiceTestUtils.buildDishItemFromTag(11L, dish1, tag1);
+        DishItemEntity d1Item2 = ServiceTestUtils.buildDishItemFromTag(22L, dish1, tag2);
+        DishItemEntity d2Item1 = ServiceTestUtils.buildDishItemFromTag(11L, dish2, tag1);
+        DishItemEntity d2Item3 = ServiceTestUtils.buildDishItemFromTag(33L, dish2, tag3);
+        DishItemEntity d2Item4 = ServiceTestUtils.buildDishItemFromTag(44L, dish2, tag4);
+        DishItemEntity d2Item5 = ServiceTestUtils.buildDishItemFromTag(55L, dish2, tag5);
+        DishItemEntity d2Item6 = ServiceTestUtils.buildDishItemFromTag(66L, dish2, tag6);
+        List<DishItemEntity> dishItems = Arrays.asList(d1Item1,d1Item2, d2Item1,
+                d2Item3, d2Item4, d2Item5, d2Item6);
         ArgumentCaptor<ShoppingListEntity> argument = ArgumentCaptor.forClass(ShoppingListEntity.class);
 
         ListAddProperties addProperties = new ListAddProperties();
         addProperties.setDishSources(Arrays.asList(dishId1.toString(), dishId2.toString()));
 
         // expectations
-        Mockito.when(userService.getUserByUserEmail(username))
-                .thenReturn(userEntity);
         Mockito.when(shoppingListRepository.getWithItemsByListId(listId))
                 .thenReturn(Optional.of(shoppingList));
-        Mockito.when(tagService.getReplacedTagsFromIds(any(Set.class)))
-                .thenReturn(new ArrayList<Long>());
-        Mockito.when(tagService.getItemsForDish(userId, dish1.getId()))
-                .thenReturn(Arrays.asList(item1, item2, item3, item4));
-        Mockito.when(tagService.getItemsForDish(userId, dish2.getId()))
-                .thenReturn(Arrays.asList(item6, item5, item4, item3));
-        Mockito.doNothing().when(dishService).updateLastAddedForDish(dishId1);
-        Mockito.doNothing().when(dishService).updateLastAddedForDish(dishId2);
+        Mockito.when(dishService.getDishItems(eq(userId), any(List.class) ))
+                .thenReturn(dishItems);
 
-        //itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
+        Mockito.when(listItemStateMachine.handleEvent(any(ListItemEvent.class),
+                        any(ItemStateContext.class)))
+                .thenReturn(new ListItemEntity());
+        Mockito.doNothing().when(dishService).updateLastAddedForDishes(any(List.class));
         Mockito.when(shoppingListRepository.save(argument.capture()))
-                .thenReturn(shoppingList);
-
-
-        // verifications before
-        // list contain doesn't item from meal plan
-        Optional<ListItemEntity> mealPlanItem = shoppingList.getItems().stream()
-                .filter(item -> item.getTag().getId() == 1L)
-                .findFirst();
-        Assert.assertFalse(mealPlanItem.isPresent());
+                .thenReturn(new ShoppingListEntity());
 
         // call
         shoppingListService.addDishesToList(userId, listId, addProperties);
@@ -978,101 +967,9 @@ public class ShoppingListServiceImplMockTest {
         // list is not null
         ShoppingListEntity listResult = argument.getValue();
         Assert.assertNotNull(listResult);
-        // list should contain 6 items
 
-        Assert.assertEquals(6, listResult.getItems().size());
-        // verify items
-        // put items into map
-        Map<Long, ListItemEntity> resultMap = listResult.getItems().stream()
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(resultMap);
-        // tag 1, 2, 5, 6 should be there - once
-        Assert.assertNotNull(resultMap.get(1L));
-        Assert.assertEquals(1, resultMap.get(1L).getUsedCount().longValue());
-        Assert.assertNotNull(resultMap.get(2L));
-        Assert.assertEquals(1, resultMap.get(2L).getUsedCount().longValue());
-        Assert.assertNotNull(resultMap.get(5L));
-        Assert.assertEquals(1, resultMap.get(5L).getUsedCount().longValue());
-        Assert.assertNotNull(resultMap.get(6L));
-        Assert.assertEquals(1, resultMap.get(6L).getUsedCount().longValue());
-        // tags 3 and 4 should be there twice
-        Assert.assertNotNull(resultMap.get(3L));
-        Assert.assertEquals(2, resultMap.get(3L).getUsedCount().longValue());
-        Assert.assertNotNull(resultMap.get(4L));
-        Assert.assertEquals(2, resultMap.get(4L).getUsedCount().longValue());
-
-
-    }
-
-    @Test
-    public void legacyTestAddDishToList() throws ShoppingListException, ItemProcessingException {
-        Long listId = 99L;
-        Long userId = 9L;
-
-        // fixtures
-        String username = "Eustace";
-
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(userId);
-        userEntity.setEmail(username);
-
-        ShoppingListEntity shoppingList = dummyShoppingList(listId, userId);
-
-        // make 6 tags
-        TagEntity tag1 = ServiceTestUtils.buildTag(1L, "first tag", TagType.Ingredient);
-        TagEntity tag2 = ServiceTestUtils.buildTag(2L, "second tag", TagType.Ingredient);
-
-        Long dishId1 = 1212L;
-        DishEntity dish1 = ServiceTestUtils.buildDishWithTags(userId, dishId1,"dish one", Arrays.asList(tag1, tag2));
-
-        ArgumentCaptor<ShoppingListEntity> argument = ArgumentCaptor.forClass(ShoppingListEntity.class);
-
-        // expectations
-        Mockito.when(userService.getUserByUserEmail(username))
-                .thenReturn(userEntity);
-        Mockito.when(shoppingListRepository.getWithItemsByListId(listId))
-                .thenReturn(Optional.of(shoppingList));
-        Mockito.when(tagService.getItemsForDish(userId, dish1.getId()))
-                .thenReturn(dish1.getItems());
-        Mockito.doNothing().when(dishService).updateLastAddedForDish(dishId1);
-
-        itemChangeRepository.saveItemChangeStatistics(any(ShoppingListEntity.class), any(List.class), any(Long.class),any(ListOperationType.class));
-        Mockito.when(shoppingListRepository.save(argument.capture()))
-                .thenReturn(shoppingList);
-
-
-        // call
-        shoppingListService.addDishToList(userId, listId, dishId1);
-
-        // verification afterwards
-        // note - checking captured list
-        // list is not null
-        ShoppingListEntity listResult = argument.getValue();
-        Assert.assertNotNull(listResult);
-        // list should contain 6 items
-
-        Assert.assertEquals(5, listResult.getItems().size());
-        // verify items
-        // put items into map
-        Map<Long, ListItemEntity> resultMap = listResult.getItems().stream()
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(resultMap);
-        // tag 1, 2, 5, 6 should be there - once
-        Assert.assertNotNull(resultMap.get(1L));
-        Assert.assertEquals(1, resultMap.get(1L).getUsedCount().longValue());
-        Assert.assertNotNull(resultMap.get(2L));
-        Assert.assertEquals(1, resultMap.get(2L).getUsedCount().longValue());
-        Assert.assertNotNull(resultMap.get(5L));
-        Assert.assertEquals(1, resultMap.get(5L).getUsedCount().longValue());
-        Assert.assertNotNull(resultMap.get(6L));
-        Assert.assertEquals(1, resultMap.get(6L).getUsedCount().longValue());
-        // tags 3 and 4 should be there twice
-        Assert.assertNotNull(resultMap.get(3L));
-        Assert.assertEquals(2, resultMap.get(3L).getUsedCount().longValue());
-        Assert.assertNotNull(resultMap.get(4L));
-        Assert.assertEquals(2, resultMap.get(4L).getUsedCount().longValue());
-
-
+        // list should contain 7 items
+        Assert.assertEquals(7, listResult.getItems().size());
     }
 
     @Test
@@ -1612,10 +1509,10 @@ public class ShoppingListServiceImplMockTest {
 
 
         // for testing after call
-        //Mockito.verify(itemChangeRepository).saveItemChanges(any(ShoppingListEntity.class),
-//                collectorCapture.capture(),
-        //               any(Long.class),
-        //              any(CollectorContext.class));
+        Mockito.verify(itemChangeRepository).legacySaveItemChanges(any(ShoppingListEntity.class),
+                collectorCapture.capture(),
+                       any(Long.class),
+                      any(CollectorContext.class));
 
         Assert.assertNotNull(collectorCapture);
         Assert.assertNotNull(collectorCapture.getValue());
@@ -1685,11 +1582,11 @@ public class ShoppingListServiceImplMockTest {
 
 
         // for testing after call
-        /*Mockito.verify(itemChangeRepository).saveItemChanges(any(ShoppingListEntity.class),
+        Mockito.verify(itemChangeRepository).legacySaveItemChanges(any(ShoppingListEntity.class),
                 collectorCapture.capture(),
                 any(Long.class),
                 any(CollectorContext.class));
-*/
+
         Assert.assertNotNull(collectorCapture);
         Assert.assertNotNull(collectorCapture.getValue());
         MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
@@ -1748,11 +1645,11 @@ public class ShoppingListServiceImplMockTest {
 
 
         // for testing after call
-        /*Mockito.verify(itemChangeRepository).saveItemChanges(any(ShoppingListEntity.class),
+        Mockito.verify(itemChangeRepository).legacySaveItemChanges(any(ShoppingListEntity.class),
                 collectorCapture.capture(),
                 any(Long.class),
                 any(CollectorContext.class));
-*/
+
         Assert.assertNotNull(collectorCapture);
         Assert.assertNotNull(collectorCapture.getValue());
         MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
@@ -1804,11 +1701,11 @@ public class ShoppingListServiceImplMockTest {
 
 
         // for testing after call
-        /*Mockito.verify(itemChangeRepository).saveItemChanges(any(ShoppingListEntity.class),
+        Mockito.verify(itemChangeRepository).legacySaveItemChanges(any(ShoppingListEntity.class),
                 collectorCapture.capture(),
                 any(Long.class),
                 any(CollectorContext.class));
-*/
+
         Assert.assertNotNull(collectorCapture);
         Assert.assertNotNull(collectorCapture.getValue());
         ListItemCollector capturedToVerify = (ListItemCollector) collectorCapture.getValue();

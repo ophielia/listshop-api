@@ -30,7 +30,7 @@ VALUES (504, 'nostarterlist@testitytest.com', true, NULL,
 -- base list - id 500
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
 values (now(), 1, 'General', 20, 509990, 'added to', false);
--- active list - id 501
+-- starter list - id 509991
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
 values (now() - interval '3 days', 11, 'General', 20, 509991, 'added from', true);
 -- user 504 doesn't have a starter list
@@ -56,7 +56,7 @@ insert into list (created_on, list_layout_id, list_types, user_id, list_id, name
 values (now(), 1, 'General', 500, 609991, 'remove from this list', false);
 
 
--- list items - four items, for active list - id 501,502,503,500
+-- list items - list 509990 - four items, for active list - id 501,502,503,500
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
 VALUES (509990, 501, 509990, now(), null, null, 1, null, null);
@@ -73,6 +73,16 @@ INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text
                       list_sources)
 VALUES (509990, 504, 509994, now(), null, null, 1, null, '509991');
 
+-- list items - list 509991 - starter list
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (509991, 295, 50999321, now(), null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (509991, 296, 50999322, now(), null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (509991, 307, 50999323, now(), null, null, 1, null, null);
 
 -- list items - four items, for active list - id 501,502,503,500
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,

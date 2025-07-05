@@ -91,12 +91,13 @@ public final class TestConstants {
     public static final Long TARGET_SLOT_1_ID = 508L;
     public static final Long TAG_EASE_OF_PREP = 399L;
     public static final Long DISH_1_ID = 1L; // Israeli Couscous
-    public static final Long DISH_2_ID = 109L; // Israeli Couscous
+    public static final Long DISH_2_ID = 109L; // stir fry
     public static final Long DISH_3_ID = 54L; // Beef Broccoli
     public static final Long DISH_4_ID = 503L; // dummy dish, test only
     public static final Long DISH_5_ID = 62L;   // Fish Tacos
     public static final Long DISH_6_ID = 603L; // for testing increment rating
     public static final Long DISH_7_ID = 500L; // dish belongs to user 1
+    public static final Long DISH_8_ID = 45L; // broccoli and carrots
 
     public static final Long TARGET_3_SLOT_ID = 506L;
 

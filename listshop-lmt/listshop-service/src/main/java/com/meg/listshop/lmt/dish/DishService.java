@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.dish;
 
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 
@@ -30,9 +31,13 @@ public interface DishService {
 
     List<DishEntity> getDishes(String userName, List<Long> dishIds);
 
+    List<DishItemEntity> getDishItems(Long userId, List<Long> dishIds);
+
     Map<Long, DishEntity> getDictionaryForIdList(List<Long> dishIds);
 
     void updateLastAddedForDish(Long dishId);
+
+    void updateLastAddedForDishes(List<Long> dishIds);
 
     List<DishEntity> getDishesToAutotag(Long statusFlag, int dishLimit);
 

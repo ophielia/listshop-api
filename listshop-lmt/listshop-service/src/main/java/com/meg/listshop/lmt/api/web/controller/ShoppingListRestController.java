@@ -284,15 +284,16 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @PostMapping(value = "/{listId}/dish", produces = "application/json")
-    public ResponseEntity<Object> addDishesToList(Authentication authentication, @PathVariable Long listId, @RequestBody ListAddProperties listAddProperties) {
+    public ResponseEntity<Object> addDishesToList(Authentication authentication, @PathVariable Long listId,
+                                                  @RequestBody ListAddProperties listAddProperties) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Adding dishes to list for user [%S]", userDetails.getId());
         logger.info(message);
 
         try {
             shoppingListService.addDishesToList(userDetails.getId(), listId, listAddProperties);
-        } catch (ShoppingListException e) {
-            logger.error("Exception while creating List.", e);
+        } catch (ShoppingListException | ItemProcessingException e) {
+            logger.error("Exception while adding dishes to list [{}].", listId, e);
             return ResponseEntity.badRequest().build();
         }
 

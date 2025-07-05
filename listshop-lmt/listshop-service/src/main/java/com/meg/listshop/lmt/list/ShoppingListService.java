@@ -15,6 +15,8 @@ public interface ShoppingListService {
 
     List<ShoppingListEntity> getListsByUserId(Long userId);
 
+    void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException, ItemProcessingException;
+
     ShoppingListEntity generateListForUser(Long userId, ListGenerateProperties listGeneratProperties) throws ShoppingListException;
 
     ShoppingListEntity getStarterList(Long userId);
@@ -60,8 +62,6 @@ public interface ShoppingListService {
     MergeResult mergeFromClient(Long userId, MergeRequest mergeRequest);
 
     void addListToList(Long userId, Long listId, Long fromListId);
-
-    void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException;
 
     void addToListFromMealPlan(Long userId, Long listId, Long mealPlanId);
 
