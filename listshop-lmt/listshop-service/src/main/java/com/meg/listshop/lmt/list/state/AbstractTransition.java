@@ -21,28 +21,6 @@ public abstract class AbstractTransition implements StateTransition {
         this.listItemDetailRepository = listItemDetailRepository;
     }
 
-    protected ListItemDetailEntity createDetailForItem(ListItemEntity item, @NotNull ItemStateContext context) {
-        ListItemDetailEntity newDetail = new ListItemDetailEntity();
-        newDetail.setItem(item);
-        newDetail.setLinkedDishId(context.getDishId());
-        newDetail.setLinkedListId(context.getListId());
-        newDetail.setCount(1);
-        DishItemEntity dishItem = context.getDishItem();
-        if (dishItem != null) {
-            newDetail.setOriginalFractionalQuantity(dishItem.getFractionalQuantity());
-            newDetail.setOriginalQuantity(dishItem.getQuantity());
-            newDetail.setOriginalUnitId(dishItem.getUnitId());
-            newDetail.setOriginalWholeQuantity(dishItem.getWholeQuantity());
-            newDetail.setMarker(dishItem.getMarker());
-            newDetail.setUnitSize(dishItem.getUnitSize());
-            newDetail.setRawEntry(dishItem.getRawEntry());
-        }
-
-        ListItemDetailEntity savedDetail = listItemDetailRepository.save(newDetail);
-
-        return savedDetail;
-    }
-
     protected ListItemEntity getOrCreateItem(ItemStateContext context) throws ProcessingException {
         if (context.getTargetItem() != null) {
             return context.getTargetItem();
@@ -58,10 +36,11 @@ public abstract class AbstractTransition implements StateTransition {
         return listItemRepository.save(item);
     }
 
-    protected boolean bothNullOrEqual(Long id1, Long id2) {
-        if (id1 == null && id2 == null) {
-            return true;
-        }
-        return id1 != null && id2 != null && id1.equals(id2);
+
+    static int getDetailCount(ListItemEntity item) {
+       if (item == null || item.getDetails() == null || item.getDetails().isEmpty()) {
+           return 0;
+       }
+       return item.getDetails().size();
     }
 }

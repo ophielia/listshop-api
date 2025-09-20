@@ -79,4 +79,8 @@ public class ItemStateContext {
         }
         return null;
     }
+
+    public void setDishId(Long dishId) {
+        this.dishId = dishId;
+    }
 }
