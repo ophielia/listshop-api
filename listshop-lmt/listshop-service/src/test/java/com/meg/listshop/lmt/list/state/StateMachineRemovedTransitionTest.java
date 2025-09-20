@@ -74,21 +74,16 @@ public class StateMachineRemovedTransitionTest {
         ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
 
         // test context
-        ItemStateContext testContext = new ItemStateContext(null, listId);
+        ItemStateContext testContext = new ItemStateContext(testItem, listId);
         testContext.setTag(tagEntity);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, testContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext);
 
         // we expect that the result has the correct dates
         verifyDates(result);
         dateInLastSecond(result.getAddedOn());
         dateInLastSecond(result.getUpdatedOn());
-        // and that the result contains 1 detail, without dish_id or list_id
-        Assertions.assertNotNull(result.getDetails());
-        Assertions.assertEquals(1, result.getDetails().size());
-        ListItemDetailEntity detail = result.getDetails().get(0);
-        Assertions.assertNull(detail.getLinkedDishId());
-        Assertions.assertEquals(listId,detail.getLinkedListId());
+
     }
 
 
@@ -141,9 +136,8 @@ public class StateMachineRemovedTransitionTest {
     }
 
     private void verifyDates(ListItemEntity result) {
-        Assertions.assertNull(result.getRemovedOn());
+        Assertions.assertNotNull(result.getRemovedOn());
         Assertions.assertNotNull(result.getUpdatedOn());
-        Assertions.assertNotNull(result.getAddedOn());
     }
 
     private void dateInLastSecond(Date toCheck) {
