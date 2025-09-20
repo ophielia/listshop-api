@@ -470,7 +470,7 @@ public class StateMachineActiveTransitionTest {
         existing.setAddedOn(calculateYesterday());
         targetList.getItems().add(existing);
 
-        // adding an item from a dish - item exists with tag, but it's been removed
+        // adding an item from a dish - item exists with tag, so we have an overlap
         ItemStateContext itemStateContext = new ItemStateContext(existing, listId);
         itemStateContext.setDishItem(dishItem);
 
