@@ -107,7 +107,7 @@ public class ActiveTransition extends AbstractTransition {
             return candidates;
         }
         ListItemDetailEntity newDetail = new ListItemDetailEntity();
-        newDetail.setLinkedListId(context.getListId());
+        newDetail.setLinkedListId(context.getTargetListId());
         newDetail.setLinkedDishId(context.getDishId());
         newDetail.setCount(1);
         DishItemEntity dishItem = context.getDishItem();

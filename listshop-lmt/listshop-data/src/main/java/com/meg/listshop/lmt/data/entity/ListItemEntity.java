@@ -211,4 +211,11 @@ public class ListItemEntity {
     public void addDetailToItem(ListItemDetailEntity detail) {
         details.add(detail);
     }
+
+    public  int getDetailCount() {
+        if (getDetails() == null || getDetails().isEmpty()) {
+            return 0;
+        }
+        return getDetails().size();
+    }
 }

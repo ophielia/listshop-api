@@ -928,18 +928,56 @@ public class ShoppingListRestControllerTest {
     @WithMockUser
     public void testRemoveDishFromList() throws Exception {
         Long listId = TestConstants.LIST_1_ID;
-        String url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_1_ID;
-        mockMvc.perform(delete(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNotFound());  // bad request, because user doesn't own this dish
+        String dish1Id = "66500";
+        String dish2Id = "66501";
+        String targetTagId = "1";
 
-        listId = TestConstants.LIST_1_ID;
-        url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_7_ID;
+        // add dish 66500 - contains tag id 1
+        String url = "/shoppinglist/" + listId + "/dish/" + dish1Id;
+        mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType))
+                .andExpect(status().isNoContent());
+
+        // add dish 66501, contains tag id 1
+        url = "/shoppinglist/" + listId + "/dish/" + dish2Id;
+        mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType))
+                .andExpect(status().isNoContent());
+
+        // affirm list has tag_id 1 2 times (tag_id 1 is green chili)
+        ShoppingList result = retrieveList(userDetails, listId);
+        // affirm we have tag id 1 there - in Category Dry, with id 1
+        ShoppingListItem resultItem = result.getCategories().stream().flatMap(c -> c.getItems().stream())
+                        .filter(item -> item.getTag().getId().equals(targetTagId))
+                                .findFirst().orElse(null);
+        Assert.assertNotNull(resultItem);
+        Assert.assertTrue(resultItem.getSourceKeys().contains("d" + dish1Id));
+        Assert.assertTrue(resultItem.getSourceKeys().contains("d" + dish2Id));
+        Assert.assertEquals(Integer.valueOf(2), resultItem.getUsedCount());
+
+        //MM check used count 0 here!!
+       // Assert.assertTrue(resultItem.getUsedCount().equals(2L));
+
+        // the remove test
+        // remove dish 66500 (dish1Id)
+        url = "/shoppinglist/" + listId + "/dish/" + dish1Id;
         mockMvc.perform(delete(url)
                         .with(user(userDetails))
                         .contentType(contentType))
-                .andExpect(status().isNoContent());  // this one is successful
+                .andExpect(status().isNoContent());
+
+        // assert list has tag_id 1 1 time
+        result = retrieveList(userDetails, listId);
+        // affirm we have tag id 1 there - in Category Dry, with id 1
+        resultItem = result.getCategories().stream().flatMap(c -> c.getItems().stream())
+                .filter(item -> item.getTag().getId().equals(targetTagId))
+                .findFirst().orElse(null);
+        Assert.assertNotNull(resultItem);
+        Assert.assertFalse(resultItem.getSourceKeys().contains("d" + dish1Id));
+        Assert.assertTrue(resultItem.getSourceKeys().contains("d" + dish2Id));
+        Assert.assertEquals(Integer.valueOf(1), resultItem.getUsedCount());
     }
 
     @Test
@@ -1138,7 +1176,7 @@ public class ShoppingListRestControllerTest {
         Assert.assertTrue(destinationResultMap.containsKey("500"));
         ShoppingListItem testElement = destinationResultMap.get("500");
         Assert.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
-        Assert.assertNotNull(testElement.getCrossedOff());
+        Assert.assertNull(testElement.getCrossedOff());  // when item is moved, it loses it's crossed off status
         // 502 should be there with a count of 2
         testElement = destinationResultMap.get("502");
         Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
@@ -1328,18 +1366,9 @@ public class ShoppingListRestControllerTest {
         properties.setGenerateMealplan(false);
 
         String jsonProperties = json(properties);
+        String listId = createList(jsonProperties,meUserDetails);
 
         String url = "/shoppinglist";
-
-        MvcResult createResult = this.mockMvc.perform(post(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isCreated())
-                .andReturn();
-        String locationString = createResult.getResponse().getHeader("Location");
-        String listId = locationString.substring(locationString.lastIndexOf("/") + 1);
-
         MvcResult listResultBefore = this.mockMvc.perform(get(url + "/" + listId)
                         .with(user(meUserDetails)))
                 .andReturn();

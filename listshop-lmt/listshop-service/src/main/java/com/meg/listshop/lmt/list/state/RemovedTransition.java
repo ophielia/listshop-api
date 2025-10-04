@@ -32,14 +32,18 @@ public class RemovedTransition extends AbstractTransition {
             removeItemLogically(targetItem);
             return listItemRepository.save(targetItem);
         }
+        int startCount = targetItem.getDetailCount();
         // just remove detail of dish or list
         removeDishOrListDetails(targetItem, itemStateContext.getDishId(), itemStateContext.getListId());
 
-        if (RemovedTransition.getDetailCount(targetItem) == 0) {
+        if (targetItem.getDetailCount() == 0) {
             removeItemLogically(targetItem);
         }
 
-        return listItemRepository.save(targetItem);
+        if (startCount != targetItem.getDetailCount()) {
+            return listItemRepository.save(targetItem);
+        }
+        return targetItem;
     }
 
     private void removeDishOrListDetails(ListItemEntity targetItem, Long dishId, Long listId) {
@@ -56,7 +60,6 @@ public class RemovedTransition extends AbstractTransition {
         });
         listItemDetailRepository.deleteAll(toRemove);
         targetItem.setDetails(toKeep);
-        toRemove.addAll(targetItem.getDetails());
     }
 
     private void removeItemLogically(ListItemEntity itemToRemove) {

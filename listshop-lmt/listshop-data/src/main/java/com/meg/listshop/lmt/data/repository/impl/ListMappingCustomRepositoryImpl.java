@@ -96,6 +96,7 @@ public class ListMappingCustomRepositoryImpl implements ListMappingCustomReposit
                 .unitId(listItemDetailEntity.getUnitId())
                 .marker(listItemDetailEntity.getMarker())
                 .unitSize(listItemDetailEntity.getUnitSize())
+                .withCount(Math.max(listItemDetailEntity.getCount(), 1))
                 .amountDisplay(listItemDetailEntity.getRawEntry());
     }
 

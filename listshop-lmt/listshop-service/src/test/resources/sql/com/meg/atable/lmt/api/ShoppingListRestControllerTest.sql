@@ -157,6 +157,15 @@ INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text
                       list_sources)
 VALUES (7777, 505, 707711, '2019-07-12', '2019-07-12', null, 1, null, null);
 
+insert into list_item_details
+(item_detail_id, item_id, linked_list_id, used_count)
+values (7077110, 70770, 7777, 1),
+       (7077111, 70771, 7777, 1),
+       (707711112, 707711, 7777, 1),
+       (7077112, 70772, 7777, 1),
+       (7077113, 70773, 7777, 1);
+
+
 -- operation list items, source - three items- id 500,501,502
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
@@ -183,6 +192,13 @@ VALUES (6666, 503, 60662, '2019-07-12', null, null, 1, null, null);
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
 VALUES (6666, 505, 60663, '2019-07-12', null, null, 1, null, null);
+
+insert into list_item_details
+    (item_detail_id, item_id, linked_list_id, used_count)
+values (6066110, 60660, 6666, 1),
+       (6066111, 60661, 6666, 1),
+       (6066112, 60662, 6666, 1),
+       (6066113, 60663, 6666, 1);
 -- test with 501, 503, 504
 
 -- test add to list from meal plan
@@ -198,6 +214,18 @@ VALUES (51000, 1, 510002, now(), null, null, 1, null, null);
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
 VALUES (51000, 12, 510003, now(), null, null, 1, null, null);
+
+
+insert into list_item_details
+(item_detail_id, item_id, linked_dish_id, used_count)
+values (51000111, 510001, null, 1);
+insert into list_item_details
+(item_detail_id, item_id, linked_dish_id, used_count)
+values (51000112, 510002, null, 1);
+insert into list_item_details
+(item_detail_id, item_id, linked_dish_id, used_count)
+values (51000113, 510003, null, 1);
+
 -- meal plan with 2 dishes
 -- contained in meal plan are tags 502, 503, and 510
 -- dishes

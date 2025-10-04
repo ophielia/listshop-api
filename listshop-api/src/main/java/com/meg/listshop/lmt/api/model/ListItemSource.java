@@ -30,7 +30,8 @@ public class ListItemSource {
     private String marker;
     @JsonIgnore
     private String unitSize;
-
+    @JsonIgnore
+    private Integer count;
 
     public ListItemSource() {
     }
@@ -116,6 +117,15 @@ public class ListItemSource {
 
     public ListItemSource unitSize(String unitSize) {
         this.unitSize = unitSize;
+        return this;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public ListItemSource withCount(Integer count) {
+        this.count = count;
         return this;
     }
 }

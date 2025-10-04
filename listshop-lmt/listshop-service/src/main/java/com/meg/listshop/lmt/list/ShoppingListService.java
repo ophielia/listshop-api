@@ -31,11 +31,11 @@ public interface ShoppingListService {
 
     ShoppingListEntity updateList(Long userId, Long listId, ShoppingListEntity updateFrom);
 
-    void performItemOperation(Long userId, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId);
+    void performItemOperation(Long userId, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId) throws ItemProcessingException;
 
     void deleteItemFromList(Long userId, Long listId, Long itemId, Boolean removeEntireItem, Long dishSourceId);
 
-    ShoppingListEntity generateListFromMealPlan(Long userId, Long mealPlanId);
+    ShoppingListEntity generateListFromMealPlan(Long userId, Long mealPlanId) throws ShoppingListException, ItemProcessingException;
 
     List<ShoppingListCategory> categorizeList(ShoppingListEntity shoppingListEntity);
 
@@ -45,7 +45,7 @@ public interface ShoppingListService {
 
     void changeListLayout(Long userId, Long listId, Long layoutId);
 
-    void removeDishFromList(Long userId, Long listId, Long dishId);
+    void removeDishFromList(Long userId, Long listId, Long dishId) throws ItemProcessingException;
 
     void removeListItemsFromList(Long userId, Long listId, Long fromListId);
 
@@ -61,9 +61,9 @@ public interface ShoppingListService {
     // last modified item.
     MergeResult mergeFromClient(Long userId, MergeRequest mergeRequest);
 
-    void addListToList(Long userId, Long listId, Long fromListId);
+    void addListToList(Long userId, Long listId, Long fromListId) throws ItemProcessingException;
 
-    void addToListFromMealPlan(Long userId, Long listId, Long mealPlanId);
+    void addToListFromMealPlan(Long userId, Long listId, Long mealPlanId) throws ShoppingListException, ItemProcessingException;
 
     void addItemToListByTag(Long userId, Long listId, Long tagId) throws ItemProcessingException;
 

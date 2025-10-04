@@ -82,7 +82,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<Object> addDishToList(Authentication principal, @PathVariable Long listId, @PathVariable Long dishId);
 
     @DeleteMapping(value = "/{listId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> removeDishFromList(Authentication principal, @PathVariable Long listId, @PathVariable Long dishId);
+    ResponseEntity<Object> removeDishFromList(Authentication principal, @PathVariable Long listId, @PathVariable Long dishId) ;
 
     @PostMapping(value = "/{listId}/list/{fromListId}", produces = "application/json")
     ResponseEntity<Object> addToListFromList(Authentication principal, @PathVariable Long listId, @PathVariable Long fromListId);

@@ -16,7 +16,6 @@ public class ItemStateContext {
     public ItemStateContext(ListItemEntity targetItem, Long targetListId) {
         this.targetItem = targetItem;
         this.targetListId = targetListId;
-        this.listId = targetListId;
     }
 
     public ListItemEntity getTargetItem() {

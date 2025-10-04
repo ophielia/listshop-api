@@ -37,10 +37,4 @@ public abstract class AbstractTransition implements StateTransition {
     }
 
 
-    static int getDetailCount(ListItemEntity item) {
-       if (item == null || item.getDetails() == null || item.getDetails().isEmpty()) {
-           return 0;
-       }
-       return item.getDetails().size();
-    }
 }

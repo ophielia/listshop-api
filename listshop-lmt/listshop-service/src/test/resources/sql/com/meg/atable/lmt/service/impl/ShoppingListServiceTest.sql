@@ -49,3 +49,14 @@ list_id, tag_id, item_id, added_on, crossed_off, removed_on, updated_on, free_te
 INSERT INTO list_item(
 list_id, tag_id, item_id, added_on, crossed_off, removed_on, updated_on, free_text, used_count, dish_sources, list_sources)
 VALUES (50002, 55, 50008, now() - interval '4 day', null , null, now() - interval '3 day', null, 1, null, null);
+
+
+-- list items to single detail - no sources
+insert into list_item_details (item_detail_id, item_id, linked_list_id, used_count)
+select nextval('list_item_detail_sequence')                     as item_detail_id,
+       item_id,
+       list_id,
+       1 as used_count
+from list_item
+where list_sources is  null and dish_sources is null
+and list_id = 5000;

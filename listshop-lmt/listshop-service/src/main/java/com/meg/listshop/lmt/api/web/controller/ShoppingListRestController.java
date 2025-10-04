@@ -2,7 +2,6 @@ package com.meg.listshop.lmt.api.web.controller;
 
 import com.google.common.base.Enums;
 import com.meg.listshop.auth.service.CustomUserDetails;
-
 import com.meg.listshop.lmt.api.controller.ShoppingListRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
@@ -10,6 +9,7 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.list.ShoppingListException;
 import com.meg.listshop.lmt.list.ShoppingListService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -144,7 +143,14 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         // make service call
         Long destinationListId = itemOperation.getDestinationListId();
         List<Long> tagIdsForUpdate = itemOperation.getTagIds();
-        shoppingListService.performItemOperation(userDetails.getId(), listId, operationType, tagIdsForUpdate, destinationListId);
+
+        try {
+            shoppingListService.performItemOperation(userDetails.getId(), listId, operationType, tagIdsForUpdate, destinationListId);
+        } catch (ItemProcessingException e) {
+            logger.error("Exception while performing item operations on list [{}]..", listId, e);
+            return ResponseEntity.internalServerError().build();
+        }
+
         // return
         return ResponseEntity.ok().build();
     }
@@ -266,7 +272,13 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication authentication, @PathVariable Long mealPlanId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Generating list from mealplan [{}] for user [{}]", mealPlanId, userDetails.getId());
-        ShoppingListEntity shoppingListEntity = this.shoppingListService.generateListFromMealPlan(userDetails.getId(), mealPlanId);
+        ShoppingListEntity shoppingListEntity = null;
+        try {
+            shoppingListEntity = this.shoppingListService.generateListFromMealPlan(userDetails.getId(), mealPlanId);
+        } catch (ShoppingListException  | ItemProcessingException e) {
+            logger.error("Exception while adding dishes to new list from mealplan [{}].", mealPlanId, e);
+            return ResponseEntity.internalServerError().build();
+        }
         if (shoppingListEntity != null) {
             ShoppingListResource resource = new ShoppingListResource(ModelMapper.toModel(shoppingListEntity, null));
             String link = resource.selfLink(request, resource).toString();
@@ -279,7 +291,12 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<Object> addToListFromMealPlan(Authentication authentication, @PathVariable Long listId, @PathVariable Long mealPlanId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding to list [{}] from meal plan [{}] for user [{}]", listId, mealPlanId, userDetails.getId());
-        this.shoppingListService.addToListFromMealPlan(userDetails.getId(), listId, mealPlanId);
+        try {
+            this.shoppingListService.addToListFromMealPlan(userDetails.getId(), listId, mealPlanId);
+        } catch (ShoppingListException | ItemProcessingException e) {
+            logger.error("Exception while adding mealplan [{}] to list [{}] for user [{}].", mealPlanId, listId, userDetails.getId(), e);
+            return ResponseEntity.internalServerError().build();
+        }
         return ResponseEntity.noContent().build();
     }
 
@@ -294,7 +311,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             shoppingListService.addDishesToList(userDetails.getId(), listId, listAddProperties);
         } catch (ShoppingListException | ItemProcessingException e) {
             logger.error("Exception while adding dishes to list [{}].", listId, e);
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.internalServerError().build();
         }
 
         return ResponseEntity.ok().build();
@@ -307,7 +324,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         logger.info("Adding dish [{}] to list [{}] for user [{}]", dishId, listId, userDetails.getId());
         try {
             this.shoppingListService.addDishToList(userDetails.getId(), listId, dishId);
-        } catch (ShoppingListException | ItemProcessingException s ) {
+        } catch (ShoppingListException | ItemProcessingException s) {
             logger.error("Unable to add Dish [{}] to List [{}]", dishId, listId, s);
             return ResponseEntity.badRequest().build();
         }
@@ -319,7 +336,14 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<Object> removeDishFromList(Authentication authentication, @PathVariable Long listId, @PathVariable Long dishId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Removing dish [{}] from list [{}] for user [{}]", dishId, listId, userDetails.getId());
-        this.shoppingListService.removeDishFromList(userDetails.getId(), listId, dishId);
+
+
+        try {
+            this.shoppingListService.removeDishFromList(userDetails.getId(), listId, dishId);
+        } catch (ItemProcessingException e) {
+            logger.error("Exception while removing dish [{}] from list [{}].", dishId, listId, e);
+            return ResponseEntity.badRequest().build();
+        }
 
         return ResponseEntity.noContent().build();
     }
@@ -329,7 +353,13 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<Object> addToListFromList(Authentication authentication, @PathVariable Long listId, @PathVariable Long fromListId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding list [{}] to list [{}] for user [{}]", fromListId, listId, userDetails.getId());
-        this.shoppingListService.addListToList(userDetails.getId(), listId, fromListId);
+
+        try {
+            this.shoppingListService.addListToList(userDetails.getId(), listId, fromListId);
+        } catch (ItemProcessingException e) {
+            logger.error("Exception while adding dishes to list [{}] from list [{}].", listId, fromListId, e);
+            return ResponseEntity.badRequest().build();
+        }
 
         return ResponseEntity.noContent().build();
     }

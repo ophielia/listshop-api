@@ -54,31 +54,6 @@ public class CampaignServiceImpl implements CampaignService {
 
     }
 
-    public void addCampaignEmailLegacy(String campaign, String email) {
-        logger.info("Beginning Add Campaign Email: campaign[{}]", campaign);
-
-        if (!StringTools.isEmail(email)) {
-            logger.info("Not adding email - email does not appear to be valid[{}]", email);
-            return;
-        }
-        // if entry already exists, return
-        CampaignEntity existing = campaignRepository.findByEmailAndCampaign(email, campaign);
-        if (existing != null) {
-            logger.info("Not adding email - since it already exists [{}]", email.substring(0, 4));
-            return;
-        }
-        // create entry
-        CampaignEntity newEntity = new CampaignEntity(campaign, email);
-        newEntity = campaignRepository.save(newEntity);
-
-        // send notification email or log
-        if (logOnly) {
-            logger.info("Logging request for beta info [{}]", campaign);
-        }
-        sendEmail(email, "", "");  // not real
-
-    }
-
     private void sendEmail(String email, String campaign, String text) {
         var contentEmailAddress = StringTools.fillIfEmpty(email, "---");
         // send email
