@@ -10,6 +10,7 @@ import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.lmt.data.repository.ListItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
+import com.meg.listshop.lmt.service.ServiceTestUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -27,7 +28,7 @@ import java.util.Date;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-public class StateMachineCrossedOffTransitionTest {
+public class StateMachineCrossedOffTransitionTest    {
 
     @ClassRule
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
@@ -47,7 +48,7 @@ public class StateMachineCrossedOffTransitionTest {
     private ListItemRepository listItemRepository;
 
     @Test
-    public void testCrossOffByTag() throws ItemProcessingException {
+    public void testCrossOff() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
 
         Long listId = targetList.getId();
@@ -59,11 +60,33 @@ public class StateMachineCrossedOffTransitionTest {
 
         // test context
         ItemStateContext testContext = new ItemStateContext(testItem, listId);
-
+        testContext.setCrossedOff(true);
         ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.CROSS_OFF_ITEM, testContext);
 
         // we expect that the result has the correct dates
         verifyCrossedOffAndUpdated(result);
+
+
+    }
+
+    @Test
+    public void testUncrossOff() throws ItemProcessingException {
+        ShoppingListEntity targetList = createShoppingList();
+
+        Long listId = targetList.getId();
+        // setup - adding a simple list item from a tag - no relation to other list or dish
+        TagEntity tagEntity = createTag();
+        ItemStateContext setupContext = new ItemStateContext(null, listId);
+        setupContext.setTag(tagEntity);
+        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+
+        // test context
+        ItemStateContext testContext = new ItemStateContext(testItem, listId);
+        testContext.setCrossedOff(false);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.CROSS_OFF_ITEM, testContext);
+
+        // we expect that the result has the correct dates
+        verifyNotCrossedOffButUpdated(result);
 
 
     }
@@ -87,18 +110,16 @@ public class StateMachineCrossedOffTransitionTest {
 
     private void verifyCrossedOffAndUpdated(ListItemEntity result) {
         Assertions.assertNotNull(result.getUpdatedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         Assertions.assertNotNull(result.getCrossedOff());
-        dateInLastSecond(result.getCrossedOff());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getCrossedOff(),2));
+    }
+    private void verifyNotCrossedOffButUpdated(ListItemEntity result) {
+        Assertions.assertNotNull(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertNull(result.getCrossedOff());
     }
 
 
-    private void dateInLastSecond(Date toCheck) {
-        LocalDateTime oneSecondAgo = LocalDateTime.now().minusSeconds(1);
-        LocalDateTime timeToCheck = LocalDateTime.ofInstant(toCheck.toInstant(), ZoneId.systemDefault());
-        System.out.println(oneSecondAgo);
-        System.out.println(timeToCheck);
-        Assertions.assertTrue(timeToCheck.isAfter(oneSecondAgo));
 
-    }
 }

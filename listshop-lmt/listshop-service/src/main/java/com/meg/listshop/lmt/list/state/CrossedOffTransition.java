@@ -24,8 +24,9 @@ public class CrossedOffTransition  extends AbstractTransition {
     public ListItemEntity transitionToState(ListItemEvent listItemEvent, ItemStateContext itemStateContext) {
         ListItemEntity item = getOrCreateItem(itemStateContext);
 
+        Date crossedOffDate = itemStateContext.isCrossedOff() ? new Date() : null;
         // set crossed off
-        item.setCrossedOff(new Date());
+        item.setCrossedOff(crossedOffDate);
 
         // set update date
         item.setUpdatedOn(new Date());

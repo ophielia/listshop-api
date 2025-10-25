@@ -6,7 +6,10 @@ import com.meg.listshop.lmt.api.model.RatingInfo;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
+import org.junit.jupiter.api.Assertions;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -141,5 +144,14 @@ public class ServiceTestUtils {
 
     public static RatingUpdateInfo buildDummyRatingUpdateInfo() {
         return new RatingUpdateInfo(Collections.emptySet(), Collections.emptySet());
+    }
+
+    public static boolean dateInLastXSeconds(Date toCheck, int secondCount) {
+        LocalDateTime oneSecondAgo = LocalDateTime.now().minusSeconds(secondCount);
+        LocalDateTime timeToCheck = LocalDateTime.ofInstant(toCheck.toInstant(), ZoneId.systemDefault());
+        System.out.println(oneSecondAgo);
+        System.out.println(timeToCheck);
+         return timeToCheck.isAfter(oneSecondAgo);
+
     }
 }

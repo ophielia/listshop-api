@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.Application;
-import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
@@ -14,11 +13,10 @@ import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.lmt.data.repository.ListItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import org.junit.Before;
+import com.meg.listshop.lmt.service.ServiceTestUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,10 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 
 @RunWith(SpringRunner.class)
@@ -82,8 +77,8 @@ public class StateMachineActiveTransitionTest {
 
         // we expect that the result has the correct dates
         verifyDates(result);
-        dateInLastSecond(result.getAddedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         // and that the result contains 1 detail, without dish_id or list_id
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
@@ -109,8 +104,8 @@ public class StateMachineActiveTransitionTest {
 
         // we expect correct dates
         verifyDates(result);
-        dateInLastSecond(result.getAddedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         // we expect 1 detail, with the dish id set
         // and no quantities
         Assertions.assertNotNull(result.getDetails());
@@ -144,8 +139,8 @@ public class StateMachineActiveTransitionTest {
 
         // we expect correct dates
         verifyDates(result);
-        dateInLastSecond(result.getAddedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
 
         // we expect 1 detail, with the dish id set
         // and  quantities
@@ -183,8 +178,8 @@ public class StateMachineActiveTransitionTest {
 
         // we expect correct dates
         verifyDates(result);
-        dateInLastSecond(result.getAddedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         // we expect 1 detail, with the list id set
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
@@ -224,8 +219,8 @@ public class StateMachineActiveTransitionTest {
 
         // we expect correct dates
         verifyDates(result);
-        dateInLastSecond(result.getAddedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         // we expect 1 detail, with the list id set and the dish id set
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
@@ -279,8 +274,8 @@ public class StateMachineActiveTransitionTest {
 
         // we expect correct dates
         verifyDates(result);
-        dateInLastSecond(result.getAddedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         // we expect 2 details
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(2, result.getDetails().size());
@@ -336,7 +331,7 @@ public class StateMachineActiveTransitionTest {
         // we expect that the result has the correct dates
         verifyDates(result);
         Assertions.assertEquals(addedOn, result.getAddedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         // and that the result contains 1 detail, with dish_id and list_id, and a count of 1
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
@@ -372,7 +367,7 @@ public class StateMachineActiveTransitionTest {
         // we expect that the result has the correct dates
         verifyDates(result);
         Assertions.assertEquals(addedOn, result.getAddedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         // and that the result contains 1 detail, with dish_id and list_id, and a count of 1
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(2, result.getDetails().size());
@@ -411,7 +406,7 @@ public class StateMachineActiveTransitionTest {
         // we expect that the result has the correct dates
         verifyDates(result);
         Assertions.assertEquals(addedOn, result.getAddedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         // and that the result contains 1 detail, with dish_id and list_id, and a count of 1
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(2, result.getDetails().size());
@@ -446,7 +441,7 @@ public class StateMachineActiveTransitionTest {
         // we expect that the result has the correct dates
         verifyDates(result);
         Assertions.assertEquals(addedOn, result.getAddedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         // and that the result contains 1 detail, with dish_id and list_id, and a count of 2
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
@@ -479,7 +474,7 @@ public class StateMachineActiveTransitionTest {
         // we expect that the result has the correct dates
         verifyDates(result);
         Assertions.assertEquals(addedOn, result.getAddedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         // and that the result contains 1 detail, with dish_id and list_id, and a count of 1
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
@@ -517,7 +512,7 @@ public class StateMachineActiveTransitionTest {
         // we expect that the result has the correct dates
         verifyDates(result);
         Assertions.assertEquals(addedOn, result.getAddedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         // and that the result contains 1 detail, with dish_id and list_id, and a count of 2
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
@@ -583,8 +578,8 @@ public class StateMachineActiveTransitionTest {
         Assertions.assertNotNull(result.getAddedOn());
     }
 
-    private void dateInLastSecond(Date toCheck) {
-        LocalDateTime oneSecondAgo = LocalDateTime.now().minusSeconds(1);
+    private void dateInLastTwoSeconds(Date toCheck) {
+        LocalDateTime oneSecondAgo = LocalDateTime.now().minusSeconds(2);
         LocalDateTime timeToCheck = LocalDateTime.ofInstant(toCheck.toInstant(), ZoneId.systemDefault());
         System.out.println(oneSecondAgo);
         System.out.println(timeToCheck);

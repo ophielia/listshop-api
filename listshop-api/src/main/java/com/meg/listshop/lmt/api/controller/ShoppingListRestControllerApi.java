@@ -60,11 +60,11 @@ public interface ShoppingListRestControllerApi {
     @PostMapping(value = "/{listId}/item/shop/{itemId}", produces = "application/json")
     ResponseEntity<Object> setCrossedOffForItem(Authentication principal, @PathVariable Long listId, @PathVariable Long itemId,
                                                 @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff
-    );
+    ) throws ItemProcessingException;
 
     @PostMapping(value = "/{listId}/item/shop", produces = "application/json")
     ResponseEntity<Object> crossOffAllItemsOnList(Authentication principal, @PathVariable Long listId,
-                                                  @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff);
+                                                  @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff) throws ItemProcessingException;
 
     @DeleteMapping(value = "/{listId}/item", produces = "application/json")
     ResponseEntity<Object> deleteAllItemsFromList(Authentication principal, @PathVariable Long listId);

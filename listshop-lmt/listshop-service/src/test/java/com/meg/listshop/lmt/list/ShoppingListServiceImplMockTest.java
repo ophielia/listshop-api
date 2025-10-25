@@ -24,12 +24,9 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.MockSettings;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -324,7 +321,7 @@ public class ShoppingListServiceImplMockTest {
         shoppingListService.addItemToListByTag(userId, listId, tagId);
 
         Mockito.verify(itemChangeRepository, times(1)).saveItemChangeStatistics(any(ShoppingListEntity.class),
-           any(List.class), any(Long.class), any(ListOperationType.class));
+                any(List.class), any(Long.class), any(ListOperationType.class));
         Mockito.verify(shoppingListRepository, times(1)).save(listCapture.capture());
 
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
@@ -385,7 +382,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testDeleteAllItemsFromList() {
+    public void testDeleteAllItemsFromList() throws ItemProcessingException {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -425,7 +422,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testDeleteAllItemsFromList_ListNotFound() {
+    public void testDeleteAllItemsFromList_ListNotFound() throws ItemProcessingException {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -473,7 +470,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testCrossOffAllItems() {
+    public void testCrossOffAllItems() throws ItemProcessingException {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -504,12 +501,10 @@ public class ShoppingListServiceImplMockTest {
         List<ListItemEntity> updatedItems = crossedOffItems.getValue();
         Assert.assertNotNull(updatedItems);
         Assert.assertEquals("should be three items", 3, updatedItems.size());
-        Assert.assertTrue("nothing uncrossed off should be found",
-                updatedItems.stream().noneMatch(i -> i.getCrossedOff() == null));
     }
 
     @Test
-    public void testUpdateItemCrossedOff() {
+    public void testUpdateItemCrossedOff() throws ItemProcessingException {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -524,28 +519,27 @@ public class ShoppingListServiceImplMockTest {
         item.setListId(listId);
 
         List<ListItemEntity> items = new ArrayList<>();
+        items.add(item);
         items.add(ServiceTestUtils.buildItem(1L, new TagEntity(11L), listId));
         items.add(ServiceTestUtils.buildItem(2L, new TagEntity(22L), listId));
         items.add(ServiceTestUtils.buildItem(3L, new TagEntity(33L), listId));
         shoppingList.setItems(items);
+        ItemStateContext context = new ItemStateContext(item, listId);
+        context.setCrossedOff(true);
 
         ArgumentCaptor<ListItemEntity> itemCapture = ArgumentCaptor.forClass(ListItemEntity.class);
 
 
         Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
-        Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-
+        Mockito.when(listItemStateMachine.handleEvent(eq(ListItemEvent.CROSS_OFF_ITEM), any(ItemStateContext.class)))
+                .thenReturn(item);
         // test call
         shoppingListService.updateItemCrossedOff(userId, listId, itemId, true);
 
-
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
-        Mockito.verify(itemRepository, times(1)).save(itemCapture.capture());
         Mockito.verify(shoppingListRepository, times(1)).save(any(ShoppingListEntity.class));
 
         // Assertions
-        ListItemEntity resultItem = itemCapture.getValue();
-        Assert.assertNotNull(resultItem);
         Assert.assertEquals(item.getCrossedOff(), item.getUpdatedOn());
 
     }
@@ -653,7 +647,7 @@ public class ShoppingListServiceImplMockTest {
     // removeListItemsFromList
 
     @Test
-    public void testCreateList_duplicateName() throws ShoppingListException {
+    public void testCreateList_duplicateName() throws ShoppingListException, ItemProcessingException {
         Long userId = 99L;
         String userName = "userName";
         String listName = "ShoppingList";
@@ -874,7 +868,7 @@ public class ShoppingListServiceImplMockTest {
         DishItemEntity d2Item4 = ServiceTestUtils.buildDishItemFromTag(44L, dish2, tag4);
         DishItemEntity d2Item5 = ServiceTestUtils.buildDishItemFromTag(55L, dish2, tag5);
         DishItemEntity d2Item6 = ServiceTestUtils.buildDishItemFromTag(66L, dish2, tag6);
-        List<DishItemEntity> dishItems = Arrays.asList(d1Item1,d1Item2, d2Item1,
+        List<DishItemEntity> dishItems = Arrays.asList(d1Item1, d1Item2, d2Item1,
                 d2Item3, d2Item4, d2Item5, d2Item6);
         ArgumentCaptor<ShoppingListEntity> argument = ArgumentCaptor.forClass(ShoppingListEntity.class);
 
@@ -884,7 +878,7 @@ public class ShoppingListServiceImplMockTest {
         // expectations
         Mockito.when(shoppingListRepository.getWithItemsByListId(listId))
                 .thenReturn(Optional.of(shoppingList));
-        Mockito.when(dishService.getDishItems(eq(userId), any(List.class) ))
+        Mockito.when(dishService.getDishItems(eq(userId), any(List.class)))
                 .thenReturn(dishItems);
 
         Mockito.when(listItemStateMachine.handleEvent(any(ListItemEvent.class),
@@ -916,8 +910,7 @@ public class ShoppingListServiceImplMockTest {
         ShoppingListEntity shoppingList = dummyShoppingList(listId, userId, new ArrayList<>());
         TagEntity tag1 = ServiceTestUtils.buildTag(1L, "first tag", TagType.Ingredient);
         TagEntity tag2 = ServiceTestUtils.buildTag(2L, "second tag", TagType.Ingredient);
-        DishEntity dish1 = ServiceTestUtils.buildDishWithTags(userId, dishId,"dish one", Arrays.asList(tag1, tag2));
-
+        DishEntity dish1 = ServiceTestUtils.buildDishWithTags(userId, dishId, "dish one", Arrays.asList(tag1, tag2));
 
 
         // mock calls
@@ -945,7 +938,7 @@ public class ShoppingListServiceImplMockTest {
                 eq(ListOperationType.DISH_ADD));
         // changed items - count of 2
         Assertions.assertNotNull(listArgument.getValue());
-        Assertions.assertEquals(2,listArgument.getValue().size());
+        Assertions.assertEquals(2, listArgument.getValue().size());
     }
 
     @Test
@@ -1254,8 +1247,8 @@ public class ShoppingListServiceImplMockTest {
         // for testing after call
         Mockito.verify(itemChangeRepository).legacySaveItemChanges(any(ShoppingListEntity.class),
                 collectorCapture.capture(),
-                       any(Long.class),
-                      any(CollectorContext.class));
+                any(Long.class),
+                any(CollectorContext.class));
 
         Assert.assertNotNull(collectorCapture);
         Assert.assertNotNull(collectorCapture.getValue());
@@ -1415,7 +1408,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testDeleteItemFromList() {
+    public void testDeleteItemFromList() throws ItemProcessingException {
         Long deleteFromListId = 9999L;
         final String userEmail = "me@mine.ours";
         final Long userId = 2L;
@@ -1440,7 +1433,7 @@ public class ShoppingListServiceImplMockTest {
         Mockito.when(shoppingListRepository.save(any(ShoppingListEntity.class)))
                 .thenReturn(shoppingList);
 
-        shoppingListService.deleteItemFromList(userId, deleteFromListId, itemIdToRemove, false, null);
+        shoppingListService.deleteItemFromList(userId, deleteFromListId, itemIdToRemove);
 
 
     }

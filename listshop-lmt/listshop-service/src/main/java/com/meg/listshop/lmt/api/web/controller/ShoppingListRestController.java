@@ -67,7 +67,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         ShoppingListEntity result = null;
         try {
             result = shoppingListService.generateListForUser(userDetails.getId(), listGenerateProperties);
-        } catch (ShoppingListException e) {
+        } catch (ShoppingListException | ItemProcessingException e) {
             logger.error("Exception while creating List.", e);
         }
         if (result != null) {
@@ -233,14 +233,18 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             serviceSourceId = Long.valueOf(sourceId);
         }
 
-        this.shoppingListService.deleteItemFromList(userDetails.getId(), listId, itemId, removeEntireItem, serviceSourceId);
+        try {
+            this.shoppingListService.deleteItemFromList(userDetails.getId(), listId, itemId);
+        } catch (ItemProcessingException e) {
+            return ResponseEntity.internalServerError().build();
+        }
 
         return ResponseEntity.noContent().build();
     }
 
     public ResponseEntity<Object> setCrossedOffForItem(Authentication authentication, @PathVariable Long listId, @PathVariable Long itemId,
                                                        @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff
-    ) {
+    ) throws ItemProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Setting crossed off for item [{}] on list [{}] for user [{}]", itemId, listId, userDetails.getId());
         this.shoppingListService.updateItemCrossedOff(userDetails.getId(), listId, itemId, crossedOff);
@@ -249,7 +253,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     public ResponseEntity<Object> crossOffAllItemsOnList(Authentication authentication, @PathVariable Long listId,
-                                                         @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff) {
+                                                         @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff) throws ItemProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Setting crossed off [{}] for all items on list [{}] for user [{}]", crossedOff, listId, userDetails.getId());
         this.shoppingListService.crossOffAllItems(userDetails.getId(), listId, crossedOff);
@@ -262,7 +266,12 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<Object> deleteAllItemsFromList(Authentication authentication, @PathVariable Long listId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Deleting all items from list [{}] for user [{}]", listId, userDetails.getId());
-        this.shoppingListService.deleteAllItemsFromList(userDetails.getId(), listId);
+        try {
+            this.shoppingListService.deleteAllItemsFromList(userDetails.getId(), listId);
+        } catch (ItemProcessingException e) {
+            logger.info("issue while removing items [{}]", e);
+            return ResponseEntity.internalServerError().build();
+        }
 
         return ResponseEntity.noContent().build();
     }
@@ -368,8 +377,11 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<Object> removeFromListByList(Authentication authentication, @PathVariable Long listId, @PathVariable Long fromListId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Removing list [{}] from list [{}] for user [{}]", fromListId, listId, userDetails.getId());
-        this.shoppingListService.removeListItemsFromList(userDetails.getId(), listId, fromListId);
-
+        try {
+            this.shoppingListService.removeListItemsFromList(userDetails.getId(), listId, fromListId);
+        } catch (ItemProcessingException e) {
+            logger.error("Exception while removing list [{}] from List [{}].", listId, fromListId, e);
+        }
         return ResponseEntity.noContent().build();
     }
 

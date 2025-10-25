@@ -12,6 +12,7 @@ public class ItemStateContext {
     private Long listId;
     private DishItemEntity dishItem;
     private ListItemEntity listItem;
+    private boolean isCrossedOff;
 
     public ItemStateContext(ListItemEntity targetItem, Long targetListId) {
         this.targetItem = targetItem;
@@ -62,6 +63,14 @@ public class ItemStateContext {
     public void setListItem(ListItemEntity listItem) {
         this.listItem = listItem;
         this.listId = listItem.getListId();
+    }
+
+    public boolean isCrossedOff() {
+        return isCrossedOff;
+    }
+
+    public void setCrossedOff(boolean crossedOff) {
+        isCrossedOff = crossedOff;
     }
 
     public Long getTargetListId() {

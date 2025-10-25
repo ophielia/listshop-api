@@ -12,6 +12,7 @@ import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.lmt.data.repository.ListItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
+import com.meg.listshop.lmt.service.ServiceTestUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -214,9 +215,9 @@ public class StateMachineRemovedTransitionTest {
 
     private void verifyRemovedAndUpdated(ListItemEntity result) {
         Assertions.assertNotNull(result.getRemovedOn());
-        dateInLastSecond(result.getRemovedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getRemovedOn(),2));
         Assertions.assertNotNull(result.getUpdatedOn());
-        dateInLastSecond(result.getUpdatedOn());
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
     }
 
     private void verifyUpdatedOnly(ListItemEntity result) {

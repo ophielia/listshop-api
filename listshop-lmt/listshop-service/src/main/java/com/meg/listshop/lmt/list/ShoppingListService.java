@@ -17,7 +17,7 @@ public interface ShoppingListService {
 
     void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException, ItemProcessingException;
 
-    ShoppingListEntity generateListForUser(Long userId, ListGenerateProperties listGeneratProperties) throws ShoppingListException;
+    ShoppingListEntity generateListForUser(Long userId, ListGenerateProperties listGeneratProperties) throws ShoppingListException, ItemProcessingException;
 
     ShoppingListEntity getStarterList(Long userId);
 
@@ -33,7 +33,7 @@ public interface ShoppingListService {
 
     void performItemOperation(Long userId, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId) throws ItemProcessingException;
 
-    void deleteItemFromList(Long userId, Long listId, Long itemId, Boolean removeEntireItem, Long dishSourceId);
+    void deleteItemFromList(Long userId, Long listId, Long itemId) throws ItemProcessingException;
 
     ShoppingListEntity generateListFromMealPlan(Long userId, Long mealPlanId) throws ShoppingListException, ItemProcessingException;
 
@@ -47,13 +47,13 @@ public interface ShoppingListService {
 
     void removeDishFromList(Long userId, Long listId, Long dishId) throws ItemProcessingException;
 
-    void removeListItemsFromList(Long userId, Long listId, Long fromListId);
+    void removeListItemsFromList(Long userId, Long listId, Long fromListId) throws ItemProcessingException;
 
-    void updateItemCrossedOff(Long userId, Long listId, Long itemId, Boolean crossedOff);
+    void updateItemCrossedOff(Long userId, Long listId, Long itemId, Boolean crossedOff) throws ItemProcessingException;
 
-    void crossOffAllItems(Long userId, Long listId, boolean crossOff);
+    void crossOffAllItems(Long userId, Long listId, boolean crossOff) throws ItemProcessingException;
 
-    void deleteAllItemsFromList(Long userId, Long listId);
+    void deleteAllItemsFromList(Long userId, Long listId) throws ItemProcessingException;
 
     // Note - this method doesn't check yet for MergeConflicts.  But the signature
     // is there to build the interface, so that MergeConflicts can be added later
