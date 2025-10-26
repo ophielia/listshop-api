@@ -667,13 +667,12 @@ public class ModelMapper {
         enhanceCategories(listId, itemCategories);
 
         long itemCount = 0;
-        if (itemCategories != null) {
-            itemCount = itemCategories.stream()
-                    .map(ShoppingListCategory::getItems)
-                    .flatMap(Collection::stream)
-                    .filter(item -> item.getRemoved() == null && item.getCrossedOff() == null)
+        if (shoppingListEntity.getItems() != null) {
+            itemCount = shoppingListEntity.getItems().stream()
+                    .filter(item -> item.getRemovedOn() == null && item.getCrossedOff() == null)
                     .count();
         }
+
         String layoutId = shoppingListEntity.getListLayoutId() != null ? String.valueOf(shoppingListEntity.getListLayoutId()) : null;
         return new ShoppingList(shoppingListEntity.getId())
                 .createdOn(shoppingListEntity.getCreatedOn())

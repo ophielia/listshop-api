@@ -731,10 +731,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public void fillSources(ShoppingListEntity result) {
         //MM rework this to look at new tables.  Should be a bit more direct
-
+        Long listId = result.getId();
         // dish sources
         // gather distinct dish sources for list
-        List<String> rawSources = itemRepository.findDishSourcesForList(result.getId());
+        List<String> rawSources = itemRepository.findDishSourcesForListFromItems(result.getId());
 
         if (rawSources != null) {
             String source;
@@ -753,12 +753,15 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // list sources
-        List<String> listRawSources = itemRepository.findListSourcesForList(result.getId());
+        List<String> listRawSources = itemRepository.findListSourcesForListForDetails(result.getId());
 
         // gather distinct list sources for list
-        if (listRawSources != null) {
+        if (listRawSources != null &&  !listRawSources.isEmpty()) {
+            List<String> filteredSources = listRawSources.stream()
+                    .filter(source -> !String.valueOf(listId).equals(source))
+                    .toList();
             String source;
-            if (listRawSources.size() == 1) {
+            if (filteredSources.size() == 1) {
                 source = listRawSources.get(0);
             } else {
                 source = String.join(";", listRawSources);
@@ -795,11 +798,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         // get list
         ShoppingListEntity shoppingList = getListForUserById(userId, listId);
 
-        List<DishItemEntity> dishItemsToRemove = tagService.getItemsForDish(userId, dishId);
-        List<Long> tagIdsToRemove = dishItemsToRemove.stream()
-                .map(DishItemEntity::getTag)
-                .map(TagEntity::getId)
-                .toList();
+        List<Long> tagIdsToRemove = itemRepository.findTagIdsInListByDishId(dishId, listId);
 
         List<ListItemEntity> changedItems = new ArrayList<>();
         for (ListItemEntity item : shoppingList.getItems()) {

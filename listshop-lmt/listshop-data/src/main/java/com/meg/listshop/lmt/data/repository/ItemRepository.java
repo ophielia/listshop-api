@@ -21,8 +21,23 @@ public interface ItemRepository extends JpaRepository<ListItemEntity, Long> {
     @Query(value = "select distinct dish_sources from list_item where list_id = :listid and dish_sources is not null  and removed_on is null", nativeQuery = true)
     List<String> findDishSourcesForList(@Param("listid") Long listid);
 
+    @Query(value = """
+            select distinct linked_dish_id from list_item_details lid join list_item i on i.item_id = lid.item_id
+                                         where list_id = :listid and linked_dish_id is not null 
+                                           and removed_on is null
+            """, nativeQuery = true)
+    List<String> findDishSourcesForListFromItems(@Param("listid") Long listid);
+
+
     @Query(value = "select distinct list_sources from list_item where list_id = :listid and list_sources is not null and removed_on is null", nativeQuery = true)
     List<String> findListSourcesForList(@Param("listid") Long listid);
+
+    @Query(value = """
+            select distinct linked_list_id from list_item_details lid join list_item i on i.item_id = lid.item_id
+                                         where list_id = :listid and linked_list_id is not null 
+                                           and removed_on is null
+            """, nativeQuery = true)
+    List<String> findListSourcesForListForDetails(@Param("listid") Long listid);
 
     @Query(value = "select i from ListItemEntity i where i.listId = :listId and (" +
             " i.addedOn > :changedAfter or" +
@@ -34,4 +49,11 @@ public interface ItemRepository extends JpaRepository<ListItemEntity, Long> {
             "where list_id = :listId and tag_id = :tagId",
             nativeQuery = true)
     ListItemEntity getItemByListAndTag(@Param("listId") Long listId, @Param("tagId") Long tagId);
+
+    @Query(value = """
+select distinct tag_id from list_item i join list_item_details id using (item_id)
+where i.list_id = :listId and linked_dish_id = :dishId
+""",
+            nativeQuery = true)
+    List<Long> findTagIdsInListByDishId(@Param("dishId") Long dishId,@Param("listId") Long listId);
 }
