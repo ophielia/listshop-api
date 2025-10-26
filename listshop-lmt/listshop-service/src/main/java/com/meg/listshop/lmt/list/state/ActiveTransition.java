@@ -96,7 +96,8 @@ public class ActiveTransition extends AbstractTransition {
 
         List<ListItemDetailEntity> candidates = new ArrayList<>();
 
-        if (context.getListItem() != null) {
+        if (context.getListItem() != null && context.getListItem().getDetails() != null
+                && !context.getListItem().getDetails().isEmpty()) {
             // adding a list item - need to add each detail
             for (ListItemDetailEntity toCopy : context.getListItem().getDetails()) {
                 ListItemDetailEntity candidate = copyItemDetail(toCopy, context.getListId());
@@ -104,6 +105,15 @@ public class ActiveTransition extends AbstractTransition {
                 candidate.setCount(1);
                 candidates.add(candidate);
             }
+            return candidates;
+        } else if (context.getListItem() != null &&
+                (context.getListItem().getDetails() != null ||
+                 context.getListItem().getDetails().isEmpty())) {
+            ListItemDetailEntity newDetail = new ListItemDetailEntity();
+            newDetail.setLinkedListId(context.getListItem().getListId());
+            newDetail.setLinkedDishId(context.getDishId());
+            newDetail.setItem(context.getListItem());
+            candidates.add(newDetail);
             return candidates;
         }
         ListItemDetailEntity newDetail = new ListItemDetailEntity();

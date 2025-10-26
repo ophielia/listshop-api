@@ -838,12 +838,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         // get list to remove
         ShoppingListEntity listToRemove = getListForUserById(userId, fromListId);
+        List<Long> tagIdsToRemove = itemRepository.findTagIdsInListByListId(fromListId, listId);
 
         List<ListItemEntity> changedItems = new ArrayList<>();
-        for (ListItemEntity itemToRemove : listToRemove.getItems()) {
-            ListItemEntity itemInList = listItemsByTag.get(itemToRemove.getTag().getId());
+        for (Long tagId : tagIdsToRemove) {
+            ListItemEntity itemInList = listItemsByTag.get(tagId);
             ItemStateContext testContext = new ItemStateContext(itemInList, listId);
-            testContext.setListItem(itemToRemove);
+            testContext.setListId(fromListId);
             changedItems.add(listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext));
         }
 

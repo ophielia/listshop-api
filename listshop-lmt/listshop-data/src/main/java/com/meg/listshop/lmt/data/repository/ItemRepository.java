@@ -51,9 +51,17 @@ public interface ItemRepository extends JpaRepository<ListItemEntity, Long> {
     ListItemEntity getItemByListAndTag(@Param("listId") Long listId, @Param("tagId") Long tagId);
 
     @Query(value = """
-select distinct tag_id from list_item i join list_item_details id using (item_id)
-where i.list_id = :listId and linked_dish_id = :dishId
-""",
+            select distinct tag_id from list_item i join list_item_details id using (item_id)
+            where i.list_id = :listId and linked_dish_id = :dishId
+            """,
             nativeQuery = true)
-    List<Long> findTagIdsInListByDishId(@Param("dishId") Long dishId,@Param("listId") Long listId);
+    List<Long> findTagIdsInListByDishId(@Param("dishId") Long dishId, @Param("listId") Long listId);
+
+    @Query(value = """
+            select distinct tag_id from list_item i join list_item_details id using (item_id)
+            where i.list_id = :listId and linked_list_id = :fromListId
+            """,
+            nativeQuery = true)
+    List<Long> findTagIdsInListByListId(@Param("fromListId") Long fromListId, @Param("listId") Long listId);
+
 }
