@@ -19,11 +19,10 @@ import com.meg.listshop.lmt.data.entity.TargetSlotEntity;
 import com.meg.listshop.lmt.service.TargetService;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -33,16 +32,16 @@ import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -50,13 +49,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
+@Testcontainers
 @ActiveProfiles("test")
-public class TargetRestControllerTest {
+class TargetRestControllerTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
 
@@ -83,10 +83,10 @@ public class TargetRestControllerTest {
                 .findAny()
                 .orElse(null);
 
-        assertNotNull("the JSON message converter must not be null");
+        Assertions.assertNotNull("the JSON message converter must not be null");
     }
 
-    @Before
+    @BeforeEach
     @WithMockUser
     void setup() {
         this.mockMvc = webAppContextSetup(webApplicationContext)
@@ -113,7 +113,7 @@ public class TargetRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testReadTarget() throws Exception {
+    void testReadTarget() throws Exception {
         Long testId = TestConstants.TARGET_1_ID;
         mockMvc.perform(get("/target/"
                         + testId)
@@ -126,22 +126,10 @@ public class TargetRestControllerTest {
                 .andReturn();
     }
 
-    @Test
-    @WithMockUser
-    @Ignore
-    public void testRetrieveTargets() throws Exception {
-
-        mockMvc.perform(get("/target")
-                        .with(user(newUserDetails)))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$._embedded.targetResourceList", hasSize(3)));
-    }
 
     @Test
     @WithMockUser
-    public void testDeleteTarget() throws Exception {
+    void testDeleteTarget() throws Exception {
         Long testId = TestConstants.TARGET_2_ID;
         mockMvc.perform(delete("/target/"
                         + testId)
@@ -152,7 +140,7 @@ public class TargetRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testCreateTarget() throws Exception {
+    void testCreateTarget() throws Exception {
         TargetEntity targetEntity = new TargetEntity();
         targetEntity.setTargetName("targetCreate");
         targetEntity.setUserId(TestConstants.USER_3_ID);
@@ -169,7 +157,7 @@ public class TargetRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testCreatePickupTarget() throws Exception {
+    void testCreatePickupTarget() throws Exception {
         TargetEntity targetEntity = new TargetEntity();
         targetEntity.setTargetName("targetCreate");
         targetEntity.setUserId(TestConstants.USER_3_ID);
@@ -188,7 +176,7 @@ public class TargetRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testUpdateTarget() throws Exception {
+    void testUpdateTarget() throws Exception {
         String newName = "new super duper name";
         TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_3_NAME, TestConstants.TARGET_3_ID);
 
@@ -206,7 +194,7 @@ public class TargetRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testAddSlotToTarget() throws Exception {
+    void testAddSlotToTarget() throws Exception {
         TargetSlotEntity slot = new TargetSlotEntity();
         slot.setSlotDishTagId(TestConstants.TAG_MAIN_DISH);
         TargetSlot slotDTO = ModelMapper.toModel(slot);
@@ -223,7 +211,7 @@ public class TargetRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testDeleteSlotFromTarget() throws Exception {
+    void testDeleteSlotFromTarget() throws Exception {
         TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_3_NAME, TestConstants.TARGET_3_ID);
         TargetSlotEntity slot = targetEntity.getSlots().get(0);
         String url = "/target/" + TestConstants.TARGET_3_ID + "/slot/"
@@ -236,7 +224,7 @@ public class TargetRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testAddTagToSlot() throws Exception {
+    void testAddTagToSlot() throws Exception {
         TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_3_NAME, TestConstants.TARGET_3_ID);
         TargetSlotEntity slot = targetEntity.getSlots().get(0);
 
@@ -250,7 +238,7 @@ public class TargetRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testDeleteTagFromSlot() throws Exception {
+    void testDeleteTagFromSlot() throws Exception {
         String url = "/target/" + TestConstants.TARGET_3_ID + "/slot/"
                 + TestConstants.TARGET_3_SLOT_ID + "/tag/" + TestConstants.TAG_CARROTS;
         this.mockMvc.perform(delete(url)
@@ -261,7 +249,7 @@ public class TargetRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testAddTagToTarget() throws Exception {
+    void testAddTagToTarget() throws Exception {
         String url = "/target/" + TestConstants.TARGET_3_ID
                 + "/tag/" + TestConstants.CHILD_TAG_ID_1;
         this.mockMvc.perform(post(url)
@@ -272,7 +260,7 @@ public class TargetRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testDeleteTagFromTarget() throws Exception {
+    void testDeleteTagFromTarget() throws Exception {
         String url = "/target/" + TestConstants.TARGET_3_ID
                 + "/tag/" + TestConstants.TAG_EASE_OF_PREP;
         this.mockMvc.perform(delete(url)

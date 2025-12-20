@@ -7,7 +7,6 @@
 
 package com.meg.listshop.lmt.api;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.auth.service.CustomUserDetails;
@@ -18,11 +17,11 @@ import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.test.TestConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,12 +34,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -48,7 +48,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -56,7 +55,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
@@ -64,9 +64,9 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sql/com/meg/atable/lmt/api/ShoppingListRestControllerTest_rollback.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-public class ShoppingListRestControllerTest {
+class ShoppingListRestControllerTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private static UserDetails userDetails;
@@ -77,45 +77,36 @@ public class ShoppingListRestControllerTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype());
     @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Autowired
     ItemRepository itemRepository;
+    @Value("classpath:/data/shoppingListRestControllerTest_mergeList.json")
+    Resource resourceFile;
+    @Value("classpath:/data/shoppingListRestControllerTest_noMergeList.json")
+    Resource resourceFileNoMerge;
+    @Value("classpath:/data/shoppingListRestControllerTest_mergeListStale.json")
+    Resource resourceFileStale;
+    @Value("classpath:/data/shoppingListRestControllerTest_mergeListEmpty.json")
+    Resource resourceFileEmpty;
+    @Value("classpath:/data/shoppingListRestControllerTest_mergeListWithConflicts.json")
+    Resource mergeConflictFileSource;
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+    private MockMvc mockMvc;
+    private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
         this.mappingJackson2HttpMessageConverter = Arrays.stream(converters)
 
-                .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
+                .filter(MappingJackson2HttpMessageConverter.class::isInstance)
                 .findAny()
                 .orElse(null);
 
-        assertNotNull("the JSON message converter must not be null");
+        Assertions.assertNotNull("the JSON message converter must not be null");
     }
 
-    @Value("classpath:/data/shoppingListRestControllerTest_mergeList.json")
-    Resource resourceFile;
-
-    @Value("classpath:/data/shoppingListRestControllerTest_noMergeList.json")
-    Resource resourceFileNoMerge;
-
-    @Value("classpath:/data/shoppingListRestControllerTest_mergeListStale.json")
-    Resource resourceFileStale;
-
-    @Value("classpath:/data/shoppingListRestControllerTest_mergeListEmpty.json")
-    Resource resourceFileEmpty;
-
-    @Value("classpath:/data/shoppingListRestControllerTest_mergeListWithConflicts.json")
-    Resource mergeConflictFileSource;
-
-
-    private MockMvc mockMvc;
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-
-
-    @Before
+    @BeforeEach
     @WithMockUser
-    public void setup() {
+    void setup() {
 
         this.mockMvc = webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
@@ -167,7 +158,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testRetrieveLists() throws Exception {
+    void testRetrieveLists() throws Exception {
 
         mockMvc.perform(get("/shoppinglist")
                         .with(user(userDetails)))
@@ -180,7 +171,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testRetrieveMostRecentList() throws Exception {
+    void testRetrieveMostRecentList() throws Exception {
         Long testId = 509990L;
 
         // updating list, so that it _is_ the most recent
@@ -189,13 +180,13 @@ public class ShoppingListRestControllerTest {
                 .isStarterList(false);
         String payload = json(shoppingList);
 
-        MvcResult result = mockMvc.perform(put("/shoppinglist/" + testId)
+        mockMvc.perform(put("/shoppinglist/" + testId)
                         .with(user(meUserDetails))
                         .content(payload).contentType(contentType))
                 .andExpect(status().isOk())
                 .andReturn();
         // now, testing the most recent call
-        result = mockMvc.perform(get("/shoppinglist/mostrecent")
+        mockMvc.perform(get("/shoppinglist/mostrecent")
                         .with(user(meUserDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
@@ -206,7 +197,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testRetrieveStarterList() throws Exception {
+    void testRetrieveStarterList() throws Exception {
         Long testId = 509991L;
 
         mockMvc.perform(get("/shoppinglist/starter")
@@ -219,7 +210,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testRetrieveStarterListNotFound() throws Exception {
+    void testRetrieveStarterListNotFound() throws Exception {
         mockMvc.perform(get("/shoppinglist/starter")
                         .with(user(noStarterUserDetails)))
                 .andExpect(status().isNotFound());
@@ -227,32 +218,25 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testRetrieveListById() throws Exception {
-        Long testId = TestConstants.LIST_2_ID;
+    void testRetrieveListById() throws Exception {
+        Long testId = 509990L;
 
-        MvcResult result = mockMvc.perform(get("/shoppinglist/" + TestConstants.LIST_2_ID)
+        mockMvc.perform(get("/shoppinglist/" + testId)
                         .with(user(meUserDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.shopping_list.legend", Matchers.hasSize(8)))
+                .andExpect(jsonPath("$.shopping_list.legend", Matchers.hasSize(6)))
                 .andExpect(jsonPath("$.shopping_list.legend[*].key",
-                        Matchers.containsInAnyOrder("d54", "d83", "d55", "d90", "l501", "l402", "d56", "d16")))
+                        Matchers.containsInAnyOrder("d5099901", "d50999010", "d509990100", "d509990101", "l6666", "l7777")))
                 .andReturn();
-
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(result.getResponse().getContentAsString());
-        JsonNode containedListJson = jsonNode.get("shopping_list");
-        jsonNode.get("shopping_list");
-
     }
 
     @Test
-    public void testRetrieveListById_NotFound() throws Exception {
+    void testRetrieveListById_NotFound() throws Exception {
         Long dummyTestId = 12345678901L;
 
-        MvcResult result = mockMvc.perform(get("/shoppinglist/" + dummyTestId)
+        mockMvc.perform(get("/shoppinglist/" + dummyTestId)
                         .with(user(meUserDetails)))
                 .andExpect(status().isNotFound())
                 .andReturn();
@@ -260,7 +244,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testCustomLayout() throws Exception {
+    void testCustomLayout() throws Exception {
         Long customLayoutListId = 10101010L;
         Long standardLayoutListId = 90909090L;
 
@@ -268,32 +252,32 @@ public class ShoppingListRestControllerTest {
         Map<String, ShoppingListItem> standardResultMap = standardLayoutList.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(standardResultMap);
+        Assertions.assertNotNull(standardResultMap);
 
 
         ShoppingList customLayoutList = retrieveList(meUserDetails, customLayoutListId);
         Map<String, ShoppingListItem> customResultMap = customLayoutList.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(customResultMap);
+        Assertions.assertNotNull(customResultMap);
 
         // item count should be equal
-        Assert.assertEquals("item count should be equal.", customResultMap.keySet().size(), standardResultMap.keySet().size());
+        Assertions.assertEquals(customResultMap.keySet().size(), standardResultMap.keySet().size(), "item count should be equal.");
         // category count should not be equal
-        Assert.assertNotEquals("category count should not be equal.", standardLayoutList.getCategories().size(), customLayoutList.getCategories().size());
+        Assertions.assertNotEquals(standardLayoutList.getCategories().size(), customLayoutList.getCategories().size(), "category count should not be equal.");
         // custom
-        Assert.assertEquals("custom should have 3 categories", 3, customLayoutList.getCategories().size());
+        Assertions.assertEquals(3, customLayoutList.getCategories().size(), "custom should have 3 categories");
         Optional<ShoppingListCategory> specialCategory = customLayoutList.getCategories().stream()
                 .filter(c -> c.getName().equals("Special")).findFirst();
-        Assert.assertTrue("on category should be called 'Special'", specialCategory.isPresent());
-        Assert.assertEquals("special contains one item", 1, specialCategory.get().getItems().size());
+        Assertions.assertTrue(specialCategory.isPresent(), "on category should be called 'Special'");
+        Assertions.assertEquals(1, specialCategory.get().getItems().size(), "special contains one item");
         ShoppingListItem tomatoes = specialCategory.get().getItems().get(0);
-        Assert.assertEquals("tomatoes are tomatoes", "tomatoes", tomatoes.getTagName());
+        Assertions.assertEquals("tomatoes", tomatoes.getTagName(), "tomatoes are tomatoes");
     }
 
     @Test
     @WithMockUser
-    public void testUpdateList() throws Exception {
+    void testUpdateList() throws Exception {
         Long testId = 509991L;
 
         ShoppingListPut shoppingList = new ShoppingListPut(testId)
@@ -302,7 +286,7 @@ public class ShoppingListRestControllerTest {
 
         String payload = json(shoppingList);
 
-        MvcResult result = mockMvc.perform(put("/shoppinglist/" + testId)
+        mockMvc.perform(put("/shoppinglist/" + testId)
                         .with(user(meUserDetails))
                         .content(payload).contentType(contentType))
                 .andExpect(status().isOk())
@@ -312,7 +296,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testUpdateList_starterListChange() throws Exception {
+    void testUpdateList_starterListChange() throws Exception {
         Long testId = 509990L;
         Long oldStarterId = 509991L;
 
@@ -341,7 +325,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testDeleteList() throws Exception {
+    void testDeleteList() throws Exception {
         Long testId = TestConstants.LIST_2_ID;
 
         mockMvc.perform(delete("/shoppinglist/" + testId)
@@ -352,7 +336,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testDeleteList_LastList() throws Exception {
+    void testDeleteList_LastList() throws Exception {
         Long testId = 99999L;
 
         mockMvc.perform(delete("/shoppinglist/" + testId)
@@ -363,7 +347,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testDeleteItemFromList() throws Exception {
+    void testDeleteItemFromList() throws Exception {
         Long listId = TestConstants.LIST_3_ID;
         String url = "/shoppinglist/" + listId + "/item/" + 501L;
         mockMvc.perform(delete(url)
@@ -373,9 +357,9 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGenerateFromMealPlan() throws Exception {
+    void testGenerateFromMealPlan() throws Exception {
 
-        Long listId = 51000L;
+
         Long mealPlanId = 65505L;
 
         String url = "/shoppinglist/mealplan/" + mealPlanId;
@@ -386,34 +370,34 @@ public class ShoppingListRestControllerTest {
                 .andReturn();
 
         List<String> responses = result.getResponse().getHeaders("Location");
-        Assert.assertNotNull(responses);
-        Assert.assertTrue(responses.size() > 0);
+        Assertions.assertNotNull(responses);
+        Assertions.assertTrue(responses.size() > 0);
         String[] urlTokens = StringUtils.split(responses.get(0), "/");
         Long newListId = Long.valueOf(urlTokens[(urlTokens).length - 1]);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(userDetails, listId);
+        ShoppingList source = retrieveList(userDetails, newListId);
         Map<String, ShoppingListItem> resultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(resultMap);
+        Assertions.assertNotNull(resultMap);
 
         // check tag occurences in result
 
         // 502 - 3
-        Assert.assertNotNull(resultMap.get("1"));
+        Assertions.assertNotNull(resultMap.get("1"));
         // 503 - 2
-        Assert.assertNotNull(resultMap.get("12"));
-        Assert.assertEquals(Optional.of(1).get(), resultMap.get("12").getUsedCount()); // showing 1 in result map
+        Assertions.assertNotNull(resultMap.get("12"));
+        Assertions.assertEquals(Optional.of(1).get(), resultMap.get("12").getUsedCount()); // showing 1 in result map
         // 436 - 1
-        Assert.assertNotNull(resultMap.get("81"));
-        Assert.assertEquals(Integer.valueOf(1), resultMap.get("81").getUsedCount());
+        Assertions.assertNotNull(resultMap.get("436"));
+        Assertions.assertEquals(Integer.valueOf(1), resultMap.get("436").getUsedCount());
 
     }
 
     @Test
     @WithMockUser
-    public void testCreateList() throws Exception {
+    void testCreateList() throws Exception {
         ListGenerateProperties properties = new ListGenerateProperties();
         properties.setAddFromStarter(true);
         properties.setGenerateMealplan(false);
@@ -432,7 +416,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testSetCrossedOffForItem() throws Exception {
+    void testSetCrossedOffForItem() throws Exception {
         Long listId = 6666L;
         String url = "/shoppinglist/" + listId + "/item/shop/" + 60660L
                 + "?crossOff=true";
@@ -444,7 +428,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testCrossOffAllItemsOnList() throws Exception {
+    void testCrossOffAllItemsOnList() throws Exception {
 
         Long listId = TestConstants.LIST_1_ID;
         String url = "/shoppinglist/" + listId + "/item/shop"
@@ -457,7 +441,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testAddListToList() throws Exception {
+    void testAddListToList() throws Exception {
         Long listId = TestConstants.LIST_3_ID;
         Long fromListId = TestConstants.LIST_1_ID;
 
@@ -470,22 +454,18 @@ public class ShoppingListRestControllerTest {
 
         // retrieve list and verify
         // now retrieve old starter list and ensure that isStarter is false
-        MvcResult result = mockMvc.perform(get("/shoppinglist/" + listId)
+        mockMvc.perform(get("/shoppinglist/" + listId)
                         .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
                 .andExpect(jsonPath("$.shopping_list.list_id").value(listId))
                 .andReturn();
-        //.andExpect(jsonPath("$.shopping_list.is_starter_list").value(false));
-
-        String listAfterAdd = result.getResponse().getContentAsString();
-
     }
 
     @Test
     @WithMockUser
-    public void testAddTagToList() throws Exception {
+    void testAddTagToList() throws Exception {
         Long tagId = TestConstants.TAG_PASTA;
         ListGenerateProperties properties = new ListGenerateProperties();
         properties.setAddFromStarter(true);
@@ -502,8 +482,8 @@ public class ShoppingListRestControllerTest {
                 .andReturn();
 
         List<String> responses = createResult.getResponse().getHeaders("Location");
-        Assert.assertNotNull(responses);
-        Assert.assertTrue(responses.size() > 0);
+        Assertions.assertNotNull(responses);
+        Assertions.assertTrue(responses.size() > 0);
         String[] urlTokens = StringUtils.split(responses.get(0), "/");
         Long listId = Long.valueOf(urlTokens[(urlTokens).length - 1]);
 
@@ -520,13 +500,13 @@ public class ShoppingListRestControllerTest {
         Map<String, ShoppingListItem> standardResultMap = listWithNewItem.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(standardResultMap);
-        Assert.assertTrue(standardResultMap.containsKey(String.valueOf(tagId)));
+        Assertions.assertNotNull(standardResultMap);
+        Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId)));
     }
 
     @Test
     @WithMockUser
-    public void testRemoveListFromList() throws Exception {
+    void testRemoveListFromList() throws Exception {
         Long listId = 609990L;
         Long fromListId = 609991L;
 
@@ -549,18 +529,18 @@ public class ShoppingListRestControllerTest {
 
         String listAfterDelete = result.getResponse().getContentAsString();
         // contains tag ids 500, 503
-        Assert.assertTrue(listAfterDelete.contains("\"tag_id\":\"503\","));
-        Assert.assertTrue(listAfterDelete.contains("\"tag_id\":\"500\","));
+        Assertions.assertTrue(listAfterDelete.contains("\"tag_id\":\"503\","));
+        Assertions.assertTrue(listAfterDelete.contains("\"tag_id\":\"500\","));
 
-        // doesn't contain tagIds 501, 502, 504
-        Assert.assertFalse(listAfterDelete.contains("\"tag_id\":\"501\","));
-        Assert.assertFalse(listAfterDelete.contains("\"tag_id\":\"502\","));
-        Assert.assertFalse(listAfterDelete.contains("\"tag_id\":\"504\","));
+        // doesn't contain tagIds 501, 502 504
+        Assertions.assertFalse(listAfterDelete.contains("\"tag_id\":\"501\","));
+        Assertions.assertFalse(listAfterDelete.contains("\"tag_id\":\"502\","));
+        Assertions.assertFalse(listAfterDelete.contains("\"tag_id\":\"504\","));
     }
 
     @Test
     @WithMockUser
-    public void testAddDishToList() throws Exception {
+    void testAddDishToList() throws Exception {
         Long listId = TestConstants.LIST_1_ID;
         Long tagId1 = 500L;
         Long tagId2 = 501L;
@@ -571,25 +551,25 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
 
         ShoppingList result = retrieveList(userDetails, listId);
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result.getCategories().size() > 0);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.getCategories().size() > 0);
 
         Map<String, ShoppingListItem> standardResultMap = result.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .filter( i -> i.getSourceKeys() != null &&
+                .filter(i -> i.getSourceKeys() != null &&
                         i.getSourceKeys().contains("d" + TestConstants.DISH_7_ID))
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(standardResultMap);
-        Assert.assertEquals(2, standardResultMap.keySet().size());
-        Assert.assertTrue(standardResultMap.containsKey(String.valueOf(tagId1)));
-        Assert.assertTrue(standardResultMap.containsKey(String.valueOf(tagId2)));
+        Assertions.assertNotNull(standardResultMap);
+        Assertions.assertEquals(2, standardResultMap.keySet().size());
+        Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId1)));
+        Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId2)));
 
     }
 
 
     @Test
     @WithMockUser
-    public void testAddDishesToList() throws Exception {
+    void testAddDishesToList() throws Exception {
         Long broccoliId = 21L;
         Long fetaId = 37L;
         ListGenerateProperties properties = new ListGenerateProperties();
@@ -602,7 +582,7 @@ public class ShoppingListRestControllerTest {
 
         Long[] dishSourceArray = {TestConstants.DISH_8_ID, TestConstants.DISH_2_ID, TestConstants.DISH_1_ID};
         List<String> dishIdsAsStrings = Arrays.stream(dishSourceArray)
-        .map(String::valueOf)
+                .map(String::valueOf)
                 .toList();
         addProperties.setDishSources(dishIdsAsStrings);
         String addDishProperties = json(addProperties);
@@ -611,28 +591,28 @@ public class ShoppingListRestControllerTest {
         mockMvc.perform(post(url)
                         .with(user(meUserDetails))
                         .contentType(contentType)
-                .content(addDishProperties))
+                        .content(addDishProperties))
                 .andExpect(status().is2xxSuccessful());
 
         ShoppingList result = retrieveList(meUserDetails, Long.valueOf(listId));
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result.getCategories().size() > 0);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.getCategories().size() > 0);
 
         Map<String, ShoppingListItem> standardResultMap = result.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(standardResultMap);
+        Assertions.assertNotNull(standardResultMap);
         // test brocolli is there, twice, with sources 109, and 45 (dish)
         ShoppingListItem broccoliItem = standardResultMap.get(String.valueOf(broccoliId));
-        Assert.assertNotNull("broccoli item should be present",broccoliItem);
-        Assert.assertEquals(2, broccoliItem.getSourceKeys().size());
-        Assert.assertTrue(broccoliItem.getSourceKeys().contains("d" + TestConstants.DISH_8_ID));
-        Assert.assertTrue(broccoliItem.getSourceKeys().contains("d" + TestConstants.DISH_2_ID));
+        Assertions.assertNotNull(broccoliItem, "broccoli item should be present");
+        Assertions.assertEquals(2, broccoliItem.getSourceKeys().size());
+        Assertions.assertTrue(broccoliItem.getSourceKeys().contains("d" + TestConstants.DISH_8_ID));
+        Assertions.assertTrue(broccoliItem.getSourceKeys().contains("d" + TestConstants.DISH_2_ID));
         // test feta cheese is there, from dish 1, tag_id 37
         ShoppingListItem fetaItem = standardResultMap.get(String.valueOf(fetaId));
-        Assert.assertNotNull("feta item should be present",fetaItem);
-        Assert.assertEquals(1, fetaItem.getSourceKeys().size());
-        Assert.assertTrue(fetaItem.getSourceKeys().contains("d" + TestConstants.DISH_1_ID));
+        Assertions.assertNotNull(fetaItem, "feta item should be present");
+        Assertions.assertEquals(1, fetaItem.getSourceKeys().size());
+        Assertions.assertTrue(fetaItem.getSourceKeys().contains("d" + TestConstants.DISH_1_ID));
     }
 
     private String createList(String jsonProperties, UserDetails userDetails) throws Exception {
@@ -650,7 +630,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testAddDishToNewList() throws Exception {
+    void testAddDishToNewList() throws Exception {
         ListGenerateProperties properties = new ListGenerateProperties();
         properties.setAddFromStarter(true);
         properties.setGenerateMealplan(false);
@@ -661,7 +641,7 @@ public class ShoppingListRestControllerTest {
                         .content(jsonProperties))
                 .andReturn();
         List<String> headers = newResult.getResponse().getHeaders("Location");
-        String listIdString = headers.get(0).replace("http://localhost/tag/","");
+        String listIdString = headers.get(0).replace("http://localhost/tag/", "");
         Long newListId = Long.valueOf(listIdString);
 
         Long tagId1 = 500L;
@@ -673,24 +653,24 @@ public class ShoppingListRestControllerTest {
                 .andExpect(status().isNoContent());
 
         ShoppingList result = retrieveList(userDetails, newListId);
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result.getCategories().size() > 0);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.getCategories().size() > 0);
 
         Map<String, ShoppingListItem> standardResultMap = result.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .filter( i -> i.getSourceKeys() != null &&
+                .filter(i -> i.getSourceKeys() != null &&
                         i.getSourceKeys().contains("d" + TestConstants.DISH_7_ID))
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(standardResultMap);
-        Assert.assertEquals(2, standardResultMap.keySet().size());
-        Assert.assertTrue(standardResultMap.containsKey(String.valueOf(tagId1)));
-        Assert.assertTrue(standardResultMap.containsKey(String.valueOf(tagId2)));
+        Assertions.assertNotNull(standardResultMap);
+        Assertions.assertEquals(2, standardResultMap.keySet().size());
+        Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId1)));
+        Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId2)));
 
     }
 
     @Test
     @WithMockUser
-    public void testUpdateItemUsedCount() throws Exception {
+    void testUpdateItemUsedCount() throws Exception {
 
         Long listId = 7777L;
         Long tagId = 500L;
@@ -704,12 +684,12 @@ public class ShoppingListRestControllerTest {
         // make sure the item has been updated
         ListItemEntity resultItem = itemRepository.getItemByListAndTag(listId, tagId);
 
-        Assert.assertEquals(usedCount, resultItem.getUsedCount());
+        Assertions.assertEquals(usedCount, resultItem.getUsedCount());
     }
 
     @Test
     @WithMockUser
-    public void testAddMealPlanToList() throws Exception {
+    void testAddMealPlanToList() throws Exception {
 
         Long listId = 51000L;
         Long mealPlanId = 65505L;
@@ -726,27 +706,27 @@ public class ShoppingListRestControllerTest {
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
-        Assert.assertNotNull(sourceResultMap);
+        Assertions.assertNotNull(sourceResultMap);
         // check tag occurences in result
         // 501 - 1
-        Assert.assertNotNull(sourceResultMap.get("81"));
-        Assert.assertEquals(Optional.of(1).get(), sourceResultMap.get("81").getUsedCount());
+        Assertions.assertNotNull(sourceResultMap.get("81"));
+        Assertions.assertEquals(Optional.of(1).get(), sourceResultMap.get("81").getUsedCount());
 
         // 502 - 3
-        Assert.assertNotNull(sourceResultMap.get("1"));
-        Assert.assertEquals(Integer.valueOf(3), sourceResultMap.get("1").getUsedCount());  // showing 1 in result map
+        Assertions.assertNotNull(sourceResultMap.get("1"));
+        Assertions.assertEquals(Integer.valueOf(3), sourceResultMap.get("1").getUsedCount());  // showing 1 in result map
         // 503 - 2
-        Assert.assertNotNull(sourceResultMap.get("12"));
-        Assert.assertEquals(Integer.valueOf(2), sourceResultMap.get("12").getUsedCount()); // showing 1 in result map
+        Assertions.assertNotNull(sourceResultMap.get("12"));
+        Assertions.assertEquals(Integer.valueOf(2), sourceResultMap.get("12").getUsedCount()); // showing 1 in result map
         // 436 - 1
-        Assert.assertNotNull(sourceResultMap.get("436"));
-        Assert.assertEquals(Integer.valueOf(1), sourceResultMap.get("436").getUsedCount());
+        Assertions.assertNotNull(sourceResultMap.get("436"));
+        Assertions.assertEquals(Integer.valueOf(1), sourceResultMap.get("436").getUsedCount());
 
     }
 
     @Test
     @WithMockUser
-    public void testMergeList() throws Exception {
+    void testMergeList() throws Exception {
         String testMergeList = StreamUtils.copyToString(resourceFile.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 110000L;
@@ -763,46 +743,45 @@ public class ShoppingListRestControllerTest {
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(sourceResultMap);
+        Assertions.assertNotNull(sourceResultMap);
 
         // check result
         // should have 9 items
-        Assert.assertEquals("should have 15 items", 15, sourceResultMap.keySet().size());
+        Assertions.assertEquals(15, sourceResultMap.keySet().size(), "should have 15 items");
         // should not contain tag 32 (which was removed)
-        Assert.assertFalse("shouldn't contain tag 32", sourceResultMap.containsKey("32"));
+        Assertions.assertFalse(sourceResultMap.containsKey("32"), "shouldn't contain tag 32");
         // not crossed off - 33, 16
         Map<String, ShoppingListItem> activeMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getCrossedOff() == null)
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertEquals("10 active items", 10, activeMap.keySet().size());
-        Assert.assertTrue("33 should be actice", activeMap.containsKey("33"));
-        Assert.assertTrue("16 should be actice", activeMap.containsKey("16"));
+        Assertions.assertEquals(10, activeMap.keySet().size(), "10 active items");
+        Assertions.assertTrue(activeMap.containsKey("33"), "33 should be actice");
+        Assertions.assertTrue(activeMap.containsKey("16"), "16 should be actice");
 
         //  crossed off - 19, 34
         Map<String, ShoppingListItem> crossedOffMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getCrossedOff() != null)
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertEquals("5 crossed off items", 5, crossedOffMap.keySet().size());
-        Assert.assertTrue("33 should be crossed off", crossedOffMap.containsKey("19"));
-        Assert.assertTrue("16 should be crossed off", crossedOffMap.containsKey("34"));
+        Assertions.assertEquals(5, crossedOffMap.keySet().size(), "5 crossed off items");
+        Assertions.assertTrue(crossedOffMap.containsKey("19"), "33 should be crossed off");
+        Assertions.assertTrue(crossedOffMap.containsKey("34"), "16 should be crossed off");
     }
 
     @Test
     @WithMockUser
-    public void testMergeList_SkipMerge() throws Exception {
+    void testMergeList_SkipMerge() throws Exception {
         String testMergeList = StreamUtils.copyToString(resourceFileNoMerge.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 110099L;
 
         String url = "/shoppinglist/shared";
-        MvcResult result = mockMvc.perform(put(url)
+        mockMvc.perform(put(url)
                         .with(user(meUserDetails))
                         .contentType(contentType)
                         .content(testMergeList))
                 .andReturn();
-                //.andExpect(status().isOk());
 
         // now, retrieve the list
         ShoppingList source = retrieveList(meUserDetails, listId);
@@ -810,18 +789,18 @@ public class ShoppingListRestControllerTest {
                 .flatMap(c -> c.getItems().stream())
                 .filter(c -> c.getCrossedOff() != null)
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(crossedOffItems);
+        Assertions.assertNotNull(crossedOffItems);
 
         // check result
         // the merged list had crossed off items. The db list didn't have any crossed off items
         // the merged list had an offline change date older than the last sync, so no merge should have been done
         // we cann check this by ensuring that no items are crossed off
-        Assert.assertEquals("should have 0 items", 0, crossedOffItems.keySet().size());
+        Assertions.assertEquals(0, crossedOffItems.keySet().size(), "should have 0 items");
     }
 
     @Test
     @WithMockUser
-    public void testMergeList_Stale() throws Exception {
+    void testMergeList_Stale() throws Exception {
         String testMergeList = StreamUtils.copyToString(resourceFileStale.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 11000001L;
@@ -838,34 +817,34 @@ public class ShoppingListRestControllerTest {
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(sourceResultMap);
+        Assertions.assertNotNull(sourceResultMap);
 
         // check result
         // should have 12 items
-        Assert.assertEquals("should have 13 items", 13, sourceResultMap.keySet().size());
+        Assertions.assertEquals(13, sourceResultMap.keySet().size(), "should have 13 items");
         // should not contain tag 32 (which was removed)
-        Assert.assertFalse("shouldn't contain tag 32", sourceResultMap.containsKey("32"));
+        Assertions.assertFalse(sourceResultMap.containsKey("32"), "shouldn't contain tag 32");
         // not crossed off - 16
         Map<String, ShoppingListItem> activeMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getCrossedOff() == null)
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertEquals("9 active items", 9, activeMap.keySet().size());
-        Assert.assertTrue("16 should be actice", activeMap.containsKey("16"));
+        Assertions.assertEquals(9, activeMap.keySet().size(), "9 active items");
+        Assertions.assertTrue(activeMap.containsKey("16"), "16 should be actice");
 
         //  crossed off - 19
         Map<String, ShoppingListItem> crossedOffMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getCrossedOff() != null)
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertEquals("4 crossed off items", 4, crossedOffMap.keySet().size());
-        Assert.assertTrue("19 should be crossed off", crossedOffMap.containsKey("19"));
+        Assertions.assertEquals(4, crossedOffMap.keySet().size(), "4 crossed off items");
+        Assertions.assertTrue(crossedOffMap.containsKey("19"), "19 should be crossed off");
     }
 
     @Test
     @WithMockUser
-    public void testMergeList_Empty() throws Exception {
-        //// load statistics into file
+    void testMergeList_Empty() throws Exception {
+        // load statistics into file
         String testMergeList = StreamUtils.copyToString(resourceFileEmpty.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 130000L;
@@ -882,16 +861,16 @@ public class ShoppingListRestControllerTest {
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(sourceResultMap);
+        Assertions.assertNotNull(sourceResultMap);
 
         // check result
         // should have 9 items
-        Assert.assertTrue("should be empty - empty list - empty merge request", sourceResultMap.isEmpty());
+        Assertions.assertTrue(sourceResultMap.isEmpty(), "should be empty - empty list - empty merge request");
     }
 
     @Test
     @WithMockUser
-    public void testMergeList_TagConflict() throws Exception {
+    void testMergeList_TagConflict() throws Exception {
         String testMergeList = StreamUtils.copyToString(mergeConflictFileSource.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 120000L;
@@ -908,25 +887,25 @@ public class ShoppingListRestControllerTest {
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(sourceResultMap);
+        Assertions.assertNotNull(sourceResultMap);
 
         // check result
         // should have 9 items
-        Assert.assertEquals("should have 9 items", 3, sourceResultMap.keySet().size());
+        Assertions.assertEquals(3, sourceResultMap.keySet().size(), "should have 9 items");
         // should not contain tag 12001 or 12002 (standard)
-        Assert.assertFalse("shouldn't contain tag 12001", sourceResultMap.containsKey("12001"));
-        Assert.assertFalse("shouldn't contain tag 12002", sourceResultMap.containsKey("12002"));
+        Assertions.assertFalse(sourceResultMap.containsKey("12001"), "shouldn't contain tag 12001");
+        Assertions.assertFalse(sourceResultMap.containsKey("12002"), "shouldn't contain tag 12002");
         // should  contain tag 13001 or 13002 (standard)
-        Assert.assertTrue("shouldn't contain tag 13001", sourceResultMap.containsKey("13001"));
-        Assert.assertTrue("shouldn't contain tag 13002", sourceResultMap.containsKey("13002"));
+        Assertions.assertTrue(sourceResultMap.containsKey("13001"), "shouldn't contain tag 13001");
+        Assertions.assertTrue(sourceResultMap.containsKey("13002"), "shouldn't contain tag 13002");
         // should contain 21 - no conflict
-        Assert.assertTrue("shouldn't contain tag 21", sourceResultMap.containsKey("21"));
+        Assertions.assertTrue(sourceResultMap.containsKey("21"), "shouldn't contain tag 21");
 
     }
 
     @Test
     @WithMockUser
-    public void testRemoveDishFromList() throws Exception {
+    void testRemoveDishFromList() throws Exception {
         Long listId = TestConstants.LIST_1_ID;
         String dish1Id = "66500";
         String dish2Id = "66501";
@@ -950,15 +929,13 @@ public class ShoppingListRestControllerTest {
         ShoppingList result = retrieveList(userDetails, listId);
         // affirm we have tag id 1 there - in Category Dry, with id 1
         ShoppingListItem resultItem = result.getCategories().stream().flatMap(c -> c.getItems().stream())
-                        .filter(item -> item.getTag().getId().equals(targetTagId))
-                                .findFirst().orElse(null);
-        Assert.assertNotNull(resultItem);
-        Assert.assertTrue(resultItem.getSourceKeys().contains("d" + dish1Id));
-        Assert.assertTrue(resultItem.getSourceKeys().contains("d" + dish2Id));
-        Assert.assertEquals(Integer.valueOf(2), resultItem.getUsedCount());
+                .filter(item -> item.getTag().getId().equals(targetTagId))
+                .findFirst().orElse(null);
+        Assertions.assertNotNull(resultItem);
+        Assertions.assertTrue(resultItem.getSourceKeys().contains("d" + dish1Id));
+        Assertions.assertTrue(resultItem.getSourceKeys().contains("d" + dish2Id));
+        Assertions.assertEquals(Integer.valueOf(2), resultItem.getUsedCount());
 
-        //MM check used count 0 here!!
-       // Assert.assertTrue(resultItem.getUsedCount().equals(2L));
 
         // the remove test
         // remove dish 66500 (dish1Id)
@@ -974,15 +951,15 @@ public class ShoppingListRestControllerTest {
         resultItem = result.getCategories().stream().flatMap(c -> c.getItems().stream())
                 .filter(item -> item.getTag().getId().equals(targetTagId))
                 .findFirst().orElse(null);
-        Assert.assertNotNull(resultItem);
-        Assert.assertFalse(resultItem.getSourceKeys().contains("d" + dish1Id));
-        Assert.assertTrue(resultItem.getSourceKeys().contains("d" + dish2Id));
-        Assert.assertEquals(Integer.valueOf(1), resultItem.getUsedCount());
+        Assertions.assertNotNull(resultItem);
+        Assertions.assertFalse(resultItem.getSourceKeys().contains("d" + dish1Id));
+        Assertions.assertTrue(resultItem.getSourceKeys().contains("d" + dish2Id));
+        Assertions.assertEquals(Integer.valueOf(1), resultItem.getUsedCount());
     }
 
     @Test
     @WithMockUser
-    public void testChangeListLayout() throws Exception {
+    void testChangeListLayout() throws Exception {
 
         Long listId = TestConstants.LIST_1_ID;
         String url = "/shoppinglist/" + listId + "/layout/" + TestConstants.LIST_LAYOUT_2_ID;
@@ -995,7 +972,7 @@ public class ShoppingListRestControllerTest {
 
     @Test
     @WithMockUser
-    public void deleteAllItemsFromList() throws Exception {
+    void deleteAllItemsFromList() throws Exception {
 
         ListGenerateProperties properties = new ListGenerateProperties();
         properties.setAddFromStarter(true);
@@ -1013,8 +990,8 @@ public class ShoppingListRestControllerTest {
                 .andReturn();
 
         List<String> responses = result.getResponse().getHeaders("Location");
-        Assert.assertNotNull(responses);
-        Assert.assertTrue(responses.size() > 0);
+        Assertions.assertNotNull(responses);
+        Assertions.assertTrue(responses.size() > 0);
         String[] urlTokens = StringUtils.split(responses.get(0), "/");
         Long listId = Long.valueOf(urlTokens[(urlTokens).length - 1]);
 
@@ -1029,13 +1006,13 @@ public class ShoppingListRestControllerTest {
         Map<String, ShoppingListItem> resultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(resultMap);
-        Assert.assertTrue(resultMap.isEmpty());
+        Assertions.assertNotNull(resultMap);
+        Assertions.assertTrue(resultMap.isEmpty());
     }
 
     @Test
     @WithMockUser
-    public void deleteItemOperation_Move() throws Exception {
+    void deleteItemOperation_Move() throws Exception {
         Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
         Long destinationListId = 6666L;  // 501, 502, 503, 505
         List<Long> tagIdsForUpdate = Arrays.asList(500L, 502L);
@@ -1049,7 +1026,7 @@ public class ShoppingListRestControllerTest {
 
         String url = "/shoppinglist/" + sourceListId + "/item";
 
-        MvcResult result = this.mockMvc.perform(put(url)
+        this.mockMvc.perform(put(url)
                         .with(user(meUserDetails))
                         .contentType(contentType)
                         .content(jsonProperties))
@@ -1062,30 +1039,30 @@ public class ShoppingListRestControllerTest {
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
-        Assert.assertNotNull(sourceResultMap);
-        Assert.assertEquals(2, sourceResultMap.keySet().size());
+        Assertions.assertNotNull(sourceResultMap);
+        Assertions.assertEquals(2, sourceResultMap.keySet().size());
         // 500 shouldn't be there
-        Assert.assertFalse(sourceResultMap.containsKey("500"));
+        Assertions.assertFalse(sourceResultMap.containsKey("500"));
         // check destination list
         ShoppingList destination = retrieveList(meUserDetails, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
-        Assert.assertNotNull(destinationResultMap);
-        Assert.assertEquals(5, destinationResultMap.keySet().size());
+        Assertions.assertNotNull(destinationResultMap);
+        Assertions.assertEquals(5, destinationResultMap.keySet().size());
         // 500 should be there with count 1
-        Assert.assertTrue(destinationResultMap.containsKey("500"));
+        Assertions.assertTrue(destinationResultMap.containsKey("500"));
         ShoppingListItem testElement = destinationResultMap.get("500");
-        Assert.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
         // 502 should be there with a count of 2
         testElement = destinationResultMap.get("502");
-        Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
 
     }
 
     @Test
     @WithMockUser
-    public void deleteItemOperation_Copy() throws Exception {
+    void deleteItemOperation_Copy() throws Exception {
         Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
         Long destinationListId = 6666L;  // 501, 502, 503, 505
         List<Long> tagIdsForUpdate = Arrays.asList(500L, 501L, 504L);
@@ -1099,7 +1076,7 @@ public class ShoppingListRestControllerTest {
 
         String url = "/shoppinglist/" + sourceListId + "/item";
 
-        MvcResult result = this.mockMvc.perform(put(url)
+        this.mockMvc.perform(put(url)
                         .with(user(meUserDetails))
                         .contentType(contentType)
                         .content(jsonProperties))
@@ -1112,28 +1089,28 @@ public class ShoppingListRestControllerTest {
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
-        Assert.assertEquals(4, sourceResultMap.keySet().size());
+        Assertions.assertEquals(4, sourceResultMap.keySet().size());
         // check destination list
         ShoppingList destination = retrieveList(meUserDetails, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
-        Assert.assertNotNull(destinationResultMap);
-        Assert.assertEquals(5, destinationResultMap.keySet().size());
+        Assertions.assertNotNull(destinationResultMap);
+        Assertions.assertEquals(5, destinationResultMap.keySet().size());
         // 500 should be there with count 1
-        Assert.assertTrue(destinationResultMap.containsKey("500"));
+        Assertions.assertTrue(destinationResultMap.containsKey("500"));
         ShoppingListItem testElement = destinationResultMap.get("500");
-        Assert.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
         // 501 should be there with a count of 2
         testElement = destinationResultMap.get("501");
-        Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
 
     }
 
     @Test
     @WithMockUser
-    public void deleteItemOperation_MoveCrossedOff_New() throws Exception {
+    void deleteItemOperation_MoveCrossedOff_New() throws Exception {
         Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
         Long destinationListId = 6666L;  // 501, 502, 503, 505, 505
         List<Long> tagIdsForUpdate = Arrays.asList(500L, 502L);
@@ -1160,31 +1137,31 @@ public class ShoppingListRestControllerTest {
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
-        Assert.assertNotNull(sourceResultMap);
-        Assert.assertEquals(2, sourceResultMap.keySet().size());
+        Assertions.assertNotNull(sourceResultMap);
+        Assertions.assertEquals(2, sourceResultMap.keySet().size());
         // 500 shouldn't be there
-        Assert.assertFalse(sourceResultMap.containsKey(500L));
+        Assertions.assertFalse(sourceResultMap.containsKey(500L));
         // check destination list
         ShoppingList destination = retrieveList(meUserDetails, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
-        Assert.assertNotNull(destinationResultMap);
-        Assert.assertEquals(5, destinationResultMap.keySet().size());
+        Assertions.assertNotNull(destinationResultMap);
+        Assertions.assertEquals(5, destinationResultMap.keySet().size());
         // 500 should be there with count 1, crossedOff
-        Assert.assertTrue(destinationResultMap.containsKey("500"));
+        Assertions.assertTrue(destinationResultMap.containsKey("500"));
         ShoppingListItem testElement = destinationResultMap.get("500");
-        Assert.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
-        Assert.assertNull(testElement.getCrossedOff());  // when item is moved, it loses it's crossed off status
+        Assertions.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertNull(testElement.getCrossedOff());  // when item is moved, it loses it's crossed off status
         // 502 should be there with a count of 2
         testElement = destinationResultMap.get("502");
-        Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
     }
 
     @Test
     @WithMockUser
-    public void deleteItemOperation_MoveCrossedOff_Existing() throws Exception {
+    void deleteItemOperation_MoveCrossedOff_Existing() throws Exception {
         Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
         Long destinationListId = 6666L;  // 501, 502, 503, 505, 505
         List<Long> tagIdsForUpdate = Arrays.asList(505L, 502L);
@@ -1211,17 +1188,17 @@ public class ShoppingListRestControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonList = listResultsAfter.getResponse().getContentAsString();
         ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
-        Assert.assertNotNull(afterList);
+        Assertions.assertNotNull(afterList);
         ShoppingList list = afterList.getShoppingList();
 
         Map<String, ShoppingListItem> allSourceResultMap = list.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
-        Assert.assertNotNull(allSourceResultMap);
-        Assert.assertEquals(2, allSourceResultMap.keySet().size());
+        Assertions.assertNotNull(allSourceResultMap);
+        Assertions.assertEquals(2, allSourceResultMap.keySet().size());
         // 505 shouldn't be there
-        Assert.assertFalse(allSourceResultMap.containsKey("505"));
+        Assertions.assertFalse(allSourceResultMap.containsKey("505"));
 
         // check destination list
         ShoppingList destination = retrieveList(meUserDetails, destinationListId);
@@ -1229,22 +1206,22 @@ public class ShoppingListRestControllerTest {
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
-        Assert.assertNotNull(destinationResultMap);
-        Assert.assertEquals(4, destinationResultMap.keySet().size());
+        Assertions.assertNotNull(destinationResultMap);
+        Assertions.assertEquals(4, destinationResultMap.keySet().size());
         // 505 should be there with count 2, not crossedOff
-        Assert.assertTrue(destinationResultMap.containsKey("505"));
+        Assertions.assertTrue(destinationResultMap.containsKey("505"));
         ShoppingListItem testElement = destinationResultMap.get("505");
-        Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
-        Assert.assertNull(testElement.getCrossedOff());
+        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertNull(testElement.getCrossedOff());
         // 502 should be there with a count of 2
         testElement = destinationResultMap.get("502");
-        Assert.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
     }
 
 
     @Test
     @WithMockUser
-    public void deleteItemOperation_Remove() throws Exception {
+    void deleteItemOperation_Remove() throws Exception {
         Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
         List<Long> tagIdsForUpdate = Arrays.asList(500L, 501L, 504L);
 
@@ -1257,7 +1234,7 @@ public class ShoppingListRestControllerTest {
 
         String url = "/shoppinglist/" + sourceListId + "/item";
 
-        MvcResult result = this.mockMvc.perform(put(url)
+        this.mockMvc.perform(put(url)
                         .with(user(meUserDetails))
                         .contentType(contentType)
                         .content(jsonProperties))
@@ -1270,16 +1247,16 @@ public class ShoppingListRestControllerTest {
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
-        Assert.assertNotNull(sourceResultMap);
-        Assert.assertEquals(2, sourceResultMap.keySet().size());
+        Assertions.assertNotNull(sourceResultMap);
+        Assertions.assertEquals(2, sourceResultMap.keySet().size());
         // 500 shouldn't be there
-        Assert.assertFalse(sourceResultMap.containsKey(500L));
+        Assertions.assertFalse(sourceResultMap.containsKey(500L));
 
     }
 
     @Test
     @WithMockUser
-    public void deleteItemOperation_RemoveCrossedOff() throws Exception {
+    void deleteItemOperation_RemoveCrossedOff() throws Exception {
         Long sourceListId = 77777L;  // 500, 501, 502
 
         ItemOperationPut operationUpdate = new ItemOperationPut();
@@ -1295,7 +1272,7 @@ public class ShoppingListRestControllerTest {
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getRemoved() != null)
                 .map(i -> i.getTag().getId())
-                .collect(Collectors.toList());
+                .toList();
 
         String url = "/shoppinglist/" + sourceListId + "/item";
 
@@ -1313,17 +1290,17 @@ public class ShoppingListRestControllerTest {
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
 
-        Assert.assertNotNull(sourceResultMap);
+        Assertions.assertNotNull(sourceResultMap);
         // check that none of the crossed off ids are in the map
         for (String crossedOffId : crossedOffIds) {
-            Assert.assertFalse("crossed off ids shouldn't be in the list", sourceResultMap.containsKey(crossedOffId));
+            Assertions.assertFalse(sourceResultMap.containsKey(crossedOffId), "crossed off ids shouldn't be in the list");
         }
 
     }
 
     @Test
     @WithMockUser
-    public void deleteItemOperation_RemoveAll() throws Exception {
+    void deleteItemOperation_RemoveAll() throws Exception {
         Long sourceListId = 77777L;  // 500, 501, 502
 
         ItemOperationPut operationUpdate = new ItemOperationPut();
@@ -1349,15 +1326,15 @@ public class ShoppingListRestControllerTest {
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
-        Assert.assertNotNull(destinationResultMap);
-        Assert.assertEquals(0, destinationResultMap.keySet().size());
+        Assertions.assertNotNull(destinationResultMap);
+        Assertions.assertEquals(0, destinationResultMap.keySet().size());
 
     }
 
 
     @Test
     @WithMockUser
-    public void testRemoveDish_CrossedOffOk() throws Exception {
+    void testRemoveDish_CrossedOffOk() throws Exception {
         // test for LS-883 here
 
         // create list
@@ -1366,7 +1343,7 @@ public class ShoppingListRestControllerTest {
         properties.setGenerateMealplan(false);
 
         String jsonProperties = json(properties);
-        String listId = createList(jsonProperties,meUserDetails);
+        String listId = createList(jsonProperties, meUserDetails);
 
         String url = "/shoppinglist";
         MvcResult listResultBefore = this.mockMvc.perform(get(url + "/" + listId)
@@ -1375,7 +1352,7 @@ public class ShoppingListRestControllerTest {
         String jsonList = listResultBefore.getResponse().getContentAsString();
         ObjectMapper objectMapper = new ObjectMapper();
         ShoppingListResource beforeList = objectMapper.readValue(jsonList, ShoppingListResource.class);
-        Assert.assertNotNull(beforeList);
+        Assertions.assertNotNull(beforeList);
 
         // add dish which contains tag carrots - 109
         String addDishOneUrl = String.format("%s/%s/dish/%s", url, listId, "109");
@@ -1388,11 +1365,27 @@ public class ShoppingListRestControllerTest {
                         .with(user(meUserDetails)))
                 .andReturn();
 
+        // check results
+        MvcResult listResultsAddDishTwo = this.mockMvc.perform(get(url + "/" + listId)
+                        .with(user(meUserDetails)))
+                .andReturn();
+        jsonList = listResultsAddDishTwo.getResponse().getContentAsString();
+        ShoppingListResource afterAddDishTwo = objectMapper.readValue(jsonList, ShoppingListResource.class);
+        Assertions.assertNotNull(afterAddDishTwo);
+
         // cross off all items on list
         String crossOffItemsUrl = String.format("%s/%s/item/shop?crossOff=true", url, listId);
         this.mockMvc.perform(post(crossOffItemsUrl)
                         .with(user(meUserDetails)))
                 .andReturn();
+        // check results
+        MvcResult listResultsCrossedOff = this.mockMvc.perform(get(url + "/" + listId)
+                        .with(user(meUserDetails)))
+                .andReturn();
+        jsonList = listResultsCrossedOff.getResponse().getContentAsString();
+        ShoppingListResource afterCrossedOff = objectMapper.readValue(jsonList, ShoppingListResource.class);
+        Assertions.assertNotNull(afterCrossedOff);
+
 
         // remove first dish - 109
         String deleteDishUrl = String.format("%s/%s/dish/%s", url, listId, "109");
@@ -1406,21 +1399,22 @@ public class ShoppingListRestControllerTest {
                 .andReturn();
         jsonList = listResultsAfter.getResponse().getContentAsString();
         ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
-        Assert.assertNotNull(afterList);
+        Assertions.assertNotNull(afterList);
         ShoppingList list = afterList.getShoppingList();
         Optional<ShoppingListCategory> produce = list.getCategories()
                 .stream()
                 .filter(c -> c.getName().equals("Produce"))
                 .findFirst();
-        Assert.assertTrue("list contains category produce", produce.isPresent());
+        Assertions.assertTrue(produce.isPresent(), "list contains category produce");
         Optional<ShoppingListItem> carrotOpt = produce.get().getItems().stream()
                 .filter(i -> i.getTag().getName().equals("carrots"))
                 .findFirst();
-        Assert.assertTrue("carrots present in list", carrotOpt.isPresent());
+        Assertions.assertTrue(carrotOpt.isPresent(), "carrots present in list");
         ShoppingListItem carrot = carrotOpt.get();
-        Assert.assertEquals("only one source key for carrots shown", 1, carrot.getSourceKeys().size());
-        Assert.assertNotNull("carrots should be crossed off", carrot.getCrossedOff());
+        Assertions.assertEquals(1, carrot.getSourceKeys().size(), "only one source key for carrots shown");
+        Assertions.assertNotNull(carrot.getCrossedOff(), "carrots should be crossed off");
     }
+
     private ShoppingList retrieveList(UserDetails userDetails, Long listId) throws Exception {
         MvcResult listResultsAfter = this.mockMvc.perform(get("/shoppinglist/" + listId)
                         .with(user(userDetails)))
@@ -1428,7 +1422,7 @@ public class ShoppingListRestControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonList = listResultsAfter.getResponse().getContentAsString();
         ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
-        Assert.assertNotNull(afterList);
+        Assertions.assertNotNull(afterList);
         return afterList.getShoppingList();
     }
 
@@ -1437,6 +1431,5 @@ public class ShoppingListRestControllerTest {
         this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();
     }
-
 
 }

@@ -321,7 +321,7 @@ public class ShoppingListServiceImplMockTest {
         shoppingListService.addItemToListByTag(userId, listId, tagId);
 
         Mockito.verify(itemChangeRepository, times(1)).saveItemChangeStatistics(any(ShoppingListEntity.class),
-                any(List.class), any(Long.class), any(ListOperationType.class));
+                any(List.class),any(List.class), any(Long.class), any(ListOperationType.class));
         Mockito.verify(shoppingListRepository, times(1)).save(listCapture.capture());
 
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
@@ -924,6 +924,7 @@ public class ShoppingListServiceImplMockTest {
         Mockito.doNothing().when(itemChangeRepository).saveItemChangeStatistics(
                 any(ShoppingListEntity.class),
                 listArgument.capture(),
+                any(List.class),
                 any(Long.class),
                 eq(ListOperationType.DISH_ADD));
 
@@ -933,6 +934,7 @@ public class ShoppingListServiceImplMockTest {
 
         Mockito.verify(itemChangeRepository, times(1)).saveItemChangeStatistics(
                 any(ShoppingListEntity.class),
+                any(List.class),
                 any(List.class),
                 any(Long.class),
                 eq(ListOperationType.DISH_ADD));

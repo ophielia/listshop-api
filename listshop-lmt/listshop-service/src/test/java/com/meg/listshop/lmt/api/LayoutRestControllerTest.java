@@ -7,12 +7,10 @@ import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -22,11 +20,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -34,7 +34,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,17 +42,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
+@Testcontainers
 @WebAppConfiguration
 @ActiveProfiles("test")
 @Sql(value = {"/sql/com/meg/atable/lmt/api/LayoutRestControlleTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sql/com/meg/atable/lmt/api/LayoutRestController_rollback.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-public class LayoutRestControllerTest {
+class LayoutRestControllerTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private static UserDetails baseUserDetails;
@@ -81,10 +81,10 @@ public class LayoutRestControllerTest {
                 .findAny()
                 .orElse(null);
 
-        assertNotNull("the JSON message converter must not be null", mappingJackson2HttpMessageConverter);
+        Assertions.assertNotNull(mappingJackson2HttpMessageConverter, "the JSON message converter must not be null");
     }
 
-    @Before
+    @BeforeEach
     @WithMockUser
     public void setup() throws Exception {
 
@@ -127,7 +127,7 @@ public class LayoutRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testDefaultLayoutAssignment() throws Exception {
+    void testDefaultLayoutAssignment() throws Exception {
         String categoryTemplateId = "998901";  // Forbidden Area
         String tagIdEliza = "1000124";
         String tagIdAlexander = "1000125";
@@ -197,14 +197,14 @@ public class LayoutRestControllerTest {
         ShoppingList resultList = afterList.getShoppingList();
 
         // Creation of new tag
-        Assert.assertNotNull(resultList);
-        Assert.assertEquals(1, resultList.getCategories().size());
+        Assertions.assertNotNull(resultList);
+        Assertions.assertEquals(1, resultList.getCategories().size());
     }
 
 
     @Test
     @WithMockUser
-    public void testPostUserMappingsExisting() throws Exception {
+    void testPostUserMappingsExisting() throws Exception {
         // create mapping post - map apples and oranges to default category Frozen
         // 10, 'Frozen'
         String categoryTemplateId = "10";
@@ -233,28 +233,28 @@ public class LayoutRestControllerTest {
 
         // get default layout
         ListLayoutListResource resource = parseResourceFromString(result.getResponse().getContentAsString());
-        Assert.assertNotNull(resource);
+        Assertions.assertNotNull(resource);
         Optional<ListLayout> listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
                 .filter(ListLayout::isDefault)
                 .findFirst();
-        Assert.assertTrue("default exists", listLayoutResult.isPresent());
+        Assertions.assertTrue(listLayoutResult.isPresent(), "default exists");
         ListLayout layout = listLayoutResult.get();
 
         // assert category "Frozen" exists
         Optional<ListLayoutCategory> frozenCategoryOpt = layout.getCategories().stream()
                 .filter(listLayoutCategory -> listLayoutCategory.getName().equalsIgnoreCase("Frozen"))
                 .findFirst();
-        Assert.assertTrue(frozenCategoryOpt.isPresent());
+        Assertions.assertTrue(frozenCategoryOpt.isPresent());
         ListLayoutCategory category = frozenCategoryOpt.get();
 
         // assert apples, oranges, and lemon are in frozen
         Set<String> tagIds = category.getTags().stream()
                 .map(Tag::getId)
                 .collect(Collectors.toSet());
-        Assert.assertTrue("apples are there", tagIds.contains(tagIdApple));
-        Assert.assertTrue("oranges are there", tagIds.contains(tagIdOrange));
-        Assert.assertTrue("lemons are there", tagIds.contains(tagIdLemon));
+        Assertions.assertTrue(tagIds.contains(tagIdApple), "apples are there");
+        Assertions.assertTrue(tagIds.contains(tagIdOrange), "oranges are there");
+        Assertions.assertTrue(tagIds.contains(tagIdLemon), "lemons are there");
 
         // Part II - move these tags to a different category
         //  999901, 'Special Category'
@@ -280,12 +280,12 @@ public class LayoutRestControllerTest {
 
         // get default layout
         resource = parseResourceFromString(result.getResponse().getContentAsString());
-        Assert.assertNotNull(resource);
+        Assertions.assertNotNull(resource);
         listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
                 .filter(ListLayout::isDefault)
                 .findFirst();
-        Assert.assertTrue("default exists", listLayoutResult.isPresent());
+        Assertions.assertTrue(listLayoutResult.isPresent(), "default exists");
         layout = listLayoutResult.get();
 
         // assert category "Special" exists
@@ -298,22 +298,22 @@ public class LayoutRestControllerTest {
         Set<String> tagIdsInSpecial = specialCategory.getTags().stream()
                 .map(Tag::getId)
                 .collect(Collectors.toSet());
-        Assert.assertFalse("apples are not there", tagIdsInSpecial.contains(tagIdApple));
-        Assert.assertFalse("oranges are not there", tagIdsInSpecial.contains(tagIdOrange));
-        Assert.assertTrue("lemons are there", tagIdsInSpecial.contains(tagIdLemon));
+        Assertions.assertFalse(tagIdsInSpecial.contains(tagIdApple), "apples are not there");
+        Assertions.assertFalse(tagIdsInSpecial.contains(tagIdOrange), "oranges are not there");
+        Assertions.assertTrue(tagIdsInSpecial.contains(tagIdLemon), "lemons are there");
 
         //  lemon is not in frozen
         Set<String> tagIdsInFrozen = frozenCategory.getTags().stream()
                 .map(Tag::getId)
                 .collect(Collectors.toSet());
-        Assert.assertTrue("apples are  there", tagIdsInFrozen.contains(tagIdApple));
-        Assert.assertTrue("oranges are  there", tagIdsInFrozen.contains(tagIdOrange));
-        Assert.assertFalse("lemons are not there", tagIdsInFrozen.contains(tagIdLemon));
+        Assertions.assertTrue(tagIdsInFrozen.contains(tagIdApple), "apples are  there");
+        Assertions.assertTrue(tagIdsInFrozen.contains(tagIdOrange), "oranges are  there");
+        Assertions.assertFalse(tagIdsInFrozen.contains(tagIdLemon), "lemons are not there");
     }
 
     @Test
     @WithMockUser
-    public void testPostUserMappingsNewUser() throws Exception {
+    void testPostUserMappingsNewUser() throws Exception {
         // do mappings with user which doesn't have any layout or categoriew
         String categoryTemplateId = "10";
 
@@ -341,28 +341,28 @@ public class LayoutRestControllerTest {
 
         // get default layout
         ListLayoutListResource resource = parseResourceFromString(result.getResponse().getContentAsString());
-        Assert.assertNotNull(resource);
+        Assertions.assertNotNull(resource);
         Optional<ListLayout> listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
                 .filter(ListLayout::isDefault)
                 .findFirst();
-        Assert.assertTrue("default exists", listLayoutResult.isPresent());
+        Assertions.assertTrue(listLayoutResult.isPresent(), "default exists");
         ListLayout layout = listLayoutResult.get();
 
         // assert category "Frozen" exists
         Optional<ListLayoutCategory> frozenCategoryOpt = layout.getCategories().stream()
                 .filter(listLayoutCategory -> listLayoutCategory.getName().equalsIgnoreCase("Frozen"))
                 .findFirst();
-        Assert.assertTrue(frozenCategoryOpt.isPresent());
+        Assertions.assertTrue(frozenCategoryOpt.isPresent());
         ListLayoutCategory category = frozenCategoryOpt.get();
 
         // assert apples, oranges, and lemon are in frozen
         Set<String> tagIds = category.getTags().stream()
                 .map(Tag::getId)
                 .collect(Collectors.toSet());
-        Assert.assertTrue("apples are there", tagIds.contains(tagIdApple));
-        Assert.assertTrue("oranges are there", tagIds.contains(tagIdOrange));
-        Assert.assertTrue("lemons are there", tagIds.contains(tagIdLemon));
+        Assertions.assertTrue(tagIds.contains(tagIdApple), "apples are there");
+        Assertions.assertTrue(tagIds.contains(tagIdOrange), "oranges are there");
+        Assertions.assertTrue(tagIds.contains(tagIdLemon), "lemons are there");
 
         // Part II - move these tags to a different category
         //  999901, 'Special Category'
@@ -388,12 +388,12 @@ public class LayoutRestControllerTest {
 
         // get default layout
         resource = parseResourceFromString(result.getResponse().getContentAsString());
-        Assert.assertNotNull(resource);
+        Assertions.assertNotNull(resource);
         listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
                 .filter(ListLayout::isDefault)
                 .findFirst();
-        Assert.assertTrue("default exists", listLayoutResult.isPresent());
+        Assertions.assertTrue(listLayoutResult.isPresent(), "default exists");
         layout = listLayoutResult.get();
 
         // assert category "Special" exists
@@ -406,22 +406,22 @@ public class LayoutRestControllerTest {
         Set<String> tagIdsInSpecial = specialCategory.getTags().stream()
                 .map(Tag::getId)
                 .collect(Collectors.toSet());
-        Assert.assertFalse("apples are not there", tagIdsInSpecial.contains(tagIdApple));
-        Assert.assertFalse("oranges are not there", tagIdsInSpecial.contains(tagIdOrange));
-        Assert.assertTrue("lemons are there", tagIdsInSpecial.contains(tagIdLemon));
+        Assertions.assertFalse(tagIdsInSpecial.contains(tagIdApple), "apples are not there");
+        Assertions.assertFalse(tagIdsInSpecial.contains(tagIdOrange), "oranges are not there");
+        Assertions.assertTrue(tagIdsInSpecial.contains(tagIdLemon), "lemons are there");
 
         //  lemon is not in frozen
         Set<String> tagIdsInFrozen = frozenCategory.getTags().stream()
                 .map(Tag::getId)
                 .collect(Collectors.toSet());
-        Assert.assertTrue("apples are  there", tagIdsInFrozen.contains(tagIdApple));
-        Assert.assertTrue("oranges are  there", tagIdsInFrozen.contains(tagIdOrange));
-        Assert.assertFalse("lemons are not there", tagIdsInFrozen.contains(tagIdLemon));
+        Assertions.assertTrue(tagIdsInFrozen.contains(tagIdApple), "apples are  there");
+        Assertions.assertTrue(tagIdsInFrozen.contains(tagIdOrange), "oranges are  there");
+        Assertions.assertFalse(tagIdsInFrozen.contains(tagIdLemon), "lemons are not there");
     }
 
     @Test
     @WithMockUser
-    public void testGetUserLayoutsEmpty() throws Exception {
+    void testGetUserLayoutsEmpty() throws Exception {
         // get base user layouts - checking that given layout is fully filled in
         String url = "/layout/user";
         MvcResult result = this.mockMvc.perform(get(url)
@@ -430,16 +430,16 @@ public class LayoutRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         ListLayoutListResource resource = parseResourceFromString(result.getResponse().getContentAsString());
-        Assert.assertNotNull(resource.getEmbeddedList().getListLayoutResourceList());
-        Assert.assertEquals("empty list should be returned", 0, resource.getEmbeddedList().getListLayoutResourceList().size());
+        Assertions.assertNotNull(resource.getEmbeddedList().getListLayoutResourceList());
+        Assertions.assertEquals(0, resource.getEmbeddedList().getListLayoutResourceList().size(), "empty list should be returned");
     }
 
 
     @Test
     @WithMockUser
-    public void testGetUserLayouts() throws Exception {
+    void testGetUserLayouts() throws Exception {
         // get base user layouts - checking that given layout is fully filled in
         String url = "/layout/user";
         MvcResult result = this.mockMvc.perform(get(url)
@@ -449,27 +449,27 @@ public class LayoutRestControllerTest {
                 .andExpect(jsonPath("$._embedded.list_layout_list", Matchers.hasSize(2)))
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         ListLayoutListResource resource = parseResourceFromString(result.getResponse().getContentAsString());
-        Assert.assertNotNull(resource);
+        Assertions.assertNotNull(resource);
         Map<Long, ListLayout> resultMap = resource.getEmbeddedList().getListLayoutResourceList().stream()
                 .map(ListLayoutResource::getListLayout)
                 .collect(Collectors.toMap(ListLayout::getLayoutId, Function.identity()));
-        Assert.assertEquals("two layouts returned", 2, resultMap.keySet().size());
-        Assert.assertTrue("contains layout 999", resultMap.containsKey(999L));
+        Assertions.assertEquals(2, resultMap.keySet().size(), "two layouts returned");
+        Assertions.assertTrue(resultMap.containsKey(999L), "contains layout 999");
         ListLayout defaultLayout = resultMap.get(999L);
-        Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
-        Assert.assertEquals("default layout has 1 category", 1, defaultLayout.getCategories().size());
-        Assert.assertEquals("default layouts category contains 3 tags", 3, defaultLayout.getCategories().get(0).getTags().size());
+        Assertions.assertTrue(defaultLayout.isDefault(), "default layout is marked as such");
+        Assertions.assertEquals(1, defaultLayout.getCategories().size(), "default layout has 1 category");
+        Assertions.assertEquals(3, defaultLayout.getCategories().get(0).getTags().size(), "default layouts category contains 3 tags");
         ListLayout otherLayout = resultMap.get(998L);
-        Assert.assertFalse("other layout is not default", otherLayout.isDefault());
-        Assert.assertEquals("other layout has 1 category", 1, otherLayout.getCategories().size());
-        Assert.assertEquals("other layouts category contains 3 tags", 3, otherLayout.getCategories().get(0).getTags().size());
+        Assertions.assertFalse(otherLayout.isDefault(), "other layout is not default");
+        Assertions.assertEquals(1, otherLayout.getCategories().size(), "other layout has 1 category");
+        Assertions.assertEquals(3, otherLayout.getCategories().get(0).getTags().size(), "other layouts category contains 3 tags");
 
     }
 
     @Test
-    public void testGetDefaultUserLayoutNotLoggedIn() throws Exception {
+    void testGetDefaultUserLayoutNotLoggedIn() throws Exception {
         // get base user layouts - checking that given layout is fully filled in
         String url = "/layout/default";
         MvcResult result = this.mockMvc.perform(get(url)
@@ -477,28 +477,28 @@ public class LayoutRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         ListLayoutResource resource = parseSingleResourceFromString(result.getResponse().getContentAsString());
-        Assert.assertNotNull(resource);
+        Assertions.assertNotNull(resource);
         ListLayout defaultLayout = resource.getListLayout();
-        Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
-        Assert.assertTrue("default layout has more than 5", defaultLayout.getCategories().size() > 5);
+        Assertions.assertTrue(defaultLayout.isDefault(), "default layout is marked as such");
+        Assertions.assertTrue(defaultLayout.getCategories().size() > 5, "default layout has more than 5");
         Optional<ListLayoutCategory> produce = defaultLayout.getCategories().stream()
                 .filter(c -> Objects.equals(c.getName(), "Produce"))
                 .findFirst();
-        Assert.assertTrue("produce category exists", produce.isPresent());
-        Assert.assertTrue("produce has at least 10 tags", produce.get().getTags().size() > 10);
+        Assertions.assertTrue(produce.isPresent(), "produce category exists");
+        Assertions.assertTrue(produce.get().getTags().size() > 10, "produce has at least 10 tags");
         // tag "Peggy" is user-specific, and should not be in ListLayout
         Optional<Tag> peggyTag = defaultLayout.getCategories().stream()
                 .flatMap(c -> c.getTags().stream())
                 .filter(t -> Objects.equals(t.getName(), "Peggy"))
                 .findFirst();
-        Assert.assertFalse(peggyTag.isPresent());
+        Assertions.assertFalse(peggyTag.isPresent());
     }
 
     @Test
     @WithMockUser
-    public void testGetDefaultLayoutLoggedIn() throws Exception {
+    void testGetDefaultLayoutLoggedIn() throws Exception {
         // New User creates new tag as child of hamilton (1000123)
         String newTagUlr = "/tag/1000123/child";
 
@@ -521,27 +521,27 @@ public class LayoutRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         ListLayoutResource resource = parseSingleResourceFromString(result.getResponse().getContentAsString());
-        Assert.assertNotNull(resource);
+        Assertions.assertNotNull(resource);
         ListLayout defaultLayout = resource.getListLayout();
-        Assert.assertTrue("default layout is marked as such", defaultLayout.isDefault());
-        Assert.assertTrue("default layout has more than 5", defaultLayout.getCategories().size() > 5);
+        Assertions.assertTrue(defaultLayout.isDefault(), "default layout is marked as such");
+        Assertions.assertTrue(defaultLayout.getCategories().size() > 5, "default layout has more than 5");
         Optional<ListLayoutCategory> produce = defaultLayout.getCategories().stream()
                 .filter(c -> Objects.equals(c.getName(), "Produce"))
                 .findFirst();
-        Assert.assertTrue("produce category exists", produce.isPresent());
-        Assert.assertTrue("produce has at least 10 tags", produce.get().getTags().size() > 10);
+        Assertions.assertTrue(produce.isPresent(), "produce category exists");
+        Assertions.assertTrue(produce.get().getTags().size() > 10, "produce has at least 10 tags");
         // check for existance of "Thomas Jefferson" tag
         Optional<Tag> jeffersonTag = defaultLayout.getCategories().stream()
                 .flatMap(c -> c.getTags().stream())
                 .filter(t -> Objects.equals(t.getName(), "Thomas Jefferson"))
                 .findFirst();
-        Assert.assertTrue(jeffersonTag.isPresent());
+        Assertions.assertTrue(jeffersonTag.isPresent());
     }
 
     @Test
-    public void testGetUserCategories() throws Exception {
+    void testGetUserCategories() throws Exception {
         String url = "/layout/user/categories";
         MvcResult result = this.mockMvc.perform(get(url)
                         .with(user(emptyUserDetails))
@@ -549,7 +549,7 @@ public class LayoutRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         CategoryListResource categoryList = parseCategoryListResourceFromString(result.getResponse().getContentAsString());
         // the empty user should contain only the default categories
         // note - the layout id isn't included in the category resource, so we have to test with ids.
@@ -563,7 +563,7 @@ public class LayoutRestControllerTest {
     }
 
     @Test
-    public void testGetUserCategoriesWithOverlap() throws Exception {
+    void testGetUserCategoriesWithOverlap() throws Exception {
         // map tags to default category "Meat" (category_id 5)
         String categoryTemplateId = "5";
 
@@ -589,7 +589,7 @@ public class LayoutRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         CategoryListResource categoryList = parseCategoryListResourceFromString(result.getResponse().getContentAsString());
         // the base user will overlap categories - the category Meat exists in both the default, and the user categories
         Map<String, Category> categoryMap = categoryList.getEmbeddedList().getCategoryResourceList().stream()
@@ -604,7 +604,7 @@ public class LayoutRestControllerTest {
 
 
     @Test
-    public void testGetUserCategoriesWithUserLayout() throws Exception {
+    void testGetUserCategoriesWithUserLayout() throws Exception {
         String url = "/layout/user/categories";
         MvcResult result = this.mockMvc.perform(get(url)
                         .with(user(baseUserDetails))
@@ -612,7 +612,7 @@ public class LayoutRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         CategoryListResource categoryList = parseCategoryListResourceFromString(result.getResponse().getContentAsString());
         // the base user will contain their categories, as well as the default categories
         // but there aren't any overlaps in the names - the use categories are distinct
@@ -628,7 +628,7 @@ public class LayoutRestControllerTest {
     }
 
     @Test
-    public void testRetrieveUserDefaultLayout() throws Exception {
+    void testRetrieveUserDefaultLayout() throws Exception {
         String url = "/layout/user/categories";
         MvcResult result = this.mockMvc.perform(get(url)
                         .with(user(baseUserDetails))
@@ -636,7 +636,7 @@ public class LayoutRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
     }
 
 
@@ -661,7 +661,7 @@ public class LayoutRestControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         ListLayoutListResource afterList = objectMapper.readValue(resultString, ListLayoutListResource.class);
-        Assert.assertNotNull(afterList);
+        Assertions.assertNotNull(afterList);
         return afterList;
     }
 
@@ -669,7 +669,7 @@ public class LayoutRestControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         ListLayoutResource afterList = objectMapper.readValue(resultString, ListLayoutResource.class);
-        Assert.assertNotNull(afterList);
+        Assertions.assertNotNull(afterList);
         return afterList;
     }
 
@@ -677,7 +677,7 @@ public class LayoutRestControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         CategoryListResource afterList = objectMapper.readValue(resultString, CategoryListResource.class);
-        Assert.assertNotNull(afterList);
+        Assertions.assertNotNull(afterList);
         return afterList;
     }
 }

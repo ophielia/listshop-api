@@ -17,23 +17,25 @@ import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.common.RoundingUtils;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-@Ignore
-public class ConversionUKFactorsTest {
+@Disabled
+class ConversionUKFactorsTest {
 
     private static final Long cupsId = 1028L;
     private static final Long gallonId = 1024L;
@@ -62,11 +64,11 @@ public class ConversionUKFactorsTest {
     UnitRepository unitRepository;
 
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Test
-    public void unitUKUnitConversions() throws ConversionPathException, ConversionFactorException {
+    void unitUKUnitConversions() throws ConversionPathException, ConversionFactorException {
         UnitEntity pintOpt = unitRepository.findById(pintId).orElse(null);
         UnitEntity quartOpt = unitRepository.findById(quartId).orElse(null);
         UnitEntity mlOpt = unitRepository.findById(mlId).orElse(null);
@@ -119,7 +121,7 @@ public class ConversionUKFactorsTest {
     }
 
     @Test
-    public void unitUKtoUSConversions() throws ConversionPathException, ConversionFactorException {
+    void unitUKtoUSConversions() throws ConversionPathException, ConversionFactorException {
         UnitEntity gallonOpt = unitRepository.findById(gallonId).orElse(null);
         UnitEntity tspOpt = unitRepository.findById(tspId).orElse(null);
         UnitEntity tbspOpt = unitRepository.findById(tbspId).orElse(null);
@@ -189,7 +191,7 @@ public class ConversionUKFactorsTest {
     }
 
     @Test
-    public void unitFocus() throws ConversionPathException, ConversionFactorException {
+    void unitFocus() throws ConversionPathException, ConversionFactorException {
 
         // cup (fluid) (UK)	gallon (UK)
         // cup (fluid) (UK)	pint (UK)

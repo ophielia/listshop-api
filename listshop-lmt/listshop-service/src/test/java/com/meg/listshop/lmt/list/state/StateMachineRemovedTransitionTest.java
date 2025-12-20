@@ -2,8 +2,6 @@ package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.conversion.exceptions.ConversionFactorException;
-import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
@@ -12,7 +10,6 @@ import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.lmt.data.repository.ListItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.ServiceTestUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -22,10 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Date;
 
 
@@ -54,7 +49,7 @@ public class StateMachineRemovedTransitionTest {
     @Test
     public void testRemoveByTag() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
-
+        // remove by tag physically deletes the tag
         Long listId = targetList.getId();
         // setup - adding a simple list item from a tag - no relation to other list or dish
         TagEntity tagEntity = createTag();
@@ -69,7 +64,7 @@ public class StateMachineRemovedTransitionTest {
         ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext);
 
         // we expect that the result has the correct dates
-        verifyRemovedAndUpdated(result);
+        Assertions.assertNull(result);
 
 
     }
@@ -81,7 +76,7 @@ public class StateMachineRemovedTransitionTest {
         // setup - adding a dish item from a tag
         TagEntity tagEntity = createTag();
         Long dishId = 12345L;
-        DishItemEntity dishItem = createDishItem(dishId,tagEntity);
+        DishItemEntity dishItem = createDishItem(dishId, tagEntity);
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setDishItem(dishItem);
         ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
@@ -94,9 +89,9 @@ public class StateMachineRemovedTransitionTest {
         // call to test
         ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext);
 
-        // we expect that the result has been logically removed
+        // we expect that the result has been physically removed
         // (since the last detail was removed)
-        verifyRemovedAndUpdated(result);
+        Assertions.assertNull(result);
 
         // we expect that there aren't any detail items
         Assertions.assertEquals(0, countDetailItems(testItem));
@@ -110,13 +105,13 @@ public class StateMachineRemovedTransitionTest {
         // setup - adding two dish item from a tag
         TagEntity tagEntity = createTag();
         Long dishId = 12345L;
-        DishItemEntity dishItem = createDishItem(dishId,tagEntity);
+        DishItemEntity dishItem = createDishItem(dishId, tagEntity);
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setDishItem(dishItem);
         ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
 
         Long secondDishId = 999999L;
-        DishItemEntity secondDishItem = createDishItem(secondDishId,tagEntity);
+        DishItemEntity secondDishItem = createDishItem(secondDishId, tagEntity);
         setupContext = new ItemStateContext(testItem, listId);
         setupContext.setDishItem(secondDishItem);
         testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
@@ -172,27 +167,18 @@ public class StateMachineRemovedTransitionTest {
         testContext.setListItem(fromSecondList);
         ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext);
 
-        ListItemEntity testResult = listItemRepository.findWithDetailsById(result.getId()).orElse(null);
-        // we expect that the result has been logically removed
+        // we expect that the result has been physically removed
         // (since the last detail was removed)
-        verifyRemovedAndUpdated(testResult);
-
-        // we expect that there aren't any detail items
-        Assertions.assertEquals(0, countDetailItems(testResult));
+        Assertions.assertNull(result);
 
     }
 
-    private ListItemDetailEntity createDetailItem(ListItemEntity item) {
-            ListItemDetailEntity detail = new ListItemDetailEntity();
-            detail.setItem(item);
-            return itemDetailRepository.save(detail);
-    }
 
     private ShoppingListEntity createShoppingList() {
 
-    ShoppingListEntity shoppingListEntity = new ShoppingListEntity();
+        ShoppingListEntity shoppingListEntity = new ShoppingListEntity();
         shoppingListEntity.setName(LocalDateTime.now().toString());
-    return shoppingListRepository.save(shoppingListEntity);
+        return shoppingListRepository.save(shoppingListEntity);
     }
 
 
@@ -211,13 +197,6 @@ public class StateMachineRemovedTransitionTest {
         dishItemEntity.setTag(tag);
         dishItemEntity.setDish(dishEntity);
         return dishItemEntity;
-    }
-
-    private void verifyRemovedAndUpdated(ListItemEntity result) {
-        Assertions.assertNotNull(result.getRemovedOn());
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getRemovedOn(),2));
-        Assertions.assertNotNull(result.getUpdatedOn());
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
     }
 
     private void verifyUpdatedOnly(ListItemEntity result) {

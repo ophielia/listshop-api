@@ -7,23 +7,25 @@ import com.meg.listshop.lmt.data.pojos.AutoTagSubject;
 import com.meg.listshop.lmt.data.pojos.Instruction;
 import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
+@Testcontainers
 @ActiveProfiles("test")
-public class TextProcessorImplTest {
+class TextProcessorImplTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
@@ -33,7 +35,7 @@ public class TextProcessorImplTest {
     DishService dishService;
 
     @Test
-    public void fillInstructions() {
+    void fillInstructions() {
         // 2 instructions
         // 1 for text "Soup" which assigns to tag "Soup" (id: 301)
         // 1 for text "Crockpot" which assigns to tag "Crockpot" (id: 323)
@@ -41,12 +43,12 @@ public class TextProcessorImplTest {
         textProcessor.fillInstructions();
         // test that fill instructions results in 2 instructions loaded
         List<Instruction> list = textProcessor.getInstructions();
-        Assert.assertNotNull(list);
-        Assert.assertEquals(2, list.size());
+        Assertions.assertNotNull(list);
+        Assertions.assertEquals(2, list.size());
     }
 
     @Test
-    public void processTagForInstruction() {
+    void processTagForInstruction() {
         // get instructions
         textProcessor.fillInstructions();
         List<Instruction> instructions = textProcessor.getInstructions();
@@ -57,26 +59,26 @@ public class TextProcessorImplTest {
         DishEntity dishEntity = dishService.getDishForUserById(TestConstants.USER_3_NAME, TestConstants.DISH_1_ID);
         AutoTagSubject subject = new AutoTagSubject(dishEntity, false);
         Long assignedId = textProcessor.processTagForInstruction(soup, subject);
-        Assert.assertNull(assignedId);
+        Assertions.assertNull(assignedId);
         assignedId = textProcessor.processTagForInstruction(crockpot, subject);
-        Assert.assertNull(assignedId);
+        Assertions.assertNull(assignedId);
 
         // test dish - 25 - Ham and Potato Soup
         dishEntity = dishService.getDishForUserById(TestConstants.USER_3_NAME, 25L);
         subject = new AutoTagSubject(dishEntity, false);
         assignedId = textProcessor.processTagForInstruction(soup, subject);
-        Assert.assertNotNull(assignedId);
-        Assert.assertEquals(301L, assignedId.longValue());
+        Assertions.assertNotNull(assignedId);
+        Assertions.assertEquals(301L, assignedId.longValue());
         assignedId = textProcessor.processTagForInstruction(crockpot, subject);
-        Assert.assertNull(assignedId);
+        Assertions.assertNull(assignedId);
 
         // test dish - 81 - Crock Pot Jambalaya
         dishEntity = dishService.getDishForUserById(TestConstants.USER_3_NAME, 81L);
         subject = new AutoTagSubject(dishEntity, false);
         assignedId = textProcessor.processTagForInstruction(soup, subject);
-        Assert.assertNull(assignedId);
+        Assertions.assertNull(assignedId);
         assignedId = textProcessor.processTagForInstruction(crockpot, subject);
-        Assert.assertNotNull(assignedId);
-        Assert.assertEquals(323L, assignedId.longValue());
+        Assertions.assertNotNull(assignedId);
+        Assertions.assertEquals(323L, assignedId.longValue());
     }
 }

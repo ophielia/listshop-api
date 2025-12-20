@@ -22,40 +22,40 @@ import com.meg.listshop.lmt.service.MealPlanService;
 import com.meg.listshop.lmt.service.proposal.ProposalService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-public class MealPlanServiceImplMockTest {
+class MealPlanServiceImplMockTest {
 
 
     private MealPlanService mealPlanService;
 
 
-    @MockBean
+    @Mock
     private UserService userService;
-    @MockBean
+    @Mock
     private MealPlanRepository mealPlanRepository;
-    @MockBean
+    @Mock
     private SlotRepository slotRepository;
-    @MockBean
+    @Mock
     private DishService dishService;
-    @MockBean
+    @Mock
     private ProposalService targetProposalService;
-    @MockBean
+    @Mock
     private TagService tagService;
 
 
@@ -64,7 +64,7 @@ public class MealPlanServiceImplMockTest {
     private UserEntity modifyUserAccount;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mealPlanService = new MealPlanServiceImpl(userService,
                 mealPlanRepository,
@@ -84,7 +84,7 @@ public class MealPlanServiceImplMockTest {
 
 
     @Test
-    public void createMealPlan_AssignedName() throws Exception {
+    void createMealPlan_AssignedName() throws Exception {
         String testMealPlanName = "testname";
         Long currentdate = new Date().getTime();
         MealPlanEntity testSave = new MealPlanEntity();
@@ -100,17 +100,17 @@ public class MealPlanServiceImplMockTest {
 
         Mockito.verify(userService).getUserByUserEmail(modifyUserAccount.getEmail());
         // assert name, userid, and created correct in object sent to save
-        Assert.assertNotNull(mealPlanEntityCaptor.getValue());
+        Assertions.assertNotNull(mealPlanEntityCaptor.getValue());
         MealPlanEntity savedMealPlan = mealPlanEntityCaptor.getValue();
-        Assert.assertEquals(testMealPlanName, savedMealPlan.getName());
-        Assert.assertEquals(modifyUserAccount.getId(), savedMealPlan.getUserId());
-        Assert.assertTrue(savedMealPlan.getCreated().getTime() >= currentdate);
+        Assertions.assertEquals(testMealPlanName, savedMealPlan.getName());
+        Assertions.assertEquals(modifyUserAccount.getId(), savedMealPlan.getUserId());
+        Assertions.assertTrue(savedMealPlan.getCreated().getTime() >= currentdate);
 
 
     }
 
     @Test
-    public void createMealPlan_EmptyName() throws Exception {
+    void createMealPlan_EmptyName() throws Exception {
         String testMealPlanName = "testname";
         Long currentdate = new Date().getTime();
         MealPlanEntity testSave = new MealPlanEntity();
@@ -125,17 +125,17 @@ public class MealPlanServiceImplMockTest {
 
         Mockito.verify(userService).getUserByUserEmail(modifyUserAccount.getEmail());
         // assert name, userid, and created correct in object sent to save
-        Assert.assertNotNull(mealPlanEntityCaptor.getValue());
+        Assertions.assertNotNull(mealPlanEntityCaptor.getValue());
         MealPlanEntity savedMealPlan = mealPlanEntityCaptor.getValue();
-        Assert.assertNotNull(savedMealPlan.getName());
-        Assert.assertEquals(modifyUserAccount.getId(), savedMealPlan.getUserId());
-        Assert.assertTrue(savedMealPlan.getCreated().getTime() >= currentdate);
+        Assertions.assertNotNull(savedMealPlan.getName());
+        Assertions.assertEquals(modifyUserAccount.getId(), savedMealPlan.getUserId());
+        Assertions.assertTrue(savedMealPlan.getCreated().getTime() >= currentdate);
 
 
     }
 
     @Test
-    public void testDeleteMealPlan() {
+    void testDeleteMealPlan() {
         String email = deleteUserAccount.getEmail();
         Long mealPlanId = 99L;
         MealPlanEntity mealPlan = new MealPlanEntity();
@@ -154,13 +154,13 @@ public class MealPlanServiceImplMockTest {
         Mockito.verify(slotRepository).deleteAll(slotList);
         Mockito.verify(mealPlanRepository).delete(mealPlanEntityCaptor.capture());
 
-        Assert.assertNotNull(mealPlanEntityCaptor.getValue());
-        Assert.assertTrue(CollectionUtils.isEmpty(mealPlanEntityCaptor.getValue().getSlots()));
+        Assertions.assertNotNull(mealPlanEntityCaptor.getValue());
+        Assertions.assertTrue(CollectionUtils.isEmpty(mealPlanEntityCaptor.getValue().getSlots()));
 
     }
 
     @Test
-    public void testAddDishToMealPlan() {
+    void testAddDishToMealPlan() {
         String username = "mrtest";
         Long mealPlanId = 9L;
         Long userid = 3L;
@@ -196,19 +196,19 @@ public class MealPlanServiceImplMockTest {
 
         // Assertions
         MealPlanEntity result = mealPlanCapture.getValue();
-        Assert.assertNotNull("Meal plan should have been saved", result);
-        Assert.assertNotNull("Meal plan should have slots", result.getSlots());
-        Assert.assertEquals("Meal plan should have 3 slots", 3, result.getSlots().size());
+        Assertions.assertNotNull(result, "Meal plan should have been saved");
+        Assertions.assertNotNull(result.getSlots(), "Meal plan should have slots");
+        Assertions.assertEquals(3, result.getSlots().size(), "Meal plan should have 3 slots");
         // create map of dishes in slots
         Map<Long, DishEntity> mealPlanDishIds = result.getSlots().stream()
                 .map(SlotEntity::getDish)
                 .collect(Collectors.toMap(DishEntity::getId, Function.identity()));
-        Assert.assertTrue("Meal plan should contain newly added dish", mealPlanDishIds.containsKey(dishId));
+        Assertions.assertTrue(mealPlanDishIds.containsKey(dishId), "Meal plan should contain newly added dish");
     }
 
 
-    @Test(expected = ActionIgnoredException.class)
-    public void testAddDishToMealPlan_DishExistsKO() {
+    @Test
+    void testAddDishToMealPlan_DishExistsKO() {
         String username = "mrtest";
         Long mealPlanId = 9L;
         Long userid = 3L;
@@ -236,17 +236,17 @@ public class MealPlanServiceImplMockTest {
         Mockito.when(mealPlanRepository.findById(mealPlanId)).thenReturn(Optional.of(mealPlan));
         Mockito.when(dishService.getDishForUserById(username, dishId)).thenReturn(dish);
         Mockito.when(slotRepository.findByMealPlanAndDish(mealPlan, dish)).thenReturn(Collections.singletonList(slot1));
-        Mockito.when(slotRepository.findByMealPlan(mealPlan)).thenReturn(slotList);
-        ArgumentCaptor<MealPlanEntity> mealPlanCapture = ArgumentCaptor.forClass(MealPlanEntity.class);
-        Mockito.when(mealPlanRepository.save(mealPlanCapture.capture())).thenReturn(null);
 
-        mealPlanService.addDishToMealPlan(username, mealPlanId, dishId);
+        Assertions.assertThrows(ActionIgnoredException.class, () -> {
+            mealPlanService.addDishToMealPlan(username, mealPlanId, dishId);
+        });
+
 
         // No Assertions - should have thrown exception
     }
 
     @Test
-    public void testGetRatingsForMealPlan() {
+    void testGetRatingsForMealPlan() {
         String userName = userAccount.getEmail();
         Long mealPlanId = 99L;
         MealPlanEntity mealPlan = new MealPlanEntity();
@@ -271,7 +271,7 @@ public class MealPlanServiceImplMockTest {
     }
 
     @Test
-    public void testCopyMealPlan() {
+    void testCopyMealPlan() {
         String username = TestConstants.USER_2_NAME;
         Long mealPlanId = 901L;
         Long copiedMealPlanId = 9901L;
@@ -304,22 +304,22 @@ public class MealPlanServiceImplMockTest {
 
         // check argument sent to save - should have recent date, and same dishes as source
         List<MealPlanEntity> results = savedMealPlan.getAllValues();
-        Assert.assertNotNull(results);
+        Assertions.assertNotNull(results);
         MealPlanEntity nameResult = results.get(0);
         MealPlanEntity result = results.get(1);
-        Assert.assertNotNull(result);
-        Assert.assertNotEquals("names should NOT match", sourceMealPlan.getName(), nameResult.getName());
-        Assert.assertNotNull("name should be filled in", nameResult.getName());
-        Assert.assertNotNull("should have slots", result.getSlots());
-        Assert.assertEquals("should have two slots", 2, result.getSlots().size());
+        Assertions.assertNotNull(result);
+        Assertions.assertNotEquals(sourceMealPlan.getName(), nameResult.getName(), "names should NOT match");
+        Assertions.assertNotNull(nameResult.getName(), "name should be filled in");
+        Assertions.assertNotNull(result.getSlots(), "should have slots");
+        Assertions.assertEquals(2, result.getSlots().size(), "should have two slots");
         List<SlotEntity> copiedSlots = result.getSlots();
         for (SlotEntity slot : copiedSlots) {
-            Assert.assertNotNull(slot);
+            Assertions.assertNotNull(slot);
         }
     }
 
-    @Test(expected = ObjectNotFoundException.class)
-    public void testCopyMealPlan_NoMealPlanKO() {
+    @Test
+    void testCopyMealPlan_NoMealPlanKO() {
         String username = TestConstants.USER_2_NAME;
         Long mealPlanId = 901L;
         Long copiedMealPlanId = 9901L;
@@ -345,15 +345,16 @@ public class MealPlanServiceImplMockTest {
 
         Mockito.when(userService.getUserByUserEmail(username)).thenReturn(user);
         Mockito.when(mealPlanRepository.findById(mealPlanId)).thenReturn(Optional.empty());
-        ArgumentCaptor<MealPlanEntity> savedMealPlan = ArgumentCaptor.forClass(MealPlanEntity.class);
-        Mockito.when(mealPlanRepository.save(savedMealPlan.capture())).thenReturn(createdMealPlan);
 
-        mealPlanService.copyMealPlan(username, mealPlanId);
+        Assertions.assertThrows(ObjectNotFoundException.class, () -> {
+            mealPlanService.copyMealPlan(username, mealPlanId);
+        });
+
 
     }
 
-    @Test(expected = ObjectNotYoursException.class)
-    public void testCopyMealPlan_NotOwnerKO() {
+    @Test
+    void testCopyMealPlan_NotOwnerKO() {
         String username = TestConstants.USER_2_NAME;
         Long mealPlanId = 901L;
         Long copiedMealPlanId = 9901L;
@@ -379,10 +380,11 @@ public class MealPlanServiceImplMockTest {
 
         Mockito.when(userService.getUserByUserEmail(username)).thenReturn(user);
         Mockito.when(mealPlanRepository.findById(mealPlanId)).thenReturn(Optional.of(sourceMealPlan));
-        ArgumentCaptor<MealPlanEntity> savedMealPlan = ArgumentCaptor.forClass(MealPlanEntity.class);
-        Mockito.when(mealPlanRepository.save(savedMealPlan.capture())).thenReturn(createdMealPlan);
 
-        mealPlanService.copyMealPlan(username, mealPlanId);
+        Assertions.assertThrows(ObjectNotYoursException.class, () -> {
+            mealPlanService.copyMealPlan(username, mealPlanId);
+        });
+
 
     }
 

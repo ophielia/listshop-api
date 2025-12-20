@@ -18,18 +18,18 @@ import com.meg.listshop.lmt.data.repository.TokenRepository;
 import com.meg.listshop.test.TestConstants;
 import com.meg.postoffice.service.MailService;
 import freemarker.template.TemplateException;
+import jakarta.mail.MessagingException;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
@@ -37,9 +37,9 @@ import java.util.Date;
 import java.util.UUID;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-public class TokenServiceImplTest {
+class TokenServiceImplTest {
 
 
     private TokenServiceImpl tokenService;
@@ -55,7 +55,7 @@ public class TokenServiceImplTest {
 
     private UserEntity userAccount;
 
-    @Before
+    @BeforeEach
     public void setUp() throws InvocationTargetException, IllegalAccessException {
 
         this.tokenService = new TokenServiceImpl(userService,
@@ -70,7 +70,7 @@ public class TokenServiceImplTest {
     }
 
     @Test
-    public void testGenerateTokenForUser() throws BadParameterException, TemplateException, MessagingException, IOException {
+    void testGenerateTokenForUser() throws BadParameterException, TemplateException, MessagingException, IOException {
         String userEmail = TestConstants.USER_1_EMAIL;
         Long testStart = new Date().getTime();
 
@@ -85,21 +85,21 @@ public class TokenServiceImplTest {
 
         // check saved token
         TokenEntity resultToken = tokenCapture.getValue();
-        Assert.assertNotNull(resultToken);
-        Assert.assertNotNull(resultToken.getTokenType());
-        Assert.assertNotNull(resultToken.getUserId());
-        Assert.assertNotNull(resultToken.getTokenValue());
-        Assert.assertNotNull(resultToken.getCreatedOn());
+        Assertions.assertNotNull(resultToken);
+        Assertions.assertNotNull(resultToken.getTokenType());
+        Assertions.assertNotNull(resultToken.getUserId());
+        Assertions.assertNotNull(resultToken.getTokenValue());
+        Assertions.assertNotNull(resultToken.getCreatedOn());
 
-        Assert.assertEquals(TokenType.PasswordReset, resultToken.getTokenType());
-        Assert.assertEquals(userAccount.getId(), resultToken.getUserId());
-        Assert.assertTrue(resultToken.getCreatedOn().getTime() >= testStart);
+        Assertions.assertEquals(TokenType.PasswordReset, resultToken.getTokenType());
+        Assertions.assertEquals(userAccount.getId(), resultToken.getUserId());
+        Assertions.assertTrue(resultToken.getCreatedOn().getTime() >= testStart);
 
 
     }
 
-    @Test(expected = ObjectNotFoundException.class)
-    public void testGenerateTokenForUser_UserNotFoundKO() throws BadParameterException, TemplateException, MessagingException, IOException {
+    @Test
+    void testGenerateTokenForUser_UserNotFoundKO() throws BadParameterException, TemplateException, MessagingException, IOException {
         // encrypted param (matches testuser@test.com)
         String encrpytedEmail = "testuser@test.com";
 
@@ -110,12 +110,15 @@ public class TokenServiceImplTest {
         Mockito.when(tokenRepository.save(tokenCapture.capture())).thenAnswer(i -> i.getArguments()[0]);
 
         // test call
-        tokenService.generateTokenForUser(TokenType.PasswordReset, encrpytedEmail);
+        Assertions.assertThrows(ObjectNotFoundException.class, () -> {
+            tokenService.generateTokenForUser(TokenType.PasswordReset, encrpytedEmail);
+        });
+
 
     }
 
     @Test
-    public void testProcessToken() throws BadParameterException, TokenException {
+    void testProcessToken() throws BadParameterException, TokenException {
         TokenType tokenType = TokenType.PasswordReset;
         String tokenValue = UUID.randomUUID().toString();
         String tokenParameter = TestConstants.USER_1_EMAIL;
@@ -135,12 +138,12 @@ public class TokenServiceImplTest {
         tokenService.processTokenFromUser(tokenType, tokenValue, tokenParameter);
 
         // assertions
-        Assert.assertNotNull(deleteCapture.getValue());
+        Assertions.assertNotNull(deleteCapture.getValue());
 
     }
 
-    @Test(expected = TokenException.class)
-    public void testProcessToken_NoTokenFoundKO() throws BadParameterException, TokenException {
+    @Test
+    void testProcessToken_NoTokenFoundKO() throws BadParameterException, TokenException {
         TokenType tokenType = TokenType.PasswordReset;
         String tokenValue = UUID.randomUUID().toString();
         String tokenParameter = TestConstants.USER_1_EMAIL;
@@ -154,11 +157,13 @@ public class TokenServiceImplTest {
                 .thenReturn(null);
 
         // service call
-        tokenService.processTokenFromUser(tokenType, tokenValue, tokenParameter);
+        Assertions.assertThrows(TokenException.class, () -> {
+            tokenService.processTokenFromUser(tokenType, tokenValue, tokenParameter);
+        });
     }
 
-    @Test(expected = TokenException.class)
-    public void testProcessToken_NoUserIdFoundKO() throws BadParameterException, TokenException {
+    @Test
+    void testProcessToken_NoUserIdFoundKO() throws BadParameterException, TokenException {
         TokenType tokenType = TokenType.PasswordReset;
         String tokenValue = UUID.randomUUID().toString();
         String tokenParameter = TestConstants.USER_1_EMAIL;
@@ -172,7 +177,9 @@ public class TokenServiceImplTest {
                 .thenReturn(null);
 
         // service call
-        tokenService.processTokenFromUser(tokenType, tokenValue, tokenParameter);
+        Assertions.assertThrows(TokenException.class, () -> {
+            tokenService.processTokenFromUser(tokenType, tokenValue, tokenParameter);
+        });
     }
 
     private UserEntity createTestUser(Long userId, String userName) {

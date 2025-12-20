@@ -12,45 +12,45 @@ import com.meg.listshop.lmt.service.ServiceTestUtils;
 import com.meg.listshop.lmt.service.tag.AutoTagProcessor;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
 import com.meg.listshop.lmt.service.tag.TagService;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-public class AutoTagServiceImplMockTest {
+class AutoTagServiceImplMockTest {
 
 
     AutoTagService autoTagService;
 
-    @MockBean
+    @Mock
     DishService dishService;
 
-    @MockBean
+    @Mock
     TagRepository tagRepository;
 
-    @MockBean
+    @Mock
     ShadowTagRepository shadowTagRepository;
 
-    @MockBean
+    @Mock
     UserService userService;
 
-    @MockBean
+    @Mock
     TagService tagService;
 
     private AutoTagProcessor mockProcessor;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         mockProcessor = Mockito.mock(AutoTagProcessor.class);
         List<AutoTagProcessor> processorList = Collections.singletonList(mockProcessor);
         autoTagService = new AutoTagServiceImpl(tagRepository, shadowTagRepository, userService, dishService, tagService, processorList);
@@ -58,18 +58,18 @@ public class AutoTagServiceImplMockTest {
 
 
     @Test
-    public void getDishesToAutotag() {
+    void getDishesToAutotag() {
         // test max number
         // test limit = 5 (test configuration)
-        Mockito.when(dishService.getDishesToAutotag(105L, 5)).thenReturn(new ArrayList<DishEntity>());
+        Mockito.when(dishService.getDishesToAutotag(0L, 5)).thenReturn(new ArrayList<DishEntity>());
         List<DishEntity> result = autoTagService.getDishesToAutotag(5);
-        Assert.assertTrue(result.isEmpty());
+        Assertions.assertTrue(result.isEmpty());
 
     }
 
 
     @Test
-    public void doAutoTag() throws Exception {
+    void doAutoTag() {
         Long userId = 20L;
         String userName = "george";
         Long dishId = 64L;
@@ -86,7 +86,6 @@ public class AutoTagServiceImplMockTest {
         List<Long> tagList = Arrays.asList(19L, 47L, 62L, 69L, 247L, 320L, 334L, 344L, 346L, 347L, 348L, 350L, 360L, 368L, 406L);
         Set<Long> tagIdsForDish = new HashSet(tagList);
         List<ShadowTags> shadowTags = Arrays.asList(ServiceTestUtils.buildShadowTag(shadowTagId, dishId));
-        List<ShadowTags> resultShadowTags = Arrays.asList(ServiceTestUtils.buildShadowTag(newTagId, dishId));
         Set<Long> processedBy = new HashSet<Long>();
         processedBy.add(newTagId);
 
@@ -105,20 +104,19 @@ public class AutoTagServiceImplMockTest {
         Mockito.when(mockProcessor.autoTagSubject(subjectCapture.capture())).thenReturn(processedSubject);
         Mockito.when(dishService.save(dishCapture.capture(), Mockito.eq(false))).thenReturn(dishEntity);
         Mockito.doNothing().when(tagService).addTagsToDish(userId, dishId, tagIdsToAssign);
-        Mockito.when(shadowTagRepository.saveAll(resultShadowTags)).thenReturn(resultShadowTags);
 
         autoTagService.doAutoTag(dishEntity, override);
 
         // verify that subject has been filled correctly, which is fed to autoprocessors
         AutoTagSubject subjectCheck = subjectCapture.getValue();
-        Assert.assertNotNull(subjectCheck);
-        Assert.assertEquals(tagIdsForDish, subjectCheck.getTagIdsForDish());
-        Assert.assertEquals(shadowTags, subjectCheck.getShadowTags());
+        Assertions.assertNotNull(subjectCheck);
+        Assertions.assertEquals(tagIdsForDish, subjectCheck.getTagIdsForDish());
+        Assertions.assertEquals(shadowTags, subjectCheck.getShadowTags());
 
         // verify that processed by correctly sent to save in dish
         DishEntity dishResult = dishCapture.getValue();
-        Assert.assertNotNull(dishResult);
-        Assert.assertEquals(Long.valueOf(newTagId), dishResult.getAutoTagStatus());
+        Assertions.assertNotNull(dishResult);
+        Assertions.assertEquals(newTagId, dishResult.getAutoTagStatus());
 
 
     }

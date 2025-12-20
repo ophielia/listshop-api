@@ -8,18 +8,19 @@ import com.meg.listshop.lmt.service.proposal.ProcessResult;
 import com.meg.listshop.lmt.service.proposal.ProposalRequest;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StringUtils;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.*;
 
@@ -29,12 +30,13 @@ import static org.mockito.ArgumentMatchers.eq;
 /**
  * Created by margaretmartin on 08/06/2018.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest()
+@Testcontainers
 @ActiveProfiles("test")
-public class FillInProposalProcessorImplTest {
+class FillInProposalProcessorImplTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
@@ -48,7 +50,7 @@ public class FillInProposalProcessorImplTest {
 
 
     @Test
-    public void testFillInProposal_Picked() throws Exception {
+    void testFillInProposal_Picked() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4, 2, 3);
         target.setUserId(TestConstants.USER_3_ID);
         ProposalRequest testRequest = new ProposalRequest();
@@ -99,14 +101,14 @@ public class FillInProposalProcessorImplTest {
 
         ProcessResult testResult = processor.processProposal(testRequest);
 
-        Assert.assertNotNull(testResult);
+        Assertions.assertNotNull(testResult);
         // check 1 slots with 9 dishes
-        Assert.assertEquals(1, testResult.getResultSlots().size());
+        Assertions.assertEquals(1, testResult.getResultSlots().size());
         ProposalSlotEntity slot = testResult.getResultSlots().get(0);
         // at least one tag match
         boolean tagMatch = false;
         int dishSlotCount = origCount + 5;
-        Assert.assertEquals(dishSlotCount, slot.getDishSlots().size());
+        Assertions.assertEquals(dishSlotCount, slot.getDishSlots().size());
         for (DishSlotEntity dishSlot : slot.getDishSlots()) {
             tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
             if (tagMatch) {
@@ -114,16 +116,16 @@ public class FillInProposalProcessorImplTest {
             }
 
         }
-        Assert.assertTrue(tagMatch);
+        Assertions.assertTrue(tagMatch);
 
 
         // currentApproach is 1
-        Assert.assertEquals(origApproach, testResult.getCurrentApproach());
+        Assertions.assertEquals(origApproach, testResult.getCurrentApproach());
     }
 
     @Test
-    @Ignore
-    public void testFillInProposal_PickedToFillIn() throws Exception {
+    @Disabled
+    void testFillInProposal_PickedToFillIn() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4, 2, 3);
         target.setUserId(TestConstants.USER_3_ID);
         ProposalRequest testRequest = new ProposalRequest();
@@ -167,7 +169,7 @@ public class FillInProposalProcessorImplTest {
             List<DishTagSearchResult> rawSearchResults = ProcessorTestUtils.makeDummySearchResults(slot,
                     dishTagMatches, target.getTagIdsAsSet(), target.getTagIdsAsSet().size(),
                     20, 3, true, false, sqlFilter);
-            Assert.assertNotNull(rawSearchResults.toString());
+            Assertions.assertNotNull(rawSearchResults.toString());
             Mockito.when(dishSearchService.retrieveDishResultsForTags(eq(TestConstants.USER_3_ID), eq(slot), any(Integer.class),
                             any(List.class), any(Map.class), eq(sqlFilter)))
                     .thenReturn(rawSearchResults);
@@ -175,15 +177,15 @@ public class FillInProposalProcessorImplTest {
 
         ProcessResult testResult = processor.processProposal(testRequest);
 
-        Assert.assertNotNull(testResult);
+        Assertions.assertNotNull(testResult);
         // check 1 slots with 9 dishes
         boolean noFilteredDishMatch = true;
-        Assert.assertEquals(1, testResult.getResultSlots().size());
+        Assertions.assertEquals(1, testResult.getResultSlots().size());
         ProposalSlotEntity slot = testResult.getResultSlots().get(0);
         // at least one tag match
         boolean tagMatch = false;
         int dishSlotCount = origCount + 5;
-        Assert.assertEquals(dishSlotCount, slot.getDishSlots().size());
+        Assertions.assertEquals(dishSlotCount, slot.getDishSlots().size());
         for (DishSlotEntity dishSlot : slot.getDishSlots()) {
             tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
             if (tagMatch) {
@@ -194,16 +196,16 @@ public class FillInProposalProcessorImplTest {
                 break;
             }
         }
-        Assert.assertTrue(tagMatch);
+        Assertions.assertTrue(tagMatch);
 
 
         // currentApproach is 1
-        Assert.assertEquals(origApproach, testResult.getCurrentApproach());
-        Assert.assertTrue(noFilteredDishMatch);
+        Assertions.assertEquals(origApproach, testResult.getCurrentApproach());
+        Assertions.assertTrue(noFilteredDishMatch);
     }
 
     @Test
-    public void testFillInProposal_NoPicked() throws Exception {
+    void testFillInProposal_NoPicked() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4, 2, 3);
         target.setUserId(TestConstants.USER_3_ID);
         ProposalRequest testRequest = new ProposalRequest();
@@ -240,30 +242,30 @@ public class FillInProposalProcessorImplTest {
 
         ProcessResult testResult = processor.processProposal(testRequest);
 
-        Assert.assertNotNull(testResult);
+        Assertions.assertNotNull(testResult);
         // check 1 slots with 10 dishes
         boolean noFilteredDishMatch = true;
-        Assert.assertEquals(1, testResult.getResultSlots().size());
+        Assertions.assertEquals(1, testResult.getResultSlots().size());
         ProposalSlotEntity slot = testResult.getResultSlots().get(0);
         // at least one tag match
         boolean tagMatch = false;
         int dishSlotCount = 9;
-        Assert.assertEquals(dishSlotCount, slot.getDishSlots().size());
+        Assertions.assertEquals(dishSlotCount, slot.getDishSlots().size());
         for (DishSlotEntity dishSlot : slot.getDishSlots()) {
             tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
             if (tagMatch) {
                 break;
             }
         }
-        Assert.assertTrue(tagMatch);
+        Assertions.assertTrue(tagMatch);
 
 
         // currentApproach is 1
-        Assert.assertEquals(originalApproach, testResult.getCurrentApproach());
+        Assertions.assertEquals(originalApproach, testResult.getCurrentApproach());
     }
 
     @Test
-    public void testFillInProposal_MealPlanFillPicked() throws Exception {
+    void testFillInProposal_MealPlanFillPicked() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(6, 2, 3);
         target.setUserId(TestConstants.USER_3_ID);
         ProposalRequest testRequest = new ProposalRequest();
@@ -318,29 +320,29 @@ public class FillInProposalProcessorImplTest {
 
         ProcessResult testResult = processor.processProposal(testRequest);
 
-        Assert.assertNotNull(testResult);
+        Assertions.assertNotNull(testResult);
         // check 8 slots with 5 dishes each
-        Assert.assertEquals(1, testResult.getResultSlots().size());
+        Assertions.assertEquals(1, testResult.getResultSlots().size());
         for (ProposalSlotEntity slot : testResult.getResultSlots()) {
             // at least one tag match
             boolean tagMatch = false;
             int dishSlotCount = origDishCount + 5;
-            Assert.assertEquals(dishSlotCount, slot.getDishSlots().size());
+            Assertions.assertEquals(dishSlotCount, slot.getDishSlots().size());
             for (DishSlotEntity dishSlot : slot.getDishSlots()) {
                 tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
                 if (tagMatch) {
                     break;
                 }
             }
-            Assert.assertTrue(tagMatch);
+            Assertions.assertTrue(tagMatch);
         }
 
         // currentApproach is 1
-        Assert.assertEquals(3, testResult.getCurrentApproach());
+        Assertions.assertEquals(3, testResult.getCurrentApproach());
     }
 
     @Test
-    public void testFillInProposal_MealPlanNoPickedFill() throws Exception {
+    void testFillInProposal_MealPlanNoPickedFill() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4, 2, 3);
         target.setUserId(TestConstants.USER_3_ID);
         ProposalRequest testRequest = new ProposalRequest();
@@ -385,30 +387,30 @@ public class FillInProposalProcessorImplTest {
 
         ProcessResult testResult = processor.processProposal(testRequest);
 
-        Assert.assertNotNull(testResult);
+        Assertions.assertNotNull(testResult);
         // check 4 slots with 5 dishes each
-        Assert.assertEquals(1, testResult.getResultSlots().size());
+        Assertions.assertEquals(1, testResult.getResultSlots().size());
         for (ProposalSlotEntity slot : testResult.getResultSlots()) {
             // at least one tag match
             boolean tagMatch = false;
             int dishSlotCount = 9;
-            Assert.assertEquals(dishSlotCount, slot.getDishSlots().size());
+            Assertions.assertEquals(dishSlotCount, slot.getDishSlots().size());
             for (DishSlotEntity dishSlot : slot.getDishSlots()) {
                 tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
                 if (tagMatch) {
                     break;
                 }
             }
-            Assert.assertTrue(tagMatch);
+            Assertions.assertTrue(tagMatch);
         }
 
         // currentApproach is 1
-        Assert.assertEquals(contextIndex, testResult.getCurrentApproach());
+        Assertions.assertEquals(contextIndex, testResult.getCurrentApproach());
     }
 
 
     @Test
-    public void testFillInProposal_NoTargetTagIds() throws Exception {
+    void testFillInProposal_NoTargetTagIds() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(4, 2, 3);
         target.setTargetTagIds("");
         target.setUserId(TestConstants.USER_3_ID);
@@ -443,29 +445,29 @@ public class FillInProposalProcessorImplTest {
 
         ProcessResult testResult = processor.processProposal(testRequest);
 
-        Assert.assertNotNull(testResult);
+        Assertions.assertNotNull(testResult);
         // check 4 slots with 5 dishes each
-        Assert.assertEquals(1, testResult.getResultSlots().size());
+        Assertions.assertEquals(1, testResult.getResultSlots().size());
         for (ProposalSlotEntity slot : testResult.getResultSlots()) {
             // at least one tag match
             boolean tagMatch = false;
-            Assert.assertEquals(9, slot.getDishSlots().size());
+            Assertions.assertEquals(9, slot.getDishSlots().size());
             for (DishSlotEntity dishSlot : slot.getDishSlots()) {
                 tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
                 if (tagMatch) {
                     break;
                 }
             }
-            Assert.assertTrue(tagMatch);
+            Assertions.assertTrue(tagMatch);
         }
 
         // currentApproach is 0
-        Assert.assertEquals(contextIndex, testResult.getCurrentApproach());
+        Assertions.assertEquals(contextIndex, testResult.getCurrentApproach());
 
     }
 
     @Test
-    public void testFillInProposal_NoSlotsTargetIds() throws Exception {
+    void testFillInProposal_NoSlotsTargetIds() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(2, 2, 3);
         TargetSlotEntity targetSlot = target.getSlots().get(0);
         targetSlot.setTargetTagIds(null);
@@ -501,29 +503,29 @@ public class FillInProposalProcessorImplTest {
 
         ProcessResult testResult = processor.processProposal(testRequest);
 
-        Assert.assertNotNull(testResult);
+        Assertions.assertNotNull(testResult);
         // check 4 slots with 5 dishes each
-        Assert.assertEquals(1, testResult.getResultSlots().size());
+        Assertions.assertEquals(1, testResult.getResultSlots().size());
         for (ProposalSlotEntity slot : testResult.getResultSlots()) {
             // at least one tag match
             boolean tagMatch = false;
-            Assert.assertEquals(9, slot.getDishSlots().size());
+            Assertions.assertEquals(9, slot.getDishSlots().size());
             for (DishSlotEntity dishSlot : slot.getDishSlots()) {
                 tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
                 if (tagMatch) {
                     break;
                 }
             }
-            Assert.assertTrue(tagMatch);
+            Assertions.assertTrue(tagMatch);
         }
 
         // currentApproach is 0
-        Assert.assertEquals(contextIndex, testResult.getCurrentApproach());
+        Assertions.assertEquals(contextIndex, testResult.getCurrentApproach());
 
     }
 
     @Test
-    public void testFillInProposal_OneSlotOnly() throws Exception {
+    void testFillInProposal_OneSlotOnly() throws Exception {
         TargetEntity target = ProcessorTestUtils.getDummyTarget(1, 2, 3);
         target.setUserId(TestConstants.USER_3_ID);
         ProposalRequest testRequest = new ProposalRequest();
@@ -558,23 +560,23 @@ public class FillInProposalProcessorImplTest {
 
         ProcessResult testResult = processor.processProposal(testRequest);
 
-        Assert.assertNotNull(testResult);
+        Assertions.assertNotNull(testResult);
         // check 4 slots with 5 dishes each
-        Assert.assertEquals(1, testResult.getResultSlots().size());
+        Assertions.assertEquals(1, testResult.getResultSlots().size());
         for (ProposalSlotEntity slot : testResult.getResultSlots()) {
             // at least one tag match
             boolean tagMatch = false;
-            Assert.assertEquals(9, slot.getDishSlots().size());
+            Assertions.assertEquals(9, slot.getDishSlots().size());
             for (DishSlotEntity dishSlot : slot.getDishSlots()) {
                 tagMatch = !StringUtils.isEmpty(dishSlot.getMatchedTagIds());
                 if (tagMatch) {
                     break;
                 }
             }
-            Assert.assertTrue(tagMatch);
+            Assertions.assertTrue(tagMatch);
         }
 
         // currentApproach is 0
-        Assert.assertEquals(contextApproach, testResult.getCurrentApproach());
+        Assertions.assertEquals(contextApproach, testResult.getCurrentApproach());
     }
 }

@@ -7,7 +7,6 @@
 
 package com.meg.listshop.lmt.service.conversion;
 
-import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.*;
@@ -17,27 +16,29 @@ import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.common.RoundingUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;/**/
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
+@SpringBootTest()
 @ActiveProfiles("test")
 @Sql(value = "data/ConversionTest.sql")
 @Sql(value = "data/ConversionTest-rollback.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-public class ConversionTest {
+class ConversionTest {
 
     private static final Long ounceId = 1009L;
     private static final Long mgId = 1016L;
@@ -75,12 +76,12 @@ public class ConversionTest {
     UnitRepository unitRepository;
 
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
 
     @Test
-    public void blowUpTest() throws ConversionPathException, ConversionFactorException {
+    void blowUpTest() throws ConversionPathException, ConversionFactorException {
         Optional<UnitEntity> gramUnitOpt = unitRepository.findById(1013L);
         Optional<UnitEntity> ozUnitOpt = unitRepository.findById(1009L);
         ConvertibleAmount amount = new SimpleAmount(1, gramUnitOpt.get());
@@ -92,7 +93,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSingleHandlerWeightExact() throws ConversionPathException, ConversionFactorException {
+    void testSingleHandlerWeightExact() throws ConversionPathException, ConversionFactorException {
         Optional<UnitEntity> ounceUnitOpt = unitRepository.findById(ounceId);
         Optional<UnitEntity> kgUnitOpt = unitRepository.findById(kgId);
         ConvertibleAmount amount = new SimpleAmount(20.0, ounceUnitOpt.get());
@@ -119,7 +120,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSingleHandlerVolumeExact() throws ConversionPathException, ConversionFactorException {
+    void testSingleHandlerVolumeExact() throws ConversionPathException, ConversionFactorException {
         Optional<UnitEntity> gallonsOpt = unitRepository.findById(gallonId);
         Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
@@ -147,7 +148,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSingleHandlerVolumeType() throws ConversionPathException, ConversionFactorException {
+    void testSingleHandlerVolumeType() throws ConversionPathException, ConversionFactorException {
         Optional<UnitEntity> litersOpt = unitRepository.findById(literId);
         Optional<UnitEntity> cupsOpt = unitRepository.findById(flCupsId);
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
@@ -173,7 +174,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSimpleMetricVolumeListContext() throws ConversionPathException, ConversionFactorException {
+    void testSimpleMetricVolumeListContext() throws ConversionPathException, ConversionFactorException {
         Optional<UnitEntity> quartOpt = unitRepository.findById(quartId);
         Optional<UnitEntity> pintOpt = unitRepository.findById(pintId);
 
@@ -201,7 +202,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testHybridDishContext() throws ConversionPathException, ConversionFactorException {
+    void testHybridDishContext() throws ConversionPathException, ConversionFactorException {
         Optional<UnitEntity> teaspoonOpt = unitRepository.findById(teaspoonId);
 
         ConvertibleAmount amount = new SimpleAmount(3, teaspoonOpt.get());
@@ -214,7 +215,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSimpleUsVolumeListContext() throws ConversionPathException, ConversionFactorException {
+    void testSimpleUsVolumeListContext() throws ConversionPathException, ConversionFactorException {
         Optional<UnitEntity> milliliterOpt = unitRepository.findById(milliliterId);
         Optional<UnitEntity> centiliterOpt = unitRepository.findById(centileterId);
 
@@ -244,7 +245,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testSimpleUsWeightListContext() throws ConversionPathException, ConversionFactorException {
+    void testSimpleUsWeightListContext() throws ConversionPathException, ConversionFactorException {
         Optional<UnitEntity> gramOpt = unitRepository.findById(gId);
 
         // 113.398093 gm = 4 ounces => ounce destination
@@ -266,7 +267,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testVolumeToWeightConversion() throws ConversionPathException, ConversionFactorException {
+    void testVolumeToWeightConversion() throws ConversionPathException, ConversionFactorException {
         UnitEntity tablespoon = unitRepository.findById(tablespoonId).orElse(null);
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
 
@@ -344,7 +345,7 @@ public class ConversionTest {
 
 
     @Test
-    public void testTagSpecificConversion() throws ConversionPathException, ConversionFactorException {
+    void testTagSpecificConversion() throws ConversionPathException, ConversionFactorException {
         UnitEntity tablespoon = unitRepository.findById(cupsId).orElse(null);
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
 
@@ -366,7 +367,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testTagSpecificConversionAndScale() throws ConversionPathException, ConversionFactorException {
+    void testTagSpecificConversionAndScale() throws ConversionPathException, ConversionFactorException {
         UnitEntity tablespoon = unitRepository.findById(tablespoonId).orElse(null);
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
 
@@ -440,7 +441,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testTagSpecificIntegral() throws ConversionPathException, ConversionFactorException {
+    void testTagSpecificIntegral() throws ConversionPathException, ConversionFactorException {
         UnitEntity slice = unitRepository.findById(sliceId).orElse(null);
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
 
@@ -478,7 +479,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testTagSpecificUnitToGrams() throws ConversionPathException, ConversionFactorException {
+    void testTagSpecificUnitToGrams() throws ConversionPathException, ConversionFactorException {
         UnitEntity singleUnit = unitRepository.findById(unitId).orElse(null);
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
         UnitEntity pounds = unitRepository.findById(lbId).orElse(null);
@@ -556,7 +557,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testTagSpecificMarker() throws ConversionPathException, ConversionFactorException {
+    void testTagSpecificMarker() throws ConversionPathException, ConversionFactorException {
         UnitEntity slice = unitRepository.findById(sliceId).orElse(null);
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
 
@@ -606,7 +607,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testCupOfDicedTomatoes() throws ConversionPathException, ConversionFactorException {
+    void testCupOfDicedTomatoes() throws ConversionPathException, ConversionFactorException {
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
         UnitEntity cup = unitRepository.findById(cupsId).orElse(null);
 
@@ -653,7 +654,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testCupOfDicedTomatoesUnitSize() throws ConversionPathException, ConversionFactorException {
+    void testCupOfDicedTomatoesUnitSize() throws ConversionPathException, ConversionFactorException {
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
         UnitEntity cup = unitRepository.findById(cupsId).orElse(null);
         UnitEntity unit = unitRepository.findById(unitId).orElse(null);
@@ -696,7 +697,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testTagSpecificRunThroughMetric() throws ConversionPathException, ConversionFactorException {
+    void testTagSpecificRunThroughMetric() throws ConversionPathException, ConversionFactorException {
         UnitEntity tablespoon = unitRepository.findById(tablespoonId).orElse(null);
         UnitEntity grams = unitRepository.findById(gId).orElse(null);
 
@@ -734,7 +735,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testTagSpecificRunThroughUS() throws ConversionPathException, ConversionFactorException {
+    void testTagSpecificRunThroughUS() throws ConversionPathException, ConversionFactorException {
         UnitEntity tablespoon = unitRepository.findById(tablespoonId).orElse(null);
         UnitEntity ounce = unitRepository.findById(ounceId).orElse(null);
 

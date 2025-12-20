@@ -4,14 +4,15 @@ import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,12 +20,13 @@ import java.util.List;
 /**
  * Created by margaretmartin on 21/03/2018.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-public class StaleItemCleanupTaskTest {
+class StaleItemCleanupTaskTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
@@ -34,7 +36,7 @@ public class StaleItemCleanupTaskTest {
     private ItemRepository itemRepository;
 
     @Test
-    public void testCleanupTask() {
+    void testCleanupTask() {
         LocalDate testRemoveDate = LocalDate.now().minusDays(12);
 
     // 3 items in test data set which are stale
@@ -59,7 +61,7 @@ public class StaleItemCleanupTaskTest {
     long newCount = allitems.stream().count();
 
     // count should be 3 less
-    Assert.assertEquals(count - staleCount, newCount);
+    Assertions.assertEquals(count - staleCount, newCount);
     }
 
 }

@@ -21,8 +21,11 @@ import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.LayoutService;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,11 +33,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.util.List;
@@ -53,14 +58,15 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 /**
  * Created by margaretmartin on 13/05/2017.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
+@Testcontainers
 @AutoConfigureJsonTesters
 @ActiveProfiles("test")
-public class TagRestControllerTest {
+class TagRestControllerTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private static UserDetails userDetails;
@@ -81,7 +87,7 @@ public class TagRestControllerTest {
     private WebApplicationContext webApplicationContext;
 
 
-    @Before
+    @BeforeEach
     @WithMockUser
     public void setup() throws Exception {
 
@@ -102,7 +108,7 @@ public class TagRestControllerTest {
     }
 
     @Test
-    public void readSingleTag() throws Exception {
+    void readSingleTag() throws Exception {
         Long testId = TestConstants.TAG_1_ID;
         String url = "/tag/" + testId;
         mockMvc.perform(get(url))
@@ -114,8 +120,9 @@ public class TagRestControllerTest {
     }
 
     @Test
-    @Ignore // endpoint is deprecated
-    public void createTag() throws Exception {
+    @Disabled
+        // endpoint is deprecated
+    void createTag() throws Exception {
         Tag newtag = new Tag("created tag");
         newtag.tagType(TagType.Rating.name());
         String tagJson = json(newtag);
@@ -128,8 +135,9 @@ public class TagRestControllerTest {
     }
 
     @Test
-    @Ignore // endpoint is deprecated
-    public void createTag_checkDefaults() throws Exception {
+    @Disabled
+        // endpoint is deprecated
+    void createTag_checkDefaults() throws Exception {
         Tag newtag = new Tag("created tag with defaults");
         newtag.tagType(TagType.Rating.name());
         String tagJson = json(newtag);
@@ -141,11 +149,11 @@ public class TagRestControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         List<String> headers = result.getResponse().getHeaders("Location");
         String[] locationParts = headers.get(0).split("/");
         String id = locationParts[locationParts.length - 1];
-        Assert.assertNotNull(id);
+        Assertions.assertNotNull(id);
 
         String fetchUrl = "/tag/" + id;
         MvcResult tagResult = mockMvc.perform(get(fetchUrl))
@@ -156,7 +164,7 @@ public class TagRestControllerTest {
 
         String resultJson = tagResult.getResponse().getContentAsString();
         TagResource resourceResult = objectMapper.readValue(resultJson, TagResource.class);
-        Assert.assertNotNull(resourceResult);
+        Assertions.assertNotNull(resourceResult);
 
         // verify that tag with found id belongs to default group
         MvcResult allResultForParent = this.mockMvc.perform(get("/tag/user")
@@ -170,13 +178,14 @@ public class TagRestControllerTest {
                 //.map(Dish::getId)
                 .collect(Collectors.toMap(Tag::getId, Function.identity()));
         Tag newTag = tagMap.get(id);
-        Assert.assertNotNull(newTag.getParentId());
+        Assertions.assertNotNull(newTag.getParentId());
 
     }
 
     @Test
-    @Ignore // endpoint is deprecated
-    public void createTag_asStandard() throws Exception {
+    @Disabled
+        // endpoint is deprecated
+    void createTag_asStandard() throws Exception {
         Tag newtag = new Tag("created Ingredient tag with defaults");
         newtag.tagType(TagType.Ingredient.name());
         String tagJson = json(newtag);
@@ -188,11 +197,11 @@ public class TagRestControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         List<String> headers = result.getResponse().getHeaders("Location");
         String[] locationParts = headers.get(0).split("/");
         String id = locationParts[locationParts.length - 1];
-        Assert.assertNotNull(id);
+        Assertions.assertNotNull(id);
 
         // verify that tag with found id belongs to default group
         MvcResult allResultForParent = this.mockMvc.perform(get("/tag/user?asStandard=true")
@@ -206,14 +215,14 @@ public class TagRestControllerTest {
                 //.map(Dish::getId)
                 .collect(Collectors.toMap(Tag::getId, Function.identity()));
         Tag newTag = tagMap.get(id);
-        Assert.assertNotNull(newTag.getParentId());
-        Assert.assertEquals("0", newTag.getUserId());
+        Assertions.assertNotNull(newTag.getParentId());
+        Assertions.assertEquals("0", newTag.getUserId());
 
     }
 
 
     @Test
-    public void addAsChild() throws Exception {
+    void addAsChild() throws Exception {
         String url = "/tag/" + TestConstants.PARENT_TAG_ID_2 + "/child";
 
         Tag tag = new Tag("testTag");
@@ -251,15 +260,13 @@ public class TagRestControllerTest {
         Optional<TagResource> resultTag = afterList.getEmbeddedList().getTagResourceList().stream()
                 .filter(t -> t.getTag().getId().equals(idString))
                 .findFirst();
-        Assert.assertNotNull(resultTag);
-        Assert.assertEquals("parent tag id should equal that given for create call",
-                String.valueOf(TestConstants.PARENT_TAG_ID_2),
-                resultTag.get().getTag().getParentId());
+        Assertions.assertNotNull(resultTag);
+        Assertions.assertEquals(String.valueOf(TestConstants.PARENT_TAG_ID_2), resultTag.get().getTag().getParentId(), "parent tag id should equal that given for create call");
 
     }
 
     @Test
-    public void addAsChild_Exists() throws Exception {
+    void addAsChild_Exists() throws Exception {
         Long parentId = 88L; // prepared meats
         String url = "/tag/" + parentId + "/child";
 
@@ -292,11 +299,11 @@ public class TagRestControllerTest {
         String recreateIdString = recreateLocationValue.substring(recreateLocationValue.lastIndexOf("/") + 1);
         Long recreatedId = Long.valueOf(recreateIdString);
 
-        Assert.assertEquals(newId, recreatedId);
+        Assertions.assertEquals(newId, recreatedId);
     }
 
     @Test
-    public void addAsChild_Standard() throws Exception {
+    void addAsChild_Standard() throws Exception {
         String url = "/tag/" + TestConstants.PARENT_TAG_ID_2 + "/child?asStandard=true";
 
         Tag tag = new Tag("testTag-standard");
@@ -327,18 +334,14 @@ public class TagRestControllerTest {
         Optional<TagResource> resultTag = afterList.getEmbeddedList().getTagResourceList().stream()
                 .filter(t -> t.getTag().getId().equals(idString))
                 .findFirst();
-        Assert.assertNotNull(resultTag);
-        Assert.assertEquals("parent tag id should equal that given for create call",
-                String.valueOf(TestConstants.PARENT_TAG_ID_2),
-                resultTag.get().getTag().getParentId());
-        Assert.assertEquals("user id should be 0",
-                String.valueOf(0L),
-                resultTag.get().getTag().getUserId());
+        Assertions.assertNotNull(resultTag);
+        Assertions.assertEquals(String.valueOf(TestConstants.PARENT_TAG_ID_2), resultTag.get().getTag().getParentId(), "parent tag id should equal that given for create call");
+        Assertions.assertEquals(String.valueOf(0L), resultTag.get().getTag().getUserId(), "user id should be 0");
 
     }
 
     @Test
-    public void addAsChild_StandardExists() throws Exception {
+    void addAsChild_StandardExists() throws Exception {
         Long parentId = 88L;
         String url = "/tag/" + parentId + "/child?asStandard=true";
 
@@ -371,7 +374,7 @@ public class TagRestControllerTest {
         String recreateLocation = result.getResponse().getHeader("Location");
         String recreateId = recreateLocation.substring(recreateLocation.lastIndexOf("/") + 1);
 
-        Assert.assertEquals(idString, recreateId);
+        Assertions.assertEquals(idString, recreateId);
     }
 
 
