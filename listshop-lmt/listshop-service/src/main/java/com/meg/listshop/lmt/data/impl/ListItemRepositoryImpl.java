@@ -45,10 +45,12 @@ public class ListItemRepositoryImpl implements ItemChangeRepository {
         }
     }
 
+
     @Override
-    public void saveItemChangeStatistics(ShoppingListEntity shoppingList, List<ListItemEntity> items, Long userId, ListOperationType operationType) {
+    public void saveItemChangeStatistics(ShoppingListEntity shoppingList, List<ListItemEntity> items, List<Long> removedTagIds,Long userId, ListOperationType operationType) {
         if (ListOperationType.NONE != operationType) {
-            listTagStatisticService.processStatistics(userId, items, operationType);
+            listTagStatisticService.processStatistics(userId, items,removedTagIds, operationType);
         }
     }
+
 }

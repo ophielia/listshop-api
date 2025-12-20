@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -83,11 +84,13 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
     }
 
     @Override
-    public void processStatistics(Long userId, List<ListItemEntity> items, ListOperationType operationType) {
-        List<Long> tagIds = items.stream().map(ListItemEntity::getTag)
+    public void processStatistics(Long userId, List<ListItemEntity> items,List<Long> removedTagIds, ListOperationType operationType) {
+        List<Long> tagIds = items.stream()
+                .map(ListItemEntity::getTag)
                 .map(TagEntity::getId)
-                .toList();
-
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        tagIds.addAll(removedTagIds);
         // check for and create missing statistics
         checkForAndCreateMissingStatistics(tagIds, userId);
 

@@ -16,13 +16,14 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
         <project.container.name>com.meg.listshop.listshop</project.container.name>
-        <spring-boot-version>3.0.13</spring-boot-version>
+        <spring-boot-version>3.1.12</spring-boot-version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring.boot.mainClass>com.meg.listshop.Application</spring.boot.mainClass>
         <springdoc.version>1.7.0</springdoc.version>
         <logback.version>1.4.12</logback.version>
         <hibernate.version>6.3.0.Final</hibernate.version>
+        <mockito-core.version>5.13.0</mockito-core.version>
     </properties>
 
     <dependencyManagement>
@@ -187,7 +188,7 @@
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>1.16.1</version>
+                <version>1.21.3</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
@@ -220,7 +221,6 @@
                 <groupId>jakarta.platform</groupId>
                 <artifactId>jakarta.jakartaee-api</artifactId>
                 <version>9.1.0</version>
-                <!--<scope>provided</scope>-->
             </dependency>
             <!-- https://mvnrepository.com/artifact/jakarta.servlet.jsp.jstl/jakarta.servlet.jsp.jstl-api -->
             <dependency>
@@ -319,7 +319,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.10</version>
+                <version>3.19.0</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -327,6 +327,18 @@
                 <version>5.9.0</version>
             </dependency>
             <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.9.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>5.12.0</version>
+                <scope>test</scope>
+            </dependency>
+           <dependency>
                 <groupId>org.junit.vintage</groupId>
                 <artifactId>junit-vintage-engine</artifactId>
                 <version>5.9.0</version>
@@ -335,7 +347,13 @@
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers</artifactId>
-                <version>1.15.3</version>
+                <version>1.21.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito-core.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
@@ -345,7 +363,7 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.5.5</version>
+                <version>42.7.8</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -422,7 +440,7 @@
                         <reuseForks>true</reuseForks>
                         <forkCount>4</forkCount>
                     </configuration>
-                    <version>3.2.5</version>
+                    <version>3.3.1</version>
                 </plugin>
 
                 <plugin>

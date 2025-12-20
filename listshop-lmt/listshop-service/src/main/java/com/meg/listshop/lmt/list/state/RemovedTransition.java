@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -28,33 +27,39 @@ public class RemovedTransition extends AbstractTransition {
         validateItemForRemove(targetItem);
         // if context is removing by tag, we remove the entire item, and all details
         if (itemStateContext.getTag() != null) {
-            // remove entire item - still will do this logically, not physically
-            removeItemLogically(targetItem);
-            return listItemRepository.save(targetItem);
+            // remove entire item - physically
+            return removeItemPhysically(targetItem);
         }
         int startCount = targetItem.getDetailCount();
         // just remove detail of dish or list
         removeDishOrListDetails(targetItem, itemStateContext.getDishId(), itemStateContext.getListId());
 
+
         if (targetItem.getDetailCount() == 0) {
-            removeItemLogically(targetItem);
+            return removeItemPhysically(targetItem);
         }
 
-        if (startCount != targetItem.getDetailCount()) {
+
+        if (targetItem.getDetailCount() > 0 &&
+                startCount != targetItem.getDetailCount()) {
             return listItemRepository.save(targetItem);
         }
+
         return targetItem;
     }
 
     private void removeDishOrListDetails(ListItemEntity targetItem, Long dishId, Long listId) {
         List<ListItemDetailEntity> toRemove = new ArrayList<>();
         List<ListItemDetailEntity> toKeep = new ArrayList<>();
+        boolean removeAllDetails = dishId == null && listId == null;
         targetItem.getDetails().forEach(detail -> {
             if (listId != null && listId.equals(detail.getLinkedListId()) ||
                     dishId != null && dishId.equals(detail.getLinkedDishId())) {
                 detail.setItem(null);
                 toRemove.add(detail);
-            } else {
+            } else if (removeAllDetails) {
+                toRemove.add(detail);
+            } else if (!removeAllDetails) {
                 toKeep.add(detail);
             }
         });
@@ -62,11 +67,10 @@ public class RemovedTransition extends AbstractTransition {
         targetItem.setDetails(toKeep);
     }
 
-    private void removeItemLogically(ListItemEntity itemToRemove) {
-        Date updated = new Date();
-        itemToRemove.setUpdatedOn(updated);
-        itemToRemove.setRemovedOn(updated);
-
+    private ListItemEntity removeItemPhysically(ListItemEntity itemToRemove) {
+        listItemDetailRepository.deleteAll(itemToRemove.getDetails());
+        listItemRepository.delete(itemToRemove);
+        return null;
     }
 
     private void validateContextForRemove(ItemStateContext itemStateContext) throws ItemProcessingException {

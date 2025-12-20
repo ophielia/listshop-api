@@ -30,7 +30,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -70,10 +69,10 @@ public class AddAmountTest {
     private static final Long chickenDrumstickId = 227959L;
     private static final Long onionConversionId = 56630L;
     private static final Long tomatoConversionId = 225744L;
-
+    @Container
+    public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
     @Autowired
     ConverterService converterService;
-
     @Autowired
     UnitRepository unitRepository;
 

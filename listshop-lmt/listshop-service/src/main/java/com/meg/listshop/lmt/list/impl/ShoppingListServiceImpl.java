@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.list.impl;
 
 import com.meg.listshop.common.DateUtils;
-import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
@@ -14,7 +13,6 @@ import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.dish.DishService;
-import com.meg.listshop.lmt.list.ListItemCollector;
 import com.meg.listshop.lmt.list.ListTagStatisticService;
 import com.meg.listshop.lmt.list.ShoppingListException;
 import com.meg.listshop.lmt.list.ShoppingListService;
@@ -178,7 +176,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
             for (ListItemEntity item : operationItems) {
                 ListItemEntity existingItem = destinationMap.get(item.getTag().getId());
-                boolean isNew = existingItem == null;
                 ItemStateContext context = new ItemStateContext(existingItem, destinationListId);
                 context.setListItem(item);
                 ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
@@ -196,14 +193,19 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 operationType.equals(ItemOperationType.RemoveAll)) {
 
             List<ListItemEntity> changedItems = new ArrayList<>();
+            List<Long> removedTagIds = new ArrayList<>();
             for (ListItemEntity item : operationItems) {
                 ItemStateContext context = new ItemStateContext(item, sourceListId);
                 context.setTag(item.getTag());
                 ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
-                changedItems.add(result);
+                if (result == null) {
+                    removedTagIds.add(item.getTag().getId());
+                } else {
+                    changedItems.add(result);
+                }
             }
 
-            saveListChanges(sourceList, changedItems, ListOperationType.LIST_REMOVE);
+            saveListChanges(sourceList, changedItems, removedTagIds, ListOperationType.LIST_REMOVE);
         }
 
     }
@@ -222,7 +224,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             return;
         }
 
-        doAddDishesToList(userId, list,  dishIds);
+        doAddDishesToList(userId, list, dishIds);
     }
 
     private void doAddDishesToList(Long userId, ShoppingListEntity list, List<Long> dishIds) throws ShoppingListException, ItemProcessingException {
@@ -261,14 +263,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // now, add all dish ids
-        doAddDishesToList(userId, newList,dishIds );
+        doAddDishesToList(userId, newList, dishIds);
 
         // add starter list - if desired
         if (Boolean.TRUE.equals(listGenerateProperties.getAddFromStarter())) {
             // add Items from BaseList
             ShoppingListEntity baseList = getStarterList(userId);
             if (baseList != null) {
-                doAddListToList(userId, newList, baseList);
+                doAddListToList(newList, baseList);
             }
         }
 
@@ -455,13 +457,19 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         List<ListItemEntity> updatedItems = new ArrayList<>();
+        List<Long> deletedItems = new ArrayList<>();
         for (ListItemEntity item : itemEntities) {
             ItemStateContext context = new ItemStateContext(item, listId);
             context.setTag(item.getTag());
             ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
+            if (result == null) {
+                deletedItems.add(item.getTag().getId());
+            } else {
+                updatedItems.add(item);
+            }
             updatedItems.add(result);
         }
-        saveListChanges(shoppingListEntity, updatedItems,ListOperationType.NONE);
+        saveListChanges(shoppingListEntity, updatedItems, deletedItems, ListOperationType.NONE);
     }
 
     @Override
@@ -477,9 +485,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ListItemEntity item = itemEntityOpt.get();
         ItemStateContext context = new ItemStateContext(item, listId);
         context.setTag(item.getTag());
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
+        listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
 
-        saveListChanges(shoppingListEntity, List.of(item), ListOperationType.LIST_REMOVE);
+        saveListChanges(shoppingListEntity, List.of(item), List.of(item.getTag().getId()), ListOperationType.LIST_REMOVE);
     }
 
     @Override
@@ -680,10 +688,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             return;
         }
 
-        doAddListToList(userId, list, toAdd);
+        doAddListToList(list, toAdd);
     }
 
-    private void doAddListToList(Long userId, ShoppingListEntity targetList, ShoppingListEntity addFromList) throws ItemProcessingException {
+    private void doAddListToList(ShoppingListEntity targetList, ShoppingListEntity addFromList) throws ItemProcessingException {
         // get list items for list to add
         List<ListItemEntity> itemsToAdd = addFromList.getItems();
 
@@ -730,22 +738,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public void fillSources(ShoppingListEntity result) {
-        //MM rework this to look at new tables.  Should be a bit more direct
-        Long listId = result.getId();
         // dish sources
         // gather distinct dish sources for list
-        List<String> rawSources = itemRepository.findDishSourcesForListFromItems(result.getId());
+        List<Long> dishIds = itemRepository.findDishSourcesForListFromItems(result.getId());
 
-        if (rawSources != null) {
-            String source;
-            if (rawSources.size() == 1) {
-                source = rawSources.get(0);
-            } else {
-                source = String.join(";", rawSources);
-            }
-            // put into set
-            Set<Long> dishIdSet = FlatStringUtils.inflateStringToLongSet(source, ";");
-            List<Long> dishIds = new ArrayList<>(dishIdSet);
+        if (dishIds != null && !dishIds.isEmpty()) {
             // retrieve dishes from database
             List<DishEntity> dishSources = dishService.getDishes(dishIds);
             // set in shopping list
@@ -753,32 +750,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // list sources
-        List<String> listRawSources = itemRepository.findListSourcesForListForDetails(result.getId());
+        List<Long> listSourceIds = itemRepository.findListSourcesForListForDetails(result.getId());
 
         // gather distinct list sources for list
-        if (listRawSources != null &&  !listRawSources.isEmpty()) {
-            List<String> filteredSources = listRawSources.stream()
-                    .filter(source -> !String.valueOf(listId).equals(source))
-                    .toList();
-            String source;
-            if (filteredSources.size() == 1) {
-                source = listRawSources.get(0);
-            } else {
-                source = String.join(";", listRawSources);
-            }
-            // put into set
-            Set<String> listSourceSet = FlatStringUtils.inflateStringToSet(source, ";");
-            List<Long> sourceListIds = listSourceSet.stream()
-                    .filter(val -> !val.isEmpty())
-                    .map(Long::valueOf)
-                    .filter(val -> val >= 0)
-                    .toList();
-            if (!sourceListIds.isEmpty()) {
-                List<ShoppingListEntity> sourceLists = shoppingListRepository.findAllById(sourceListIds);
-                // set in shopping list
-                result.setListSources(sourceLists);
-
-            }
+        if (listSourceIds != null && !listSourceIds.isEmpty()) {
+            List<ShoppingListEntity> sourceLists = shoppingListRepository.findAllById(listSourceIds);
+            // set in shopping list
+            result.setListSources(sourceLists);
         }
     }
 
@@ -801,29 +779,24 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<Long> tagIdsToRemove = itemRepository.findTagIdsInListByDishId(dishId, listId);
 
         List<ListItemEntity> changedItems = new ArrayList<>();
+        List<Long> removedTagIds = new ArrayList<>();
         for (ListItemEntity item : shoppingList.getItems()) {
             Long tagId = item.getTag().getId();
             if (tagIdsToRemove.contains(tagId)) {
-                removeDishItem(item, listId, dishId, changedItems);
+                removeDishItem(item, listId, dishId, changedItems, removedTagIds);
             }
         }
-        saveListChanges(shoppingList, changedItems, ListOperationType.DISH_REMOVE);
-        //MM BOOKMARK
-        // need test for this - remove by dish
-        //    if possible - test with confirmation that only updated items have stats updated
-        // oops ! add to list from list!!
-        // done - need implementation for count  - removing when more than one
-        // need test for that impl
-        // next up - remove by list
+        saveListChanges(shoppingList, changedItems, removedTagIds, ListOperationType.DISH_REMOVE);
     }
 
-    private void removeDishItem(ListItemEntity item, Long listId, Long dishId, List<ListItemEntity> changedItems) throws ItemProcessingException {
-        int startCount = item.getDetailCount();
+    private void removeDishItem(ListItemEntity item, Long listId, Long dishId, List<ListItemEntity> changedItems, List<Long> removedIds) throws ItemProcessingException {
         ItemStateContext context = new ItemStateContext(item, listId);
         context.setDishId(dishId);
-        ListItemEntity result = null;
-        result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
-        if (startCount != item.getDetailCount()) {
+
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
+        if (result == null) {
+            removedIds.add(item.getTag().getId());
+        } else {
             changedItems.add(result);
         }
     }
@@ -836,19 +809,24 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .filter(item -> item.getTag().getId() != null)
                 .collect(Collectors.toMap(item -> item.getTag().getId(), item -> item));
 
-        // get list to remove
-        ShoppingListEntity listToRemove = getListForUserById(userId, fromListId);
+        // get list tag ids to remove
         List<Long> tagIdsToRemove = itemRepository.findTagIdsInListByListId(fromListId, listId);
 
         List<ListItemEntity> changedItems = new ArrayList<>();
+        List<Long> removedItems = new ArrayList<>();
         for (Long tagId : tagIdsToRemove) {
             ListItemEntity itemInList = listItemsByTag.get(tagId);
             ItemStateContext testContext = new ItemStateContext(itemInList, listId);
             testContext.setListId(fromListId);
-            changedItems.add(listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext));
+            ListItemEntity resultItems = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext);
+            if (resultItems != null) {
+                changedItems.add(itemInList);
+            } else {
+                removedItems.add(itemInList.getTag().getId());
+            }
         }
 
-        saveListChanges(shoppingList, changedItems, ListOperationType.LIST_REMOVE);
+        saveListChanges(shoppingList, changedItems, removedItems, ListOperationType.LIST_REMOVE);
     }
 
     @Override
@@ -915,7 +893,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     private void saveListChanges(ShoppingListEntity shoppingList, List<ListItemEntity> items,
                                  ListOperationType operationType) {
-        itemChangeRepository.saveItemChangeStatistics(shoppingList, items, shoppingList.getUserId(), operationType);
+        itemChangeRepository.saveItemChangeStatistics(shoppingList, items, Collections.emptyList(), shoppingList.getUserId(), operationType);
         // make changes in list object
         if (items != null && !items.isEmpty()) {
             shoppingList.setLastUpdate(new Date());
@@ -923,6 +901,22 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
     }
 
+
+    private void saveListChanges(ShoppingListEntity shoppingList, List<ListItemEntity> changedItems,
+                                 List<Long> removedTagIds, ListOperationType operationType) {
+        itemChangeRepository.saveItemChangeStatistics(shoppingList, changedItems, removedTagIds, shoppingList.getUserId(), operationType);
+
+        List<ListItemEntity> filteredItems = shoppingList.getItems().stream()
+                .filter(item -> !removedTagIds.contains(item.getTag().getId()))
+                .collect(Collectors.toList());
+        shoppingList.setItems(filteredItems);
+        // make changes in list object
+        if ((changedItems != null && !changedItems.isEmpty()) ||
+                ( removedTagIds != null && !removedTagIds.isEmpty())) {
+            shoppingList.setLastUpdate(new Date());
+            shoppingListRepository.save(shoppingList);
+        }
+    }
 
     private void checkReplaceTagsInCollector(ItemCollector mergeCollector) {
         Set<Long> allServerTagIds = new HashSet<>(mergeCollector.getAllTagIds());
@@ -938,12 +932,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             mergeCollector.replaceOutdatedTags(outdatedTags, outdatedDictionary);
         }
 
-    }
-
-    private ListItemCollector createListItemCollector(Long listId, List<ListItemEntity> items) {
-        ListItemCollector collector = new ListItemCollector(listId, items);
-        checkReplaceTagsInCollector(collector);
-        return collector;
     }
 
     private List<ListItemEntity> convertClientItemsToItemEntities(Long userId, MergeRequest mergeRequest) {

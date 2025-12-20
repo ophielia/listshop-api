@@ -79,7 +79,7 @@ public class TargetRestControllerTest {
     void setConverters(HttpMessageConverter<?>[] converters) {
         this.mappingJackson2HttpMessageConverter = Arrays.stream(converters)
 
-                .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
+                .filter(MappingJackson2HttpMessageConverter.class::isInstance)
                 .findAny()
                 .orElse(null);
 
@@ -88,7 +88,7 @@ public class TargetRestControllerTest {
 
     @Before
     @WithMockUser
-    public void setup() {
+    void setup() {
         this.mockMvc = webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
                 .build();

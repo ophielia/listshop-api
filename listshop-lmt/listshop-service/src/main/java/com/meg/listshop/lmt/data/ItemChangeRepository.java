@@ -15,5 +15,5 @@ import java.util.List;
 public interface ItemChangeRepository {
     void legacySaveItemChanges(ShoppingListEntity shoppingList, ItemCollector collector, Long userId, CollectorContext context);
 
-    void saveItemChangeStatistics(ShoppingListEntity shoppingList, List<ListItemEntity> items, Long userId, ListOperationType operationType);
+    void saveItemChangeStatistics(ShoppingListEntity shoppingList, List<ListItemEntity> items, List<Long> removedTagIds,Long userId, ListOperationType operationType);
 }

@@ -26,7 +26,7 @@ public interface ItemRepository extends JpaRepository<ListItemEntity, Long> {
                                          where list_id = :listid and linked_dish_id is not null 
                                            and removed_on is null
             """, nativeQuery = true)
-    List<String> findDishSourcesForListFromItems(@Param("listid") Long listid);
+    List<Long> findDishSourcesForListFromItems(@Param("listid") Long listid);
 
 
     @Query(value = "select distinct list_sources from list_item where list_id = :listid and list_sources is not null and removed_on is null", nativeQuery = true)
@@ -37,7 +37,7 @@ public interface ItemRepository extends JpaRepository<ListItemEntity, Long> {
                                          where list_id = :listid and linked_list_id is not null 
                                            and removed_on is null
             """, nativeQuery = true)
-    List<String> findListSourcesForListForDetails(@Param("listid") Long listid);
+    List<Long> findListSourcesForListForDetails(@Param("listid") Long listid);
 
     @Query(value = "select i from ListItemEntity i where i.listId = :listId and (" +
             " i.addedOn > :changedAfter or" +
