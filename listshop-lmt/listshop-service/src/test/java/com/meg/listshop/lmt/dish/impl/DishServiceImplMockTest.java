@@ -6,7 +6,6 @@ import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
-import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -429,15 +428,6 @@ class DishServiceImplMockTest {
         TagEntity tag = new TagEntity();
         tag.setId(tagId);
 
-        ArgumentCaptor<DishItemEntity> itemCaptor = ArgumentCaptor.forClass(DishItemEntity.class);
-        ArgumentCaptor<DishEntity> dishCaptor = ArgumentCaptor.forClass(DishEntity.class);
-
-        Mockito.when(dishRepository.findByDishIdForUser(userId, dishId))
-                .thenReturn(Optional.of(dishEntity));
-        Mockito.when(tagService.getTagById(tagId))
-                .thenReturn(tag);
-
-
         Assertions.assertThrows(ObjectNotFoundException.class, () -> {
             dishService.updateIngredientInDish(userId, dishId, dishItemDto);
         });
@@ -468,9 +458,6 @@ class DishServiceImplMockTest {
 
         Mockito.when(dishRepository.findByDishIdForUser(userId, dishId))
                 .thenReturn(Optional.of(dishEntity));
-        Mockito.when(tagService.getTagById(tagId))
-                .thenReturn(tag);
-
 
         Assertions.assertThrows(ObjectNotFoundException.class, () -> {
             dishService.updateIngredientInDish(userId, dishId, dishItemDto);
@@ -497,18 +484,8 @@ class DishServiceImplMockTest {
         TagEntity tag = new TagEntity();
         tag.setId(tagId);
 
-        ArgumentCaptor<DishItemEntity> itemCaptor = ArgumentCaptor.forClass(DishItemEntity.class);
-        ArgumentCaptor<DishEntity> dishCaptor = ArgumentCaptor.forClass(DishEntity.class);
-
         Mockito.when(dishRepository.findByDishIdForUser(userId, dishId))
                 .thenReturn(Optional.of(dishEntity));
-        Mockito.when(tagService.getTagById(tagId))
-                .thenReturn(tag);
-        Mockito.when(dishItemRepository.save(itemCaptor.capture()))
-                .thenReturn(new DishItemEntity());
-        Mockito.when(dishRepository.save(dishCaptor.capture()))
-                .thenReturn(new DishEntity());
-
         Assertions.assertThrows(ObjectNotFoundException.class, () -> {
             dishService.updateIngredientInDish(userId, dishId, dishItemDto);
         });

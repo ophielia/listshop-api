@@ -155,14 +155,12 @@ class UserServiceImplMockTest {
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setUsername(TestConstants.USER_3_NAME);
         Mockito.when(userRepository.findById(TestConstants.USER_3_ID)).thenReturn(Optional.of(testUser));
-        Mockito.when(userRepository.findByEmail(TestConstants.USER_3_NAME)).thenReturn(testUser);
 
         UserDeviceEntity testUserDevice = new UserDeviceEntity();
         testUserDevice.setUserId(TestConstants.USER_3_ID);
 
         ArgumentCaptor<UserDeviceEntity> userDeviceCapture = ArgumentCaptor.forClass(UserDeviceEntity.class);
         Mockito.when(userDeviceRepository.save(userDeviceCapture.capture())).thenReturn(null);
-        Mockito.when(userDeviceRepository.findByToken(token)).thenReturn(testUserDevice);
 
         userService.createDeviceForUserAndDevice(TestConstants.USER_3_ID, deviceInfo, token);
 
@@ -307,8 +305,6 @@ class UserServiceImplMockTest {
         UserEntity mockUserEntity = new UserEntity();
 
         Mockito.when(userRepository.findByEmail(userName)).thenReturn(mockUserEntity);
-        ArgumentCaptor<UserEntity> userCapture = ArgumentCaptor.forClass(UserEntity.class);
-        Mockito.when(userRepository.save(userCapture.capture())).thenReturn(null);
         Mockito.when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(BadCredentialsException.class);
 
