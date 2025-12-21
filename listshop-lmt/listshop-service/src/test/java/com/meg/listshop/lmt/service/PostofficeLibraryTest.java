@@ -13,32 +13,36 @@ import com.meg.postoffice.api.model.EmailParameters;
 import com.meg.postoffice.api.model.EmailType;
 import com.meg.postoffice.service.MailService;
 import freemarker.template.TemplateException;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import jakarta.mail.MessagingException;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
 import java.io.IOException;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
+@Testcontainers
 @ActiveProfiles("test")
-public class PostofficeLibraryTest {
+class PostofficeLibraryTest {
 
     @Autowired
     MailService mailService;
 
-
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Test
-    public void testMailService() throws TemplateException, IOException, MessagingException {
+    void testMailService() throws TemplateException, IOException, MessagingException {
         EmailParameters parameters = new EmailParameters();
         parameters.setEmailType(EmailType.ResetPassword);
         parameters.setReceiver("margaret.martin@orange.fr");

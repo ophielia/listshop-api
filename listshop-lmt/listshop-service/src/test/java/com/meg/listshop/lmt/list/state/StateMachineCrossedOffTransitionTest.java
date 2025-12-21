@@ -11,26 +11,23 @@ import com.meg.listshop.lmt.data.repository.ListItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.ServiceTestUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
 
-@RunWith(SpringRunner.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-public class StateMachineCrossedOffTransitionTest    {
+class StateMachineCrossedOffTransitionTest    {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
@@ -48,7 +45,7 @@ public class StateMachineCrossedOffTransitionTest    {
     private ListItemRepository listItemRepository;
 
     @Test
-    public void testCrossOff() throws ItemProcessingException {
+    void testCrossOff() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
 
         Long listId = targetList.getId();
@@ -70,7 +67,7 @@ public class StateMachineCrossedOffTransitionTest    {
     }
 
     @Test
-    public void testUncrossOff() throws ItemProcessingException {
+    void testUncrossOff() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
 
         Long listId = targetList.getId();

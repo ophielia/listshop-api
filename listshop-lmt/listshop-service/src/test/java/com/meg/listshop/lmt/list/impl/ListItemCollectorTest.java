@@ -6,25 +6,24 @@ import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.list.ListItemCollector;
 import com.meg.listshop.lmt.service.CollectorContext;
 import com.meg.listshop.lmt.service.CollectorContextBuilder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-public class ListItemCollectorTest {
+class ListItemCollectorTest {
 
 
     @Test
-    public void testAdd() {
+    void testAdd() {
         ListItemCollector collector = new ListItemCollector(999L, new ArrayList<>());
         ListItemEntity item = createItem(1L, 100L);
 
@@ -34,13 +33,13 @@ public class ListItemCollectorTest {
 
         // check results
         List<ListItemEntity> changed = collector.getChangedItems();
-        assertNotNull(changed);
-        assertEquals(1, changed.size());
+        Assertions.assertNotNull(changed);
+        Assertions.assertEquals(1, changed.size());
 
     }
 
     @Test
-    public void testUpdate() {
+    void testUpdate() {
 
         ListItemEntity item = createItem(1L, 100L);
         ListItemCollector collector = new ListItemCollector(999L, Collections.singletonList(item));
@@ -52,14 +51,14 @@ public class ListItemCollectorTest {
 
         // check results
         List<ListItemEntity> changed = collector.getChangedItems();
-        assertNotNull(changed);
-        assertEquals(1, changed.size());
-        assertNotNull(changed.get(0).getUpdatedOn() );
+        Assertions.assertNotNull(changed);
+        Assertions.assertEquals(1, changed.size());
+        Assertions.assertNotNull(changed.get(0).getUpdatedOn());
 
     }
 
     @Test
-    public void testDelete() {
+    void testDelete() {
         ListItemEntity item = createItem(1L, 100L);
         ListItemCollector collector = new ListItemCollector(999L, Collections.singletonList(item));
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Dish)
@@ -69,14 +68,14 @@ public class ListItemCollectorTest {
 
         // check results
         List<ListItemEntity> changed = collector.getChangedItems();
-        assertNotNull(changed);
-        assertEquals(1, changed.size());
-        assertNotNull(changed.get(0).getRemovedOn() );
+        Assertions.assertNotNull(changed);
+        Assertions.assertEquals(1, changed.size());
+        Assertions.assertNotNull(changed.get(0).getRemovedOn());
     }
 
 
     @Test
-    public void testAddUpdateDelete() {
+    void testAddUpdateDelete() {
         ListItemEntity item = createItem(1L, 100L);
         ListItemEntity item2 = createItem(2L, 200L);
         List<ListItemEntity> items = new ArrayList<>();
@@ -100,8 +99,8 @@ public class ListItemCollectorTest {
 
         // check results
         List<ListItemEntity> changed = collector.getChangedItems();
-        assertNotNull(changed);
-        assertEquals(3, changed.size());
+        Assertions.assertNotNull(changed);
+        Assertions.assertEquals(3, changed.size());
 
         // check dates
         int added =0;
@@ -117,9 +116,9 @@ public class ListItemCollectorTest {
                 added++;
             }
         }
-        assertTrue(deleted > 0);
-        assertTrue(added > 0);
-        assertTrue(updated > 0);
+        Assertions.assertTrue(deleted > 0);
+        Assertions.assertTrue(added > 0);
+        Assertions.assertTrue(updated > 0);
     }
 
     private ListItemEntity createItem(Long tagId, Long itemId) {

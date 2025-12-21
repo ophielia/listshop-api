@@ -14,7 +14,6 @@ import com.meg.listshop.Application;
 import com.meg.listshop.admin.model.PostSearchTags;
 import com.meg.listshop.auth.data.entity.AuthorityName;
 import com.meg.listshop.auth.service.CustomUserDetails;
-import com.meg.listshop.auth.service.impl.JwtUser;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -22,12 +21,10 @@ import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,11 +35,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,14 +49,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.fasterxml.jackson.databind.type.LogicalType.Collection;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @AutoConfigureJsonTesters
@@ -67,9 +66,9 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 
 @ActiveProfiles("test")
-public class AdminTagRestControllerTest {
+class AdminTagRestControllerTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgresSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private static UserDetails userDetails;
@@ -86,7 +85,7 @@ public class AdminTagRestControllerTest {
     private WebApplicationContext webApplicationContext;
 
 
-    @Before
+    @BeforeEach
     @WithMockUser
     public void setup() throws Exception {
 
@@ -106,9 +105,9 @@ public class AdminTagRestControllerTest {
     }
 
     @Test
-    public void updateTag() throws Exception {
+    void updateTag() throws Exception {
         Optional<TagEntity> toUpdateOpt = tagRepository.findById(TestConstants.TAG_3_ID);
-        Assert.assertTrue(toUpdateOpt.isPresent());
+        Assertions.assertTrue(toUpdateOpt.isPresent());
         TagEntity toUpdate = toUpdateOpt.get();
         String updateName = "updated:" + toUpdate.getName();
         String updateDescription = "updated:" + (toUpdate.getDescription() == null ? "" : toUpdate.getDescription());
@@ -126,7 +125,7 @@ public class AdminTagRestControllerTest {
 
     @Test
     @WithMockUser
-    public void replaceTagsInDishes() throws Exception {
+    void replaceTagsInDishes() throws Exception {
         this.mockMvc.perform(put("/admin/tag/" + TestConstants.TAG_CARROTS + "/dish/" + TestConstants.TAG_MEAT)
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful());
@@ -134,7 +133,7 @@ public class AdminTagRestControllerTest {
 
     @Test
     @WithMockUser
-    public void findFoodSuggestions() throws Exception {
+    void findFoodSuggestions() throws Exception {
         // @GetMapping(value = "/{tagId}/food/suggestions")
         MvcResult result = this.mockMvc.perform(get("/admin/tag/888999/food/suggestions")
                         .with(user(userDetails)))
@@ -144,7 +143,7 @@ public class AdminTagRestControllerTest {
         String jsonList = result.getResponse().getContentAsString();
         ObjectMapper objectMapper = new ObjectMapper();
         FoodListResource afterList = objectMapper.readValue(jsonList, FoodListResource.class);
-        Assert.assertNotNull(afterList);
+        Assertions.assertNotNull(afterList);
 
 
         long countForCategoryThree = afterList.getEmbeddedList().getFoodResourceList().stream()
@@ -163,7 +162,7 @@ public class AdminTagRestControllerTest {
 
     @Test
     @WithMockUser
-    public void assignFoodToTag() throws Exception {
+    void assignFoodToTag() throws Exception {
         MvcResult result = this.mockMvc.perform(post("/admin/tag/888999/food/9000")
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful())
@@ -173,7 +172,7 @@ public class AdminTagRestControllerTest {
 
     @Test
     @WithMockUser
-    public void assignLiquidToTag() throws Exception {
+    void assignLiquidToTag() throws Exception {
         this.mockMvc.perform(post("/admin/tag/888999/liquid/true")
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful())
@@ -192,7 +191,7 @@ public class AdminTagRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetFoodCategoryMappings() throws Exception {
+    void testGetFoodCategoryMappings() throws Exception {
         //    @GetMapping(value = "/food/categories")
         MvcResult result = this.mockMvc.perform(get("/admin/tag/food/category/mappings")
                         .with(user(userDetails)))
@@ -214,7 +213,7 @@ public class AdminTagRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetFullTagInfo() throws Exception {
+    void testGetFullTagInfo() throws Exception {
         long tagId = 9991029;
         MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
                         .with(user(userDetails)))
@@ -229,7 +228,7 @@ public class AdminTagRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testFullTagInfoConversionSamplesBasic() throws Exception {
+    void testFullTagInfoConversionSamplesBasic() throws Exception {
         // oregano
         // chicken breast
         // tomatoes
@@ -248,7 +247,7 @@ public class AdminTagRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testFullTagInfoConversionSamplesOregano() throws Exception {
+    void testFullTagInfoConversionSamplesOregano() throws Exception {
         // oregano - that is to say, one factor, converting to grams, no markers or unit sizes
         long tagId = 888888;
         MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
@@ -268,12 +267,12 @@ public class AdminTagRestControllerTest {
                 .filter( s -> s.getFromAmount().contains(",") ||
                         s.getToAmount().contains(","))
                 .count();
-        Assert.assertEquals(0L, commaCount);
+        Assertions.assertEquals(0L, commaCount);
     }
 
     @Test
     @WithMockUser
-    public void testFullTagInfoConversionSamplesChickenBreast() throws Exception {
+    void testFullTagInfoConversionSamplesChickenBreast() throws Exception {
         // chicken breast - one factor, between unit and grams.
         long tagId = 777777;
         MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
@@ -293,13 +292,13 @@ public class AdminTagRestControllerTest {
                 .filter( s -> s.getFromAmount().contains(",") ||
                         s.getToAmount().contains(","))
                 .count();
-        Assert.assertEquals(0L, commaCount);
+        Assertions.assertEquals(0L, commaCount);
     }
 
 
     @Test
     @WithMockUser
-    public void testFullTagInfoConversionSamplesTomatoes() throws Exception {
+    void testFullTagInfoConversionSamplesTomatoes() throws Exception {
         // MM START HERE - To Ma To es
         // in other words - multiple unit sizes and markers
         // 3 unit sizes, 3 markers (including null) - generics
@@ -322,12 +321,12 @@ public class AdminTagRestControllerTest {
                 .filter( s -> s.getFromUnit().contains(",") ||
                         s.getToUnit().contains(","))
                 .count();
-        Assert.assertTrue(commaCount > 1);
+        Assertions.assertTrue(commaCount > 1);
     }
 
 
     @Test
-    public void addChildren() throws Exception {
+    void addChildren() throws Exception {
         String url = "/admin/tag/" + TestConstants.PARENT_TAG_ID_1 + "/children?tagIds=" + TestConstants.TAG_MEAT + "," + TestConstants.TAG_CARROTS + "," + TestConstants.TAG_CROCKPOT;
 
         this.mockMvc.perform(post(url).contentType(contentType)
@@ -336,12 +335,12 @@ public class AdminTagRestControllerTest {
     }
 
     @Test
-    public void assignChildToParent() throws Exception {
+    void assignChildToParent() throws Exception {
         String url = "/admin/tag/" + TestConstants.PARENT_TAG_ID_2
                 + "/child/" + TestConstants.CHILD_TAG_ID_1;
 
         Optional<TagEntity> toUpdateOpt = tagRepository.findById(TestConstants.CHILD_TAG_ID_1);
-        Assert.assertTrue(toUpdateOpt.isPresent());
+        Assertions.assertTrue(toUpdateOpt.isPresent());
         TagEntity toUpdate = toUpdateOpt.get();
         String updateName = "updated:" + toUpdate.getName();
         String updateDescription = "updated:" + (toUpdate.getDescription() == null ? "" : toUpdate.getDescription());
@@ -354,7 +353,7 @@ public class AdminTagRestControllerTest {
 
 
     @Test
-    public void assignChildToBaseTag() throws Exception {
+    void assignChildToBaseTag() throws Exception {
         String url = "/admin/tag/" + TestConstants.PARENT_TAG_ID_1 + "/child/" + TestConstants.TAG_MEAT;
 
         this.mockMvc.perform(put(url)
@@ -365,7 +364,7 @@ public class AdminTagRestControllerTest {
     }
 
     @Test
-    public void testAssignFoodCategoryToTag() throws Exception {
+    void testAssignFoodCategoryToTag() throws Exception {
         Long testTagId = 9991019L;
         long testCategoryId = 3L;
         String url = "/admin/tag/" + testTagId + "/food/category/" + testCategoryId;
@@ -375,12 +374,12 @@ public class AdminTagRestControllerTest {
                 .andExpect(status().is2xxSuccessful());
 
         TagEntity tagResult = tagRepository.findById(testTagId).orElse(null);
-        Assert.assertNotNull(tagResult);
-        Assert.assertEquals(tagResult.getInternalStatus(), (Long) TagInternalStatus.CATEGORY_ASSIGNED.value());
+        Assertions.assertNotNull(tagResult);
+        Assertions.assertEquals(tagResult.getInternalStatus(), (Long) TagInternalStatus.CATEGORY_ASSIGNED.value());
     }
 
     @Test
-    public void getTagInfoListGroupInclude() throws Exception {
+    void getTagInfoListGroupInclude() throws Exception {
         PostSearchTags postSearchTags = new PostSearchTags();
         postSearchTags.setGroupIncludeType(IncludeType.ONLY.getDisplayName());
 
@@ -394,12 +393,12 @@ public class AdminTagRestControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         String resultBody = result.getResponse().getContentAsString();
         System.out.println("\n\n" + resultBody + "\n\n");
-        Assert.assertNotNull(resultBody);
+        Assertions.assertNotNull(resultBody);
         TagListResource resultResource = deserializeTagListResource(resultBody);
-        Assert.assertNotNull(resultResource);
+        Assertions.assertNotNull(resultResource);
 
         // check that results do not contain "carrots" (since carrots are not a group)
 
@@ -412,8 +411,8 @@ public class AdminTagRestControllerTest {
                 .filter(t -> t.getTag().getName().equalsIgnoreCase("frozen"))
                 .findFirst()
                 .orElse(null);
-        Assert.assertNotNull(foundDryGoods);
-        Assert.assertNull(notFoundCarrots);
+        Assertions.assertNotNull(foundDryGoods);
+        Assertions.assertNull(notFoundCarrots);
 
         // now test exclude groups
         postSearchTags.setGroupIncludeType(IncludeType.EXCLUDE.getDisplayName());
@@ -428,12 +427,12 @@ public class AdminTagRestControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         resultBody = result.getResponse().getContentAsString();
         System.out.println("\n\n" + resultBody + "\n\n");
-        Assert.assertNotNull(resultBody);
+        Assertions.assertNotNull(resultBody);
         resultResource = deserializeTagListResource(resultBody);
-        Assert.assertNotNull(resultResource);
+        Assertions.assertNotNull(resultResource);
 
         // check that results do not contain "carrots" (since carrots are not a group)
 
@@ -446,12 +445,12 @@ public class AdminTagRestControllerTest {
                 .filter(t -> t.getTag().getName().equalsIgnoreCase("frozen"))
                 .findFirst()
                 .orElse(null);
-        Assert.assertNull(foundDryGoods);
-        Assert.assertNotNull(notFoundCarrots);
+        Assertions.assertNull(foundDryGoods);
+        Assertions.assertNotNull(notFoundCarrots);
     }
 
     @Test
-    public void getTagInfoListUser() throws Exception {
+    void getTagInfoListUser() throws Exception {
         PostSearchTags postSearchTags = new PostSearchTags();
         postSearchTags.setUserId("0");  // should return the default tags only, with userId = 0
 
@@ -465,12 +464,12 @@ public class AdminTagRestControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         String resultBody = result.getResponse().getContentAsString();
         System.out.println("\n\n" + resultBody + "\n\n");
-        Assert.assertNotNull(resultBody);
+        Assertions.assertNotNull(resultBody);
         TagListResource resultResource = deserializeTagListResource(resultBody);
-        Assert.assertNotNull(resultResource);
+        Assertions.assertNotNull(resultResource);
 
         // check that results do not contain "carrots" (since carrots are not a group)
 
@@ -483,8 +482,8 @@ public class AdminTagRestControllerTest {
                 .filter(t -> t.getTag().getName().equalsIgnoreCase("carrots"))
                 .findFirst()
                 .orElse(null);
-        Assert.assertNotNull(foundCarrots);
-        Assert.assertNull(notFoundSomeGreenThing);
+        Assertions.assertNotNull(foundCarrots);
+        Assertions.assertNull(notFoundSomeGreenThing);
 
         // now test userId - 101010
         postSearchTags.setUserId("101010");
@@ -499,12 +498,12 @@ public class AdminTagRestControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         resultBody = result.getResponse().getContentAsString();
         System.out.println("\n\n" + resultBody + "\n\n");
-        Assert.assertNotNull(resultBody);
+        Assertions.assertNotNull(resultBody);
         resultResource = deserializeTagListResource(resultBody);
-        Assert.assertNotNull(resultResource);
+        Assertions.assertNotNull(resultResource);
 
         // check that results do  contain "some green things"
         TagResource foundSomeGreenThing = resultResource.getEmbeddedList().getTagResourceList().stream()
@@ -516,8 +515,8 @@ public class AdminTagRestControllerTest {
                 .filter(t -> t.getTag().getName().equalsIgnoreCase("carrots"))
                 .findFirst()
                 .orElse(null);
-        Assert.assertNull(notFoundCarrots);
-        Assert.assertNotNull(foundSomeGreenThing);
+        Assertions.assertNull(notFoundCarrots);
+        Assertions.assertNotNull(foundSomeGreenThing);
     }
 
     private String json(Object o) throws IOException {

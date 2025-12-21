@@ -14,14 +14,15 @@ import com.meg.listshop.lmt.data.repository.ListItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.ServiceTestUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,15 +31,16 @@ import java.time.ZoneOffset;
 import java.util.Date;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-public class StateMachineActiveTransitionTest {
+class StateMachineActiveTransitionTest {
 
     private static final Long DISH_ID = 5678L;
     private static final Long UNIT_ID = 9101112L;
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
@@ -59,13 +61,13 @@ public class StateMachineActiveTransitionTest {
     private ListItemRepository listItemRepository;
 
     @Test
-    public void blowUpTest() throws ConversionPathException, ConversionFactorException {
+    void blowUpTest() throws ConversionPathException, ConversionFactorException {
         Assertions.assertTrue(true);
         Assertions.assertNotNull(listItemStateMachine);
     }
 
     @Test
-    public void testAddFromTag() throws ItemProcessingException {
+    void testAddFromTag() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
         // adding a list item from a tag - no relation to other list or dish
@@ -88,7 +90,7 @@ public class StateMachineActiveTransitionTest {
     }
 
     @Test
-    public void testDishItemNoQuantities() throws ItemProcessingException {
+    void testDishItemNoQuantities() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
         TagEntity tag = createTag();
@@ -116,7 +118,7 @@ public class StateMachineActiveTransitionTest {
     }
 
     @Test
-    public void testDishItemQuantities() throws ItemProcessingException {
+    void testDishItemQuantities() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
         // adding a dish item as a new list item
@@ -162,7 +164,7 @@ public class StateMachineActiveTransitionTest {
     }
 
     @Test
-    public void testListItemNoQuantities() throws ItemProcessingException {
+    void testListItemNoQuantities() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
         // adding a list item as a new list item
@@ -190,7 +192,7 @@ public class StateMachineActiveTransitionTest {
     }
 
     @Test
-    public void testListItemQuantities() throws ItemProcessingException {
+    void testListItemQuantities() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
         // adding a list item as a new list item
@@ -240,7 +242,7 @@ public class StateMachineActiveTransitionTest {
     }
 
     @Test
-    public void testListItemComplex() throws ItemProcessingException {
+    void testListItemComplex() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
         // adding a list item as a new list item
@@ -308,7 +310,7 @@ public class StateMachineActiveTransitionTest {
     }
 
     @Test
-    public void testAddTagExistingRemoved() throws ItemProcessingException {
+    void testAddTagExistingRemoved() throws ItemProcessingException {
         Date addedOn = calculateYesterday();
         Long dishId = 12345L;
         ShoppingListEntity targetList = createShoppingList();
@@ -343,7 +345,7 @@ public class StateMachineActiveTransitionTest {
 
 
     @Test
-    public void testDishItemExistingRemoved() throws ItemProcessingException {
+    void testDishItemExistingRemoved() throws ItemProcessingException {
         Date addedOn = calculateYesterday();
         Long dishId = 12345L;
         ShoppingListEntity targetList = createShoppingList();
@@ -381,7 +383,7 @@ public class StateMachineActiveTransitionTest {
     }
 
     @Test
-    public void testListItemExistingRemoved() throws ItemProcessingException {
+    void testListItemExistingRemoved() throws ItemProcessingException {
         Date addedOn = calculateYesterday();
         ShoppingListEntity addedFromList = createShoppingList();
         ShoppingListEntity targetList = createShoppingList();
@@ -420,7 +422,7 @@ public class StateMachineActiveTransitionTest {
     }
 
     @Test
-    public void testAddTagExisting() throws ItemProcessingException {
+    void testAddTagExisting() throws ItemProcessingException {
         Date addedOn = calculateYesterday();
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
@@ -452,7 +454,7 @@ public class StateMachineActiveTransitionTest {
     }
 
     @Test
-    public void testDishItemExistingOverlap() throws ItemProcessingException {
+    void testDishItemExistingOverlap() throws ItemProcessingException {
         Date addedOn = calculateYesterday();
         Long dishId = 12345L;
         ShoppingListEntity targetList = createShoppingList();
@@ -489,7 +491,7 @@ public class StateMachineActiveTransitionTest {
     }
 
     @Test
-    public void testListItemExistingOverlap() throws ItemProcessingException {
+    void testListItemExistingOverlap() throws ItemProcessingException {
         Date addedOn = calculateYesterday();
         ShoppingListEntity addedFromList = createShoppingList();
         ShoppingListEntity targetList = createShoppingList();

@@ -16,24 +16,26 @@ import com.meg.listshop.lmt.service.MergeItemCollector;
 import com.meg.listshop.lmt.list.ShoppingListService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
+@Testcontainers
 @ActiveProfiles("test")
 @Transactional
 @Sql(value = {"/sql/com/meg/atable/lmt/service/MergeItemCollectorTest-rollback.sql",
@@ -41,9 +43,9 @@ import java.util.List;
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sql/com/meg/atable/lmt/service/MergeItemCollectorTest-rollback.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-public class MergeItemCollectorTest {
+class MergeItemCollectorTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
 
@@ -54,29 +56,29 @@ public class MergeItemCollectorTest {
 
 
     @Test
-    public void testLoadTestList() {
+    void testLoadTestList() {
         ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
         // blow up test
-        Assert.assertEquals(1, 1);
+        Assertions.assertEquals(1, 1);
     }
 
 
     @Test
-    public void testMergeWithEmpty() {
+    void testMergeWithEmpty() {
         ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
 
         collector.addMergeItems(new ArrayList<>());
 
-        Assert.assertFalse(collector.hasChanges());
-        Assert.assertEquals(4, collector.getAllItems().size());
+        Assertions.assertFalse(collector.hasChanges());
+        Assertions.assertEquals(4, collector.getAllItems().size());
     }
 
     @Test
-    public void testUpdatesToItem() {
+    void testUpdatesToItem() {
         ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
@@ -87,13 +89,13 @@ public class MergeItemCollectorTest {
 
         collector.addMergeItems(mergeItems);
 
-        Assert.assertTrue(collector.hasChanges());
-        Assert.assertEquals(1, collector.getChangedItems().size());
-        Assert.assertEquals(4, collector.getAllItems().size());
+        Assertions.assertTrue(collector.hasChanges());
+        Assertions.assertEquals(1, collector.getChangedItems().size());
+        Assertions.assertEquals(4, collector.getAllItems().size());
     }
 
     @Test
-    public void testUpdatesToItemServerMoreRecent() {
+    void testUpdatesToItemServerMoreRecent() {
         ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
@@ -105,13 +107,13 @@ public class MergeItemCollectorTest {
 
         collector.addMergeItems(mergeItems);
 
-        Assert.assertFalse(collector.hasChanges());
-        Assert.assertEquals(0, collector.getChangedItems().size());
-        Assert.assertEquals(4, collector.getAllItems().size());
+        Assertions.assertFalse(collector.hasChanges());
+        Assertions.assertEquals(0, collector.getChangedItems().size());
+        Assertions.assertEquals(4, collector.getAllItems().size());
     }
 
     @Test
-    public void testAddingNewItem() {
+    void testAddingNewItem() {
         ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
@@ -121,9 +123,9 @@ public class MergeItemCollectorTest {
 
         collector.addMergeItems(mergeItems);
 
-        Assert.assertTrue(collector.hasChanges());
-        Assert.assertEquals(1, collector.getChangedItems().size());
-        Assert.assertEquals(5, collector.getAllItems().size());
+        Assertions.assertTrue(collector.hasChanges());
+        Assertions.assertEquals(1, collector.getChangedItems().size());
+        Assertions.assertEquals(5, collector.getAllItems().size());
     }
 
     private ListItemEntity createItemForTagId(long tagId) {

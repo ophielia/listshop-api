@@ -10,26 +10,27 @@ import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.lmt.data.repository.ListItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
-
-@RunWith(SpringRunner.class)
+@Testcontainers
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-public class StateMachineRemovedTransitionTest {
+class StateMachineRemovedTransitionTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
@@ -47,7 +48,7 @@ public class StateMachineRemovedTransitionTest {
     private ListItemRepository listItemRepository;
 
     @Test
-    public void testRemoveByTag() throws ItemProcessingException {
+    void testRemoveByTag() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
         // remove by tag physically deletes the tag
         Long listId = targetList.getId();
@@ -70,7 +71,7 @@ public class StateMachineRemovedTransitionTest {
     }
 
     @Test
-    public void testRemoveByDish() throws ItemProcessingException {
+    void testRemoveByDish() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
         // setup - adding a dish item from a tag
@@ -99,7 +100,7 @@ public class StateMachineRemovedTransitionTest {
     }
 
     @Test
-    public void testRemoveByDishTwoItems() throws ItemProcessingException {
+    void testRemoveByDishTwoItems() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
         // setup - adding two dish item from a tag
@@ -141,7 +142,7 @@ public class StateMachineRemovedTransitionTest {
     }
 
     @Test
-    public void testRemoveByList() throws ItemProcessingException {
+    void testRemoveByList() throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
         ShoppingListEntity secondList = createShoppingList();
         Long listId = targetList.getId();

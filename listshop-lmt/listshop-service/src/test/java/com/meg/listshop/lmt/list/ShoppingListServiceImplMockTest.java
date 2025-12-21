@@ -18,15 +18,14 @@ import com.meg.listshop.lmt.list.state.ListItemEvent;
 import com.meg.listshop.lmt.list.state.ListItemStateMachine;
 import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,9 +38,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-public class ShoppingListServiceImplMockTest {
+class ShoppingListServiceImplMockTest {
 
 
     private ShoppingListService shoppingListService;
@@ -68,7 +67,7 @@ public class ShoppingListServiceImplMockTest {
 
     private ListItemStateMachine listItemStateMachine = Mockito.mock(ListItemStateMachine.class);
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         shoppingListService = new ShoppingListServiceImpl(tagService,
@@ -83,7 +82,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testGetListById() {
+    void testGetListById() {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -103,11 +102,11 @@ public class ShoppingListServiceImplMockTest {
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
 
         // Assertions
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
     }
 
     @Test
-    public void testGetListById_NoItems() {
+    void testGetListById_NoItems() {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -129,7 +128,7 @@ public class ShoppingListServiceImplMockTest {
         Mockito.verify(shoppingListRepository, times(1)).findById(listId);
 
         // Assertions
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
 
         // test returning null - user
         // test returning null - shoppinglistwithitems
@@ -138,7 +137,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testGetListById_NoUser() {
+    void testGetListById_NoUser() {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -153,7 +152,7 @@ public class ShoppingListServiceImplMockTest {
         ShoppingListEntity result = shoppingListService.getListForUserById(userId, listId);
 
         // Assertions
-        Assert.assertNull(result);
+        Assertions.assertNull(result);
 
         // test returning null - user
         // test returning null - shoppinglistwithitems
@@ -162,7 +161,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testGetListById_BadUser() {
+    void testGetListById_BadUser() {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -181,13 +180,13 @@ public class ShoppingListServiceImplMockTest {
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);
 
         // Assertions
-        Assert.assertNull(result);
+        Assertions.assertNull(result);
 
 
     }
 
     @Test
-    public void testDeleteList() {
+    void testDeleteList() {
         Long userId = 99L;
         UserEntity user = new UserEntity();
         user.setId(userId);
@@ -229,12 +228,12 @@ public class ShoppingListServiceImplMockTest {
         Mockito.verify(shoppingListRepository, times(1)).flush();
 
         // Assertions
-        Assert.assertNotNull(listArgument.getValue());
+        Assertions.assertNotNull(listArgument.getValue());
         ShoppingListEntity resultList = listArgument.getValue();
-        Assert.assertTrue(resultList.getItems().isEmpty());
+        Assertions.assertTrue(resultList.getItems().isEmpty());
     }
 
-    @Test(expected = ActionInvalidException.class)
+    @Test
     public void testDeleteList_NoListsFound() {
         Long userId = 99L;
         String userName = "userName";
@@ -244,10 +243,13 @@ public class ShoppingListServiceImplMockTest {
         Long listId = 199L;
 
         // test call
-        shoppingListService.deleteList(userId, listId);
+        Assertions.assertThrows(ActionInvalidException.class, () -> {
+            shoppingListService.deleteList(userId, listId);
+        });
+
     }
 
-    @Test(expected = ObjectNotFoundException.class)
+    @Test
     public void testDeleteList_BadList() {
         Long userId = 99L;
         String userName = "userName";
@@ -265,12 +267,15 @@ public class ShoppingListServiceImplMockTest {
         Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(listOfLists);
 
         // test call
-        shoppingListService.deleteList(userId, listId);
+        Assertions.assertThrows(ObjectNotFoundException.class, () -> {
+            shoppingListService.deleteList(userId, listId);
+        });
+
 
 
     }
 
-    @Test(expected = ActionInvalidException.class)
+    @Test
     public void testDeleteList_LastList() {
         Long userId = 99L;
         String userName = "userName";
@@ -282,15 +287,19 @@ public class ShoppingListServiceImplMockTest {
 
         Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(listOfLists);
 
+
+        Assertions.assertThrows(ActionInvalidException.class, () -> {
+            shoppingListService.deleteList(userId, listId);
+        });
         // test call
-        shoppingListService.deleteList(userId, listId);
+
 
 
     }
     // test list - last list
 
     @Test
-    public void testAddItemToListByTag() throws ItemProcessingException {
+    void testAddItemToListByTag() throws ItemProcessingException {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -329,12 +338,12 @@ public class ShoppingListServiceImplMockTest {
 
         // Assertions
         ShoppingListEntity listResult = listCapture.getValue();
-        Assert.assertNotNull(listResult);
-        Assert.assertNotNull(listResult.getLastUpdate());
+        Assertions.assertNotNull(listResult);
+        Assertions.assertNotNull(listResult.getLastUpdate());
     }
 
     @Test
-    public void testUpdateItemCount() {
+    void testUpdateItemCount() {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -367,22 +376,22 @@ public class ShoppingListServiceImplMockTest {
         // Assertions
         ListItemEntity itemResult = itemCapture.getValue();
         ShoppingListEntity listResult = listCapture.getValue();
-        Assert.assertNotNull(itemResult);
-        Assert.assertNotNull(listResult);
+        Assertions.assertNotNull(itemResult);
+        Assertions.assertNotNull(listResult);
 
         // item checks
-        Assert.assertEquals("used count should equal that in call", usedCount, itemResult.getUsedCount());
-        Assert.assertNotNull("update date should be set", itemResult.getUpdatedOn());
-        Assert.assertNull("removed on should be null", itemResult.getRemovedOn());
-        Assert.assertNull("crossed off should be null", itemResult.getCrossedOff());
+        Assertions.assertEquals(usedCount, itemResult.getUsedCount(), "used count should equal that in call");
+        Assertions.assertNotNull(itemResult.getUpdatedOn(), "update date should be set");
+        Assertions.assertNull(itemResult.getRemovedOn(), "removed on should be null");
+        Assertions.assertNull(itemResult.getCrossedOff(), "crossed off should be null");
 
         // list chanes
-        Assert.assertNotNull("update date should be set", listResult.getLastUpdate());
+        Assertions.assertNotNull(listResult.getLastUpdate(), "update date should be set");
 
     }
 
     @Test
-    public void testDeleteAllItemsFromList() throws ItemProcessingException {
+    void testDeleteAllItemsFromList() throws ItemProcessingException {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -414,15 +423,15 @@ public class ShoppingListServiceImplMockTest {
 
         // Assertions
         ShoppingListEntity testResult = savedList.getValue();
-        Assert.assertNotNull(testResult);
+        Assertions.assertNotNull(testResult);
         Optional<ListItemEntity> notCrossedOff = testResult.getItems().stream()
                 .filter(i -> i.getRemovedOn() == null)
                 .findFirst();
-        Assert.assertFalse("All items should be shown as removed", notCrossedOff.isPresent());
+        Assertions.assertFalse(notCrossedOff.isPresent(), "All items should be shown as removed");
     }
 
     @Test
-    public void testDeleteAllItemsFromList_ListNotFound() throws ItemProcessingException {
+    void testDeleteAllItemsFromList_ListNotFound() throws ItemProcessingException {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -448,7 +457,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testGetListsByUsername() {
+    void testGetListsByUsername() {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -470,7 +479,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testCrossOffAllItems() throws ItemProcessingException {
+    void testCrossOffAllItems() throws ItemProcessingException {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -499,12 +508,12 @@ public class ShoppingListServiceImplMockTest {
         Mockito.verify(itemRepository, times(1)).saveAll(crossedOffItems.capture());
 
         List<ListItemEntity> updatedItems = crossedOffItems.getValue();
-        Assert.assertNotNull(updatedItems);
-        Assert.assertEquals("should be three items", 3, updatedItems.size());
+        Assertions.assertNotNull(updatedItems);
+        Assertions.assertEquals(3, updatedItems.size(), "should be three items");
     }
 
     @Test
-    public void testUpdateItemCrossedOff() throws ItemProcessingException {
+    void testUpdateItemCrossedOff() throws ItemProcessingException {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -540,12 +549,12 @@ public class ShoppingListServiceImplMockTest {
         Mockito.verify(shoppingListRepository, times(1)).save(any(ShoppingListEntity.class));
 
         // Assertions
-        Assert.assertEquals(item.getCrossedOff(), item.getUpdatedOn());
+        Assertions.assertEquals(item.getCrossedOff(), item.getUpdatedOn());
 
     }
 
     @Test
-    public void testCategorizeList() {
+    void testCategorizeList() {
         Long userId = 99L;
         UserEntity user = new UserEntity();
         user.setId(userId);
@@ -581,11 +590,11 @@ public class ShoppingListServiceImplMockTest {
         List<ShoppingListCategory> resultList = shoppingListService.categorizeList(shoppingList);
 
         // Assertions
-        Assert.assertNotNull(resultList);
+        Assertions.assertNotNull(resultList);
     }
 
     @Test
-    public void testGetStarterList() {
+    void testGetStarterList() {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -606,11 +615,11 @@ public class ShoppingListServiceImplMockTest {
         Mockito.verify(shoppingListRepository, times(1)).findByUserIdAndIsStarterListTrue(userId);
 
         // Assertions
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
     }
 
     @Test
-    public void testGetMostRecentList() {
+    void testGetMostRecentList() {
         Long userId = 99L;
         String userName = "userName";
         UserEntity user = new UserEntity();
@@ -634,20 +643,12 @@ public class ShoppingListServiceImplMockTest {
         Mockito.verify(shoppingListRepository, times(1)).findByUserIdOrderByLastUpdateDesc(userId);
 
         // Assertions
-        Assert.assertNotNull(result);
-        Assert.assertEquals(listId, result.getId());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(listId, result.getId());
     }
 
-    // getChangedItemsForMostRecentList
-    // addListToList
-    // fillSources
-    // changeListLayout
-    // addDishToList
-    // removeDishFromList
-    // removeListItemsFromList
-
     @Test
-    public void testCreateList_duplicateName() throws ShoppingListException, ItemProcessingException {
+    void testCreateList_duplicateName() throws ShoppingListException, ItemProcessingException {
         Long userId = 99L;
         String userName = "userName";
         String listName = "ShoppingList";
@@ -681,15 +682,15 @@ public class ShoppingListServiceImplMockTest {
 
         ShoppingListEntity result = shoppingListService.generateListForUser(userId, properties);
 
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         ShoppingListEntity captured = listArgument.getValue();
-        Assert.assertNotNull(captured);
-        Assert.assertEquals("ShoppingList 4", captured.getName());
+        Assertions.assertNotNull(captured);
+        Assertions.assertEquals("ShoppingList 4", captured.getName());
 
     }
 
     @Test
-    public void testGenerateListFromMealPlan() throws ShoppingListException, ItemProcessingException {
+    void testGenerateListFromMealPlan() throws ShoppingListException, ItemProcessingException {
         String username = "Eustace";
         Long listId = 99L;
         Long mealPlanId = 999L;
@@ -748,11 +749,11 @@ public class ShoppingListServiceImplMockTest {
         // note - checking captured list
         // list is not null
         ShoppingListEntity listResult = argument.getValue();
-        Assert.assertNotNull(listResult);
+        Assertions.assertNotNull(listResult);
     }
 
     @Test
-    public void testAddToListFromMealPlan() throws ShoppingListException, ItemProcessingException {
+    void testAddToListFromMealPlan() throws ShoppingListException, ItemProcessingException {
         String username = "Eustace";
         Long listId = 99L;
         Long mealPlanId = 999L;
@@ -816,7 +817,7 @@ public class ShoppingListServiceImplMockTest {
         Optional<ListItemEntity> mealPlanItem = shoppingList.getItems().stream()
                 .filter(item -> item.getTag().getId() == 1L)
                 .findFirst();
-        Assert.assertFalse(mealPlanItem.isPresent());
+        Assertions.assertFalse(mealPlanItem.isPresent());
 
         // call
         shoppingListService.addToListFromMealPlan(userId, listId, mealPlanId);
@@ -825,14 +826,14 @@ public class ShoppingListServiceImplMockTest {
 
         // list is not null
         ShoppingListEntity listResult = argument.getValue();
-        Assert.assertNotNull(listResult);
+        Assertions.assertNotNull(listResult);
 
         String invocations = Mockito.mockingDetails(tagService).printInvocations();
         Assertions.assertFalse(invocations.toLowerCase().contains("unused"));
     }
 
     @Test
-    public void testAddDishesToList() throws ShoppingListException, ItemProcessingException {
+    void testAddDishesToList() throws ShoppingListException, ItemProcessingException {
         Long listId = 99L;
         Long userId = 9L;
 
@@ -895,14 +896,14 @@ public class ShoppingListServiceImplMockTest {
         // note - checking captured list
         // list is not null
         ShoppingListEntity listResult = argument.getValue();
-        Assert.assertNotNull(listResult);
+        Assertions.assertNotNull(listResult);
 
         // list should contain 7 items
-        Assert.assertEquals(7, listResult.getItems().size());
+        Assertions.assertEquals(7, listResult.getItems().size());
     }
 
     @Test
-    public void testAddDishToList() throws ItemProcessingException, ShoppingListException {
+    void testAddDishToList() throws ItemProcessingException, ShoppingListException {
         Long userId = 99L;
         Long listId = 88L;
         Long dishId = 77L;
@@ -944,7 +945,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testPerformItemOperation_Remove() throws ItemProcessingException {
+    void testPerformItemOperation_Remove() throws ItemProcessingException {
         String username = "Eustace";
         Long sourceListId = 99L;
         List<Long> operationTagIds = Arrays.asList(4L, 5L, 8L);
@@ -976,13 +977,13 @@ public class ShoppingListServiceImplMockTest {
         // after remove, the list should contain only one item - id 3
         // list is not null
         ShoppingListEntity listResult = argument.getValue();
-        Assert.assertNotNull(listResult);
+        Assertions.assertNotNull(listResult);
         // can't test real removal of items, since this is done in
         // a mocked service.  Will depend on other tests (basically ITs) for that
     }
 
     @Test
-    public void testPerformItemOperation_RemoveMultipleCount() throws ItemProcessingException {
+    void testPerformItemOperation_RemoveMultipleCount() throws ItemProcessingException {
         String username = "Eustace";
         Long sourceListId = 99L;
         List<Long> operationTagIds = Arrays.asList(4L, 5L, 8L);
@@ -1018,11 +1019,11 @@ public class ShoppingListServiceImplMockTest {
         // after remove, the list should contain only one item - id 3
         // list is not null
         ShoppingListEntity listResult = argument.getValue();
-        Assert.assertNotNull(listResult);
+        Assertions.assertNotNull(listResult);
     }
 
     @Test
-    public void testPerformItemOperation_RemoveCrossedOff() throws ItemProcessingException {
+    void testPerformItemOperation_RemoveCrossedOff() throws ItemProcessingException {
         String username = "Eustace";
         Long sourceListId = 99L;
         List<Long> operationTagIds = Arrays.asList(4L, 5L, 8L);
@@ -1059,11 +1060,11 @@ public class ShoppingListServiceImplMockTest {
         // after remove, the list should contain only one item - id 4
         // list is not null
         ShoppingListEntity listResult = argument.getValue();
-        Assert.assertNotNull(listResult);
+        Assertions.assertNotNull(listResult);
     }
 
     @Test
-    public void testPerformItemOperation_RemoveAll() throws ItemProcessingException {
+    void testPerformItemOperation_RemoveAll() throws ItemProcessingException {
         String username = "Eustace";
         Long sourceListId = 99L;
 
@@ -1095,11 +1096,11 @@ public class ShoppingListServiceImplMockTest {
         // after remove, the list should contain only one item - id 4
         // list is not null
         ShoppingListEntity listResult = argument.getValue();
-        Assert.assertNotNull(listResult);
+        Assertions.assertNotNull(listResult);
     }
 
     @Test
-    public void testPerformItemOperation_Move() throws ItemProcessingException {
+    void testPerformItemOperation_Move() throws ItemProcessingException {
         String username = "Eustace";
         Long sourceListId = 99L;
         Long destinationListId = 96L;
@@ -1147,7 +1148,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testPerformItemOperation_Copy() throws ItemProcessingException {
+    void testPerformItemOperation_Copy() throws ItemProcessingException {
         String username = "Eustace";
         Long sourceListId = 99L;
         Long destinationListId = 96L;
@@ -1190,7 +1191,7 @@ public class ShoppingListServiceImplMockTest {
         // list is not null
         List<ShoppingListEntity> resultLists = argument.getAllValues();
         ShoppingListEntity firstCallResult = resultLists.get(0);
-        Assert.assertNotNull(firstCallResult);
+        Assertions.assertNotNull(firstCallResult);
 
     }
 
@@ -1209,7 +1210,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testMerge_AllChangedOneNewFromClient() {
+    void testMerge_AllChangedOneNewFromClient() {
         Long mergeListId = 9999L;
         final Long serverListId = 9999L;
         final Long[] serverTagIds = {8887L, 8888L, 8889L};
@@ -1252,28 +1253,28 @@ public class ShoppingListServiceImplMockTest {
                 any(Long.class),
                 any(CollectorContext.class));
 
-        Assert.assertNotNull(collectorCapture);
-        Assert.assertNotNull(collectorCapture.getValue());
+        Assertions.assertNotNull(collectorCapture);
+        Assertions.assertNotNull(collectorCapture.getValue());
         MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
-        Assert.assertEquals(Long.valueOf(9999L), capturedToVerify.getListId());
+        Assertions.assertEquals(Long.valueOf(9999L), capturedToVerify.getListId());
         Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
 
-        Assert.assertEquals(7, itemMap.keySet().size());
+        Assertions.assertEquals(7, itemMap.keySet().size());
         // assert 8888 is there, and unchanged
         CollectedItem testItem = itemMap.get(8888L);
-        Assert.assertNotNull(testItem);
-        Assert.assertFalse(testItem.isChanged());
+        Assertions.assertNotNull(testItem);
+        Assertions.assertFalse(testItem.isChanged());
 
         // assert 501 is there, with added = true
         CollectedItem testItem2 = itemMap.get(501L);
-        Assert.assertNotNull(testItem2);
-        Assert.assertTrue(testItem2.isChanged());
-        Assert.assertTrue(testItem2.isAdded());
+        Assertions.assertNotNull(testItem2);
+        Assertions.assertTrue(testItem2.isChanged());
+        Assertions.assertTrue(testItem2.isAdded());
 
     }
 
     @Test
-    public void testMerge_StandardUserTagConflicts() {
+    void testMerge_StandardUserTagConflicts() {
         Long mergeListId = 9999L;
         final Long serverListId = 9999L;
         final Long userId = 2L;
@@ -1325,28 +1326,28 @@ public class ShoppingListServiceImplMockTest {
                 any(Long.class),
                 any(CollectorContext.class));
 
-        Assert.assertNotNull(collectorCapture);
-        Assert.assertNotNull(collectorCapture.getValue());
+        Assertions.assertNotNull(collectorCapture);
+        Assertions.assertNotNull(collectorCapture.getValue());
         MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
-        Assert.assertEquals(Long.valueOf(9999L), capturedToVerify.getListId());
+        Assertions.assertEquals(Long.valueOf(9999L), capturedToVerify.getListId());
         Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
 
-        Assert.assertEquals(4, itemMap.keySet().size());
+        Assertions.assertEquals(4, itemMap.keySet().size());
         // assert 1500, 1501 are there
-        Assert.assertNotNull(itemMap.get(1500L));
-        Assert.assertNotNull(itemMap.get(1501L));
+        Assertions.assertNotNull(itemMap.get(1500L));
+        Assertions.assertNotNull(itemMap.get(1501L));
 
         // assert 500, 501 are not there
-        Assert.assertNull(itemMap.get(500L));
-        Assert.assertNull(itemMap.get(501L));
+        Assertions.assertNull(itemMap.get(500L));
+        Assertions.assertNull(itemMap.get(501L));
 
         // assert 503, 503 are there
-        Assert.assertNotNull(itemMap.get(502L));
-        Assert.assertNotNull(itemMap.get(503L));
+        Assertions.assertNotNull(itemMap.get(502L));
+        Assertions.assertNotNull(itemMap.get(503L));
     }
 
     @Test
-    public void testMerge_ChangesServerSide() {
+    void testMerge_ChangesServerSide() {
         Long mergeListId = 9999L;
         final Long serverListId = 9999L;
         final Long[] serverTagIds = {501L, 502L, 503L};
@@ -1388,29 +1389,29 @@ public class ShoppingListServiceImplMockTest {
                 any(Long.class),
                 any(CollectorContext.class));
 
-        Assert.assertNotNull(collectorCapture);
-        Assert.assertNotNull(collectorCapture.getValue());
+        Assertions.assertNotNull(collectorCapture);
+        Assertions.assertNotNull(collectorCapture.getValue());
         MergeItemCollector capturedToVerify = (MergeItemCollector) collectorCapture.getValue();
-        Assert.assertEquals(Long.valueOf(9999L), capturedToVerify.getListId());
+        Assertions.assertEquals(Long.valueOf(9999L), capturedToVerify.getListId());
         Map<Long, CollectedItem> itemMap = capturedToVerify.getTagCollectedMap();
 
-        Assert.assertEquals(4, itemMap.keySet().size());
+        Assertions.assertEquals(4, itemMap.keySet().size());
         // assert 500 is there, with added
         CollectedItem testItem = itemMap.get(500L);
-        Assert.assertNotNull(testItem);
-        Assert.assertTrue(testItem.isChanged());
-        Assert.assertTrue(testItem.isAdded());
+        Assertions.assertNotNull(testItem);
+        Assertions.assertTrue(testItem.isChanged());
+        Assertions.assertTrue(testItem.isAdded());
 
         // assert 501 is there, with changed false
         CollectedItem testItem2 = itemMap.get(501L);
-        Assert.assertNotNull(testItem2);
-        Assert.assertFalse(testItem2.isChanged());
-        Assert.assertNotNull(testItem2.getRemovedOn());
+        Assertions.assertNotNull(testItem2);
+        Assertions.assertFalse(testItem2.isChanged());
+        Assertions.assertNotNull(testItem2.getRemovedOn());
 
     }
 
     @Test
-    public void testDeleteItemFromList() throws ItemProcessingException {
+    void testDeleteItemFromList() throws ItemProcessingException {
         Long deleteFromListId = 9999L;
         final String userEmail = "me@mine.ours";
         final Long userId = 2L;
@@ -1441,7 +1442,7 @@ public class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testUpdateList() {
+    void testUpdateList() {
         String userName = "george";
         Long userId = 999L;
         Long listId = 99L;
@@ -1466,8 +1467,8 @@ public class ShoppingListServiceImplMockTest {
 
         shoppingListService.updateList(userId, listId, updateFrom);
 
-        Assert.assertEquals("has been updated", listArgument.getValue().getName());
-        Assert.assertEquals(false, listArgument.getValue().getIsStarterList());
+        Assertions.assertEquals("has been updated", listArgument.getValue().getName());
+        Assertions.assertEquals(false, listArgument.getValue().getIsStarterList());
     }
 
     private Item createMergeTestItem(String tagId, int addedDateInterval, int updatedDateInterval, int crossedOffDateInterval, int removedDateInterval) {
