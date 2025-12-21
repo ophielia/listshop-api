@@ -338,11 +338,7 @@
                 <version>5.12.0</version>
                 <scope>test</scope>
             </dependency>
-           <dependency>
-                <groupId>org.junit.vintage</groupId>
-                <artifactId>junit-vintage-engine</artifactId>
-                <version>5.9.0</version>
-            </dependency>
+
 
             <dependency>
                 <groupId>org.testcontainers</groupId>

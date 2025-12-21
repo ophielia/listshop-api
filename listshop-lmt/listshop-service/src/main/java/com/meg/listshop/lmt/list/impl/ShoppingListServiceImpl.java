@@ -738,6 +738,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public void fillSources(ShoppingListEntity result) {
+        Long selfListId = result.getId();
         // dish sources
         // gather distinct dish sources for list
         List<Long> dishIds = itemRepository.findDishSourcesForListFromItems(result.getId());
@@ -750,11 +751,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         // list sources
-        List<Long> listSourceIds = itemRepository.findListSourcesForListForDetails(result.getId());
+        List<Long> listSourceIds = itemRepository.findListSourcesForListForDetails(result.getId()).stream()
+                .filter(id -> !id.equals(selfListId))
+                .toList();
 
         // gather distinct list sources for list
         if (listSourceIds != null && !listSourceIds.isEmpty()) {
             List<ShoppingListEntity> sourceLists = shoppingListRepository.findAllById(listSourceIds);
+
             // set in shopping list
             result.setListSources(sourceLists);
         }
