@@ -9,17 +9,15 @@ package com.meg.postoffice.service;
 
 import com.meg.postoffice.api.model.EmailParameters;
 import com.meg.postoffice.service.content.ContentMap;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-@RunWith(JUnit4.class)
-public class MailServiceTest {
+
+class MailServiceTest {
 
 
     @Test
-    public void testSimpleContentMap() {
+    void testSimpleContentMap() {
         EmailParameters parameters = new EmailParameters();
         parameters.setReceiver("receiver");
         parameters.setSender("sender");
@@ -31,15 +29,15 @@ public class MailServiceTest {
         ContentMap result = ContentMap.fromEmailParameters(parameters);
 
         // assert filled out correctly
-        Assert.assertEquals("receiver doesn't match", "receiver", result.get(ContentMap.RECEIVER));
-        Assert.assertEquals("sender doesn't match", "sender", result.get(ContentMap.SENDER));
-        Assert.assertEquals("subject doesn't match", "subject", result.get(ContentMap.SUBJECT));
-        Assert.assertEquals("first parameter doesn't match", "the first parameter", result.get("firstParameter"));
-        Assert.assertEquals("second parameter doesn't match", "the second parameter", result.get("secondParameter"));
+        Assertions.assertEquals("receiver", result.get(ContentMap.RECEIVER), "receiver doesn't match");
+        Assertions.assertEquals("sender", result.get(ContentMap.SENDER), "sender doesn't match");
+        Assertions.assertEquals("subject", result.get(ContentMap.SUBJECT), "subject doesn't match");
+        Assertions.assertEquals("the first parameter", result.get("firstParameter"), "first parameter doesn't match");
+        Assertions.assertEquals("the second parameter", result.get("secondParameter"), "second parameter doesn't match");
     }
 
     @Test
-    public void testContentMapWithList() {
+    void testContentMapWithList() {
         EmailParameters parameters = new EmailParameters();
         parameters.setReceiver("receiver");
         parameters.setSender("sender");
@@ -53,13 +51,13 @@ public class MailServiceTest {
         ContentMap result = ContentMap.fromEmailParameters(parameters);
 
         // assert filled out correctly
-        Assert.assertEquals("receiver doesn't match", "receiver", result.get(ContentMap.RECEIVER));
-        Assert.assertEquals("sender doesn't match", "sender", result.get(ContentMap.SENDER));
-        Assert.assertEquals("subject doesn't match", "subject", result.get(ContentMap.SUBJECT));
-        Assert.assertEquals("results should contain count", "4", result.get("parameterList.count"));
-        Assert.assertEquals("results should contain list item 1", "listItem 1", result.get("parameterList.0"));
-        Assert.assertEquals("results should contain list item 2", "listItem 2", result.get("parameterList.1"));
-        Assert.assertEquals("results should contain list item 3", "listItem 3", result.get("parameterList.2"));
-        Assert.assertEquals("results should contain list item 4", "listItem 4", result.get("parameterList.3"));
+        Assertions.assertEquals("receiver", result.get(ContentMap.RECEIVER), "receiver doesn't match");
+        Assertions.assertEquals("sender", result.get(ContentMap.SENDER), "sender doesn't match");
+        Assertions.assertEquals("subject", result.get(ContentMap.SUBJECT), "subject doesn't match");
+        Assertions.assertEquals("4", result.get("parameterList.count"), "results should contain count");
+        Assertions.assertEquals("listItem 1", result.get("parameterList.0"), "results should contain list item 1");
+        Assertions.assertEquals("listItem 2", result.get("parameterList.1"), "results should contain list item 2");
+        Assertions.assertEquals("listItem 3", result.get("parameterList.2"), "results should contain list item 3");
+        Assertions.assertEquals("listItem 4", result.get("parameterList.3"), "results should contain list item 4");
     }
 }
