@@ -107,6 +107,8 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     private List<DishResource> getAllDishes(Long userId) {
+        String message = String.format("getting all dishes for user [%S]", userId);
+        logger.info(message);
         return dishService.getDishesForUser(userId).stream()
                 .map(d -> ModelMapper.toModel(d, false))
                 .map(DishResource::new)
