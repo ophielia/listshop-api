@@ -38,11 +38,42 @@ set unit_id = 1039, gram_weight = 36, unit_name = 'head'
 where unit_id = 1011 and fdc_id = 169230;
 
 -- mapped_modifiers
-insert into modifier_mappings (mapping_id, modifier_type, modifier, mapped_modifier) values (11450, 'Unit', 'cloves', 'clove');
-insert into modifier_mappings (mapping_id, modifier_type, modifier, mapped_modifier) values (11500, 'Unit', 'toe', 'clove');
-insert into modifier_mappings (mapping_id, modifier_type, modifier, mapped_modifier) values (11550, 'Unit', 'toes', 'clove');
-insert into modifier_mappings (mapping_id, modifier_type, modifier, mapped_modifier) values (11600, 'Unit', 'cl.', 'clove');
+insert into modifier_mappings (mapping_id, modifier_type, modifier, mapped_modifier,reference_id)
+values (11450, 'Unit', 'cloves', 'clove',1055),
+ (11500, 'Unit', 'toe', 'clove', 1055),
+ (11550, 'Unit', 'toes', 'clove', 1055),
+ (11550, 'Unit', 'clove', 'clove', 1055),
+ (11600, 'Unit', 'cl.', 'clove', 1055);
+
+select * from modifier_mappings where reference_id = 1055;
+select * from units where unit_id = 1055;
+
+select distinct u.unit_id, u.name
+from units u
+         join food_conversions f on f.unit_id = u.unit_id
+         join tag t on t.conversion_id = f.conversion_id
+where tag_id = 19
 
 
+delete
+from modifier_mappings
+where modifier_type = 'Unit'
+  and reference_id = 1055
+  and mapped_modifier = 'clove'
+;
+select *
+from modifier_mappings
+where modifier_type = 'Unit'
+  and reference_id = 1055
+  and mapped_modifier = 'clove'
+;
 
 
+insert into modifier_mappings (mapping_id, modifier_type, modifier, mapped_modifier, reference_id) values (11450, 'Unit', 'cloves', 'clove', 1055);
+insert into modifier_mappings (mapping_id, modifier_type, modifier, mapped_modifier, reference_id) values (11500, 'Unit', 'toe', 'clove', 1055);
+insert into modifier_mappings (mapping_id, modifier_type, modifier, mapped_modifier, reference_id) values (11550, 'Unit', 'toes', 'clove', 1055);
+insert into modifier_mappings (mapping_id, modifier_type, modifier, mapped_modifier, reference_id) values (11600, 'Unit', 'cl.', 'clove', 1055);
+insert into modifier_mappings (mapping_id, modifier_type, modifier, mapped_modifier, reference_id) values (11650, 'Unit', 'clove', 'clove', 1055);
+
+
+select * from dish_items where dish_id = 56873;
