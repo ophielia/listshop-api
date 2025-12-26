@@ -12,10 +12,10 @@ import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,17 +27,18 @@ import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -47,13 +48,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
+@Testcontainers
 @ActiveProfiles("test")
-public class StatisticRestControllerTest {
+class StatisticRestControllerTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private static UserDetails userDetails;
@@ -79,10 +81,10 @@ public class StatisticRestControllerTest {
                 .findAny()
                 .orElse(null);
 
-        assertNotNull("the JSON message converter must not be null");
+        Assertions.assertNotNull("the JSON message converter must not be null");
     }
 
-    @Before
+    @BeforeEach
     @WithMockUser
     public void setup() {
         this.mockMvc = webAppContextSetup(webApplicationContext)
@@ -109,7 +111,7 @@ public class StatisticRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testCreateUserStatistics() throws Exception {
+    void testCreateUserStatistics() throws Exception {
         // load statistics into file
         String testUploadStatistics = StreamUtils.copyToString(resourceFile.getInputStream(), Charset.forName("utf8"));
 
@@ -124,7 +126,7 @@ public class StatisticRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetUserStatistics() throws Exception {
+    void testGetUserStatistics() throws Exception {
 
         this.mockMvc.perform(get("/statistics")
                         .with(user(userDetails))

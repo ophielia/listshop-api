@@ -9,14 +9,12 @@ import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
-import com.meg.listshop.lmt.service.DishService;
-import com.meg.listshop.lmt.service.DishTestBuilder;
+import com.meg.listshop.lmt.dish.DishService;
+import com.meg.listshop.lmt.dish.DishTestBuilder;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -27,11 +25,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.util.*;
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -47,17 +45,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@RunWith(SpringRunner.class)
+//@RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
+@Testcontainers
 @WebAppConfiguration
 @ActiveProfiles("test")
 @Sql(value = {"/sql/com/meg/atable/lmt/api/DishRestControllerTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sql/com/meg/atable/lmt/api/DishRestControllerTest_rollback.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-public class DishRestControllerTest {
+class DishRestControllerTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     public static final Comparator<DishResource> CREATEDON = Comparator.comparing((DishResource o) -> o.getDish().getId());
@@ -84,10 +83,10 @@ public class DishRestControllerTest {
                 .findAny()
                 .orElse(null);
 
-        assertNotNull("the JSON message converter must not be null");
+        Assertions.assertNotNull("the JSON message converter must not be null");
     }
 
-    @Before
+    @BeforeEach
     @WithMockUser
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext)
@@ -108,7 +107,7 @@ public class DishRestControllerTest {
 
     @Test
     @WithMockUser
-    public void readSingleDish() throws Exception {
+    void readSingleDish() throws Exception {
         Long testId = TestConstants.DISH_1_ID;
         MvcResult result = mockMvc.perform(get("/dish/"
                         + testId)
@@ -118,12 +117,12 @@ public class DishRestControllerTest {
                 .andExpect(jsonPath("$.dish.dish_id", isA(Number.class)))
                 .andExpect(jsonPath("$.dish.dish_id").value(testId))
                 .andReturn();
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
     }
 
     @Test
     @WithMockUser
-    public void readSingleDish_ObjectNotFoundException() throws Exception {
+    void readSingleDish_ObjectNotFoundException() throws Exception {
         Long testId = TestConstants.DISH_7_ID;
         MvcResult result = mockMvc.perform(get("/dish/"
                         + testId)
@@ -135,7 +134,7 @@ public class DishRestControllerTest {
 
     @Test
     @WithMockUser
-    public void readDishes() throws Exception {
+    void readDishes() throws Exception {
         mockMvc.perform(get("/dish")
                         .with(user(userDetails)))
                 .andExpect(status().isOk())
@@ -145,7 +144,7 @@ public class DishRestControllerTest {
 
     @Test
     @WithMockUser
-    public void createDish() throws Exception {
+    void createDish() throws Exception {
 
         String dishJson = json(new Dish(
                 TestConstants.USER_3_ID, "created dish"));
@@ -160,7 +159,7 @@ public class DishRestControllerTest {
 
     @Test
     @WithMockUser
-    public void updateDish() throws Exception {
+    void updateDish() throws Exception {
         DishEntity toUpdate = dishService.getDishForUserById(TestConstants.USER_3_NAME, TestConstants.DISH_1_ID);
         String updateName = "updated:" + toUpdate.getDishName();
         String updateDescription = "updated:" + (toUpdate.getDescription() == null ? "" : toUpdate.getDescription());
@@ -177,14 +176,14 @@ public class DishRestControllerTest {
                 .andExpect(status().is2xxSuccessful());
 
         DishEntity result = dishService.getDishForUserById(TestConstants.USER_3_NAME, TestConstants.DISH_1_ID);
-        Assert.assertEquals(updateName, result.getDishName());
-        Assert.assertEquals(updateDescription, result.getDescription());
-        Assert.assertEquals("reference", result.getReference());
+        Assertions.assertEquals(updateName, result.getDishName());
+        Assertions.assertEquals(updateDescription, result.getDescription());
+        Assertions.assertEquals("reference", result.getReference());
     }
 
     @Test
     @WithMockUser
-    public void testGetTagsByDishId() throws Exception {
+    void testGetTagsByDishId() throws Exception {
         mockMvc.perform(get("/dish/" + TestConstants.DISH_2_ID + "/tag")
                         .with(user(userDetails)))
                 .andExpect(status().isOk())
@@ -195,7 +194,7 @@ public class DishRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testAddTagToDish() throws Exception {
+    void testAddTagToDish() throws Exception {
         String url = "/dish/" + TestConstants.DISH_1_ID + "/tag/" + TestConstants.TAG_CARROTS;
         this.mockMvc.perform(post(url)
                         .with(user(userDetails))
@@ -205,7 +204,7 @@ public class DishRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testDeleteTagFromDish() throws Exception {
+    void testDeleteTagFromDish() throws Exception {
         String url = "/dish/" + TestConstants.DISH_1_ID + "/tag/344";
         this.mockMvc.perform(delete(url)
                         .with(user(userDetails))
@@ -214,12 +213,12 @@ public class DishRestControllerTest {
 
         Dish result = retrieveDish(userDetails, TestConstants.DISH_1_ID);
         Optional<Tag> threeFourFourTag = result.getTags().stream().filter(t -> t.getId().equals(344L)).findFirst();
-        Assert.assertFalse(threeFourFourTag.isPresent());
+        Assertions.assertFalse(threeFourFourTag.isPresent());
     }
 
     @Test
     @WithMockUser
-    public void testAddAndRemoveTags() throws Exception {
+    void testAddAndRemoveTags() throws Exception {
         List<Long> addTags = Arrays.asList(TestConstants.TAG_1_ID, TestConstants.TAG_2_ID, TestConstants.TAG_3_ID);
         List<Long> deleteTags = Arrays.asList(55L, 104L);
 
@@ -234,7 +233,7 @@ public class DishRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testFindDishes() throws Exception {
+    void testFindDishes() throws Exception {
         List<Long> excludedTags = Arrays.asList(TestConstants.TAG_3_ID);
         List<Long> includedTags = Arrays.asList(TestConstants.TAG_PASTA);
 
@@ -258,14 +257,14 @@ public class DishRestControllerTest {
                 .sorted(Comparator.comparing(Dish::getDishName, String.CASE_INSENSITIVE_ORDER))
                 .map(d -> d.getDishName())
                 .collect(Collectors.toList());
-        assertNotNull(listAsExpected);
+        Assertions.assertNotNull(listAsExpected);
 
         // list as received
         List<String> listAsReceived = dishList
                 .stream()
                 .map(rdr -> rdr.getDish().getDishName())
                 .collect(Collectors.toList());
-        assertNotNull(listAsReceived);
+        Assertions.assertNotNull(listAsReceived);
 
         // order matches
         assertThat(listAsReceived, equalTo(listAsExpected));
@@ -287,7 +286,7 @@ public class DishRestControllerTest {
                 .map(d -> d.getDish().getId())
                 .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
-        assertNotNull(listAsExpected);
+        Assertions.assertNotNull(listAsExpected);
 
 
         // list as received
@@ -295,7 +294,7 @@ public class DishRestControllerTest {
                 .stream()
                 .map(rdr -> rdr.getDish().getId())
                 .collect(Collectors.toList());
-        assertNotNull(listAsReceived);
+        Assertions.assertNotNull(listAsReceived);
 
         // order matches
         assertThat(longsAsReceived, equalTo(expectedCreatedOnResults));
@@ -304,7 +303,7 @@ public class DishRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testFindDishesOrig() throws Exception {
+    void testFindDishesOrig() throws Exception {
         List<Long> excludedTags = Arrays.asList(TestConstants.TAG_1_ID, TestConstants.TAG_2_ID, TestConstants.TAG_3_ID);
         List<Long> includedTags = Arrays.asList(TestConstants.TAG_MEAT, TestConstants.TAG_PASTA);
 
@@ -320,7 +319,7 @@ public class DishRestControllerTest {
     }
 
     @Test
-    public void testSetRatingTagOnDish() throws Exception {
+    void testSetRatingTagOnDish() throws Exception {
         // test case (from sql)
         Long dishId = 9999999L;
         String originalTag = "325";
@@ -361,7 +360,7 @@ public class DishRestControllerTest {
     }
 
     @Test
-    public void testSetRatingTagOnDish_KO() throws Exception {
+    void testSetRatingTagOnDish_KO() throws Exception {
         // test case for failure.
         // set step to 100
         Long dishId = 9999999L;
@@ -387,7 +386,7 @@ public class DishRestControllerTest {
     }
 
     @Test
-    public void testDeleteLastTag_NoDelete() throws Exception {
+    void testDeleteLastTag_NoDelete() throws Exception {
         Long mainDishId = 320L;
         Long oliveOilId = 336L;
 
@@ -400,7 +399,7 @@ public class DishRestControllerTest {
         Long createdId = createDish(userDetails, dish);
 
         Dish created = retrieveDish(userDetails, createdId);
-        Assert.assertNotNull(created);
+        Assertions.assertNotNull(created);
 
         removeRatingTags(userDetails, createdId);
 
@@ -412,14 +411,14 @@ public class DishRestControllerTest {
 
         // retrieve dish
         Dish afterDelete = retrieveDish(userDetails, createdId);
-        Assert.assertNotNull(afterDelete);
+        Assertions.assertNotNull(afterDelete);
         Set<String> dishTagIds = afterDelete.getTags().stream().map(Tag::getId).collect(Collectors.toSet());
-        Assert.assertEquals(2, dishTagIds.size());  // no change
-        Assert.assertTrue(dishTagIds.contains(String.valueOf(mainDishId)));  // main dish id wasn't deleted
+        Assertions.assertEquals(2, dishTagIds.size());  // no change
+        Assertions.assertTrue(dishTagIds.contains(String.valueOf(mainDishId)));  // main dish id wasn't deleted
     }
 
     @Test
-    public void testDeleteLastTag_OK() throws Exception {
+    void testDeleteLastTag_OK() throws Exception {
         Long mainDishId = 320L;
         Long appetizerId = 333L;
         Long oliveOilId = 336L;
@@ -434,7 +433,7 @@ public class DishRestControllerTest {
         Long createdId = createDish(userDetails, dish);
 
         Dish created = retrieveDish(userDetails, createdId);
-        Assert.assertNotNull(created);
+        Assertions.assertNotNull(created);
 
         removeRatingTags(userDetails, createdId);
 
@@ -446,14 +445,14 @@ public class DishRestControllerTest {
 
         // retrieve dish
         Dish afterDelete = retrieveDish(userDetails, createdId);
-        Assert.assertNotNull(afterDelete);
+        Assertions.assertNotNull(afterDelete);
         Set<String> dishTagIds = afterDelete.getTags().stream().map(Tag::getId).collect(Collectors.toSet());
-        Assert.assertEquals(2, dishTagIds.size());
-        Assert.assertFalse(dishTagIds.contains(String.valueOf(mainDishId)));  // main dish id was deleted
+        Assertions.assertEquals(2, dishTagIds.size());
+        Assertions.assertFalse(dishTagIds.contains(String.valueOf(mainDishId)));  // main dish id was deleted
     }
 
     @Test
-    public void testDeleteLastTag_PartialDelete() throws Exception {
+    void testDeleteLastTag_PartialDelete() throws Exception {
         Long mainDishId = 320L;
         Long blackPepperId = 334L;
         Long oliveOilId = 336L;
@@ -468,7 +467,7 @@ public class DishRestControllerTest {
         Long createdId = createDish(userDetails, dish);
 
         Dish created = retrieveDish(userDetails, createdId);
-        Assert.assertNotNull(created);
+        Assertions.assertNotNull(created);
 
         // remove rating tags
         removeRatingTags(userDetails, createdId);
@@ -485,11 +484,11 @@ public class DishRestControllerTest {
 
         // retrieve list, and check
         Dish updated = retrieveDish(userDetails, createdId);
-        Assert.assertNotNull(updated);
+        Assertions.assertNotNull(updated);
 
-        Assert.assertEquals(1, updated.getTags().size());
+        Assertions.assertEquals(1, updated.getTags().size());
         Tag lastTag = updated.getTags().get(0);
-        Assert.assertEquals(String.valueOf(mainDishId), lastTag.getId());
+        Assertions.assertEquals(String.valueOf(mainDishId), lastTag.getId());
 
     }
 
@@ -510,7 +509,7 @@ public class DishRestControllerTest {
     }
 
     @Test
-    public void testDeleteLastTag_SuccessfulDelete() throws Exception {
+    void testDeleteLastTag_SuccessfulDelete() throws Exception {
         Long mainDishId = 320L;
         Long appetizerId = 333L;
         Long blackPepperId = 334L;
@@ -527,7 +526,7 @@ public class DishRestControllerTest {
         Long createdId = createDish(userDetails, dish);
 
         Dish created = retrieveDish(userDetails, createdId);
-        Assert.assertNotNull(created);
+        Assertions.assertNotNull(created);
 
         removeRatingTags(userDetails, createdId);
 
@@ -544,11 +543,11 @@ public class DishRestControllerTest {
 
         // retrieve list, and check
         Dish updated = retrieveDish(userDetails, createdId);
-        Assert.assertNotNull(updated);
+        Assertions.assertNotNull(updated);
 
-        Assert.assertEquals(1, updated.getTags().size());
+        Assertions.assertEquals(1, updated.getTags().size());
         Tag lastTag = updated.getTags().get(0);
-        Assert.assertEquals(String.valueOf(appetizerId), lastTag.getId());
+        Assertions.assertEquals(String.valueOf(appetizerId), lastTag.getId());
     }
 
     private Long createDish(UserDetails userDetails, Dish dish) throws Exception {
@@ -576,7 +575,7 @@ public class DishRestControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonList = listResultsAfter.getResponse().getContentAsString();
         DishResource afterList = objectMapper.readValue(jsonList, DishResource.class);
-        Assert.assertNotNull(afterList);
+        Assertions.assertNotNull(afterList);
         return afterList.getDish();
     }
 

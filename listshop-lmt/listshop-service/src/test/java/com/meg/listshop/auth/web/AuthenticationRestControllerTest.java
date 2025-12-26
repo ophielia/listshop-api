@@ -9,10 +9,10 @@ import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -23,11 +23,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -42,7 +44,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
@@ -50,9 +53,9 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sql/com/meg/atable/auth/api/AuthenticationRestControllerTest_rollback.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-public class AuthenticationRestControllerTest {
+class AuthenticationRestControllerTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
 
@@ -80,10 +83,10 @@ public class AuthenticationRestControllerTest {
                 .findAny()
                 .orElse(null);
 
-        assertNotNull("the JSON message converter must not be null");
+        Assertions.assertNotNull("the JSON message converter must not be null");
     }
 
-    @Before
+    @BeforeEach
     @WithMockUser
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext)
@@ -103,7 +106,7 @@ public class AuthenticationRestControllerTest {
 
 
     @Test
-    public void testCreateUserLogin() throws Exception {
+    void testCreateUserLogin() throws Exception {
         ClientDeviceInfo deviceInfo = new ClientDeviceInfo();
         deviceInfo.setClientType(ClientType.Mobile);
         JwtAuthorizationRequest jwtAuthenticationRequest = new JwtAuthorizationRequest(TestConstants.USER_3_NAME,
@@ -125,7 +128,7 @@ public class AuthenticationRestControllerTest {
 
 
     @Test
-    public void testLogin() throws Exception {
+    void testLogin() throws Exception {
         ClientDeviceInfo deviceInfo = new ClientDeviceInfo();
         deviceInfo.setClientType(ClientType.Mobile);
         JwtAuthorizationRequest jwtAuthenticationRequest = new JwtAuthorizationRequest("rufus",
@@ -139,7 +142,7 @@ public class AuthenticationRestControllerTest {
     }
 
     @Test
-    public void testAuthorize() throws Exception {
+    void testAuthorize() throws Exception {
         ClientDeviceInfo deviceInfo = new ClientDeviceInfo();
         deviceInfo.setClientType(ClientType.Mobile);
         JwtAuthorizationRequest jwtAuthenticationRequest = new JwtAuthorizationRequest("rufus",
@@ -165,7 +168,7 @@ public class AuthenticationRestControllerTest {
     }
 
     @Test
-    public void testLogout() throws Exception {
+    void testLogout() throws Exception {
         ClientDeviceInfo deviceInfo = new ClientDeviceInfo();
         deviceInfo.setClientType(ClientType.Mobile);
         JwtAuthorizationRequest jwtAuthenticationRequest = new JwtAuthorizationRequest("rufus",

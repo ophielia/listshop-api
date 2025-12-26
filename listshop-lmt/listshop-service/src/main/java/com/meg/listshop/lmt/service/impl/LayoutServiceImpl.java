@@ -6,6 +6,7 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.LayoutCategoryDTO;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
@@ -149,6 +150,18 @@ public class LayoutServiceImpl implements LayoutService {
         return getAvailableCategoriesForLayout(userDefaultLayout);
     }
 
+    @Override
+    public List<LayoutCategoryDTO> getDefaultCategories() {
+
+        // get default layout for user
+        ListLayoutEntity userDefaultLayout = getStandardLayout();
+
+        // return categories for this layout
+        return getAvailableCategoriesForLayout(userDefaultLayout).stream()
+                .map(LayoutCategoryDTO::new)
+                .toList();
+    }
+
     private List<ListLayoutCategoryEntity> getAvailableCategoriesForLayout(ListLayoutEntity layout) {
         ListLayoutEntity defaultLayout = getStandardLayout();
         Map<String, ListLayoutCategoryEntity> userCategoryMap = layoutCategoriesToMap(layout);
@@ -253,9 +266,63 @@ public class LayoutServiceImpl implements LayoutService {
         if (tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
             return;
         }
-        tags.add(tag);
-        tag.getCategories().add(categoryEntity);
+        doAddCategory(categoryEntity,tag);
+
+    }
+
+    public void removeTagFromCategory(ListLayoutCategoryEntity categoryEntity, TagEntity tag) {
+        Set<TagEntity> tags = categoryEntity.getTags();
+        if (!tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
+            return;
+        }
+        tags.remove(tag);
+        tag.getCategories().remove(categoryEntity);
         categoryEntity.setTags(tags);
+        categoryRepository.save(categoryEntity);
+    }
+
+    @Override
+    public void moveTagToDefaultCategory(Long tagId, Long categoryId) {
+        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt = categoryRepository.findById(categoryId);
+        if (!listLayoutEntityOpt.isPresent()) {
+            return;
+        }
+        ListLayoutEntity listLayoutEntity = listLayoutRepository.findById(listLayoutEntityOpt.get().getLayoutId())
+                .orElse(null);
+        if (listLayoutEntity == null || listLayoutEntity.getUserId() != null
+                || (listLayoutEntity.getDefault() != null && listLayoutEntity.getDefault() != true)) {
+            // not a default category
+            return;
+        }
+
+        Optional<TagEntity> tag = tagRepository.findById(tagId);
+        if (!tag.isPresent() || tag.get().getUserId() != null) {
+            return;
+        }
+
+        // get existing standard category
+        ListLayoutCategoryEntity existing = categoryRepository.getStandardCategoryForTag(tagId);
+
+        // remove from existing category
+        if (existing != null) {
+            removeTagFromCategory(existing, tag.get());
+        }
+
+        // add to new category
+        ListLayoutCategoryEntity categoryEntity = listLayoutEntityOpt.get();
+        Set<TagEntity> tags = categoryEntity.getTags();
+        if (tags.stream().anyMatch(t -> t.getId().equals(tagId))) {
+            return;
+        }
+        doAddCategory(categoryEntity, tag.get());
+
+    }
+
+    private void doAddCategory(ListLayoutCategoryEntity categoryEntity, TagEntity tag) {
+
+        categoryEntity.getTags().add(tag);
+        tag.getCategories().add(categoryEntity);
+
         categoryRepository.save(categoryEntity);
     }
 }

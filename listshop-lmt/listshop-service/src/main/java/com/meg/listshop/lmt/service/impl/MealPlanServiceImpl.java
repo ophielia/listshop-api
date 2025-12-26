@@ -10,7 +10,7 @@ import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.repository.MealPlanRepository;
 import com.meg.listshop.lmt.data.repository.SlotRepository;
-import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.MealPlanService;
 import com.meg.listshop.lmt.service.proposal.ProposalService;
 import com.meg.listshop.lmt.service.tag.TagService;

@@ -1,6 +1,6 @@
 package com.meg.listshop.lmt.service.proposal;
 
-import com.meg.listshop.lmt.service.DishTagSearchResult;
+import com.meg.listshop.lmt.dish.DishTagSearchResult;
 
 import java.util.*;
 import java.util.stream.Collectors;

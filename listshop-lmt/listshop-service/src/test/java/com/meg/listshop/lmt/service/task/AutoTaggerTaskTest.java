@@ -2,14 +2,14 @@ package com.meg.listshop.lmt.service.task;
 
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.service.tag.AutoTagService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,24 +17,23 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-public class AutoTaggerTaskTest {
+class AutoTaggerTaskTest {
 
     @MockBean
     AutoTagService autoTagService;
 
-
     AutoTaggerTask autoTaggerTask;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         autoTaggerTask = new AutoTaggerTask(autoTagService);
     }
 
     @Test
-    public void autoTagDishes() {
+    void autoTagDishes() {
         autoTaggerTask.taskIsActive = true;
         List<DishEntity> dummyDishList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {

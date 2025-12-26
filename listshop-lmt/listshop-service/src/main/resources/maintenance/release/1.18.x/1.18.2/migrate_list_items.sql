@@ -41,6 +41,15 @@ where list_sources is not null
   and length(trim(list_sources)) > 1
   and list_sources not like '%;%';
 
+-- list items to single detail - no sources
+insert into list_item_details (item_detail_id, item_id, linked_list_id, used_count)
+select nextval('list_item_detail_sequence')                     as item_detail_id,
+       item_id,
+       list_id,
+       1 as used_count
+from list_item
+where list_sources is  null and dish_sources is null;
+
 -- update dish original amounts from dish - for those available
 update list_item_details d
     set orig_whole_quantity = di.whole_quantity,

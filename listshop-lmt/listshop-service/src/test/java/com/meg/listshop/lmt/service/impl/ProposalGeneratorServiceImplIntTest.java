@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.service.impl;
 
+import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.repository.ProposalContextRepository;
@@ -9,26 +10,28 @@ import com.meg.listshop.lmt.service.proposal.ProposalRequest;
 import com.meg.listshop.lmt.service.proposal.ProposalSearchType;
 import com.meg.listshop.lmt.service.proposal.ProposalService;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * Created by margaretmartin on 03/06/2018.
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest()
+@ExtendWith(SpringExtension.class)
+@Testcontainers
+@SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 @Transactional
-public class ProposalGeneratorServiceImplIntTest {
+class ProposalGeneratorServiceImplIntTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
@@ -47,7 +50,7 @@ public class ProposalGeneratorServiceImplIntTest {
 
 
     @Test
-    public void testNewSearchGenerateProposal() throws Exception {
+    void testNewSearchGenerateProposal() throws Exception {
         // make / save b    ase target
         TargetEntity targetEntity = buildBaseTestTarget();
         // make test fixtures
@@ -59,23 +62,23 @@ public class ProposalGeneratorServiceImplIntTest {
         ProposalEntity proposalEntity = proposalGeneratorServiceImpl.generateProposal(TestConstants.USER_3_NAME, targetEntity.getTargetId());
 
         // retrieve result
-        Assert.assertNotNull(proposalEntity);
+        Assertions.assertNotNull(proposalEntity);
         ProposalEntity result = proposalService.getProposalById(TestConstants.USER_3_NAME, proposalEntity.getId());
 
         // result exists
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         // result has same number of slots as target
-        Assert.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
+        Assertions.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
         // slots contain 5 dishes each
         for (ProposalSlotEntity slotEntity : result.getSlots()) {
-            Assert.assertTrue(slotEntity.getDishSlots().size() == 5);
+            Assertions.assertTrue(slotEntity.getDishSlots().size() == 5);
         }
         // has approaches and is refreshable
         ProposalContextEntity context = proposalContextRepository.findByProposalId(result.getId());
-        Assert.assertNotNull(context);
-        Assert.assertNotNull(context.getApproaches());
-        Assert.assertTrue(context.getApproaches().size()>1);
-        Assert.assertEquals(0, context.getCurrentApproachIndex());
+        Assertions.assertNotNull(context);
+        Assertions.assertNotNull(context.getApproaches());
+        Assertions.assertTrue(context.getApproaches().size()>1);
+        Assertions.assertEquals(0, context.getCurrentApproachIndex());
     }
 
 

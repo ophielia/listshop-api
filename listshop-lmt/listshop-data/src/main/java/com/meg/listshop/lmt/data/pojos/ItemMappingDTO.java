@@ -254,10 +254,15 @@ public class ItemMappingDTO {
                 .tagId(String.valueOf(tagId))
                 .tagName(tagName)
                 .tagType(tagType)
-                .usedCount(usedCount)
+                .usedCount(calculateCount())
                 .rawListSources(rawListSources)
                 .rawDishSources(rawDishSources);
 
+    }
+
+    private Integer calculateCount() {
+        if (details == null || details.isEmpty()) return 0;
+        return details.stream().map(ListItemSource::getCount).reduce(0, Integer::sum);
     }
 
 

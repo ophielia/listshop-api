@@ -20,46 +20,47 @@ import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Date;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-public class UserServiceImplMockTest {
+class UserServiceImplMockTest {
 
     private UserService userService;
 
-    @MockBean
+    @Mock
     private UserRepository userRepository;
-    @MockBean
+    @Mock
     private UserDeviceRepository userDeviceRepository;
-    @MockBean
+    @Mock
     private AuthorityRepository authorityRepository;
-    @MockBean
+    @Mock
     private AuthenticationManager authenticationManager;
 
-    @MockBean
+    @Mock
     private AdminUserDetailsRepository adminUserDetailsRepository;
 
     private final String buildNumber = "buildNumber";
@@ -71,30 +72,30 @@ public class UserServiceImplMockTest {
     private final String ossystem = "os";
     private final String osversion = "osversion";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         userService = new UserServiceImpl(userRepository, userDeviceRepository, authorityRepository,
                 authenticationManager, adminUserDetailsRepository);
     }
 
     @Test
-    public void testGetUserById() {
+    void testGetUserById() {
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setEmail(TestConstants.USER_3_NAME);
         Mockito.when(userRepository.findById(TestConstants.USER_3_ID)).thenReturn(Optional.of(testUser));
 
         UserEntity resultUser = userService.getUserById(TestConstants.USER_3_ID);
-        assertNotNull(resultUser);
-        assertNotNull(resultUser.getId());
-        assertEquals(TestConstants.USER_3_ID, resultUser.getId());
-        assertEquals(TestConstants.USER_3_NAME, resultUser.getEmail());
+        Assertions.assertNotNull(resultUser);
+        Assertions.assertNotNull(resultUser.getId());
+        Assertions.assertEquals(TestConstants.USER_3_ID, resultUser.getId());
+        Assertions.assertEquals(TestConstants.USER_3_NAME, resultUser.getEmail());
 
     }
 
 
     @Test
-    public void testCreateUser() throws BadParameterException {
+    void testCreateUser() throws BadParameterException {
         final String username = "george";
         final String email = "george@will.run";
         final String password = "Passw0rd";
@@ -113,26 +114,30 @@ public class UserServiceImplMockTest {
         Mockito.when(authorityRepository.save(Mockito.any(AuthorityEntity.class))).thenReturn(testAuthority);
 
         UserEntity result = userService.createUser(email, password);
-        assertNotNull(result);
-        assertNotNull(result.getAuthorities());
+        Assertions.assertNotNull(result);
+        Assertions.assertNotNull(result.getAuthorities());
         UserEntity datePasswordCheck = dateCapture.getValue();
-        assertNotNull(datePasswordCheck);
-        assertTrue(DateUtils.isAfterOrEqual(datePasswordCheck.getCreationDate(), new Date()));
-        assertTrue(BCrypt.checkpw(password, datePasswordCheck.getPassword()));
-        assertNotEquals(datePasswordCheck.getPassword(), password);
-
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testCreateDeviceForUser_Error() {
-        Mockito.when(userRepository.findById(TestConstants.USER_3_ID)).thenReturn(Optional.ofNullable(null));
-
-        userService.createDeviceForUserAndDevice(TestConstants.USER_3_ID, null, "token");
+        Assertions.assertNotNull(datePasswordCheck);
+        Assertions.assertTrue(DateUtils.isAfterOrEqual(datePasswordCheck.getCreationDate(), new Date()));
+        Assertions.assertTrue(BCrypt.checkpw(password, datePasswordCheck.getPassword()));
+        Assertions.assertNotEquals(datePasswordCheck.getPassword(), password);
 
     }
 
     @Test
-    public void testCreateDeviceForUserAndDevice() {
+    public void testCreateDeviceForUser_Error() {
+        Mockito.when(userRepository.findById(TestConstants.USER_3_ID)).thenReturn(Optional.ofNullable(null));
+
+
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            userService.createDeviceForUserAndDevice(TestConstants.USER_3_ID, null, "token");
+        });
+
+
+    }
+
+    @Test
+    void testCreateDeviceForUserAndDevice() {
         String token = "abcdefg1234567";
 
         ClientDeviceInfo deviceInfo = new ClientDeviceInfo();
@@ -150,25 +155,23 @@ public class UserServiceImplMockTest {
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setUsername(TestConstants.USER_3_NAME);
         Mockito.when(userRepository.findById(TestConstants.USER_3_ID)).thenReturn(Optional.of(testUser));
-        Mockito.when(userRepository.findByEmail(TestConstants.USER_3_NAME)).thenReturn(testUser);
 
         UserDeviceEntity testUserDevice = new UserDeviceEntity();
         testUserDevice.setUserId(TestConstants.USER_3_ID);
 
         ArgumentCaptor<UserDeviceEntity> userDeviceCapture = ArgumentCaptor.forClass(UserDeviceEntity.class);
         Mockito.when(userDeviceRepository.save(userDeviceCapture.capture())).thenReturn(null);
-        Mockito.when(userDeviceRepository.findByToken(token)).thenReturn(testUserDevice);
 
         userService.createDeviceForUserAndDevice(TestConstants.USER_3_ID, deviceInfo, token);
 
         UserDeviceEntity captured = userDeviceCapture.getValue();
-        assertNotNull(captured);
-        assertEquals(TestConstants.USER_3_ID, captured.getUserId());
+        Assertions.assertNotNull(captured);
+        Assertions.assertEquals(TestConstants.USER_3_ID, captured.getUserId());
 
     }
 
     @Test
-    public void testSaveTokenForUserAndDevice() {
+    void testSaveTokenForUserAndDevice() {
         String buildNumber = "buildNumber";
         String clientVersion = "clientVersion";
         ClientType clientType = ClientType.Mobile;
@@ -208,13 +211,13 @@ public class UserServiceImplMockTest {
         userService.saveTokenForUserAndDevice(testUser, deviceInfo, token);
 
         UserDeviceEntity captured = userDeviceCapture.getValue();
-        assertNotNull(captured);
-        assertEquals(TestConstants.USER_3_ID, captured.getUserId());
+        Assertions.assertNotNull(captured);
+        Assertions.assertEquals(TestConstants.USER_3_ID, captured.getUserId());
 
     }
 
     @Test
-    public void testUpdateLoginForUser() {
+    void testUpdateLoginForUser() {
         String token = "abcdefg1234567";
 
         UserDeviceEntity deviceInfo = new UserDeviceEntity();
@@ -246,22 +249,22 @@ public class UserServiceImplMockTest {
         userService.updateLoginForUser(TestConstants.USER_3_NAME, token, null );
 
         UserDeviceEntity capturedUserDevice = userDeviceCapture.getValue();
-        assertNotNull(capturedUserDevice);
+        Assertions.assertNotNull(capturedUserDevice);
         System.out.println(now);
         System.out.println(now.getTime());
         System.out.println(capturedUserDevice.getLastLogin());
         System.out.println(capturedUserDevice.getLastLogin().getTime());
-        assertTrue(DateUtils.isAfterOrEqual(thirtySecondsAgo, capturedUserDevice.getLastLogin()));
+        Assertions.assertTrue(DateUtils.isAfterOrEqual(thirtySecondsAgo, capturedUserDevice.getLastLogin()));
 
         UserEntity caturedUser = userCapture.getValue();
-        assertNotNull(caturedUser);
-        assertTrue(DateUtils.isAfterOrEqual(thirtySecondsAgo, caturedUser.getLastLogin()));
+        Assertions.assertNotNull(caturedUser);
+        Assertions.assertTrue(DateUtils.isAfterOrEqual(thirtySecondsAgo, caturedUser.getLastLogin()));
 
 
     }
 
     @Test
-    public void testChangePasswordForUser() {
+    void testChangePasswordForUser() {
         var userName = TestConstants.USER_1_EMAIL;
         var newPassword = "NEWPASSWORD";
         var originalPassword = "ORIGINALPASSWORD";
@@ -284,12 +287,12 @@ public class UserServiceImplMockTest {
                 .findByEmail(userName);
 
         // verify capture
-        Assert.assertNotNull("value captured on save", userCapture.getValue());
-        Assert.assertEquals("changed password doesn't match", userCapture.getValue().getPassword().substring(0, 4), encodedPassword.substring(0, 4));
-        Assert.assertTrue("date of password change should be set", userCapture.getValue().getLastPasswordResetDate().getTime() >= startTime);
+        Assertions.assertNotNull(userCapture.getValue(), "value captured on save");
+        Assertions.assertEquals(userCapture.getValue().getPassword().substring(0, 4), encodedPassword.substring(0, 4), "changed password doesn't match");
+        Assertions.assertTrue(userCapture.getValue().getLastPasswordResetDate().getTime() >= startTime, "date of password change should be set");
     }
 
-    @Test(expected = BadCredentialsException.class)
+    @Test
     public void testChangePasswordForUser_KO() {
         var userName = TestConstants.USER_1_EMAIL;
         var newPassword = "NEWPASSWORD";
@@ -302,26 +305,20 @@ public class UserServiceImplMockTest {
         UserEntity mockUserEntity = new UserEntity();
 
         Mockito.when(userRepository.findByEmail(userName)).thenReturn(mockUserEntity);
-        ArgumentCaptor<UserEntity> userCapture = ArgumentCaptor.forClass(UserEntity.class);
-        Mockito.when(userRepository.save(userCapture.capture())).thenReturn(null);
         Mockito.when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(BadCredentialsException.class);
 
+
+        Assertions.assertThrows(BadCredentialsException.class, () -> {
+            userService.changePassword(userName, newPassword, originalPassword );
+        });
         // test call
-        userService.changePassword(userName, newPassword, originalPassword );
 
-        // verify calls
-        Mockito.verify(userRepository, times(1))
-                .findByEmail(userName);
 
-        // verify capture
-        Assert.assertNotNull("value captured on save", userCapture.getValue());
-        Assert.assertEquals("changed password doesn't match", userCapture.getValue().getPassword().substring(0, 4), encodedPassword.substring(0, 4));
-        Assert.assertTrue("date of password change should be set", userCapture.getValue().getLastPasswordResetDate().getTime() >= startTime);
     }
 
     @Test
-    public void testRemoveLoginForUser() {
+    void testRemoveLoginForUser() {
         String token = "abcdefg1234567";
 
         UserDeviceEntity deviceInfo = new UserDeviceEntity();

@@ -11,6 +11,7 @@ import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
+import com.meg.listshop.lmt.service.LayoutService;
 import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
@@ -44,13 +45,15 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     private final FoodService foodService;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminTagRestController.class);
+    private final LayoutService layoutService;
 
     @Autowired
     AdminTagRestController(TagService tagService, TagStructureService tagStructureService,
-                           FoodService foodService) {
+                           FoodService foodService, LayoutService layoutService) {
         this.tagStructureService = tagStructureService;
         this.tagService = tagService;
         this.foodService = foodService;
+        this.layoutService = layoutService;
     }
 
 

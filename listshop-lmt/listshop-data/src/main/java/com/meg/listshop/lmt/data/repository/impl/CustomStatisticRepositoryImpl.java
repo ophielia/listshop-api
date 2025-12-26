@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.data.repository.impl;
 
+import com.meg.listshop.lmt.api.model.ListOperationType;
 import com.meg.listshop.lmt.api.model.StatisticCountType;
 import com.meg.listshop.lmt.data.entity.StatisticOperationType;
 import com.meg.listshop.lmt.data.repository.CustomStatisticRepository;
@@ -92,7 +93,7 @@ public class CustomStatisticRepositoryImpl implements CustomStatisticRepository 
     }
 
     @Override
-    public void updateUserStatistics(Long userId, List<Long> updateIds, StatisticOperationType operation, StatisticCountType countType) {
+    public void legacyUpdateUserStatistics(Long userId, List<Long> updateIds, StatisticOperationType operation, StatisticCountType countType) {
         var fieldPrefix = "added_";
         boolean isRemove = operation == StatisticOperationType.remove;
         if (isRemove) {
@@ -100,6 +101,29 @@ public class CustomStatisticRepositoryImpl implements CustomStatisticRepository 
         }
 
         String field = getFieldNameForContext(countType);
+        if (field == null) {
+            return;
+        }
+        var fieldName = new StringBuilder(fieldPrefix).append(field).toString();
+
+
+        String sql = constructStatisticUpdateSql(!isRemove, fieldName);
+
+        entityManager.createNativeQuery(sql)
+                .setParameter(1, userId)
+                .setParameter(2, updateIds)
+                .executeUpdate();
+    }
+
+    @Override
+    public void updateUserStatistics(Long userId, List<Long> updateIds, ListOperationType operationType) {
+        var fieldPrefix = "added_";
+        boolean isRemove = !operationType.getIsAdd();
+        if (isRemove) {
+            fieldPrefix = "removed_";
+        }
+
+        String field = getFieldNameForContext(operationType);
         if (field == null) {
             return;
         }
@@ -144,6 +168,25 @@ public class CustomStatisticRepositoryImpl implements CustomStatisticRepository 
             case Single:
                 return "single";
             case StarterList:
+                return "starterlist";
+            default:
+                return null;
+        }
+
+    }
+
+    private String getFieldNameForContext(ListOperationType countType) {
+        if (countType == null) {
+            return null;
+        }
+        switch (countType) {
+            case TAG_ADD, TAG_REMOVE:
+                return "single";
+            case LIST_ADD, LIST_REMOVE:
+                return "list";
+            case DISH_ADD, DISH_REMOVE:
+                return "single";
+            case STARTERLIST_ADD, STARTERLIST_REMOVE:
                 return "starterlist";
             default:
                 return null;

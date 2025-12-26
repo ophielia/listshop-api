@@ -6,7 +6,10 @@ import com.meg.listshop.lmt.api.model.RatingInfo;
 import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.*;
+import org.junit.jupiter.api.Assertions;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,6 +29,13 @@ public class ServiceTestUtils {
         return itemEntity;
     }
 
+    public static DishItemEntity buildDishItemFromTag(Long id, DishEntity dish, TagEntity tag) {
+        DishItemEntity itemEntity = new DishItemEntity(id);
+        itemEntity.setTag(tag);
+        itemEntity.setDish(dish);
+        return itemEntity;
+    }
+
     public static  SlotEntity buildDishSlot(MealPlanEntity mealplan, DishEntity dish) {
         SlotEntity slot = new SlotEntity();
         slot.setDish(dish);
@@ -39,6 +49,15 @@ public class ServiceTestUtils {
         dish.setUserId(userId);
         dish.setDishName(dishName);
         dish.setItems(tags.stream().map(t -> buildDishItemFromTag(t.getId(), t)).collect(Collectors.toList()));
+        return dish;
+    }
+
+    public static DishEntity buildDishWithTags(Long userId, Long dishId, String dishName, List<TagEntity> tags) {
+        DishEntity dish = new DishEntity();
+        dish.setUserId(userId);
+        dish.setDishName(dishName);
+        dish.setId(dishId);
+        dish.setItems(tags.stream().map(t -> buildDishItemFromTag(t.getId(),dish, t)).collect(Collectors.toList()));
         return dish;
     }
 
@@ -125,5 +144,14 @@ public class ServiceTestUtils {
 
     public static RatingUpdateInfo buildDummyRatingUpdateInfo() {
         return new RatingUpdateInfo(Collections.emptySet(), Collections.emptySet());
+    }
+
+    public static boolean dateInLastXSeconds(Date toCheck, int secondCount) {
+        LocalDateTime oneSecondAgo = LocalDateTime.now().minusSeconds(secondCount);
+        LocalDateTime timeToCheck = LocalDateTime.ofInstant(toCheck.toInstant(), ZoneId.systemDefault());
+        System.out.println(oneSecondAgo);
+        System.out.println(timeToCheck);
+         return timeToCheck.isAfter(oneSecondAgo);
+
     }
 }

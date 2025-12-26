@@ -16,15 +16,15 @@ import com.meg.listshop.lmt.data.repository.TargetRepository;
 import com.meg.listshop.lmt.data.repository.TargetSlotRepository;
 import com.meg.listshop.lmt.service.TargetService;
 import com.meg.listshop.lmt.service.tag.TagService;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +32,9 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-public class TargetServiceImplMockTest {
+class TargetServiceImplMockTest {
 
     @MockBean
     private UserService userService;
@@ -51,13 +51,13 @@ public class TargetServiceImplMockTest {
     @MockBean
     private TargetSlotRepository targetSlotRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         targetService = new TargetServiceImpl(userService, targetRepository, targetSlotRepository, tagService);
     }
 
     @Test
-    public void getTargetsForUserName_Temporary() throws Exception {
+    void getTargetsForUserName_Temporary() throws Exception {
         String userName = "user@name.com";
         Long userId = 20L;
         Long targetId = 99L;
@@ -81,13 +81,13 @@ public class TargetServiceImplMockTest {
         // call under test
         List<TargetEntity> result = targetService.getTargetsForUserName(userName, true);
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals(2, result.size());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(2, result.size());
 
     }
 
     @Test
-    public void getTargetsForUserName() throws Exception {
+    void getTargetsForUserName() throws Exception {
         String userName = "user@name.com";
         Long userId = 20L;
         Long targetId = 99L;
@@ -111,13 +111,13 @@ public class TargetServiceImplMockTest {
         // call under test
         List<TargetEntity> result = targetService.getTargetsForUserName(userName, false);
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals(2, result.size());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(2, result.size());
 
     }
 
     @Test
-    public void createTarget() {
+    void createTarget() {
         String userName = "user@user.com";
         TargetEntity newTarget = new TargetEntity();
         newTarget.setTargetName("george");
@@ -136,12 +136,12 @@ public class TargetServiceImplMockTest {
 
         TargetEntity capturedTarget = targetCapture.getValue();
 
-        Assert.assertNotNull(capturedTarget);
-        Assert.assertEquals("george", capturedTarget.getTargetName());
-        Assert.assertNotNull(capturedTarget.getUserId());
-        Assert.assertNull(capturedTarget.getLastUsed());
-        Assert.assertNotNull(capturedTarget.getCreated());
-        Assert.assertNull(capturedTarget.getExpires());
+        Assertions.assertNotNull(capturedTarget);
+        Assertions.assertEquals("george", capturedTarget.getTargetName());
+        Assertions.assertNotNull(capturedTarget.getUserId());
+        Assertions.assertNull(capturedTarget.getLastUsed());
+        Assertions.assertNotNull(capturedTarget.getCreated());
+        Assertions.assertNull(capturedTarget.getExpires());
 
     }
 
@@ -165,17 +165,17 @@ public class TargetServiceImplMockTest {
 
         TargetEntity capturedTarget = targetCapture.getValue();
 
-        Assert.assertNotNull(capturedTarget);
-        Assert.assertEquals("george", capturedTarget.getTargetName());
-        Assert.assertNotNull(capturedTarget.getUserId());
-        Assert.assertNull(capturedTarget.getLastUsed());
-        Assert.assertNotNull(capturedTarget.getCreated());
-        Assert.assertNotNull(capturedTarget.getExpires());
+        Assertions.assertNotNull(capturedTarget);
+        Assertions.assertEquals("george", capturedTarget.getTargetName());
+        Assertions.assertNotNull(capturedTarget.getUserId());
+        Assertions.assertNull(capturedTarget.getLastUsed());
+        Assertions.assertNotNull(capturedTarget.getCreated());
+        Assertions.assertNotNull(capturedTarget.getExpires());
 
     }
 
     @Test
-    public void getTargetById() throws Exception {
+    void getTargetById() throws Exception {
         String userName = "user@name.com";
         Long userId = 20L;
         Long targetId = 99L;
@@ -199,13 +199,13 @@ public class TargetServiceImplMockTest {
         // service call
         TargetEntity result = targetService.getTargetById(userName, targetId);
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals("target id matches", targetId, result.getTargetId());
-        Assert.assertEquals("slot count matches", 1, target.getSlots().size());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(targetId, result.getTargetId(), "target id matches");
+        Assertions.assertEquals(1, target.getSlots().size(), "slot count matches");
     }
 
     @Test
-    public void deleteTarget() throws Exception {
+    void deleteTarget() throws Exception {
         String userName = "user@name.com";
         Long userId = 20L;
         Long targetId = 99L;
@@ -236,13 +236,13 @@ public class TargetServiceImplMockTest {
         Mockito.verify(targetSlotRepository).deleteAll(any(List.class));
 
         TargetEntity capturedTarget = targetCapture.getValue();
-        Assert.assertNotNull("Captured target should exist", capturedTarget);
-        Assert.assertNull("Captured target should not contain slots", capturedTarget.getSlots());
+        Assertions.assertNotNull(capturedTarget, "Captured target should exist");
+        Assertions.assertNull(capturedTarget.getSlots(), "Captured target should not contain slots");
 
     }
 
     @Test
-    public void updateTarget() throws Exception {
+    void updateTarget() throws Exception {
         String newname = "New Name";
         String userName = "user@name.com";
         Long userId = 20L;
@@ -268,12 +268,12 @@ public class TargetServiceImplMockTest {
         targetService.updateTarget(userName, editTarget);
 
         TargetEntity capturedTarget = targetCapture.getValue();
-        Assert.assertNotNull("Captured target should exist", capturedTarget);
-        Assert.assertEquals("name has been changed", newname, capturedTarget.getTargetName());
+        Assertions.assertNotNull(capturedTarget, "Captured target should exist");
+        Assertions.assertEquals(newname, capturedTarget.getTargetName(), "name has been changed");
     }
 
     @Test
-    public void addSlotToTarget() throws Exception {
+    void addSlotToTarget() throws Exception {
         String userName = "user@name.com";
         Long userId = 20L;
         Long originalSlotId = 900L;
@@ -307,16 +307,16 @@ public class TargetServiceImplMockTest {
 
         // verify test
         TargetEntity capturedTarget = targetCapture.getValue();
-        Assert.assertNotNull("Captured target should exist", capturedTarget);
-        Assert.assertEquals("target should contain 2 slots", 2, capturedTarget.getSlots().size());
+        Assertions.assertNotNull(capturedTarget, "Captured target should exist");
+        Assertions.assertEquals(2, capturedTarget.getSlots().size(), "target should contain 2 slots");
         TargetSlotEntity capturedSlot = targetSlotCapture.getValue();
-        Assert.assertNotNull("Captured target slot should exist", capturedSlot);
-        Assert.assertEquals("slot should have order of 2", "2", capturedSlot.getSlotOrder().toString());
-        Assert.assertEquals("slot should have correct target id", targetId, capturedSlot.getTargetId());
+        Assertions.assertNotNull(capturedSlot, "Captured target slot should exist");
+        Assertions.assertEquals("2", capturedSlot.getSlotOrder().toString(), "slot should have order of 2");
+        Assertions.assertEquals(targetId, capturedSlot.getTargetId(), "slot should have correct target id");
     }
 
     @Test
-    public void deleteSlotFromTarget() throws Exception {
+    void deleteSlotFromTarget() throws Exception {
         String userName = "user@name.com";
         Long userId = 20L;
         Long slotId = 500L;
@@ -353,12 +353,12 @@ public class TargetServiceImplMockTest {
         // verify afterwards
         Mockito.verify(targetSlotRepository).delete(targetSlotCapture.capture());
         TargetEntity capturedTarget = targetCapture.getValue();
-        Assert.assertNotNull("Captured target should exist", capturedTarget);
-        Assert.assertEquals("target should contain 1 slot", 1, capturedTarget.getSlots().size());
+        Assertions.assertNotNull(capturedTarget, "Captured target should exist");
+        Assertions.assertEquals(1, capturedTarget.getSlots().size(), "target should contain 1 slot");
     }
 
     @Test
-    public void addTagToTargetSlot() throws Exception {
+    void addTagToTargetSlot() throws Exception {
         String userName = "user@name.com";
         Long userId = 20L;
         Long tagId = 50L;
@@ -385,12 +385,12 @@ public class TargetServiceImplMockTest {
         targetService.addTagToTargetSlot(userName, targetId, slotId, tagId);
 
         TargetSlotEntity capturedSlot = targetSlotCapture.getValue();
-        Assert.assertNotNull("Captured slot should exist", capturedSlot);
-        Assert.assertEquals("Slot should contain tag 50", capturedSlot.getTargetTagIds(), "1;2;3;50");
+        Assertions.assertNotNull(capturedSlot, "Captured slot should exist");
+        Assertions.assertEquals(capturedSlot.getTargetTagIds(), "1;2;3;50", "Slot should contain tag 50");
     }
 
     @Test
-    public void deleteTagFromTargetSlot() throws Exception {
+    void deleteTagFromTargetSlot() throws Exception {
         String userName = "user@name.com";
         Long userId = 20L;
         Long tagId = 50L;
@@ -417,12 +417,12 @@ public class TargetServiceImplMockTest {
         targetService.deleteTagFromTargetSlot(userName, targetId, slotId, tagId);
 
         TargetSlotEntity capturedSlot = targetSlotCapture.getValue();
-        Assert.assertNotNull("Captured slot should exist", capturedSlot);
-        Assert.assertEquals("Slot should not contain tag 50", capturedSlot.getTargetTagIds(), "1;2;3");
+        Assertions.assertNotNull(capturedSlot, "Captured slot should exist");
+        Assertions.assertEquals(capturedSlot.getTargetTagIds(), "1;2;3", "Slot should not contain tag 50");
     }
 
     @Test
-    public void addTagToTarget() throws Exception {
+    void addTagToTarget() throws Exception {
         String userName = "user@name.com";
         Long userId = 20L;
         Long tagId = 50L;
@@ -445,13 +445,13 @@ public class TargetServiceImplMockTest {
         targetService.addTagToTarget(userName, targetId, tagId);
 
         TargetEntity capturedTarget = targetCapture.getValue();
-        Assert.assertNotNull("Should have captured value", capturedTarget);
-        Assert.assertNull("Target should have null proposal id", capturedTarget.getProposalId());
-        Assert.assertEquals("Target should contain new tagId", "1;2;3;50", capturedTarget.getTargetTagIds());
+        Assertions.assertNotNull(capturedTarget, "Should have captured value");
+        Assertions.assertNull(capturedTarget.getProposalId(), "Target should have null proposal id");
+        Assertions.assertEquals("1;2;3;50", capturedTarget.getTargetTagIds(), "Target should contain new tagId");
     }
 
     @Test
-    public void testAddDefaultTargetSlot() throws Exception {
+    void testAddDefaultTargetSlot() throws Exception {
         String userName = "user@name.com";
         Long userId = 20L;
         Long targetId = 99L;
@@ -477,18 +477,18 @@ public class TargetServiceImplMockTest {
 
         // check that slot has slot order of 1, and filled in target id
         TargetSlotEntity capturedSlot = slotCapture.getValue();
-        Assert.assertNotNull("TargetSlotEntity should be captured", capturedSlot);
-        Assert.assertEquals("order should be 1", 1L, (long) capturedSlot.getSlotOrder());
-        Assert.assertEquals("targetId should be as declared", targetId, capturedSlot.getTargetId());
+        Assertions.assertNotNull(capturedSlot, "TargetSlotEntity should be captured");
+        Assertions.assertEquals(1L, (long) capturedSlot.getSlotOrder(), "order should be 1");
+        Assertions.assertEquals(targetId, capturedSlot.getTargetId(), "targetId should be as declared");
         // check that saved target has one slot
         TargetEntity capturedTarget = targetCapture.getValue();
-        Assert.assertNotNull("TargetEntity should be captured", capturedTarget);
-        Assert.assertNotNull("Target should have slots", capturedTarget.getSlots());
-        Assert.assertEquals("Target should have 1 slot", 1, capturedTarget.getSlots().size());
+        Assertions.assertNotNull(capturedTarget, "TargetEntity should be captured");
+        Assertions.assertNotNull(capturedTarget.getSlots(), "Target should have slots");
+        Assertions.assertEquals(1, capturedTarget.getSlots().size(), "Target should have 1 slot");
     }
 
     @Test
-    public void deleteTagFromTarget() throws Exception {
+    void deleteTagFromTarget() throws Exception {
         String userName = "user@test.com";
         Long targetId = 99L;
         Long tagId = 1L;
@@ -510,7 +510,7 @@ public class TargetServiceImplMockTest {
 
         // check capture
         TargetEntity result = argument.getValue();
-        Assert.assertNotNull("Call made - and capture exists", result);
-        Assert.assertEquals("1 should no longer be in list", "2;3", result.getTargetTagIds());
+        Assertions.assertNotNull(result, "Call made - and capture exists");
+        Assertions.assertEquals("2;3", result.getTargetTagIds(), "1 should no longer be in list");
     }
 }

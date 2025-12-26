@@ -5,15 +5,14 @@ import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.exception.ProposalProcessingException;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.repository.ProposalContextRepository;
-import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.MealPlanService;
 import com.meg.listshop.lmt.service.TargetService;
 import com.meg.listshop.lmt.service.proposal.*;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +38,15 @@ import static org.mockito.ArgumentMatchers.any;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest()
+@Testcontainers
 @ActiveProfiles("test")
 @Transactional
-public class ProposalGeneratorServiceImplTest {
+class ProposalGeneratorServiceImplTest {
 
 
     private static Long existingProposalId;
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @MockBean
@@ -83,7 +85,7 @@ public class ProposalGeneratorServiceImplTest {
     private List<Long> testDishIds;
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws ProposalProcessingException {
         // make / save base target
         TargetEntity targetEntity = buildBaseTestTarget();
@@ -99,7 +101,7 @@ public class ProposalGeneratorServiceImplTest {
     }
 
     @Test
-    public void generateProposal() throws Exception {
+    void generateProposal() throws Exception {
         // make / save b    ase target
         TargetEntity targetEntity = buildBaseTestTarget();
         // make test fixtures
@@ -117,27 +119,27 @@ public class ProposalGeneratorServiceImplTest {
         ProposalEntity proposalEntity = proposalGeneratorServiceImpl.generateProposal(TestConstants.USER_3_NAME, targetEntity.getTargetId());
 
         // retrieve result
-        Assert.assertNotNull(proposalEntity);
+        Assertions.assertNotNull(proposalEntity);
         ProposalEntity result = proposalService.getProposalById(TestConstants.USER_3_NAME, proposalEntity.getId());
 
         // result exists
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         // result has same number of slots as target
-        Assert.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
+        Assertions.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
         // slots contain 5 dishes each
         for (ProposalSlotEntity slotEntity : result.getSlots()) {
-            Assert.assertTrue(slotEntity.getDishSlots().size() == 5);
+            Assertions.assertTrue(slotEntity.getDishSlots().size() == 5);
         }
         // has approaches and is refreshable
         ProposalContextEntity context = proposalContextRepository.findByProposalId(result.getId());
-        Assert.assertNotNull(context);
-        Assert.assertNotNull(context.getApproaches());
-        Assert.assertEquals(3, context.getApproaches().size());
-        Assert.assertEquals(0, context.getCurrentApproachIndex());
+        Assertions.assertNotNull(context);
+        Assertions.assertNotNull(context.getApproaches());
+        Assertions.assertEquals(3, context.getApproaches().size());
+        Assertions.assertEquals(0, context.getCurrentApproachIndex());
     }
 
     @Test
-    public void refreshProposal() throws Exception {
+    void refreshProposal() throws Exception {
         ProposalEntity proposal = proposalService.getProposalById(TestConstants.USER_3_NAME, existingProposalId);
         ProposalContextEntity contextentity = proposalContextRepository.findByProposalId(proposal.getId());
         TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_3_NAME, contextentity.getTargetId());
@@ -152,28 +154,28 @@ public class ProposalGeneratorServiceImplTest {
         ProposalEntity proposalEntity = proposalGeneratorServiceImpl.refreshProposal(TestConstants.USER_3_NAME, existingProposalId);
 
         // retrieve result
-        Assert.assertNotNull(proposalEntity);
+        Assertions.assertNotNull(proposalEntity);
         ProposalEntity result = proposalService.getProposalById(TestConstants.USER_3_NAME, proposalEntity.getId());
 
         // result exists
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         // result has same number of slots as target
-        Assert.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
+        Assertions.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
         // slots contain 5 dishes each
         for (ProposalSlotEntity slotEntity : result.getSlots()) {
-            Assert.assertTrue(slotEntity.getDishSlots().size() == 5);
+            Assertions.assertTrue(slotEntity.getDishSlots().size() == 5);
         }
         // has approaches and is refreshable
         ProposalContextEntity context = proposalContextRepository.findByProposalId(result.getId());
-        Assert.assertNotNull(context);
-        Assert.assertNotNull(context.getApproaches());
-        Assert.assertEquals(3, context.getApproaches().size());
-        Assert.assertEquals(0, context.getCurrentApproachIndex());
+        Assertions.assertNotNull(context);
+        Assertions.assertNotNull(context.getApproaches());
+        Assertions.assertEquals(3, context.getApproaches().size());
+        Assertions.assertEquals(0, context.getCurrentApproachIndex());
     }
 
 
     @Test
-    public void proposalForMealPlan() throws Exception {
+    void proposalForMealPlan() throws Exception {
         // make / save base target
         TargetEntity targetEntity = buildBaseTestTarget();
         // make / save meal plan
@@ -193,28 +195,28 @@ public class ProposalGeneratorServiceImplTest {
         ProposalEntity proposalEntity = proposalGeneratorServiceImpl.proposalForMealPlan(TestConstants.USER_3_NAME, mealPlanEntity.getId(), targetEntity.getTargetId());
 
         // retrieve result
-        Assert.assertNotNull(proposalEntity);
+        Assertions.assertNotNull(proposalEntity);
         ProposalEntity result = proposalService.getProposalById(TestConstants.USER_3_NAME, proposalEntity.getId());
 
         // result exists
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         // result has same number of slots as target
-        Assert.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
+        Assertions.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
         // slots contain 5 dishes each
         for (ProposalSlotEntity slotEntity : result.getSlots()) {
-            Assert.assertTrue(slotEntity.getDishSlots().size() == 5);
+            Assertions.assertTrue(slotEntity.getDishSlots().size() == 5);
         }
         // has approaches and is refreshable
         ProposalContextEntity context = proposalContextRepository.findByProposalId(result.getId());
-        Assert.assertNotNull(context);
-        Assert.assertNotNull(context.getApproaches());
-        Assert.assertEquals(3, context.getApproaches().size());
-        Assert.assertEquals(0, context.getCurrentApproachIndex());
+        Assertions.assertNotNull(context);
+        Assertions.assertNotNull(context.getApproaches());
+        Assertions.assertEquals(3, context.getApproaches().size());
+        Assertions.assertEquals(0, context.getCurrentApproachIndex());
     }
 
 
     @Test
-    public void addToProposalSlot() throws Exception {
+    void addToProposalSlot() throws Exception {
         ProposalEntity proposal = proposalService.getProposalById(TestConstants.USER_3_NAME, existingProposalId);
         ProposalContextEntity contextentity = proposalContextRepository.findByProposalId(proposal.getId());
         TargetEntity targetEntity = targetService.getTargetById(TestConstants.USER_3_NAME, contextentity.getTargetId());
@@ -230,40 +232,40 @@ public class ProposalGeneratorServiceImplTest {
         ProposalEntity proposalEntity = proposalGeneratorServiceImpl.addToProposalSlot(TestConstants.USER_3_NAME, existingProposalId, 0);
 
 // retrieve result
-        Assert.assertNotNull(proposalEntity);
+        Assertions.assertNotNull(proposalEntity);
         ProposalEntity result = proposalService.getProposalById(TestConstants.USER_3_NAME, existingProposalId);
 
         // result exists
-        Assert.assertNotNull(result);
+        Assertions.assertNotNull(result);
         // result has same number of slots as target
-        Assert.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
+        Assertions.assertEquals(targetEntity.getSlots().size(), result.getSlots().size());
         // slots contain 5 dishes each
         for (ProposalSlotEntity slotEntity : result.getSlots()) {
-            Assert.assertTrue(slotEntity.getDishSlots().size() == 5);
+            Assertions.assertTrue(slotEntity.getDishSlots().size() == 5);
         }
         // has approaches and is refreshable
         ProposalContextEntity context = proposalContextRepository.findByProposalId(result.getId());
-        Assert.assertNotNull(context);
-        Assert.assertNotNull(context.getApproaches());
-        Assert.assertEquals(3, context.getApproaches().size());
-        Assert.assertEquals(0, context.getCurrentApproachIndex());
+        Assertions.assertNotNull(context);
+        Assertions.assertNotNull(context.getApproaches());
+        Assertions.assertEquals(3, context.getApproaches().size());
+        Assertions.assertEquals(0, context.getCurrentApproachIndex());
     }
 
     @Test
-    public void fillInformationForProposal() throws Exception {
+    void fillInformationForProposal() throws Exception {
         ProposalEntity proposal = proposalService.getProposalById(TestConstants.USER_3_NAME, existingProposalId);
 
         proposal = proposalGeneratorServiceImpl.fillInformationForProposal(TestConstants.USER_3_NAME, proposal);
 
         // make sure everything is filled in
-        Assert.assertNotNull(proposal.getTargetTags());
-        Assert.assertNotNull(proposal.getSlots());
+        Assertions.assertNotNull(proposal.getTargetTags());
+        Assertions.assertNotNull(proposal.getSlots());
         for (ProposalSlotEntity slot : proposal.getSlots()) {
             Set<Long> ids = FlatStringUtils.inflateStringToLongSet(slot.getFlatMatchedTagIds(), ";");
-            Assert.assertTrue(ids.size() <= slot.getTags().size());
+            Assertions.assertTrue(ids.size() <= slot.getTags().size());
             for (DishSlotEntity dish : slot.getDishSlots()) {
                 if (dish.getMatchedTagIds() != null) {
-                    Assert.assertTrue(dish.getMatchedTags().size() > 0);
+                    Assertions.assertTrue(dish.getMatchedTags().size() > 0);
                 }
             }
         }

@@ -12,29 +12,28 @@ import com.meg.postoffice.api.model.EmailParameters;
 import com.meg.postoffice.api.model.EmailType;
 import com.meg.postoffice.service.MailService;
 import freemarker.template.TemplateException;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import jakarta.mail.MessagingException;
 import java.io.IOException;
 
-
+@ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = "/mytestsend.properties")
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {PostofficeTestConfiguration.class})
-public class ResetPasswordSendTest {
+class ResetPasswordSendTest {
 
     @Autowired
     private MailService mailService;
 
 
     @Test
-    public void testResetPassword() throws TemplateException, IOException, MessagingException {
+    void testResetPassword() throws TemplateException, IOException, MessagingException {
         EmailParameters parameters = new EmailParameters();
         parameters.setEmailType(EmailType.ResetPassword);
         parameters.setReceiver("margaret.martin@orange.fr");
@@ -45,7 +44,7 @@ public class ResetPasswordSendTest {
         parameters.addParameter("supportEmail", "support@the-list-shop.com");
 
         mailService.processEmail(parameters);
-        Assert.assertTrue(1 == 1);
+        Assertions.assertTrue(1 == 1);
     }
 
 }

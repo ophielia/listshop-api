@@ -17,21 +17,23 @@ import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.common.RoundingUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-public class ConversionUSFactorsTest {
+class ConversionUSFactorsTest {
 
     private static final Long ounceId = 1009L;
     private static final Long lbId = 1008L;
@@ -50,11 +52,11 @@ public class ConversionUSFactorsTest {
     UnitRepository unitRepository;
 
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgresSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Test
-    public void unitTestsUsScaling() throws ConversionPathException, ConversionFactorException {
+    void unitTestsUsScaling() throws ConversionPathException, ConversionFactorException {
         UnitEntity ounceOpt = unitRepository.findById(ounceId).orElse(null);
         UnitEntity pintOpt = unitRepository.findById(pintId).orElse(null);
         UnitEntity cupsOpt = unitRepository.findById(cupsId).orElse(null);
@@ -150,7 +152,7 @@ public class ConversionUSFactorsTest {
     }
 
     @Test
-    public void unitUSVolumeScaling() throws ConversionPathException, ConversionFactorException {
+    void unitUSVolumeScaling() throws ConversionPathException, ConversionFactorException {
         UnitEntity flTspOpt = unitRepository.findById(flTeaspoonId).orElse(null);
         UnitEntity flTbOpt = unitRepository.findById(flTablespoonId).orElse(null);
 

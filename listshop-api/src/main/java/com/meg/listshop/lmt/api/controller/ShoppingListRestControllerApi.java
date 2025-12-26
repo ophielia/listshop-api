@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.controller;
 
+import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -48,7 +49,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<ShoppingList> deleteList(Authentication principal, @PathVariable("listId") Long listId);
 
     @PostMapping(value = "/{listId}/tag/{tagId}", produces = "application/json")
-    ResponseEntity<Object> addItemToListByTag(Authentication principal, @PathVariable Long listId, @PathVariable Long tagId);
+    ResponseEntity<Object> addItemToListByTag(Authentication principal, @PathVariable Long listId, @PathVariable Long tagId) throws ItemProcessingException;
 
     @DeleteMapping(value = "/{listId}/item/{itemId}", produces = "application/json")
     ResponseEntity<Object> deleteItemFromList(Authentication principal, @PathVariable Long listId, @PathVariable Long itemId,
@@ -59,11 +60,11 @@ public interface ShoppingListRestControllerApi {
     @PostMapping(value = "/{listId}/item/shop/{itemId}", produces = "application/json")
     ResponseEntity<Object> setCrossedOffForItem(Authentication principal, @PathVariable Long listId, @PathVariable Long itemId,
                                                 @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff
-    );
+    ) throws ItemProcessingException;
 
     @PostMapping(value = "/{listId}/item/shop", produces = "application/json")
     ResponseEntity<Object> crossOffAllItemsOnList(Authentication principal, @PathVariable Long listId,
-                                                  @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff);
+                                                  @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff) throws ItemProcessingException;
 
     @DeleteMapping(value = "/{listId}/item", produces = "application/json")
     ResponseEntity<Object> deleteAllItemsFromList(Authentication principal, @PathVariable Long listId);
@@ -81,7 +82,7 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<Object> addDishToList(Authentication principal, @PathVariable Long listId, @PathVariable Long dishId);
 
     @DeleteMapping(value = "/{listId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> removeDishFromList(Authentication principal, @PathVariable Long listId, @PathVariable Long dishId);
+    ResponseEntity<Object> removeDishFromList(Authentication principal, @PathVariable Long listId, @PathVariable Long dishId) ;
 
     @PostMapping(value = "/{listId}/list/{fromListId}", produces = "application/json")
     ResponseEntity<Object> addToListFromList(Authentication principal, @PathVariable Long listId, @PathVariable Long fromListId);

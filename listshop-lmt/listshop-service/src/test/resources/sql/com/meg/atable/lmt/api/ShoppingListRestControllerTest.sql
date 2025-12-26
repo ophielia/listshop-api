@@ -30,7 +30,7 @@ VALUES (504, 'nostarterlist@testitytest.com', true, NULL,
 -- base list - id 500
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
 values (now(), 1, 'General', 20, 509990, 'added to', false);
--- active list - id 501
+-- starter list - id 509991
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
 values (now() - interval '3 days', 11, 'General', 20, 509991, 'added from', true);
 -- user 504 doesn't have a starter list
@@ -56,23 +56,40 @@ insert into list (created_on, list_layout_id, list_types, user_id, list_id, name
 values (now(), 1, 'General', 500, 609991, 'remove from this list', false);
 
 
--- list items - four items, for active list - id 501,502,503,500
+-- list items - list 509990 - four items, for active list - id 501,502,503,500
+insert into public.dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status, created_on, reference)
+values
+    (5099901, null, 'Israeli Couscous', 20, null, 105, '2019-08-17 21:23:14.773362 +00:00', null),
+    (50999010, null, 'four vegetable soup', 20, '2022-03-12 10:37:26.878000 +00:00', 105,'2019-08-17 21:14:14.773362 +00:00', '17 '),
+    (509990100, null, 'crispy cucumber salad', 20, '2021-05-08 09:02:13.478000 +00:00', 105,'2019-08-17 19:44:14.773362 +00:00', '30 '),
+    (509990101, null, 'crockpot corn chowder', 20, '2022-03-19 09:50:06.144000 +00:00', 105,'2019-08-17 19:43:14.773362 +00:00', null);
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
-VALUES (509990, 501, 509990, now(), null, null, 1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
-                      list_sources)
-VALUES (509990, 502, 509991, now(), null, null, 1, null, '509991');
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
-                      list_sources)
-VALUES (509990, 503, 509992, now(), null, null, 1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
-                      list_sources)
-VALUES (509990, 500, 509993, now(), null, null, 1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
-                      list_sources)
-VALUES (509990, 504, 509994, now(), null, null, 1, null, '509991');
+VALUES (509990, 501, 509990, now(), null, null, 1, null, null),
+       (509990, 502, 509991, now(), null, null, 1, null, '509991'),
+       (509990, 503, 509992, now(), null, null, 1, null, null),
+       (509990, 500, 509993, now(), null, null, 1, null, null),
+       (509990, 504, 509994, now(), null, null, 1, null, '509991'),
+       (509990, 504, 509995, now(), null, null, 1, null, '509991');
+INSERT INTO list_item_details (item_detail_id, item_id, used_count, linked_list_id, linked_dish_id)
+VALUES  (5099910,509990, 1, 7777,null),
+        (5099911,509991, 1, 6666,null),
+        (5099912,509992, 1, null,5099901),
+        (5099913,509993, 1, null,50999010),
+        (5099914,509994, 1, null,509990100),
+        (5099915,509995, 1, null,509990101);
 
+
+-- list items - list 509991 - starter list
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (509991, 295, 50999321, now(), null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (509991, 296, 50999322, now(), null, null, 1, null, null);
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+                      list_sources)
+VALUES (509991, 307, 50999323, now(), null, null, 1, null, null);
 
 -- list items - four items, for active list - id 501,502,503,500
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
@@ -94,19 +111,17 @@ VALUES (509999, 504, 509984, now(), null, null, 1, null, '509991');
 -- list items for list from which to delete a list
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
-VALUES (609990, 501, 609990, now(), null, null, 1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
-                      list_sources)
-VALUES (609990, 502, 609991, now(), null, null, 1, null, '609991');
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
-                      list_sources)
-VALUES (609990, 503, 609992, now(), null, null, 1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
-                      list_sources)
-VALUES (609990, 500, 609993, now(), null, null, 1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
-                      list_sources)
-VALUES (609990, 504, 609994, now(), null, null, 1, null, '609991');
+VALUES  (609990, 501, 609990, now(), null, null, 1, null, null),
+        (609990, 502, 609991, now(), null, null, 1, null, '609991'),
+        (609990, 503, 609992, now(), null, null, 1, null, null),
+        (609990, 500, 609993, now(), null, null, 1, null, null),
+        (609990, 504, 609994, now(), null, null, 1, null, '609991');
+INSERT INTO list_item_details (item_detail_id, item_id, used_count, linked_list_id, linked_dish_id)
+VALUES  (6099910,609990, 1, 609991,null),
+        (6099911,609991, 1, 609991,null),
+        (6099912,609992, 1, null,null),
+        (6099913,609993, 1, null,null),
+        (6099914,609994, 1, 609991,null);
 
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
@@ -147,6 +162,15 @@ INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text
                       list_sources)
 VALUES (7777, 505, 707711, '2019-07-12', '2019-07-12', null, 1, null, null);
 
+insert into list_item_details
+(item_detail_id, item_id, linked_list_id, used_count)
+values (7077110, 70770, 7777, 1),
+       (7077111, 70771, 7777, 1),
+       (707711112, 707711, 7777, 1),
+       (7077112, 70772, 7777, 1),
+       (7077113, 70773, 7777, 1);
+
+
 -- operation list items, source - three items- id 500,501,502
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
@@ -173,6 +197,13 @@ VALUES (6666, 503, 60662, '2019-07-12', null, null, 1, null, null);
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
 VALUES (6666, 505, 60663, '2019-07-12', null, null, 1, null, null);
+
+insert into list_item_details
+    (item_detail_id, item_id, linked_list_id, used_count)
+values (6066110, 60660, 6666, 1),
+       (6066111, 60661, 6666, 1),
+       (6066112, 60662, 6666, 1),
+       (6066113, 60663, 6666, 1);
 -- test with 501, 503, 504
 
 -- test add to list from meal plan
@@ -188,6 +219,18 @@ VALUES (51000, 1, 510002, now(), null, null, 1, null, null);
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
                       list_sources)
 VALUES (51000, 12, 510003, now(), null, null, 1, null, null);
+
+
+insert into list_item_details
+(item_detail_id, item_id, linked_dish_id, used_count)
+values (51000111, 510001, null, 1);
+insert into list_item_details
+(item_detail_id, item_id, linked_dish_id, used_count)
+values (51000112, 510002, null, 1);
+insert into list_item_details
+(item_detail_id, item_id, linked_dish_id, used_count)
+values (51000113, 510003, null, 1);
+
 -- meal plan with 2 dishes
 -- contained in meal plan are tags 502, 503, and 510
 -- dishes

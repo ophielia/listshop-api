@@ -10,11 +10,10 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.MealPlanEntity;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -25,11 +24,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -39,7 +40,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -47,13 +47,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
+@Testcontainers
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class MealPlanRestControllerTest {
+class MealPlanRestControllerTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private static UserEntity userAccount;
@@ -79,10 +80,10 @@ public class MealPlanRestControllerTest {
                 .findAny()
                 .orElse(null);
 
-        assertNotNull("the JSON message converter must not be null");
+        Assertions.assertNotNull("the JSON message converter must not be null");
     }
 
-    @Before
+    @BeforeEach
     @WithMockUser
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext)
@@ -119,7 +120,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void readSingleMealPlan() throws Exception {
+    void readSingleMealPlan() throws Exception {
         Long testId = TestConstants.MENU_PLAN_3_ID;
         mockMvc.perform(get("/mealplan/"
                         + testId)
@@ -136,7 +137,7 @@ public class MealPlanRestControllerTest {
     @Sql(value = "/sql/com/meg/atable/lmt/api/MealPlanRestControllerTest.sql")
     @Sql(value = "/sql/com/meg/atable/lmt/api/MealPlanRestControllerTest_rollback.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void readMealPlanRatings() throws Exception {
+    void readMealPlanRatings() throws Exception {
         Long testId = 50485L;
         mockMvc.perform(get("/mealplan/"
                         + testId + "/ratings")
@@ -150,7 +151,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void readMealPlans() throws Exception {
+    void readMealPlans() throws Exception {
         MvcResult result = mockMvc.perform(get("/mealplan")
                         .with(user(userDetails)))
                 .andExpect(status().isOk())
@@ -164,7 +165,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void readMealPlanBadUser() throws Exception {
+    void readMealPlanBadUser() throws Exception {
         Long testId = TestConstants.MENU_PLAN_3_ID;
         mockMvc.perform(get("/mealplan" + "/" + testId)
                         .with(user(userDetailsDelete)))
@@ -173,7 +174,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testDeleteMealPlan() throws Exception {
+    void testDeleteMealPlan() throws Exception {
         Long testId = 506L; //TestConstants.MENU_PLAN_2_ID;
         mockMvc.perform(delete("/mealplan/"
                         + testId)
@@ -184,7 +185,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testCreateMealPlan() throws Exception {
+    void testCreateMealPlan() throws Exception {
 
         MealPlanEntity mealPlanEntity = new MealPlanEntity();
         mealPlanEntity.setName("mealPlanCreate");
@@ -202,7 +203,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testCreateMealPlan_EmptyName() throws Exception {
+    void testCreateMealPlan_EmptyName() throws Exception {
         MealPlanEntity mealPlanEntity = new MealPlanEntity();
         mealPlanEntity.setMealPlanType(MealPlanType.Manual);
         mealPlanEntity.setUserId(userAccount.getId());
@@ -221,7 +222,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testAddDishToMealPlan() throws Exception {
+    void testAddDishToMealPlan() throws Exception {
         String url = "/mealplan/" + TestConstants.MENU_PLAN_3_ID
                 + "/dish/" + TestConstants.DISH_1_ID;
         this.mockMvc.perform(post(url)
@@ -232,7 +233,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testAddDishToMealPlan_DishExistsKO() throws Exception {
+    void testAddDishToMealPlan_DishExistsKO() throws Exception {
         // dishid 500 exists for mealplan 503 in test data
         var dishId = "500";
         var mealPlanId = "503";
@@ -247,7 +248,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testRemoveDishFromMealPlan() throws Exception {
+    void testRemoveDishFromMealPlan() throws Exception {
         String url = "/mealplan/" + TestConstants.MENU_PLAN_3_ID
                 + "/dish/" + 501L;
         this.mockMvc.perform(delete(url)
@@ -258,7 +259,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testCreateMealPlanFromTargetProposal() throws Exception {
+    void testCreateMealPlanFromTargetProposal() throws Exception {
         String url = "/mealplan/proposal/" + TestConstants.PROPOSAL_3_ID;
 
         this.mockMvc.perform(post(url)
@@ -270,7 +271,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testRenameMealPlan() throws Exception {
+    void testRenameMealPlan() throws Exception {
 
         String url = "/mealplan/" + TestConstants.MENU_PLAN_3_ID + "/name/george";
 
@@ -284,7 +285,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testCopyMealPlan() throws Exception {
+    void testCopyMealPlan() throws Exception {
         Long copyMealPlan = 504L;
         String url = "/mealplan/" + copyMealPlan;
         Long startTime = new Date().getTime();
@@ -319,29 +320,29 @@ public class MealPlanRestControllerTest {
         MealPlan source = sourceResource.getMealPlan();
         MealPlan copied = copiedResource.getMealPlan();
         // check meal plan
-        Assert.assertNotNull("copied name should not be null", copied.getName());
-        Assert.assertNotEquals("copied name should not equal source", copied.getName(), source.getName());
-        Assert.assertNotNull("copied should have created", copied.getCreated());
-        Assert.assertTrue("copied created should be after start", copied.getCreated().getTime() >= startTime);
+        Assertions.assertNotNull(copied.getName(), "copied name should not be null");
+        Assertions.assertNotEquals(copied.getName(), source.getName(), "copied name should not equal source");
+        Assertions.assertNotNull(copied.getCreated(), "copied should have created");
+        Assertions.assertTrue(copied.getCreated().getTime() >= startTime, "copied created should be after start");
         // check slots
         List<Slot> sourceSlots = source.getSlots();
         List<Slot> copiedSlots = copied.getSlots();
-        Assert.assertNotNull("slots should exist - copied", copiedSlots);
-        Assert.assertNotNull("slots should exist - source", sourceSlots);
-        Assert.assertEquals("size should match", sourceSlots.size(), copiedSlots.size());
+        Assertions.assertNotNull(copiedSlots, "slots should exist - copied");
+        Assertions.assertNotNull(sourceSlots, "slots should exist - source");
+        Assertions.assertEquals(sourceSlots.size(), copiedSlots.size(), "size should match");
         Map<Long, Dish> dishIdsInSource = sourceSlots.stream()
                 .map(Slot::getDish)
                 //.map(Dish::getId)
                 .collect(Collectors.toMap(Dish::getId, Function.identity()));
         for (Slot slot : copiedSlots) {
-            Assert.assertEquals("meal plan id should be correct", newId, String.valueOf(slot.getMealPlanId()));
-            Assert.assertTrue("dish id should match one in source", dishIdsInSource.containsKey(slot.getDish().getId()));
+            Assertions.assertEquals(newId, String.valueOf(slot.getMealPlanId()), "meal plan id should be correct");
+            Assertions.assertTrue(dishIdsInSource.containsKey(slot.getDish().getId()), "dish id should match one in source");
         }
     }
 
     @Test
     @WithMockUser
-    public void testCopyMealPlan_BadUserKO() throws Exception {
+    void testCopyMealPlan_BadUserKO() throws Exception {
         Long copyMealPlan = 504L;
         String url = "/mealplan/" + copyMealPlan;
         Long startTime = new Date().getTime();
@@ -356,7 +357,7 @@ public class MealPlanRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testCopyMealPlan_BadMealPlanKO() throws Exception {
+    void testCopyMealPlan_BadMealPlanKO() throws Exception {
         Long copyMealPlan = 555504L;
         String url = "/mealplan/" + copyMealPlan;
         Long startTime = new Date().getTime();

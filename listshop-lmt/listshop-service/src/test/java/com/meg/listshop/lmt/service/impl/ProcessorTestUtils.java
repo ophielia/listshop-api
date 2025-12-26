@@ -4,7 +4,7 @@ import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.api.model.ApproachType;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.service.AttemptGenerator;
-import com.meg.listshop.lmt.service.DishTagSearchResult;
+import com.meg.listshop.lmt.dish.DishTagSearchResult;
 import com.meg.listshop.test.TestConstants;
 
 import java.util.*;

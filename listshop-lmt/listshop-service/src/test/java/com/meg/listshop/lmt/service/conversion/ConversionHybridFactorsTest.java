@@ -8,8 +8,8 @@
 package com.meg.listshop.lmt.service.conversion;
 
 import com.meg.listshop.Application;
-import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
@@ -17,21 +17,23 @@ import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.common.RoundingUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-public class ConversionHybridFactorsTest {
+class ConversionHybridFactorsTest {
 
     private static final Long ounceId = 1009L;
     private static final Long gId = 1013L;
@@ -57,11 +59,12 @@ public class ConversionHybridFactorsTest {
     UnitRepository unitRepository;
 
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
+
     @Test
-    public void unitHybridScaling() throws ConversionPathException, ConversionFactorException {
+    void unitHybridScaling() throws ConversionPathException, ConversionFactorException {
         UnitEntity flTspOpt = unitRepository.findById(flTeaspoonId).orElse(null);
         UnitEntity tablespoonOpt = unitRepository.findById(tbId).orElse(null);
 

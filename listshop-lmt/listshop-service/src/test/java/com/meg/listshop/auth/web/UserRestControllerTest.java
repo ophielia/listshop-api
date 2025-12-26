@@ -17,11 +17,10 @@ import com.meg.listshop.lmt.api.model.TokenType;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -36,12 +35,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -58,7 +59,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
@@ -66,11 +68,11 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
         "/sql/com/meg/atable/auth/api/CopyUser.sql",
         "/sql/com/meg/atable/auth/api/UserRestControllerTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class UserRestControllerTest {
+class UserRestControllerTest {
 
     private static final Long USER_WITH_PROPERTIES_ID = 999L;
     private static final String USER_WITH_PROPERTIES_NAME = "rufus@barkingmad.com";
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
@@ -102,10 +104,10 @@ public class UserRestControllerTest {
                 .findAny()
                 .orElse(null);
 
-        assertNotNull("the JSON message converter must not be null");
+        Assertions.assertNotNull("the JSON message converter must not be null");
     }
 
-    @Before
+    @BeforeEach
     @WithMockUser
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext)
@@ -163,7 +165,7 @@ public class UserRestControllerTest {
     }
 
     @Test
-    public void testCreateUser_KO() throws Exception {
+    void testCreateUser_KO() throws Exception {
         Device device = LiteDevice.from(DeviceType.NORMAL, DevicePlatform.IOS);
         final String username = "dXNlcm5hbWU=";
         final String email = "ZW1haWw=";
@@ -182,7 +184,7 @@ public class UserRestControllerTest {
     }
 
     @Test
-    public void testCreateUser() throws Exception {
+    void testCreateUser() throws Exception {
         ClientDeviceInfo deviceInfo = new ClientDeviceInfo();
         deviceInfo.setModel("dummy device");
         deviceInfo.setBuildNumber("99.9");
@@ -206,7 +208,7 @@ public class UserRestControllerTest {
     }
 
     @Test
-    public void testGetToken() throws Exception {
+    void testGetToken() throws Exception {
         // get tokens -> count
         var tokenCountBefore = tokenRepository.count();
 
@@ -228,11 +230,11 @@ public class UserRestControllerTest {
         var tokenCountAfter = tokenRepository.count();
 
         // ensure tokens have increased by 1
-        Assert.assertEquals("token count should have increased by 1", tokenCountBefore + 1, tokenCountAfter);
+        Assertions.assertEquals(tokenCountBefore + 1, tokenCountAfter, "token count should have increased by 1");
     }
 
     @Test
-    public void testPostToken() throws Exception {
+    void testPostToken() throws Exception {
         // get tokens -> count
         var tokenCountBefore = tokenRepository.count();
 
@@ -255,11 +257,11 @@ public class UserRestControllerTest {
         var tokenCountAfter = tokenRepository.count();
 
         // ensure tokens have increased by 1
-        Assert.assertEquals("token count should have decreased by 1", tokenCountBefore - 1, tokenCountAfter);
+        Assertions.assertEquals(tokenCountBefore - 1, tokenCountAfter, "token count should have decreased by 1");
     }
 
     @Test
-    public void testPostToken_NoPasswordKO() throws Exception {
+    void testPostToken_NoPasswordKO() throws Exception {
         // get tokens -> count
         var tokenCountBefore = tokenRepository.count();
 
@@ -281,7 +283,7 @@ public class UserRestControllerTest {
     }
 
     @Test
-    public void testPostToken_NoTokenTypeKO() throws Exception {
+    void testPostToken_NoTokenTypeKO() throws Exception {
         // get tokens -> count
         var tokenCountBefore = tokenRepository.count();
 
@@ -303,7 +305,7 @@ public class UserRestControllerTest {
     }
 
     @Test
-    public void testPostToken_TokenNotFoundKO() throws Exception {
+    void testPostToken_TokenNotFoundKO() throws Exception {
         // get tokens -> count
         var tokenCountBefore = tokenRepository.count();
 
@@ -325,7 +327,7 @@ public class UserRestControllerTest {
     }
 
     @Test
-    public void testPostToken_TokenExpiredKO() throws Exception {
+    void testPostToken_TokenExpiredKO() throws Exception {
         // get tokens -> count
         var tokenCountBefore = tokenRepository.count();
 
@@ -348,7 +350,7 @@ public class UserRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetUser() throws Exception {
+    void testGetUser() throws Exception {
 
         String url = "/user";
         mockMvc.perform(get(url)
@@ -365,7 +367,7 @@ public class UserRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testChangePassword() throws Exception {
+    void testChangePassword() throws Exception {
         byte[] originalPasswordBytes = "Passw0rd".getBytes(StandardCharsets.UTF_8);
         String originalPasswordEncoded = Base64.getEncoder().encodeToString(originalPasswordBytes);
         byte[] newPasswordBytes = "newpassword".getBytes(StandardCharsets.UTF_8);
@@ -398,13 +400,13 @@ public class UserRestControllerTest {
         var passwordResetDate = userAccountAfter.getLastPasswordResetDate();
 
         // ensure password has changed, and password reset is updated
-        Assert.assertNotEquals("password should have changed", passwordBeforeChange, passwordAfterChange);
-        Assert.assertTrue("reset date should be equal or after start of test", passwordResetDate.getTime() >= startTime);
+        Assertions.assertNotEquals(passwordBeforeChange, passwordAfterChange, "password should have changed");
+        Assertions.assertTrue(passwordResetDate.getTime() >= startTime, "reset date should be equal or after start of test");
     }
 
     @Test
     @WithMockUser
-    public void testChangePassword_badOriginalPassKO() throws Exception {
+    void testChangePassword_badOriginalPassKO() throws Exception {
         byte[] originalPasswordBytes = "badPasswordBadPassword".getBytes(StandardCharsets.UTF_8);
         String originalPasswordEncoded = Base64.getEncoder().encodeToString(originalPasswordBytes);
         byte[] newPasswordBytes = "newpassword".getBytes(StandardCharsets.UTF_8);
@@ -435,12 +437,12 @@ public class UserRestControllerTest {
         var passwordAfterChange = userAccountAfter.getPassword();
 
         // ensure password has not changed
-        Assert.assertEquals("password should not have changed", passwordBeforeChange, passwordAfterChange);
+        Assertions.assertEquals(passwordBeforeChange, passwordAfterChange, "password should not have changed");
     }
 
     @Test
     @WithMockUser
-    public void testDeleteUser_NotFoundKO() throws Exception {
+    void testDeleteUser_NotFoundKO() throws Exception {
 
         // make call - ensure 200 as return code
         String url = "/user";
@@ -454,7 +456,7 @@ public class UserRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testDeleteUser() throws Exception {
+    void testDeleteUser() throws Exception {
 
         // make call - ensure 200 as return code
         String url = "/user";
@@ -465,11 +467,11 @@ public class UserRestControllerTest {
                 .andExpect(status().isOk());
 
         UserEntity user = userService.getUserByUserEmail("bravenewworld@test.com");
-        Assert.assertNull(user);
+        Assertions.assertNull(user);
     }
 
     @Test
-    public void testUserNameIsTaken() throws Exception {
+    void testUserNameIsTaken() throws Exception {
         ListShopPayload payload = new ListShopPayload();
         List<String> parameters = new ArrayList<>();
         parameters.add("name@whichdoesntexist.com");
@@ -487,7 +489,7 @@ public class UserRestControllerTest {
                 .andReturn();
 
         String resultBody = result.getResponse().getContentAsString();
-        Assert.assertEquals("Expect false for nonsense name", "false", resultBody);
+        Assertions.assertEquals("false", resultBody, "Expect false for nonsense name");
 
         ListShopPayload payloadForExistingUser = new ListShopPayload();
         parameters = new ArrayList<>();
@@ -503,11 +505,11 @@ public class UserRestControllerTest {
                 .andReturn();
 
         resultBody = result.getResponse().getContentAsString();
-        Assert.assertEquals("Expect true for existing name", "true", resultBody);
+        Assertions.assertEquals("true", resultBody, "Expect true for existing name");
     }
 
     @Test
-    public void testMinimumClientVersion() throws Exception {
+    void testMinimumClientVersion() throws Exception {
         // make call - ensure 200 as return code
         String url = "/user/client/version";
         mockMvc.perform(get(url)
@@ -521,7 +523,7 @@ public class UserRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetUserProperties() throws Exception {
+    void testGetUserProperties() throws Exception {
 
         String url = "/user/properties";
         mockMvc.perform(get(url)
@@ -539,7 +541,7 @@ public class UserRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetUserProperties_NoProperties() throws Exception {
+    void testGetUserProperties_NoProperties() throws Exception {
 
         String url = "/user/properties";
         mockMvc.perform(get(url)
@@ -554,7 +556,7 @@ public class UserRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetUserProperty() throws Exception {
+    void testGetUserProperty() throws Exception {
 
         String url = "/user/properties/key/test_property";
         mockMvc.perform(get(url)
@@ -569,7 +571,7 @@ public class UserRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetUserProperty_NoProperty() throws Exception {
+    void testGetUserProperty_NoProperty() throws Exception {
 
         String url = "/user/properties/key/test_missing_property";
         mockMvc.perform(get(url)
@@ -582,7 +584,7 @@ public class UserRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testSetUserProperties() throws Exception {
+    void testSetUserProperties() throws Exception {
         UserProperty property1 = new UserProperty("key1", "value1");
         UserProperty property2 = new UserProperty("key2", "value2");
         PostUserProperties propertiesPost = new PostUserProperties();
@@ -614,7 +616,7 @@ public class UserRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testSetUserProperties_Existing() throws Exception {
+    void testSetUserProperties_Existing() throws Exception {
         UserProperty property1 = new UserProperty("key1", "value1");
         UserProperty property2 = new UserProperty("key2", "value2");
         PostUserProperties propertiesPost = new PostUserProperties();
@@ -648,7 +650,7 @@ public class UserRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testSetUserProperties_Update() throws Exception {
+    void testSetUserProperties_Update() throws Exception {
         UserProperty property1 = new UserProperty("test_property", "scintillating value");
         PostUserProperties propertiesPost = new PostUserProperties();
         propertiesPost.setProperties(Arrays.asList(property1));
@@ -676,7 +678,7 @@ public class UserRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testSetUserProperties_UpdateToNull() throws Exception {
+    void testSetUserProperties_UpdateToNull() throws Exception {
         UserProperty property1 = new UserProperty("another_property", null);
         PostUserProperties propertiesPost = new PostUserProperties();
         propertiesPost.setProperties(Arrays.asList(property1));

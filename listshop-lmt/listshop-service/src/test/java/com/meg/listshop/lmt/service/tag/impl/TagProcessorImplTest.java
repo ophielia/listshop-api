@@ -9,18 +9,19 @@ import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.AutoTagSubject;
 import com.meg.listshop.lmt.data.pojos.Instruction;
-import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.HashSet;
 import java.util.List;
@@ -29,12 +30,13 @@ import java.util.stream.Collectors;
 
 import static com.meg.listshop.test.TestConstants.USER_3_NAME;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-public class TagProcessorImplTest {
+class TagProcessorImplTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
@@ -47,7 +49,7 @@ public class TagProcessorImplTest {
     TagService tagService;
 
     @Test
-    public void fillInstructions() {
+    void fillInstructions() {
         // 2 instructions
         // 1 for tag "Meat" which assigns to tag "Meat" (id: 346)
         // 1 for text "Vegetarian" which assigns to tag "Vegetarian" (id: 199)
@@ -55,8 +57,8 @@ public class TagProcessorImplTest {
         tagProcessor.fillInstructions();
         // test that fill instructions results in 2 instructions loaded
         List<Instruction> list = tagProcessor.getInstructions();
-        Assert.assertNotNull(list);
-        Assert.assertTrue(list.size() >= 2);
+        Assertions.assertNotNull(list);
+        Assertions.assertTrue(list.size() >= 2);
     }
 
     @Test
@@ -64,7 +66,7 @@ public class TagProcessorImplTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/com/meg/atable/lmt/tag/impl/TagProcessorImplTest_restoreOriginal.sql"},
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void fillAlternateInstructions() {
+    void fillAlternateInstructions() {
         // 2 instructions
         // 1 for tag "Meat" which assigns to tag "Meat" (id: 346)
         // 1 for text "Vegetarian" which assigns to tag "Vegetarian" (id: 199)
@@ -72,14 +74,14 @@ public class TagProcessorImplTest {
         tagProcessor.fillInstructions();
         // test that fill instructions results in 2 instructions loaded
         List<Instruction> list = tagProcessor.getInstructions();
-        Assert.assertNotNull(list);
-        Assert.assertEquals(1, list.size());
+        Assertions.assertNotNull(list);
+        Assertions.assertEquals(1, list.size());
     }
 
     @Test
     @Sql(value = {"/sql/com/meg/atable/lmt/tag/impl/TagProcessorImplTest_restoreOriginal.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    public void processDishForInstructions() {
+    void processDishForInstructions() {
 
         // get instructions
         tagProcessor.fillInstructions();
@@ -95,9 +97,9 @@ public class TagProcessorImplTest {
         subject.setTagIdsForDish(tagIds);
         Long assignedId = tagProcessor.processTagForInstruction(vegetarian, subject);
         //Assert.assertNotNull(assignedId);
-        Assert.assertEquals(199L, assignedId.longValue());
+        Assertions.assertEquals(199L, assignedId.longValue());
         assignedId = tagProcessor.processTagForInstruction(vegetarian, subject);
-        Assert.assertNotNull(assignedId);
+        Assertions.assertNotNull(assignedId);
 
 
         // test meaty dish - should be 346 found, and 199 not found
@@ -108,10 +110,10 @@ public class TagProcessorImplTest {
         subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);
         assignedId = tagProcessor.processTagForInstruction(meat, subject);
-        Assert.assertNotNull(assignedId);
-        Assert.assertEquals(346L, assignedId.longValue());
+        Assertions.assertNotNull(assignedId);
+        Assertions.assertEquals(346L, assignedId.longValue());
         assignedId = tagProcessor.processTagForInstruction(vegetarian, subject);
-        Assert.assertNull(assignedId);
+        Assertions.assertNull(assignedId);
 
 
         // 47 chicken cassolet - should be tagged meat
@@ -121,10 +123,10 @@ public class TagProcessorImplTest {
         subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);
         assignedId = tagProcessor.processTagForInstruction(meat, subject);
-        Assert.assertNotNull(assignedId);
-        Assert.assertEquals(346L, assignedId.longValue());
+        Assertions.assertNotNull(assignedId);
+        Assertions.assertEquals(346L, assignedId.longValue());
         assignedId = tagProcessor.processTagForInstruction(vegetarian, subject);
-        Assert.assertNull(assignedId);
+        Assertions.assertNull(assignedId);
 
         // test dish - 25 - Ham and Potato Soup - should be tagged meat
         dishEntity = dishService.getDishForUserById(USER_3_NAME, 25L);
@@ -133,10 +135,10 @@ public class TagProcessorImplTest {
         subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);
         assignedId = tagProcessor.processTagForInstruction(meat, subject);
-        Assert.assertNotNull(assignedId);
-        Assert.assertEquals(346L, assignedId.longValue());
+        Assertions.assertNotNull(assignedId);
+        Assertions.assertEquals(346L, assignedId.longValue());
         assignedId = tagProcessor.processTagForInstruction(vegetarian, subject);
-        Assert.assertNull(assignedId);
+        Assertions.assertNull(assignedId);
 
 
     }
@@ -144,7 +146,7 @@ public class TagProcessorImplTest {
     @Test
     @Sql(value = {"/sql/com/meg/atable/lmt/tag/impl/TagProcessorImplTest_restoreOriginal.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    public void processDishForInstruction_NewTag() throws BadParameterException {
+    void processDishForInstruction_NewTag() throws BadParameterException {
         // add new tag
         TagEntity parentTag = tagService.getTagById(88L);
         TagEntity meatCake = new TagEntity();
@@ -170,8 +172,8 @@ public class TagProcessorImplTest {
         AutoTagSubject subject = new AutoTagSubject(dishEntity, false);
         subject.setTagIdsForDish(tagIds);
         Long assignedId = tagProcessor.processTagForInstruction(meat, subject);
-        Assert.assertNotNull(assignedId);
-        Assert.assertEquals(346L, assignedId.longValue());
+        Assertions.assertNotNull(assignedId);
+        Assertions.assertEquals(346L, assignedId.longValue());
 
         // clean up by removing tag afterwards
         // add tag to dish which doesn't have meat

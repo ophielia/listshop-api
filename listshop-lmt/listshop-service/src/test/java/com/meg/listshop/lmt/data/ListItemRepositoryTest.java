@@ -6,24 +6,23 @@ import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.lmt.data.repository.ListItemRepository;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
 
-@RunWith(SpringRunner.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-public class ListItemRepositoryTest {
+class ListItemRepositoryTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgresSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
@@ -33,24 +32,24 @@ public class ListItemRepositoryTest {
     private ListItemDetailRepository detailRepository;
 
     @Test
-    public void blowUpTest() {
+    void blowUpTest() {
         int origCount = repository.findAll().size();
         ListItemEntity newItem = new ListItemEntity();
 
         ListItemEntity savedItem = repository.save(newItem);
         List<ListItemEntity> items = repository.findAll();
-        Assert.assertEquals("one more item should be found", origCount + 1, items.size());
+        Assertions.assertEquals(origCount + 1, items.size(), "one more item should be found");
 
         ListItemEntity retrievedItem = repository.findWithDetailsById(savedItem.getId()).get();
-        Assert.assertNotNull(retrievedItem);
-        Assert.assertNotNull(retrievedItem.getDetails());
-        Assert.assertTrue(retrievedItem.getDetails().isEmpty());
+        Assertions.assertNotNull(retrievedItem);
+        Assertions.assertNotNull(retrievedItem.getDetails());
+        Assertions.assertTrue(retrievedItem.getDetails().isEmpty());
 
 
     }
 
     @Test
-    public void testDriveItemWithDetails() {
+    void testDriveItemWithDetails() {
         ListItemEntity newItem = repository.save(new ListItemEntity());
         ListItemDetailEntity detail = testDetailEntity(newItem);
         ListItemDetailEntity detailToSave = detailRepository.save(detail);
@@ -58,10 +57,10 @@ public class ListItemRepositoryTest {
         repository.save(newItem);
 
         ListItemEntity retrievedItem = repository.findWithDetailsById(newItem.getId()).get();
-        Assert.assertNotNull("item should not be null", retrievedItem);
-        Assert.assertNotNull("details should not be null", retrievedItem.getDetails());
-        Assert.assertFalse("details should not be empty", retrievedItem.getDetails().isEmpty());
-        Assert.assertEquals("there should be one detail", 1,retrievedItem.getDetails().size());
+        Assertions.assertNotNull(retrievedItem, "item should not be null");
+        Assertions.assertNotNull(retrievedItem.getDetails(), "details should not be null");
+        Assertions.assertFalse(retrievedItem.getDetails().isEmpty(), "details should not be empty");
+        Assertions.assertEquals(1, retrievedItem.getDetails().size(), "there should be one detail");
 
 
     }

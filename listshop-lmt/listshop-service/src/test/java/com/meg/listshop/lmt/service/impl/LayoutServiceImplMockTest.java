@@ -6,6 +6,7 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.entity.TokenEntity;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
@@ -823,6 +824,62 @@ class LayoutServiceImplMockTest {
         Assertions.assertTrue(result.isPresent());
         Assertions.assertEquals(result.get().getId(), tagId);
     }
+
+    @Test
+    void testMoveTagToDefaultCategory() {
+        // variants - no category found, tag already exists
+
+        Long tagId = 99L;
+        Long categoryId = 109L;
+        Long existingCategoryId = 101L;
+        Long layoutId = 10109L;
+        TagEntity tag = new TagEntity(tagId);
+        tag.setUserId(null);
+
+        ListLayoutCategoryEntity category = new ListLayoutCategoryEntity(categoryId);
+        category.setLayoutId(layoutId);
+        ListLayoutCategoryEntity existing = new ListLayoutCategoryEntity(categoryId);
+        existing.getTags().add(tag);
+        tag.getCategories().add(existing);
+        ListLayoutEntity layout = new ListLayoutEntity(layoutId);
+        layout.setUserId(null);
+        layout.setDefault(true);
+
+        ArgumentCaptor<ListLayoutCategoryEntity> categoryCapture = ArgumentCaptor.forClass(ListLayoutCategoryEntity.class);
+
+        Mockito.when(categoryRepositoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        Mockito.when(listLayoutRepository.findById(layoutId)).thenReturn(Optional.of(layout));
+        Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.of(tag));
+        Mockito.when(categoryRepositoryRepository.getStandardCategoryForTag(tagId))
+                .thenReturn(existing);
+
+        // call which deletes existing
+        Mockito.when(categoryRepositoryRepository.save(categoryCapture.capture()))
+                .thenReturn(null);
+
+        // call which adds new
+        Mockito.when(categoryRepositoryRepository.save(categoryCapture.capture()))
+                .thenReturn(null);
+
+        // service call
+        listLayoutService.moveTagToDefaultCategory(tagId, categoryId);
+
+        // assertions - tag has category, and category has tag
+        List<ListLayoutCategoryEntity> categorySaves = categoryCapture.getAllValues()
+                        .stream()
+                                .filter(Objects::nonNull)
+                                        .toList();
+        Assertions.assertFalse(tag.getCategories().isEmpty());
+        Assertions.assertEquals(tag.getCategories().get(0).getId(), categoryId);
+
+        ListLayoutCategoryEntity lastSaved = categorySaves.get(1);
+        Assertions.assertEquals(categoryId,lastSaved.getId(), "saved id is incorrect");
+        Assertions.assertTrue(lastSaved.getTags()
+                .stream()
+                .anyMatch(t -> t.getId().equals(tagId)),
+                "tag not in saved list");
+    }
+
 
     private ListLayoutCategoryEntity buildCategory(Long categoryId, String categoryName) {
         ListLayoutCategoryEntity category = new ListLayoutCategoryEntity(categoryId);

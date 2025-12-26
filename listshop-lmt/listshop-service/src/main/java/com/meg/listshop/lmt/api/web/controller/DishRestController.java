@@ -7,9 +7,9 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.service.DishSearchCriteria;
-import com.meg.listshop.lmt.service.DishSearchService;
-import com.meg.listshop.lmt.service.DishService;
+import com.meg.listshop.lmt.dish.DishSearchCriteria;
+import com.meg.listshop.lmt.dish.DishSearchService;
+import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +107,8 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     private List<DishResource> getAllDishes(Long userId) {
+        String message = String.format("getting all dishes for user [%S]", userId);
+        logger.info(message);
         return dishService.getDishesForUser(userId).stream()
                 .map(d -> ModelMapper.toModel(d, false))
                 .map(DishResource::new)

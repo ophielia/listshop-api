@@ -6,20 +6,21 @@ import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.nio.charset.Charset;
 
@@ -29,13 +30,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class ProposalRestControllerTest {
+class ProposalRestControllerTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private static UserDetails userDetails;
@@ -52,7 +54,7 @@ public class ProposalRestControllerTest {
     private MockMvc mockMvc;
 
 
-    @Before
+    @BeforeEach
     @WithMockUser
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext)
@@ -74,7 +76,7 @@ public class ProposalRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGenerateProposal() throws Exception {
+    void testGenerateProposal() throws Exception {
         String url = "/proposal/target/" + TestConstants.TARGET_1_ID;
         this.mockMvc.perform(post(url)
                         .with(user(userDetails))
@@ -85,7 +87,7 @@ public class ProposalRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetProposal() throws Exception {
+    void testGetProposal() throws Exception {
         String url = "/proposal/" + TestConstants.PROPOSAL_1_ID;
         this.mockMvc.perform(get(url)
                         .with(user(userDetails))
@@ -95,7 +97,7 @@ public class ProposalRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testRefreshProposal() throws Exception {
+    void testRefreshProposal() throws Exception {
         String url = "/proposal/" + TestConstants.PROPOSAL_2_ID;
         this.mockMvc.perform(put(url)
                         .with(user(userDetails))
@@ -105,7 +107,7 @@ public class ProposalRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testSelectDishInSlot() throws Exception {
+    void testSelectDishInSlot() throws Exception {
 
         String url = "/proposal/" + TestConstants.PROPOSAL_1_ID
                 + "/slot/" + TestConstants.PROPOSAL_1_SLOT_4_ID
@@ -120,7 +122,7 @@ public class ProposalRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testClearDishFromSlot() throws Exception {
+    void testClearDishFromSlot() throws Exception {
         String url = "/proposal/" + TestConstants.PROPOSAL_3_ID
                 + "/slot/" + TestConstants.PROPOSAL_3_SLOT_4_ID
                 + "/dish/" + TestConstants.PROPOSAL_3_SLOT_4_DISH_ID;
@@ -133,7 +135,7 @@ public class ProposalRestControllerTest {
 
     @Test
     @WithMockUser
-    public void refreshProposalSlot() throws Exception {
+    void refreshProposalSlot() throws Exception {
         String url = "/proposal/" + TestConstants.PROPOSAL_2_ID
                 + "/slot/3";
         this.mockMvc.perform(put(url)

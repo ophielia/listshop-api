@@ -107,3 +107,7 @@ where user_id = 20
 update list_layout
 set is_default = true
 where user_id = 20;
+
+
+-- delete test dishes
+delete from dish where dish_id in (5099901,50999010,509990100,509990101);

@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.data.impl;
 
+import com.meg.listshop.lmt.api.model.ListOperationType;
 import com.meg.listshop.lmt.api.model.StatisticCountType;
 import com.meg.listshop.lmt.data.ItemChangeRepository;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
@@ -7,7 +8,7 @@ import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.service.CollectorContext;
 import com.meg.listshop.lmt.service.ItemCollector;
-import com.meg.listshop.lmt.service.ListTagStatisticService;
+import com.meg.listshop.lmt.list.ListTagStatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,9 +32,9 @@ public class ListItemRepositoryImpl implements ItemChangeRepository {
     }
 
     @Override
-    public void saveItemChanges(ShoppingListEntity shoppingList, ItemCollector collector, Long userId, CollectorContext context) {
+    public void legacySaveItemChanges(ShoppingListEntity shoppingList, ItemCollector collector, Long userId, CollectorContext context) {
         if (context.getStatisticCountType() != StatisticCountType.None) {
-            listTagStatisticService.processCollectorStatistics(userId, collector, context);
+            listTagStatisticService.legacyProcessCollectorStatistics(userId, collector, context);
         }
 
         List<ListItemEntity> toUpdate = collector.getChangedItems();
@@ -43,4 +44,13 @@ public class ListItemRepositoryImpl implements ItemChangeRepository {
             itemRepository.saveAll(toUpdate);
         }
     }
+
+
+    @Override
+    public void saveItemChangeStatistics(ShoppingListEntity shoppingList, List<ListItemEntity> items, List<Long> removedTagIds,Long userId, ListOperationType operationType) {
+        if (ListOperationType.NONE != operationType) {
+            listTagStatisticService.processStatistics(userId, items,removedTagIds, operationType);
+        }
+    }
+
 }
