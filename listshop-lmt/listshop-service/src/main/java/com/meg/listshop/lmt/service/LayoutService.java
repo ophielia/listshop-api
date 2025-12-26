@@ -5,6 +5,7 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.LayoutCategoryDTO;
 
 import java.util.List;
 
@@ -31,5 +32,9 @@ public interface LayoutService {
 
     List<ListLayoutCategoryEntity> getUserCategories(String userName);
 
+    List<LayoutCategoryDTO> getDefaultCategories();
+
     void addTagToCategory(Long layoutCategoryId, TagEntity tag);
+
+    void moveTagToDefaultCategory(Long tagId, Long categoryId);
 }

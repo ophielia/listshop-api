@@ -17,10 +17,7 @@ import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.api.model.v2.Ingredient;
 import com.meg.listshop.lmt.data.entity.*;
-import com.meg.listshop.lmt.data.pojos.DishItemDTO;
-import com.meg.listshop.lmt.data.pojos.FoodMappingDTO;
-import com.meg.listshop.lmt.data.pojos.SuggestionDTO;
-import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
+import com.meg.listshop.lmt.data.pojos.*;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 
 import java.util.*;
@@ -378,6 +375,13 @@ public class ModelMapper {
         }
 
         return layout;
+    }
+
+    public static LayoutCategory toModel(LayoutCategoryDTO cat) {
+        LayoutCategory returnval = new LayoutCategory();
+        returnval.setCategoryName(cat.getCategoryName());
+        returnval.setCategoryId(cat.getCategoryId());
+return returnval;
     }
 
     public static Category toModel(ListLayoutCategoryEntity cat) {
