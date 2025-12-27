@@ -344,7 +344,31 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
+            <!---->
+            <plugin>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-file</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <sourceFile>src/main/resources/emailtemplates/</sourceFile>
+                                    <destinationFile>target/test-classes/emailtemplates/</destinationFile>
+                                </fileSet>
+                            </fileSets>
 
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!---->
 
         </plugins>
     </build>

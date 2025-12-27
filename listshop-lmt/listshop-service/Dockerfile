@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim
+FROM amazoncorretto:17
 RUN addgroup --system listshop && adduser --system listshop --ingroup listshop
 USER listshop:listshop
 ARG DEPENDENCY=target/dependency

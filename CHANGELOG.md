@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - item update behavior - state machine
 - refactor V1 add list, item, dish to list
+- reset flyway to baseline
 ### Updated
 - all tests to JUnit 5
 
