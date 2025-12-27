@@ -16,10 +16,10 @@ import com.meg.listshop.lmt.data.repository.CustomTagInfoRepository;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.DishSearchCriteria;
-import com.meg.listshop.lmt.service.DishSearchService;
-import com.meg.listshop.lmt.service.DishService;
-import com.meg.listshop.lmt.service.ListTagStatisticService;
+import com.meg.listshop.lmt.dish.DishSearchCriteria;
+import com.meg.listshop.lmt.dish.DishSearchService;
+import com.meg.listshop.lmt.dish.DishService;
+import com.meg.listshop.lmt.list.ListTagStatisticService;
 import com.meg.listshop.lmt.service.tag.TagChangeListener;
 import com.meg.listshop.lmt.service.tag.TagReplaceService;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -800,8 +800,8 @@ public class TagServiceImpl implements TagService {
 
         List<Object[]> categoryRelations = tagRepository.getStandardCategoriesForTags(copySet, defaultLayoutId);
         return categoryRelations.stream().map(o -> {
-            BigInteger tagId = (BigInteger) o[0];
-            BigInteger parentId = (BigInteger) o[1];
+            Long tagId = (Long) o[0];
+            Long parentId = (Long) o[1];
             return new LongTagIdPairDTO(tagId.longValue(), parentId.longValue());
         }).collect(Collectors.toMap(LongTagIdPairDTO::getLeftId, LongTagIdPairDTO::getRightId));
     }
@@ -809,9 +809,9 @@ public class TagServiceImpl implements TagService {
     private Map<Long, TagEntity> getStandardParentsForTags(Set<Long> copySet) {
         List<Object[]> parentRelations = tagRepository.getStandardParentsForTags(copySet);
         Map<Long, Long> parentRelationIds = parentRelations.stream().map(o -> {
-            BigInteger tagId = (BigInteger) o[0];
-            BigInteger parentId = (BigInteger) o[1];
-            return new LongTagIdPairDTO(tagId.longValue(), parentId.longValue());
+            Long tagId = (Long) o[0];
+            Long parentId = (Long) o[1];
+            return new LongTagIdPairDTO(tagId, parentId);
         }).collect(Collectors.toMap(LongTagIdPairDTO::getLeftId, LongTagIdPairDTO::getRightId));
 
         List<TagEntity> parentTags = tagRepository.getTagsForIdList(new HashSet<>(parentRelationIds.values()));
@@ -835,6 +835,10 @@ public class TagServiceImpl implements TagService {
         newTag.setPower(tagToCopy.getPower());
         newTag.setCreatedOn(new Date());
         newTag.setIsGroup(tagToCopy.getIsGroup());
+        newTag.setInternalStatus(tagToCopy.getInternalStatus());
+        newTag.setIsLiquid(tagToCopy.getIsLiquid());
+        newTag.setConversionId(tagToCopy.getConversionId());
+        newTag.setMarker(tagToCopy.getMarker());
 
         return newTag;
     }

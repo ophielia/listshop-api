@@ -1,4 +1,12 @@
 delete
+from list_item_details d
+using list_item i
+where i.item_id = d.item_id and
+      i.list_id in
+      (509990, 509991, 509999, 609990, 609991, 51000, 6666, 7777, 77777, 500777, 110000,110099, 11000001, 90909090, 10101010);
+
+
+delete
 from list_item
 where list_id in
       (509990, 509991, 509999, 609990, 609991, 51000, 6666, 7777, 77777, 500777, 110000,110099, 11000001, 90909090, 10101010);
@@ -99,3 +107,7 @@ where user_id = 20
 update list_layout
 set is_default = true
 where user_id = 20;
+
+
+-- delete test dishes
+delete from dish where dish_id in (5099901,50999010,509990100,509990101);

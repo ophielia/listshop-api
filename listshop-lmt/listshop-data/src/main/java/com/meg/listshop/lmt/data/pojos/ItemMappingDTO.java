@@ -1,8 +1,11 @@
 package com.meg.listshop.lmt.data.pojos;
 
+import com.meg.listshop.lmt.api.model.ListItemSource;
 import com.meg.listshop.lmt.api.model.ShoppingListItem;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class ItemMappingDTO {
@@ -35,6 +38,8 @@ public class ItemMappingDTO {
 
     private String userCategoryName;
     private int userDisplayOrder;
+
+    private List<ListItemSource> details = new ArrayList<>();
 
     public ItemMappingDTO(Long itemId, Date addedOn, Date removedOn, Date crossedOffOn, Date updatedOn, Long tagId, String tagName, String tagType, int usedCount, String rawDishSources, String rawListSources, Long categoryId, String categoryName, int displayOrder, Long userCategoryId, String userCategoryName, int userDisplayOrder) {
         this.itemId = itemId;
@@ -175,6 +180,10 @@ public class ItemMappingDTO {
         return userDisplayOrder;
     }
 
+    public void setUserDisplayOrder(int userDisplayOrder) {
+        this.userDisplayOrder = userDisplayOrder;
+    }
+
     public String getUserCategoryName() {
         return userCategoryName;
     }
@@ -189,6 +198,14 @@ public class ItemMappingDTO {
 
     public void setTagType(String tagType) {
         this.tagType = tagType;
+    }
+
+    public List<ListItemSource> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<ListItemSource> details) {
+        this.details = details;
     }
 
     @Override
@@ -214,10 +231,6 @@ public class ItemMappingDTO {
                 '}';
     }
 
-    public void setUserDisplayOrder(int userDisplayOrder) {
-        this.userDisplayOrder = userDisplayOrder;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -237,13 +250,19 @@ public class ItemMappingDTO {
                 .removed(removedOn)
                 .updated(updatedOn)
                 .crossedOff(crossedOffOn)
+                .sources(details)
                 .tagId(String.valueOf(tagId))
                 .tagName(tagName)
                 .tagType(tagType)
-                .usedCount(usedCount)
+                .usedCount(calculateCount())
                 .rawListSources(rawListSources)
                 .rawDishSources(rawDishSources);
 
+    }
+
+    private Integer calculateCount() {
+        if (details == null || details.isEmpty()) return 0;
+        return details.stream().map(ListItemSource::getCount).reduce(0, Integer::sum);
     }
 
 

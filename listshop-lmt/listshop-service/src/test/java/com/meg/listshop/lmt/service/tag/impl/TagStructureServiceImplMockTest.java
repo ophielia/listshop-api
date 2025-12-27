@@ -5,23 +5,23 @@ import com.meg.listshop.lmt.data.entity.TagRelationEntity;
 import com.meg.listshop.lmt.data.repository.TagRelationRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-public class TagStructureServiceImplMockTest {
+class TagStructureServiceImplMockTest {
 
     private TagStructureService tagStructureService;
 
@@ -31,7 +31,7 @@ public class TagStructureServiceImplMockTest {
     @MockBean
     private TagRepository tagRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         tagStructureService = new TagStructureServiceImpl(
@@ -42,7 +42,7 @@ public class TagStructureServiceImplMockTest {
 
 
     @Test
-    public void testFillInRelationshipInfo() throws Exception {
+    void testFillInRelationshipInfo() throws Exception {
         // tag 1
         // -- tag 11
         // -- tag 12
@@ -88,17 +88,17 @@ public class TagStructureServiceImplMockTest {
         List<TagEntity> results = tagStructureService.fillInRelationshipInfo(startTagList);
 
         // assertions
-        Assert.assertEquals(startTagList.size(), results.size());
+        Assertions.assertEquals(startTagList.size(), results.size());
         // tag 1 shouldn't have a parent - but should have 2 children
         Optional<TagEntity> resultTag1 = results.stream().filter(tag -> tag.getId().equals(1L)).findFirst();
-        Assert.assertTrue(resultTag1.isPresent());
-        Assert.assertTrue(resultTag1.get().getParentId() == null);
-        Assert.assertTrue(resultTag1.get().getChildrenIds().size() == 2);
+        Assertions.assertTrue(resultTag1.isPresent());
+        Assertions.assertTrue(resultTag1.get().getParentId() == null);
+        Assertions.assertTrue(resultTag1.get().getChildrenIds().size() == 2);
         // tag 22 should have a parent (tag2), and 2 children
         Optional<TagEntity> resultTag22 = results.stream().filter(tag -> tag.getId().equals(22L)).findFirst();
-        Assert.assertTrue(resultTag22.isPresent());
-        Assert.assertTrue(resultTag22.get().getParentId() == 2);
-        Assert.assertTrue(resultTag22.get().getChildrenIds().size() == 2);
+        Assertions.assertTrue(resultTag22.isPresent());
+        Assertions.assertTrue(resultTag22.get().getParentId() == 2);
+        Assertions.assertTrue(resultTag22.get().getChildrenIds().size() == 2);
     }
 
     private TagEntity createTag(Long id) {

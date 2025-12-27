@@ -14,24 +14,23 @@ import com.meg.listshop.auth.service.UserPropertyService;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.test.TestConstants;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-public class UserPropertyServiceImplMockTest {
+class UserPropertyServiceImplMockTest {
 
     private UserPropertyService userPropertyService;
 
@@ -41,13 +40,13 @@ public class UserPropertyServiceImplMockTest {
     @MockBean
     private UserPropertyRepository userPropertyRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         userPropertyService = new UserPropertyServiceImpl(userService, userPropertyRepository);
     }
 
     @Test
-    public void testGetPropertyForUser() throws BadParameterException {
+    void testGetPropertyForUser() throws BadParameterException {
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setEmail(TestConstants.USER_3_NAME);
@@ -59,14 +58,14 @@ public class UserPropertyServiceImplMockTest {
 
         UserPropertyEntity result = userPropertyService.getPropertyForUser(TestConstants.USER_3_NAME, "key2");
 
-        assertNotNull(result);
-        assertEquals("has key1 as key", "key1", property.getKey());
-        assertEquals("has value1 as value", "value1", property.getValue());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("key1", property.getKey(), "has key1 as key");
+        Assertions.assertEquals("value1", property.getValue(), "has value1 as value");
 
     }
 
     @Test
-    public void testGetPropertyForUser_DoesntExist() throws BadParameterException {
+    void testGetPropertyForUser_DoesntExist() throws BadParameterException {
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setEmail(TestConstants.USER_3_NAME);
@@ -78,11 +77,11 @@ public class UserPropertyServiceImplMockTest {
 
         UserPropertyEntity result = userPropertyService.getPropertyForUser(TestConstants.USER_3_NAME, "key2");
 
-        assertNull(result);
+        Assertions.assertNull(result);
     }
 
     @Test
-    public void testGetPropertiesForUser() throws BadParameterException {
+    void testGetPropertiesForUser() throws BadParameterException {
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setEmail(TestConstants.USER_3_NAME);
@@ -96,22 +95,22 @@ public class UserPropertyServiceImplMockTest {
 
         List<UserPropertyEntity> resultList = userPropertyService.getPropertiesForUser(TestConstants.USER_3_NAME);
 
-        assertNotNull(resultList);
-        assertFalse(resultList.isEmpty());
-        assertEquals("List should have 2 elements", 2, resultList.size());
+        Assertions.assertNotNull(resultList);
+        Assertions.assertFalse(resultList.isEmpty());
+        Assertions.assertEquals(2, resultList.size(), "List should have 2 elements");
         Map<String, String> resultMap = new HashMap<String, String>();
         resultList.stream()
                 .forEach(element -> resultMap.put(element.getKey(), element.getValue()));
-        assertTrue("results contain first key", resultMap.containsKey("key1"));
-        assertEquals("key 1 has value1 for value", "value1", resultMap.get("key1"));
-        assertTrue("results contain second key", resultMap.containsKey("key1"));
-        assertEquals("key 2 has value2 for value", "value2", resultMap.get("key2"));
+        Assertions.assertTrue(resultMap.containsKey("key1"), "results contain first key");
+        Assertions.assertEquals("value1", resultMap.get("key1"), "key 1 has value1 for value");
+        Assertions.assertTrue(resultMap.containsKey("key1"), "results contain second key");
+        Assertions.assertEquals("value2", resultMap.get("key2"), "key 2 has value2 for value");
 
     }
 
 
     @Test
-    public void testGetPropertiesForUser_NoExisting() throws BadParameterException {
+    void testGetPropertiesForUser_NoExisting() throws BadParameterException {
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setEmail(TestConstants.USER_3_NAME);
@@ -121,13 +120,13 @@ public class UserPropertyServiceImplMockTest {
 
         List<UserPropertyEntity> resultList = userPropertyService.getPropertiesForUser(TestConstants.USER_3_NAME);
 
-        assertNotNull(resultList);
-        assertTrue(resultList.isEmpty());
+        Assertions.assertNotNull(resultList);
+        Assertions.assertTrue(resultList.isEmpty());
 
     }
 
     @Test
-    public void testSetPropertiesForUser() throws BadParameterException {
+    void testSetPropertiesForUser() throws BadParameterException {
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setEmail(TestConstants.USER_3_NAME);
@@ -143,22 +142,22 @@ public class UserPropertyServiceImplMockTest {
 
         userPropertyService.setPropertiesForUser(TestConstants.USER_3_NAME, propertyList);
 
-        assertNotNull(saveCapture);
+        Assertions.assertNotNull(saveCapture);
         List<UserPropertyEntity> savedProperties = saveCapture.getValue();
-        assertNotNull(savedProperties);
-        assertFalse(savedProperties.isEmpty());
-        assertEquals("size is 2", 2, savedProperties.size());
+        Assertions.assertNotNull(savedProperties);
+        Assertions.assertFalse(savedProperties.isEmpty());
+        Assertions.assertEquals(2, savedProperties.size(), "size is 2");
         Map<String, UserPropertyEntity> resultMap = savedProperties.stream()
                 .collect(Collectors.toMap(UserPropertyEntity::getKey, Function.identity()));
-        assertTrue("key1 exists", resultMap.containsKey("key1"));
-        assertEquals("key1 value is value1", "value1", resultMap.get("key1").getValue());
-        assertTrue("key2 exists", resultMap.containsKey("key2"));
-        assertEquals("key2 value is value1", "value2", resultMap.get("key2").getValue());
+        Assertions.assertTrue(resultMap.containsKey("key1"), "key1 exists");
+        Assertions.assertEquals("value1", resultMap.get("key1").getValue(), "key1 value is value1");
+        Assertions.assertTrue(resultMap.containsKey("key2"), "key2 exists");
+        Assertions.assertEquals("value2", resultMap.get("key2").getValue(), "key2 value is value1");
 
     }
 
     @Test
-    public void testSetPropertiesForUser_OneExisting() throws BadParameterException {
+    void testSetPropertiesForUser_OneExisting() throws BadParameterException {
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setEmail(TestConstants.USER_3_NAME);
@@ -176,22 +175,22 @@ public class UserPropertyServiceImplMockTest {
 
         userPropertyService.setPropertiesForUser(TestConstants.USER_3_NAME, propertyListEntry);
 
-        assertNotNull(saveCapture);
+        Assertions.assertNotNull(saveCapture);
         List<UserPropertyEntity> savedProperties = saveCapture.getValue();
-        assertNotNull(savedProperties);
-        assertFalse(savedProperties.isEmpty());
-        assertEquals("size is 2", 2, savedProperties.size());
+        Assertions.assertNotNull(savedProperties);
+        Assertions.assertFalse(savedProperties.isEmpty());
+        Assertions.assertEquals(2, savedProperties.size(), "size is 2");
         Map<String, UserPropertyEntity> resultMap = savedProperties.stream()
                 .collect(Collectors.toMap(UserPropertyEntity::getKey, Function.identity()));
-        assertTrue("key1 exists", resultMap.containsKey("key1"));
-        assertEquals("key1 value is value1", "crazy new value", resultMap.get("key1").getValue());
-        assertTrue("key2 exists", resultMap.containsKey("key2"));
-        assertEquals("key2 value is value1", "value2", resultMap.get("key2").getValue());
+        Assertions.assertTrue(resultMap.containsKey("key1"), "key1 exists");
+        Assertions.assertEquals("crazy new value", resultMap.get("key1").getValue(), "key1 value is value1");
+        Assertions.assertTrue(resultMap.containsKey("key2"), "key2 exists");
+        Assertions.assertEquals("value2", resultMap.get("key2").getValue(), "key2 value is value1");
 
     }
 
     @Test
-    public void testSetPropertiesForUser_BothExisting() throws BadParameterException {
+    void testSetPropertiesForUser_BothExisting() throws BadParameterException {
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setEmail(TestConstants.USER_3_NAME);
@@ -210,22 +209,22 @@ public class UserPropertyServiceImplMockTest {
 
         userPropertyService.setPropertiesForUser(TestConstants.USER_3_NAME, propertyListEntry);
 
-        assertNotNull(saveCapture);
+        Assertions.assertNotNull(saveCapture);
         List<UserPropertyEntity> savedProperties = saveCapture.getValue();
-        assertNotNull(savedProperties);
-        assertFalse(savedProperties.isEmpty());
-        assertEquals("size is 2", 2, savedProperties.size());
+        Assertions.assertNotNull(savedProperties);
+        Assertions.assertFalse(savedProperties.isEmpty());
+        Assertions.assertEquals(2, savedProperties.size(), "size is 2");
         Map<String, UserPropertyEntity> resultMap = savedProperties.stream()
                 .collect(Collectors.toMap(UserPropertyEntity::getKey, Function.identity()));
-        assertTrue("key1 exists", resultMap.containsKey("key1"));
-        assertEquals("key1 value is value1", "crazy new value", resultMap.get("key1").getValue());
-        assertTrue("key2 exists", resultMap.containsKey("key2"));
-        assertEquals("key2 value is value1", "calm value", resultMap.get("key2").getValue());
+        Assertions.assertTrue(resultMap.containsKey("key1"), "key1 exists");
+        Assertions.assertEquals("crazy new value", resultMap.get("key1").getValue(), "key1 value is value1");
+        Assertions.assertTrue(resultMap.containsKey("key2"), "key2 exists");
+        Assertions.assertEquals("calm value", resultMap.get("key2").getValue(), "key2 value is value1");
 
     }
 
     @Test
-    public void testSetPropertiesForUser_Delete() throws BadParameterException {
+    void testSetPropertiesForUser_Delete() throws BadParameterException {
         UserEntity testUser = new UserEntity();
         testUser.setId(TestConstants.USER_3_ID);
         testUser.setEmail(TestConstants.USER_3_NAME);
@@ -246,24 +245,24 @@ public class UserPropertyServiceImplMockTest {
 
         userPropertyService.setPropertiesForUser(TestConstants.USER_3_NAME, propertyListEntry);
 
-        assertNotNull(saveCapture);
+        Assertions.assertNotNull(saveCapture);
         List<UserPropertyEntity> savedProperties = saveCapture.getValue();
-        assertNotNull(savedProperties);
-        assertFalse(savedProperties.isEmpty());
-        assertEquals("size is 1", 1, savedProperties.size());
+        Assertions.assertNotNull(savedProperties);
+        Assertions.assertFalse(savedProperties.isEmpty());
+        Assertions.assertEquals(1, savedProperties.size(), "size is 1");
         Map<String, UserPropertyEntity> resultMap = savedProperties.stream()
                 .collect(Collectors.toMap(UserPropertyEntity::getKey, Function.identity()));
-        assertTrue("key2 exists", resultMap.containsKey("key2"));
-        assertEquals("key2 value is value1", "calm value", resultMap.get("key2").getValue());
+        Assertions.assertTrue(resultMap.containsKey("key2"), "key2 exists");
+        Assertions.assertEquals("calm value", resultMap.get("key2").getValue(), "key2 value is value1");
 
-        assertNotNull(deleteCapture);
+        Assertions.assertNotNull(deleteCapture);
         List<UserPropertyEntity> deletedProperties = deleteCapture.getValue();
-        assertNotNull(deletedProperties);
-        assertFalse(deletedProperties.isEmpty());
-        assertEquals("size is 1", 1, deletedProperties.size());
+        Assertions.assertNotNull(deletedProperties);
+        Assertions.assertFalse(deletedProperties.isEmpty());
+        Assertions.assertEquals(1, deletedProperties.size(), "size is 1");
         Map<String, UserPropertyEntity> deletedResults = deletedProperties.stream()
                 .collect(Collectors.toMap(UserPropertyEntity::getKey, Function.identity()));
-        assertTrue("key1 exists", deletedResults.containsKey("key1"));
+        Assertions.assertTrue(deletedResults.containsKey("key1"), "key1 exists");
 
     }
 

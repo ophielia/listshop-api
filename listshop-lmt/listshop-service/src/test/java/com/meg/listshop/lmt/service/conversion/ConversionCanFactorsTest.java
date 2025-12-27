@@ -18,21 +18,23 @@ import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.common.RoundingUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@Testcontainers
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
-public class ConversionCanFactorsTest {
+class ConversionCanFactorsTest {
 
     private static final Long canId = 1029L;
     private static final Long largeCanId = 1030L;
@@ -51,11 +53,11 @@ public class ConversionCanFactorsTest {
     UnitRepository unitRepository;
 
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Test
-    public void unitBasicEquivalencyTests() throws ConversionPathException, ConversionFactorException {
+    void unitBasicEquivalencyTests() throws ConversionPathException, ConversionFactorException {
         UnitEntity canOpt = unitRepository.findById(canId).orElse(null);
         UnitEntity largeCanOpt = unitRepository.findById(largeCanId).orElse(null);
         UnitEntity smallCanOpt = unitRepository.findById(smallCanId).orElse(null);
@@ -93,7 +95,7 @@ public class ConversionCanFactorsTest {
     // dish context should pass through
     // list context should convert to hybrid
     @Test
-    public void unitDomainConversions() throws ConversionPathException, ConversionFactorException {
+    void unitDomainConversions() throws ConversionPathException, ConversionFactorException {
         UnitEntity canOpt = unitRepository.findById(canId).orElse(null);
         UnitEntity largeCanOpt = unitRepository.findById(largeCanId).orElse(null);
         UnitEntity smallCanOpt = unitRepository.findById(smallCanId).orElse(null);
@@ -119,7 +121,7 @@ public class ConversionCanFactorsTest {
     }
 
     @Test
-    public void unitContextConversions() throws ConversionPathException, ConversionFactorException {
+    void unitContextConversions() throws ConversionPathException, ConversionFactorException {
         UnitEntity canOpt = unitRepository.findById(canId).orElse(null);
         UnitEntity largeCanOpt = unitRepository.findById(largeCanId).orElse(null);
         UnitEntity smallCanOpt = unitRepository.findById(smallCanId).orElse(null);

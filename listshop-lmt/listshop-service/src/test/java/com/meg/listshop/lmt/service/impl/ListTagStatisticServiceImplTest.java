@@ -8,10 +8,11 @@ import com.meg.listshop.lmt.api.model.Statistic;
 import com.meg.listshop.lmt.api.model.StatisticCountType;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.list.ListItemCollector;
+import com.meg.listshop.lmt.list.ListTagStatisticService;
 import com.meg.listshop.lmt.service.*;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -27,13 +30,14 @@ import java.util.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
+@Testcontainers
 @ActiveProfiles("test")
 @Sql(value = {"/sql/com/meg/atable/lmt/service/impl/ListTagStatisticServiceTest-rollback.sql",
         "/sql/com/meg/atable/lmt/service/impl/ListTagStatisticServiceTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class ListTagStatisticServiceImplTest {
+class ListTagStatisticServiceImplTest {
 
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     @Autowired
@@ -47,7 +51,7 @@ public class ListTagStatisticServiceImplTest {
 
     @Test
     @Sql(value = {"/sql/com/meg/atable/lmt/service/impl/ListTagStatisticServiceTest-rollback.sql"})
-    public void createStatisticsForUser_AllAdd() {
+    void createStatisticsForUser_AllAdd() {
         List<Long> tagIds = Arrays.asList(16L, 18L, 20L);
         Long userId = 1L;
         List<Statistic> stats = dummyStatistics(tagIds);
@@ -61,7 +65,7 @@ public class ListTagStatisticServiceImplTest {
 
 
     @Test
-    public void processCollectorStatistics_NoChange() {
+    void legacyProcessCollectorStatistics_NoChange() {
         CollectorContext context = new CollectorContextBuilder()
                 .create(ContextType.Item)
                 .withStatisticCountType(StatisticCountType.Single)
@@ -72,14 +76,14 @@ public class ListTagStatisticServiceImplTest {
         Mockito.when(mockCollector.getCollectedTagItems())
                 .thenReturn(new ArrayList<>());
 
-        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
+        listTagStatisticService.legacyProcessCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(0, getFieldResultForTag("removed_dish", 18L, 99L).intValue());
+        Assertions.assertEquals(0, getFieldResultForTag("removed_dish", 18L, 99L).intValue());
     }
 
     @Test
     @Sql(value = {"/sql/com/meg/atable/lmt/service/impl/ListTagStatisticServiceTest-rollback.sql"})
-    public void processCollectorStatistics_AddAndInsert() {
+    void legacyProcessCollectorStatistics_AddAndInsert() {
         List<Long> tagIds = Arrays.asList(16L, 18L, 20L);
         List<CollectedItem> items = dummyItems(tagIds);
 
@@ -100,15 +104,15 @@ public class ListTagStatisticServiceImplTest {
                 .thenReturn(tagIds);
 
 
-        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
+        listTagStatisticService.legacyProcessCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(1, getFieldResultForTag("added_single", 16L, 1L).intValue());
-        Assert.assertEquals(0, getFieldResultForTag("added_single", 18L, 1L).intValue());
+        Assertions.assertEquals(1, getFieldResultForTag("added_single", 16L, 1L).intValue());
+        Assertions.assertEquals(0, getFieldResultForTag("added_single", 18L, 1L).intValue());
     }
 
     @Test
     @Sql(value = {"/sql/com/meg/atable/lmt/service/impl/ListTagStatisticServiceTest-Existing.sql"})
-    public void processCollectorStatistics_AddWithExisting() {
+    void legacyProcessCollectorStatistics_AddWithExisting() {
         List<Long> tagIds = Arrays.asList(16L, 18L, 20L);
         List<CollectedItem> items = dummyItems(tagIds);
 
@@ -129,15 +133,15 @@ public class ListTagStatisticServiceImplTest {
                 .thenReturn(tagIds);
 
 
-        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
+        listTagStatisticService.legacyProcessCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(2, getFieldResultForTag("added_list", 16L, 1L).intValue());
-        Assert.assertEquals(1, getFieldResultForTag("added_list", 18L, 1L).intValue());
+        Assertions.assertEquals(2, getFieldResultForTag("added_list", 16L, 1L).intValue());
+        Assertions.assertEquals(1, getFieldResultForTag("added_list", 18L, 1L).intValue());
     }
 
     @Test
     @Sql(value = {"/sql/com/meg/atable/lmt/service/impl/ListTagStatisticServiceTest-Existing.sql"})
-    public void processCollectorStatistics_RemoveWithExisting() {
+    void legacyProcessCollectorStatistics_RemoveWithExisting() {
         List<Long> tagIds = Arrays.asList(16L, 18L, 20L);
         List<CollectedItem> items = dummyItems(tagIds);
 
@@ -161,16 +165,16 @@ public class ListTagStatisticServiceImplTest {
                 .thenReturn(tagIds);
 
 
-        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
+        listTagStatisticService.legacyProcessCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(2, getFieldResultForTag("removed_starterlist", 16L, 1L).intValue());
-        Assert.assertEquals(1, getFieldResultForTag("removed_starterlist", 18L, 1L).intValue());
+        Assertions.assertEquals(2, getFieldResultForTag("removed_starterlist", 16L, 1L).intValue());
+        Assertions.assertEquals(1, getFieldResultForTag("removed_starterlist", 18L, 1L).intValue());
     }
 
 
     @Test
     @Sql(value = {"/sql/com/meg/atable/lmt/service/impl/ListTagStatisticServiceTest-Existing.sql"})
-    public void processCollectorStatistics_RemoveIgnoresCrossedOff() {
+    void legacyProcessCollectorStatistics_RemoveIgnoresCrossedOff() {
         List<Long> tagIds = Arrays.asList(16L, 18L, 20L);
         List<CollectedItem> items = dummyItems(tagIds);
 
@@ -195,15 +199,15 @@ public class ListTagStatisticServiceImplTest {
                 .thenReturn(tagIds);
 
 
-        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
+        listTagStatisticService.legacyProcessCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(1, getFieldResultForTag("removed_dish", 16L, 1L).intValue());
-        Assert.assertEquals(1, getFieldResultForTag("removed_dish", 18L, 1L).intValue());
+        Assertions.assertEquals(1, getFieldResultForTag("removed_dish", 16L, 1L).intValue());
+        Assertions.assertEquals(1, getFieldResultForTag("removed_dish", 18L, 1L).intValue());
     }
 
     @Test
     @Sql(value = {"/sql/com/meg/atable/lmt/service/impl/ListTagStatisticServiceTest-Existing.sql"})
-    public void processCollectorStatistics_AddAndRemove() {
+    void legacyProcessCollectorStatistics_AddAndRemove() {
         List<Long> tagIds = Arrays.asList(16L, 18L, 20L);
         List<CollectedItem> items = dummyItems(tagIds);
 
@@ -227,15 +231,15 @@ public class ListTagStatisticServiceImplTest {
                 .thenReturn(tagIds);
 
 
-        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
+        listTagStatisticService.legacyProcessCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(2, getFieldResultForTag("removed_dish", 16L, 1L).intValue());
-        Assert.assertEquals(1, getFieldResultForTag("added_dish", 18L, 1L).intValue());
+        Assertions.assertEquals(2, getFieldResultForTag("removed_dish", 16L, 1L).intValue());
+        Assertions.assertEquals(1, getFieldResultForTag("added_dish", 18L, 1L).intValue());
     }
 
     @Test
     @Sql(value = {"/sql/com/meg/atable/lmt/service/impl/ListTagStatisticServiceTest-rollback.sql"})
-    public void processCollectorStatistics_NoUpdateWithNone() {
+    void legacyProcessCollectorStatistics_NoUpdateWithNone() {
         List<Long> tagIds = Arrays.asList(16L, 18L, 20L);
         List<CollectedItem> items = dummyItems(tagIds);
 
@@ -257,10 +261,10 @@ public class ListTagStatisticServiceImplTest {
                 .thenReturn(tagIds);
 
 
-        listTagStatisticService.processCollectorStatistics(1L, mockCollector, context);
+        listTagStatisticService.legacyProcessCollectorStatistics(1L, mockCollector, context);
 
-        Assert.assertEquals(0, getFieldResultForTag("removed_dish", 16L, 1L).intValue());
-        Assert.assertEquals(0, getFieldResultForTag("removed_dish", 18L, 1L).intValue());
+        Assertions.assertEquals(0, getFieldResultForTag("removed_dish", 16L, 1L).intValue());
+        Assertions.assertEquals(0, getFieldResultForTag("removed_dish", 18L, 1L).intValue());
     }
 
 

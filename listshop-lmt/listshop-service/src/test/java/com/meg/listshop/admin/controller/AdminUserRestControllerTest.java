@@ -16,10 +16,10 @@ import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.repository.TokenRepository;
 import com.meg.listshop.test.TestConstants;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -32,10 +32,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -52,18 +54,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
+@Testcontainers
 @ActiveProfiles("test")
 @Sql(value = {"/sql/com/meg/atable/auth/api/UserRestControllerTest-rollback.sql",
         "/sql/com/meg/atable/auth/api/UserRestControllerTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class AdminUserRestControllerTest {
+class AdminUserRestControllerTest {
 
     private static final Long USER_WITH_PROPERTIES_ID = 999L;
     private static final String USER_WITH_PROPERTIES_NAME = "rufus@barkingmad.com";
-    @ClassRule
+    @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
@@ -95,10 +98,10 @@ public class AdminUserRestControllerTest {
                 .findAny()
                 .orElse(null);
 
-        assertNotNull("the JSON message converter must not be null");
+        Assertions.assertNotNull("the JSON message converter must not be null");
     }
 
-    @Before
+    @BeforeEach
     @WithMockUser
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext)
@@ -120,7 +123,7 @@ public class AdminUserRestControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetUser() throws Exception {
+    void testGetUser() throws Exception {
 
         String url = "/admin/user/999";
         mockMvc.perform(get(url)

@@ -14,7 +14,7 @@ import com.meg.listshop.lmt.data.entity.ContextApproachEntity;
 import com.meg.listshop.lmt.data.entity.ProposalSlotEntity;
 import com.meg.listshop.lmt.data.entity.SlotEntity;
 import com.meg.listshop.lmt.data.entity.TargetSlotEntity;
-import com.meg.listshop.lmt.service.DishSearchService;
+import com.meg.listshop.lmt.dish.DishSearchService;
 import com.meg.listshop.lmt.service.NewRawSlotResult;
 import com.meg.listshop.lmt.service.proposal.ProcessInformation;
 import com.meg.listshop.lmt.service.proposal.ProcessResult;

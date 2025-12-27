@@ -8,7 +8,7 @@ import com.meg.listshop.lmt.api.model.ModelMapper;
 import com.meg.listshop.lmt.api.model.StatisticListPost;
 import com.meg.listshop.lmt.api.model.StatisticListResource;
 import com.meg.listshop.lmt.data.entity.ListTagStatistic;
-import com.meg.listshop.lmt.service.ListTagStatisticService;
+import com.meg.listshop.lmt.list.ListTagStatisticService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.data.repository;
 
+import com.meg.listshop.lmt.api.model.ListOperationType;
 import com.meg.listshop.lmt.api.model.StatisticCountType;
 import com.meg.listshop.lmt.data.entity.StatisticOperationType;
 
@@ -18,5 +19,7 @@ public interface CustomStatisticRepository {
 
     void insertEmptyUserStatistics(Long userId, List<Long> tagIds);
 
-    void updateUserStatistics(Long userId, List<Long> updateIds, StatisticOperationType operation, StatisticCountType countType);
+    void legacyUpdateUserStatistics(Long userId, List<Long> updateIds, StatisticOperationType operation, StatisticCountType countType);
+
+    void updateUserStatistics(Long userId, List<Long> updateIds, ListOperationType operationType);
 }

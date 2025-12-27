@@ -12,27 +12,29 @@ import com.meg.postoffice.api.model.EmailParameters;
 import com.meg.postoffice.api.model.EmailType;
 import com.meg.postoffice.service.MailService;
 import freemarker.template.TemplateException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import jakarta.mail.MessagingException;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import java.io.IOException;
 
+
 @TestPropertySource(locations = "/mytestsend.properties")
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {PostofficeTestConfiguration.class})
-public class BetaTestInformationSendTest {
+class BetaTestInformationSendTest {
 
     @Autowired
     private MailService mailService;
 
 
     @Test
-    public void testSendBetaTestInfo() throws TemplateException, IOException, MessagingException {
+    void testSendBetaTestInfo() throws TemplateException, IOException, MessagingException {
         EmailParameters parameters = new EmailParameters();
         parameters.setEmailType(EmailType.BetaTestInformation);
         parameters.setReceiver("margaret.martin@orange.fr");
