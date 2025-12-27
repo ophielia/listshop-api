@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.19.0]  - March 2025
+### Fixed
+- make standard tag from user tag (called from extranet)
+### Added
+- new table list item details
+### Changed
+- item update behavior - state machine
+- refactor V1 add list, item, dish to list
+- reset flyway to baseline
+### Updated
+- all tests to JUnit 5
+
 ## [1.18.1]  - March 2025
 ### Fixed
 - Dockerfile to use java 17
