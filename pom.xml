@@ -16,7 +16,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
         <project.container.name>com.meg.listshop.listshop</project.container.name>
-        <spring-boot-version>3.0.13</spring-boot-version>
+        <spring-boot-version>3.1.10</spring-boot-version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring.boot.mainClass>com.meg.listshop.Application</spring.boot.mainClass>
@@ -229,7 +229,6 @@
                 <groupId>jakarta.platform</groupId>
                 <artifactId>jakarta.jakartaee-api</artifactId>
                 <version>9.1.0</version>
-                <!--<scope>provided</scope>-->
             </dependency>
             <!-- https://mvnrepository.com/artifact/jakarta.servlet.jsp.jstl/jakarta.servlet.jsp.jstl-api -->
             <dependency>
