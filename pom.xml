@@ -16,7 +16,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
         <project.container.name>com.meg.listshop.listshop</project.container.name>
-        <spring-boot-version>3.2.12</spring-boot-version>
+        <spring-boot-version>3.3.11</spring-boot-version><!--next 3.4.13 -->
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring.boot.mainClass>com.meg.listshop.Application</spring.boot.mainClass>
@@ -24,6 +24,7 @@
         <testcontainers.version>2.0.2</testcontainers.version>
         <jackson.version>2.16.2</jackson.version>
         <flyway.version>10.22.0</flyway.version>
+        <logback.version>1.5.24</logback.version>
         <junit.jupiter.version>5.9.0</junit.jupiter.version>
     </properties>
 
@@ -93,16 +94,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <dependency>
-                <artifactId>logback-classic</artifactId>
-                <groupId>ch.qos.logback</groupId>
-                <version>1.4.12</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
-                <version>1.4.12</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
@@ -309,6 +301,24 @@
                 <version>1.9.4</version>
             </dependency>
 
+            <!-- Source: https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback.access</groupId>
+                <artifactId>logback-access-common</artifactId>
+                <version>2.0.7</version>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
             <!-- for enums -->
             <dependency>
@@ -316,14 +326,6 @@
                 <artifactId>guava</artifactId>
                 <version>32.0.1-jre</version>
             </dependency>
-
-
-            <dependency>
-                <groupId>net.logstash.logback</groupId>
-                <artifactId>logstash-logback-encoder</artifactId>
-                <version>6.0</version>
-            </dependency>
-
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
