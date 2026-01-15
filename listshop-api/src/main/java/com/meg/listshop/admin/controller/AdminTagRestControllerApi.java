@@ -49,8 +49,8 @@ public interface AdminTagRestControllerApi {
     @DeleteMapping(value = "/delete/{tagId}")
     ResponseEntity<Object> saveTagForDelete(@PathVariable("tagId") Long tagId, @RequestParam(value = "replacementTagId") Long replacementTagId);
 
-    @PostMapping(value = "{tagId}/children", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds", required = false) String filter);
+    @PostMapping(value = "{tagId}/children/{tagIds}", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> addChildren(@PathVariable("tagId") Long tagId, @RequestParam("tagIds") String tagIds);
 
     @PutMapping(value = "{parentId}/child/{childId}", produces = "application/json")
     ResponseEntity<Object> assignChildToParent(@PathVariable("parentId") Long parentId, @PathVariable("childId") Long childId);
@@ -59,7 +59,7 @@ public interface AdminTagRestControllerApi {
     ResponseEntity<Object> assignChildToBaseTag(@PathVariable("tagId") Long tagId);
 
     @PutMapping(value = "/{tagId}", consumes = "application/json")
-    ResponseEntity<Object> updateTag(@PathVariable Long tagId, @RequestBody Tag input);
+    ResponseEntity<Object> updateTag(@PathVariable("tagId") Long tagId, @RequestBody Tag input);
 
     @PutMapping(consumes = "application/json")
     ResponseEntity<Object> performOperation(@RequestBody TagOperationPut input);

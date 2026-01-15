@@ -48,7 +48,7 @@ public class ProposalRestController implements ProposalRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> generateProposal(HttpServletRequest request, Authentication authentication, @PathVariable Long targetId) throws ProposalProcessingException {
+    public ResponseEntity<Object> generateProposal(HttpServletRequest request, Authentication authentication, @PathVariable("targetId") Long targetId) throws ProposalProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.debug("Entering generateProposal method for user [{}]", userDetails.getId());
         ProposalEntity proposalEntity = this.targetProposalGenerator.generateProposal(userDetails.getUsername(), targetId);
@@ -88,7 +88,7 @@ public class ProposalRestController implements ProposalRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> selectDishInSlot(Authentication authentication, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId) {
+    public ResponseEntity<Object> selectDishInSlot(Authentication authentication, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId, @PathVariable("dishId") Long dishId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.debug("Entering selectDishInSlot method for user [{}]", userDetails.getId());
         this.targetProposalService.selectDishInSlot(userDetails.getUsername(), proposalId, slotId, dishId);
@@ -97,7 +97,7 @@ public class ProposalRestController implements ProposalRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> clearDishFromSlot(Authentication authentication, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId) {
+    public ResponseEntity<Object> clearDishFromSlot(Authentication authentication, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId, @PathVariable("dishId") Long dishId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.debug("Entering clearDishFromSlot method for user [{}]", userDetails.getId());
         this.targetProposalService.clearDishFromSlot(authentication, proposalId, slotId, dishId);

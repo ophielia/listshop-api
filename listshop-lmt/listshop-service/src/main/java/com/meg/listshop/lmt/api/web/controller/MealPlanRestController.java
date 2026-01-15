@@ -86,7 +86,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> createMealPlanFromTargetProposal(HttpServletRequest request, Principal principal, @PathVariable Long proposalId) {
+    public ResponseEntity<Object> createMealPlanFromTargetProposal(HttpServletRequest request, Principal principal, @PathVariable("proposalId") Long proposalId) {
         MealPlanEntity result = mealPlanService.createMealPlanFromProposal(principal.getName(), proposalId);
 
         if (result != null) {
@@ -99,7 +99,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<MealPlanResource> readMealPlan(Principal principal, @PathVariable Long mealPlanId) {
+    public ResponseEntity<MealPlanResource> readMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) {
         MealPlanEntity result = this.mealPlanService
                 .getMealPlanById(principal.getName(), mealPlanId);
 
@@ -122,21 +122,23 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
 
 
     @Override
-    public ResponseEntity<MealPlan> deleteMealPlan(Principal principal, @PathVariable Long mealPlanId) {
+    public ResponseEntity<MealPlan> deleteMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) {
 
         mealPlanService.deleteMealPlan(principal.getName(), mealPlanId);
         return ResponseEntity.noContent().build();
     }
 
     //@RequestMapping(method = RequestMethod.POST, value = "/{mealPlanId}/name", produces = "application/json")
-    public ResponseEntity<Object> renameMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable String newName) throws ObjectNotYoursException, ObjectNotFoundException {
+    public ResponseEntity<Object> renameMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId,
+                                                 @PathVariable("newName") String newName) throws ObjectNotYoursException, ObjectNotFoundException {
         this.mealPlanService.renameMealPlan(principal.getName(), mealPlanId, newName);
         return ResponseEntity.noContent().build();
     }
 
 
     @Override
-    public ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) {
+    public ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId,
+                                                    @PathVariable("dishId") Long dishId) {
         UserEntity user = userService.getUserByUserEmail(principal.getName());
 
         this.mealPlanService.addDishToMealPlan(user.getEmail(), mealPlanId, dishId);
@@ -145,7 +147,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) {
+    public ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId, @PathVariable("dishId") Long dishId) {
         UserEntity user = userService.getUserByUserEmail(principal.getName());
 
         this.mealPlanService.deleteDishFromMealPlan(user.getEmail(), mealPlanId, dishId);
@@ -155,7 +157,7 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
 
     @Override
     //@RequestMapping(method=RequestMethod.GET, value = "/{mealPlanId}/ratings", produces = "application/json")
-    public ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable Long mealPlanId) {
+    public ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) {
         UserEntity user = userService.getUserByUserEmail(principal.getName());
 
         RatingUpdateInfo ratingInfo = this.mealPlanService.getRatingsForMealPlan(user.getEmail(), mealPlanId);

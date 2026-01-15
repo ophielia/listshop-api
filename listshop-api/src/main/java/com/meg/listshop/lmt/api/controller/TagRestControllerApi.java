@@ -25,7 +25,7 @@ public interface TagRestControllerApi {
             HttpServletRequest request);
 
     @PostMapping(value = "{tagId}/child", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
+    ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable("tagId") Long tagId, @RequestBody Tag input,
                                    @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException;
 
 
@@ -33,7 +33,7 @@ public interface TagRestControllerApi {
     ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId);
 
     @PutMapping(value = "{tagId}", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> updateTag(Authentication authentication, HttpServletRequest request, @PathVariable Long tagId,
+    ResponseEntity<Object> updateTag(Authentication authentication, HttpServletRequest request, @PathVariable("tagId") Long tagId,
                                      @RequestBody TagPut input) throws BadParameterException;
 
 

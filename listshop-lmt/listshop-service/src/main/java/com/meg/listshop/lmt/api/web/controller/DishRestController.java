@@ -138,7 +138,7 @@ public class DishRestController implements DishRestControllerApi {
     }
 
 
-    public ResponseEntity<Object> updateDish(Authentication authentication, @PathVariable Long dishId, @RequestBody Dish input) {
+    public ResponseEntity<Object> updateDish(Authentication authentication, @PathVariable("dishId") Long dishId, @RequestBody Dish input) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("updating dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
@@ -156,7 +156,7 @@ public class DishRestController implements DishRestControllerApi {
     }
 
 
-    public ResponseEntity<DishResource> readDish(HttpServletRequest request, Authentication authentication, @PathVariable Long dishId) {
+    public ResponseEntity<DishResource> readDish(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("retrieving dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
@@ -176,7 +176,7 @@ public class DishRestController implements DishRestControllerApi {
         return new ResponseEntity(resource, HttpStatus.OK);
     }
 
-    public ResponseEntity<CollectionModel<TagResource>> getTagsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable Long dishId) {
+    public ResponseEntity<CollectionModel<TagResource>> getTagsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("retrieving dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
@@ -189,7 +189,7 @@ public class DishRestController implements DishRestControllerApi {
         return new ResponseEntity(tagList, HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> addTagToDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long tagId) {
+    public ResponseEntity<Object> addTagToDish(Authentication authentication, @PathVariable("dishId") Long dishId, @PathVariable("tagId") Long tagId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("adding tag [%S] dish [%S] for user [%S]", tagId, dishId, userDetails.getId());
         logger.info(message);
@@ -201,7 +201,7 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteTagFromDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long tagId) {
+    public ResponseEntity<Object> deleteTagFromDish(Authentication authentication, @PathVariable("dishId") Long dishId, @PathVariable("tagId") Long tagId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("deleting tag [%S] from dish [%S] for user [%S]", tagId, dishId, userDetails.getId());
         logger.info(message);
@@ -216,7 +216,7 @@ public class DishRestController implements DishRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> addAndRemoveTags(Authentication authentication, @PathVariable Long dishId,
+    public ResponseEntity<Object> addAndRemoveTags(Authentication authentication, @PathVariable("dishId") Long dishId,
                                                    @RequestParam(value = "addTags", required = false) String addTags,
                                                    @RequestParam(value = "removeTags", required = false) String removeTags) {
 
@@ -244,7 +244,7 @@ public class DishRestController implements DishRestControllerApi {
 
     }
 
-    public ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Authentication authentication, @PathVariable Long dishId) {
+    public ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Authentication authentication, @PathVariable("dishId") Long dishId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("get rating update info for dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
@@ -255,8 +255,8 @@ public class DishRestController implements DishRestControllerApi {
 
     }
 
-    public ResponseEntity<Object> incrementRatingForDish(Authentication authentication, @PathVariable Long dishId,
-                                                         @PathVariable Long ratingId,
+    public ResponseEntity<Object> incrementRatingForDish(Authentication authentication, @PathVariable("dishId") Long dishId,
+                                                         @PathVariable("ratingId") Long ratingId,
                                                          @RequestParam(value = "direction") String direction) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("increment rating for dish [%S],  user [%S] direction [%S]", dishId, userDetails.getId(), direction);
@@ -266,9 +266,9 @@ public class DishRestController implements DishRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> setRatingForDish(Authentication authentication, @PathVariable Long dishId,
-                                                   @PathVariable Long ratingId,
-                                                   @PathVariable Integer step) {
+    public ResponseEntity<Object> setRatingForDish(Authentication authentication, @PathVariable("dishId") Long dishId,
+                                                   @PathVariable("ratingId") Long ratingId,
+                                                   @PathVariable("step") Integer step) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("set rating for dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);

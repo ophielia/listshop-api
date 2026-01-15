@@ -29,7 +29,7 @@ public interface MealPlanRestControllerApi {
     ResponseEntity<Object> createMealPlan(HttpServletRequest request, Principal principal, @RequestBody MealPlan input);
 
     @PostMapping(value = "/proposal/{proposalId}", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> createMealPlanFromTargetProposal(HttpServletRequest request, Principal principal, @PathVariable Long proposalId) throws ObjectNotFoundException, ObjectNotYoursException;
+    ResponseEntity<Object> createMealPlanFromTargetProposal(HttpServletRequest request, Principal principal, @PathVariable("proposalId") Long proposalId) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @GetMapping(value = "/{mealPlanId}", produces = "application/json")
     ResponseEntity<MealPlanResource> readMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException;
@@ -41,16 +41,16 @@ public interface MealPlanRestControllerApi {
     ResponseEntity<MealPlan> deleteMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @PostMapping(value = "/{mealPlanId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) throws ObjectNotFoundException, ObjectNotYoursException;
+    ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId, @PathVariable("dishId") Long dishId) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @PostMapping(value = "/{mealPlanId}/name/{newName}", produces = "application/json")
-    ResponseEntity<Object> renameMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable String newName) throws ObjectNotYoursException, ObjectNotFoundException;
+    ResponseEntity<Object> renameMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId, @PathVariable("newName") String newName) throws ObjectNotYoursException, ObjectNotFoundException;
 
     @DeleteMapping(value = "/{mealPlanId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable Long mealPlanId, @PathVariable Long dishId) throws ObjectNotFoundException, ObjectNotYoursException;
+    ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId, @PathVariable("dishId") Long dishId) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @GetMapping(value = "/{mealPlanId}/ratings", produces = "application/json")
-    ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable Long mealPlanId);
+    ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable("mealPlanId") Long mealPlanId);
 
 
 }

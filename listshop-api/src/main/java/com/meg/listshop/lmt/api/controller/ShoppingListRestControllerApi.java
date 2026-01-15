@@ -49,55 +49,55 @@ public interface ShoppingListRestControllerApi {
     ResponseEntity<ShoppingList> deleteList(Authentication principal, @PathVariable("listId") Long listId);
 
     @PostMapping(value = "/{listId}/tag/{tagId}", produces = "application/json")
-    ResponseEntity<Object> addItemToListByTag(Authentication principal, @PathVariable Long listId, @PathVariable Long tagId) throws ItemProcessingException;
+    ResponseEntity<Object> addItemToListByTag(Authentication principal, @PathVariable("listId") Long listId, @PathVariable("tagId") Long tagId) throws ItemProcessingException;
 
     @DeleteMapping(value = "/{listId}/item/{itemId}", produces = "application/json")
-    ResponseEntity<Object> deleteItemFromList(Authentication principal, @PathVariable Long listId, @PathVariable Long itemId,
+    ResponseEntity<Object> deleteItemFromList(Authentication principal, @PathVariable("listId") Long listId, @PathVariable("itemId") Long itemId,
                                               @RequestParam(value = "removeEntireItem", required = false, defaultValue = "false") Boolean removeEntireItem,
                                               @RequestParam(value = "sourceId", required = false, defaultValue = "0") String sourceId
     );
 
     @PostMapping(value = "/{listId}/item/shop/{itemId}", produces = "application/json")
-    ResponseEntity<Object> setCrossedOffForItem(Authentication principal, @PathVariable Long listId, @PathVariable Long itemId,
+    ResponseEntity<Object> setCrossedOffForItem(Authentication principal, @PathVariable("listId") Long listId, @PathVariable("itemId") Long itemId,
                                                 @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff
     ) throws ItemProcessingException;
 
     @PostMapping(value = "/{listId}/item/shop", produces = "application/json")
-    ResponseEntity<Object> crossOffAllItemsOnList(Authentication principal, @PathVariable Long listId,
+    ResponseEntity<Object> crossOffAllItemsOnList(Authentication principal, @PathVariable("listId") Long listId,
                                                   @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff) throws ItemProcessingException;
 
     @DeleteMapping(value = "/{listId}/item", produces = "application/json")
-    ResponseEntity<Object> deleteAllItemsFromList(Authentication principal, @PathVariable Long listId);
+    ResponseEntity<Object> deleteAllItemsFromList(Authentication principal, @PathVariable("listId") Long listId);
 
     @PostMapping(value = "/mealplan/{mealPlanId}", produces = "application/json")
-    ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication principal, @PathVariable Long mealPlanId);
+    ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication principal, @PathVariable("mealPlanId") Long mealPlanId);
 
     @PutMapping(value = "/{listId}/mealplan/{mealPlanId}", produces = "application/json")
-    ResponseEntity<Object> addToListFromMealPlan(Authentication principal, @PathVariable Long listId, @PathVariable Long mealPlanId);
+    ResponseEntity<Object> addToListFromMealPlan(Authentication principal, @PathVariable("listId") Long listId, @PathVariable("mealPlanId") Long mealPlanId);
 
     @PostMapping(value = "/{listId}/dish", produces = "application/json")
-    ResponseEntity<Object> addDishesToList(Authentication principal, @PathVariable Long listId, @RequestBody ListAddProperties listAddProperties);
+    ResponseEntity<Object> addDishesToList(Authentication principal, @PathVariable("listId") Long listId, @RequestBody ListAddProperties listAddProperties);
 
     @PostMapping(value = "/{listId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> addDishToList(Authentication principal, @PathVariable Long listId, @PathVariable Long dishId);
+    ResponseEntity<Object> addDishToList(Authentication principal, @PathVariable("listId") Long listId, @PathVariable("dishId") Long dishId);
 
     @DeleteMapping(value = "/{listId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> removeDishFromList(Authentication principal, @PathVariable Long listId, @PathVariable Long dishId) ;
+    ResponseEntity<Object> removeDishFromList(Authentication principal, @PathVariable("listId") Long listId, @PathVariable("dishId") Long dishId) ;
 
     @PostMapping(value = "/{listId}/list/{fromListId}", produces = "application/json")
-    ResponseEntity<Object> addToListFromList(Authentication principal, @PathVariable Long listId, @PathVariable Long fromListId);
+    ResponseEntity<Object> addToListFromList(Authentication principal, @PathVariable("listId") Long listId, @PathVariable("fromListId") Long fromListId);
 
 
     @DeleteMapping(value = "/{listId}/list/{fromListId}", produces = "application/json")
-    ResponseEntity<Object> removeFromListByList(Authentication principal, @PathVariable Long listId, @PathVariable Long fromListId);
+    ResponseEntity<Object> removeFromListByList(Authentication principal, @PathVariable("listId") Long listId, @PathVariable("fromListId") Long fromListId);
 
     @PostMapping(value = "/{listId}/layout/{layoutId}", produces = "application/json")
-    ResponseEntity<Object> changeListLayout(Authentication principal, @PathVariable Long listId, @PathVariable Long layoutId);
+    ResponseEntity<Object> changeListLayout(Authentication principal, @PathVariable("listId") Long listId, @PathVariable("layoutId") Long layoutId);
 
     @PutMapping(value = "/{listId}/tag/{tagId}/count/{usedCount}", produces = "application/json")
-    ResponseEntity<Object> updateItemCountByTag(Authentication principal, @PathVariable Long listId,
-                                                @PathVariable Long tagId,
-                                                @PathVariable @NotNull Integer usedCount
+    ResponseEntity<Object> updateItemCountByTag(Authentication principal, @PathVariable("listId") Long listId,
+                                                @PathVariable("tagId") Long tagId,
+                                                @PathVariable("usedCount") @NotNull Integer usedCount
     );
 
 

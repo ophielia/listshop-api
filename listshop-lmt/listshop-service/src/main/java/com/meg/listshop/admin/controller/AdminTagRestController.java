@@ -273,12 +273,12 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
 
-    public ResponseEntity<Object> addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds") String filter) {
-        if (filter == null) {
+    public ResponseEntity<Object> addChildren(@PathVariable("tagId") Long tagId, @RequestParam( "tagIds") String tagIds) {
+        if (tagIds == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        List<Long> tagIdList = commaDelimitedToList(filter);
+        List<Long> tagIdList = commaDelimitedToList(tagIds);
         this.tagService.assignChildrenToParent(tagId, tagIdList);
         return ResponseEntity.noContent().build();
 
@@ -286,7 +286,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
     /* havent gone over things starting hers - looking for what isn't used anymore */
     @Override
-    public ResponseEntity<Object> assignChildToParent(@PathVariable Long parentId, @PathVariable Long childId) {
+    public ResponseEntity<Object> assignChildToParent(@PathVariable("parentId") Long parentId, @PathVariable("childId") Long childId) {
         tagService.assignTagToParent(childId, parentId);
         return ResponseEntity.ok().build();
     }
@@ -301,7 +301,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
 
-    public ResponseEntity<Object> updateTag(@PathVariable Long tagId, @RequestBody Tag input) {
+    public ResponseEntity<Object> updateTag(@PathVariable("tagId") Long tagId, @RequestBody Tag input) {
         // invalid tagId - returns invalid id supplied - 400
 
         // invalid contents of input - returns 405 validation exception
@@ -325,7 +325,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> saveTagForDelete(@PathVariable Long tagId, @RequestParam Long replacementTagId) {
+    public ResponseEntity<Object> saveTagForDelete(@PathVariable("tagId") Long tagId, @RequestParam("replacementTagId") Long replacementTagId) {
 
         this.tagService.saveTagForDelete(tagId, replacementTagId);
 

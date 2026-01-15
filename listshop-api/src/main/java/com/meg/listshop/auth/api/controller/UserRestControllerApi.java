@@ -55,7 +55,7 @@ public interface UserRestControllerApi {
     ResponseEntity<Object> getUserProperties(Authentication authentication) throws BadParameterException;
 
     @GetMapping(value = "properties/key/{key}", produces = "application/json")
-    ResponseEntity<Object> getUserProperty(Authentication authentication, @PathVariable String key) throws BadParameterException;
+    ResponseEntity<Object> getUserProperty(Authentication authentication, @PathVariable("key") String key) throws BadParameterException;
 
     @PostMapping(value = "properties", produces = "application/json")
     ResponseEntity<Object> setUserProperties(Authentication authentication, @RequestBody PostUserProperties properties) throws BadParameterException, IOException;

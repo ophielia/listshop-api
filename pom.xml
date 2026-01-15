@@ -16,13 +16,15 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
         <project.container.name>com.meg.listshop.listshop</project.container.name>
-        <spring-boot-version>3.1.10</spring-boot-version>
+        <spring-boot-version>3.2.1</spring-boot-version><!-- next 3.2.12 -->
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring.boot.mainClass>com.meg.listshop.Application</spring.boot.mainClass>
         <springdoc.version>1.7.0</springdoc.version>
         <testcontainers.version>2.0.2</testcontainers.version>
         <jackson.version>2.16.2</jackson.version>
+        <flyway.version>10.22.0</flyway.version>
+        <junit.jupiter.version>5.9.0</junit.jupiter.version>
     </properties>
 
     <dependencyManagement>
@@ -284,7 +286,12 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>9.0.1</version>
+                <version>${flyway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-database-postgresql</artifactId>
+                <version>${flyway.version}</version>
             </dependency>
 
 
@@ -336,13 +343,15 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
-                <version>5.9.0</version>
+                <version>${junit.jupiter.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.junit.vintage</groupId>
-                <artifactId>junit-vintage-engine</artifactId>
-                <version>5.9.0</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.jupiter.version}</version>
+                <scope>test</scope>
             </dependency>
+
 
 
             <dependency>
@@ -365,7 +374,7 @@
                 <plugin>
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-maven-plugin</artifactId>
-                    <version>9.0.1</version>
+                    <version>${flyway.version}</version>
                     <configuration>
                         <url>jdbc:postgresql://localhost:5432/dishdev</url>
                         <user>listshopstarter</user>

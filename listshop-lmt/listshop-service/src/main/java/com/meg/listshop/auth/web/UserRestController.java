@@ -247,7 +247,7 @@ public class UserRestController implements UserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> getUserProperty(Authentication authentication, @PathVariable String key) throws BadParameterException {
+    public ResponseEntity<Object> getUserProperty(Authentication authentication, @PathVariable("key") String key) throws BadParameterException {
         if (key == null) {
             throw new BadParameterException("key is required for /user/property/key");
         }

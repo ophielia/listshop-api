@@ -329,7 +329,7 @@ class AdminTagRestControllerTest {
     void addChildren() throws Exception {
         String url = "/admin/tag/" + TestConstants.PARENT_TAG_ID_1 + "/children?tagIds=" + TestConstants.TAG_MEAT + "," + TestConstants.TAG_CARROTS + "," + TestConstants.TAG_CROCKPOT;
 
-        this.mockMvc.perform(post(url).contentType(contentType)
+        this.mockMvc.perform(post(url)//.contentType(contentType)
                         .with(user(userDetails)))
                 .andExpect(status().is2xxSuccessful());
     }
