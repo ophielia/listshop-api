@@ -1,6 +1,7 @@
 package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.admin.model.PostSearchTags;
+import com.meg.listshop.admin.model.PostUpdateTags;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.api.model.*;
@@ -273,12 +274,12 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
 
-    public ResponseEntity<Object> addChildren(@PathVariable("tagId") Long tagId, @RequestParam( "tagIds") String tagIds) {
-        if (tagIds == null) {
+    public ResponseEntity<Object> addChildren(@PathVariable("tagId") Long tagId, @RequestBody PostUpdateTags tagIdPost) {
+        if (tagIdPost == null || tagIdPost.getTagIds() == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        List<Long> tagIdList = commaDelimitedToList(tagIds);
+        List<Long> tagIdList = tagIdPost.getTagIds().stream().map(Long::valueOf).toList();
         this.tagService.assignChildrenToParent(tagId, tagIdList);
         return ResponseEntity.noContent().build();
 
