@@ -16,7 +16,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
         <project.container.name>com.meg.listshop.listshop</project.container.name>
-        <spring-boot-version>3.2.1</spring-boot-version><!-- next 3.2.12 -->
+        <spring-boot-version>3.2.12</spring-boot-version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring.boot.mainClass>com.meg.listshop.Application</spring.boot.mainClass>
