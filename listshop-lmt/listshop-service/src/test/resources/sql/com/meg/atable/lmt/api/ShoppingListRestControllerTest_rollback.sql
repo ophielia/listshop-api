@@ -10,6 +10,7 @@ delete
 from list_item
 where list_id in
       (509990, 509991, 509999, 609990, 609991, 51000, 6666, 7777, 77777, 500777, 110000,110099, 11000001, 90909090, 10101010);
+delete from list_item where item_id = 70771;
 delete
 from list
 where list_id in

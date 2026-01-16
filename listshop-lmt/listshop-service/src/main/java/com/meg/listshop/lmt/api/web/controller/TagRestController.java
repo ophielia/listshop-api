@@ -65,7 +65,7 @@ public class TagRestController implements TagRestControllerApi {
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
-    public ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable Long tagId, @RequestBody Tag input,
+    public ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable("tagId") Long tagId, @RequestBody Tag input,
                                           @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Creating add tag for user [%S]", userDetails.getId());
@@ -88,7 +88,7 @@ public class TagRestController implements TagRestControllerApi {
 
     }
 
-    public ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable Long tagId) {
+    public ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId) {
         // invalid dishId - returns invalid id supplied - 400
         var tagEntity = this.tagService
                 .getTagById(tagId);
@@ -103,7 +103,7 @@ public class TagRestController implements TagRestControllerApi {
     }
 
     @PutMapping(value = "{tagId}", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<Object> updateTag(Authentication authentication, HttpServletRequest request, @PathVariable Long tagId, @RequestBody TagPut input) throws BadParameterException {
+    public ResponseEntity<Object> updateTag(Authentication authentication, HttpServletRequest request, @PathVariable("tagId") Long tagId, @RequestBody TagPut input) throws BadParameterException {
         String tagName = input.getName();
         tagService.updateTagName(tagId, tagName);
         return ResponseEntity.noContent().build();

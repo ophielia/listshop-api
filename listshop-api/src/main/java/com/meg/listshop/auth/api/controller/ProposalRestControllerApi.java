@@ -25,7 +25,7 @@ import java.security.Principal;
 public interface ProposalRestControllerApi {
 
     @RequestMapping(method = RequestMethod.POST, value = "/target/{targetId}", produces = "application/json")
-    ResponseEntity<Object> generateProposal(HttpServletRequest request, Authentication authentication, @PathVariable Long targetId) throws ProposalProcessingException;
+    ResponseEntity<Object> generateProposal(HttpServletRequest request, Authentication authentication, @PathVariable("targetId") Long targetId) throws ProposalProcessingException;
 
     @RequestMapping(method = RequestMethod.GET, value = "/{proposalId}", produces = "application/json")
     ResponseEntity<ProposalResource> getProposal(Authentication authentication, @PathVariable("proposalId") Long proposalId);
@@ -35,10 +35,10 @@ public interface ProposalRestControllerApi {
                                            @RequestParam(value = "direction", required = false) String direction) throws ProposalProcessingException;
 
     @RequestMapping(method = RequestMethod.POST, value = "/{proposalId}/slot/{slotId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> selectDishInSlot(Authentication authentication, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId);
+    ResponseEntity<Object> selectDishInSlot(Authentication authentication, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId, @PathVariable("dishId") Long dishId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{proposalId}/slot/{slotId}/dish/{dishId}", produces = "application/json")
-    ResponseEntity<Object> clearDishFromSlot(Authentication authentication, @PathVariable Long proposalId, @PathVariable Long slotId, @PathVariable Long dishId);
+    ResponseEntity<Object> clearDishFromSlot(Authentication authentication, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId, @PathVariable("dishId") Long dishId);
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{proposalId}/slot/{slotId}", produces = "application/json")
     ResponseEntity<Object> refreshProposalSlot(Authentication authentication, @PathVariable("proposalId") Long proposalId, @PathVariable("slotId") Long slotId) throws ProposalProcessingException;

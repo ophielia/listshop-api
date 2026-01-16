@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.list;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
-import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
@@ -18,9 +17,9 @@ import com.meg.listshop.lmt.list.state.ListItemEvent;
 import com.meg.listshop.lmt.list.state.ListItemStateMachine;
 import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -45,8 +44,6 @@ class ShoppingListServiceImplMockTest {
 
     private ShoppingListService shoppingListService;
 
-    private UserService userService = Mockito.mock(UserService.class);
-
     private TagService tagService = Mockito.mock(TagService.class);
 
     private DishService dishService = Mockito.mock(DishService.class);
@@ -54,8 +51,6 @@ class ShoppingListServiceImplMockTest {
     private ShoppingListRepository shoppingListRepository = Mockito.mock(ShoppingListRepository.class);
 
     private LayoutService layoutService = Mockito.mock(LayoutService.class);
-
-    private ListSearchService listSearchService = Mockito.mock(ListSearchService.class);
 
     private MealPlanService mealPlanService = Mockito.mock(MealPlanService.class);
 
@@ -220,17 +215,11 @@ class ShoppingListServiceImplMockTest {
         // test call
         shoppingListService.deleteList(userId, listId);
 
-        Mockito.verify(shoppingListRepository, times(1)).findByListIdAndUserId(listId, userId);
         Mockito.verify(shoppingListRepository, times(1)).findByUserIdOrderByLastUpdateDesc(userId);
-        Mockito.verify(itemRepository, times(1)).findByListId(listId);
-        Mockito.verify(itemRepository, times(1)).deleteAll(items);
         Mockito.verify(shoppingListRepository, times(1)).delete(listId);
         Mockito.verify(shoppingListRepository, times(1)).flush();
 
-        // Assertions
-        Assertions.assertNotNull(listArgument.getValue());
-        ShoppingListEntity resultList = listArgument.getValue();
-        Assertions.assertTrue(resultList.getItems().isEmpty());
+
     }
 
     @Test
@@ -272,7 +261,6 @@ class ShoppingListServiceImplMockTest {
         });
 
 
-
     }
 
     @Test
@@ -292,7 +280,6 @@ class ShoppingListServiceImplMockTest {
             shoppingListService.deleteList(userId, listId);
         });
         // test call
-
 
 
     }
@@ -330,7 +317,7 @@ class ShoppingListServiceImplMockTest {
         shoppingListService.addItemToListByTag(userId, listId, tagId);
 
         Mockito.verify(itemChangeRepository, times(1)).saveItemChangeStatistics(any(ShoppingListEntity.class),
-                any(List.class),any(List.class), any(Long.class), any(ListOperationType.class));
+                any(List.class), any(List.class), any(Long.class), any(ListOperationType.class));
         Mockito.verify(shoppingListRepository, times(1)).save(listCapture.capture());
 
         Mockito.verify(shoppingListRepository, times(1)).getWithItemsByListId(listId);

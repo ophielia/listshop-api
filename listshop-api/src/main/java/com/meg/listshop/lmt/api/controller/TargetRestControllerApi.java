@@ -36,26 +36,26 @@ public interface TargetRestControllerApi {
     ResponseEntity<Target> deleteTarget(Principal principal, @PathVariable("targetId") Long targetId);
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{targetId}", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> updateTarget(HttpServletRequest request, Principal principal, @PathVariable Long targetId, @RequestBody Target input);
+    ResponseEntity<Object> updateTarget(HttpServletRequest request, Principal principal, @PathVariable("targetId") Long targetId, @RequestBody Target input);
 
     @RequestMapping(method = RequestMethod.POST, value = "/{targetId}/slot", produces = "application/json")
-    ResponseEntity<Object> addSlotToTarget(Principal principal, @PathVariable Long targetId, @RequestBody TargetSlot input);
+    ResponseEntity<Object> addSlotToTarget(Principal principal, @PathVariable("targetId") Long targetId, @RequestBody TargetSlot input);
 
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{targetId}/slot/{slotId}", produces = "application/json")
-    ResponseEntity<Object> deleteSlotFromTarget(Principal principal, @PathVariable Long targetId, @PathVariable Long slotId);
+    ResponseEntity<Object> deleteSlotFromTarget(Principal principal, @PathVariable("targetId") Long targetId, @PathVariable("slotId") Long slotId);
 
     @RequestMapping(method = RequestMethod.POST, value = "/{targetId}/slot/{slotId}/tag/{tagId}", produces = "application/json")
-    ResponseEntity<Object> addTagToSlot(Principal principal, @PathVariable Long targetId, @PathVariable Long slotId, @PathVariable Long tagId);
+    ResponseEntity<Object> addTagToSlot(Principal principal, @PathVariable("targetId") Long targetId, @PathVariable("slotId") Long slotId, @PathVariable("tagId") Long tagId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{targetId}/slot/{slotId}/tag/{tagId}", produces = "application/json")
-    ResponseEntity<Object> deleteTagFromSlot(Principal principal, @PathVariable Long targetId, @PathVariable Long slotId, @PathVariable Long tagId);
+    ResponseEntity<Object> deleteTagFromSlot(Principal principal, @PathVariable("targetId") Long targetId, @PathVariable("slotId") Long slotId, @PathVariable("tagId") Long tagId);
 
 
     @RequestMapping(method = RequestMethod.POST, value = "/{targetId}/tag/{tagId}", produces = "application/json")
-    ResponseEntity<Object> addTagToTarget(Principal principal, @PathVariable Long targetId, @PathVariable Long tagId);
+    ResponseEntity<Object> addTagToTarget(Principal principal, @PathVariable("targetId") Long targetId, @PathVariable("tagId") Long tagId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{targetId}/tag/{tagId}", produces = "application/json")
-    ResponseEntity<Object> deleteTagFromTarget(Principal principal, @PathVariable Long targetId, @PathVariable Long tagId);
+    ResponseEntity<Object> deleteTagFromTarget(Principal principal, @PathVariable("targetId") Long targetId, @PathVariable("tagId") Long tagId);
 
 }

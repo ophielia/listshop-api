@@ -20,7 +20,9 @@ public abstract class AbstractItemCollector implements ItemCollector {
     private final Map<Long, CollectedItem> tagCollectedItem;
     private final List<CollectedItem> freeTextItems;
 
+    private final Predicate<CollectedItem> isRemoved = i -> i.isRemoved();
     private final Predicate<CollectedItem> isChanged = i -> i.isChanged();
+    private final Predicate<CollectedItem> notRemoved = i -> !i.isRemoved();
 
     public AbstractItemCollector(Long savedNewListId, List<ListItemEntity> items) {
         this.listId = savedNewListId;
@@ -77,7 +79,17 @@ public abstract class AbstractItemCollector implements ItemCollector {
     @Override
     public List<ListItemEntity> getChangedItems() {
         return getTagCollectedMap().values().stream()
-                .filter(isChanged)
+                .filter(isChanged )
+                .filter(notRemoved )
+                .map(CollectedItem::getItem)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<ListItemEntity> getRemovedItems() {
+        return getTagCollectedMap().values().stream()
+                .filter(isRemoved )
                 .map(CollectedItem::getItem)
                 .collect(Collectors.toList());
     }

@@ -32,7 +32,7 @@ public interface DishRestControllerApi {
     ResponseEntity<Object> createDish(HttpServletRequest request, Authentication authentication, @RequestBody Dish input);
 
     @PutMapping(value = "/{dishId}", consumes = "application/json")
-    ResponseEntity<Object> updateDish(Authentication authentication, @PathVariable Long dishId, @RequestBody Dish input);
+    ResponseEntity<Object> updateDish(Authentication authentication, @PathVariable("dishId") Long dishId, @RequestBody Dish input);
 
     @GetMapping(value = "/{dishId}", produces = "application/json")
     ResponseEntity<DishResource> readDish(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
@@ -41,26 +41,28 @@ public interface DishRestControllerApi {
     ResponseEntity<CollectionModel<TagResource>> getTagsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
 
     @PostMapping(value = "/{dishId}/tag/{tagId}", produces = "application/json")
-    ResponseEntity<Object> addTagToDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long tagId);
+    ResponseEntity<Object> addTagToDish(Authentication authentication, @PathVariable("dishId") Long dishId,
+                                        @PathVariable("tagId") Long tagId);
 
     @DeleteMapping(value = "/{dishId}/tag/{tagId}", produces = "application/json")
-    ResponseEntity<Object> deleteTagFromDish(Authentication authentication, @PathVariable Long dishId, @PathVariable Long tagId);
+    ResponseEntity<Object> deleteTagFromDish(Authentication authentication, @PathVariable("dishId") Long dishId,
+                                             @PathVariable("tagId") Long tagId);
 
     @PutMapping(value = "/{dishId}/tag", produces = "application/json")
-    ResponseEntity<Object> addAndRemoveTags(Authentication authentication, @PathVariable Long dishId,
+    ResponseEntity<Object> addAndRemoveTags(Authentication authentication, @PathVariable("dishId") Long dishId,
                                             @RequestParam(value = "addTags", required = false) String addTags,
                                              @RequestParam(value = "removeTags", required = false) String removeTags);
 
     @GetMapping(value = "/{dishId}/ratings", produces = "application/json")
-    ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Authentication authentication, @PathVariable Long dishId);
+    ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Authentication authentication, @PathVariable("dishId") Long dishId);
 
     @PostMapping(value = "/{dishId}/rating/{ratingId}", produces = "application/json")
-    ResponseEntity<Object> incrementRatingForDish(Authentication authentication, @PathVariable Long dishId,
-                                                  @PathVariable Long ratingId,
+    ResponseEntity<Object> incrementRatingForDish(Authentication authentication, @PathVariable("dishId") Long dishId,
+                                                  @PathVariable("ratingId") Long ratingId,
                                                   @RequestParam(value = "action", required = true) String direction);
 
     @PutMapping(value = "/{dishId}/rating/{ratingId}/{step}", produces = "application/json")
-    ResponseEntity<Object> setRatingForDish(Authentication authentication, @PathVariable Long dishId,
-                                            @PathVariable Long ratingId,
-                                            @PathVariable Integer step);
+    ResponseEntity<Object> setRatingForDish(Authentication authentication, @PathVariable("dishId") Long dishId,
+                                            @PathVariable("ratingId") Long ratingId,
+                                            @PathVariable("step") Integer step);
 }

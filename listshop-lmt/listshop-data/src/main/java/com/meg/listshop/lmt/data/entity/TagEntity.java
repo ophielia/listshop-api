@@ -59,7 +59,7 @@ public class TagEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tag_sequence")
     @SequenceGenerator(name = "tag_sequence", sequenceName = "tag_sequence", allocationSize = 1)
     @Column(name = "tag_id")
-    private Long tag_id;
+    private Long tagId;
 
     @Column(name = "user_id")
     private Long userId;
@@ -121,15 +121,15 @@ public class TagEntity {
     }
 
     public TagEntity(Long tagId) {
-        this.tag_id = tagId;
+        this.tagId = tagId;
     }
 
     public Long getId() {
-        return tag_id;
+        return tagId;
     }
 
     public void setId(Long tagId) {
-        this.tag_id = tagId;
+        this.tagId = tagId;
     }
 
     public Long getUserId() {
@@ -332,20 +332,20 @@ public class TagEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         var tagEntity = (TagEntity) o;
-        return Objects.equals(tag_id, tagEntity.tag_id) &&
+        return Objects.equals(tagId, tagEntity.tagId) &&
                 Objects.equals(name, tagEntity.name) &&
                 tagType == tagEntity.tagType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tag_id, name, tagType);
+        return Objects.hash(tagId, name, tagType);
     }
 
     @Override
     public String toString() {
         return "TagEntity{" +
-                "tag_id=" + tag_id +
+                "tag_id=" + tagId +
                 ", userId=" + userId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

@@ -27,7 +27,7 @@ public interface ListLayoutRepository extends JpaRepository<ListLayoutEntity, Lo
     @Query("select e from TagEntity e " +
             "JOIN e.categories c " +
             "where c.layoutId = ?1 " +
-            "and e.tag_id in (?2)")
+            "and e.tagId in (?2)")
     List<TagEntity> getTagsToDeleteFromLayout(Long layoutId, Set<Long> tagIds);
 
     @Query("select e from ListLayoutEntity e where e.userId = ?1")

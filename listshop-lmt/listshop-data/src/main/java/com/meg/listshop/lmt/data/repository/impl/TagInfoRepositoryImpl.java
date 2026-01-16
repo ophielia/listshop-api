@@ -108,14 +108,14 @@ public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
 
         cq.select(cb.construct(
                 TagInfoDTO.class,
-                tagRelationRoot.get("child").get("tag_id"),
+                tagRelationRoot.get("child").get("tagId"),
                 tagRelationRoot.get("child").get("name"),
                 tagRelationRoot.get("child").get("description"),
                 tagRelationRoot.get("child").get("power"),
                 tagRelationRoot.get("child").get("userId"),
                 tagRelationRoot.get("child").get("tagType"),
                 tagRelationRoot.get("child").get("isGroup"),
-                tagRelationRoot.get("parent").get("tag_id"),
+                tagRelationRoot.get("parent").get("tagId"),
                 tagRelationRoot.get("child").get("toDelete")
         ));
 
@@ -144,7 +144,7 @@ public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
         }
         // tag ids
         if (criteria.getTagIds() != null && !criteria.getTagIds().isEmpty()) {
-            predicates.add(tagRelationRoot.get("child").get("tag_id").in(criteria.getTagIds()));
+            predicates.add(tagRelationRoot.get("child").get("tagId").in(criteria.getTagIds()));
         }
         // group type
         ParameterExpression<Boolean> parameterGroupInclude = cb.parameter(Boolean.class);

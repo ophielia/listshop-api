@@ -1,6 +1,7 @@
 package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.admin.model.PostSearchTags;
+import com.meg.listshop.admin.model.PostUpdateTags;
 import com.meg.listshop.lmt.api.model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -47,19 +48,19 @@ public interface AdminTagRestControllerApi {
 
 
     @DeleteMapping(value = "/delete/{tagId}")
-    ResponseEntity<Object> saveTagForDelete(@PathVariable("tagId") Long tagId, @RequestParam(value = "replacementTagId") Long replacementTagId);
+    ResponseEntity<Object> saveTagForDelete(@PathVariable Long tagId, @RequestParam(value = "replacementTagId") Long replacementTagId);
 
-    @PostMapping(value = "{tagId}/children", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Object> addChildren(@PathVariable Long tagId, @RequestParam(value = "tagIds", required = false) String filter);
+    @PostMapping(value = "/{tagId}/children")
+    ResponseEntity<Object> addChildren(@PathVariable("tagId") Long tagId, @RequestBody PostUpdateTags tagIdPost);
 
-    @PutMapping(value = "{parentId}/child/{childId}", produces = "application/json")
+    @PutMapping(value = "/{parentId}/child/{childId}", produces = "application/json")
     ResponseEntity<Object> assignChildToParent(@PathVariable("parentId") Long parentId, @PathVariable("childId") Long childId);
 
     @PutMapping(value = "/base/{tagId}", produces = "application/json")
     ResponseEntity<Object> assignChildToBaseTag(@PathVariable("tagId") Long tagId);
 
     @PutMapping(value = "/{tagId}", consumes = "application/json")
-    ResponseEntity<Object> updateTag(@PathVariable Long tagId, @RequestBody Tag input);
+    ResponseEntity<Object> updateTag(@PathVariable("tagId") Long tagId, @RequestBody Tag input);
 
     @PutMapping(consumes = "application/json")
     ResponseEntity<Object> performOperation(@RequestBody TagOperationPut input);

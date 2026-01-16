@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.meg.listshop.Application;
 import com.meg.listshop.admin.model.PostSearchTags;
+import com.meg.listshop.admin.model.PostUpdateTags;
 import com.meg.listshop.auth.data.entity.AuthorityName;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
@@ -21,14 +22,15 @@ import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.test.TestConstants;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -72,17 +74,17 @@ class AdminTagRestControllerTest {
     public static ListShopPostgresqlContainer postgresSQLContainer = ListShopPostgresqlContainer.getInstance();
 
     private static UserDetails userDetails;
+    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
+            MediaType.APPLICATION_JSON.getSubtype());
     @Autowired
     private
     ObjectMapper objectMapper;
-    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype());
-
     private MockMvc mockMvc;
     @Autowired
     private TagRepository tagRepository;
     @Autowired
     private WebApplicationContext webApplicationContext;
+    private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
 
     @BeforeEach
@@ -264,7 +266,7 @@ class AdminTagRestControllerTest {
         Assertions.assertNotNull(grid);
         Assertions.assertEquals(3, grid.getSamples().size(), "expected 3 samples");
         long commaCount = grid.getSamples().stream()
-                .filter( s -> s.getFromAmount().contains(",") ||
+                .filter(s -> s.getFromAmount().contains(",") ||
                         s.getToAmount().contains(","))
                 .count();
         Assertions.assertEquals(0L, commaCount);
@@ -289,7 +291,7 @@ class AdminTagRestControllerTest {
         Assertions.assertNotNull(grid);
         Assertions.assertEquals(1, grid.getSamples().size(), "expected 3 samples");
         long commaCount = grid.getSamples().stream()
-                .filter( s -> s.getFromAmount().contains(",") ||
+                .filter(s -> s.getFromAmount().contains(",") ||
                         s.getToAmount().contains(","))
                 .count();
         Assertions.assertEquals(0L, commaCount);
@@ -318,7 +320,7 @@ class AdminTagRestControllerTest {
         Assertions.assertNotNull(grid);
         Assertions.assertEquals(15, grid.getSamples().size(), "expected 45 samples");
         long commaCount = grid.getSamples().stream()
-                .filter( s -> s.getFromUnit().contains(",") ||
+                .filter(s -> s.getFromUnit().contains(",") ||
                         s.getToUnit().contains(","))
                 .count();
         Assertions.assertTrue(commaCount > 1);
@@ -327,10 +329,14 @@ class AdminTagRestControllerTest {
 
     @Test
     void addChildren() throws Exception {
-        String url = "/admin/tag/" + TestConstants.PARENT_TAG_ID_1 + "/children?tagIds=" + TestConstants.TAG_MEAT + "," + TestConstants.TAG_CARROTS + "," + TestConstants.TAG_CROCKPOT;
-
-        this.mockMvc.perform(post(url).contentType(contentType)
-                        .with(user(userDetails)))
+        String url = "/admin/tag/" + TestConstants.PARENT_TAG_ID_1 + "/children";
+        PostUpdateTags postUpdate = new PostUpdateTags();
+        postUpdate.setTagIds(List.of(TestConstants.TAG_MEAT, TestConstants.TAG_CARROTS, TestConstants.TAG_CROCKPOT).stream().map(String::valueOf).toList());
+        String payload = json(postUpdate);
+        this.mockMvc.perform(post(url)
+                        .with(user(userDetails))
+                        .contentType(contentType)
+                        .content(payload))
                 .andExpect(status().is2xxSuccessful());
     }
 
@@ -530,4 +536,6 @@ class AdminTagRestControllerTest {
         return objectMapper.readValue(json, TagListResource.class);
 
     }
+
+
 }

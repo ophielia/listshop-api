@@ -204,9 +204,9 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<Object> updateItemCountByTag(Authentication authentication, @PathVariable Long listId,
-                                                       @PathVariable Long tagId,
-                                                       @PathVariable Integer usedCount
+    public ResponseEntity<Object> updateItemCountByTag(Authentication authentication, @PathVariable("listId") Long listId,
+                                                       @PathVariable("tagId") Long tagId,
+                                                       @PathVariable("usedCount") Integer usedCount
     ) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         final String message = String.format("Update count for tag [%d] to [%d] in list [%d]", tagId, usedCount, listId);
@@ -215,7 +215,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> addItemToListByTag(Authentication authentication, @PathVariable Long listId, @PathVariable Long tagId) throws ItemProcessingException {
+    public ResponseEntity<Object> addItemToListByTag(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("tagId") Long tagId) throws ItemProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding tag [{}] to list [{}] for user [{}]", tagId, listId, userDetails.getId());
         this.shoppingListService.addItemToListByTag(userDetails.getId(), listId, tagId);
@@ -223,7 +223,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<Object> deleteItemFromList(Authentication authentication, @PathVariable Long listId, @PathVariable Long itemId,
+    public ResponseEntity<Object> deleteItemFromList(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("itemId") Long itemId,
                                                      @RequestParam(value = "removeEntireItem", required = false, defaultValue = "false") Boolean removeEntireItem,
                                                      @RequestParam(value = "sourceId", required = false, defaultValue = "0") String sourceId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -242,7 +242,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> setCrossedOffForItem(Authentication authentication, @PathVariable Long listId, @PathVariable Long itemId,
+    public ResponseEntity<Object> setCrossedOffForItem(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("itemId") Long itemId,
                                                        @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff
     ) throws ItemProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -252,7 +252,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> crossOffAllItemsOnList(Authentication authentication, @PathVariable Long listId,
+    public ResponseEntity<Object> crossOffAllItemsOnList(Authentication authentication, @PathVariable("listId") Long listId,
                                                          @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff) throws ItemProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Setting crossed off [{}] for all items on list [{}] for user [{}]", crossedOff, listId, userDetails.getId());
@@ -263,7 +263,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
     @Override
-    public ResponseEntity<Object> deleteAllItemsFromList(Authentication authentication, @PathVariable Long listId) {
+    public ResponseEntity<Object> deleteAllItemsFromList(Authentication authentication, @PathVariable("listId") Long listId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Deleting all items from list [{}] for user [{}]", listId, userDetails.getId());
         try {
@@ -278,7 +278,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
     @Override
-    public ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication authentication, @PathVariable Long mealPlanId) {
+    public ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Generating list from mealplan [{}] for user [{}]", mealPlanId, userDetails.getId());
         ShoppingListEntity shoppingListEntity = null;
@@ -297,7 +297,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<Object> addToListFromMealPlan(Authentication authentication, @PathVariable Long listId, @PathVariable Long mealPlanId) {
+    public ResponseEntity<Object> addToListFromMealPlan(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("mealPlanId") Long mealPlanId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding to list [{}] from meal plan [{}] for user [{}]", listId, mealPlanId, userDetails.getId());
         try {
@@ -310,7 +310,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @PostMapping(value = "/{listId}/dish", produces = "application/json")
-    public ResponseEntity<Object> addDishesToList(Authentication authentication, @PathVariable Long listId,
+    public ResponseEntity<Object> addDishesToList(Authentication authentication, @PathVariable("listId") Long listId,
                                                   @RequestBody ListAddProperties listAddProperties) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Adding dishes to list for user [%S]", userDetails.getId());
@@ -328,7 +328,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
     @Override
-    public ResponseEntity<Object> addDishToList(Authentication authentication, @PathVariable Long listId, @PathVariable Long dishId) {
+    public ResponseEntity<Object> addDishToList(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("dishId") Long dishId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding dish [{}] to list [{}] for user [{}]", dishId, listId, userDetails.getId());
         try {
@@ -342,7 +342,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<Object> removeDishFromList(Authentication authentication, @PathVariable Long listId, @PathVariable Long dishId) {
+    public ResponseEntity<Object> removeDishFromList(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("dishId") Long dishId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Removing dish [{}] from list [{}] for user [{}]", dishId, listId, userDetails.getId());
 
@@ -359,7 +359,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
     @Override
-    public ResponseEntity<Object> addToListFromList(Authentication authentication, @PathVariable Long listId, @PathVariable Long fromListId) {
+    public ResponseEntity<Object> addToListFromList(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("fromListId") Long fromListId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding list [{}] to list [{}] for user [{}]", fromListId, listId, userDetails.getId());
 
@@ -374,7 +374,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<Object> removeFromListByList(Authentication authentication, @PathVariable Long listId, @PathVariable Long fromListId) {
+    public ResponseEntity<Object> removeFromListByList(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("fromListId") Long fromListId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Removing list [{}] from list [{}] for user [{}]", fromListId, listId, userDetails.getId());
         try {
@@ -386,7 +386,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
     @Override
-    public ResponseEntity<Object> changeListLayout(Authentication authentication, @PathVariable Long listId, @PathVariable Long layoutId) {
+    public ResponseEntity<Object> changeListLayout(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("layoutId") Long layoutId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Chaning list layout [{}] for list [{}] for user [{}]", layoutId, listId, userDetails.getId());
         this.shoppingListService.changeListLayout(userDetails.getId(), listId, layoutId);

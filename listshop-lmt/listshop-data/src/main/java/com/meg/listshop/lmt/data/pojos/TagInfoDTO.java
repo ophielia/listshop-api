@@ -4,7 +4,7 @@ import com.meg.listshop.lmt.api.model.TagType;
 
 public class TagInfoDTO {
 
-    private Long tag_id;
+    private Long tagId;
 
     private String name;
 
@@ -31,7 +31,7 @@ public class TagInfoDTO {
     public TagInfoDTO(Long tagId, String name, String description,
                       Double power, Long userId, TagType tagType,
                       boolean isGroup, Long parentId, boolean toDelete,Boolean isLiquid) {
-        this.tag_id = tagId;
+        this.tagId = tagId;
         this.name = name;
         this.description = description;
         this.power = power;
@@ -44,7 +44,7 @@ public class TagInfoDTO {
     }
 
     public Long getTagId() {
-        return tag_id;
+        return tagId;
     }
 
     public String getName() {
@@ -90,7 +90,7 @@ public class TagInfoDTO {
     @Override
     public String toString() {
         return "TagInfoEntity{" +
-                "tag_id=" + tag_id +
+                "tag_id=" + tagId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", power=" + power +

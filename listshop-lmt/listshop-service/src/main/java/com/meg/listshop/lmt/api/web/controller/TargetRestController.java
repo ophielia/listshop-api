@@ -86,7 +86,7 @@ public class TargetRestController implements TargetRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Target> readTarget(Principal principal, @PathVariable Long targetId) {
+    public ResponseEntity<Target> readTarget(Principal principal, @PathVariable("targetId") Long targetId) {
         TargetEntity target = this.targetService
                 .getTargetById(principal.getName(), targetId);
 
@@ -103,7 +103,7 @@ public class TargetRestController implements TargetRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Target> deleteTarget(Principal principal, @PathVariable Long targetId) {
+    public ResponseEntity<Target> deleteTarget(Principal principal, @PathVariable("targetId") Long targetId) {
         boolean success = targetService.deleteTarget(principal.getName(), targetId);
         if (success) {
             return ResponseEntity.noContent().build();
@@ -113,7 +113,7 @@ public class TargetRestController implements TargetRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> updateTarget(HttpServletRequest request, Principal principal, @PathVariable Long targetId, @RequestBody Target input) {
+    public ResponseEntity<Object> updateTarget(HttpServletRequest request, Principal principal, @PathVariable("targetId") Long targetId, @RequestBody Target input) {
         //this.getUserForPrincipal(principal);
         TargetEntity targetEntity = ModelMapper.toEntity(input);
 
@@ -129,7 +129,7 @@ public class TargetRestController implements TargetRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> addSlotToTarget(Principal principal, @PathVariable Long targetId, @RequestBody TargetSlot input) {
+    public ResponseEntity<Object> addSlotToTarget(Principal principal, @PathVariable("targetId") Long targetId, @RequestBody TargetSlot input) {
         TargetSlotEntity targetSlotEntity = ModelMapper.toEntity(input);
         this.targetService.addSlotToTarget(principal.getName(), targetId, targetSlotEntity);
 
@@ -138,21 +138,21 @@ public class TargetRestController implements TargetRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteSlotFromTarget(Principal principal, @PathVariable Long targetId, @PathVariable Long slotId) {
+    public ResponseEntity<Object> deleteSlotFromTarget(Principal principal, @PathVariable("targetId") Long targetId, @PathVariable("slotId") Long slotId) {
         this.targetService.deleteSlotFromTarget(principal.getName(), targetId, slotId);
 
         return ResponseEntity.noContent().build();
     }
 
     @Override
-    public ResponseEntity<Object> addTagToSlot(Principal principal, @PathVariable Long targetId, @PathVariable Long slotId, @PathVariable Long tagId) {
+    public ResponseEntity<Object> addTagToSlot(Principal principal, @PathVariable("targetId") Long targetId, @PathVariable("slotId") Long slotId, @PathVariable("tagId") Long tagId) {
         this.targetService.addTagToTargetSlot(principal.getName(), targetId, slotId, tagId);
 
         return ResponseEntity.noContent().build();
     }
 
     @Override
-    public ResponseEntity<Object> deleteTagFromSlot(Principal principal, @PathVariable Long targetId, @PathVariable Long slotId, @PathVariable Long tagId) {
+    public ResponseEntity<Object> deleteTagFromSlot(Principal principal, @PathVariable("targetId") Long targetId, @PathVariable("slotId") Long slotId, @PathVariable("tagId") Long tagId) {
         this.targetService.deleteTagFromTargetSlot(principal.getName(), targetId, slotId, tagId);
 
         return ResponseEntity.noContent().build();
@@ -160,14 +160,14 @@ public class TargetRestController implements TargetRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> addTagToTarget(Principal principal, @PathVariable Long targetId, @PathVariable Long tagId) {
+    public ResponseEntity<Object> addTagToTarget(Principal principal, @PathVariable("targetId") Long targetId, @PathVariable("tagId") Long tagId) {
         this.targetService.addTagToTarget(principal.getName(), targetId, tagId);
 
         return ResponseEntity.noContent().build();
     }
 
     @Override
-    public ResponseEntity<Object> deleteTagFromTarget(Principal principal, @PathVariable Long targetId, @PathVariable Long tagId) {
+    public ResponseEntity<Object> deleteTagFromTarget(Principal principal, @PathVariable("targetId") Long targetId, @PathVariable("tagId") Long tagId) {
         this.targetService.deleteTagFromTarget(principal.getName(), targetId, tagId);
 
         return ResponseEntity.noContent().build();

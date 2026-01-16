@@ -5,7 +5,7 @@
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>listshop-data</artifactId>
-    <version>1.19.0</version>
+    <version>1.20.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>listshop-data</name>
@@ -15,7 +15,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-lmt</artifactId>
-        <version>1.19.0</version>
+        <version>1.20.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -29,12 +29,7 @@
             <groupId>com.meg.listshop</groupId>
             <artifactId>listshop-common-data</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>hibernate-core</artifactId>
-                    <groupId>org.hibernate.orm</groupId>
-                </exclusion>
-            </exclusions>
+
         </dependency>
         <dependency>
             <groupId>com.meg.listshop</groupId>
@@ -68,12 +63,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>hibernate-core</artifactId>
-                    <groupId>org.hibernate.orm</groupId>
-                </exclusion>
-            </exclusions>
+
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -117,11 +107,7 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
             <version>1.11.1</version>
         </dependency>
-        <!-- hibernate -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-        </dependency>
+
         <!-- tsid, vlad -->
         <dependency>
             <groupId>io.hypersistence</groupId>
@@ -132,8 +118,7 @@
         <!-- testcontainers -->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>compile</scope>
+            <artifactId>testcontainers-postgresql</artifactId>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
@@ -156,6 +141,10 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
 
 
@@ -195,18 +184,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
@@ -220,7 +203,7 @@
         <dependency>
             <groupId>com.meg.listshop</groupId>
             <artifactId>conversion-data</artifactId>
-            <version>1.19.0</version>
+            <version>1.20.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 

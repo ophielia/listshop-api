@@ -65,11 +65,11 @@ public interface TagRepository extends JpaRepository<TagEntity, Long>, CustomTag
             "LIMIT  1 ", nativeQuery = true)
     TagEntity getNextRatingDown(Long parentRatingId, Long currentId);
 
-    @Query(value = "select t from TagEntity t where t.tag_id in (:tagIds)")
+    @Query(value = "select t from TagEntity t where t.tagId in (:tagIds)")
     List<TagEntity> getTagsForIdList(@Param("tagIds") Set<Long> tagIds);
 
     @Modifying
-    @Query("update TagEntity t set t.userId = :userId where t.userId is null and t.tag_id in (:tagIds)")
+    @Query("update TagEntity t set t.userId = :userId where t.userId is null and t.tagId in (:tagIds)")
     void assignTagsToUser(@Param("userId") Long userId, @Param("tagIds") List<Long> tagIds);
 
     @Query(value = "select  t.tag_id, p.tag_id as parent_id from tag t " +

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>conversion-service</artifactId>
-    <version>1.19.0</version>
+    <version>1.20.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>conversion-service</name>
@@ -13,7 +13,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-conversion</artifactId>
-        <version>1.19.0</version>
+        <version>1.20.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.meg.listshop</groupId>
             <artifactId>conversion-api</artifactId>
-            <version>1.19.0</version>
+            <version>1.20.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -65,14 +65,8 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.9.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -86,7 +80,11 @@
             <version>${project.version}</version>
         </dependency>
 
-
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

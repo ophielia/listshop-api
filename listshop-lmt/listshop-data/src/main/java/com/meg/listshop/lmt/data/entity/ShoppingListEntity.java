@@ -40,7 +40,9 @@ public class ShoppingListEntity {
     @Column(name = "list_types")
     private String listType;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            cascade = CascadeType.ALL)
     @JoinColumn(name = "list_id", referencedColumnName = "list_id")
     private List<ListItemEntity> items = new ArrayList<>();
 

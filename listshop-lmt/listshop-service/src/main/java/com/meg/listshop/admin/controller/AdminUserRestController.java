@@ -99,7 +99,7 @@ public class AdminUserRestController implements AdminUserRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<AdminUser> getUser(@PathVariable Long userId) throws ObjectNotFoundException, BadParameterException {
+    public ResponseEntity<AdminUser> getUser(@PathVariable("userId") Long userId) throws ObjectNotFoundException, BadParameterException {
         if (userId == null) {
             throw new BadParameterException("Can't get a user without an id!");
         }

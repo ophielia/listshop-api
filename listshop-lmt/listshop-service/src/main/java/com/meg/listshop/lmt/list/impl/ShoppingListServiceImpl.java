@@ -193,19 +193,19 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 operationType.equals(ItemOperationType.RemoveAll)) {
 
             List<ListItemEntity> changedItems = new ArrayList<>();
-            List<Long> removedTagIds = new ArrayList<>();
+            List<ListItemEntity> removedItems = new ArrayList<>();
             for (ListItemEntity item : operationItems) {
                 ItemStateContext context = new ItemStateContext(item, sourceListId);
                 context.setTag(item.getTag());
                 ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
                 if (result == null) {
-                    removedTagIds.add(item.getTag().getId());
+                    removedItems.add(item);
                 } else {
                     changedItems.add(result);
                 }
             }
 
-            saveListChanges(sourceList, changedItems, removedTagIds, ListOperationType.LIST_REMOVE);
+            saveListChanges(sourceList, changedItems, removedItems, ListOperationType.LIST_REMOVE);
         }
 
     }
@@ -378,11 +378,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         ShoppingListEntity toDelete = toDeleteOpt.get();
-        List<ListItemEntity> items = itemRepository.findByListId(listId);
-        itemRepository.deleteAll(items);
-        toDelete.setItems(new ArrayList<>());
-        shoppingListRepository.save(toDelete);
-        toDelete = getSimpleListForUserById(userId, listId);
+
         shoppingListRepository.delete(toDelete.getId());
         shoppingListRepository.flush();
     }
@@ -457,13 +453,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
 
         List<ListItemEntity> updatedItems = new ArrayList<>();
-        List<Long> deletedItems = new ArrayList<>();
+        List<ListItemEntity> deletedItems = new ArrayList<>();
         for (ListItemEntity item : itemEntities) {
             ItemStateContext context = new ItemStateContext(item, listId);
             context.setTag(item.getTag());
             ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
             if (result == null) {
-                deletedItems.add(item.getTag().getId());
+                deletedItems.add(item);
             } else {
                 updatedItems.add(item);
             }
@@ -487,7 +483,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         context.setTag(item.getTag());
         listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
 
-        saveListChanges(shoppingListEntity, List.of(item), List.of(item.getTag().getId()), ListOperationType.LIST_REMOVE);
+        saveListChanges(shoppingListEntity, List.of(item), List.of(item), ListOperationType.LIST_REMOVE);
     }
 
     @Override
@@ -655,11 +651,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .build();
         legacySaveListChanges(list, mergeCollector, context);
 
-        // delete tags by removed on
-        LocalDate removedBeforeDate = LocalDate.now().minusDays(mergeDeleteAfterDays);
-        List<ListItemEntity> itemsToRemove = itemRepository.findByRemovedOnBefore(java.sql.Date.valueOf(removedBeforeDate));
-        itemRepository.deleteAll(itemsToRemove);
-
         logger.info("Merge complete for list [{}}].", list.getId());
         return new MergeResult();
     }
@@ -783,7 +774,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<Long> tagIdsToRemove = itemRepository.findTagIdsInListByDishId(dishId, listId);
 
         List<ListItemEntity> changedItems = new ArrayList<>();
-        List<Long> removedTagIds = new ArrayList<>();
+        List<ListItemEntity> removedTagIds = new ArrayList<>();
         for (ListItemEntity item : shoppingList.getItems()) {
             Long tagId = item.getTag().getId();
             if (tagIdsToRemove.contains(tagId)) {
@@ -793,13 +784,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         saveListChanges(shoppingList, changedItems, removedTagIds, ListOperationType.DISH_REMOVE);
     }
 
-    private void removeDishItem(ListItemEntity item, Long listId, Long dishId, List<ListItemEntity> changedItems, List<Long> removedIds) throws ItemProcessingException {
+    private void removeDishItem(ListItemEntity item, Long listId, Long dishId, List<ListItemEntity> changedItems,
+                                List<ListItemEntity> removedIds) throws ItemProcessingException {
         ItemStateContext context = new ItemStateContext(item, listId);
         context.setDishId(dishId);
 
         ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
         if (result == null) {
-            removedIds.add(item.getTag().getId());
+            removedIds.add(item);
         } else {
             changedItems.add(result);
         }
@@ -817,7 +809,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         List<Long> tagIdsToRemove = itemRepository.findTagIdsInListByListId(fromListId, listId);
 
         List<ListItemEntity> changedItems = new ArrayList<>();
-        List<Long> removedItems = new ArrayList<>();
+        List<ListItemEntity> removedItems = new ArrayList<>();
         for (Long tagId : tagIdsToRemove) {
             ListItemEntity itemInList = listItemsByTag.get(tagId);
             ItemStateContext testContext = new ItemStateContext(itemInList, listId);
@@ -826,7 +818,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             if (resultItems != null) {
                 changedItems.add(itemInList);
             } else {
-                removedItems.add(itemInList.getTag().getId());
+                removedItems.add(itemInList);
             }
         }
 
@@ -887,8 +879,16 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     private void legacySaveListChanges(ShoppingListEntity shoppingList, ItemCollector collector, CollectorContext context) {
         itemChangeRepository.legacySaveItemChanges(shoppingList, collector, shoppingList.getUserId(), context);
+
         // make changes in list object
-        shoppingList.setItems(collector.getAllItems());
+        for (ListItemEntity toRemove : collector.getRemovedItems()) {
+            shoppingList.getItems().remove(toRemove);
+        }
+        for (ListItemEntity changed : collector.getChangedItems()) {
+            shoppingList.getItems().remove(changed);
+            shoppingList.getItems().add(changed);
+        }
+        //shoppingList.setItems(collector.getAllItems());
         if (collector.hasChanges()) {
             shoppingList.setLastUpdate(new Date());
         }
@@ -905,18 +905,21 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         }
     }
 
-
     private void saveListChanges(ShoppingListEntity shoppingList, List<ListItemEntity> changedItems,
-                                 List<Long> removedTagIds, ListOperationType operationType) {
+                                 List<ListItemEntity> removedItems, ListOperationType operationType) {
+        List<Long> removedTagIds = removedItems.stream()
+                .map(ListItemEntity::getTag)
+                .map(TagEntity::getId)
+                .toList();
         itemChangeRepository.saveItemChangeStatistics(shoppingList, changedItems, removedTagIds, shoppingList.getUserId(), operationType);
-
-        List<ListItemEntity> filteredItems = shoppingList.getItems().stream()
-                .filter(item -> !removedTagIds.contains(item.getTag().getId()))
+        removedItems.forEach(removed -> shoppingList.getItems().remove(removed));
+     /*   List<ListItemEntity> filteredItems = shoppingList.getItems().stream()
+                .filter(item -> !removedItems.contains(item.getTag().getId()))
                 .collect(Collectors.toList());
-        shoppingList.setItems(filteredItems);
+        shoppingList.setItems(filteredItems);*/
         // make changes in list object
         if ((changedItems != null && !changedItems.isEmpty()) ||
-                ( removedTagIds != null && !removedTagIds.isEmpty())) {
+                (removedItems != null && !removedItems.isEmpty())) {
             shoppingList.setLastUpdate(new Date());
             shoppingListRepository.save(shoppingList);
         }
