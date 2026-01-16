@@ -20,7 +20,7 @@ public class ListItemEntity {
     @OneToMany(mappedBy = "item")
     private List<ListItemDetailEntity> details = new ArrayList<>();
 
-    @OneToOne( cascade = CascadeType.ALL)
+    @OneToOne( cascade = CascadeType.MERGE)
     @JoinColumn(name = "tagId",referencedColumnName = "tag_id")
     private TagEntity tag;
 

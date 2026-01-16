@@ -17,5 +17,7 @@ public interface ItemCollector {
 
     List<ListItemEntity> getChangedItems();
 
+    List<ListItemEntity> getRemovedItems();
+
     void replaceOutdatedTags(List<TagEntity> outdatedTags, Map<Long, TagEntity> replacementDictionary);
 }
