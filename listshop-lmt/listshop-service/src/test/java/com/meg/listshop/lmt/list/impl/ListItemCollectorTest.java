@@ -69,8 +69,10 @@ class ListItemCollectorTest {
         // check results
         List<ListItemEntity> changed = collector.getChangedItems();
         Assertions.assertNotNull(changed);
-        Assertions.assertEquals(1, changed.size());
-        Assertions.assertNotNull(changed.get(0).getRemovedOn());
+        Assertions.assertEquals(0, changed.size());
+        List<ListItemEntity> removed = collector.getRemovedItems();
+        Assertions.assertNotNull(removed);
+        Assertions.assertEquals(1, removed.size());
     }
 
 
@@ -100,7 +102,7 @@ class ListItemCollectorTest {
         // check results
         List<ListItemEntity> changed = collector.getChangedItems();
         Assertions.assertNotNull(changed);
-        Assertions.assertEquals(3, changed.size());
+        Assertions.assertEquals(2, changed.size());
 
         // check dates
         int added =0;
@@ -116,7 +118,6 @@ class ListItemCollectorTest {
                 added++;
             }
         }
-        Assertions.assertTrue(deleted > 0);
         Assertions.assertTrue(added > 0);
         Assertions.assertTrue(updated > 0);
     }
