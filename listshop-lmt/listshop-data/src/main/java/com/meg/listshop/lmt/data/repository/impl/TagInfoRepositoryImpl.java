@@ -108,14 +108,14 @@ public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
 
         cq.select(cb.construct(
                 TagInfoDTO.class,
-                tagRelationRoot.get("child").get("tag_id"),
+                tagRelationRoot.get("child").get("tagId"),
                 tagRelationRoot.get("child").get("name"),
                 tagRelationRoot.get("child").get("description"),
                 tagRelationRoot.get("child").get("power"),
                 tagRelationRoot.get("child").get("userId"),
                 tagRelationRoot.get("child").get("tagType"),
                 tagRelationRoot.get("child").get("isGroup"),
-                tagRelationRoot.get("parent").get("tag_id"),
+                tagRelationRoot.get("parent").get("tagId"),
                 tagRelationRoot.get("child").get("toDelete")
         ));
 
@@ -144,7 +144,7 @@ public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
         }
         // tag ids
         if (criteria.getTagIds() != null && !criteria.getTagIds().isEmpty()) {
-            predicates.add(tagRelationRoot.get("child").get("tag_id").in(criteria.getTagIds()));
+            predicates.add(tagRelationRoot.get("child").get("tagId").in(criteria.getTagIds()));
         }
         // group type
         ParameterExpression<Boolean> parameterGroupInclude = cb.parameter(Boolean.class);
@@ -259,7 +259,7 @@ public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
     private static final class TagInfoMapper implements RowMapper<TagInfoDTO> {
 
         public TagInfoDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Long id = rs.getLong("tag_id");
+            Long id = rs.getLong("tagId");
             Long userId = rs.getLong("user_id");
             String name = rs.getString("name");
             String description = rs.getString("description");
