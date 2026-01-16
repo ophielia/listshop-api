@@ -3,12 +3,14 @@ package com.meg.listshop.lmt.list;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
 /**
  * Created by margaretmartin on 30/10/2017.
  */
+@Transactional
 public interface ShoppingListService {
 
     String FREQUENT = "frequent";

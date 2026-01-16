@@ -32,7 +32,6 @@ public class PostofficeConfiguration {
     }
 
     @Bean
-    @Autowired
     public JavaMailSender javaMailSender(MailConfiguration mailConfiguration) {
 
         var mailSender = new JavaMailSenderImpl();
@@ -62,7 +61,6 @@ public class PostofficeConfiguration {
     }
 
     @Bean
-    @Autowired
     public MailService mailService(FreeMarkerConfigurer freemarkerConfigurer, JavaMailSender javaMailSender, MailConfiguration mailConfiguration) {
         return new MailService( freemarkerConfigurer, javaMailSender, mailConfiguration);
     }
