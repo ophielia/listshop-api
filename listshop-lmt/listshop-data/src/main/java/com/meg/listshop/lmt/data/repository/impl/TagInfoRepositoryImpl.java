@@ -259,7 +259,7 @@ public class TagInfoRepositoryImpl implements CustomTagInfoRepository {
     private static final class TagInfoMapper implements RowMapper<TagInfoDTO> {
 
         public TagInfoDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Long id = rs.getLong("tagId");
+            Long id = rs.getLong("tag_id");
             Long userId = rs.getLong("user_id");
             String name = rs.getString("name");
             String description = rs.getString("description");
