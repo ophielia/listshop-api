@@ -21,4 +21,6 @@ public interface ConverterService {
     ConvertibleAmount convert(ConvertibleAmount amount, UnitEntity targetUnit, String unitSize) throws ConversionPathException, ConversionFactorException;
 
     ConvertibleAmount add(ConvertibleAmount amountToAdd, ConvertibleAmount addTo, AddRequest addRequest) throws ConversionPathException, ConversionFactorException, ConversionAddException;
+
+    ConvertibleAmount scale(ConvertibleAmount summary, AddRequest addRequest) throws ConversionFactorException;
 }

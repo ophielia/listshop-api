@@ -1,0 +1,74 @@
+package com.meg.listshop.lmt.conversion;
+
+import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.service.ConvertibleAmount;
+import com.meg.listshop.lmt.data.entity.DishItemEntity;
+import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
+import com.meg.listshop.lmt.data.entity.TagEntity;
+import org.springframework.format.annotation.DurationFormat;
+
+public class EntityConvertibleAmount implements ConvertibleAmount {
+
+    private UnitEntity unitEntity;
+    private double quantity;
+    private String marker;
+    private Boolean isLiquid;
+    private String unitSize;
+
+    public EntityConvertibleAmount(ListItemDetailEntity listItemDetail, UnitEntity unit, TagEntity tagEntity) {
+        this.unitEntity = unit;
+        this.quantity = listItemDetail.getQuantity();
+        this.marker = listItemDetail.getMarker();
+        this.isLiquid = tagEntity.getIsLiquid();
+        this.unitSize = listItemDetail.getUnitSize();
+    }
+
+    public EntityConvertibleAmount(DishItemEntity dishItem, UnitEntity unit, TagEntity tagEntity) {
+        this.unitEntity = unit;
+        this.quantity = dishItem.getQuantity();
+        this.marker = dishItem.getMarker();
+        this.isLiquid = tagEntity.getIsLiquid();
+        this.unitSize = dishItem.getUnitSize();
+    }
+
+    @Override
+    public double getQuantity() {
+        return quantity;
+    }
+
+    @Override
+    public UnitEntity getUnit() {
+        return unitEntity;
+    }
+
+    @Override
+    public Long getConversionId() {
+        return 0L;
+    }
+
+    @Override
+    public String getMarker() {
+        return marker;
+    }
+
+    @Override
+    public Boolean getIsLiquid() {
+        return isLiquid;
+    }
+
+    @Override
+    public String getUnitSize() {
+        return unitSize;
+    }
+
+
+    @Override
+    public Boolean getUserSize() {
+        return false;
+    }
+
+    @Override
+    public double getQuantityRoundedUp() {
+        return 0;
+    }
+}

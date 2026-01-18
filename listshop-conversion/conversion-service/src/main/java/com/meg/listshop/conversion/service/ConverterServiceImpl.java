@@ -150,6 +150,23 @@ public class ConverterServiceImpl implements ConverterService {
         return summedAmount;
     }
 
+    public ConvertibleAmount scale(ConvertibleAmount toScale,  AddRequest request) throws ConversionFactorException {
+        // do the scaling
+        // create context
+        ConversionSpec spec = ConversionSpec.specForAddRequest(request);
+        ConversionContext context = new ConversionContext(toScale, spec);
+        prepareContextForTagSpecificScaling(context);
+        ScalingHandler scalingHandler = getScalerForContext(context);
+
+        // do scaling
+        if (scalingHandler != null && !context.isUnitToUnit()) {
+            return scalingHandler.scale(toScale, context);
+        }
+
+        // return result
+        return toScale;
+    }
+
     private ConvertibleAmount equalizeSize(ConvertibleAmount possibleScale, ConversionContext context, ScalingHandler scalingHandler) throws ConversionFactorException {
         if (!context.isUnitToUnit() ||
                 possibleScale.getUnitSize() == null && context.getTargetUnitSize() == null ||

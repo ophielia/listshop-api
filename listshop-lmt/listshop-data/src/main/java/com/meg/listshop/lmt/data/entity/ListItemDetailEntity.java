@@ -75,6 +75,9 @@ public class ListItemDetailEntity {
     @Column(name = "raw_entry")
     private String rawEntry;
 
+    @Transient
+    private boolean unspecified = true;
+
     public ListItemDetailEntity() {
         // necessary for jpa construction
     }
@@ -211,6 +214,13 @@ public class ListItemDetailEntity {
         this.rawEntry = rawEntry;
     }
 
+
+    public void setUnspecified(boolean specified) {
+        //MM 2236 - add unspecified to db for item, item detail.
+        // currently, just transient, so the sucker works
+
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -240,4 +250,5 @@ public class ListItemDetailEntity {
                 ", originalUnitId=" + originalUnitId +
                 '}';
     }
+
 }

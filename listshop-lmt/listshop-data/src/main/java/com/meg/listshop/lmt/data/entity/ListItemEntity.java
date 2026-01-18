@@ -1,5 +1,7 @@
 package com.meg.listshop.lmt.data.entity;
 
+import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.lmt.api.model.FractionType;
 import jakarta.persistence.*;
 
 import java.util.*;
@@ -50,6 +52,25 @@ public class ListItemEntity {
 
     private String freeText;
 
+    @Column(name = "quantity")
+    private Double quantity;
+
+    @Column(name = "whole_quantity")
+    private Integer wholeQuantity;
+
+    @Column(name = "fractional_quantity")
+    @Enumerated(EnumType.STRING)
+    private FractionType fractionalQuantity;
+
+    @OneToOne( cascade = CascadeType.MERGE)
+    @JoinColumn(name = "id", referencedColumnName = "unit_id")
+    private UnitEntity unit;
+
+    @Column(name = "unit_size")
+    private String unitSize;
+
+    @Column(name = "amount_text")
+    private String amountText;
 
     @Transient
     private Long tagId;
@@ -172,17 +193,83 @@ public class ListItemEntity {
         this.details = details;
     }
 
+    public Integer getWholeQuantity() {
+        return wholeQuantity;
+    }
+
+    public void setWholeQuantity(Integer wholeQuantity) {
+        this.wholeQuantity = wholeQuantity;
+    }
+
+    public FractionType getFractionalQuantity() {
+        return fractionalQuantity;
+    }
+
+    public void setFractionalQuantity(FractionType fractionalQuantity) {
+        this.fractionalQuantity = fractionalQuantity;
+    }
+
+    public Double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
+    }
+
+    public Long getUnitId() {
+        return Optional.of(unit).map(UnitEntity::getId).orElse(null);
+    }
+
+    public UnitEntity getUnit() {
+        return unit;
+    }
+
+    public void setUnit(UnitEntity unit) {
+        this.unit = unit;
+    }
+
+    public String getUnitSize() {
+        return unitSize;
+    }
+
+    public void setUnitSize(String unitSize) {
+        this.unitSize = unitSize;
+    }
+
+
+    public String getAmountText() {
+        return amountText;
+    }
+
+    public void setAmountText(String amountDescription) {
+        this.amountText = amountDescription;
+    }
+
+
     @Override
     public String toString() {
-        return "ItemEntity{" +
+        return "ListItemEntity{" +
                 "item_id=" + item_id +
+                ", details=" + details +
+                ", tag=" + tag +
                 ", rawDishSources='" + rawDishSources + '\'' +
                 ", rawListSources='" + rawListSources + '\'' +
                 ", listId=" + listId +
                 ", usedCount=" + usedCount +
+                ", handles=" + handles +
                 ", addedOn=" + addedOn +
-                ", freeText='" + freeText + '\'' +
                 ", crossedOff=" + crossedOff +
+                ", removedOn=" + removedOn +
+                ", updatedOn=" + updatedOn +
+                ", freeText='" + freeText + '\'' +
+                ", wholeQuantity=" + wholeQuantity +
+                ", fractionalQuantity=" + fractionalQuantity +
+                ", quantity=" + quantity +
+                ", unit=" + unit +
+                ", unitSize='" + unitSize + '\'' +
+                ", amountDescription='" + amountText + '\'' +
+                ", tagId=" + tagId +
                 '}';
     }
 

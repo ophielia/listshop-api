@@ -21,6 +21,13 @@ public class AddRequest {
         this.unitSize = amount.getUnitSize();
     }
 
+    public AddRequest(ConversionTargetType contextType, UnitEntity unit, String unitSize) {
+        this.contextType = contextType;
+        this.type = unit.getType();
+        this.subtype = unit.getSubtype();
+        this.unitSize = unitSize;
+    }
+
     public ConversionTargetType getContextType() {
         return contextType;
     }
