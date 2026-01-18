@@ -22,6 +22,7 @@ public class EntityConvertibleAmount implements ConvertibleAmount {
         this.marker = listItemDetail.getMarker();
         this.isLiquid = tagEntity.getIsLiquid();
         this.unitSize = listItemDetail.getUnitSize();
+        this.conversionId = tagEntity.getConversionId();
     }
 
     public EntityConvertibleAmount(DishItemEntity dishItem, UnitEntity unit, TagEntity tagEntity) {

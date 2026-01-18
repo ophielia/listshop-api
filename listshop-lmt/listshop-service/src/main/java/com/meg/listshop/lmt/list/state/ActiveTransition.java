@@ -136,13 +136,82 @@ public class ActiveTransition extends AbstractTransition {
 
     }
 
+
+
+    /*
+    Processes an addition of a list item - resulting in multiple added/updated item details in the passed item.
+    Result is scaled, summed and saved.
+     */
+    private void processAddListItem(ListItemEntity item, @NotNull ItemStateContext itemStateContext) throws ItemProcessingException {
+        ListItemEntity newListItem = itemStateContext.getListItem();
+
+        for (ListItemDetailEntity newDetail : newListItem.getDetails()) {
+            doAddListItemDetail(item, newDetail, itemStateContext);
+        }
+
+        conversionService.sumItemDetails(item, itemStateContext);
+        // save changes to item
+        //MM 2236 deal with massaging item amounts (whole quantity, fractional quantity, description)
+        item.setUpdatedOn(new Date());
+        listItemRepository.save(item);
+
+
+//MM 2236 - will need to pull unit size all through this code
+    }
+
+    /*
+Processes an addition of a list item - resulting in multiple added/updated item details in the passed item.
+Result is scaled, summed and saved.
+ */
+    private void doAddListItemDetail(ListItemEntity addedTo, ListItemDetailEntity toAdd, @NotNull ItemStateContext itemStateContext) throws ItemProcessingException {
+        ListItemEntity newListItem = itemStateContext.getListItem();
+        Long listSearchId = CommonUtils.elvis(itemStateContext.getListId(), newListItem.getListId());
+        // find existing
+        ListItemDetailEntity existing = addedTo.getDetails().stream()
+                .filter(detail -> detail.getLinkedListId() != null)
+                .filter(detail -> detail.getLinkedListId().equals(listSearchId))
+                .filter(detail -> ((detail.getLinkedDishId() == null && toAdd.getLinkedDishId() == null) ||
+                        (detail.getLinkedDishId() != null && detail.getLinkedDishId().equals(toAdd.getLinkedDishId()))))
+                .findFirst().orElse(null);
+
+        // convert dish item to list context or unit, if available
+        ConvertibleAmount converted = null;
+        try {
+            converted =  conversionService.convertListItemDetailForList(toAdd, existing, addedTo);
+        } catch (ConversionPathException | ConversionFactorException e) {
+            // we weren't able to convert this - it happens sometimes
+            String message = String.format("weren't able to convert dishItem [%s] to list context. ", newListItem.getListId());
+            log.warn(message);
+        }
+
+        // add list item
+        if (converted != null && converted.getUnit() != null) {
+            addSpecifiedAmount(converted, addedTo, existing,toAdd, itemStateContext);
+        } else {
+            addNonSpecifiedAmount(existing, addedTo,  itemStateContext);
+        }
+//MM 2236 - will need to pull unit size all through this code
+    }
+
+    /*
+Processes an addition of a simple item - resulting in a single added/updated item detail in the passed item.
+New / changed detail is converted to list type, and ready to be summed
+ */
+    private void processAddSimpleItem(ListItemEntity item, @NotNull ItemStateContext itemStateContext) {
+
+    }
+
     private void addNonSpecifiedAmount(ListItemDetailEntity existing, ListItemEntity item, @NotNull ItemStateContext context) {
         if (existing != null) {
             existing.setCount(existing.getCount() + 1);
             return;
         }
+        Long detailListId = context.getTargetListId();
+        if (context.getListItem() != null) {
+            detailListId = context.getListItem().getListId();
+        }
         ListItemDetailEntity newDetail = new ListItemDetailEntity();
-        newDetail.setLinkedListId(context.getTargetListId());
+        newDetail.setLinkedListId(detailListId);
         newDetail.setLinkedDishId(context.getDishId());
         newDetail.setCount(1);
         // add to list item
@@ -150,7 +219,19 @@ public class ActiveTransition extends AbstractTransition {
         item.addDetailToItem(listItemDetailRepository.save(newDetail));
     }
 
+    private void addSpecifiedAmount(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, ListItemDetailEntity addFrom, @NotNull ItemStateContext context) throws ItemProcessingException {
+        addSpecifiedAmount(converted, item, existing, addFrom.getRawEntry(), context);
+    }
+
     private void addSpecifiedAmount(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, @NotNull ItemStateContext context) throws ItemProcessingException {
+        String rawEntry = "";
+        if (context.getDishItem() != null) {
+            rawEntry =  context.getDishItem().getRawEntry();
+        }
+        addSpecifiedAmount(converted, item, existing, rawEntry, context);
+    }
+
+    private void addSpecifiedAmount(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, String rawEntry, @NotNull ItemStateContext context) throws ItemProcessingException {
         //MM 2236 not paying attention to filling in other detail fields - particularly size
         if (existing != null) {
             if (!existing.getUnitId().equals(converted.getUnit().getId())) {
@@ -162,12 +243,16 @@ public class ActiveTransition extends AbstractTransition {
             existing.setQuantity(newQuantity);
             return;
         }
+        Long detailListId = context.getTargetListId();
+        if (context.getListItem() != null) {
+            detailListId = context.getListItem().getListId();
+        }
         ListItemDetailEntity newDetail = new ListItemDetailEntity();
-        newDetail.setLinkedListId(context.getTargetListId());
+        newDetail.setLinkedListId(detailListId);
         newDetail.setLinkedDishId(context.getDishId());
         newDetail.setCount(1);
         newDetail.setQuantity(converted.getQuantity());
-        newDetail.setRawEntry(context.getDishItem().getRawEntry());
+        newDetail.setRawEntry(rawEntry);
         newDetail.setUnitId(converted.getUnit().getId());
 
         // add to list item
@@ -177,30 +262,6 @@ public class ActiveTransition extends AbstractTransition {
 
     }
 
-
-    /*
-    Processes an addition of a list item - resulting in multiple added/updated item details in the passed item.
-    New / changed details are converted to list type, and ready to be summed
-     */
-    private void processAddListItem(ListItemEntity item, @NotNull ItemStateContext itemStateContext) {
-
-        // add types
-        //   single tag - single detail (now, no amounts, but later, possibly)
-        //     result in single detail, without linked ids
-        //   dish item - single detail w/wo amounts
-        //     result in single detail, with dish id
-        //   list item - multiple details w/wo amounts
-        //     result in multiple details, each with either just list id, or list id and dish id
-
-    }
-
-    /*
-Processes an addition of a simple item - resulting in a single added/updated item detail in the passed item.
-New / changed detail is converted to list type, and ready to be summed
- */
-    private void processAddSimpleItem(ListItemEntity item, @NotNull ItemStateContext itemStateContext) {
-
-    }
 
     private ProcessingType determineProcessingType(@NotNull ItemStateContext context) {
         if (context.getDishItem() != null) {

@@ -22,4 +22,6 @@ public interface ListConversionService {
 
 
     QuantityElements splitQuantityIntoElements(Double amount);
+
+    ConvertibleAmount convertListItemDetailForList(ListItemDetailEntity detailToAdd, ListItemDetailEntity existingDetail, ListItemEntity parentItem) throws ConversionPathException, ConversionFactorException;
 }

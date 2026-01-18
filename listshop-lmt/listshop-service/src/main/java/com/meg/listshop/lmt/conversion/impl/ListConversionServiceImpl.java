@@ -139,6 +139,22 @@ public class ListConversionServiceImpl implements ListConversionService {
     }
 
 
+    @Override
+    public ConvertibleAmount convertListItemDetailForList(ListItemDetailEntity detailToAdd, ListItemDetailEntity existingDetail, ListItemEntity parentItem) throws ConversionPathException, ConversionFactorException {
+        if (detailToAdd == null || detailToAdd.getUnitId() == null) {
+            // nothing to convert - return
+            return null;
+        }
+        UnitEntity toConvertUnit = getUnit(detailToAdd.getUnitId());
+        if (toConvertUnit == null) {
+            return null;
+        }
+        ConvertibleAmount toConvert = new EntityConvertibleAmount(detailToAdd, toConvertUnit, parentItem.getTag());
+
+        return convertDetail(toConvert, existingDetail, parentItem);
+    }
+
+
 
     private void setInItem(ConvertibleAmount amount, ListItemEntity item, List<ListItemDetailEntity> unspecified) {
         // set unspecified as unspecified
