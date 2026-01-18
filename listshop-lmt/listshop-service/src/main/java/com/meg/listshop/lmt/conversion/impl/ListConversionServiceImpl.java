@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.conversion.impl;
 
+import com.meg.listshop.common.CommonUtils;
 import com.meg.listshop.common.FractionUtils;
 import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.common.data.entity.UnitEntity;
@@ -79,19 +80,21 @@ public class ListConversionServiceImpl implements ListConversionService {
         if (unitSummary.size() == 0) {
             // no units found
             setInItem(null, item, unspecified);
-
+            return;
         } else if (unitSummary.size() == 1) {
             SummaryConvertibleAmount summary = unitSummary.entrySet().stream().findFirst()
                     .map(entry -> entry.getValue())
                     .orElse(null);
             //MM 2236 once the dust has settled, rename this to AddScaleRequest
             AddRequest addRequest = new AddRequest(ConversionTargetType.List, summary.getUnit(), summary.getUnitSize());
+            ConvertibleAmount summed = null;
             try {
-                summary = (SummaryConvertibleAmount) converterService.scale(summary, addRequest);
+                summed = converterService.scale(summary, addRequest);
             } catch (ConversionFactorException e) {
                 log.warn("unable to scale summary amount, unit[{}]", summary.getUnit());
             }
-            setInItem(summary, item, unspecified);
+            summary.getDetails().stream().forEach(detail -> detail.setUnspecified(false));
+            setInItem(summed, item, unspecified);
             return;
         }
 
@@ -150,6 +153,7 @@ public class ListConversionServiceImpl implements ListConversionService {
         item.setWholeQuantity(elements.wholeNumber());
         item.setUnit(amount.getUnit());
         item.setUnitSize(amount.getUnitSize());
+        //MM 2236 - set unspecified for item
     }
 
 
@@ -177,8 +181,8 @@ public class ListConversionServiceImpl implements ListConversionService {
 
     private String createKey(Long unitId, String unitSize) {
         // key is made up of unit_id plus underscore plus size
-        String keyUnitId = Optional.of(unitId).map(String::valueOf).orElse("");
-        String keyUnitSize = Optional.of(unitSize).map(String::valueOf).orElse("");
+        String keyUnitId = CommonUtils.elvis(unitId,0L) + "";
+        String keyUnitSize = CommonUtils.elvis(unitSize,"");
         return String.format("%s_%s", keyUnitId, keyUnitSize);
     }
 

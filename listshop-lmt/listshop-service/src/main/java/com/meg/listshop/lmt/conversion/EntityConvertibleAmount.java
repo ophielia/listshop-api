@@ -14,6 +14,7 @@ public class EntityConvertibleAmount implements ConvertibleAmount {
     private String marker;
     private Boolean isLiquid;
     private String unitSize;
+    private Long conversionId;
 
     public EntityConvertibleAmount(ListItemDetailEntity listItemDetail, UnitEntity unit, TagEntity tagEntity) {
         this.unitEntity = unit;
@@ -29,6 +30,7 @@ public class EntityConvertibleAmount implements ConvertibleAmount {
         this.marker = dishItem.getMarker();
         this.isLiquid = tagEntity.getIsLiquid();
         this.unitSize = dishItem.getUnitSize();
+        this.conversionId = tagEntity.getConversionId();
     }
 
     @Override
@@ -43,7 +45,7 @@ public class EntityConvertibleAmount implements ConvertibleAmount {
 
     @Override
     public Long getConversionId() {
-        return 0L;
+        return conversionId;
     }
 
     @Override

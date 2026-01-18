@@ -216,8 +216,7 @@ public class ListItemDetailEntity {
 
 
     public void setUnspecified(boolean specified) {
-        //MM 2236 - add unspecified to db for item, item detail.
-        // currently, just transient, so the sucker works
+        unspecified = specified;
 
     }
 

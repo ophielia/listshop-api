@@ -165,6 +165,7 @@ public class ActiveTransition extends AbstractTransition {
         newDetail.setQuantity(converted.getQuantity());
         newDetail.setRawEntry(context.getDishItem().getRawEntry());
         newDetail.setUnitId(converted.getUnit().getId());
+
         // add to list item
         newDetail.setItem(item);
         item.addDetailToItem(listItemDetailRepository.save(newDetail));
