@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 10.14 (Debian 10.14-1.pgdg90+1)
--- Dumped by pg_dump version 14.11 (Homebrew)
+-- Dumped by pg_dump version 14.19 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -62,7 +62,7 @@ TAG	4	199	t	371	433
 
 
 --
--- Data for Name: campaigns; Type: TABLE DATA; Schema: public; Owner: bankuser
+-- Data for Name: campaigns; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.campaigns (campaign_id, created_on, email, campaign, user_id) FROM stdin;
@@ -4536,7 +4536,7 @@ COPY public.dish_tags (dish_id, tag_id) FROM stdin;
 
 
 --
--- Data for Name: domain_unit; Type: TABLE DATA; Schema: public; Owner: bankuser
+-- Data for Name: domain_unit; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.domain_unit (domain_unit_id, domain_type, unit_id) FROM stdin;
@@ -4878,6 +4878,14 @@ COPY public.list_item (item_id, added_on, crossed_off, free_text, source, list_i
 510	2021-04-11 09:46:31.681524+00	\N	\N	\N	501	\N	210	1	\N	\N	402	\N	\N
 511	2021-04-11 09:46:31.681524+00	\N	\N	\N	501	\N	211	1	\N	\N	402	\N	\N
 512	2021-04-11 09:46:31.681524+00	\N	\N	\N	501	\N	113	2	\N	;83;	\N	\N	\N
+\.
+
+
+--
+-- Data for Name: list_item_details; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.list_item_details (item_detail_id, item_id, used_count, linked_list_id, linked_dish_id, whole_quantity, fractional_quantity, quantity, unit_id, marker, unit_size, raw_entry, orig_whole_quantity, orig_fractional_quantity, orig_quantity, orig_unit_id) FROM stdin;
 \.
 
 
@@ -5342,7 +5350,7 @@ COPY public.meal_plan_slot (meal_plan_slot_id, dish_dish_id, meal_plan_id) FROM 
 
 
 --
--- Data for Name: modifier_mappings; Type: TABLE DATA; Schema: public; Owner: bankuser
+-- Data for Name: modifier_mappings; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.modifier_mappings (mapping_id, modifier_type, modifier, mapped_modifier, reference_id) FROM stdin;
@@ -5538,6 +5546,14 @@ COPY public.proposal_dish (dish_slot_id, slot_id, dish_id, matched_tag_ids) FROM
 647	523	63	81
 648	523	10	81
 649	523	77	81
+\.
+
+
+--
+-- Data for Name: q; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.q (copy_single_dish) FROM stdin;
 \.
 
 
@@ -6236,7 +6252,7 @@ COPY public.target_slot (target_slot_id, slot_dish_tag_id, slot_order, target_id
 
 
 --
--- Data for Name: tokens; Type: TABLE DATA; Schema: public; Owner: bankuser
+-- Data for Name: tokens; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.tokens (token_id, created_on, token_type, token_value, user_id) FROM stdin;
@@ -6252,7 +6268,7 @@ COPY public.user_devices (user_device_id, user_id, name, model, os, os_version, 
 
 
 --
--- Data for Name: user_properties; Type: TABLE DATA; Schema: public; Owner: bankuser
+-- Data for Name: user_properties; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.user_properties (user_property_id, user_id, property_key, property_value, is_system) FROM stdin;
@@ -6283,7 +6299,7 @@ SELECT pg_catalog.setval('public.auto_tag_instructions_sequence', 10000, false);
 
 
 --
--- Name: campaign_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: campaign_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.campaign_sequence', 1000, false);
@@ -6297,7 +6313,7 @@ SELECT pg_catalog.setval('public.category_relation_sequence', 10000, false);
 
 
 --
--- Name: dish_item_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: dish_item_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.dish_item_sequence', 2536, true);
@@ -6311,21 +6327,21 @@ SELECT pg_catalog.setval('public.dish_sequence', 10000, false);
 
 
 --
--- Name: domain_unit_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: domain_unit_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.domain_unit_sequence', 1098, true);
 
 
 --
--- Name: factor_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: factor_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.factor_sequence', 999, true);
 
 
 --
--- Name: food_category_mapping_seq; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: food_category_mapping_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.food_category_mapping_seq', 1000, false);
@@ -6336,6 +6352,13 @@ SELECT pg_catalog.setval('public.food_category_mapping_seq', 1000, false);
 --
 
 SELECT pg_catalog.setval('public.hibernate_sequence', 1, false);
+
+
+--
+-- Name: list_item_detail_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.list_item_detail_sequence', 1000, false);
 
 
 --
@@ -6388,7 +6411,7 @@ SELECT pg_catalog.setval('public.meal_plan_slot_sequence', 10000, false);
 
 
 --
--- Name: modifier_mapping_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: modifier_mapping_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.modifier_mapping_sequence', 1000, false);
@@ -6500,14 +6523,14 @@ SELECT pg_catalog.setval('public.target_slot_sequence', 10000, false);
 
 
 --
--- Name: token_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: token_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.token_sequence', 57000, false);
 
 
 --
--- Name: unit_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: unit_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.unit_sequence', 1000, false);
@@ -6528,13 +6551,9 @@ SELECT pg_catalog.setval('public.user_id_sequence', 10000, false);
 
 
 --
--- Name: user_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: user_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.user_properties_id_seq', 10000, false);
 
-
---
--- PostgreSQL database dump complete
---
 

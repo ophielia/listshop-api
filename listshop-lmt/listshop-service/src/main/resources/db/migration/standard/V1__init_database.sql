@@ -46,7 +46,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: copy_single_dish(integer, integer); Type: FUNCTION; Schema: public; Owner: bank
+-- Name: copy_single_dish(integer, integer); Type: FUNCTION; Schema: public; Owner: listshopstarter
 --
 
 CREATE FUNCTION public.copy_single_dish(integer, integer) RETURNS integer
@@ -83,7 +83,7 @@ ALTER FUNCTION public.copy_single_dish(integer, integer) OWNER TO listshopstarte
 SET default_tablespace = '';
 
 --
--- Name: dish; Type: TABLE; Schema: public; Owner: bank
+-- Name: dish; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.dish (
@@ -101,7 +101,7 @@ CREATE TABLE public.dish (
 ALTER TABLE public.dish OWNER TO listshopstarter;
 
 --
--- Name: list; Type: TABLE; Schema: public; Owner: bank
+-- Name: list; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.list (
@@ -120,7 +120,7 @@ CREATE TABLE public.list (
 ALTER TABLE public.list OWNER TO listshopstarter;
 
 --
--- Name: meal_plan; Type: TABLE; Schema: public; Owner: bank
+-- Name: meal_plan; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.meal_plan (
@@ -136,7 +136,7 @@ CREATE TABLE public.meal_plan (
 ALTER TABLE public.meal_plan OWNER TO listshopstarter;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: bank
+-- Name: users; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.users (
@@ -154,7 +154,7 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO listshopstarter;
 
 --
--- Name: admin_user_details; Type: VIEW; Schema: public; Owner: bank
+-- Name: admin_user_details; Type: VIEW; Schema: public; Owner: listshopstarter
 --
 
 CREATE VIEW public.admin_user_details AS
@@ -176,7 +176,7 @@ CREATE VIEW public.admin_user_details AS
 ALTER TABLE public.admin_user_details OWNER TO listshopstarter;
 
 --
--- Name: authority; Type: TABLE; Schema: public; Owner: bank
+-- Name: authority; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.authority (
@@ -189,7 +189,7 @@ CREATE TABLE public.authority (
 ALTER TABLE public.authority OWNER TO listshopstarter;
 
 --
--- Name: authority_id_seq; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: authority_id_seq; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.authority_id_seq
@@ -203,7 +203,7 @@ CREATE SEQUENCE public.authority_id_seq
 ALTER TABLE public.authority_id_seq OWNER TO listshopstarter;
 
 --
--- Name: authority_seq; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: authority_seq; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.authority_seq
@@ -217,7 +217,7 @@ CREATE SEQUENCE public.authority_seq
 ALTER TABLE public.authority_seq OWNER TO listshopstarter;
 
 --
--- Name: auto_tag_instructions; Type: TABLE; Schema: public; Owner: bank
+-- Name: auto_tag_instructions; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.auto_tag_instructions (
@@ -233,7 +233,7 @@ CREATE TABLE public.auto_tag_instructions (
 ALTER TABLE public.auto_tag_instructions OWNER TO listshopstarter;
 
 --
--- Name: auto_tag_instructions_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: auto_tag_instructions_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.auto_tag_instructions_sequence
@@ -247,7 +247,7 @@ CREATE SEQUENCE public.auto_tag_instructions_sequence
 ALTER TABLE public.auto_tag_instructions_sequence OWNER TO listshopstarter;
 
 --
--- Name: list_stat_configs; Type: TABLE; Schema: public; Owner: bank
+-- Name: list_stat_configs; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.list_stat_configs (
@@ -266,7 +266,7 @@ CREATE TABLE public.list_stat_configs (
 ALTER TABLE public.list_stat_configs OWNER TO listshopstarter;
 
 --
--- Name: list_tag_stats; Type: TABLE; Schema: public; Owner: bank
+-- Name: list_tag_stats; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.list_tag_stats (
@@ -290,7 +290,7 @@ CREATE TABLE public.list_tag_stats (
 ALTER TABLE public.list_tag_stats OWNER TO listshopstarter;
 
 --
--- Name: calculated_stats; Type: VIEW; Schema: public; Owner: bank
+-- Name: calculated_stats; Type: VIEW; Schema: public; Owner: listshopstarter
 --
 
 CREATE VIEW public.calculated_stats AS
@@ -306,7 +306,7 @@ CREATE VIEW public.calculated_stats AS
 ALTER TABLE public.calculated_stats OWNER TO listshopstarter;
 
 --
--- Name: campaign_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: campaign_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.campaign_sequence
@@ -320,7 +320,7 @@ CREATE SEQUENCE public.campaign_sequence
 ALTER TABLE public.campaign_sequence OWNER TO listshopstarter;
 
 --
--- Name: campaigns; Type: TABLE; Schema: public; Owner: bank
+-- Name: campaigns; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.campaigns (
@@ -335,7 +335,7 @@ CREATE TABLE public.campaigns (
 ALTER TABLE public.campaigns OWNER TO listshopstarter;
 
 --
--- Name: category_relation_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: category_relation_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.category_relation_sequence
@@ -349,7 +349,7 @@ CREATE SEQUENCE public.category_relation_sequence
 ALTER TABLE public.category_relation_sequence OWNER TO listshopstarter;
 
 --
--- Name: category_tags; Type: TABLE; Schema: public; Owner: bank
+-- Name: category_tags; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.category_tags (
@@ -361,7 +361,7 @@ CREATE TABLE public.category_tags (
 ALTER TABLE public.category_tags OWNER TO listshopstarter;
 
 --
--- Name: dish_item_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: dish_item_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.dish_item_sequence
@@ -375,7 +375,7 @@ CREATE SEQUENCE public.dish_item_sequence
 ALTER TABLE public.dish_item_sequence OWNER TO listshopstarter;
 
 --
--- Name: dish_items; Type: TABLE; Schema: public; Owner: bank
+-- Name: dish_items; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.dish_items (
@@ -397,7 +397,7 @@ CREATE TABLE public.dish_items (
 ALTER TABLE public.dish_items OWNER TO listshopstarter;
 
 --
--- Name: dish_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: dish_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.dish_sequence
@@ -411,7 +411,7 @@ CREATE SEQUENCE public.dish_sequence
 ALTER TABLE public.dish_sequence OWNER TO listshopstarter;
 
 --
--- Name: dish_tags; Type: TABLE; Schema: public; Owner: bank
+-- Name: dish_tags; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.dish_tags (
@@ -423,7 +423,7 @@ CREATE TABLE public.dish_tags (
 ALTER TABLE public.dish_tags OWNER TO listshopstarter;
 
 --
--- Name: domain_unit; Type: TABLE; Schema: public; Owner: bank
+-- Name: domain_unit; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.domain_unit (
@@ -436,7 +436,7 @@ CREATE TABLE public.domain_unit (
 ALTER TABLE public.domain_unit OWNER TO listshopstarter;
 
 --
--- Name: domain_unit_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: domain_unit_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.domain_unit_sequence
@@ -450,7 +450,7 @@ CREATE SEQUENCE public.domain_unit_sequence
 ALTER TABLE public.domain_unit_sequence OWNER TO listshopstarter;
 
 --
--- Name: factor_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: factor_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.factor_sequence
@@ -464,7 +464,7 @@ CREATE SEQUENCE public.factor_sequence
 ALTER TABLE public.factor_sequence OWNER TO listshopstarter;
 
 --
--- Name: factors; Type: TABLE; Schema: public; Owner: bank
+-- Name: factors; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.factors (
@@ -484,7 +484,7 @@ ALTER TABLE public.factors OWNER TO listshopstarter;
 
 
 --
--- Name: food_categories; Type: TABLE; Schema: public; Owner: bank
+-- Name: food_categories; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.food_categories (
@@ -497,7 +497,7 @@ CREATE TABLE public.food_categories (
 ALTER TABLE public.food_categories OWNER TO listshopstarter;
 
 --
--- Name: food_category_mapping; Type: TABLE; Schema: public; Owner: bank
+-- Name: food_category_mapping; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.food_category_mapping (
@@ -510,7 +510,7 @@ CREATE TABLE public.food_category_mapping (
 ALTER TABLE public.food_category_mapping OWNER TO listshopstarter;
 
 --
--- Name: food_category_mapping_seq; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: food_category_mapping_seq; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.food_category_mapping_seq
@@ -524,7 +524,7 @@ CREATE SEQUENCE public.food_category_mapping_seq
 ALTER TABLE public.food_category_mapping_seq OWNER TO listshopstarter;
 
 --
--- Name: food_conversions; Type: TABLE; Schema: public; Owner: bank
+-- Name: food_conversions; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.food_conversions (
@@ -548,7 +548,7 @@ CREATE TABLE public.food_conversions (
 ALTER TABLE public.food_conversions OWNER TO listshopstarter;
 
 --
--- Name: foods; Type: TABLE; Schema: public; Owner: bank
+-- Name: foods; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.foods (
@@ -567,7 +567,7 @@ CREATE TABLE public.foods (
 ALTER TABLE public.foods OWNER TO listshopstarter;
 
 --
--- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.hibernate_sequence
@@ -581,7 +581,7 @@ CREATE SEQUENCE public.hibernate_sequence
 ALTER TABLE public.hibernate_sequence OWNER TO listshopstarter;
 
 --
--- Name: list_category; Type: TABLE; Schema: public; Owner: bank
+-- Name: list_category; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.list_category (
@@ -596,7 +596,7 @@ CREATE TABLE public.list_category (
 ALTER TABLE public.list_category OWNER TO listshopstarter;
 
 --
--- Name: list_item; Type: TABLE; Schema: public; Owner: bank
+-- Name: list_item; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.list_item (
@@ -620,7 +620,7 @@ CREATE TABLE public.list_item (
 ALTER TABLE public.list_item OWNER TO listshopstarter;
 
 --
--- Name: list_item_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: list_item_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.list_item_sequence
@@ -634,7 +634,7 @@ CREATE SEQUENCE public.list_item_sequence
 ALTER TABLE public.list_item_sequence OWNER TO listshopstarter;
 
 --
--- Name: list_layout; Type: TABLE; Schema: public; Owner: bank
+-- Name: list_layout; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.list_layout (
@@ -648,7 +648,7 @@ CREATE TABLE public.list_layout (
 ALTER TABLE public.list_layout OWNER TO listshopstarter;
 
 --
--- Name: list_layout_category_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: list_layout_category_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.list_layout_category_sequence
@@ -662,7 +662,7 @@ CREATE SEQUENCE public.list_layout_category_sequence
 ALTER TABLE public.list_layout_category_sequence OWNER TO listshopstarter;
 
 --
--- Name: list_layout_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: list_layout_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.list_layout_sequence
@@ -676,7 +676,7 @@ CREATE SEQUENCE public.list_layout_sequence
 ALTER TABLE public.list_layout_sequence OWNER TO listshopstarter;
 
 --
--- Name: list_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: list_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.list_sequence
@@ -690,7 +690,7 @@ CREATE SEQUENCE public.list_sequence
 ALTER TABLE public.list_sequence OWNER TO listshopstarter;
 
 --
--- Name: list_tag_stats_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: list_tag_stats_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.list_tag_stats_sequence
@@ -704,7 +704,7 @@ CREATE SEQUENCE public.list_tag_stats_sequence
 ALTER TABLE public.list_tag_stats_sequence OWNER TO listshopstarter;
 
 --
--- Name: meal_plan_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: meal_plan_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.meal_plan_sequence
@@ -718,7 +718,7 @@ CREATE SEQUENCE public.meal_plan_sequence
 ALTER TABLE public.meal_plan_sequence OWNER TO listshopstarter;
 
 --
--- Name: meal_plan_slot; Type: TABLE; Schema: public; Owner: bank
+-- Name: meal_plan_slot; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.meal_plan_slot (
@@ -731,7 +731,7 @@ CREATE TABLE public.meal_plan_slot (
 ALTER TABLE public.meal_plan_slot OWNER TO listshopstarter;
 
 --
--- Name: meal_plan_slot_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: meal_plan_slot_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.meal_plan_slot_sequence
@@ -745,7 +745,7 @@ CREATE SEQUENCE public.meal_plan_slot_sequence
 ALTER TABLE public.meal_plan_slot_sequence OWNER TO listshopstarter;
 
 --
--- Name: modifier_mapping_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: modifier_mapping_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.modifier_mapping_sequence
@@ -759,7 +759,7 @@ CREATE SEQUENCE public.modifier_mapping_sequence
 ALTER TABLE public.modifier_mapping_sequence OWNER TO listshopstarter;
 
 --
--- Name: modifier_mappings; Type: TABLE; Schema: public; Owner: bank
+-- Name: modifier_mappings; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.modifier_mappings (
@@ -774,7 +774,7 @@ CREATE TABLE public.modifier_mappings (
 ALTER TABLE public.modifier_mappings OWNER TO listshopstarter;
 
 --
--- Name: proposal; Type: TABLE; Schema: public; Owner: bank
+-- Name: proposal; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.proposal (
@@ -788,7 +788,7 @@ CREATE TABLE public.proposal (
 ALTER TABLE public.proposal OWNER TO listshopstarter;
 
 --
--- Name: proposal_approach; Type: TABLE; Schema: public; Owner: bank
+-- Name: proposal_approach; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.proposal_approach (
@@ -802,7 +802,7 @@ CREATE TABLE public.proposal_approach (
 ALTER TABLE public.proposal_approach OWNER TO listshopstarter;
 
 --
--- Name: proposal_approach_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: proposal_approach_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.proposal_approach_sequence
@@ -816,7 +816,7 @@ CREATE SEQUENCE public.proposal_approach_sequence
 ALTER TABLE public.proposal_approach_sequence OWNER TO listshopstarter;
 
 --
--- Name: proposal_context; Type: TABLE; Schema: public; Owner: bank
+-- Name: proposal_context; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.proposal_context (
@@ -835,7 +835,7 @@ CREATE TABLE public.proposal_context (
 ALTER TABLE public.proposal_context OWNER TO listshopstarter;
 
 --
--- Name: proposal_context_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: proposal_context_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.proposal_context_sequence
@@ -849,7 +849,7 @@ CREATE SEQUENCE public.proposal_context_sequence
 ALTER TABLE public.proposal_context_sequence OWNER TO listshopstarter;
 
 --
--- Name: proposal_context_slot_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: proposal_context_slot_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.proposal_context_slot_sequence
@@ -863,7 +863,7 @@ CREATE SEQUENCE public.proposal_context_slot_sequence
 ALTER TABLE public.proposal_context_slot_sequence OWNER TO listshopstarter;
 
 --
--- Name: proposal_dish; Type: TABLE; Schema: public; Owner: bank
+-- Name: proposal_dish; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.proposal_dish (
@@ -877,7 +877,7 @@ CREATE TABLE public.proposal_dish (
 ALTER TABLE public.proposal_dish OWNER TO listshopstarter;
 
 --
--- Name: proposal_dish_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: proposal_dish_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.proposal_dish_sequence
@@ -891,7 +891,7 @@ CREATE SEQUENCE public.proposal_dish_sequence
 ALTER TABLE public.proposal_dish_sequence OWNER TO listshopstarter;
 
 --
--- Name: proposal_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: proposal_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.proposal_sequence
@@ -905,7 +905,7 @@ CREATE SEQUENCE public.proposal_sequence
 ALTER TABLE public.proposal_sequence OWNER TO listshopstarter;
 
 --
--- Name: proposal_slot; Type: TABLE; Schema: public; Owner: bank
+-- Name: proposal_slot; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.proposal_slot (
@@ -921,7 +921,7 @@ CREATE TABLE public.proposal_slot (
 ALTER TABLE public.proposal_slot OWNER TO listshopstarter;
 
 --
--- Name: proposal_slot_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: proposal_slot_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.proposal_slot_sequence
@@ -935,7 +935,7 @@ CREATE SEQUENCE public.proposal_slot_sequence
 ALTER TABLE public.proposal_slot_sequence OWNER TO listshopstarter;
 
 --
--- Name: q; Type: TABLE; Schema: public; Owner: bank
+-- Name: q; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.q (
@@ -946,7 +946,7 @@ CREATE TABLE public.q (
 ALTER TABLE public.q OWNER TO listshopstarter;
 
 --
--- Name: shadow_tags; Type: TABLE; Schema: public; Owner: bank
+-- Name: shadow_tags; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.shadow_tags (
@@ -959,7 +959,7 @@ CREATE TABLE public.shadow_tags (
 ALTER TABLE public.shadow_tags OWNER TO listshopstarter;
 
 --
--- Name: shadow_tags_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: shadow_tags_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.shadow_tags_sequence
@@ -973,7 +973,7 @@ CREATE SEQUENCE public.shadow_tags_sequence
 ALTER TABLE public.shadow_tags_sequence OWNER TO listshopstarter;
 
 --
--- Name: tag; Type: TABLE; Schema: public; Owner: bank
+-- Name: tag; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.tag (
@@ -1002,7 +1002,7 @@ CREATE TABLE public.tag (
 ALTER TABLE public.tag OWNER TO listshopstarter;
 
 --
--- Name: tag_relation; Type: TABLE; Schema: public; Owner: bank
+-- Name: tag_relation; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.tag_relation (
@@ -1015,7 +1015,7 @@ CREATE TABLE public.tag_relation (
 ALTER TABLE public.tag_relation OWNER TO listshopstarter;
 
 --
--- Name: tag_relation_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: tag_relation_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.tag_relation_sequence
@@ -1029,7 +1029,7 @@ CREATE SEQUENCE public.tag_relation_sequence
 ALTER TABLE public.tag_relation_sequence OWNER TO listshopstarter;
 
 --
--- Name: tag_search_group_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: tag_search_group_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.tag_search_group_sequence
@@ -1043,7 +1043,7 @@ CREATE SEQUENCE public.tag_search_group_sequence
 ALTER TABLE public.tag_search_group_sequence OWNER TO listshopstarter;
 
 --
--- Name: tag_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: tag_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.tag_sequence
@@ -1057,7 +1057,7 @@ CREATE SEQUENCE public.tag_sequence
 ALTER TABLE public.tag_sequence OWNER TO listshopstarter;
 
 --
--- Name: target; Type: TABLE; Schema: public; Owner: bank
+-- Name: target; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.target (
@@ -1078,7 +1078,7 @@ CREATE TABLE public.target (
 ALTER TABLE public.target OWNER TO listshopstarter;
 
 --
--- Name: target_proposal_dish_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: target_proposal_dish_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.target_proposal_dish_sequence
@@ -1092,7 +1092,7 @@ CREATE SEQUENCE public.target_proposal_dish_sequence
 ALTER TABLE public.target_proposal_dish_sequence OWNER TO listshopstarter;
 
 --
--- Name: target_proposal_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: target_proposal_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.target_proposal_sequence
@@ -1106,7 +1106,7 @@ CREATE SEQUENCE public.target_proposal_sequence
 ALTER TABLE public.target_proposal_sequence OWNER TO listshopstarter;
 
 --
--- Name: target_proposal_slot_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: target_proposal_slot_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.target_proposal_slot_sequence
@@ -1120,7 +1120,7 @@ CREATE SEQUENCE public.target_proposal_slot_sequence
 ALTER TABLE public.target_proposal_slot_sequence OWNER TO listshopstarter;
 
 --
--- Name: target_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: target_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.target_sequence
@@ -1134,7 +1134,7 @@ CREATE SEQUENCE public.target_sequence
 ALTER TABLE public.target_sequence OWNER TO listshopstarter;
 
 --
--- Name: target_slot; Type: TABLE; Schema: public; Owner: bank
+-- Name: target_slot; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.target_slot (
@@ -1150,7 +1150,7 @@ CREATE TABLE public.target_slot (
 ALTER TABLE public.target_slot OWNER TO listshopstarter;
 
 --
--- Name: target_slot_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: target_slot_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.target_slot_sequence
@@ -1164,7 +1164,7 @@ CREATE SEQUENCE public.target_slot_sequence
 ALTER TABLE public.target_slot_sequence OWNER TO listshopstarter;
 
 --
--- Name: token_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: token_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.token_sequence
@@ -1178,7 +1178,7 @@ CREATE SEQUENCE public.token_sequence
 ALTER TABLE public.token_sequence OWNER TO listshopstarter;
 
 --
--- Name: tokens; Type: TABLE; Schema: public; Owner: bank
+-- Name: tokens; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.tokens (
@@ -1193,7 +1193,7 @@ CREATE TABLE public.tokens (
 ALTER TABLE public.tokens OWNER TO listshopstarter;
 
 --
--- Name: unit_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: unit_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.unit_sequence
@@ -1207,7 +1207,7 @@ CREATE SEQUENCE public.unit_sequence
 ALTER TABLE public.unit_sequence OWNER TO listshopstarter;
 
 --
--- Name: units; Type: TABLE; Schema: public; Owner: bank
+-- Name: units; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.units (
@@ -1229,7 +1229,7 @@ CREATE TABLE public.units (
 ALTER TABLE public.units OWNER TO listshopstarter;
 
 --
--- Name: user_device_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: user_device_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.user_device_sequence
@@ -1243,7 +1243,7 @@ CREATE SEQUENCE public.user_device_sequence
 ALTER TABLE public.user_device_sequence OWNER TO listshopstarter;
 
 --
--- Name: user_devices; Type: TABLE; Schema: public; Owner: bank
+-- Name: user_devices; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.user_devices (
@@ -1265,7 +1265,7 @@ CREATE TABLE public.user_devices (
 ALTER TABLE public.user_devices OWNER TO listshopstarter;
 
 --
--- Name: user_id_sequence; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: user_id_sequence; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.user_id_sequence
@@ -1279,7 +1279,7 @@ CREATE SEQUENCE public.user_id_sequence
 ALTER TABLE public.user_id_sequence OWNER TO listshopstarter;
 
 --
--- Name: user_properties; Type: TABLE; Schema: public; Owner: bank
+-- Name: user_properties; Type: TABLE; Schema: public; Owner: listshopstarter
 --
 
 CREATE TABLE public.user_properties (
@@ -1294,7 +1294,7 @@ CREATE TABLE public.user_properties (
 ALTER TABLE public.user_properties OWNER TO listshopstarter;
 
 --
--- Name: user_properties_id_seq; Type: SEQUENCE; Schema: public; Owner: bank
+-- Name: user_properties_id_seq; Type: SEQUENCE; Schema: public; Owner: listshopstarter
 --
 
 CREATE SEQUENCE public.user_properties_id_seq
@@ -1309,280 +1309,280 @@ ALTER TABLE public.user_properties_id_seq OWNER TO listshopstarter;
 
 --
 --
--- Name: authority_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: authority_id_seq; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.authority_id_seq', 1057, true);
 
 
 --
--- Name: authority_seq; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: authority_seq; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.authority_seq', 5, true);
 
 
 --
--- Name: auto_tag_instructions_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: auto_tag_instructions_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.auto_tag_instructions_sequence', 1003, true);
 
 
 --
--- Name: campaign_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: campaign_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.campaign_sequence', 1000, false);
 
 
 --
--- Name: category_relation_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: category_relation_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.category_relation_sequence', 50058, true);
 
 
 --
--- Name: dish_item_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: dish_item_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.dish_item_sequence', 28625, true);
 
 
 --
--- Name: dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.dish_sequence', 57699, true);
 
 
 --
--- Name: domain_unit_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: domain_unit_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.domain_unit_sequence', 1033, true);
 
 
 --
--- Name: factor_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: factor_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.factor_sequence', 1028, true);
 
 
 --
--- Name: food_category_mapping_seq; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: food_category_mapping_seq; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.food_category_mapping_seq', 1000, false);
 
 
 --
--- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.hibernate_sequence', 11, true);
 
 
 --
--- Name: list_item_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: list_item_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.list_item_sequence', 92413, true);
 
 
 --
--- Name: list_layout_category_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: list_layout_category_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.list_layout_category_sequence', 52024, true);
 
 
 --
--- Name: list_layout_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: list_layout_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.list_layout_sequence', 15, true);
 
 
 --
--- Name: list_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: list_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.list_sequence', 51066, true);
 
 
 --
--- Name: list_tag_stats_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: list_tag_stats_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.list_tag_stats_sequence', 54470, true);
 
 
 --
--- Name: meal_plan_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: meal_plan_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.meal_plan_sequence', 50708, true);
 
 
 --
--- Name: meal_plan_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: meal_plan_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.meal_plan_slot_sequence', 53826, true);
 
 
 --
--- Name: modifier_mapping_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: modifier_mapping_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.modifier_mapping_sequence', 1000, false);
 
 
 --
--- Name: proposal_approach_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: proposal_approach_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.proposal_approach_sequence', 1003, true);
 
 
 --
--- Name: proposal_context_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: proposal_context_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.proposal_context_sequence', 50007, true);
 
 
 --
--- Name: proposal_context_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: proposal_context_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.proposal_context_slot_sequence', 50048, true);
 
 
 --
--- Name: proposal_dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: proposal_dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.proposal_dish_sequence', 1039, true);
 
 
 --
--- Name: proposal_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: proposal_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.proposal_sequence', 1003, true);
 
 
 --
--- Name: proposal_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: proposal_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.proposal_slot_sequence', 1006, true);
 
 
 --
--- Name: shadow_tags_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: shadow_tags_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.shadow_tags_sequence', 52564, true);
 
 
 --
--- Name: tag_relation_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: tag_relation_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.tag_relation_sequence', 51721, true);
 
 
 --
--- Name: tag_search_group_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: tag_search_group_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.tag_search_group_sequence', 278, true);
 
 
 --
--- Name: tag_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: tag_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.tag_sequence', 51872, true);
 
 
 --
--- Name: target_proposal_dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: target_proposal_dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.target_proposal_dish_sequence', 52099, true);
 
 
 --
--- Name: target_proposal_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: target_proposal_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.target_proposal_sequence', 50003, true);
 
 
 --
--- Name: target_proposal_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: target_proposal_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.target_proposal_slot_sequence', 50017, true);
 
 
 --
--- Name: target_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: target_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.target_sequence', 50005, true);
 
 
 --
--- Name: target_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: target_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.target_slot_sequence', 1022, true);
 
 
 --
--- Name: token_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: token_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.token_sequence', 57011, true);
 
 
 --
--- Name: unit_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: unit_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.unit_sequence', 1000, false);
 
 
 --
--- Name: user_device_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: user_device_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.user_device_sequence', 917, true);
 
 
 --
--- Name: user_id_sequence; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: user_id_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.user_id_sequence', 69, true);
 
 
 --
--- Name: user_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bank
+-- Name: user_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.user_properties_id_seq', 10000, false);
 
 
 --
--- Name: authority authority_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: authority authority_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.authority
@@ -1590,7 +1590,7 @@ ALTER TABLE ONLY public.authority
 
 
 --
--- Name: auto_tag_instructions auto_tag_instructions_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: auto_tag_instructions auto_tag_instructions_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.auto_tag_instructions
@@ -1598,7 +1598,7 @@ ALTER TABLE ONLY public.auto_tag_instructions
 
 
 --
--- Name: campaigns campaign_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: campaigns campaign_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.campaigns
@@ -1606,7 +1606,7 @@ ALTER TABLE ONLY public.campaigns
 
 
 --
--- Name: dish dish_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: dish dish_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.dish
@@ -1615,7 +1615,7 @@ ALTER TABLE ONLY public.dish
 
 
 --
--- Name: list_category list_category_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: list_category list_category_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.list_category
@@ -1623,7 +1623,7 @@ ALTER TABLE ONLY public.list_category
 
 
 --
--- Name: list_item list_item_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: list_item list_item_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.list_item
@@ -1631,7 +1631,7 @@ ALTER TABLE ONLY public.list_item
 
 
 --
--- Name: list_layout list_layout_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: list_layout list_layout_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.list_layout
@@ -1639,7 +1639,7 @@ ALTER TABLE ONLY public.list_layout
 
 
 --
--- Name: list list_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: list list_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.list
@@ -1647,7 +1647,7 @@ ALTER TABLE ONLY public.list
 
 
 --
--- Name: list_tag_stats list_tag_stats_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: list_tag_stats list_tag_stats_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.list_tag_stats
@@ -1655,7 +1655,7 @@ ALTER TABLE ONLY public.list_tag_stats
 
 
 --
--- Name: meal_plan meal_plan_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: meal_plan meal_plan_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.meal_plan
@@ -1663,7 +1663,7 @@ ALTER TABLE ONLY public.meal_plan
 
 
 --
--- Name: meal_plan_slot meal_plan_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: meal_plan_slot meal_plan_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.meal_plan_slot
@@ -1671,7 +1671,7 @@ ALTER TABLE ONLY public.meal_plan_slot
 
 
 --
--- Name: factors pk_factors; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: factors pk_factors; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.factors
@@ -1679,7 +1679,7 @@ ALTER TABLE ONLY public.factors
 
 
 --
--- Name: units pk_units; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: units pk_units; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.units
@@ -1687,7 +1687,7 @@ ALTER TABLE ONLY public.units
 
 
 --
--- Name: proposal_context proposal_context_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: proposal_context proposal_context_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.proposal_context
@@ -1695,7 +1695,7 @@ ALTER TABLE ONLY public.proposal_context
 
 
 --
--- Name: proposal proposal_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: proposal proposal_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.proposal
@@ -1703,7 +1703,7 @@ ALTER TABLE ONLY public.proposal
 
 
 --
--- Name: proposal_slot proposal_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: proposal_slot proposal_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.proposal_slot
@@ -1711,7 +1711,7 @@ ALTER TABLE ONLY public.proposal_slot
 
 
 --
--- Name: shadow_tags shadow_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: shadow_tags shadow_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.shadow_tags
@@ -1719,7 +1719,7 @@ ALTER TABLE ONLY public.shadow_tags
 
 
 --
--- Name: tag tag_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: tag tag_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.tag
@@ -1727,7 +1727,7 @@ ALTER TABLE ONLY public.tag
 
 
 --
--- Name: tag_relation tag_relation_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: tag_relation tag_relation_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.tag_relation
@@ -1735,7 +1735,7 @@ ALTER TABLE ONLY public.tag_relation
 
 
 --
--- Name: target target_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: target target_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.target
@@ -1743,7 +1743,7 @@ ALTER TABLE ONLY public.target
 
 
 --
--- Name: target_slot target_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: target_slot target_slot_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.target_slot
@@ -1751,7 +1751,7 @@ ALTER TABLE ONLY public.target_slot
 
 
 --
--- Name: tokens tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: tokens tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.tokens
@@ -1759,7 +1759,7 @@ ALTER TABLE ONLY public.tokens
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: bank
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.users
@@ -1767,7 +1767,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: tag_relation fk3vyajpbcb8wl8380yntahtgtf; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: tag_relation fk3vyajpbcb8wl8380yntahtgtf; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.tag_relation
@@ -1775,7 +1775,7 @@ ALTER TABLE ONLY public.tag_relation
 
 
 --
--- Name: tag_relation fk6x8vvlp985udfs7g15uuxj42c; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: tag_relation fk6x8vvlp985udfs7g15uuxj42c; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.tag_relation
@@ -1783,7 +1783,7 @@ ALTER TABLE ONLY public.tag_relation
 
 
 --
--- Name: authority fk_authority__user_id; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: authority fk_authority__user_id; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.authority
@@ -1791,7 +1791,7 @@ ALTER TABLE ONLY public.authority
 
 
 --
--- Name: dish_tags fk_dish__dish_tags; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: dish_tags fk_dish__dish_tags; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.dish_tags
@@ -1799,7 +1799,7 @@ ALTER TABLE ONLY public.dish_tags
 
 
 --
--- Name: dish fk_dish__user_id; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: dish fk_dish__user_id; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.dish
@@ -1807,7 +1807,7 @@ ALTER TABLE ONLY public.dish
 
 
 --
--- Name: factors fk_factors_on_from_unit; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: factors fk_factors_on_from_unit; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.factors
@@ -1815,7 +1815,7 @@ ALTER TABLE ONLY public.factors
 
 
 --
--- Name: factors fk_factors_on_to_unit; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: factors fk_factors_on_to_unit; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.factors
@@ -1823,7 +1823,7 @@ ALTER TABLE ONLY public.factors
 
 
 --
--- Name: list_item fk_list__list_id; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: list_item fk_list__list_id; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.list_item
@@ -1831,7 +1831,7 @@ ALTER TABLE ONLY public.list_item
 
 
 --
--- Name: list fk_list__user_id; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: list fk_list__user_id; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.list
@@ -1839,7 +1839,7 @@ ALTER TABLE ONLY public.list
 
 
 --
--- Name: meal_plan_slot fk_meal_plan__meal_plan_slot; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: meal_plan_slot fk_meal_plan__meal_plan_slot; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.meal_plan_slot
@@ -1847,7 +1847,7 @@ ALTER TABLE ONLY public.meal_plan_slot
 
 
 --
--- Name: meal_plan fk_meal_plan__user_id; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: meal_plan fk_meal_plan__user_id; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.meal_plan
@@ -1855,7 +1855,7 @@ ALTER TABLE ONLY public.meal_plan
 
 
 --
--- Name: proposal fk_proposal__user_id; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: proposal fk_proposal__user_id; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.proposal
@@ -1863,7 +1863,7 @@ ALTER TABLE ONLY public.proposal
 
 
 --
--- Name: proposal_approach fk_proposal_approach__proposal_context; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: proposal_approach fk_proposal_approach__proposal_context; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.proposal_approach
@@ -1871,7 +1871,7 @@ ALTER TABLE ONLY public.proposal_approach
 
 
 --
--- Name: proposal_context fk_proposal_context__proposal; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: proposal_context fk_proposal_context__proposal; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.proposal_context
@@ -1879,7 +1879,7 @@ ALTER TABLE ONLY public.proposal_context
 
 
 --
--- Name: proposal_dish fk_proposal_dish__proposal_slot; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: proposal_dish fk_proposal_dish__proposal_slot; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.proposal_dish
@@ -1887,7 +1887,7 @@ ALTER TABLE ONLY public.proposal_dish
 
 
 --
--- Name: proposal_slot fk_proposal_slot__proposal; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: proposal_slot fk_proposal_slot__proposal; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.proposal_slot
@@ -1895,7 +1895,7 @@ ALTER TABLE ONLY public.proposal_slot
 
 
 --
--- Name: list_tag_stats fk_stats__user_id; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: list_tag_stats fk_stats__user_id; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.list_tag_stats
@@ -1903,7 +1903,7 @@ ALTER TABLE ONLY public.list_tag_stats
 
 
 --
--- Name: target_slot fk_target__target_slot; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: target_slot fk_target__target_slot; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.target_slot
@@ -1911,7 +1911,7 @@ ALTER TABLE ONLY public.target_slot
 
 
 --
--- Name: target fk_target__user_id; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: target fk_target__user_id; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.target
@@ -1919,7 +1919,7 @@ ALTER TABLE ONLY public.target
 
 
 --
--- Name: user_devices fk_user_devices__user_id; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: user_devices fk_user_devices__user_id; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.user_devices
@@ -1927,7 +1927,7 @@ ALTER TABLE ONLY public.user_devices
 
 
 --
--- Name: category_tags fkclr8vrg8b1cwgwjsgcd5jtj6a; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: category_tags fkclr8vrg8b1cwgwjsgcd5jtj6a; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.category_tags
@@ -1935,7 +1935,7 @@ ALTER TABLE ONLY public.category_tags
 
 
 --
--- Name: meal_plan_slot fkdit15dhtc9j583c1pp21c8ss0; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: meal_plan_slot fkdit15dhtc9j583c1pp21c8ss0; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.meal_plan_slot
@@ -1943,7 +1943,7 @@ ALTER TABLE ONLY public.meal_plan_slot
 
 
 --
--- Name: list_item fklcvoij9ynqfllhxgn9v6qpsh8; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: list_item fklcvoij9ynqfllhxgn9v6qpsh8; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.list_item
@@ -1951,7 +1951,7 @@ ALTER TABLE ONLY public.list_item
 
 
 --
--- Name: category_tags fkns9s1sef980caqqamoee8srdw; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: category_tags fkns9s1sef980caqqamoee8srdw; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.category_tags
@@ -1959,7 +1959,7 @@ ALTER TABLE ONLY public.category_tags
 
 
 --
--- Name: dish_tags fkpy8j9ypbt3d59bjs0hgl3wcct; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: dish_tags fkpy8j9ypbt3d59bjs0hgl3wcct; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.dish_tags
@@ -1967,7 +1967,7 @@ ALTER TABLE ONLY public.dish_tags
 
 
 --
--- Name: list_category fkrhcs3i2p15y79hn00y5ic41gn; Type: FK CONSTRAINT; Schema: public; Owner: bank
+-- Name: list_category fkrhcs3i2p15y79hn00y5ic41gn; Type: FK CONSTRAINT; Schema: public; Owner: listshopstarter
 --
 
 ALTER TABLE ONLY public.list_category
@@ -1979,87 +1979,87 @@ ALTER TABLE ONLY public.list_category
 
 --- grants for tables
 
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.admin_user_details TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.authority TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.auto_tag_instructions TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.calculated_stats TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.campaigns TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.category_tags TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.dish TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.dish_items TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.dish_tags TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.domain_unit TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.factors TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.food_categories TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.food_category_mapping TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.food_conversions TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.foods TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.list TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_category TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_item TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_layout TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_stat_configs TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_tag_stats TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.meal_plan TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.meal_plan_slot TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.modifier_mappings TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal_approach TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal_context TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal_dish TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal_slot TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.q TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.shadow_tags TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.tag TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.tag_relation TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.target TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.target_slot TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.tokens TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.units TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.user_devices TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.user_properties TO bank;
-GRANT SELECT , INSERT , UPDATE , DELETE ON public.users TO bank;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.admin_user_details TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.authority TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.auto_tag_instructions TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.calculated_stats TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.campaigns TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.category_tags TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.dish TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.dish_items TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.dish_tags TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.domain_unit TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.factors TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.food_categories TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.food_category_mapping TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.food_conversions TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.foods TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.list TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_category TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_item TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_layout TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_stat_configs TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.list_tag_stats TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.meal_plan TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.meal_plan_slot TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.modifier_mappings TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal_approach TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal_context TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal_dish TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.proposal_slot TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.q TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.shadow_tags TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.tag TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.tag_relation TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.target TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.target_slot TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.tokens TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.units TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.user_devices TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.user_properties TO listshopstarter;
+GRANT SELECT , INSERT , UPDATE , DELETE ON public.users TO listshopstarter;
 
 
 -- grants for sequences
 
-GRANT USAGE  ON public.auto_tag_instructions_sequence TO bank;
-GRANT USAGE  ON public.campaign_sequence TO bank;
-GRANT USAGE  ON public.category_relation_sequence TO bank;
-GRANT USAGE  ON public.dish_item_sequence TO bank;
-GRANT USAGE  ON public.dish_sequence TO bank;
-GRANT USAGE  ON public.domain_unit_sequence TO bank;
-GRANT USAGE  ON public.factor_sequence TO bank;
-GRANT USAGE  ON public.hibernate_sequence TO bank;
-GRANT USAGE  ON public.list_item_sequence TO bank;
-GRANT USAGE  ON public.list_layout_category_sequence TO bank;
-GRANT USAGE  ON public.list_layout_sequence TO bank;
-GRANT USAGE  ON public.list_sequence TO bank;
-GRANT USAGE  ON public.list_tag_stats_sequence TO bank;
-GRANT USAGE  ON public.meal_plan_sequence TO bank;
-GRANT USAGE  ON public.meal_plan_slot_sequence TO bank;
-GRANT USAGE  ON public.modifier_mapping_sequence TO bank;
-GRANT USAGE  ON public.proposal_approach_sequence TO bank;
-GRANT USAGE  ON public.proposal_context_sequence TO bank;
-GRANT USAGE  ON public.proposal_context_slot_sequence TO bank;
-GRANT USAGE  ON public.proposal_dish_sequence TO bank;
-GRANT USAGE  ON public.proposal_sequence TO bank;
-GRANT USAGE  ON public.proposal_slot_sequence TO bank;
-GRANT USAGE  ON public.shadow_tags_sequence TO bank;
-GRANT USAGE  ON public.tag_relation_sequence TO bank;
-GRANT USAGE  ON public.tag_search_group_sequence TO bank;
-GRANT USAGE  ON public.tag_sequence TO bank;
-GRANT USAGE  ON public.target_proposal_dish_sequence TO bank;
-GRANT USAGE  ON public.target_proposal_sequence TO bank;
-GRANT USAGE  ON public.target_proposal_slot_sequence TO bank;
-GRANT USAGE  ON public.target_sequence TO bank;
-GRANT USAGE  ON public.target_slot_sequence TO bank;
-GRANT USAGE  ON public.token_sequence TO bank;
-GRANT USAGE  ON public.unit_sequence TO bank;
-GRANT USAGE  ON public.user_device_sequence TO bank;
-GRANT USAGE  ON public.user_id_sequence TO bank;
-GRANT USAGE  ON public.authority_id_seq TO bank;
-GRANT USAGE  ON public.authority_seq TO bank;
-GRANT USAGE  ON public.food_category_mapping_seq TO bank;
-GRANT USAGE  ON public.user_properties_id_seq TO bank;
-GRANT ALL ON function public.copy_single_dish TO bank;
+GRANT USAGE  ON public.auto_tag_instructions_sequence TO listshopstarter;
+GRANT USAGE  ON public.campaign_sequence TO listshopstarter;
+GRANT USAGE  ON public.category_relation_sequence TO listshopstarter;
+GRANT USAGE  ON public.dish_item_sequence TO listshopstarter;
+GRANT USAGE  ON public.dish_sequence TO listshopstarter;
+GRANT USAGE  ON public.domain_unit_sequence TO listshopstarter;
+GRANT USAGE  ON public.factor_sequence TO listshopstarter;
+GRANT USAGE  ON public.hibernate_sequence TO listshopstarter;
+GRANT USAGE  ON public.list_item_sequence TO listshopstarter;
+GRANT USAGE  ON public.list_layout_category_sequence TO listshopstarter;
+GRANT USAGE  ON public.list_layout_sequence TO listshopstarter;
+GRANT USAGE  ON public.list_sequence TO listshopstarter;
+GRANT USAGE  ON public.list_tag_stats_sequence TO listshopstarter;
+GRANT USAGE  ON public.meal_plan_sequence TO listshopstarter;
+GRANT USAGE  ON public.meal_plan_slot_sequence TO listshopstarter;
+GRANT USAGE  ON public.modifier_mapping_sequence TO listshopstarter;
+GRANT USAGE  ON public.proposal_approach_sequence TO listshopstarter;
+GRANT USAGE  ON public.proposal_context_sequence TO listshopstarter;
+GRANT USAGE  ON public.proposal_context_slot_sequence TO listshopstarter;
+GRANT USAGE  ON public.proposal_dish_sequence TO listshopstarter;
+GRANT USAGE  ON public.proposal_sequence TO listshopstarter;
+GRANT USAGE  ON public.proposal_slot_sequence TO listshopstarter;
+GRANT USAGE  ON public.shadow_tags_sequence TO listshopstarter;
+GRANT USAGE  ON public.tag_relation_sequence TO listshopstarter;
+GRANT USAGE  ON public.tag_search_group_sequence TO listshopstarter;
+GRANT USAGE  ON public.tag_sequence TO listshopstarter;
+GRANT USAGE  ON public.target_proposal_dish_sequence TO listshopstarter;
+GRANT USAGE  ON public.target_proposal_sequence TO listshopstarter;
+GRANT USAGE  ON public.target_proposal_slot_sequence TO listshopstarter;
+GRANT USAGE  ON public.target_sequence TO listshopstarter;
+GRANT USAGE  ON public.target_slot_sequence TO listshopstarter;
+GRANT USAGE  ON public.token_sequence TO listshopstarter;
+GRANT USAGE  ON public.unit_sequence TO listshopstarter;
+GRANT USAGE  ON public.user_device_sequence TO listshopstarter;
+GRANT USAGE  ON public.user_id_sequence TO listshopstarter;
+GRANT USAGE  ON public.authority_id_seq TO listshopstarter;
+GRANT USAGE  ON public.authority_seq TO listshopstarter;
+GRANT USAGE  ON public.food_category_mapping_seq TO listshopstarter;
+GRANT USAGE  ON public.user_properties_id_seq TO listshopstarter;
+GRANT ALL ON function public.copy_single_dish TO listshopstarter;
