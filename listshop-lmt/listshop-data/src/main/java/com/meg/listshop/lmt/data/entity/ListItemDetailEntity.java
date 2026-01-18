@@ -75,7 +75,7 @@ public class ListItemDetailEntity {
     @Column(name = "raw_entry")
     private String rawEntry;
 
-    @Transient
+    @Column(name = "nonspecified")
     private boolean unspecified = true;
 
     public ListItemDetailEntity() {

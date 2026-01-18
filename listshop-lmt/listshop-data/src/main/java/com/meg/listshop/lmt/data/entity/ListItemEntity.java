@@ -63,7 +63,7 @@ public class ListItemEntity {
     private FractionType fractionalQuantity;
 
     @OneToOne( cascade = CascadeType.MERGE)
-    @JoinColumn(name = "id", referencedColumnName = "unit_id")
+    @JoinColumn(name = "unit_id", referencedColumnName = "unit_id")
     private UnitEntity unit;
 
     @Column(name = "unit_size")
