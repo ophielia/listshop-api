@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.list.state;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meg.listshop.common.CommonUtils;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
@@ -97,10 +98,13 @@ public class ActiveTransition extends AbstractTransition {
      */
     private void processAddDishItem(ListItemEntity item, @NotNull ItemStateContext itemStateContext) throws ItemProcessingException {
         DishItemEntity dishItem = itemStateContext.getDishItem();
+        Long listSearchId = CommonUtils.elvis(itemStateContext.getListId(), item.getListId());
         // find existing
         ListItemDetailEntity existing = item.getDetails().stream()
                 .filter(detail -> detail.getLinkedDishId() != null)
                 .filter(detail -> detail.getLinkedDishId().equals(dishItem.getDish().getId()))
+                .filter(detail -> detail.getLinkedListId() != null)
+                .filter(detail -> detail.getLinkedListId().equals(listSearchId))
                 .findFirst().orElse(null);
 
         // convert dish item to list context or unit, if available
