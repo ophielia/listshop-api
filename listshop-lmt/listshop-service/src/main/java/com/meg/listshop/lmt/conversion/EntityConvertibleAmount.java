@@ -34,6 +34,15 @@ public class EntityConvertibleAmount implements ConvertibleAmount {
         this.conversionId = tagEntity.getConversionId();
     }
 
+    public EntityConvertibleAmount(BasicAmount tagAmount, UnitEntity unit, TagEntity tagEntity) {
+        this.unitEntity = unit;
+        this.quantity = tagAmount.getQuantity();
+        this.marker = tagAmount.getMarker();
+        this.isLiquid = tagEntity.getIsLiquid();
+        this.unitSize = tagAmount.getUnitSize();
+        this.conversionId = tagEntity.getConversionId();
+    }
+
     @Override
     public double getQuantity() {
         return quantity;

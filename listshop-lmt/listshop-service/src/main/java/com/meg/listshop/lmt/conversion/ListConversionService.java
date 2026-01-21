@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.conversion;
 
+import com.meg.listshop.conversion.exceptions.ConversionAddException;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
@@ -7,6 +8,7 @@ import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
+import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.list.state.ItemStateContext;
 import jakarta.validation.constraints.NotNull;
 
@@ -24,4 +26,8 @@ public interface ListConversionService {
     QuantityElements splitQuantityIntoElements(Double amount);
 
     ConvertibleAmount convertListItemDetailForList(ListItemDetailEntity detailToAdd, ListItemDetailEntity existingDetail, ListItemEntity parentItem) throws ConversionPathException, ConversionFactorException;
+
+    ConvertibleAmount convertTagForList(TagEntity tag, BasicAmount tagAmount, ListItemDetailEntity existing, ListItemEntity item) throws ConversionPathException, ConversionFactorException;
+
+    ConvertibleAmount addToListItemDetail(ConvertibleAmount converted, ListItemDetailEntity existing, @NotNull ItemStateContext context) throws ConversionPathException, ConversionAddException, ConversionFactorException;
 }

@@ -13,14 +13,13 @@ import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.FractionType;
-import com.meg.listshop.lmt.conversion.EntityConvertibleAmount;
-import com.meg.listshop.lmt.conversion.ListConversionService;
-import com.meg.listshop.lmt.conversion.QuantityElements;
-import com.meg.listshop.lmt.conversion.SummaryConvertibleAmount;
+import com.meg.listshop.lmt.conversion.*;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
+import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.list.state.ItemStateContext;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,7 +153,31 @@ public class ListConversionServiceImpl implements ListConversionService {
         return convertDetail(toConvert, existingDetail, parentItem);
     }
 
+    @Override
+    public  ConvertibleAmount convertTagForList(TagEntity tag, BasicAmount tagAmount, ListItemDetailEntity existing, ListItemEntity item) throws ConversionPathException, ConversionFactorException {
+        if (tagAmount == null || tagAmount.getUnitId() == null) {
+            // nothing to convert - return
+            return null;
+        }
+        UnitEntity toConvertUnit = getUnit(tagAmount.getUnitId());
+        if (toConvertUnit == null) {
+            return null;
+        }
+        ConvertibleAmount toConvert = new EntityConvertibleAmount(tagAmount, toConvertUnit, tag);
 
+        return convertDetail(toConvert, existing, item);
+    }
+
+    @Override
+    public ConvertibleAmount addToListItemDetail(ConvertibleAmount converted, ListItemDetailEntity existing, @NotNull ItemStateContext context) throws ConversionPathException, ConversionAddException, ConversionFactorException {
+        UnitEntity existingUnit = getUnit(existing.getUnitId());
+        EntityConvertibleAmount addTo = new EntityConvertibleAmount(existing, existingUnit, context.getTag());
+        AddRequest addRequest = new AddRequest(ConversionTargetType.List, existingUnit, existing.getUnitSize());
+        ConvertibleAmount added = null;
+        added = converterService.add(converted, addTo, addRequest);
+
+        return added;
+    }
 
     private void setInItem(ConvertibleAmount amount, ListItemEntity item, List<ListItemDetailEntity> unspecified) {
         // set unspecified as unspecified

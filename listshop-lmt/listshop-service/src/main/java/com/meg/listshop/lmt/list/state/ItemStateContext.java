@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.list.state;
 
+import com.meg.listshop.lmt.conversion.BasicAmount;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -13,6 +14,7 @@ public class ItemStateContext {
     private DishItemEntity dishItem;
     private ListItemEntity listItem;
     private boolean isCrossedOff;
+    private BasicAmount basicAmount;
 
     public ItemStateContext(ListItemEntity targetItem, Long targetListId) {
         this.targetItem = targetItem;
@@ -90,5 +92,13 @@ public class ItemStateContext {
 
     public void setDishId(Long dishId) {
         this.dishId = dishId;
+    }
+
+    public BasicAmount getTagAmount() {
+        return basicAmount;
+    }
+
+    public void setTagAmount(BasicAmount basicAmount) {
+        this.basicAmount = basicAmount;
     }
 }

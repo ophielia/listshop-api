@@ -76,7 +76,7 @@ public class ListItemDetailEntity {
     private String rawEntry;
 
     @Column(name = "nonspecified")
-    private boolean unspecified = true;
+    private boolean unspecified = false;
 
     public ListItemDetailEntity() {
         // necessary for jpa construction
