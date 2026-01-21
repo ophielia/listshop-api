@@ -9,6 +9,8 @@ ALTER TABLE list_item
     ADD COLUMN unit_size           varchar(256),
     ADD COLUMN amount_text         varchar(256);
 
+ALTER TABLE list_item
+    DROP COLUMN free_text;
 
 -----  for dropping during test / dev
 

@@ -47,12 +47,6 @@ public class ListItemCollector extends AbstractItemCollector {
         if ((item.getCrossedOff() != null && !context.isCopyCrossedOff()) || item.getRemovedOn() != null) {
             return;
         }
-        if (item.getTag() == null) {
-            CollectedItem copied = copyFreeTextItem(item);
-            // free text item
-            getFreeTextItemList().add(copied);
-        }
-
 
         Pair<Boolean, CollectedItem> collectedItemPair = findOrCreateItemByTagId(item.getTag());
         CollectedItem update = collectedItemPair.getRight();
@@ -83,15 +77,6 @@ public class ListItemCollector extends AbstractItemCollector {
     public void removeFreeTextItem(ListItemEntity listItemEntity) {
         // TODO implement this
 
-    }
-
-
-    private CollectedItem copyFreeTextItem(ListItemEntity item) {
-        ListItemEntity copiedItem = item.createCopy();
-
-        CollectedItem copied = new CollectedItem(copiedItem);
-        copied.setFreeText(item.getFreeText());
-        return copied;
     }
 
     public void removeItemsFromList(List<ListItemEntity> fromListItems, CollectorContext context) {

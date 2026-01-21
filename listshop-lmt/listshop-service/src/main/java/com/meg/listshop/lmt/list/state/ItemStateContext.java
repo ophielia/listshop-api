@@ -14,7 +14,7 @@ public class ItemStateContext {
     private DishItemEntity dishItem;
     private ListItemEntity listItem;
     private boolean isCrossedOff;
-    private BasicAmount basicAmount;
+    private BasicAmount tagAmount;
 
     public ItemStateContext(ListItemEntity targetItem, Long targetListId) {
         this.targetItem = targetItem;
@@ -95,10 +95,10 @@ public class ItemStateContext {
     }
 
     public BasicAmount getTagAmount() {
-        return basicAmount;
+        return tagAmount;
     }
 
     public void setTagAmount(BasicAmount basicAmount) {
-        this.basicAmount = basicAmount;
+        this.tagAmount = basicAmount;
     }
 }

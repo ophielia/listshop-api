@@ -18,6 +18,7 @@ public class BasicAmount implements ConvertibleAmount {
 
     public BasicAmount(double quantity, String marker, String unitSize, UnitEntity unit, TagEntity tagEntity) {
         this.unitEntity = unit;
+        this.unitId = unit.getId();
         this.quantity = quantity;
         this.marker = marker;
         this.isLiquid = tagEntity.getIsLiquid();

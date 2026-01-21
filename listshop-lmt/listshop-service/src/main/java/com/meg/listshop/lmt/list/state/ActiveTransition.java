@@ -263,9 +263,7 @@ New / changed detail is converted to list type, and ready to be summed
     }
 
     private void addSpecifiedAmountForTag(ConvertibleAmount converted, ListItemEntity item, Long listId, ListItemDetailEntity existing, @NotNull ItemStateContext context) throws ItemProcessingException {
-
-        Long dishId = context.getDishItem().getDish().getId();
-        genericAddSpecifiedAmount(converted, item, existing, null,dishId,listId, context);
+        genericAddSpecifiedAmount(converted, item, existing, null,null,listId, context);
     }
 
 

@@ -172,13 +172,6 @@ public class CollectedItem {
         this.item.setUpdatedOn(java.sql.Timestamp.valueOf(updatedOn));
     }
 
-    public String getFreeText() {
-        return item.getFreeText();
-    }
-
-    public void setFreeText(String freeText) {
-        this.item.setFreeText(freeText);
-    }
 
     // Collector Item methods
     public void remove(CollectorContext context) {
@@ -382,7 +375,6 @@ public class CollectedItem {
                 dateEquals(secondCount, getRemovedOn(), that.getRemovedOn()) &&
                 dateEquals(secondCount, getCrossedOff(), that.getCrossedOff()) &&
                 getUsedCount() != null && getUsedCount().equals(that.getUsedCount()) &&
-                getFreeText() != null && getFreeText().equals(that.getFreeText()) &&
                 getTag().getId().equals(that.getTag().getId());
     }
 
@@ -439,7 +431,6 @@ public class CollectedItem {
         ListItemEntity nakedClient = clientItem.getItem();
         nakedServer.setAddedOn(nakedClient.getAddedOn());
         nakedServer.setCrossedOff(nakedClient.getCrossedOff());
-        nakedServer.setFreeText(nakedClient.getFreeText());
         nakedServer.setRemovedOn(nakedClient.getRemovedOn());
         nakedServer.setUpdatedOn(nakedClient.getUpdatedOn());
         nakedServer.setUsedCount(nakedClient.getUsedCount());

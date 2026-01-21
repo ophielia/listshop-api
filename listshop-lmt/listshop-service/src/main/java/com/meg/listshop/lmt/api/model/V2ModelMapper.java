@@ -114,7 +114,6 @@ public class V2ModelMapper {
                 .removed(listItemEntity.getRemovedOn())
                 .crossedOff(listItemEntity.getCrossedOff())
                 .usedCount(listItemEntity.getUsedCount())
-                .freeText(listItemEntity.getFreeText())
                 .handles(listItemEntity.getHandles());
     }
 

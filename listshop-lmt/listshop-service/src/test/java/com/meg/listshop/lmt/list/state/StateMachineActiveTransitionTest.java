@@ -1,12 +1,15 @@
 package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.common.RoundingUtils;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.conversion.BasicAmount;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
@@ -14,8 +17,8 @@ import com.meg.listshop.lmt.data.repository.ListItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.ServiceTestUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,8 +32,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Date;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 
 @ExtendWith(SpringExtension.class)
@@ -39,10 +40,10 @@ import java.util.function.Predicate;
 @ActiveProfiles("test")
 class StateMachineActiveTransitionTest {
 
-    private static final Long DISH_ID = 5678L;
-    private static final Long UNIT_ID = 1011L;
+    private static final Long UNIT_UNIT_ID = 1011L;
     private static final Long CUP_UNIT_ID = 1000L;
-private static final Long TAG_FLOUR = 350L;
+    private static final Long TAG_FLOUR = 350L;
+    private static final Long OZ_UNIT_ID = 1009L;
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
@@ -53,7 +54,7 @@ private static final Long TAG_FLOUR = 350L;
     private ShoppingListRepository shoppingListRepository;
 
     @Autowired
-    private ListItemRepository itemListRepository;
+    private UnitRepository unitRepository;
 
     @Autowired
     private ListItemDetailRepository itemDetailRepository;
@@ -82,14 +83,14 @@ private static final Long TAG_FLOUR = 350L;
 
         // we expect that the result has the correct dates
         verifyDates(result);
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(), 2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
         // and that the result contains 1 detail, without dish_id or list_id
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
         ListItemDetailEntity detail = result.getDetails().get(0);
         Assertions.assertNull(detail.getLinkedDishId());
-        Assertions.assertEquals(listId,detail.getLinkedListId());
+        Assertions.assertEquals(listId, detail.getLinkedListId());
     }
 
     @Test
@@ -98,7 +99,7 @@ private static final Long TAG_FLOUR = 350L;
         Long listId = targetList.getId();
         TagEntity tag = createTag();
         Long dishId = 12345L;
-        DishItemEntity dishItem = createDishItem(dishId,tag);
+        DishItemEntity dishItem = createDishItem(dishId, tag);
 
         // adding a dish  as a new list item
         ItemStateContext context = new ItemStateContext(null, listId);
@@ -109,15 +110,15 @@ private static final Long TAG_FLOUR = 350L;
 
         // we expect correct dates
         verifyDates(result);
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(), 2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
         // we expect 1 detail, with the dish id set
         // and no quantities
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
         ListItemDetailEntity detail = result.getDetails().get(0);
-        Assertions.assertEquals(dishId,detail.getLinkedDishId());
-        Assertions.assertEquals(listId,detail.getLinkedListId());
+        Assertions.assertEquals(dishId, detail.getLinkedDishId());
+        Assertions.assertEquals(listId, detail.getLinkedListId());
     }
 
     @Test
@@ -127,13 +128,13 @@ private static final Long TAG_FLOUR = 350L;
         // adding a dish item as a new list item
         TagEntity tag = createTag();
         Long dishId = 12345L;
-        DishItemEntity dishItem = createDishItem(dishId,tag);
+        DishItemEntity dishItem = createDishItem(dishId, tag);
         dishItem.setQuantity(1.5);
         dishItem.setFractionalQuantity(FractionType.OneHalf);
         dishItem.setWholeQuantity(1);
         dishItem.setUnitSize("size");
         dishItem.setRawEntry("rawEntry");
-        dishItem.setUnitId(UNIT_ID);
+        dishItem.setUnitId(UNIT_UNIT_ID);
         dishItem.setRawModifiers("rawModifiers");
 
         // adding a dish with quantities as a new list item
@@ -144,21 +145,21 @@ private static final Long TAG_FLOUR = 350L;
 
         // we expect correct dates
         verifyDates(result);
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(), 2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
 
         // we expect 1 detail, with the dish id set
         // and  quantities
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
         ListItemDetailEntity detail = result.getDetails().get(0);
-        Assertions.assertEquals(dishId,detail.getLinkedDishId());
-        Assertions.assertEquals(listId,detail.getLinkedListId());
+        Assertions.assertEquals(dishId, detail.getLinkedDishId());
+        Assertions.assertEquals(listId, detail.getLinkedListId());
         // verify quantities
-        Assertions.assertEquals(dishItem.getQuantity(),detail.getQuantity());
+        Assertions.assertEquals(dishItem.getQuantity(), detail.getQuantity());
         //MM 2236 come back and fix this Assertions.assertEquals(dishItem.getUnitSize(),detail.getUnitSize());
-        Assertions.assertEquals(dishItem.getUnitId(),detail.getUnitId());
-        Assertions.assertEquals(dishItem.getRawEntry(),detail.getRawEntry());
+        Assertions.assertEquals(dishItem.getUnitId(), detail.getUnitId());
+        Assertions.assertEquals(dishItem.getRawEntry(), detail.getRawEntry());
 
 
     }
@@ -170,7 +171,7 @@ private static final Long TAG_FLOUR = 350L;
         // adding a dish item as a new list item
         TagEntity tag = getTag(TAG_FLOUR);
         Long dishId = 12345L;
-        DishItemEntity dishItem = createDishItem(dishId,tag);
+        DishItemEntity dishItem = createDishItem(dishId, tag);
         dishItem.setQuantity(1.5);
         dishItem.setFractionalQuantity(FractionType.OneHalf);
         dishItem.setWholeQuantity(1);
@@ -195,12 +196,12 @@ private static final Long TAG_FLOUR = 350L;
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
         ListItemDetailEntity detail = result.getDetails().get(0);
-        Assertions.assertEquals(dishId,detail.getLinkedDishId());
-        Assertions.assertEquals(listId,detail.getLinkedListId());
+        Assertions.assertEquals(dishId, detail.getLinkedDishId());
+        Assertions.assertEquals(listId, detail.getLinkedListId());
         // verify quantities
         Assertions.assertTrue(detail.getQuantity() > 5.8 && detail.getQuantity() < 5.9);
-        Assertions.assertEquals(1009L,detail.getUnitId());
-        Assertions.assertEquals(dishItem.getRawEntry(),detail.getRawEntry());
+        Assertions.assertEquals(1009L, detail.getUnitId());
+        Assertions.assertEquals(dishItem.getRawEntry(), detail.getRawEntry());
         Assertions.assertEquals(5.875, result.getQuantity());
         Assertions.assertEquals(FractionType.SevenEighths, result.getFractionalQuantity());
         Assertions.assertEquals(5, result.getWholeQuantity());
@@ -218,7 +219,7 @@ private static final Long TAG_FLOUR = 350L;
         // now, add the same a third time for a different dish, but this time, without an amount
         context = new ItemStateContext(result, listId);
         // adding a dish item as a new list item
-        DishItemEntity newDishItem = createDishItem(56789L,tag);
+        DishItemEntity newDishItem = createDishItem(56789L, tag);
         context.setDishItem(newDishItem);
         ListItemEntity thirdResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
         Assertions.assertNotNull(thirdResult);
@@ -235,7 +236,7 @@ private static final Long TAG_FLOUR = 350L;
         // adding a list item as a new list item
         TagEntity tag = createTag();
         ShoppingListEntity addedItemsList = createShoppingList();
-        ListItemEntity toAdd = createListItem(addedItemsList,tag);
+        ListItemEntity toAdd = createListItem(addedItemsList, tag);
 
         // so - list is empty (no existing item), and adding list item from different list
         ItemStateContext context = new ItemStateContext(null, listId);
@@ -245,13 +246,13 @@ private static final Long TAG_FLOUR = 350L;
 
         // we expect correct dates
         verifyDates(result);
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(), 2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
         // we expect 1 detail, with the list id set
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
         ListItemDetailEntity detail = result.getDetails().get(0);
-        Assertions.assertEquals(addedItemsList.getId(),detail.getLinkedListId());
+        Assertions.assertEquals(addedItemsList.getId(), detail.getLinkedListId());
         Assertions.assertNotNull(detail.getLinkedListId());
         Assertions.assertNull(detail.getLinkedDishId());
     }
@@ -265,13 +266,13 @@ private static final Long TAG_FLOUR = 350L;
         ShoppingListEntity addedItemsList = createShoppingList();
         // the item to be added will contain a dish detail, with quantities
         Long dishId = 12345L;
-        DishItemEntity dishItem = createDishItem(dishId,tag);
+        DishItemEntity dishItem = createDishItem(dishId, tag);
         dishItem.setQuantity(1.5);
         dishItem.setFractionalQuantity(FractionType.OneHalf);
         dishItem.setWholeQuantity(1);
         dishItem.setUnitSize("size");
         dishItem.setRawEntry("rawEntry");
-        dishItem.setUnitId(UNIT_ID);
+        dishItem.setUnitId(UNIT_UNIT_ID);
         dishItem.setRawModifiers("rawModifiers");
         // we'll use the statemachine to create the start state
         ItemStateContext testContext = new ItemStateContext(null, addedItemsList.getId());
@@ -286,20 +287,20 @@ private static final Long TAG_FLOUR = 350L;
 
         // we expect correct dates
         verifyDates(result);
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
-              Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(), 2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
         // we expect 1 detail, with the list id set and the dish id set
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
         ListItemDetailEntity detail = result.getDetails().get(0);
         Assertions.assertNotNull(detail.getLinkedListId());
-        Assertions.assertEquals(addedItemsList.getId(),detail.getLinkedListId());
+        Assertions.assertEquals(addedItemsList.getId(), detail.getLinkedListId());
         Assertions.assertNotNull(detail.getLinkedDishId());
-        Assertions.assertEquals(dishId,detail.getLinkedDishId());
+        Assertions.assertEquals(dishId, detail.getLinkedDishId());
         // verify quantities
-        Assertions.assertEquals(dishItem.getQuantity(),detail.getQuantity());
-        Assertions.assertEquals(dishItem.getUnitId(),detail.getUnitId());
-        Assertions.assertEquals(dishItem.getRawEntry(),detail.getRawEntry());
+        Assertions.assertEquals(dishItem.getQuantity(), detail.getQuantity());
+        Assertions.assertEquals(dishItem.getUnitId(), detail.getUnitId());
+        Assertions.assertEquals(dishItem.getRawEntry(), detail.getRawEntry());
     }
 
 
@@ -312,7 +313,7 @@ private static final Long TAG_FLOUR = 350L;
         ShoppingListEntity addedItemsList = createShoppingList();
         // the item to be added will contain a dish detail, with quantities
         Long dishId = 12345L;
-        DishItemEntity dishItem = createDishItem(dishId,tag);
+        DishItemEntity dishItem = createDishItem(dishId, tag);
         dishItem.setQuantity(1.5);
         dishItem.setFractionalQuantity(FractionType.OneHalf);
         dishItem.setWholeQuantity(1);
@@ -339,16 +340,16 @@ private static final Long TAG_FLOUR = 350L;
         Assertions.assertEquals(1, result.getDetails().size());
         ListItemDetailEntity detail = result.getDetails().get(0);
         Assertions.assertNotNull(detail.getLinkedListId());
-        Assertions.assertEquals(addedItemsList.getId(),detail.getLinkedListId());
+        Assertions.assertEquals(addedItemsList.getId(), detail.getLinkedListId());
         Assertions.assertNotNull(detail.getLinkedDishId());
-        Assertions.assertEquals(dishId,detail.getLinkedDishId());
+        Assertions.assertEquals(dishId, detail.getLinkedDishId());
         // verify item quantities
         Assertions.assertEquals(5, result.getWholeQuantity());
         Assertions.assertEquals(FractionType.SevenEighths, result.getFractionalQuantity());
         Assertions.assertEquals(5.875, result.getQuantity());
         Assertions.assertEquals(1009L, result.getUnit().getId());
         // verify quantities, detail
-        Assertions.assertEquals(5.8608,detail.getQuantity());
+        Assertions.assertEquals(5.8608, detail.getQuantity());
         Assertions.assertEquals(1009L, detail.getUnitId());
     }
 
@@ -361,13 +362,13 @@ private static final Long TAG_FLOUR = 350L;
         ShoppingListEntity addedItemsList = createShoppingList();
         // the item to be added will contain a dish detail, with quantities
         Long dishId = 12345L;
-        DishItemEntity dishItem = createDishItem(dishId,tag);
+        DishItemEntity dishItem = createDishItem(dishId, tag);
         dishItem.setQuantity(1.5);
         dishItem.setFractionalQuantity(FractionType.OneHalf);
         dishItem.setWholeQuantity(1);
         dishItem.setUnitSize("size");
         dishItem.setRawEntry("rawEntry");
-        dishItem.setUnitId(UNIT_ID);
+        dishItem.setUnitId(UNIT_UNIT_ID);
         dishItem.setRawModifiers("rawModifiers");
         // we'll use the statemachine to create the start state
         ItemStateContext testContext = new ItemStateContext(null, addedItemsList.getId());
@@ -387,8 +388,8 @@ private static final Long TAG_FLOUR = 350L;
 
         // we expect correct dates
         verifyDates(result);
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(), 2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
         // we expect 2 details
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(2, result.getDetails().size());
@@ -398,17 +399,17 @@ private static final Long TAG_FLOUR = 350L;
                 .findFirst().orElse(null);
         Assertions.assertNotNull(detail);
         Assertions.assertNotNull(detail.getLinkedListId());
-        Assertions.assertEquals(addedItemsList.getId(),detail.getLinkedListId());
+        Assertions.assertEquals(addedItemsList.getId(), detail.getLinkedListId());
         Assertions.assertNotNull(detail.getLinkedDishId());
-        Assertions.assertEquals(dishId,detail.getLinkedDishId());
+        Assertions.assertEquals(dishId, detail.getLinkedDishId());
         // verify quantities
-        Assertions.assertEquals(dishItem.getQuantity(),detail.getOriginalQuantity());
-        Assertions.assertEquals(dishItem.getWholeQuantity(),detail.getOriginalWholeQuantity());
-        Assertions.assertEquals(dishItem.getFractionalQuantity(),detail.getOriginalFractionalQuantity());
-        Assertions.assertEquals(dishItem.getUnitSize(),detail.getUnitSize());
-        Assertions.assertEquals(dishItem.getUnitId(),detail.getOriginalUnitId());
-        Assertions.assertEquals(dishItem.getRawEntry(),detail.getRawEntry());
-        Assertions.assertEquals(dishItem.getMarker(),detail.getMarker());
+        Assertions.assertEquals(dishItem.getQuantity(), detail.getOriginalQuantity());
+        Assertions.assertEquals(dishItem.getWholeQuantity(), detail.getOriginalWholeQuantity());
+        Assertions.assertEquals(dishItem.getFractionalQuantity(), detail.getOriginalFractionalQuantity());
+        Assertions.assertEquals(dishItem.getUnitSize(), detail.getUnitSize());
+        Assertions.assertEquals(dishItem.getUnitId(), detail.getOriginalUnitId());
+        Assertions.assertEquals(dishItem.getRawEntry(), detail.getRawEntry());
+        Assertions.assertEquals(dishItem.getMarker(), detail.getMarker());
 
         // get "plain" detail (no dish id, but list id)
         detail = result.getDetails().stream()
@@ -416,7 +417,7 @@ private static final Long TAG_FLOUR = 350L;
                 .findFirst().orElse(null);
         Assertions.assertNotNull(detail);
         Assertions.assertNotNull(detail.getLinkedListId());
-        Assertions.assertEquals(addedItemsList.getId(),detail.getLinkedListId());
+        Assertions.assertEquals(addedItemsList.getId(), detail.getLinkedListId());
         Assertions.assertNull(detail.getLinkedDishId());
     }
 
@@ -442,14 +443,108 @@ private static final Long TAG_FLOUR = 350L;
         // we expect that the result has the correct dates
         verifyDates(result);
         Assertions.assertEquals(addedOn, result.getAddedOn());
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
         // and that the result contains 1 detail, with dish_id and list_id, and a count of 2
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
         ListItemDetailEntity detail = result.getDetails().get(0);
         Assertions.assertNull(detail.getLinkedDishId());
-        Assertions.assertEquals(listId,detail.getLinkedListId());
+        Assertions.assertEquals(listId, detail.getLinkedListId());
 
+    }
+
+    @Test
+    void testAddTagWithAmountNonConvertible() throws ItemProcessingException {
+        Date addedOn = calculateYesterday();
+        ShoppingListEntity targetList = createShoppingList();
+        Long listId = targetList.getId();
+        TagEntity tagEntity = createTag(); // new tag, can't be converted
+        BasicAmount amount = new BasicAmount(1, null, null, UNIT_UNIT_ID, tagEntity);
+        ItemStateContext setupContext = new ItemStateContext(null, listId);
+        setupContext.setTag(tagEntity);
+        setupContext.setTagAmount(amount);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+
+        // we expect that the result has the correct dates
+        verifyDates(result);
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
+        // and that the result contains 1 detail, with dish_id and list_id null
+        // quantity of 1, usedCount 1, unitId - unit
+        Assertions.assertNotNull(result.getDetails());
+        Assertions.assertEquals(1, result.getDetails().size());
+        ListItemDetailEntity detail = result.getDetails().get(0);
+        Assertions.assertNull(detail.getLinkedDishId());
+        Assertions.assertEquals(listId, detail.getLinkedListId());
+        Assertions.assertEquals(1, detail.getQuantity());
+        Assertions.assertEquals(1, detail.getCount());
+        Assertions.assertEquals(UNIT_UNIT_ID, detail.getUnitId());
+
+//MM next up - add amount with a convertible amount
+    }
+
+
+    @Test
+    void testAddTagWithAmountConvertible() throws ItemProcessingException {
+        Date addedOn = calculateYesterday();
+        ShoppingListEntity targetList = createShoppingList();
+        Long listId = targetList.getId();
+        TagEntity tagEntity = getTag(TAG_FLOUR); // tag flour, which has conversions
+        BasicAmount amount = new BasicAmount(1, null, null, CUP_UNIT_ID, tagEntity);
+        ItemStateContext setupContext = new ItemStateContext(null, listId);
+        setupContext.setTag(tagEntity);
+        setupContext.setTagAmount(amount);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+
+        // we expect that the result has the correct dates
+        verifyDates(result);
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
+        // and that the result contains 1 detail, with dish_id and list_id null
+        // quantity of 1, usedCount 1, unitId - unit
+        Assertions.assertEquals(1, result.getDetails().size());
+        ListItemDetailEntity detail = result.getDetails().get(0);
+        Assertions.assertNull(detail.getLinkedDishId());
+        Assertions.assertEquals(listId, detail.getLinkedListId());
+        Assertions.assertEquals(3.907, RoundingUtils.roundToThousandths(detail.getQuantity()));
+        Assertions.assertEquals(1, detail.getCount());
+        Assertions.assertEquals(OZ_UNIT_ID, detail.getUnitId());
+    }
+
+    @Test
+    void testAddTagWithAmountConvertibleExisting() throws ItemProcessingException {
+        // setup list with an existing item (having an amount)
+        ShoppingListEntity targetList = createShoppingList();
+        Long listId = targetList.getId();
+        TagEntity tagEntity = getTag(TAG_FLOUR); // tag flour, which has conversions
+        BasicAmount amount = new BasicAmount(1, null, null, CUP_UNIT_ID, tagEntity);
+        ItemStateContext setupContext = new ItemStateContext(null, listId);
+        setupContext.setTag(tagEntity);
+        setupContext.setTagAmount(amount);
+        ListItemEntity setupResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        targetList.getItems().add(setupResult);
+        shoppingListRepository.save(targetList);
+
+        // now, we'll add flour to the target list again - this time, one ounce
+        BasicAmount secondAmount = new BasicAmount(1, null, null, OZ_UNIT_ID, tagEntity);
+        ItemStateContext testContext = new ItemStateContext(setupResult, listId);
+        testContext.setTag(tagEntity);
+        testContext.setTagAmount(secondAmount);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, testContext);
+
+        // we expect that the result has the correct dates
+        verifyDates(result);
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
+        // verify item amounts
+        Assertions.assertEquals(5, result.getQuantity());
+        Assertions.assertEquals(OZ_UNIT_ID, result.getUnit().getId());
+        // and that the result contains 1 detail, with dish_id null and list_id not null
+        // quantity of 4.907, usedCount 2, unitId - ounce
+        Assertions.assertEquals(1, result.getDetails().size());
+        ListItemDetailEntity detail = result.getDetails().get(0);
+        Assertions.assertNull(detail.getLinkedDishId());
+        Assertions.assertEquals(listId, detail.getLinkedListId());
+        Assertions.assertEquals(4.907, RoundingUtils.roundToThousandths(detail.getQuantity()));
+        Assertions.assertEquals(2, detail.getCount());
+        Assertions.assertEquals(OZ_UNIT_ID, detail.getUnitId());
     }
 
     @Test
@@ -459,7 +554,7 @@ private static final Long TAG_FLOUR = 350L;
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
         TagEntity tagEntity = createTag();
-        DishItemEntity dishItem = createDishItem(dishId,tagEntity);
+        DishItemEntity dishItem = createDishItem(dishId, tagEntity);
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setDishItem(dishItem);
         ListItemEntity existing = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
@@ -475,7 +570,7 @@ private static final Long TAG_FLOUR = 350L;
         // we expect that the result has the correct dates
         verifyDates(result);
         Assertions.assertEquals(addedOn, result.getAddedOn());
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
         // and that the result contains 1 detail, with dish_id and list_id, and a count of 1
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
@@ -483,8 +578,8 @@ private static final Long TAG_FLOUR = 350L;
                 .filter(d -> dishId.equals(d.getLinkedDishId()))
                 .findFirst().orElse(null);
         Assertions.assertEquals(2, detail.getCount());
-        Assertions.assertEquals(dishId,detail.getLinkedDishId());
-        Assertions.assertEquals(listId,detail.getLinkedListId());
+        Assertions.assertEquals(dishId, detail.getLinkedDishId());
+        Assertions.assertEquals(listId, detail.getLinkedListId());
 
 
     }
@@ -497,7 +592,7 @@ private static final Long TAG_FLOUR = 350L;
         Long listId = targetList.getId();
         TagEntity tagEntity = createTag();
 
-        ListItemEntity listItem = createListItem(addedFromList,tagEntity);
+        ListItemEntity listItem = createListItem(addedFromList, tagEntity);
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setListItem(listItem);
         ListItemEntity existing = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
@@ -513,22 +608,22 @@ private static final Long TAG_FLOUR = 350L;
         // we expect that the result has the correct dates
         verifyDates(result);
         Assertions.assertEquals(addedOn, result.getAddedOn());
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
         // and that the result contains 1 detail, with dish_id and list_id, and a count of 2
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
         ListItemDetailEntity detail = result.getDetails().get(0);
         Assertions.assertEquals(2, detail.getCount());
         Assertions.assertNull(detail.getLinkedDishId());
-        Assertions.assertEquals(addedFromList.getId(),detail.getLinkedListId());
+        Assertions.assertEquals(addedFromList.getId(), detail.getLinkedListId());
 
     }
 
 
     private ListItemDetailEntity createDetailItem(ListItemEntity item) {
-            ListItemDetailEntity detail = new ListItemDetailEntity();
-            detail.setItem(item);
-            return itemDetailRepository.save(detail);
+        ListItemDetailEntity detail = new ListItemDetailEntity();
+        detail.setItem(item);
+        return itemDetailRepository.save(detail);
     }
 
     private Date calculateYesterday() {
@@ -541,7 +636,7 @@ private static final Long TAG_FLOUR = 350L;
         listItemEntity.setTagId(tag.getId());
         listItemEntity.setTag(tag);
         listItemEntity.setListId(shoppingListEntity.getId());
-        ListItemEntity created =  listItemRepository.save(listItemEntity);
+        ListItemEntity created = listItemRepository.save(listItemEntity);
         ListItemDetailEntity detail = createDetailItem(created);
         detail.setLinkedListId(shoppingListEntity.getId());
         created.addDetailToItem(detail);
@@ -551,9 +646,9 @@ private static final Long TAG_FLOUR = 350L;
 
     private ShoppingListEntity createShoppingList() {
 
-    ShoppingListEntity shoppingListEntity = new ShoppingListEntity();
+        ShoppingListEntity shoppingListEntity = new ShoppingListEntity();
         shoppingListEntity.setName(LocalDateTime.now().toString());
-    return shoppingListRepository.save(shoppingListEntity);
+        return shoppingListRepository.save(shoppingListEntity);
     }
 
     private TagEntity createTag() {

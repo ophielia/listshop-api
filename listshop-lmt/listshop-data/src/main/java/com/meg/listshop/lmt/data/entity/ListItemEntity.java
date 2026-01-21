@@ -50,8 +50,6 @@ public class ListItemEntity {
 
     private Date updatedOn;
 
-    private String freeText;
-
     @Column(name = "quantity")
     private Double quantity;
 
@@ -121,14 +119,6 @@ public class ListItemEntity {
 
     public void setUpdatedOn(Date updatedOn) {
         this.updatedOn = updatedOn;
-    }
-
-    public String getFreeText() {
-        return freeText;
-    }
-
-    public void setFreeText(String freeText) {
-        this.freeText = freeText;
     }
 
     public Date getCrossedOff() {
@@ -262,7 +252,6 @@ public class ListItemEntity {
                 ", crossedOff=" + crossedOff +
                 ", removedOn=" + removedOn +
                 ", updatedOn=" + updatedOn +
-                ", freeText='" + freeText + '\'' +
                 ", wholeQuantity=" + wholeQuantity +
                 ", fractionalQuantity=" + fractionalQuantity +
                 ", quantity=" + quantity +
@@ -281,7 +270,6 @@ public class ListItemEntity {
         cloned.setUpdatedOn(this.getUpdatedOn());
         cloned.setUsedCount(this.getUsedCount());
         cloned.setListId(this.getListId());
-        cloned.setFreeText(this.getFreeText());
         cloned.setRawDishSources(this.getRawDishSources());
         cloned.setRawListSources(this.getRawListSources());
         cloned.setTag(this.getTag());
@@ -289,10 +277,7 @@ public class ListItemEntity {
     }
 
     public String getDisplay() {
-        if (this.tag != null) {
             return this.tag.getName();
-        }
-        return this.freeText;
     }
 
     public void addDetailToItem(ListItemDetailEntity detail) {
