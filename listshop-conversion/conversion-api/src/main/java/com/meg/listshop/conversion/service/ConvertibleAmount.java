@@ -1,6 +1,7 @@
 package com.meg.listshop.conversion.service;
 
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 
 public interface ConvertibleAmount {
 
@@ -19,4 +20,15 @@ public interface ConvertibleAmount {
     Boolean getUserSize();
 
     double getQuantityRoundedUp();
+
+    default SimpleAmount copy() {
+        return new SimpleAmount(
+                getQuantity(),
+                getUnit(),
+                getConversionId().longValue(),
+                getIsLiquid().booleanValue(),
+                getMarker()
+        );
+
+    }
 }

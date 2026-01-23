@@ -5,7 +5,6 @@ import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import org.springframework.format.annotation.DurationFormat;
 
 public class EntityConvertibleAmount implements ConvertibleAmount {
 

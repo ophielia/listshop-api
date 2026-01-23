@@ -186,8 +186,9 @@ public class ListConversionServiceImpl implements ListConversionService {
         if (amount == null) {
             return;
         }
+        item.setRawQuantity(amount.getQuantity());
         QuantityElements elements = splitQuantityIntoElements(RoundingUtils.roundUpToNearestFraction(amount.getQuantity()));
-        item.setQuantity(elements.quantity());
+        item.setRoundedQuantity(elements.quantity());
         item.setFractionalQuantity(elements.fractionType());
         item.setWholeQuantity(elements.wholeNumber());
         item.setUnit(amount.getUnit());

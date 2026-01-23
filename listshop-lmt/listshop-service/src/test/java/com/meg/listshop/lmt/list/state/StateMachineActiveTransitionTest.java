@@ -40,9 +40,11 @@ import java.util.Date;
 @ActiveProfiles("test")
 class StateMachineActiveTransitionTest {
 
+    private static final Long KILO_UNIT_ID = 1014L;
     private static final Long UNIT_UNIT_ID = 1011L;
     private static final Long CUP_UNIT_ID = 1000L;
     private static final Long TAG_FLOUR = 350L;
+    private static final Long TAG_TOMATO = 33L;
     private static final Long OZ_UNIT_ID = 1009L;
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
@@ -157,7 +159,7 @@ class StateMachineActiveTransitionTest {
         Assertions.assertEquals(listId, detail.getLinkedListId());
         // verify quantities
         Assertions.assertEquals(dishItem.getQuantity(), detail.getQuantity());
-        //MM 2236 come back and fix this Assertions.assertEquals(dishItem.getUnitSize(),detail.getUnitSize());
+        Assertions.assertEquals(dishItem.getUnitSize(),detail.getUnitSize());
         Assertions.assertEquals(dishItem.getUnitId(), detail.getUnitId());
         Assertions.assertEquals(dishItem.getRawEntry(), detail.getRawEntry());
 
@@ -202,7 +204,7 @@ class StateMachineActiveTransitionTest {
         Assertions.assertTrue(detail.getQuantity() > 5.8 && detail.getQuantity() < 5.9);
         Assertions.assertEquals(1009L, detail.getUnitId());
         Assertions.assertEquals(dishItem.getRawEntry(), detail.getRawEntry());
-        Assertions.assertEquals(5.875, result.getQuantity());
+        Assertions.assertEquals(5.875, result.getRoundedQuantity());
         Assertions.assertEquals(FractionType.SevenEighths, result.getFractionalQuantity());
         Assertions.assertEquals(5, result.getWholeQuantity());
 
@@ -212,7 +214,7 @@ class StateMachineActiveTransitionTest {
         context.setDishItem(dishItem);
         ListItemEntity secondResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
         Assertions.assertNotNull(secondResult);
-        Assertions.assertEquals(0.75, secondResult.getQuantity());
+        Assertions.assertEquals(0.75, secondResult.getRoundedQuantity());
         Assertions.assertEquals(FractionType.ThreeQuarters, secondResult.getFractionalQuantity());
         Assertions.assertEquals(0, secondResult.getWholeQuantity());
 
@@ -223,7 +225,7 @@ class StateMachineActiveTransitionTest {
         context.setDishItem(newDishItem);
         ListItemEntity thirdResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
         Assertions.assertNotNull(thirdResult);
-        Assertions.assertEquals(0.75, thirdResult.getQuantity());
+        Assertions.assertEquals(0.75, thirdResult.getRoundedQuantity());
         Assertions.assertEquals(FractionType.ThreeQuarters, thirdResult.getFractionalQuantity());
         Assertions.assertEquals(0, thirdResult.getWholeQuantity());
     }
@@ -333,8 +335,8 @@ class StateMachineActiveTransitionTest {
 
         // we expect correct dates
         verifyDates(result);
-//MM fix this        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
-//MM fix / delete this        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
         // we expect 1 detail, with the list id set and the dish id set
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
@@ -346,7 +348,7 @@ class StateMachineActiveTransitionTest {
         // verify item quantities
         Assertions.assertEquals(5, result.getWholeQuantity());
         Assertions.assertEquals(FractionType.SevenEighths, result.getFractionalQuantity());
-        Assertions.assertEquals(5.875, result.getQuantity());
+        Assertions.assertEquals(5.875, result.getRoundedQuantity());
         Assertions.assertEquals(1009L, result.getUnit().getId());
         // verify quantities, detail
         Assertions.assertEquals(5.8608, detail.getQuantity());
@@ -478,8 +480,47 @@ class StateMachineActiveTransitionTest {
         Assertions.assertEquals(1, detail.getQuantity());
         Assertions.assertEquals(1, detail.getCount());
         Assertions.assertEquals(UNIT_UNIT_ID, detail.getUnitId());
+    }
 
-//MM next up - add amount with a convertible amount
+    @Test
+    void testAddTagWithAmountSize() throws ItemProcessingException {
+
+        ShoppingListEntity targetList = createShoppingList();
+        Long listId = targetList.getId();
+        TagEntity tagEntity = getTag(TAG_TOMATO); // tag flour, which has conversions
+        BasicAmount amount = new BasicAmount(1, null, "medium", UNIT_UNIT_ID, tagEntity);
+        ItemStateContext setupContext = new ItemStateContext(null, listId);
+        setupContext.setTag(tagEntity);
+        setupContext.setTagAmount(amount);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+
+        // we expect that the result has the correct dates
+        Assertions.assertEquals(1, result.getDetails().size());
+        Assertions.assertEquals(1, result.getRoundedQuantity());
+        Assertions.assertEquals("medium", result.getUnitSize());
+
+        // now add 1 cup diced - see what happens
+        BasicAmount dicedAmount = new BasicAmount(1, "chopped", null, CUP_UNIT_ID, tagEntity);
+        ItemStateContext diceyContext = new ItemStateContext(result, listId);
+        diceyContext.setTag(tagEntity);
+        diceyContext.setTagAmount(dicedAmount);
+        ListItemEntity diceyResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, diceyContext);
+
+        Assertions.assertNotNull(diceyResult);
+        Assertions.assertEquals(2.216, RoundingUtils.roundToThousandths(diceyResult.getRawQuantity()));
+        Assertions.assertEquals(2.25, diceyResult.getRoundedQuantity());
+        Assertions.assertEquals(1011L, diceyResult.getUnit().getId());
+        // add dish item
+        DishItemEntity dishItem = createDishItem(123456L, tagEntity);
+        dishItem.setQuantity(0.5);
+        dishItem.setUnitId(KILO_UNIT_ID);
+        ItemStateContext addDishContext = new ItemStateContext(diceyResult, listId);
+        addDishContext.setDishItem(dishItem);
+        ListItemEntity twoTagsAndADish = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, addDishContext);
+
+        Assertions.assertNotNull(twoTagsAndADish);
+        //MM
+        // just fill in the tests to pin it down!
     }
 
 
@@ -534,7 +575,7 @@ class StateMachineActiveTransitionTest {
         verifyDates(result);
         Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
         // verify item amounts
-        Assertions.assertEquals(5, result.getQuantity());
+        Assertions.assertEquals(5, result.getRoundedQuantity());
         Assertions.assertEquals(OZ_UNIT_ID, result.getUnit().getId());
         // and that the result contains 1 detail, with dish_id null and list_id not null
         // quantity of 4.907, usedCount 2, unitId - ounce

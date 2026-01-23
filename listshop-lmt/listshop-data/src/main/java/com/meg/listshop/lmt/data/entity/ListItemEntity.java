@@ -51,7 +51,11 @@ public class ListItemEntity {
     private Date updatedOn;
 
     @Column(name = "quantity")
-    private Double quantity;
+    private Double roundedQuantity;
+
+    @Column(name = "raw_quantity")
+    private Double rawQuantity;
+
 
     @Column(name = "whole_quantity")
     private Integer wholeQuantity;
@@ -199,12 +203,20 @@ public class ListItemEntity {
         this.fractionalQuantity = fractionalQuantity;
     }
 
-    public Double getQuantity() {
-        return quantity;
+    public Double getRoundedQuantity() {
+        return roundedQuantity;
     }
 
-    public void setQuantity(Double quantity) {
-        this.quantity = quantity;
+    public void setRoundedQuantity(Double quantity) {
+        this.roundedQuantity = quantity;
+    }
+
+    public Double getRawQuantity() {
+        return rawQuantity;
+    }
+
+    public void setRawQuantity(Double rawQuantity) {
+        this.rawQuantity = rawQuantity;
     }
 
     public Long getUnitId() {
@@ -254,7 +266,7 @@ public class ListItemEntity {
                 ", updatedOn=" + updatedOn +
                 ", wholeQuantity=" + wholeQuantity +
                 ", fractionalQuantity=" + fractionalQuantity +
-                ", quantity=" + quantity +
+                ", quantity=" + roundedQuantity +
                 ", unit=" + unit +
                 ", unitSize='" + unitSize + '\'' +
                 ", amountDescription='" + amountText + '\'' +

@@ -3,6 +3,7 @@ ALTER TABLE list_item_details
 
 ALTER TABLE list_item
     ADD COLUMN quantity            double precision,
+    ADD COLUMN raw_quantity         double precision,
     ADD COLUMN whole_quantity      integer,
     ADD COLUMN fractional_quantity character varying(56),
     ADD COLUMN unit_id             bigint,

@@ -2,8 +2,6 @@ package com.meg.listshop.lmt.conversion;
 
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
-import com.meg.listshop.lmt.data.entity.DishItemEntity;
-import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 
 public class BasicAmount implements ConvertibleAmount {

@@ -187,4 +187,15 @@ public class ConversionContext {
     public void setGramWeight(double gramWeight) {
         this.gramWeight = gramWeight;
     }
+
+    public void checkUnitToUnit(ConvertibleAmount result) {
+        if (result == null) {
+            return;
+        }
+        if (result.getUnit().getType() == UnitType.UNIT
+                && targetSpec.getUnitType() == UnitType.UNIT) {
+            this.isUnitToUnit = true;
+        }
+
+    }
 }
