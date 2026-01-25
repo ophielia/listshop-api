@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.conversion;
 
+import com.meg.listshop.common.CommonUtils;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
@@ -19,7 +20,7 @@ public class EntityConvertibleAmount implements ConvertibleAmount {
         this.unitEntity = unit;
         this.quantity = listItemDetail.getQuantity();
         this.marker = listItemDetail.getMarker();
-        this.isLiquid = tagEntity.getIsLiquid();
+        this.isLiquid =  CommonUtils.elvis(tagEntity.getIsLiquid(),false);
         this.unitSize = listItemDetail.getUnitSize();
         this.conversionId = tagEntity.getConversionId();
     }
@@ -28,7 +29,7 @@ public class EntityConvertibleAmount implements ConvertibleAmount {
         this.unitEntity = unit;
         this.quantity = dishItem.getQuantity();
         this.marker = dishItem.getMarker();
-        this.isLiquid = tagEntity.getIsLiquid();
+        this.isLiquid = CommonUtils.elvis(tagEntity.getIsLiquid(),false);
         this.unitSize = dishItem.getUnitSize();
         this.conversionId = tagEntity.getConversionId();
     }
@@ -37,7 +38,7 @@ public class EntityConvertibleAmount implements ConvertibleAmount {
         this.unitEntity = unit;
         this.quantity = tagAmount.getQuantity();
         this.marker = tagAmount.getMarker();
-        this.isLiquid = tagEntity.getIsLiquid();
+        this.isLiquid =  CommonUtils.elvis(tagEntity.getIsLiquid(),false);
         this.unitSize = tagAmount.getUnitSize();
         this.conversionId = tagEntity.getConversionId();
     }
