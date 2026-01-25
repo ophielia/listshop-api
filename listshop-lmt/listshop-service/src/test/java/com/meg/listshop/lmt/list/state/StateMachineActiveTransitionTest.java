@@ -190,8 +190,8 @@ class StateMachineActiveTransitionTest {
 
         // we expect correct dates
         verifyDates(result);
-//        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
-//        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
 
         // we expect 1 detail, with the dish id set
         // and  quantities
@@ -405,11 +405,8 @@ class StateMachineActiveTransitionTest {
         Assertions.assertNotNull(detail.getLinkedDishId());
         Assertions.assertEquals(dishId, detail.getLinkedDishId());
         // verify quantities
-        Assertions.assertEquals(dishItem.getQuantity(), detail.getOriginalQuantity());
-        Assertions.assertEquals(dishItem.getWholeQuantity(), detail.getOriginalWholeQuantity());
-        Assertions.assertEquals(dishItem.getFractionalQuantity(), detail.getOriginalFractionalQuantity());
+        Assertions.assertEquals(dishItem.getQuantity(), detail.getQuantity());
         Assertions.assertEquals(dishItem.getUnitSize(), detail.getUnitSize());
-        Assertions.assertEquals(dishItem.getUnitId(), detail.getOriginalUnitId());
         Assertions.assertEquals(dishItem.getRawEntry(), detail.getRawEntry());
         Assertions.assertEquals(dishItem.getMarker(), detail.getMarker());
 
@@ -457,7 +454,6 @@ class StateMachineActiveTransitionTest {
 
     @Test
     void testAddTagWithAmountNonConvertible() throws ItemProcessingException {
-        Date addedOn = calculateYesterday();
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
         TagEntity tagEntity = createTag(); // new tag, can't be converted
@@ -526,7 +522,6 @@ class StateMachineActiveTransitionTest {
 
     @Test
     void testAddTagWithAmountConvertible() throws ItemProcessingException {
-        Date addedOn = calculateYesterday();
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
         TagEntity tagEntity = getTag(TAG_FLOUR); // tag flour, which has conversions

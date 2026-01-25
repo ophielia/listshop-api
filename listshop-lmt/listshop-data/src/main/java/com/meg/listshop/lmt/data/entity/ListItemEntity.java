@@ -2,6 +2,7 @@ package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.lmt.api.model.FractionType;
+import com.meg.listshop.lmt.api.model.v2.SpecificationType;
 import jakarta.persistence.*;
 
 import java.util.*;
@@ -17,13 +18,13 @@ public class ListItemEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_item_sequence")
     @SequenceGenerator(name = "list_item_sequence", sequenceName = "list_item_sequence", allocationSize = 1)
     @Column(name = "item_id")
-    private Long item_id;
+    private Long itemId;
 
     @OneToMany(mappedBy = "item")
     private List<ListItemDetailEntity> details = new ArrayList<>();
 
-    @OneToOne( cascade = CascadeType.MERGE)
-    @JoinColumn(name = "tagId",referencedColumnName = "tag_id")
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "tagId", referencedColumnName = "tag_id")
     private TagEntity tag;
 
     @Column(name = "dish_sources")
@@ -64,7 +65,7 @@ public class ListItemEntity {
     @Enumerated(EnumType.STRING)
     private FractionType fractionalQuantity;
 
-    @OneToOne( cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "unit_id", referencedColumnName = "unit_id")
     private UnitEntity unit;
 
@@ -74,11 +75,15 @@ public class ListItemEntity {
     @Column(name = "amount_text")
     private String amountText;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "specification_type")
+    private SpecificationType specificationType;
+
     @Transient
     private Long tagId;
 
     public ListItemEntity(Long id) {
-        item_id = id;
+        itemId = id;
     }
 
     public ListItemEntity() {
@@ -86,11 +91,11 @@ public class ListItemEntity {
     }
 
     public Long getId() {
-        return item_id;
+        return itemId;
     }
 
     public void setId(Long itemId) {
-        this.item_id = itemId;
+        this.itemId = itemId;
     }
 
     public TagEntity getTag() {
@@ -248,11 +253,18 @@ public class ListItemEntity {
         this.amountText = amountDescription;
     }
 
+    public SpecificationType getSpecificationType() {
+        return specificationType;
+    }
+
+    public void setSpecificationType(SpecificationType specificationType) {
+        this.specificationType = specificationType;
+    }
 
     @Override
     public String toString() {
         return "ListItemEntity{" +
-                "item_id=" + item_id +
+                "item_id=" + itemId +
                 ", details=" + details +
                 ", tag=" + tag +
                 ", rawDishSources='" + rawDishSources + '\'' +
@@ -270,6 +282,7 @@ public class ListItemEntity {
                 ", unit=" + unit +
                 ", unitSize='" + unitSize + '\'' +
                 ", amountDescription='" + amountText + '\'' +
+                ", specificationType='" + specificationType + '\'' +
                 ", tagId=" + tagId +
                 '}';
     }
@@ -289,14 +302,14 @@ public class ListItemEntity {
     }
 
     public String getDisplay() {
-            return this.tag.getName();
+        return this.tag.getName();
     }
 
     public void addDetailToItem(ListItemDetailEntity detail) {
         details.add(detail);
     }
 
-    public  int getDetailCount() {
+    public int getDetailCount() {
         if (getDetails() == null || getDetails().isEmpty()) {
             return 0;
         }
