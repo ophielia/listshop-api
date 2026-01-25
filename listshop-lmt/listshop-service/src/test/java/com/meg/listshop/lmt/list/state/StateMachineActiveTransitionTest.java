@@ -9,6 +9,7 @@ import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.api.model.v2.SpecificationType;
 import com.meg.listshop.lmt.conversion.BasicAmount;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
@@ -159,7 +160,7 @@ class StateMachineActiveTransitionTest {
         Assertions.assertEquals(listId, detail.getLinkedListId());
         // verify quantities
         Assertions.assertEquals(dishItem.getQuantity(), detail.getQuantity());
-        Assertions.assertEquals(dishItem.getUnitSize(),detail.getUnitSize());
+        Assertions.assertEquals(dishItem.getUnitSize(), detail.getUnitSize());
         Assertions.assertEquals(dishItem.getUnitId(), detail.getUnitId());
         Assertions.assertEquals(dishItem.getRawEntry(), detail.getRawEntry());
 
@@ -190,8 +191,8 @@ class StateMachineActiveTransitionTest {
 
         // we expect correct dates
         verifyDates(result);
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(), 2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
 
         // we expect 1 detail, with the dish id set
         // and  quantities
@@ -335,8 +336,8 @@ class StateMachineActiveTransitionTest {
 
         // we expect correct dates
         verifyDates(result);
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(),2));
-        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(),2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getAddedOn(), 2));
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
         // we expect 1 detail, with the list id set and the dish id set
         Assertions.assertNotNull(result.getDetails());
         Assertions.assertEquals(1, result.getDetails().size());
@@ -655,6 +656,60 @@ class StateMachineActiveTransitionTest {
 
     }
 
+    @Test
+    void testSpecification() throws ItemProcessingException {
+        // add flour tag w/o amount  - should be SpecificationType.NONE
+        ShoppingListEntity targetList = createShoppingList();
+        Long listId = targetList.getId();
+        TagEntity tagEntity = getTag(TAG_FLOUR); // tag flour, which has conversions
+        ItemStateContext setupContext = new ItemStateContext(null, listId);
+        setupContext.setTag(tagEntity);
+        ListItemEntity flourNoAmount = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+
+        Assertions.assertNotNull(flourNoAmount);
+        Assertions.assertEquals(SpecificationType.NONE, flourNoAmount.getSpecificationType());
+        Assertions.assertEquals(1, flourNoAmount.getDetails().size());
+        Assertions.assertTrue(flourNoAmount.getDetails().get(0).isUnspecified());
+        Assertions.assertFalse(flourNoAmount.getDetails().get(0).isContainsUnspecified());
+
+        // add flour tag w/amount to same item - should be item SpecificationType.NONE, and 1 item detail with "containsUnspecified"
+        ItemStateContext flourWithAmount = new ItemStateContext(flourNoAmount, listId); // adding to existing
+        flourWithAmount.setTag(tagEntity);
+        BasicAmount oneKiloAmount = new BasicAmount(1, null, null, KILO_UNIT_ID, tagEntity);
+        flourWithAmount.setTagAmount(oneKiloAmount);
+        ListItemEntity flourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, flourWithAmount);
+
+        Assertions.assertNotNull(flourWithAmountResult);
+        Assertions.assertEquals(SpecificationType.MIXED, flourWithAmountResult.getSpecificationType());
+        Assertions.assertEquals(1, flourWithAmountResult.getDetails().size());
+        Assertions.assertFalse(flourWithAmountResult.getDetails().get(0).isUnspecified());
+        Assertions.assertTrue(flourWithAmountResult.getDetails().get(0).isContainsUnspecified());
+
+
+        // new item - add 1 kg flour - should be SpecificationType.ALL
+        ItemStateContext newFlourWithAmount = new ItemStateContext(null, listId); // adding to existing
+        newFlourWithAmount.setTag(tagEntity);
+        newFlourWithAmount.setTagAmount(oneKiloAmount);
+        ListItemEntity newFlourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, newFlourWithAmount);
+
+        Assertions.assertNotNull(newFlourWithAmountResult);
+        Assertions.assertEquals(SpecificationType.ALL, newFlourWithAmountResult.getSpecificationType());
+        Assertions.assertEquals(1, newFlourWithAmountResult.getDetails().size());
+        Assertions.assertFalse(newFlourWithAmountResult.getDetails().get(0).isUnspecified());
+        Assertions.assertFalse(newFlourWithAmountResult.getDetails().get(0).isContainsUnspecified());
+
+        // add 1kg flour to tag amount flour (newFlourWithAmount to flourWithAmountResult) - should be SpecificationType.MIXED, and item detail with "containsUnspecified"
+        ItemStateContext allFlour = new ItemStateContext(flourWithAmountResult, listId); // adding to existing
+        allFlour.setTag(tagEntity);
+        allFlour.setTagAmount(oneKiloAmount);
+        ListItemEntity allFlourResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, allFlour);
+
+        Assertions.assertNotNull(allFlourResult);
+        Assertions.assertEquals(SpecificationType.MIXED, allFlourResult.getSpecificationType());
+        Assertions.assertEquals(1, allFlourResult.getDetails().size());
+        Assertions.assertFalse(allFlourResult.getDetails().get(0).isUnspecified());
+        Assertions.assertTrue(allFlourResult.getDetails().get(0).isContainsUnspecified());
+    }
 
     private ListItemDetailEntity createDetailItem(ListItemEntity item) {
         ListItemDetailEntity detail = new ListItemDetailEntity();

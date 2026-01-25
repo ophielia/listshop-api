@@ -1,7 +1,5 @@
 package com.meg.listshop.lmt.list.state;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.common.CommonUtils;
 import com.meg.listshop.conversion.exceptions.ConversionAddException;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
@@ -22,21 +20,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Component
 @Qualifier("activeTransition")
 @Transactional
 public class ActiveTransition extends AbstractTransition {
 
-    private static final String MATCH_SEPARATOR = "*";
     private static final Logger log = LoggerFactory.getLogger(ActiveTransition.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final ListConversionService conversionService;
 
@@ -82,7 +73,7 @@ public class ActiveTransition extends AbstractTransition {
         // convert dish item to list context or unit, if available
         ConvertibleAmount converted = null;
         try {
-            converted =  conversionService.convertDishItemForList(dishItem, existing, item);
+            converted = conversionService.convertDishItemForList(dishItem, existing, item);
         } catch (ConversionPathException | ConversionFactorException e) {
             // we weren't able to convert this - it happens sometimes
             String message = String.format("weren't able to convert dishItem [%s] to list context. ", dishItem.getDishItemId());
@@ -145,7 +136,7 @@ Result is scaled, summed and saved.
         // convert dish item to list context or unit, if available
         ConvertibleAmount converted = null;
         try {
-            converted =  conversionService.convertListItemDetailForList(toAdd, existing, addedTo);
+            converted = conversionService.convertListItemDetailForList(toAdd, existing, addedTo);
         } catch (ConversionPathException | ConversionFactorException e) {
             // we weren't able to convert this - it happens sometimes
             String message = String.format("weren't able to convert dishItem [%s] to list context. ", newListItem.getListId());
@@ -154,9 +145,9 @@ Result is scaled, summed and saved.
 
         // add list item
         if (converted != null && converted.getUnit() != null) {
-            addSpecifiedAmountForListItem(converted, addedTo, existing,toAdd, itemStateContext);
+            addSpecifiedAmountForListItem(converted, addedTo, existing, toAdd, itemStateContext);
         } else {
-            addNonSpecifiedAmount(existing, addedTo,  itemStateContext);
+            addNonSpecifiedAmount(existing, addedTo, itemStateContext);
         }
 //MM 2236 - will need to pull unit size all through this code
     }
@@ -176,7 +167,7 @@ New / changed detail is converted to list type, and ready to be summed
         // convert dish item to list context or unit, if available
         ConvertibleAmount converted = null;
         try {
-            converted =  conversionService.convertTagForList(tag, itemStateContext.getTagAmount(), existing, item);
+            converted = conversionService.convertTagForList(tag, itemStateContext.getTagAmount(), existing, item);
         } catch (ConversionPathException | ConversionFactorException e) {
             // we weren't able to convert this - it happens sometimes
             String message = String.format("weren't able to convert tag [%s] to list context. ", tag.getId());
@@ -221,25 +212,25 @@ New / changed detail is converted to list type, and ready to be summed
         Long listId = addFrom.getLinkedListId();
         Long dishId = addFrom.getLinkedDishId();
         String rawEntry = addFrom.getRawEntry();
-        genericAddSpecifiedAmount(converted, item, existing, rawEntry, dishId, listId,context);
+        genericAddSpecifiedAmount(converted, item, existing, rawEntry, dishId, listId, context);
     }
 
     private void addSpecifiedAmountForDish(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, @NotNull ItemStateContext context) throws ItemProcessingException {
         String rawEntry = "";
         if (context.getDishItem() != null) {
-            rawEntry =  context.getDishItem().getRawEntry();
+            rawEntry = context.getDishItem().getRawEntry();
         }
         Long dishId = context.getDishItem().getDish().getId();
-        Long linkecListId = CommonUtils.elvis(context.getListId(), item.getListId());
-        genericAddSpecifiedAmount(converted, item, existing, rawEntry,dishId,linkecListId, context);
+        Long linkedListId = CommonUtils.elvis(context.getListId(), item.getListId());
+        genericAddSpecifiedAmount(converted, item, existing, rawEntry, dishId, linkedListId, context);
     }
 
     private void addSpecifiedAmountForTag(ConvertibleAmount converted, ListItemEntity item, Long listId, ListItemDetailEntity existing, @NotNull ItemStateContext context) throws ItemProcessingException {
-        genericAddSpecifiedAmount(converted, item, existing, null,null,listId, context);
+        genericAddSpecifiedAmount(converted, item, existing, null, null, listId, context);
     }
 
-    private void genericAddSpecifiedAmount(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, String rawEntry,Long linkedDishId, Long linkedListId, @NotNull ItemStateContext context) throws ItemProcessingException {
-        //MM 2236 not paying attention to filling in other detail fields - particularly size
+    private void genericAddSpecifiedAmount(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, String rawEntry, Long linkedDishId, Long linkedListId, @NotNull ItemStateContext context) {
+
         if (existing != null) {
             doAddToExisting(converted, existing, context);
             return;
@@ -254,7 +245,6 @@ New / changed detail is converted to list type, and ready to be summed
         newDetail.setUnitSize(converted.getUnitSize());
         newDetail.setMarker(converted.getMarker());
         newDetail.setUnitId(converted.getUnit().getId());
-
         // add to list item
         newDetail.setItem(item);
         item.addDetailToItem(listItemDetailRepository.save(newDetail));
@@ -263,8 +253,14 @@ New / changed detail is converted to list type, and ready to be summed
     }
 
     private void doAddToExisting(ConvertibleAmount converted, ListItemDetailEntity existing, @NotNull ItemStateContext context) {
-       // if simple add is possible (units equal) do it
-        if (existing.getUnitId().equals(converted.getUnit().getId())) {
+        //MM have to take into account that adding to existing may be adding to a detail which doesn't have a value
+        if (existing.getUnitId() == null) {
+            // existing doesn't have amount, but converted to add does - this is adding a mixed amount
+            doAddMixedDetail(converted, existing, context);
+            return;
+        } else if (existing.getUnitId().equals(converted.getUnit().getId())) {
+            // if simple add is possible (units equal) do it
+
             Double newQuantity = existing.getQuantity() + converted.getQuantity();
             existing.setQuantity(newQuantity);
             Integer count = CommonUtils.elvis(existing.getCount(), 1);
@@ -274,7 +270,7 @@ New / changed detail is converted to list type, and ready to be summed
         // otherwise, try add
         ConvertibleAmount convertedExisting = null;
         try {
-            convertedExisting =  conversionService.addToListItemDetail(converted, existing, context);
+            convertedExisting = conversionService.addToListItemDetail(converted, existing, context);
         } catch (ConversionPathException | ConversionAddException | ConversionFactorException e) {
             // we weren't able to convert this - it happens sometimes
             String message = String.format("weren't able to add to existing detail [%s]. ", existing.getItemDetailId());
@@ -291,10 +287,25 @@ New / changed detail is converted to list type, and ready to be summed
 
             return;
         }
-        // otherwise, update count, and set unspecified
+        // otherwise, add mixed amount
+        doAddMixedDetail(converted, existing, context);
+
+    }
+
+    private void doAddMixedDetail(ConvertibleAmount converted, ListItemDetailEntity existing, @NotNull ItemStateContext context) {
+        if (existing.getUnitId() == null) {
+            // converted must have amount info - copy it into existing
+            existing.setQuantity(converted.getQuantity());
+            existing.setUnitId(converted.getUnit().getId());
+            existing.setMarker(converted.getMarker());
+            existing.setUnitSize(converted.getUnitSize());
+            existing.setUserSize(converted.getUserSize());
+        }
+        // update count, and set unspecified
         Integer count = CommonUtils.elvis(existing.getCount(), 1);
         existing.setCount(count + 1);
-        existing.setUnspecified(true);  //MM 2236 change to contains unspecified
+        existing.setContainsUnspecified(true);
+
     }
 
     private ProcessingType determineProcessingType(@NotNull ItemStateContext context) {

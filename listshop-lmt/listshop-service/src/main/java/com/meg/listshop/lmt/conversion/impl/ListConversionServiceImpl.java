@@ -13,6 +13,7 @@ import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.FractionType;
+import com.meg.listshop.lmt.api.model.v2.SpecificationType;
 import com.meg.listshop.lmt.conversion.*;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
@@ -63,6 +64,7 @@ public class ListConversionServiceImpl implements ListConversionService {
         Map<String, SummaryConvertibleAmount> unitSummary = new HashMap<>();
         List<ListItemDetailEntity> unspecified = new ArrayList<>();
         for (ListItemDetailEntity detail : item.getDetails()) {
+            detail.setUnspecified(true);
             if (detail.getUnitId() != null) {
                 String key = createKey(detail.getUnitId(), detail.getUnitSize());
                 if (!unitSummary.containsKey(key)) {
@@ -78,22 +80,24 @@ public class ListConversionServiceImpl implements ListConversionService {
         // bow out, if no conversion to a different unit is necessary
         if (unitSummary.size() == 0) {
             // no units found
-            setInItem(null, item, unspecified);
+            setInItem(null, item);
             return;
         } else if (unitSummary.size() == 1) {
             SummaryConvertibleAmount summary = unitSummary.entrySet().stream().findFirst()
-                    .map(entry -> entry.getValue())
+                    .map(Map.Entry::getValue)
                     .orElse(null);
             //MM 2236 once the dust has settled, rename this to AddScaleRequest
             AddRequest addRequest = new AddRequest(ConversionTargetType.List, summary.getUnit(), summary.getUnitSize());
             ConvertibleAmount summed = null;
             try {
                 summed = converterService.scale(summary, addRequest);
+                summary.getDetails().stream().forEach(detail -> detail.setUnspecified(false));
+                setInItem(summed, item);
+                return;
             } catch (ConversionFactorException e) {
                 log.warn("unable to scale summary amount, unit[{}]", summary.getUnit());
             }
-            summary.getDetails().stream().forEach(detail -> detail.setUnspecified(false));
-            setInItem(summed, item, unspecified);
+            setInItem(summed, item);
             return;
         }
 
@@ -102,7 +106,7 @@ public class ListConversionServiceImpl implements ListConversionService {
         SummaryConvertibleAmount baseAmount = unitSummary.get(baseKey);
         List<SummaryConvertibleAmount> amountsToConvert = unitSummary.entrySet().stream()
                 .filter(entry -> !entry.getKey().equals(baseKey))
-                .map(entry -> entry.getValue())
+                .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
 
         ConvertibleAmount summary = new SimpleAmount(baseAmount.getQuantity(), baseAmount.getUnit());
@@ -120,7 +124,7 @@ public class ListConversionServiceImpl implements ListConversionService {
 
         // mark base amount as specified
         baseAmount.getDetails().forEach( detail -> detail.setUnspecified(false));
-        setInItem(summary, item, unspecified);
+        setInItem(summary, item);
     }
 
     @Override
@@ -179,21 +183,44 @@ public class ListConversionServiceImpl implements ListConversionService {
         return added;
     }
 
-    private void setInItem(ConvertibleAmount amount, ListItemEntity item, List<ListItemDetailEntity> unspecified) {
-        // set unspecified as unspecified
-        unspecified.forEach(detail -> detail.setUnspecified(true));
+    private void setInItem(ConvertibleAmount amount, ListItemEntity item) {
+        item.setSpecificationType(determineSpecificationType(item));
         // ignore, if no amount
         if (amount == null) {
+
             return;
         }
         item.setRawQuantity(amount.getQuantity());
+        item.setUnit(amount.getUnit());
+        item.setUnitSize(amount.getUnitSize());
+
         QuantityElements elements = splitQuantityIntoElements(RoundingUtils.roundUpToNearestFraction(amount.getQuantity()));
         item.setRoundedQuantity(elements.quantity());
         item.setFractionalQuantity(elements.fractionType());
         item.setWholeQuantity(elements.wholeNumber());
-        item.setUnit(amount.getUnit());
-        item.setUnitSize(amount.getUnitSize());
+
+        // set text for item
         //MM 2236 - set unspecified for item
+    }
+
+    private SpecificationType determineSpecificationType(ListItemEntity item) {
+        boolean unspecifiedExists = false;
+        boolean specifiedExists = false;
+        for (ListItemDetailEntity detail : item.getDetails()) {
+            if (detail.isUnspecified() || detail.isContainsUnspecified() ) {
+                unspecifiedExists = true;
+            }
+            if (!detail.isUnspecified()) {
+                specifiedExists = true;
+            }
+        }
+        if (unspecifiedExists && specifiedExists) {
+            return SpecificationType.MIXED;
+        } else if (unspecifiedExists) {
+            return SpecificationType.NONE;
+        } else {
+            return SpecificationType.ALL;
+        }
     }
 
 
