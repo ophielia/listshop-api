@@ -59,4 +59,8 @@ public class RoundingUtils {
 
         return numerator / denominator;
     }
+
+    public static double roundUpToNearestWholeNumber(double quantity) {
+        return Math.ceil(quantity);
+    }
 }

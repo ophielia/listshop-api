@@ -16,6 +16,7 @@ import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.common.RoundingUtils;
+import com.meg.listshop.lmt.conversion.BasicAmount;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -784,5 +785,48 @@ class ConversionTest {
         System.out.println(converted);
         assertEquals(3.378, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(unitId, converted.getUnit().getId());
+    }
+
+    @Test
+    void testCupOfDicedTomatoesToList() throws ConversionPathException, ConversionFactorException {
+        UnitEntity cupUnit = unitRepository.findById(cupsId).orElse(null);
+
+        // Not converting diced tomatoes to us weight
+        // problem in tag specific version
+        // also - should fix this so that if tag specific conversion fails, the scaling doesn't happen -
+        // it gives really weird results like 0.000006 pounds.....
+
+        // 1 cup diced tomatoes
+        ConvertibleAmount amount = new SimpleAmount(1, cupUnit, tomatoConversionId, false, "chopped");
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
+        ConvertibleAmount converted = converterService.convert(amount, listContext);
+        assertNotNull(converted);
+        System.out.println(converted);
+        assertEquals(1.216, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(unitId, converted.getUnit().getId());
+    }
+
+    @Test
+    void testHalfAKiloTomatoesToListUS() throws ConversionPathException, ConversionFactorException {
+        UnitEntity kiloUnit = unitRepository.findById(kgId).orElse(null);
+
+        // Not converting diced tomatoes to us weight
+        // problem in tag specific version
+        // also - should fix this so that if tag specific conversion fails, the scaling doesn't happen -
+        // it gives really weird results like 0.000006 pounds.....
+
+        // 1 cup diced tomatoes
+        ConvertibleAmount amount = new SimpleAmount(0.5, kiloUnit, tomatoConversionId, false, null);
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
+        ConvertibleAmount converted = converterService.convert(amount, listContext);
+        assertNotNull(converted);
+        System.out.println(converted);
+  //      assertEquals(1.216, RoundingUtils.roundToThousandths(converted.getQuantity()));
+   //     assertEquals(unitId, converted.getUnit().getId());
+
+        // BAD!!!!
+        /*
+        SimpleAmount{quantity=0.0033783783783783786, unit=UnitEntity{id=1011, name='unit', type=UNIT, subtype=NONE, isListUnit=true, isDishUnit=true, isLiquid=false, isWeight=false, isVolume=false, isTagSpecific=false}, tagId=225744, isLiquid=false, marker=null, unitSize=medium}
+         */
     }
 }

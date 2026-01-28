@@ -505,7 +505,7 @@ class StateMachineActiveTransitionTest {
 
         Assertions.assertNotNull(diceyResult);
         Assertions.assertEquals(2.216, RoundingUtils.roundToThousandths(diceyResult.getRawQuantity()));
-        Assertions.assertEquals(2.25, diceyResult.getRoundedQuantity());
+        Assertions.assertEquals(3.0, diceyResult.getRoundedQuantity());
         Assertions.assertEquals(1011L, diceyResult.getUnit().getId());
         // add dish item
         DishItemEntity dishItem = createDishItem(123456L, tagEntity);
@@ -709,6 +709,120 @@ class StateMachineActiveTransitionTest {
         Assertions.assertEquals(1, allFlourResult.getDetails().size());
         Assertions.assertFalse(allFlourResult.getDetails().get(0).isUnspecified());
         Assertions.assertTrue(allFlourResult.getDetails().get(0).isContainsUnspecified());
+    }
+
+    @Test
+    void testText() throws ItemProcessingException {
+        // add flour tag w/o amount  - should be empty text
+        ShoppingListEntity targetList = createShoppingList();
+        Long listId = targetList.getId();
+        TagEntity tagEntity = getTag(TAG_FLOUR); // tag flour, which has conversions
+        ItemStateContext setupContext = new ItemStateContext(null, listId);
+        setupContext.setTag(tagEntity);
+        ListItemEntity flourNoAmount = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+
+        Assertions.assertNotNull(flourNoAmount);
+        Assertions.assertNotNull(flourNoAmount.getAmountText());
+        Assertions.assertTrue(flourNoAmount.getAmountText().isEmpty());
+
+        // add flour tag w/amount to same item - item text should be non empty, detail text should be non empty
+        ItemStateContext flourWithAmount = new ItemStateContext(flourNoAmount, listId); // adding to existing
+        flourWithAmount.setTag(tagEntity);
+        BasicAmount oneKiloAmount = new BasicAmount(1, null, null, KILO_UNIT_ID, tagEntity);
+        flourWithAmount.setTagAmount(oneKiloAmount);
+        ListItemEntity flourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, flourWithAmount);
+
+        Assertions.assertNotNull(flourWithAmountResult);
+        Assertions.assertNotNull(flourWithAmountResult.getAmountText());
+        Assertions.assertEquals("2 1/4 lb", flourWithAmountResult.getAmountText());
+        ListItemDetailEntity detail = flourWithAmountResult.getDetails().get(0);
+        Assertions.assertNotNull(detail.getRawEntry());
+        Assertions.assertEquals("2 1/4 lb", detail.getRawEntry());
+
+        // new item -  dish item with given raw amount
+        ItemStateContext newFlourWithAmount = new ItemStateContext(null, listId); // adding to existing
+        Long dishId = 12345L;
+        TagEntity flourTag = getTag(TAG_FLOUR);
+        DishItemEntity dishItem = createDishItem(dishId, flourTag);
+        dishItem.setRawEntry("some willy wally wang");
+        dishItem.setUnitId(CUP_UNIT_ID);
+        dishItem.setQuantity(1.5);
+        newFlourWithAmount.setDishItem(dishItem);
+        ListItemEntity newFlourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, newFlourWithAmount);
+
+        Assertions.assertNotNull(newFlourWithAmountResult);
+        Assertions.assertNotNull(newFlourWithAmountResult.getAmountText());
+        Assertions.assertEquals("5 7/8 oz", newFlourWithAmountResult.getAmountText());
+        ListItemDetailEntity givenAmountDetail = newFlourWithAmountResult.getDetails().get(0);
+        Assertions.assertNotNull(givenAmountDetail.getRawEntry());
+        Assertions.assertEquals("some willy wally wang", givenAmountDetail.getRawEntry());
+
+        // new item -  dish item with given raw amount
+        ItemStateContext dishItemNoRawAmount = new ItemStateContext(null, listId); // adding to existing
+        DishItemEntity dishItemNoAmountText = createDishItem(dishId, flourTag);
+        dishItemNoAmountText.setUnitId(CUP_UNIT_ID);
+        dishItemNoAmountText.setQuantity(1.5);
+        dishItemNoRawAmount.setDishItem(dishItemNoAmountText);
+        ListItemEntity dishItemNoRawAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, dishItemNoRawAmount);
+
+        Assertions.assertNotNull(dishItemNoRawAmountResult);
+        Assertions.assertNotNull(dishItemNoRawAmountResult.getAmountText());
+        Assertions.assertEquals("5 7/8 oz", dishItemNoRawAmountResult.getAmountText());
+        ListItemDetailEntity datailNoGivenText = dishItemNoRawAmountResult.getDetails().get(0);
+        Assertions.assertNotNull(datailNoGivenText.getRawEntry());
+        Assertions.assertEquals("5 7/8 oz", datailNoGivenText.getRawEntry());
+
+    }
+
+    @Test
+    void testTextMarker() throws ItemProcessingException {
+        // add tomato tag w/marker
+        ShoppingListEntity targetList = createShoppingList();
+        Long listId = targetList.getId();
+        TagEntity tagEntity = getTag(TAG_TOMATO);
+        // add tomato tag w/amount to same item - item text should be non empty, detail text should be non empty
+        ItemStateContext tomatoWithMarker = new ItemStateContext(null, listId); // adding to existing
+        tomatoWithMarker.setTag(tagEntity);
+        BasicAmount dicedTomatoes = new BasicAmount(1, "chopped", null, CUP_UNIT_ID, tagEntity);
+        tomatoWithMarker.setTagAmount(dicedTomatoes);
+        ListItemEntity tomatoWithMarkerResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, tomatoWithMarker);
+
+        Assertions.assertNotNull(tomatoWithMarkerResult);
+        Assertions.assertNotNull(tomatoWithMarkerResult.getAmountText());
+        Assertions.assertEquals("2 medium", tomatoWithMarkerResult.getAmountText());
+        ListItemDetailEntity detail = tomatoWithMarkerResult.getDetails().get(0);
+        Assertions.assertNotNull(detail.getRawEntry());
+        Assertions.assertEquals("2 medium", detail.getRawEntry());
+
+        // create tomato tag with small amount - at least small unit size -
+        // add flour tag w/amount to same item - item text should be non empty, detail text should be non empty
+        ItemStateContext lessThanOne = new ItemStateContext(null, listId); // adding to existing
+        lessThanOne.setTag(tagEntity);
+        BasicAmount halfAKilo = new BasicAmount(0.5, null, null, KILO_UNIT_ID, tagEntity);
+        lessThanOne.setTagAmount(halfAKilo);
+        ListItemEntity lessThanOneResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, lessThanOne);
+
+        Assertions.assertNotNull(lessThanOneResult);
+        Assertions.assertNotNull(lessThanOneResult.getAmountText());
+        Assertions.assertEquals("4 medium", lessThanOneResult.getAmountText());
+        ListItemDetailEntity lessThanOneDetail = lessThanOneResult.getDetails().get(0);
+        Assertions.assertNotNull(lessThanOneDetail.getRawEntry());
+        Assertions.assertEquals("4 medium", lessThanOneDetail.getRawEntry());
+
+        ItemStateContext flourWithAmount = new ItemStateContext(null, listId); // adding to existing
+        TagEntity flourTag = getTag(TAG_FLOUR);
+        flourWithAmount.setTag(flourTag);
+        BasicAmount halfKiloAmount = new BasicAmount(0.25, null, null, KILO_UNIT_ID, flourTag);
+        flourWithAmount.setTagAmount(halfKiloAmount);
+        ListItemEntity flourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, flourWithAmount);
+
+        Assertions.assertNotNull(flourWithAmountResult);
+        Assertions.assertNotNull(flourWithAmountResult.getAmountText());
+        Assertions.assertEquals("5/8 lb", flourWithAmountResult.getAmountText());
+        ListItemDetailEntity flourDetail = flourWithAmountResult.getDetails().get(0);
+        Assertions.assertNotNull(flourDetail.getRawEntry());
+        Assertions.assertEquals("5/8 lb", flourDetail.getRawEntry());
+
     }
 
     private ListItemDetailEntity createDetailItem(ListItemEntity item) {

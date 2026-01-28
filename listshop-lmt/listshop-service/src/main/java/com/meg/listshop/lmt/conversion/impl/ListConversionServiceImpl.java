@@ -1,8 +1,9 @@
 package com.meg.listshop.lmt.conversion.impl;
 
+import com.meg.listshop.common.AmountTextBuilder;
 import com.meg.listshop.common.CommonUtils;
-import com.meg.listshop.common.FractionUtils;
 import com.meg.listshop.common.RoundingUtils;
+import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.pojo.*;
@@ -12,7 +13,6 @@ import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConverterService;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
-import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.api.model.v2.SpecificationType;
 import com.meg.listshop.lmt.conversion.*;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
@@ -26,9 +26,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.meg.listshop.common.FractionUtils.splitQuantityIntoElements;
 
 @Service
 public class ListConversionServiceImpl implements ListConversionService {
@@ -114,7 +115,7 @@ public class ListConversionServiceImpl implements ListConversionService {
             AddRequest addRequest = new AddRequest(ConversionTargetType.List, toConvert.getUnit(), toConvert.getUnitSize());
             try {
                 summary = converterService.add(toConvert, summary, addRequest);
-                toConvert.getDetails().forEach( detail -> detail.setUnspecified(false));
+                toConvert.getDetails().forEach(detail -> detail.setUnspecified(false));
             } catch (ConversionPathException | ConversionFactorException | ConversionAddException e) {
                 //MM 2236 - fix exception, and add all detail in toConvert to unspecified
                 unspecified.addAll(toConvert.getDetails());
@@ -123,22 +124,8 @@ public class ListConversionServiceImpl implements ListConversionService {
         }
 
         // mark base amount as specified
-        baseAmount.getDetails().forEach( detail -> detail.setUnspecified(false));
+        baseAmount.getDetails().forEach(detail -> detail.setUnspecified(false));
         setInItem(summary, item);
-    }
-
-    @Override
-    public QuantityElements splitQuantityIntoElements(Double amount) {
-        if (amount == null) {
-            return new QuantityElements(0.0, 0, null);
-        }
-        double rounded = RoundingUtils.roundToNearestFraction(amount);
-        double fractionalPart = rounded - Math.floor(rounded);
-
-        FractionType fractionType = FractionUtils.getFractionTypeForDecimal(BigDecimal.valueOf(fractionalPart));
-        int wholeNumberPart = (int) rounded;
-
-        return new QuantityElements(rounded, wholeNumberPart, fractionType);
     }
 
 
@@ -158,7 +145,7 @@ public class ListConversionServiceImpl implements ListConversionService {
     }
 
     @Override
-    public  ConvertibleAmount convertTagForList(TagEntity tag, BasicAmount tagAmount, ListItemDetailEntity existing, ListItemEntity item) throws ConversionPathException, ConversionFactorException {
+    public ConvertibleAmount convertTagForList(TagEntity tag, BasicAmount tagAmount, ListItemDetailEntity existing, ListItemEntity item) throws ConversionPathException, ConversionFactorException {
         if (tagAmount == null || tagAmount.getUnitId() == null) {
             // nothing to convert - return
             return null;
@@ -185,29 +172,58 @@ public class ListConversionServiceImpl implements ListConversionService {
 
     private void setInItem(ConvertibleAmount amount, ListItemEntity item) {
         item.setSpecificationType(determineSpecificationType(item));
+        setTextInItem(item, null);
         // ignore, if no amount
         if (amount == null) {
-
             return;
         }
         item.setRawQuantity(amount.getQuantity());
         item.setUnit(amount.getUnit());
         item.setUnitSize(amount.getUnitSize());
 
-        QuantityElements elements = splitQuantityIntoElements(RoundingUtils.roundUpToNearestFraction(amount.getQuantity()));
+        double roundedQuantity = getRoundedQuantityForUnit(amount.getQuantity(),amount.getUnit());
+        QuantityElements elements = splitQuantityIntoElements(roundedQuantity);
         item.setRoundedQuantity(elements.quantity());
         item.setFractionalQuantity(elements.fractionType());
         item.setWholeQuantity(elements.wholeNumber());
 
         // set text for item
-        //MM 2236 - set unspecified for item
+        setTextInItem(item, elements);
+    }
+
+    private double getRoundedQuantityForUnit(double quantity, UnitEntity unit) {
+        if (unit.getType().equals(UnitType.UNIT)) {
+            return RoundingUtils.roundUpToNearestWholeNumber(quantity);
+        }
+        return RoundingUtils.roundUpToNearestFraction(quantity);
+    }
+
+    private void setTextInItem(ListItemEntity item, QuantityElements elements) {
+        // set text for item
+        String text = new AmountTextBuilder()
+                .with(item)
+                .withElements(elements)
+                .build();
+        item.setAmountText(text);
+
+        // set text for details without text
+        item.getDetails().stream()
+                .filter(d -> d.getRawEntry() == null || d.getRawEntry().trim().isEmpty())
+                .forEach(d -> {
+                    UnitEntity unit = getUnit(d.getUnitId());
+                    String detailText = new AmountTextBuilder()
+                            .with(d)
+                            .with(unit)
+                            .build();
+                    d.setRawEntry(detailText);
+                });
     }
 
     private SpecificationType determineSpecificationType(ListItemEntity item) {
         boolean unspecifiedExists = false;
         boolean specifiedExists = false;
         for (ListItemDetailEntity detail : item.getDetails()) {
-            if (detail.isUnspecified() || detail.isContainsUnspecified() ) {
+            if (detail.isUnspecified() || detail.isContainsUnspecified()) {
                 unspecifiedExists = true;
             }
             if (!detail.isUnspecified()) {
@@ -248,8 +264,8 @@ public class ListConversionServiceImpl implements ListConversionService {
 
     private String createKey(Long unitId, String unitSize) {
         // key is made up of unit_id plus underscore plus size
-        String keyUnitId = CommonUtils.elvis(unitId,0L) + "";
-        String keyUnitSize = CommonUtils.elvis(unitSize,"");
+        String keyUnitId = CommonUtils.elvis(unitId, 0L) + "";
+        String keyUnitSize = CommonUtils.elvis(unitSize, "");
         return String.format("%s_%s", keyUnitId, keyUnitSize);
     }
 
@@ -269,7 +285,7 @@ public class ListConversionServiceImpl implements ListConversionService {
 
     private UnitEntity determineTargetUnit(ListItemDetailEntity existing, ListItemEntity item) {
         // return unit for existing item if available
-        if (existing != null && existing.getUnitId()!=null) {
+        if (existing != null && existing.getUnitId() != null) {
             return getUnit(existing.getUnitId());
         }
         // otherwise, return unit for item

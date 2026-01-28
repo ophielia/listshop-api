@@ -22,9 +22,6 @@ public interface ListConversionService {
 
     void sumItemDetails(ListItemEntity item, @NotNull ItemStateContext context) throws ItemProcessingException;
 
-
-    QuantityElements splitQuantityIntoElements(Double amount);
-
     ConvertibleAmount convertListItemDetailForList(ListItemDetailEntity detailToAdd, ListItemDetailEntity existingDetail, ListItemEntity parentItem) throws ConversionPathException, ConversionFactorException;
 
     ConvertibleAmount convertTagForList(TagEntity tag, BasicAmount tagAmount, ListItemDetailEntity existing, ListItemEntity item) throws ConversionPathException, ConversionFactorException;

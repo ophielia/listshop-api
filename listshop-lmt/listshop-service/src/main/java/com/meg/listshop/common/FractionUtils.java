@@ -1,6 +1,7 @@
 package com.meg.listshop.common;
 
 import com.meg.listshop.lmt.api.model.FractionType;
+import com.meg.listshop.lmt.conversion.QuantityElements;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -77,5 +78,18 @@ public class FractionUtils {
             return val2;
         else
             return val1;
+    }
+
+    public static QuantityElements splitQuantityIntoElements(Double amount) {
+        if (amount == null) {
+            return new QuantityElements(0.0, 0, null);
+        }
+        double rounded = RoundingUtils.roundToNearestFraction(amount);
+        double fractionalPart = rounded - Math.floor(rounded);
+
+        FractionType fractionType = FractionUtils.getFractionTypeForDecimal(BigDecimal.valueOf(fractionalPart));
+        int wholeNumberPart = (int) rounded;
+
+        return new QuantityElements(rounded, wholeNumberPart, fractionType);
     }
 }

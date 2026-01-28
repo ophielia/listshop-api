@@ -300,7 +300,9 @@ public class ConverterServiceImpl implements ConverterService {
 
         // preconvert - if target is unit, or target is tag specific, convert to grams
         ConvertibleAmount preHandled =  amount.copy();
-        if (context.getTargetUnitType() != null && context.getTargetUnitType() == UnitType.UNIT) {
+        if (context.getTargetUnitType() != null &&
+                preHandled.getUnit().getSubtype().equals(UnitSubtype.WEIGHT) &&
+                (context.getTargetContextType() == ConversionTargetType.List || context.getTargetUnitType() == UnitType.UNIT) ) {
             UnitEntity targetUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
             Long conversionIdForPrehandle = amount.getUnit().getType() != UnitType.HYBRID ? null : amount.getConversionId();
             ConvertibleAmount convertToGrams =   copyAmountWithConversionId(amount, conversionIdForPrehandle);
