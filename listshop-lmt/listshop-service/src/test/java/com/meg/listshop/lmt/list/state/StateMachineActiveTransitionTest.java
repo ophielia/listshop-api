@@ -24,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -39,6 +40,8 @@ import java.util.Date;
 @Testcontainers
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
+@Sql(value = {"/com/meg/listshop/lmt/list/state/StateMachineActiveTransitionTest.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class StateMachineActiveTransitionTest {
 
     private static final Long KILO_UNIT_ID = 1014L;
@@ -47,6 +50,7 @@ class StateMachineActiveTransitionTest {
     private static final Long TAG_FLOUR = 350L;
     private static final Long TAG_TOMATO = 33L;
     private static final Long OZ_UNIT_ID = 1009L;
+    private static final Long GRAM_UNIT_ID = 1013L;
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
@@ -55,9 +59,6 @@ class StateMachineActiveTransitionTest {
 
     @Autowired
     private ShoppingListRepository shoppingListRepository;
-
-    @Autowired
-    private UnitRepository unitRepository;
 
     @Autowired
     private ListItemDetailRepository itemDetailRepository;
@@ -82,7 +83,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext itemStateContext = new ItemStateContext(null, listId);
         itemStateContext.setTag(tagEntity);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext, targetList.getUserId());
 
         // we expect that the result has the correct dates
         verifyDates(result);
@@ -108,7 +109,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext context = new ItemStateContext(null, listId);
         context.setDishItem(dishItem);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context, targetList.getUserId());
 
 
         // we expect correct dates
@@ -144,7 +145,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext context = new ItemStateContext(null, listId);
         context.setDishItem(dishItem);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context, targetList.getUserId());
 
         // we expect correct dates
         verifyDates(result);
@@ -187,7 +188,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext context = new ItemStateContext(null, listId);
         context.setDishItem(dishItem);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context, targetList.getUserId());
 
         // we expect correct dates
         verifyDates(result);
@@ -213,7 +214,7 @@ class StateMachineActiveTransitionTest {
         // now, add the same again, and we should have 3 cups
         context = new ItemStateContext(result, listId);
         context.setDishItem(dishItem);
-        ListItemEntity secondResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
+        ListItemEntity secondResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context, targetList.getUserId());
         Assertions.assertNotNull(secondResult);
         Assertions.assertEquals(0.75, secondResult.getRoundedQuantity());
         Assertions.assertEquals(FractionType.ThreeQuarters, secondResult.getFractionalQuantity());
@@ -224,7 +225,7 @@ class StateMachineActiveTransitionTest {
         // adding a dish item as a new list item
         DishItemEntity newDishItem = createDishItem(56789L, tag);
         context.setDishItem(newDishItem);
-        ListItemEntity thirdResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
+        ListItemEntity thirdResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context ,targetList.getUserId());
         Assertions.assertNotNull(thirdResult);
         Assertions.assertEquals(0.75, thirdResult.getRoundedQuantity());
         Assertions.assertEquals(FractionType.ThreeQuarters, thirdResult.getFractionalQuantity());
@@ -245,7 +246,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext context = new ItemStateContext(null, listId);
         context.setListItem(toAdd);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context, targetList.getUserId());
 
         // we expect correct dates
         verifyDates(result);
@@ -280,13 +281,13 @@ class StateMachineActiveTransitionTest {
         // we'll use the statemachine to create the start state
         ItemStateContext testContext = new ItemStateContext(null, addedItemsList.getId());
         testContext.setDishItem(dishItem);
-        ListItemEntity toAdd = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, testContext);
+        ListItemEntity toAdd = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, testContext, targetList.getUserId());
 
         // so now, the call we're testing - adding the list item toAdd
         ItemStateContext context = new ItemStateContext(null, listId);
         context.setListItem(toAdd);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context,  targetList.getUserId());
 
         // we expect correct dates
         verifyDates(result);
@@ -326,13 +327,13 @@ class StateMachineActiveTransitionTest {
         // we'll use the statemachine to create the start state
         ItemStateContext testContext = new ItemStateContext(null, addedItemsList.getId());
         testContext.setDishItem(dishItem);
-        ListItemEntity toAdd = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, testContext);
+        ListItemEntity toAdd = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, testContext, targetList.getUserId());
 
         // so now, the call we're testing - adding the list item toAdd
         ItemStateContext context = new ItemStateContext(null, listId);
         context.setListItem(toAdd);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context, targetList.getUserId());
 
         // we expect correct dates
         verifyDates(result);
@@ -376,18 +377,18 @@ class StateMachineActiveTransitionTest {
         // we'll use the statemachine to create the start state
         ItemStateContext testContext = new ItemStateContext(null, addedItemsList.getId());
         testContext.setDishItem(dishItem);
-        ListItemEntity toAdd = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, testContext);
+        ListItemEntity toAdd = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, testContext, targetList.getUserId());
         // and now we'll add just a simple tag
         testContext = new ItemStateContext(toAdd, addedItemsList.getId());
         testContext.setTag(tag);
-        ListItemEntity complex = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, testContext);
+        ListItemEntity complex = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, testContext, targetList.getUserId());
 
         // so now, the call we're testing - adding the list item toAdd
         // toAdd has a "normal" tag item, and a dishitem with quantity
         ItemStateContext context = new ItemStateContext(null, listId);
         context.setListItem(complex);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context, targetList.getUserId());
 
         // we expect correct dates
         verifyDates(result);
@@ -429,7 +430,7 @@ class StateMachineActiveTransitionTest {
         TagEntity tagEntity = createTag();
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setTag(tagEntity);
-        ListItemEntity existing = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity existing = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
         existing.setUsedCount(1);
         existing.setAddedOn(calculateYesterday());
         targetList.getItems().add(existing);
@@ -438,7 +439,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext itemStateContext = new ItemStateContext(existing, listId);
         itemStateContext.setTag(tagEntity);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext, targetList.getUserId());
 
         // we expect that the result has the correct dates
         verifyDates(result);
@@ -462,7 +463,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setTag(tagEntity);
         setupContext.setTagAmount(amount);
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
         // we expect that the result has the correct dates
         verifyDates(result);
@@ -489,7 +490,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setTag(tagEntity);
         setupContext.setTagAmount(amount);
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
         // we expect that the result has the correct dates
         Assertions.assertEquals(1, result.getDetails().size());
@@ -501,7 +502,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext diceyContext = new ItemStateContext(result, listId);
         diceyContext.setTag(tagEntity);
         diceyContext.setTagAmount(dicedAmount);
-        ListItemEntity diceyResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, diceyContext);
+        ListItemEntity diceyResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, diceyContext, targetList.getUserId());
 
         Assertions.assertNotNull(diceyResult);
         Assertions.assertEquals(2.216, RoundingUtils.roundToThousandths(diceyResult.getRawQuantity()));
@@ -513,7 +514,7 @@ class StateMachineActiveTransitionTest {
         dishItem.setUnitId(KILO_UNIT_ID);
         ItemStateContext addDishContext = new ItemStateContext(diceyResult, listId);
         addDishContext.setDishItem(dishItem);
-        ListItemEntity twoTagsAndADish = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, addDishContext);
+        ListItemEntity twoTagsAndADish = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, addDishContext, targetList.getUserId());
 
         Assertions.assertNotNull(twoTagsAndADish);
         //MM
@@ -530,7 +531,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setTag(tagEntity);
         setupContext.setTagAmount(amount);
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
         // we expect that the result has the correct dates
         verifyDates(result);
@@ -556,7 +557,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setTag(tagEntity);
         setupContext.setTagAmount(amount);
-        ListItemEntity setupResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity setupResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
         targetList.getItems().add(setupResult);
         shoppingListRepository.save(targetList);
 
@@ -565,7 +566,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext testContext = new ItemStateContext(setupResult, listId);
         testContext.setTag(tagEntity);
         testContext.setTagAmount(secondAmount);
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, testContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, testContext, targetList.getUserId());
 
         // we expect that the result has the correct dates
         verifyDates(result);
@@ -594,7 +595,7 @@ class StateMachineActiveTransitionTest {
         DishItemEntity dishItem = createDishItem(dishId, tagEntity);
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setDishItem(dishItem);
-        ListItemEntity existing = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity existing = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
         existing.setAddedOn(calculateYesterday());
         targetList.getItems().add(existing);
 
@@ -602,7 +603,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext itemStateContext = new ItemStateContext(existing, listId);
         itemStateContext.setDishItem(dishItem);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext, targetList.getUserId());
 
         // we expect that the result has the correct dates
         verifyDates(result);
@@ -632,7 +633,7 @@ class StateMachineActiveTransitionTest {
         ListItemEntity listItem = createListItem(addedFromList, tagEntity);
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setListItem(listItem);
-        ListItemEntity existing = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity existing = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
         existing.setAddedOn(calculateYesterday());
         targetList.getItems().add(existing);
 
@@ -640,7 +641,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext itemStateContext = new ItemStateContext(existing, listId);
         itemStateContext.setListItem(listItem);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext, targetList.getUserId());
 
         // we expect that the result has the correct dates
         verifyDates(result);
@@ -664,7 +665,7 @@ class StateMachineActiveTransitionTest {
         TagEntity tagEntity = getTag(TAG_FLOUR); // tag flour, which has conversions
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setTag(tagEntity);
-        ListItemEntity flourNoAmount = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity flourNoAmount = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
         Assertions.assertNotNull(flourNoAmount);
         Assertions.assertEquals(SpecificationType.NONE, flourNoAmount.getSpecificationType());
@@ -677,7 +678,7 @@ class StateMachineActiveTransitionTest {
         flourWithAmount.setTag(tagEntity);
         BasicAmount oneKiloAmount = new BasicAmount(1, null, null, KILO_UNIT_ID, tagEntity);
         flourWithAmount.setTagAmount(oneKiloAmount);
-        ListItemEntity flourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, flourWithAmount);
+        ListItemEntity flourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, flourWithAmount, targetList.getUserId());
 
         Assertions.assertNotNull(flourWithAmountResult);
         Assertions.assertEquals(SpecificationType.MIXED, flourWithAmountResult.getSpecificationType());
@@ -690,7 +691,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext newFlourWithAmount = new ItemStateContext(null, listId); // adding to existing
         newFlourWithAmount.setTag(tagEntity);
         newFlourWithAmount.setTagAmount(oneKiloAmount);
-        ListItemEntity newFlourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, newFlourWithAmount);
+        ListItemEntity newFlourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, newFlourWithAmount, targetList.getUserId());
 
         Assertions.assertNotNull(newFlourWithAmountResult);
         Assertions.assertEquals(SpecificationType.ALL, newFlourWithAmountResult.getSpecificationType());
@@ -702,7 +703,7 @@ class StateMachineActiveTransitionTest {
         ItemStateContext allFlour = new ItemStateContext(flourWithAmountResult, listId); // adding to existing
         allFlour.setTag(tagEntity);
         allFlour.setTagAmount(oneKiloAmount);
-        ListItemEntity allFlourResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, allFlour);
+        ListItemEntity allFlourResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, allFlour, targetList.getUserId());
 
         Assertions.assertNotNull(allFlourResult);
         Assertions.assertEquals(SpecificationType.MIXED, allFlourResult.getSpecificationType());
@@ -719,7 +720,7 @@ class StateMachineActiveTransitionTest {
         TagEntity tagEntity = getTag(TAG_FLOUR); // tag flour, which has conversions
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setTag(tagEntity);
-        ListItemEntity flourNoAmount = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity flourNoAmount = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
         Assertions.assertNotNull(flourNoAmount);
         Assertions.assertNotNull(flourNoAmount.getAmountText());
@@ -730,7 +731,7 @@ class StateMachineActiveTransitionTest {
         flourWithAmount.setTag(tagEntity);
         BasicAmount oneKiloAmount = new BasicAmount(1, null, null, KILO_UNIT_ID, tagEntity);
         flourWithAmount.setTagAmount(oneKiloAmount);
-        ListItemEntity flourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, flourWithAmount);
+        ListItemEntity flourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, flourWithAmount, targetList.getUserId());
 
         Assertions.assertNotNull(flourWithAmountResult);
         Assertions.assertNotNull(flourWithAmountResult.getAmountText());
@@ -748,7 +749,7 @@ class StateMachineActiveTransitionTest {
         dishItem.setUnitId(CUP_UNIT_ID);
         dishItem.setQuantity(1.5);
         newFlourWithAmount.setDishItem(dishItem);
-        ListItemEntity newFlourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, newFlourWithAmount);
+        ListItemEntity newFlourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, newFlourWithAmount, targetList.getUserId());
 
         Assertions.assertNotNull(newFlourWithAmountResult);
         Assertions.assertNotNull(newFlourWithAmountResult.getAmountText());
@@ -763,7 +764,7 @@ class StateMachineActiveTransitionTest {
         dishItemNoAmountText.setUnitId(CUP_UNIT_ID);
         dishItemNoAmountText.setQuantity(1.5);
         dishItemNoRawAmount.setDishItem(dishItemNoAmountText);
-        ListItemEntity dishItemNoRawAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, dishItemNoRawAmount);
+        ListItemEntity dishItemNoRawAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, dishItemNoRawAmount, targetList.getUserId());
 
         Assertions.assertNotNull(dishItemNoRawAmountResult);
         Assertions.assertNotNull(dishItemNoRawAmountResult.getAmountText());
@@ -785,7 +786,7 @@ class StateMachineActiveTransitionTest {
         tomatoWithMarker.setTag(tagEntity);
         BasicAmount dicedTomatoes = new BasicAmount(1, "chopped", null, CUP_UNIT_ID, tagEntity);
         tomatoWithMarker.setTagAmount(dicedTomatoes);
-        ListItemEntity tomatoWithMarkerResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, tomatoWithMarker);
+        ListItemEntity tomatoWithMarkerResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, tomatoWithMarker, targetList.getUserId());
 
         Assertions.assertNotNull(tomatoWithMarkerResult);
         Assertions.assertNotNull(tomatoWithMarkerResult.getAmountText());
@@ -800,7 +801,7 @@ class StateMachineActiveTransitionTest {
         lessThanOne.setTag(tagEntity);
         BasicAmount halfAKilo = new BasicAmount(0.5, null, null, KILO_UNIT_ID, tagEntity);
         lessThanOne.setTagAmount(halfAKilo);
-        ListItemEntity lessThanOneResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, lessThanOne);
+        ListItemEntity lessThanOneResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, lessThanOne, targetList.getUserId());
 
         Assertions.assertNotNull(lessThanOneResult);
         Assertions.assertNotNull(lessThanOneResult.getAmountText());
@@ -814,7 +815,7 @@ class StateMachineActiveTransitionTest {
         flourWithAmount.setTag(flourTag);
         BasicAmount halfKiloAmount = new BasicAmount(0.25, null, null, KILO_UNIT_ID, flourTag);
         flourWithAmount.setTagAmount(halfKiloAmount);
-        ListItemEntity flourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, flourWithAmount);
+        ListItemEntity flourWithAmountResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, flourWithAmount, targetList.getUserId());
 
         Assertions.assertNotNull(flourWithAmountResult);
         Assertions.assertNotNull(flourWithAmountResult.getAmountText());
@@ -824,6 +825,35 @@ class StateMachineActiveTransitionTest {
         Assertions.assertEquals("5/8 lb", flourDetail.getRawEntry());
 
     }
+
+
+    @Test
+    void testAddTagWithUserDomain() throws ItemProcessingException {
+        ShoppingListEntity targetList = createShoppingList();
+        Long listId = targetList.getId();
+        targetList.setUserId(34L);
+        TagEntity tagEntity = getTag(TAG_FLOUR); // tag flour, which has conversions
+        BasicAmount amount = new BasicAmount(1, null, null, CUP_UNIT_ID, tagEntity);
+        ItemStateContext setupContext = new ItemStateContext(null, listId);
+        setupContext.setTag(tagEntity);
+        setupContext.setTagAmount(amount);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
+
+        // we expect that the result has the correct dates
+        verifyDates(result);
+        Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
+        // and that the result contains 1 detail, with dish_id and list_id null
+        // quantity of 1, usedCount 1, unitId - unit
+        Assertions.assertEquals(1, result.getDetails().size());
+        ListItemDetailEntity detail = result.getDetails().get(0);
+        Assertions.assertNull(detail.getLinkedDishId());
+        Assertions.assertEquals(listId, detail.getLinkedListId());
+        Assertions.assertEquals(111, RoundingUtils.roundToThousandths(detail.getQuantity()));
+        Assertions.assertEquals(1, detail.getCount());
+        Assertions.assertEquals(GRAM_UNIT_ID, detail.getUnitId());
+    }
+
+
 
     private ListItemDetailEntity createDetailItem(ListItemEntity item) {
         ListItemDetailEntity detail = new ListItemDetailEntity();
@@ -853,6 +883,7 @@ class StateMachineActiveTransitionTest {
 
         ShoppingListEntity shoppingListEntity = new ShoppingListEntity();
         shoppingListEntity.setName(LocalDateTime.now().toString());
+        shoppingListEntity.setUserId(20L);
         return shoppingListRepository.save(shoppingListEntity);
     }
 

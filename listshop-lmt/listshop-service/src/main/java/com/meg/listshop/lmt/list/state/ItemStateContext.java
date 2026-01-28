@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.list.state;
 
+import com.meg.listshop.conversion.data.pojo.DomainType;
 import com.meg.listshop.lmt.conversion.BasicAmount;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
@@ -15,6 +16,7 @@ public class ItemStateContext {
     private ListItemEntity listItem;
     private boolean isCrossedOff;
     private BasicAmount tagAmount;
+    private DomainType userDomain;
 
     public ItemStateContext(ListItemEntity targetItem, Long targetListId) {
         this.targetItem = targetItem;
@@ -100,5 +102,13 @@ public class ItemStateContext {
 
     public void setTagAmount(BasicAmount basicAmount) {
         this.tagAmount = basicAmount;
+    }
+
+    public void setUserDomain(DomainType userDomainType) {
+            this.userDomain = userDomainType;
+    }
+
+    public DomainType getUserDomain() {
+        return userDomain;
     }
 }

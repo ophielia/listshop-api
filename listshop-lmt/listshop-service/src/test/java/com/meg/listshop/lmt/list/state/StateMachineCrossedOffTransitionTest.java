@@ -53,12 +53,12 @@ class StateMachineCrossedOffTransitionTest    {
         TagEntity tagEntity = createTag();
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setTag(tagEntity);
-        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
         // test context
         ItemStateContext testContext = new ItemStateContext(testItem, listId);
         testContext.setCrossedOff(true);
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.CROSS_OFF_ITEM, testContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.CROSS_OFF_ITEM, testContext, targetList.getUserId());
 
         // we expect that the result has the correct dates
         verifyCrossedOffAndUpdated(result);
@@ -75,12 +75,12 @@ class StateMachineCrossedOffTransitionTest    {
         TagEntity tagEntity = createTag();
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setTag(tagEntity);
-        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
         // test context
         ItemStateContext testContext = new ItemStateContext(testItem, listId);
         testContext.setCrossedOff(false);
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.CROSS_OFF_ITEM, testContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.CROSS_OFF_ITEM, testContext, targetList.getUserId());
 
         // we expect that the result has the correct dates
         verifyNotCrossedOffButUpdated(result);
@@ -92,6 +92,7 @@ class StateMachineCrossedOffTransitionTest    {
 
     ShoppingListEntity shoppingListEntity = new ShoppingListEntity();
         shoppingListEntity.setName(LocalDateTime.now().toString());
+        shoppingListEntity.setUserId(20L);
     return shoppingListRepository.save(shoppingListEntity);
     }
 

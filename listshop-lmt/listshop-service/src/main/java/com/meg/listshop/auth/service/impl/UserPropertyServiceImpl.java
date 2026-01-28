@@ -69,6 +69,14 @@ public class UserPropertyServiceImpl implements UserPropertyService {
 
         return userPropertyRepository.findByUserIdAndKey(user.getId(), propertyKey).orElse(null);
     }
+    @Override
+    public     UserPropertyEntity getPropertyForUserById(Long userId, String propertyKey) throws BadParameterException {
+        if (propertyKey == null) {
+            throw new BadParameterException("Property Key is null in getPropertyForUser");
+        }
+
+        return userPropertyRepository.findByUserIdAndKey(userId, propertyKey).orElse(null);
+    }
 
     @Override
     public void setPropertiesForUser(String userName, List<UserPropertyEntity> userPropertyEntities) throws BadParameterException {
@@ -144,6 +152,17 @@ public class UserPropertyServiceImpl implements UserPropertyService {
         UserEntity user = userService.getUserByUserEmail(userName);
         if (user == null) {
             throw new UserNotFoundException(userName);
+        }
+        return user;
+    }
+
+    private UserEntity getUserForUserId(Long userId) throws UserNotFoundException, BadParameterException {
+        if (userId == null) {
+            throw new BadParameterException(String.valueOf(userId));
+        }
+        UserEntity user = userService.getUserById(userId);
+        if (user == null) {
+            throw new UserNotFoundException(String.valueOf(userId));
         }
         return user;
     }

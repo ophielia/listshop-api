@@ -31,9 +31,7 @@ public class ActiveTransition extends AbstractTransition {
 
     private final ListConversionService conversionService;
 
-    public ActiveTransition(ListItemRepository listItemRepository,
-                            ListItemDetailRepository listItemDetailRepository,
-                            ListConversionService conversionService) {
+    public ActiveTransition(ListItemRepository listItemRepository, ListItemDetailRepository listItemDetailRepository, ListConversionService conversionService) {
         super(listItemRepository, listItemDetailRepository);
 
         this.conversionService = conversionService;
@@ -66,14 +64,11 @@ public class ActiveTransition extends AbstractTransition {
         DishItemEntity dishItem = itemStateContext.getDishItem();
         Long listSearchId = CommonUtils.elvis(itemStateContext.getListId(), item.getListId());
         // find existing
-        ListItemDetailEntity existing = item.getDetails().stream()
-                .filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedListId(), listSearchId))
-                .filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedDishId(), dishItem.getDish().getId()))
-                .findFirst().orElse(null);
+        ListItemDetailEntity existing = item.getDetails().stream().filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedListId(), listSearchId)).filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedDishId(), dishItem.getDish().getId())).findFirst().orElse(null);
         // convert dish item to list context or unit, if available
         ConvertibleAmount converted = null;
         try {
-            converted = conversionService.convertDishItemForList(dishItem, existing, item);
+            converted = conversionService.convertDishItemForList(dishItem, existing, item, itemStateContext.getUserDomain());
         } catch (ConversionPathException | ConversionFactorException e) {
             // we weren't able to convert this - it happens sometimes
             String message = String.format("weren't able to convert dishItem [%s] to list context. ", dishItem.getDishItemId());
@@ -128,15 +123,12 @@ Result is scaled, summed and saved.
         ListItemEntity newListItem = itemStateContext.getListItem();
         Long listSearchId = CommonUtils.elvis(itemStateContext.getListId(), newListItem.getListId());
         // find existing
-        ListItemDetailEntity existing = addedTo.getDetails().stream()
-                .filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedListId(), listSearchId))
-                .filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedDishId(), toAdd.getLinkedDishId()))
-                .findFirst().orElse(null);
+        ListItemDetailEntity existing = addedTo.getDetails().stream().filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedListId(), listSearchId)).filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedDishId(), toAdd.getLinkedDishId())).findFirst().orElse(null);
 
         // convert dish item to list context or unit, if available
         ConvertibleAmount converted = null;
         try {
-            converted = conversionService.convertListItemDetailForList(toAdd, existing, addedTo);
+            converted = conversionService.convertListItemDetailForList(toAdd, existing, addedTo, itemStateContext.getUserDomain());
         } catch (ConversionPathException | ConversionFactorException e) {
             // we weren't able to convert this - it happens sometimes
             String message = String.format("weren't able to convert dishItem [%s] to list context. ", newListItem.getListId());
@@ -149,25 +141,21 @@ Result is scaled, summed and saved.
         } else {
             addNonSpecifiedAmount(existing, addedTo, itemStateContext);
         }
-//MM 2236 - will need to pull unit size all through this code
     }
 
     /*
-Processes an addition of a simple item - resulting in a single added/updated item detail in the passed item.
-New / changed detail is converted to list type, and ready to be summed
- */
+        Processes an addition of a simple item - resulting in a single added/updated item detail in the passed item.
+        New / changed detail is converted to list type, and ready to be summed
+    */
     private void processAddSimpleItem(ListItemEntity item, @NotNull ItemStateContext itemStateContext) throws ItemProcessingException {
         TagEntity tag = itemStateContext.getTag();
         Long listSearchId = CommonUtils.elvis(itemStateContext.getTargetListId(), itemStateContext.getListId());
         // find existing
-        ListItemDetailEntity existing = item.getDetails().stream()
-                .filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedListId(), listSearchId))
-                .filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedDishId(), null))
-                .findFirst().orElse(null);
+        ListItemDetailEntity existing = item.getDetails().stream().filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedListId(), listSearchId)).filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedDishId(), null)).findFirst().orElse(null);
         // convert dish item to list context or unit, if available
         ConvertibleAmount converted = null;
         try {
-            converted = conversionService.convertTagForList(tag, itemStateContext.getTagAmount(), existing, item);
+            converted = conversionService.convertTagForList(tag, itemStateContext.getTagAmount(), existing, item, itemStateContext.getUserDomain());
         } catch (ConversionPathException | ConversionFactorException e) {
             // we weren't able to convert this - it happens sometimes
             String message = String.format("weren't able to convert tag [%s] to list context. ", tag.getId());
@@ -318,8 +306,6 @@ New / changed detail is converted to list type, and ready to be summed
     }
 
     private enum ProcessingType {
-        SIMPLE_ITEM,
-        DISH,
-        LIST
+        SIMPLE_ITEM, DISH, LIST
     }
 }

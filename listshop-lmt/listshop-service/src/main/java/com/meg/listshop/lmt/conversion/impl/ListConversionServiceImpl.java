@@ -45,7 +45,7 @@ public class ListConversionServiceImpl implements ListConversionService {
     }
 
     @Override
-    public ConvertibleAmount convertDishItemForList(DishItemEntity dishItem, ListItemDetailEntity existing, ListItemEntity item) throws ConversionPathException, ConversionFactorException {
+    public ConvertibleAmount convertDishItemForList(DishItemEntity dishItem, ListItemDetailEntity existing, ListItemEntity item, DomainType userDomain) throws ConversionPathException, ConversionFactorException {
         if (dishItem == null || dishItem.getUnitId() == null) {
             // nothing to convert - return
             return null;
@@ -56,7 +56,7 @@ public class ListConversionServiceImpl implements ListConversionService {
         }
         ConvertibleAmount toConvert = new EntityConvertibleAmount(dishItem, toConvertUnit, item.getTag());
 
-        return convertDetail(toConvert, existing, item);
+        return convertDetail(toConvert, existing, item, userDomain);
     }
 
     @Override
@@ -130,7 +130,8 @@ public class ListConversionServiceImpl implements ListConversionService {
 
 
     @Override
-    public ConvertibleAmount convertListItemDetailForList(ListItemDetailEntity detailToAdd, ListItemDetailEntity existingDetail, ListItemEntity parentItem) throws ConversionPathException, ConversionFactorException {
+    public ConvertibleAmount convertListItemDetailForList(ListItemDetailEntity detailToAdd, ListItemDetailEntity existingDetail,
+                                                          ListItemEntity parentItem, DomainType domainType) throws ConversionPathException, ConversionFactorException {
         if (detailToAdd == null || detailToAdd.getUnitId() == null) {
             // nothing to convert - return
             return null;
@@ -141,11 +142,13 @@ public class ListConversionServiceImpl implements ListConversionService {
         }
         ConvertibleAmount toConvert = new EntityConvertibleAmount(detailToAdd, toConvertUnit, parentItem.getTag());
 
-        return convertDetail(toConvert, existingDetail, parentItem);
+        return convertDetail(toConvert, existingDetail, parentItem, domainType);
     }
 
     @Override
-    public ConvertibleAmount convertTagForList(TagEntity tag, BasicAmount tagAmount, ListItemDetailEntity existing, ListItemEntity item) throws ConversionPathException, ConversionFactorException {
+    public ConvertibleAmount convertTagForList(TagEntity tag, BasicAmount tagAmount,
+                                               ListItemDetailEntity existing, ListItemEntity item,
+                                               DomainType domainType) throws ConversionPathException, ConversionFactorException {
         if (tagAmount == null || tagAmount.getUnitId() == null) {
             // nothing to convert - return
             return null;
@@ -156,7 +159,7 @@ public class ListConversionServiceImpl implements ListConversionService {
         }
         ConvertibleAmount toConvert = new EntityConvertibleAmount(tagAmount, toConvertUnit, tag);
 
-        return convertDetail(toConvert, existing, item);
+        return convertDetail(toConvert, existing, item, domainType);
     }
 
     @Override
@@ -269,7 +272,7 @@ public class ListConversionServiceImpl implements ListConversionService {
         return String.format("%s_%s", keyUnitId, keyUnitSize);
     }
 
-    private ConvertibleAmount convertDetail(ConvertibleAmount toConvert, ListItemDetailEntity existing, ListItemEntity item) throws ConversionPathException, ConversionFactorException {
+    private ConvertibleAmount convertDetail(ConvertibleAmount toConvert, ListItemDetailEntity existing, ListItemEntity item, DomainType domainType) throws ConversionPathException, ConversionFactorException {
         UnitEntity targetUnit = determineTargetUnit(existing, item);
         if (targetUnit != null) {
             // convert directly to unit
@@ -277,7 +280,7 @@ public class ListConversionServiceImpl implements ListConversionService {
         } else {
             // convert to list context
             //MM also - need user preference for domain here
-            ConversionRequest context = new ConversionRequest(ConversionTargetType.List, DomainType.US);
+            ConversionRequest context = new ConversionRequest(ConversionTargetType.List, domainType);
             return converterService.convert(toConvert, context);
         }
     }

@@ -56,13 +56,13 @@ class StateMachineRemovedTransitionTest {
         TagEntity tagEntity = createTag();
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setTag(tagEntity);
-        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
         // test context
         ItemStateContext testContext = new ItemStateContext(testItem, listId);
         testContext.setTag(tagEntity);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext, targetList.getUserId());
 
         // we expect that the result has the correct dates
         Assertions.assertNull(result);
@@ -80,7 +80,7 @@ class StateMachineRemovedTransitionTest {
         DishItemEntity dishItem = createDishItem(dishId, tagEntity);
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setDishItem(dishItem);
-        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
         // count detail items - we expect 1
         Assertions.assertEquals(1, countDetailItems(testItem));
@@ -88,7 +88,7 @@ class StateMachineRemovedTransitionTest {
         ItemStateContext testContext = new ItemStateContext(testItem, listId);
         testContext.setDishId(dishId);
         // call to test
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext, targetList.getUserId());
 
         // we expect that the result has been physically removed
         // (since the last detail was removed)
@@ -109,13 +109,13 @@ class StateMachineRemovedTransitionTest {
         DishItemEntity dishItem = createDishItem(dishId, tagEntity);
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setDishItem(dishItem);
-        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
         Long secondDishId = 999999L;
         DishItemEntity secondDishItem = createDishItem(secondDishId, tagEntity);
         setupContext = new ItemStateContext(testItem, listId);
         setupContext.setDishItem(secondDishItem);
-        testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
         // count detail items - we expect 2
         Assertions.assertEquals(2, countDetailItems(testItem));
@@ -123,7 +123,7 @@ class StateMachineRemovedTransitionTest {
         ItemStateContext testContext = new ItemStateContext(testItem, listId);
         testContext.setDishId(dishId);
         // call to test
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext, targetList.getUserId());
 
         // we expect that the result has been logically removed
         // (since the last detail was removed)
@@ -153,12 +153,12 @@ class StateMachineRemovedTransitionTest {
         // second list
         ItemStateContext secondListContext = new ItemStateContext(null, secondList.getId());
         secondListContext.setTag(tagEntity);
-        ListItemEntity fromSecondList = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, secondListContext);
+        ListItemEntity fromSecondList = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, secondListContext, targetList.getUserId());
 
         // add item from second list to test target list
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setListItem(fromSecondList);
-        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext);
+        ListItemEntity testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
         // count detail items - we expect 1
         Assertions.assertEquals(1, countDetailItems(testItem));
@@ -166,7 +166,7 @@ class StateMachineRemovedTransitionTest {
         // now, the test - remove the second list item from the test target list
         ItemStateContext testContext = new ItemStateContext(testItem, listId);
         testContext.setListItem(fromSecondList);
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext, targetList.getUserId());
 
         // we expect that the result has been physically removed
         // (since the last detail was removed)
@@ -179,6 +179,7 @@ class StateMachineRemovedTransitionTest {
 
         ShoppingListEntity shoppingListEntity = new ShoppingListEntity();
         shoppingListEntity.setName(LocalDateTime.now().toString());
+        shoppingListEntity.setUserId(20L);
         return shoppingListRepository.save(shoppingListEntity);
     }
 

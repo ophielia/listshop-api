@@ -527,7 +527,8 @@ class ShoppingListServiceImplMockTest {
 
 
         Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
-        Mockito.when(listItemStateMachine.handleEvent(eq(ListItemEvent.CROSS_OFF_ITEM), any(ItemStateContext.class)))
+        Mockito.when(listItemStateMachine.handleEvent(eq(ListItemEvent.CROSS_OFF_ITEM), any(ItemStateContext.class),
+                        any(Long.class)))
                 .thenReturn(item);
         // test call
         shoppingListService.updateItemCrossedOff(userId, listId, itemId, true);
@@ -870,7 +871,7 @@ class ShoppingListServiceImplMockTest {
                 .thenReturn(dishItems);
 
         Mockito.when(listItemStateMachine.handleEvent(any(ListItemEvent.class),
-                        any(ItemStateContext.class)))
+                        any(ItemStateContext.class),any(Long.class)))
                 .thenReturn(new ListItemEntity());
         Mockito.doNothing().when(dishService).updateLastAddedForDishes(any(List.class));
         Mockito.when(shoppingListRepository.save(argument.capture()))
@@ -907,7 +908,7 @@ class ShoppingListServiceImplMockTest {
                 .thenReturn(Optional.of(shoppingList));
         Mockito.when(tagService.getItemsForDish(userId, dishId))
                 .thenReturn(dish1.getItems());
-        Mockito.when(listItemStateMachine.handleEvent(any(ListItemEvent.class), any(ItemStateContext.class)))
+        Mockito.when(listItemStateMachine.handleEvent(any(ListItemEvent.class), any(ItemStateContext.class),any(Long.class)))
                 .thenReturn(new ListItemEntity());
         Mockito.doNothing().when(itemChangeRepository).saveItemChangeStatistics(
                 any(ShoppingListEntity.class),

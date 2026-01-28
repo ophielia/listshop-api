@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.conversion;
 
+import com.meg.listshop.conversion.data.pojo.DomainType;
 import com.meg.listshop.conversion.exceptions.ConversionAddException;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
@@ -18,13 +19,14 @@ import jakarta.validation.constraints.NotNull;
 
 public interface ListConversionService {
 
-    ConvertibleAmount convertDishItemForList(DishItemEntity dishItem, ListItemDetailEntity existing, ListItemEntity item) throws ConversionPathException, ConversionFactorException;
+    ConvertibleAmount convertDishItemForList(DishItemEntity dishItem, ListItemDetailEntity existing, ListItemEntity item, DomainType userDomain) throws ConversionPathException, ConversionFactorException;
 
     void sumItemDetails(ListItemEntity item, @NotNull ItemStateContext context) throws ItemProcessingException;
 
-    ConvertibleAmount convertListItemDetailForList(ListItemDetailEntity detailToAdd, ListItemDetailEntity existingDetail, ListItemEntity parentItem) throws ConversionPathException, ConversionFactorException;
+    ConvertibleAmount convertListItemDetailForList(ListItemDetailEntity detailToAdd, ListItemDetailEntity existingDetail,
+                                                   ListItemEntity parentItem, DomainType domainType) throws ConversionPathException, ConversionFactorException;
 
-    ConvertibleAmount convertTagForList(TagEntity tag, BasicAmount tagAmount, ListItemDetailEntity existing, ListItemEntity item) throws ConversionPathException, ConversionFactorException;
+    ConvertibleAmount convertTagForList(TagEntity tag, BasicAmount tagAmount, ListItemDetailEntity existing, ListItemEntity item, DomainType domainType) throws ConversionPathException, ConversionFactorException;
 
     ConvertibleAmount addToListItemDetail(ConvertibleAmount converted, ListItemDetailEntity existing, @NotNull ItemStateContext context) throws ConversionPathException, ConversionAddException, ConversionFactorException;
 }
