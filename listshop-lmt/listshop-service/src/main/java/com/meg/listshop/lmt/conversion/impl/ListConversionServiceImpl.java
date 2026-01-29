@@ -87,8 +87,7 @@ public class ListConversionServiceImpl implements ListConversionService {
             SummaryConvertibleAmount summary = unitSummary.entrySet().stream().findFirst()
                     .map(Map.Entry::getValue)
                     .orElse(null);
-            //MM 2236 once the dust has settled, rename this to AddScaleRequest
-            AddRequest addRequest = new AddRequest(ConversionTargetType.List, summary.getUnit(), summary.getUnitSize());
+            AddScaleRequest addRequest = new AddScaleRequest(ConversionTargetType.List, summary.getUnit(), summary.getUnitSize());
             ConvertibleAmount summed = null;
             try {
                 summed = converterService.scale(summary, addRequest);
@@ -112,14 +111,12 @@ public class ListConversionServiceImpl implements ListConversionService {
 
         ConvertibleAmount summary = new SimpleAmount(baseAmount.getQuantity(), baseAmount.getUnit());
         for (SummaryConvertibleAmount toConvert : amountsToConvert) {
-            AddRequest addRequest = new AddRequest(ConversionTargetType.List, toConvert.getUnit(), toConvert.getUnitSize());
+            AddScaleRequest addRequest = new AddScaleRequest(ConversionTargetType.List, toConvert.getUnit(), toConvert.getUnitSize());
             try {
                 summary = converterService.add(toConvert, summary, addRequest);
                 toConvert.getDetails().forEach(detail -> detail.setUnspecified(false));
             } catch (ConversionPathException | ConversionFactorException | ConversionAddException e) {
-                //MM 2236 - fix exception, and add all detail in toConvert to unspecified
                 unspecified.addAll(toConvert.getDetails());
-                throw new RuntimeException(e);
             }
         }
 
@@ -166,7 +163,7 @@ public class ListConversionServiceImpl implements ListConversionService {
     public ConvertibleAmount addToListItemDetail(ConvertibleAmount converted, ListItemDetailEntity existing, @NotNull ItemStateContext context) throws ConversionPathException, ConversionAddException, ConversionFactorException {
         UnitEntity existingUnit = getUnit(existing.getUnitId());
         EntityConvertibleAmount addTo = new EntityConvertibleAmount(existing, existingUnit, context.getTag());
-        AddRequest addRequest = new AddRequest(ConversionTargetType.List, existingUnit, existing.getUnitSize());
+        AddScaleRequest addRequest = new AddScaleRequest(ConversionTargetType.List, existingUnit, existing.getUnitSize());
         ConvertibleAmount added = null;
         added = converterService.add(converted, addTo, addRequest);
 
@@ -279,7 +276,6 @@ public class ListConversionServiceImpl implements ListConversionService {
             return converterService.convert(toConvert, targetUnit);
         } else {
             // convert to list context
-            //MM also - need user preference for domain here
             ConversionRequest context = new ConversionRequest(ConversionTargetType.List, domainType);
             return converterService.convert(toConvert, context);
         }
@@ -303,7 +299,6 @@ public class ListConversionServiceImpl implements ListConversionService {
         if (unitId == null) {
             return null;
         }
-        //MM TODO 2236 - possible caching here
         return unitRepo.findById(unitId).orElse(null);
     }
 }

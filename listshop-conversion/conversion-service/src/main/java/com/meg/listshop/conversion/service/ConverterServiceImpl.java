@@ -97,7 +97,7 @@ public class ConverterServiceImpl implements ConverterService {
         return doConversion(amount, target);
     }
 
-    public ConvertibleAmount add(ConvertibleAmount amountToAdd, ConvertibleAmount addTo, AddRequest request) throws ConversionPathException, ConversionFactorException, ConversionAddException {
+    public ConvertibleAmount add(ConvertibleAmount amountToAdd, ConvertibleAmount addTo, AddScaleRequest request) throws ConversionPathException, ConversionFactorException, ConversionAddException {
         // check if the units are the same
         if (amountToAdd.getUnit() == null || addTo.getUnit() == null) {
             String message = String.format("Cannot add unit, from [%s] or to unit [%s] is null", amountToAdd.getUnit(), addTo.getUnit());
@@ -156,7 +156,7 @@ public class ConverterServiceImpl implements ConverterService {
         return summedAmount;
     }
 
-    public ConvertibleAmount scale(ConvertibleAmount toScale, AddRequest request) throws ConversionFactorException {
+    public ConvertibleAmount scale(ConvertibleAmount toScale, AddScaleRequest request) throws ConversionFactorException {
         // do the scaling
         // create context
         ConversionSpec spec = ConversionSpec.specForAddRequest(request);

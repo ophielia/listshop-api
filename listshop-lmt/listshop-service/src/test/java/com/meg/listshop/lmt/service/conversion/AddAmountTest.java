@@ -11,7 +11,7 @@ import com.meg.listshop.Application;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.conversion.data.pojo.AddRequest;
+import com.meg.listshop.conversion.data.pojo.AddScaleRequest;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.exceptions.ConversionAddException;
@@ -85,7 +85,7 @@ class AddAmountTest {
         Optional<UnitEntity> ozUnitOpt = unitRepository.findById(1009L);
         ConvertibleAmount toAdd = new SimpleAmount(1, gramUnitOpt.get());
         ConvertibleAmount addTo = new SimpleAmount(800, gramUnitOpt.get());
-        AddRequest request = new AddRequest(ConversionTargetType.List, addTo);
+        AddScaleRequest request = new AddScaleRequest(ConversionTargetType.List, addTo);
         ConvertibleAmount summed = converterService.add(toAdd, addTo, request);
         assertNotNull(summed);
         Assertions.assertEquals(0.875, summed.getQuantityRoundedUp(), 0.0);
@@ -103,7 +103,7 @@ class AddAmountTest {
         ConvertibleAmount mediumTomato = new SimpleAmount(1.0, unit, tomatoConversionId, false, null, null, false);
         ConvertibleAmount largeTomato = new SimpleAmount(1.0, unit, tomatoConversionId, false, null, null, false);
 
-        AddRequest addRequest = new AddRequest(ConversionTargetType.List, largeTomato);
+        AddScaleRequest addRequest = new AddScaleRequest(ConversionTargetType.List, largeTomato);
         ConvertibleAmount added = converterService.add(mediumTomato, largeTomato, addRequest);
         assertNotNull(added);
         Assertions.assertEquals(2.00, added.getQuantityRoundedUp(), 0.0);
@@ -114,7 +114,7 @@ class AddAmountTest {
         largeTomato = new SimpleAmount(1.0, unit, tomatoConversionId, false, null, "large", true);
 
         // list context
-        addRequest = new AddRequest(ConversionTargetType.List, largeTomato);
+        addRequest = new AddScaleRequest(ConversionTargetType.List, largeTomato);
         added = converterService.add(mediumTomato, largeTomato, addRequest);
         assertNotNull(added);
         Assertions.assertEquals(1.875, added.getQuantityRoundedUp(), 0.0);
@@ -125,7 +125,7 @@ class AddAmountTest {
         mediumTomato = new SimpleAmount(1.0, unit, tomatoConversionId, false, null, "medium", true);
         largeTomato = new SimpleAmount(1.0, unit, tomatoConversionId, false, null, "large", false);
 
-        addRequest = new AddRequest(ConversionTargetType.List, largeTomato);
+        addRequest = new AddScaleRequest(ConversionTargetType.List, largeTomato);
         added = converterService.add(mediumTomato, largeTomato, addRequest);
         assertNotNull(added);
         Assertions.assertEquals(2.25, added.getQuantityRoundedUp(), 0.0);

@@ -517,8 +517,6 @@ class StateMachineActiveTransitionTest {
         ListItemEntity twoTagsAndADish = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, addDishContext, targetList.getUserId());
 
         Assertions.assertNotNull(twoTagsAndADish);
-        //MM
-        // just fill in the tests to pin it down!
     }
 
 
@@ -853,6 +851,99 @@ class StateMachineActiveTransitionTest {
         Assertions.assertEquals(GRAM_UNIT_ID, detail.getUnitId());
     }
 
+    @Test
+    void testComplexItemsNotTagSpecificTest() throws ItemProcessingException {
+        // list one -
+        ShoppingListEntity listOne = createShoppingList();
+        Long listOneId = listOne.getId();
+        listOne.setUserId(34L); // metric user
+        TagEntity tagEntity = createTag(); // any tag, no specific conversion
+        // add tag, no amount
+        ItemStateContext setupContext = new ItemStateContext(null, listOneId);
+        setupContext.setTag(tagEntity);
+        ListItemEntity listOneItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, listOne.getUserId());
+
+        // add tag with 100 g
+        BasicAmount amount = new BasicAmount(100, null, null, GRAM_UNIT_ID, tagEntity);
+        ItemStateContext tagAddContext = new ItemStateContext(listOneItem, listOneId);
+        tagAddContext.setTag(tagEntity);
+        tagAddContext.setTagAmount(amount);
+        listOneItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, tagAddContext, listOne.getUserId());
+
+        // check list one results
+        Assertions.assertNotNull(listOneItem);
+        Assertions.assertEquals(1, listOneItem.getDetails().size());
+        Assertions.assertEquals(100.0, listOneItem.getRoundedQuantity());
+        Assertions.assertEquals(100.0, listOneItem.getRawQuantity());
+        Assertions.assertEquals(GRAM_UNIT_ID, listOneItem.getUnit().getId());
+        Assertions.assertEquals("100 gram", listOneItem.getAmountText());
+        Assertions.assertTrue(listOneItem.getDetails().get(0).isContainsUnspecified());
+        Assertions.assertFalse(listOneItem.getDetails().get(0).isUnspecified());
+        Assertions.assertEquals(SpecificationType.MIXED,listOneItem.getSpecificationType());
+
+        // list two -
+        ShoppingListEntity listTwo = createShoppingList();
+        Long listTwoId = listTwo.getId();
+        listTwo.setUserId(34L); // metric user
+        Long dishId1 = 1234L;
+        Long dishId2 = 5678L;
+
+        // add dish item, with 3 oz
+        DishItemEntity firstDishItem = createDishItem(dishId1, tagEntity);
+        ItemStateContext firstDishContext = new ItemStateContext(null, listTwoId);
+        firstDishContext.setDishItem(firstDishItem);
+        ListItemEntity listTwoItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, firstDishContext, listTwo.getUserId());
+        // add different dish item, no amount
+        DishItemEntity secondDishItem = createDishItem(dishId2, tagEntity);
+        secondDishItem.setQuantity(6.0);
+        secondDishItem.setUnitId(OZ_UNIT_ID);
+        ItemStateContext secondDishContext = new ItemStateContext(listTwoItem, listTwoId);
+        secondDishContext.setDishItem(secondDishItem);
+        listTwoItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, secondDishContext, listTwo.getUserId());
+
+        Assertions.assertNotNull(listTwoItem);
+        Assertions.assertEquals(2, listTwoItem.getDetails().size());
+        Assertions.assertEquals(170.125, listTwoItem.getRoundedQuantity());
+        Assertions.assertEquals(GRAM_UNIT_ID, listTwoItem.getUnit().getId());
+        Assertions.assertEquals("170 1/8 gram", listTwoItem.getAmountText());
+        ListItemDetailEntity firstDetail = listTwoItem.getDetails().stream().filter( d -> d.getLinkedDishId().equals(dishId1)).findFirst().orElse(null);
+        Assertions.assertNotNull(firstDetail);
+        Assertions.assertTrue(firstDetail.isUnspecified());
+        Assertions.assertEquals("",firstDetail.getRawEntry());
+        ListItemDetailEntity secondDetail = listTwoItem.getDetails().stream().filter( d -> d.getLinkedDishId().equals(dishId2)).findFirst().orElse(null);
+        Assertions.assertNotNull(secondDetail);
+        Assertions.assertFalse(secondDetail.isUnspecified());
+        Assertions.assertFalse(secondDetail.isContainsUnspecified());
+        Assertions.assertEquals("170 1/8 gram",secondDetail.getRawEntry());
+        Assertions.assertEquals(SpecificationType.MIXED, listTwoItem.getSpecificationType());
+
+        // add list one to list two
+        ItemStateContext finalContext = new ItemStateContext(listTwoItem, listTwoId);
+        finalContext.setListItem(listOneItem);
+        ListItemEntity finalResult = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, finalContext, listTwo.getUserId());
+
+        // should have 3 details
+        Assertions.assertNotNull(finalResult);
+        Assertions.assertEquals(3, finalResult.getDetails().size());
+        Assertions.assertEquals(270.125, finalResult.getRoundedQuantity());
+        Assertions.assertEquals(GRAM_UNIT_ID, finalResult.getUnit().getId());
+        Assertions.assertEquals("270 1/8 gram", finalResult.getAmountText());
+        firstDetail = finalResult.getDetails().stream().filter( d -> d.getLinkedDishId().equals(dishId1)).findFirst().orElse(null);
+        Assertions.assertNotNull(firstDetail);
+        Assertions.assertTrue(firstDetail.isUnspecified());
+        Assertions.assertEquals("",firstDetail.getRawEntry());
+        secondDetail = finalResult.getDetails().stream().filter( d -> d.getLinkedDishId().equals(dishId2)).findFirst().orElse(null);
+        Assertions.assertNotNull(secondDetail);
+        Assertions.assertFalse(secondDetail.isUnspecified());
+        Assertions.assertFalse(secondDetail.isContainsUnspecified());
+        Assertions.assertEquals("170 1/8 gram",secondDetail.getRawEntry());
+        ListItemDetailEntity thirdDetail = finalResult.getDetails().stream().filter( d -> d.getLinkedListId().equals(listOneId)).findFirst().orElse(null);
+        Assertions.assertTrue(thirdDetail.isContainsUnspecified());
+        Assertions.assertFalse(thirdDetail.isUnspecified());
+        Assertions.assertEquals(100.0,thirdDetail.getQuantity());
+        Assertions.assertEquals("100 gram",thirdDetail.getRawEntry());
+        Assertions.assertEquals(SpecificationType.MIXED, finalResult.getSpecificationType());
+    }
 
 
     private ListItemDetailEntity createDetailItem(ListItemEntity item) {

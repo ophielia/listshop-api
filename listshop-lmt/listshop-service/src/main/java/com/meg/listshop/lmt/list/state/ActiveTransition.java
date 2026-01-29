@@ -84,14 +84,8 @@ public class ActiveTransition extends AbstractTransition {
 
         conversionService.sumItemDetails(item, itemStateContext);
         // save changes to item
-        //MM 2236 deal with massaging item amounts (whole quantity, fractional quantity, description)
-
         item.setUpdatedOn(new Date());
         listItemRepository.save(item);
-
-
-//MM 2236 - will need to pull unit size all through this code
-
     }
 
     /*
@@ -107,12 +101,8 @@ public class ActiveTransition extends AbstractTransition {
 
         conversionService.sumItemDetails(item, itemStateContext);
         // save changes to item
-        //MM 2236 deal with massaging item amounts (whole quantity, fractional quantity, description)
         item.setUpdatedOn(new Date());
         listItemRepository.save(item);
-
-
-//MM 2236 - will need to pull unit size, markers all through this code
     }
 
     /*
@@ -171,8 +161,6 @@ Result is scaled, summed and saved.
 
         conversionService.sumItemDetails(item, itemStateContext);
         // save changes to item
-        //MM 2236 deal with massaging item amounts (whole quantity, fractional quantity, description)
-
         item.setUpdatedOn(new Date());
         listItemRepository.save(item);
 
@@ -200,7 +188,7 @@ Result is scaled, summed and saved.
         Long listId = addFrom.getLinkedListId();
         Long dishId = addFrom.getLinkedDishId();
         String rawEntry = addFrom.getRawEntry();
-        genericAddSpecifiedAmount(converted, item, existing, rawEntry, dishId, listId, context);
+        genericAddSpecifiedAmount(converted, item, existing,addFrom.isContainsUnspecified(), rawEntry, dishId, listId, context);
     }
 
     private void addSpecifiedAmountForDish(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, @NotNull ItemStateContext context) throws ItemProcessingException {
@@ -210,14 +198,14 @@ Result is scaled, summed and saved.
         }
         Long dishId = context.getDishItem().getDish().getId();
         Long linkedListId = CommonUtils.elvis(context.getListId(), item.getListId());
-        genericAddSpecifiedAmount(converted, item, existing, rawEntry, dishId, linkedListId, context);
+        genericAddSpecifiedAmount(converted, item, existing, false,rawEntry, dishId, linkedListId, context);
     }
 
     private void addSpecifiedAmountForTag(ConvertibleAmount converted, ListItemEntity item, Long listId, ListItemDetailEntity existing, @NotNull ItemStateContext context) throws ItemProcessingException {
-        genericAddSpecifiedAmount(converted, item, existing, null, null, listId, context);
+        genericAddSpecifiedAmount(converted, item, existing, false,null, null, listId, context);
     }
 
-    private void genericAddSpecifiedAmount(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, String rawEntry, Long linkedDishId, Long linkedListId, @NotNull ItemStateContext context) {
+    private void genericAddSpecifiedAmount(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, boolean containsUnspecified,String rawEntry, Long linkedDishId, Long linkedListId, @NotNull ItemStateContext context) {
 
         if (existing != null) {
             doAddToExisting(converted, existing, context);
@@ -233,6 +221,7 @@ Result is scaled, summed and saved.
         newDetail.setUnitSize(converted.getUnitSize());
         newDetail.setMarker(converted.getMarker());
         newDetail.setUnitId(converted.getUnit().getId());
+        newDetail.setContainsUnspecified(containsUnspecified);
         // add to list item
         newDetail.setItem(item);
         item.addDetailToItem(listItemDetailRepository.save(newDetail));
@@ -241,7 +230,6 @@ Result is scaled, summed and saved.
     }
 
     private void doAddToExisting(ConvertibleAmount converted, ListItemDetailEntity existing, @NotNull ItemStateContext context) {
-        //MM have to take into account that adding to existing may be adding to a detail which doesn't have a value
         if (existing.getUnitId() == null) {
             // existing doesn't have amount, but converted to add does - this is adding a mixed amount
             doAddMixedDetail(converted, existing, context);
@@ -288,6 +276,7 @@ Result is scaled, summed and saved.
             existing.setMarker(converted.getMarker());
             existing.setUnitSize(converted.getUnitSize());
             existing.setUserSize(converted.getUserSize());
+
         }
         // update count, and set unspecified
         Integer count = CommonUtils.elvis(existing.getCount(), 1);

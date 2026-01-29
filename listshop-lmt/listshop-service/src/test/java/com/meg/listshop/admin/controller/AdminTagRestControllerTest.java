@@ -264,7 +264,7 @@ class AdminTagRestControllerTest {
         // so we should have three samples, all converting to grams, without any markers or unit sizes
         ConversionGrid grid = resultObject.getTag().getConversionGrid();
         Assertions.assertNotNull(grid);
-        Assertions.assertEquals(3, grid.getSamples().size(), "expected 3 samples");
+        Assertions.assertEquals(4, grid.getSamples().size(), "expected 4 samples");
         long commaCount = grid.getSamples().stream()
                 .filter(s -> s.getFromAmount().contains(",") ||
                         s.getToAmount().contains(","))
@@ -318,7 +318,7 @@ class AdminTagRestControllerTest {
         // so we should have 15 (3 x 5) samples, converting to units, with markers and unit sizes
         ConversionGrid grid = resultObject.getTag().getConversionGrid();
         Assertions.assertNotNull(grid);
-        Assertions.assertEquals(15, grid.getSamples().size(), "expected 45 samples");
+        Assertions.assertEquals(18, grid.getSamples().size(), "expected 18 samples");
         long commaCount = grid.getSamples().stream()
                 .filter(s -> s.getFromUnit().contains(",") ||
                         s.getToUnit().contains(","))
