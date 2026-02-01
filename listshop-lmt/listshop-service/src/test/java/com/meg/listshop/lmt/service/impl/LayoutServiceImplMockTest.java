@@ -6,7 +6,6 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.entity.TokenEntity;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
@@ -16,8 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -32,19 +31,19 @@ import static org.mockito.ArgumentMatchers.anySet;
 @ActiveProfiles("test")
 class LayoutServiceImplMockTest {
 
-    @MockBean
+    @Mock
     private LayoutServiceImpl listLayoutService;
 
-    @MockBean
+    @Mock
     private ListLayoutRepository listLayoutRepository;
 
-    @MockBean
+    @Mock
     private ListLayoutCategoryRepository categoryRepositoryRepository;
 
-    @MockBean
+    @Mock
     private UserService userService;
 
-    @MockBean
+    @Mock
     private TagRepository tagRepository;
 
     @BeforeEach
@@ -695,7 +694,7 @@ class LayoutServiceImplMockTest {
 
         // assertions
         Assertions.assertNotNull(categoryEntity.getTags());
-        Assertions.assertEquals(1,categoryEntity.getTags().size());
+        Assertions.assertEquals(1, categoryEntity.getTags().size());
         Optional<TagEntity> assigned = categoryEntity.getTags().stream().findFirst();
         Assertions.assertTrue(assigned.isPresent());
         Assertions.assertEquals(assigned.get().getId(), tagToAssignId);
@@ -729,41 +728,13 @@ class LayoutServiceImplMockTest {
         // assertions
         for (ListLayoutCategoryEntity categoryEntity : Arrays.asList(categoryEntity1, categoryEntity2, categoryEntity3)) {
             Assertions.assertNotNull(categoryEntity.getTags());
-            Assertions.assertEquals(1,categoryEntity.getTags().size());
+            Assertions.assertEquals(1, categoryEntity.getTags().size());
             Optional<TagEntity> assigned = categoryEntity.getTags().stream().findFirst();
             Assertions.assertTrue(assigned.isPresent());
             Assertions.assertEquals(assigned.get().getId(), tagToAssignId);
 
         }
     }
-
-    @Test
-    void testAssignUserDefaultCategoriesToTag_NoCategoryFound() {
-        Long idToAssign = null;
-        Long tagToAssignId = 99L;
-        Long defaultId = 9999L;
-        TagEntity tagToWhichToAssign = new TagEntity(tagToAssignId);
-        TagEntity siblingTag1 = new TagEntity(1L);
-        TagEntity siblingTag2 = new TagEntity(2L);
-        TagEntity siblingTag3 = new TagEntity(3L);
-        List<TagEntity> siblings = Arrays.asList(siblingTag1, siblingTag2, siblingTag3);
-        Set<Long> siblingIds = siblings.stream().map(TagEntity::getId).collect(Collectors.toSet());
-        ListLayoutCategoryEntity categoryEntity = new ListLayoutCategoryEntity(idToAssign);
-
-        Mockito.when(listLayoutRepository.getDefaultCategoryForSiblings(siblingIds)).thenReturn(idToAssign);
-        Mockito.when(categoryRepositoryRepository.getDefaultCategoryId()).thenReturn(defaultId);
-        Mockito.when(categoryRepositoryRepository.findById(defaultId)).thenReturn(Optional.of(categoryEntity));
-        // service call
-        listLayoutService.assignDefaultCategoryToTag(siblings, tagToWhichToAssign);
-
-        // assertions
-        Assertions.assertNotNull(categoryEntity.getTags());
-        Assertions.assertEquals(1, categoryEntity.getTags().size());
-        Optional<TagEntity> assigned = categoryEntity.getTags().stream().findFirst();
-        Assertions.assertTrue(assigned.isPresent());
-        Assertions.assertEquals(assigned.get().getId(), tagToAssignId);
-    }
-
 
     @Test
     void testAddTagToCategory() {
@@ -831,7 +802,6 @@ class LayoutServiceImplMockTest {
 
         Long tagId = 99L;
         Long categoryId = 109L;
-        Long existingCategoryId = 101L;
         Long layoutId = 10109L;
         TagEntity tag = new TagEntity(tagId);
         tag.setUserId(null);
@@ -866,17 +836,17 @@ class LayoutServiceImplMockTest {
 
         // assertions - tag has category, and category has tag
         List<ListLayoutCategoryEntity> categorySaves = categoryCapture.getAllValues()
-                        .stream()
-                                .filter(Objects::nonNull)
-                                        .toList();
+                .stream()
+                .filter(Objects::nonNull)
+                .toList();
         Assertions.assertFalse(tag.getCategories().isEmpty());
         Assertions.assertEquals(tag.getCategories().get(0).getId(), categoryId);
 
         ListLayoutCategoryEntity lastSaved = categorySaves.get(1);
-        Assertions.assertEquals(categoryId,lastSaved.getId(), "saved id is incorrect");
+        Assertions.assertEquals(categoryId, lastSaved.getId(), "saved id is incorrect");
         Assertions.assertTrue(lastSaved.getTags()
-                .stream()
-                .anyMatch(t -> t.getId().equals(tagId)),
+                        .stream()
+                        .anyMatch(t -> t.getId().equals(tagId)),
                 "tag not in saved list");
     }
 

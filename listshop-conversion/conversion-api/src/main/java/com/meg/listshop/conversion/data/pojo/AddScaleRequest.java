@@ -5,7 +5,7 @@ import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 
-public class AddRequest {
+public class AddScaleRequest {
     ConversionTargetType contextType;
 
 
@@ -13,12 +13,19 @@ public class AddRequest {
     private UnitType type;
     private UnitSubtype subtype;
 
-    public AddRequest(ConversionTargetType contextType, ConvertibleAmount amount) {
+    public AddScaleRequest(ConversionTargetType contextType, ConvertibleAmount amount) {
         UnitEntity unit = amount.getUnit();
         this.contextType = contextType;
         this.type = unit.getType();
         this.subtype = unit.getSubtype();
         this.unitSize = amount.getUnitSize();
+    }
+
+    public AddScaleRequest(ConversionTargetType contextType, UnitEntity unit, String unitSize) {
+        this.contextType = contextType;
+        this.type = unit.getType();
+        this.subtype = unit.getSubtype();
+        this.unitSize = unitSize;
     }
 
     public ConversionTargetType getContextType() {

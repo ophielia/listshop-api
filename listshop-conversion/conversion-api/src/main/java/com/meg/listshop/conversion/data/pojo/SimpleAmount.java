@@ -6,7 +6,7 @@ import com.meg.listshop.conversion.service.ConvertibleAmount;
 
 import java.util.Objects;
 
-public class SimpleAmount implements ConvertibleAmount {
+public class SimpleAmount  implements ConvertibleAmount {
 
     private double quantity;
     private UnitEntity unit;

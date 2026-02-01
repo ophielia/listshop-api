@@ -20,9 +20,9 @@ VALUES (99999, 999);
 --list
 insert into list (created_on, list_layout_id, list_types, user_id, list_id)
 values (now(), 1, 'BaseList', 99999, 99999);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
                       list_sources)
-VALUES (99999, 999, 99999, now(), null, null, 1, null, null);
+VALUES (99999, 999, 99999, now(), null,  1, null, null);
 INSERT INTO list_tag_stats (list_tag_stat_id, added_count, removed_count, tag_id, user_id)
 VALUES (99999, 1, 1, 999, 99999);
 
@@ -37,8 +37,8 @@ VALUES (88888, 999);
 --list
 insert into list (created_on, list_layout_id, list_types, user_id, list_id)
 values (now(), 1, 'BaseList', 88888, 88888);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off, free_text, used_count, dish_sources,
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
                       list_sources)
-VALUES (88888, 999, 88888, now(), null, null, 1, null, null);
+VALUES (88888, 999, 88888, now(), null,  1, null, null);
 INSERT INTO list_tag_stats (list_tag_stat_id, added_count, removed_count, tag_id, user_id)
 VALUES (88888, 1, 1, 999, 88888);

@@ -1,5 +1,8 @@
 package com.meg.listshop.lmt.data.entity;
 
+import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.lmt.api.model.FractionType;
+import com.meg.listshop.lmt.api.model.v2.SpecificationType;
 import jakarta.persistence.*;
 
 import java.util.*;
@@ -15,13 +18,13 @@ public class ListItemEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_item_sequence")
     @SequenceGenerator(name = "list_item_sequence", sequenceName = "list_item_sequence", allocationSize = 1)
     @Column(name = "item_id")
-    private Long item_id;
+    private Long itemId;
 
     @OneToMany(mappedBy = "item")
     private List<ListItemDetailEntity> details = new ArrayList<>();
 
-    @OneToOne( cascade = CascadeType.MERGE)
-    @JoinColumn(name = "tagId",referencedColumnName = "tag_id")
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "tagId", referencedColumnName = "tag_id")
     private TagEntity tag;
 
     @Column(name = "dish_sources")
@@ -48,14 +51,39 @@ public class ListItemEntity {
 
     private Date updatedOn;
 
-    private String freeText;
+    @Column(name = "quantity")
+    private Double roundedQuantity;
 
+    @Column(name = "raw_quantity")
+    private Double rawQuantity;
+
+
+    @Column(name = "whole_quantity")
+    private Integer wholeQuantity;
+
+    @Column(name = "fractional_quantity")
+    @Enumerated(EnumType.STRING)
+    private FractionType fractionalQuantity;
+
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "unit_id", referencedColumnName = "unit_id")
+    private UnitEntity unit;
+
+    @Column(name = "unit_size")
+    private String unitSize;
+
+    @Column(name = "amount_text")
+    private String amountText;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "specification_type")
+    private SpecificationType specificationType;
 
     @Transient
     private Long tagId;
 
     public ListItemEntity(Long id) {
-        item_id = id;
+        itemId = id;
     }
 
     public ListItemEntity() {
@@ -63,11 +91,11 @@ public class ListItemEntity {
     }
 
     public Long getId() {
-        return item_id;
+        return itemId;
     }
 
     public void setId(Long itemId) {
-        this.item_id = itemId;
+        this.itemId = itemId;
     }
 
     public TagEntity getTag() {
@@ -100,14 +128,6 @@ public class ListItemEntity {
 
     public void setUpdatedOn(Date updatedOn) {
         this.updatedOn = updatedOn;
-    }
-
-    public String getFreeText() {
-        return freeText;
-    }
-
-    public void setFreeText(String freeText) {
-        this.freeText = freeText;
     }
 
     public Date getCrossedOff() {
@@ -172,17 +192,98 @@ public class ListItemEntity {
         this.details = details;
     }
 
+    public Integer getWholeQuantity() {
+        return wholeQuantity;
+    }
+
+    public void setWholeQuantity(Integer wholeQuantity) {
+        this.wholeQuantity = wholeQuantity;
+    }
+
+    public FractionType getFractionalQuantity() {
+        return fractionalQuantity;
+    }
+
+    public void setFractionalQuantity(FractionType fractionalQuantity) {
+        this.fractionalQuantity = fractionalQuantity;
+    }
+
+    public Double getRoundedQuantity() {
+        return roundedQuantity;
+    }
+
+    public void setRoundedQuantity(Double quantity) {
+        this.roundedQuantity = quantity;
+    }
+
+    public Double getRawQuantity() {
+        return rawQuantity;
+    }
+
+    public void setRawQuantity(Double rawQuantity) {
+        this.rawQuantity = rawQuantity;
+    }
+
+    public Long getUnitId() {
+        return Optional.of(unit).map(UnitEntity::getId).orElse(null);
+    }
+
+    public UnitEntity getUnit() {
+        return unit;
+    }
+
+    public void setUnit(UnitEntity unit) {
+        this.unit = unit;
+    }
+
+    public String getUnitSize() {
+        return unitSize;
+    }
+
+    public void setUnitSize(String unitSize) {
+        this.unitSize = unitSize;
+    }
+
+
+    public String getAmountText() {
+        return amountText;
+    }
+
+    public void setAmountText(String amountDescription) {
+        this.amountText = amountDescription;
+    }
+
+    public SpecificationType getSpecificationType() {
+        return specificationType;
+    }
+
+    public void setSpecificationType(SpecificationType specificationType) {
+        this.specificationType = specificationType;
+    }
+
     @Override
     public String toString() {
-        return "ItemEntity{" +
-                "item_id=" + item_id +
+        return "ListItemEntity{" +
+                "item_id=" + itemId +
+                ", details=" + details +
+                ", tag=" + tag +
                 ", rawDishSources='" + rawDishSources + '\'' +
                 ", rawListSources='" + rawListSources + '\'' +
                 ", listId=" + listId +
                 ", usedCount=" + usedCount +
+                ", handles=" + handles +
                 ", addedOn=" + addedOn +
-                ", freeText='" + freeText + '\'' +
                 ", crossedOff=" + crossedOff +
+                ", removedOn=" + removedOn +
+                ", updatedOn=" + updatedOn +
+                ", wholeQuantity=" + wholeQuantity +
+                ", fractionalQuantity=" + fractionalQuantity +
+                ", quantity=" + roundedQuantity +
+                ", unit=" + unit +
+                ", unitSize='" + unitSize + '\'' +
+                ", amountDescription='" + amountText + '\'' +
+                ", specificationType='" + specificationType + '\'' +
+                ", tagId=" + tagId +
                 '}';
     }
 
@@ -194,7 +295,6 @@ public class ListItemEntity {
         cloned.setUpdatedOn(this.getUpdatedOn());
         cloned.setUsedCount(this.getUsedCount());
         cloned.setListId(this.getListId());
-        cloned.setFreeText(this.getFreeText());
         cloned.setRawDishSources(this.getRawDishSources());
         cloned.setRawListSources(this.getRawListSources());
         cloned.setTag(this.getTag());
@@ -202,17 +302,14 @@ public class ListItemEntity {
     }
 
     public String getDisplay() {
-        if (this.tag != null) {
-            return this.tag.getName();
-        }
-        return this.freeText;
+        return this.tag.getName();
     }
 
     public void addDetailToItem(ListItemDetailEntity detail) {
         details.add(detail);
     }
 
-    public  int getDetailCount() {
+    public int getDetailCount() {
         if (getDetails() == null || getDetails().isEmpty()) {
             return 0;
         }

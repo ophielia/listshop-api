@@ -3,7 +3,11 @@ package com.meg.listshop.conversion.service;
 import com.meg.listshop.common.UnitSubtype;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.*;
+import com.meg.listshop.common.data.repository.UnitRepository;
+import com.meg.listshop.conversion.data.pojo.ConversionRequest;
+import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
+import com.meg.listshop.conversion.data.pojo.DomainType;
+import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.handlers.ChainConversionHandler;
@@ -15,6 +19,7 @@ import com.meg.listshop.conversion.service.tools.StandardConversionHandlerBuilde
 import com.meg.listshop.conversion.tools.ConversionTestTools;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +27,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@SpringBootTest(classes = UnitRepository.class)
 class ConverterServiceTest {
 
     UnitEntity metricGrams;
@@ -35,6 +41,8 @@ class ConverterServiceTest {
 
     ConverterService service;
 
+
+    private UnitRepository unitRepository;
 
     @BeforeEach
     void setUp() {
@@ -56,7 +64,7 @@ class ConverterServiceTest {
                 .withToSpec(UnitType.US, null)
                 .build();
 
-        ScalingHandler listHandler =  new ScalingConversionHandlerBuilder()
+        ScalingHandler listHandler = new ScalingConversionHandlerBuilder()
                 .withFactor(usCups, usQuart, 0.25)
                 .withForScalar(ConversionTargetType.List)
                 .withFromSpec(UnitType.METRIC, UnitSubtype.VOLUME)
@@ -71,8 +79,8 @@ class ConverterServiceTest {
                 .withToSpec(UnitType.US, UnitSubtype.VOLUME)
                 .build();
 
-        List<ChainConversionHandler> handlers = Collections.singletonList( metricToUs);
-        service = new ConverterServiceImpl(handlers, Collections.singletonList(listHandler), weightToVolume);
+        List<ChainConversionHandler> handlers = Collections.singletonList(metricToUs);
+        service = new ConverterServiceImpl(handlers, Collections.singletonList(listHandler), weightToVolume, unitRepository);
     }
 
     @Test
