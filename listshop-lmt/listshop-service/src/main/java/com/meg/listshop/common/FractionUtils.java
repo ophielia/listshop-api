@@ -1,6 +1,7 @@
 package com.meg.listshop.common;
 
 import com.meg.listshop.lmt.api.model.FractionType;
+import com.meg.listshop.lmt.conversion.QuantityElements;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -9,31 +10,36 @@ import java.util.stream.Collectors;
 
 public class FractionUtils {
 
+    private FractionUtils() {
+    }
 
     public static FractionType getFractionTypeForDecimal(BigDecimal decimalPart) {
         if (decimalPart.compareTo(BigDecimal.ZERO) == 0) {
             return null;
         }
         List<BigDecimal> decimalValues = Arrays.stream(FractionType.values())
-                .map(  FractionType::doubleValueOf)
-                .map(d -> BigDecimal.valueOf(d))
+                .map(FractionType::doubleValueOf)
+                .map(BigDecimal::valueOf)
                 .sorted()
                 .collect(Collectors.toList());
-        BigDecimal closestFraction = FractionUtils.closestInList(decimalPart,decimalValues);
+        BigDecimal closestFraction = FractionUtils.closestInList(decimalPart, decimalValues);
         double fractionAsDouble = closestFraction.doubleValue();
         return FractionType.fromDouble(fractionAsDouble);
     }
+
     public static BigDecimal closestInList(BigDecimal target, List<BigDecimal> searchList) {
         int n = searchList.size();
 
         // Corner cases
         if (target.compareTo(searchList.get(0)) <= 0)
             return searchList.get(0);
-        if (target.compareTo(searchList.get(n-1)) >= 0)
-            return searchList.get(n-1);
+        if (target.compareTo(searchList.get(n - 1)) >= 0)
+            return searchList.get(n - 1);
 
         // Doing binary search
-        int i = 0, j = n, mid = 0;
+        int i = 0;
+        int j = n;
+        int mid = 0;
         while (i < j) {
             mid = (i + j) / 2;
 
@@ -46,7 +52,7 @@ public class FractionUtils {
 
                 // If target is greater than previous
                 // to mid, return closest of two
-                if (mid > 0 && target.compareTo(searchList.get(mid-1)) > 0)
+                if (mid > 0 && target.compareTo(searchList.get(mid - 1)) > 0)
                     return getClosest(searchList.get(mid - 1),
                             searchList.get(mid), target);
 
@@ -56,8 +62,8 @@ public class FractionUtils {
 
             // If target is greater than mid
             else {
-                if (mid < n-1 && target.compareTo(searchList.get(mid+1)) < 0)
-                    return getClosest(searchList.get(mid),searchList.get(mid+1),target);
+                if (mid < n - 1 && target.compareTo(searchList.get(mid + 1)) < 0)
+                    return getClosest(searchList.get(mid), searchList.get(mid + 1), target);
                 i = mid + 1; // update i
             }
         }
@@ -66,16 +72,26 @@ public class FractionUtils {
         return searchList.get(mid);
 
 
-
-
     }
 
     private static BigDecimal getClosest(BigDecimal val1, BigDecimal val2,
-                                         BigDecimal target)
-    {
-        if (target.subtract(val1).compareTo(val2.subtract(target)) >= 0 )
+                                         BigDecimal target) {
+        if (target.subtract(val1).compareTo(val2.subtract(target)) >= 0)
             return val2;
         else
             return val1;
+    }
+
+    public static QuantityElements splitQuantityIntoElements(Double amount) {
+        if (amount == null) {
+            return new QuantityElements(0.0, 0, null);
+        }
+        double rounded = RoundingUtils.roundToNearestFraction(amount);
+        double fractionalPart = rounded - Math.floor(rounded);
+
+        FractionType fractionType = FractionUtils.getFractionTypeForDecimal(BigDecimal.valueOf(fractionalPart));
+        int wholeNumberPart = (int) rounded;
+
+        return new QuantityElements(rounded, wholeNumberPart, fractionType);
     }
 }

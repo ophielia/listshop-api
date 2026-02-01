@@ -2,6 +2,9 @@ package com.meg.listshop.common;
 
 public class RoundingUtils {
 
+    private RoundingUtils() {
+    }
+
     public static double roundToHundredths(double value) {
         return RoundingType.HUNDREDTH.round(value);
     }
@@ -54,9 +57,13 @@ public class RoundingUtils {
         if (fractionParts.length != 2) {
             return 0.0;
         }
-        double numerator = Double.valueOf(fractionParts[0].trim());
+        double numerator = Double.parseDouble(fractionParts[0].trim());
         double denominator = Math.max(Double.valueOf(fractionParts[1].trim()), 0.01);
 
         return numerator / denominator;
+    }
+
+    public static double roundUpToNearestWholeNumber(double quantity) {
+        return Math.ceil(quantity);
     }
 }

@@ -29,7 +29,7 @@ public class ConversionContext {
         UnitEntity unit = amount.getUnit();
         boolean sourceIsUnit = unit.getType() == UnitType.UNIT;
         if (sourceIsUnit && conversionSpec.getUnitType() != null) {
-            isUnitToUnit = sourceIsUnit && conversionSpec.getUnitType().equals(UnitType.UNIT);
+            isUnitToUnit = conversionSpec.getUnitType().equals(UnitType.UNIT);
         }
     }
 
@@ -186,5 +186,16 @@ public class ConversionContext {
 
     public void setGramWeight(double gramWeight) {
         this.gramWeight = gramWeight;
+    }
+
+    public void checkUnitToUnit(ConvertibleAmount result) {
+        if (result == null) {
+            return;
+        }
+        if (result.getUnit().getType() == UnitType.UNIT
+                && targetSpec.getUnitType() == UnitType.UNIT) {
+            this.isUnitToUnit = true;
+        }
+
     }
 }

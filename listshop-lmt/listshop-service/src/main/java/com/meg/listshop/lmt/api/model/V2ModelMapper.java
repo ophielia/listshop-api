@@ -19,7 +19,6 @@ import java.util.*;
 public class V2ModelMapper {
     private static final String DISH_PREFIX = "d";
     private static final String LIST_PREFIX = "l";
-    private static final String SPECIAL_PREFIX = "s";
 
     private V2ModelMapper() {
         throw new IllegalAccessError("Utility class");
@@ -114,7 +113,6 @@ public class V2ModelMapper {
                 .removed(listItemEntity.getRemovedOn())
                 .crossedOff(listItemEntity.getCrossedOff())
                 .usedCount(listItemEntity.getUsedCount())
-                .freeText(listItemEntity.getFreeText())
                 .handles(listItemEntity.getHandles());
     }
 

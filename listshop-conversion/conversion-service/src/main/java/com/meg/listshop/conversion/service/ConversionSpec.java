@@ -75,7 +75,7 @@ public class ConversionSpec {
                 request.getUnitSize(), request.getDomainType(), new HashSet<>());
     }
 
-    public static ConversionSpec specForAddRequest(AddRequest request) {
+    public static ConversionSpec specForAddRequest(AddScaleRequest request) {
         return new ConversionSpec(null, request.getUnitType(), request.getSubtype(),
                 request.getContextType(), request.getUnitSize(), null, null);
     }

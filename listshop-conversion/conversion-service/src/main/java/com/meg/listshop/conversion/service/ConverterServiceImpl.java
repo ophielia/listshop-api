@@ -5,6 +5,7 @@ import com.meg.listshop.common.StringTools;
 import com.meg.listshop.common.UnitSubtype;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.exceptions.ConversionAddException;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,20 +31,24 @@ import java.util.List;
 @Service
 public class ConverterServiceImpl implements ConverterService {
     private static final Logger LOG = LoggerFactory.getLogger(ConverterServiceImpl.class);
-    HashMap<HandlerChainKey, HandlerChain> chainMap = new HashMap<>();
+    private final UnitRepository unitRepository;
     private final List<ChainConversionHandler> handlerList;
     private final List<ScalingHandler> scalerList;
-
     private final ConversionHandler tagSpecificHandler;
+    HashMap<HandlerChainKey, HandlerChain> chainMap = new HashMap<>();
+
+    @Value("${conversionservice.gram.unit.id:1013}")
+    private Long GRAM_UNIT_ID;
 
 
     @Autowired
     public ConverterServiceImpl(List<ChainConversionHandler> handlerList,
                                 List<ScalingHandler> scalerList,
-                                @Qualifier("tagSpecificHandler") ConversionHandler tagSpecificHandler) {
+                                @Qualifier("tagSpecificHandler") ConversionHandler tagSpecificHandler, UnitRepository unitRepository) {
         this.handlerList = handlerList;
         this.scalerList = scalerList;
         this.tagSpecificHandler = tagSpecificHandler;
+        this.unitRepository = unitRepository;
     }
 
     @PostConstruct
@@ -91,7 +97,7 @@ public class ConverterServiceImpl implements ConverterService {
         return doConversion(amount, target);
     }
 
-    public ConvertibleAmount add(ConvertibleAmount amountToAdd, ConvertibleAmount addTo, AddRequest request) throws ConversionPathException, ConversionFactorException, ConversionAddException {
+    public ConvertibleAmount add(ConvertibleAmount amountToAdd, ConvertibleAmount addTo, AddScaleRequest request) throws ConversionPathException, ConversionFactorException, ConversionAddException {
         // check if the units are the same
         if (amountToAdd.getUnit() == null || addTo.getUnit() == null) {
             String message = String.format("Cannot add unit, from [%s] or to unit [%s] is null", amountToAdd.getUnit(), addTo.getUnit());
@@ -150,6 +156,23 @@ public class ConverterServiceImpl implements ConverterService {
         return summedAmount;
     }
 
+    public ConvertibleAmount scale(ConvertibleAmount toScale, AddScaleRequest request) throws ConversionFactorException {
+        // do the scaling
+        // create context
+        ConversionSpec spec = ConversionSpec.specForAddRequest(request);
+        ConversionContext context = new ConversionContext(toScale, spec);
+        prepareContextForTagSpecificScaling(context);
+        ScalingHandler scalingHandler = getScalerForContext(context);
+
+        // do scaling
+        if (scalingHandler != null && !context.isUnitToUnit()) {
+            return scalingHandler.scale(toScale, context);
+        }
+
+        // return result
+        return toScale;
+    }
+
     private ConvertibleAmount equalizeSize(ConvertibleAmount possibleScale, ConversionContext context, ScalingHandler scalingHandler) throws ConversionFactorException {
         if (!context.isUnitToUnit() ||
                 possibleScale.getUnitSize() == null && context.getTargetUnitSize() == null ||
@@ -166,10 +189,6 @@ public class ConverterServiceImpl implements ConverterService {
             return possibleScale;
         }
 
-        // now - we expect that only one of the two sizes will be equalized
-        if (targetSize.equals(possibleScaleSize)) {
-            return possibleScale;
-        }
         // convert sizes => amountToAdd to target size
         return scalingHandler.scale(possibleScale, context);
     }
@@ -233,8 +252,7 @@ public class ConverterServiceImpl implements ConverterService {
         //               tag specific available (conversion id not null)
         if (context.requiresAndCanDoTagSpecificConversion(amount)) {
             // weight / volume requirement requires metric type
-            result = preConvertForWeightVolume(result, context);
-            result = tagSpecificHandler.convert(result, context);
+            result = doTagSpecificConversion(result, context);
         }
 
 
@@ -254,6 +272,7 @@ public class ConverterServiceImpl implements ConverterService {
         //       limits to unit types for context
         //       no cross domain conversions
         //       no weight to volume conversion
+        context.checkUnitToUnit(result);
         ScalingHandler scalingHandler = getScalerForContext(context);
         if (scalingHandler != null) {
             return scalingHandler.scale(result, context);
@@ -262,6 +281,51 @@ public class ConverterServiceImpl implements ConverterService {
         return result;
 
 
+    }
+
+    private ConvertibleAmount doTagSpecificConversion(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
+        // from tag specific to grams works
+        // to tag specific (for units) doesn't work.
+        //    note for above - to tag specific?? or to unit?? maybe more to unit - that's my use case
+        // tag specific keys on grams
+        // so, if we wnt to convert _to_ a tag specific
+
+        // preconvert - if target is unit, or target is tag specific, convert to grams
+        ConvertibleAmount preHandled =  amount.copy();
+        if (context.getTargetUnitType() != null &&
+                preHandled.getUnit().getSubtype().equals(UnitSubtype.WEIGHT) &&
+                (context.getTargetContextType() == ConversionTargetType.List || context.getTargetUnitType() == UnitType.UNIT) ) {
+            UnitEntity targetUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
+            Long conversionIdForPrehandle = amount.getUnit().getType() != UnitType.HYBRID ? null : amount.getConversionId();
+            ConvertibleAmount convertToGrams =   copyAmountWithConversionId(amount, conversionIdForPrehandle);
+
+            try {
+                preHandled = convert(convertToGrams, targetUnit);
+                // copy object with conversion id
+                preHandled = copyAmountWithConversionId(preHandled, amount.getConversionId());
+            } catch (ConversionPathException | ConversionFactorException e) {
+                // swallowing this error, since it's not at all a sure thing that the conversion will work
+                LOG.debug("unable to convert amount with unit [{}] to grams", amount.getUnit());
+            }
+        } else if (context.getTargetSubtype().equals(UnitSubtype.VOLUME)
+                && !amount.getUnit().getType().equals(UnitType.METRIC)) {
+            preHandled =  convert(amount, DomainType.METRIC);
+        }
+        // result convert preconvert with tagspecific handler
+        ConvertibleAmount result = tagSpecificHandler.convert(preHandled, context);
+
+        return result;
+
+    }
+
+    private ConvertibleAmount copyAmountWithConversionId(ConvertibleAmount amount,Long conversionId) {
+        return      new SimpleAmount(
+                amount.getQuantity(),
+                amount.getUnit(),
+                conversionId,
+                amount.getIsLiquid().booleanValue(),
+                amount.getMarker()
+        );
     }
 
     private boolean noConversionNecessary(ConvertibleAmount amount, ConversionSpec conversionSpec) {
@@ -292,6 +356,8 @@ public class ConverterServiceImpl implements ConverterService {
         return scalerList.stream().filter(s -> s.scalerFor(context)).findFirst().orElse(null);
     }
 
+
+
     private ConvertibleAmount convertDomain(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
         UnitType domainType = context.getTargetUnitType();
         UnitType sourceType = amount.getUnit().getType();
@@ -305,15 +371,6 @@ public class ConverterServiceImpl implements ConverterService {
 
     }
 
-
-    private ConvertibleAmount preConvertForWeightVolume(ConvertibleAmount amount, ConversionContext context)
-            throws ConversionPathException, ConversionFactorException {
-        if (context.getTargetSubtype().equals(UnitSubtype.VOLUME)
-                && !amount.getUnit().getType().equals(UnitType.METRIC)) {
-            return convert(amount, DomainType.METRIC);
-        }
-        return amount;
-    }
 
 
     private ConvertibleAmount doDomainConversion(ConvertibleAmount amount, ConversionContext context) throws ConversionFactorException, ConversionPathException {
