@@ -79,7 +79,8 @@ public class ActiveTransition extends AbstractTransition {
         if (converted != null && converted.getUnit() != null) {
             addSpecifiedAmountForDish(converted, item, existing, itemStateContext);
         } else {
-            addNonSpecifiedAmount(existing, item, itemStateContext);
+            Long dishId = itemStateContext.getDishId();
+            addNonSpecifiedAmount(existing, item, dishId, itemStateContext);
         }
 
         conversionService.sumItemDetails(item, itemStateContext);
@@ -129,7 +130,8 @@ Result is scaled, summed and saved.
         if (converted != null && converted.getUnit() != null) {
             addSpecifiedAmountForListItem(converted, addedTo, existing, toAdd, itemStateContext);
         } else {
-            addNonSpecifiedAmount(existing, addedTo, itemStateContext);
+            Long dishId = toAdd.getLinkedDishId();
+            addNonSpecifiedAmount(existing, addedTo, dishId, itemStateContext);
         }
     }
 
@@ -156,7 +158,7 @@ Result is scaled, summed and saved.
         if (converted != null && converted.getUnit() != null) {
             addSpecifiedAmountForTag(converted, item, listSearchId, existing, itemStateContext);
         } else {
-            addNonSpecifiedAmount(existing, item, itemStateContext);
+            addNonSpecifiedAmount(existing, item, null, itemStateContext);
         }
 
         conversionService.sumItemDetails(item, itemStateContext);
@@ -166,7 +168,7 @@ Result is scaled, summed and saved.
 
     }
 
-    private void addNonSpecifiedAmount(ListItemDetailEntity existing, ListItemEntity item, @NotNull ItemStateContext context) {
+    private void addNonSpecifiedAmount(ListItemDetailEntity existing, ListItemEntity item, Long dishId, @NotNull ItemStateContext context) {
         if (existing != null) {
             existing.setCount(existing.getCount() + 1);
             return;
@@ -177,7 +179,7 @@ Result is scaled, summed and saved.
         }
         ListItemDetailEntity newDetail = new ListItemDetailEntity();
         newDetail.setLinkedListId(detailListId);
-        newDetail.setLinkedDishId(context.getDishId());
+        newDetail.setLinkedDishId(dishId);
         newDetail.setCount(1);
         // add to list item
         newDetail.setItem(item);

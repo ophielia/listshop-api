@@ -428,8 +428,7 @@ return returnval;
         List<String> tags = new ArrayList<>();
         if (s.getLinkedDishId() != null && !s.getLinkedDishId().isEmpty()) {
             tags.add(ItemSourceType.Dish.getPrefix() + s.getLinkedDishId());
-        }
-        if (s.getLinkedListId() != null
+        } else if (s.getLinkedListId() != null
                 && !s.getLinkedListId().isEmpty()
                 && !s.getLinkedListId().equals(listId)) {
             tags.add(ItemSourceType.List.getPrefix() + s.getLinkedListId());
