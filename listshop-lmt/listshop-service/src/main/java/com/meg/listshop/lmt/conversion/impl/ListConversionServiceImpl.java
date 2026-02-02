@@ -177,7 +177,7 @@ public class ListConversionServiceImpl implements ListConversionService {
         setTextInItem(item, null);
         // ignore, if no amount
         if (amount == null) {
-            restAmountsInItem(item);
+            resetAmountsInItem(item);
             return;
         }
         item.setRawQuantity(amount.getQuantity());
@@ -194,7 +194,7 @@ public class ListConversionServiceImpl implements ListConversionService {
         setTextInItem(item, elements);
     }
 
-    private void restAmountsInItem(ListItemEntity item) {
+    private void resetAmountsInItem(ListItemEntity item) {
         item.setRawQuantity(null);
         item.setUnit(null);
         item.setUnitSize(null);
@@ -202,7 +202,6 @@ public class ListConversionServiceImpl implements ListConversionService {
         item.setFractionalQuantity(null);
         item.setWholeQuantity(null);
         item.setSpecificationType(SpecificationType.NONE);
-        item.setAmountText(null);
     }
 
     private double getRoundedQuantityForUnit(double quantity, UnitEntity unit) {
