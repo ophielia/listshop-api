@@ -2,8 +2,6 @@ package com.meg.listshop.lmt.list.state;
 
 
 import com.meg.listshop.lmt.api.exception.ProcessingException;
-import com.meg.listshop.lmt.data.entity.DishItemEntity;
-import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.lmt.data.repository.ListItemRepository;
@@ -16,7 +14,7 @@ public abstract class AbstractTransition implements StateTransition {
     protected ListItemRepository listItemRepository;
     protected ListItemDetailRepository listItemDetailRepository;
 
-    public AbstractTransition(ListItemRepository listItemRepository, ListItemDetailRepository listItemDetailRepository) {
+    protected AbstractTransition(ListItemRepository listItemRepository, ListItemDetailRepository listItemDetailRepository) {
         this.listItemRepository = listItemRepository;
         this.listItemDetailRepository = listItemDetailRepository;
     }
@@ -37,4 +35,16 @@ public abstract class AbstractTransition implements StateTransition {
     }
 
 
+    protected ProcessingType determineProcessingType(@NotNull ItemStateContext context) {
+        if (context.getDishItem() != null || context.getDishId() != null) {
+            return ProcessingType.DISH;
+        } else if (context.getListItem() != null) {
+            return ProcessingType.LIST;
+        }
+        return ProcessingType.SIMPLE_ITEM;
+    }
+
+    protected enum ProcessingType {
+        SIMPLE_ITEM, DISH, LIST
+    }
 }

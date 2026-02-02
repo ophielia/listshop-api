@@ -109,7 +109,7 @@ public class ActiveTransition extends AbstractTransition {
 Processes an addition of a list item - resulting in multiple added/updated item details in the passed item.
 Result is scaled, summed and saved.
  */
-    private void doAddListItemDetail(ListItemEntity addedTo, ListItemDetailEntity toAdd, @NotNull ItemStateContext itemStateContext)  {
+    private void doAddListItemDetail(ListItemEntity addedTo, ListItemDetailEntity toAdd, @NotNull ItemStateContext itemStateContext) {
         ListItemEntity newListItem = itemStateContext.getListItem();
         Long listSearchId = CommonUtils.elvis(itemStateContext.getListId(), newListItem.getListId());
         // find existing
@@ -184,28 +184,28 @@ Result is scaled, summed and saved.
         item.addDetailToItem(listItemDetailRepository.save(newDetail));
     }
 
-    private void addSpecifiedAmountForListItem(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, ListItemDetailEntity addFrom, @NotNull ItemStateContext context)  {
+    private void addSpecifiedAmountForListItem(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, ListItemDetailEntity addFrom, @NotNull ItemStateContext context) {
         Long listId = addFrom.getLinkedListId();
         Long dishId = addFrom.getLinkedDishId();
         String rawEntry = addFrom.getRawEntry();
-        genericAddSpecifiedAmount(converted, item, existing,addFrom.isContainsUnspecified(), rawEntry, dishId, listId, context);
+        genericAddSpecifiedAmount(converted, item, existing, addFrom.isContainsUnspecified(), rawEntry, dishId, listId, context);
     }
 
-    private void addSpecifiedAmountForDish(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, @NotNull ItemStateContext context)  {
+    private void addSpecifiedAmountForDish(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, @NotNull ItemStateContext context) {
         String rawEntry = "";
         if (context.getDishItem() != null) {
             rawEntry = context.getDishItem().getRawEntry();
         }
         Long dishId = context.getDishItem().getDish().getId();
         Long linkedListId = CommonUtils.elvis(context.getListId(), item.getListId());
-        genericAddSpecifiedAmount(converted, item, existing, false,rawEntry, dishId, linkedListId, context);
+        genericAddSpecifiedAmount(converted, item, existing, false, rawEntry, dishId, linkedListId, context);
     }
 
-    private void addSpecifiedAmountForTag(ConvertibleAmount converted, ListItemEntity item, Long listId, ListItemDetailEntity existing, @NotNull ItemStateContext context)  {
-        genericAddSpecifiedAmount(converted, item, existing, false,null, null, listId, context);
+    private void addSpecifiedAmountForTag(ConvertibleAmount converted, ListItemEntity item, Long listId, ListItemDetailEntity existing, @NotNull ItemStateContext context) {
+        genericAddSpecifiedAmount(converted, item, existing, false, null, null, listId, context);
     }
 
-    private void genericAddSpecifiedAmount(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, boolean containsUnspecified,String rawEntry, Long linkedDishId, Long linkedListId, @NotNull ItemStateContext context) {
+    private void genericAddSpecifiedAmount(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, boolean containsUnspecified, String rawEntry, Long linkedDishId, Long linkedListId, @NotNull ItemStateContext context) {
 
         if (existing != null) {
             doAddToExisting(converted, existing, context);
@@ -285,16 +285,5 @@ Result is scaled, summed and saved.
 
     }
 
-    private ProcessingType determineProcessingType(@NotNull ItemStateContext context) {
-        if (context.getDishItem() != null) {
-            return ProcessingType.DISH;
-        } else if (context.getListItem() != null) {
-            return ProcessingType.LIST;
-        }
-        return ProcessingType.SIMPLE_ITEM;
-    }
 
-    private enum ProcessingType {
-        SIMPLE_ITEM, DISH, LIST
-    }
 }
