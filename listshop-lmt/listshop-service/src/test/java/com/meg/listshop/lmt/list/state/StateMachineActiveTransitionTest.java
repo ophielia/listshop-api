@@ -50,6 +50,7 @@ class StateMachineActiveTransitionTest {
     private static final Long TAG_TOMATO = 33L;
     private static final Long OZ_UNIT_ID = 1009L;
     private static final Long GRAM_UNIT_ID = 1013L;
+
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 

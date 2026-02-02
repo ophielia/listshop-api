@@ -81,6 +81,7 @@ public class ListConversionServiceImpl implements ListConversionService {
         // bow out, if no conversion to a different unit is necessary
         if (unitSummary.size() == 0) {
             // no units found
+            unspecified.forEach(d -> d.setUnspecified(true));
             setInItem(null, item);
             return;
         } else if (unitSummary.size() == 1) {
@@ -176,13 +177,14 @@ public class ListConversionServiceImpl implements ListConversionService {
         setTextInItem(item, null);
         // ignore, if no amount
         if (amount == null) {
+            restAmountsInItem(item);
             return;
         }
         item.setRawQuantity(amount.getQuantity());
         item.setUnit(amount.getUnit());
         item.setUnitSize(amount.getUnitSize());
 
-        double roundedQuantity = getRoundedQuantityForUnit(amount.getQuantity(),amount.getUnit());
+        double roundedQuantity = getRoundedQuantityForUnit(amount.getQuantity(), amount.getUnit());
         QuantityElements elements = splitQuantityIntoElements(roundedQuantity);
         item.setRoundedQuantity(elements.quantity());
         item.setFractionalQuantity(elements.fractionType());
@@ -190,6 +192,17 @@ public class ListConversionServiceImpl implements ListConversionService {
 
         // set text for item
         setTextInItem(item, elements);
+    }
+
+    private void restAmountsInItem(ListItemEntity item) {
+        item.setRawQuantity(null);
+        item.setUnit(null);
+        item.setUnitSize(null);
+        item.setRoundedQuantity(null);
+        item.setFractionalQuantity(null);
+        item.setWholeQuantity(null);
+        item.setSpecificationType(SpecificationType.NONE);
+        item.setAmountText(null);
     }
 
     private double getRoundedQuantityForUnit(double quantity, UnitEntity unit) {

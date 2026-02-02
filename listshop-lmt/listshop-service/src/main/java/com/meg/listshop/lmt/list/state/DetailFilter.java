@@ -11,6 +11,10 @@ public class DetailFilter {
         return bothNull().or(bothNotNull().and(doMatch())).test(left, right);
     }
 
+    public static boolean bothNotNullAndMatch(Long left, Long right) {
+        return bothNotNull().and(doMatch()).test(left, right);
+    }
+
     private static BiPredicate<Long, Long> bothNotNull() {
         // lambda is closed by capturing low and high (its "closure")
         return (left, right) -> left != null && right != null;
