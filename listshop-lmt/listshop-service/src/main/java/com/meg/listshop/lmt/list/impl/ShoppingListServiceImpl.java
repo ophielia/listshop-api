@@ -1013,14 +1013,18 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     private List<ListItemEntity> addDishItemsToList(ShoppingListEntity shoppingList, List<DishItemEntity> dishItems) throws ShoppingListException, ItemProcessingException {
+        List<TagType> tagTypesToExclude = Arrays.asList(TagType.DishType, TagType.Rating);
         List<ListItemEntity> items = shoppingList.getItems();
+        List<DishItemEntity> dishItemsToAdd = dishItems.stream()
+                .filter( i -> !tagTypesToExclude.contains( i.getTag().getTagType()))
+                .toList();
         // gather tags for dish to add
-        if (dishItems == null || dishItems.isEmpty()) {
+        if (dishItemsToAdd == null || dishItems.isEmpty()) {
             return new ArrayList<>();
         }
 
         // tag ids for dish items
-        Set<Long> tagIdsInDish = dishItems.stream()
+        Set<Long> tagIdsInDish = dishItemsToAdd.stream()
                 .map(DishItemEntity::getTag)
                 .map(TagEntity::getId)
                 .collect(Collectors.toSet());
@@ -1032,7 +1036,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         List<ListItemEntity> newOrUpdatedListItems = new ArrayList<>();
         List<Long> addedDishIds = new ArrayList<>();
-        for (DishItemEntity dishItemToAdd : dishItems) {
+        for (DishItemEntity dishItemToAdd : dishItemsToAdd) {
 
             ListItemEntity item = tagToItem.get(dishItemToAdd.getTag().getId());
             boolean isNew = item == null;

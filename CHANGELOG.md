@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.20.0]  - February 2026
+### Fixed
+- ounces as modifier
+### Added
+- new unit bag, bottle, fillet
+### Changed
+- adding list item takes amounts into account
+- removed unused database fields
+### Updated
+- spring boot to version 3.5.9
+
+
 ## [1.19.0]  - March 2025
 ### Fixed
 - make standard tag from user tag (called from extranet)

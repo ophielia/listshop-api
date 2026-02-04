@@ -12,7 +12,9 @@ values (11700, 'Unit', 'bottles', 'bottle'),
        (11800, 'Unit', 'bag', 'bag'),
        (11850, 'Unit', 'bags', 'bag'),
        (11900, 'Unit', 'fillet', 'fillet'),
-       (11950, 'Unit', 'fillets', 'fillet');
+       (11950, 'Unit', 'fillets', 'fillet'),
+       (23750, 'UnitSize', 'minced', 'diced'),
+       (23800, 'UnitSize', 'minced', 'chopped');
 
 -- fix some modifier mappings
 update modifier_mappings m
@@ -22,9 +24,6 @@ where m.mapped_modifier = u.name
   and reference_id is null
   and modifier_type = 'Unit';
 
-select *
-from units
-where name ilike '%oz%'
 
 update modifier_mappings
 set reference_id = 1009
