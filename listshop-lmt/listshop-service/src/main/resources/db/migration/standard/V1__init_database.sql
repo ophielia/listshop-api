@@ -1,9 +1,3 @@
--- we don't know how to generate root <with-no-name> (class Root) :(
-
-comment on database postgres is 'default administrative connection database';
-
-grant connect, create, temporary on database testbank to bankuser;
-
 create sequence authority_id_seq
     start with 1000;
 
@@ -391,27 +385,6 @@ create table domain_unit
 alter table domain_unit
     owner to postgres;
 
-create table flyway_schema_history
-(
-    installed_rank integer                 not null
-        constraint flyway_schema_history_pk
-            primary key,
-    version        varchar(50),
-    description    varchar(200)            not null,
-    type           varchar(20)             not null,
-    script         varchar(1000)           not null,
-    checksum       integer,
-    installed_by   varchar(100)            not null,
-    installed_on   timestamp default now() not null,
-    execution_time integer                 not null,
-    success        boolean                 not null
-);
-
-alter table flyway_schema_history
-    owner to postgres;
-
-create index flyway_schema_history_s_idx
-    on flyway_schema_history (success);
 
 create table food_categories
 (

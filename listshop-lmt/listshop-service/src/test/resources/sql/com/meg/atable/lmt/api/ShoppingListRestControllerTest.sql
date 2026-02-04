@@ -18,9 +18,7 @@ INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_cou
                       list_sources)
 VALUES (99999, 999, 99999, now(), null, 1, null, null);
 
-delete
-from users
-where user_id = 504;
+delete from users where user_id = 504;
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username)
 VALUES (504, 'nostarterlist@testitytest.com', true, NULL,
         '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
@@ -29,31 +27,22 @@ VALUES (504, 'nostarterlist@testitytest.com', true, NULL,
 -- lists - ids 500-503
 -- base list - id 500
 insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
-values (now(), 1, 'General', 20, 509990, 'added to', false);
+values (now(), 1, 'General', 20, 509990, 'added to', false),
 -- starter list - id 509991
-insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
-values (now() - interval '3 days', 11, 'General', 20, 509991, 'added from', true);
+       (now() - interval '3 days', 11, 'General', 20, 509991, 'added from', true),
 -- user 504 doesn't have a starter list
-insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
-values (now() - interval '3 days', 11, 'General', 504, 509999, 'added from', false);
+       (now() - interval '3 days', 11, 'General', 504, 509999, 'added from', false),
 -- user 504 doesn't have a starter list
-insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
-values (now() - interval '3 days', 11, 'General', 20, 500777, 'merge test', false);
+       (now() - interval '3 days', 11, 'General', 20, 500777, 'merge test', false),
 -- copy from / to: sourceList
-insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
-values (now() - interval '3 days', null, 'General', 20, 7777, 'list operations - source', false);
+       (now() - interval '3 days', null, 'General', 20, 7777, 'list operations - source', false),
 -- copy from / to: destinationList
-insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
-values (now() - interval '3 days', null, 'General', 20, 6666, 'list operations - source', false);
+       (now() - interval '3 days', null, 'General', 20, 6666, 'list operations - source', false),
 -- copy from / to: sourceList
-insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
-values (now() - interval '3 days', 11, 'General', 20, 77777, 'list operations - source', false);
-
+       (now() - interval '3 days', 11, 'General', 20, 77777, 'list operations - source', false),
 -- test list for removing from lists
-insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
-values (now(), 1, 'General', 500, 609990, 'added to', false);
-insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
-values (now(), 1, 'General', 500, 609991, 'remove from this list', false);
+       (now(), 1, 'General', 500, 609990, 'added to', false),
+       (now(), 1, 'General', 500, 609991, 'remove from this list', false);
 
 
 -- list items - list 509990 - four items, for active list - id 501,502,503,500
@@ -83,87 +72,60 @@ VALUES  (5099910,509990, 1, 7777,null),
 -- list items - list 509991 - starter list
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
                       list_sources)
-VALUES (509991, 295, 50999321, now(), null,  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (509991, 296, 50999322, now(), null,  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (509991, 307, 50999323, now(), null,  1, null, null);
+VALUES (509991, 295, 50999321, now(), null, 1, null, null),
+       (509991, 296, 50999322, now(), null, 1, null, null)
+        ,
+       (509991, 307, 50999323, now(), null, 1, null, null)
+        ,
 
 -- list items - four items, for active list - id 501,502,503,500
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (509999, 501, 509999, now(), null,  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (509999, 502, 509981, now(), null,  1, null, '509991');
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (509999, 503, 509982, now(), null,  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (509999, 500, 509983, now(), null,  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (509999, 504, 509984, now(), null,  1, null, '509991');
+       (509999, 501, 509999, now(), null, 1, null, null)
+        ,
+       (509999, 502, 509981, now(), null, 1, null, '509991')
+        ,
+       (509999, 503, 509982, now(), null, 1, null, null)
+        ,
+       (509999, 500, 509983, now(), null, 1, null, null)
+        ,
+       (509999, 504, 509984, now(), null, 1, null, '509991')
+        ,
 
 -- list items for list from which to delete a list
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES  (609990, 501, 609990, now(), null,  1, null, null),
-        (609990, 502, 609991, now(), null,  1, null, '609991'),
-        (609990, 503, 609992, now(), null,  1, null, null),
-        (609990, 500, 609993, now(), null,  1, null, null),
-        (609990, 504, 609994, now(), null,  1, null, '609991');
+       (609990, 501, 609990, now(), null, 1, null, null)
+        ,
+       (609990, 502, 609991, now(), null, 1, null, '609991')
+        ,
+       (609990, 503, 609992, now(), null, 1, null, null)
+        ,
+       (609990, 500, 609993, now(), null, 1, null, null)
+        ,
+       (609990, 504, 609994, now(), null, 1, null, '609991');
 INSERT INTO list_item_details (item_detail_id, item_id, used_count, linked_list_id, linked_dish_id)
-VALUES  (6099910,609990, 1, 609991,null),
-        (6099911,609991, 1, 609991,null),
-        (6099912,609992, 1, null,null),
-        (6099913,609993, 1, null,null),
-        (6099914,609994, 1, 609991,null);
+VALUES (6099910, 609990, 1, 609991, null),
+       (6099911, 609991, 1, 609991, null),
+       (6099912, 609992, 1, null, null),
+       (6099913, 609993, 1, null, null),
+       (6099914, 609994, 1, 609991, null);
 
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
+INSERT INTO list_item(item_id, tag_id, list_id, added_on, crossed_off, used_count, dish_sources,
                       list_sources)
-VALUES (609991, 501, 609980, now(), null,  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (609991, 504, 609984, now(), null,  1, null, null);
-
-
+VALUES ( 609980,501,  609991, null, null, 1,null, null),
+       ( 609984,504,  609991, null, null, 1,null, null),
 -- merge list items - four items, for active list - id 501,502,503,500
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (500777, 501, 500770, '2019-07-12', null,  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (500777, 502, 500771, '2019-07-12', null,  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (500777, 503, 500772, '2019-07-12', null,  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (500777, 500, 500773, '2019-07-12', null,  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (500777, 504, 500774, '2019-07-12', null,  1, null, null);
+       ( 500770,501, 500777, '2019-07-12',  null, 1,null, null),
+       ( 500771,502, 500777, '2019-07-12',  null, 1,null, null),
+       ( 500772,503, 500777, '2019-07-12',  null, 1,null, null),
+       ( 500773,500, 500777, '2019-07-12',  null, 1,null, null),
+       ( 500774,504, 500777, '2019-07-12',  null, 1,null, null),
 
 -- operation list items, source - three items- id 500,501,502
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (7777, 500, 70773, '2019-07-12', '2019-07-12',  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (7777, 501, 70770, '2019-07-12', null,  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (7777, 502, 70771, '2019-07-12', null,  1, null, null);
-INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources)
-VALUES (7777, 505, 707711, '2019-07-12', '2019-07-12',  1, null, null);
+       (70773, 500, 7777, '2019-07-12', '2019-07-12',  1,null, null),
+       (70770, 501, 7777, '2019-07-12', null,  1,null, null),
+       (70771, 502, 7777, '2019-07-12', null,  1,null, null),
+       (707711, 505, 7777, '2019-07-12', '2019-07-12',1,  null, null);
 
 insert into list_item_details
-(item_detail_id, item_id, linked_list_id, used_count)
+    (item_detail_id, item_id, linked_list_id, used_count)
 values (7077110, 70770, 7777, 1),
        (7077111, 70771, 7777, 1),
        (707711112, 707711, 7777, 1),
