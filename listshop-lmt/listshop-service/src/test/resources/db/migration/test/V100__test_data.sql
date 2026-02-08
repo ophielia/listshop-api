@@ -2,8 +2,10 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.14 (Debian 10.14-1.pgdg90+1)
--- Dumped by pg_dump version 14.11 (Homebrew)
+
+
+-- Dumped from database version 14.19 (Homebrew)
+-- Dumped by pg_dump version 14.19 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -17,7 +19,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.users (user_id, email, enabled, last_password_reset_date, password, username, creation_date, last_login) FROM stdin;
@@ -35,7 +37,7 @@ COPY public.users (user_id, email, enabled, last_password_reset_date, password, 
 
 
 --
--- Data for Name: authority; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: authority; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.authority (authority_id, name, user_id) FROM stdin;
@@ -49,7 +51,7 @@ COPY public.authority (authority_id, name, user_id) FROM stdin;
 
 
 --
--- Data for Name: auto_tag_instructions; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: auto_tag_instructions; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.auto_tag_instructions (instruction_type, instruction_id, assign_tag_id, is_invert, search_terms, invert_filter) FROM stdin;
@@ -62,7 +64,7 @@ TAG	4	199	t	371	433
 
 
 --
--- Data for Name: campaigns; Type: TABLE DATA; Schema: public; Owner: bankuser
+-- Data for Name: campaigns; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.campaigns (campaign_id, created_on, email, campaign, user_id) FROM stdin;
@@ -70,7 +72,7 @@ COPY public.campaigns (campaign_id, created_on, email, campaign, user_id) FROM s
 
 
 --
--- Data for Name: list_layout; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: list_layout; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.list_layout (layout_id, name, user_id, is_default) FROM stdin;
@@ -79,7 +81,7 @@ COPY public.list_layout (layout_id, name, user_id, is_default) FROM stdin;
 
 
 --
--- Data for Name: list_category; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: list_category; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.list_category (category_id, name, layout_id, display_order, is_default) FROM stdin;
@@ -94,424 +96,405 @@ COPY public.list_category (category_id, name, layout_id, display_order, is_defau
 
 
 --
--- Data for Name: tag; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: tag; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.tag (tag_id, description, name, tag_type, tag_type_default, is_verified, power, to_delete, replacement_tag_id, created_on, updated_on, category_updated_on, removed_on, is_group, user_id, internal_status, is_liquid, conversion_id, marker) FROM stdin;
-1154	are cute	baby rutabegas	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:47:21.046+00	\N	\N	\N	f	\N	1	\N	\N	\N
-346	\N	Meat	TagType	\N	\N	\N	f	\N	2021-04-11 02:00:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1	\N	green chili - preprepared	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:45:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-2	dd	cheap 5	Rating	\N	\N	5	f	\N	2021-04-11 07:44:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-3	\N	salt and pepper shaker	NonEdible	\N	\N	\N	f	\N	2021-04-11 07:43:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-4	\N	prepared pie crust	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:42:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-5	\N	big envelopes	NonEdible	\N	\N	\N	f	\N	2021-04-11 07:41:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-6	\N	duck	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:40:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-7	\N	Finger Food	TagType	\N	\N	\N	f	\N	2021-04-11 07:39:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-8	\N	Skillet Dish	TagType	\N	\N	\N	f	\N	2021-04-11 07:38:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-10	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:36:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-11	\N	Mexican	TagType	\N	\N	\N	f	\N	2021-04-11 07:35:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-12	\N	applesauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:34:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-13	\N	rice	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:33:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-15	\N	celery	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:31:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-16	\N	onion	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:30:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-17	\N	vegetable soup	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:29:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-18	\N	cheddar cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:28:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-19	\N	garlic	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:27:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-20	\N	cream	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:26:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-21	\N	broccoli	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:25:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-22	\N	artichoke hearts	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:24:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-23	\N	white wine	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:23:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-24	\N	Pasta	TagType	\N	\N	\N	f	\N	2021-04-11 07:22:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-25	\N	canned corn	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:21:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-26	\N	dry red beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:20:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-27	\N	prosciutto	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:19:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-28	\N	ham hock	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:18:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-29	\N	tabasco	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:17:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-30	\N	ground lamb	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:16:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-31	\N	cordon blue	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:15:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-32	\N	lettuce	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:14:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-33	\N	tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:13:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-34	\N	cucumber	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:12:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-36	\N	feta cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:10:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-37	\N	feta cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:09:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-38	\N	salmon	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:08:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-39	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:07:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-40	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:06:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-41	\N	peanuts	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:05:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-42	\N	jelly	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:04:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-44	\N	bread	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:02:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-45	\N	oranges	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:01:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-46	\N	cod	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:00:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-47	\N	cayenne pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:59:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-48	\N	chives	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:58:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-49	\N	risotto rice	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:57:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-50	\N	saffron	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:56:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-51	\N	mascarpone	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:55:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-52	\N	tarragon	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:54:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-53	\N	snow peas	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:53:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-54	\N	caraway seeds	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:52:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-55	\N	shallot	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:51:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-56	\N	leek	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:50:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-57	\N	bay leaf	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:49:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-58	\N	fresh thyme	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:48:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-59	\N	red potatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:47:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-60	\N	spinach	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:46:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-61	\N	egg noodles	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:45:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-62	\N	bread crumbs	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:44:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-63	\N	sponge	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:43:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-64	\N	cheap 4	Rating	\N	\N	4	f	\N	2021-04-11 06:42:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-65	\N	apples	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:41:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-66	\N	muesli	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:40:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-67	\N	milk	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:39:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-68	\N	yogurt	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:38:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-69	\N	eggs	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:37:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-70	\N	creme fraiche	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:36:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-71	\N	grated swiss cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:35:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-72	\N	pie crust	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:34:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-73	\N	lardons	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:33:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-74	\N	lardons	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:32:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-75	\N	cucumbers	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:31:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-76	\N	red pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:30:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-77	\N	white vinegar	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:29:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-78	\N	red lentils	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:28:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-79	\N	baking soda	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:27:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-80	\N	chocolate chips	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:26:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-81	\N	carrots	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:25:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-82	\N	dry black beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:24:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-83	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:23:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-84	\N	yeast	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:22:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-85	\N	salt and pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:21:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-86	\N	unused	TagType	\N	\N	\N	f	\N	2021-04-11 06:20:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-89	\N	merguez	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:17:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-90	\N	frozen hamburgers	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:16:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-91	\N	tortellini	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:15:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-92	\N	pesto pasta sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:14:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-93	\N	saram wrap	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:13:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-94	\N	dry cat food	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:12:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-95	\N	crackers	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:11:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-96	\N	brown cookies	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:10:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-97	\N	pears	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:09:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-98	\N	grapefruit	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:08:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-99	\N	kalamata olives	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:07:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-100	\N	plum tomato	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:06:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-101	\N	fresh basil	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:05:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-102	\N	capers	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:04:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-103	\N	orange zest	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:03:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-104	\N	lemon juice	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:02:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-105	\N	fusilli	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:01:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-106	\N	quail eggs	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:00:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-107	\N	fresh dill	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:59:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-108	\N	yellow bell pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:58:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-109	\N	asparagus	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:57:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-110	\N	canned diced tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:56:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-111	\N	baby spinach	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:55:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-112	\N	garam masala	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:54:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-113	\N	canned chickpeas	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:53:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-114	\N	couscous	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:52:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-115	\N	rotisserie chicken	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:51:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-116	\N	butternut squash	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:50:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-117	\N	campanelle	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:49:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-118	\N	leeks	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:48:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-119	\N	fresh oregano	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:47:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-120	\N	eggplant	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:46:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-121	\N	penne	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:45:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-122	\N	goat cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:44:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-123	\N	white rice	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:43:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-124	\N	strip steaks	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:42:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-125	\N	blue cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:41:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-126	\N	heavy cream	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:40:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-127	\N	roasted red peppers	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:39:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-128	\N	light brown sugar	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:38:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-129	\N	mayonnaise	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:37:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-130	\N	sun dried tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:36:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-131	\N	parmesan cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:35:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-132	\N	pine nuts	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:34:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-133	\N	balsamic vinegar	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:33:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-134	\N	farfalle	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:32:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-135	\N	arugula	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:31:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-136	\N	salami	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:30:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-137	\N	granola bars	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:29:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-138	\N	brioche	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:28:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-139	\N	nutella	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:27:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-140	\N	compote	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:26:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-141	\N	toothpaste	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:25:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-142	\N	Good For Picnics	TagType	\N	\N	\N	f	\N	2021-04-11 05:24:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-143	\N	Low Fat	TagType	\N	\N	\N	f	\N	2021-04-11 05:23:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-144	\N	window cleaner	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:22:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-145	\N	mopping fluid	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:21:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-146	\N	soft butter	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:20:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-147	\N	english muffins	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:19:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-148	\N	coffee filters	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:18:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-149	\N	page protectors	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:17:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-150	\N	blue pen	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:16:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-151	\N	clementines	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:15:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-152	\N	Low Carbohydrates	TagType	\N	\N	\N	f	\N	2021-04-11 05:14:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-153	\N	Low Salt	TagType	\N	\N	\N	f	\N	2021-04-11 05:13:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-154	\N	Low Calorie	TagType	\N	\N	\N	f	\N	2021-04-11 05:12:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-155	dd	unused	TagType	\N	\N	\N	f	\N	2021-04-11 05:11:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-156	\N	Low Glycemic Index	TagType	\N	\N	\N	f	\N	2021-04-11 05:10:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-158	\N	notused1	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:08:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-159	\N	gizzards	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:07:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-161	\N	shell pasta	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:05:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-162	\N	sliced ham	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:04:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-163	\N	light cream	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:03:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-164	\N	canned white kidney beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:02:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-165	\N	beef stock	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:01:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-166	\N	spaghetti sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:00:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-167	\N	sweet potatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:59:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-168	\N	paprika	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:58:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-169	\N	mustard powder	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:57:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-170	\N	whipping cream	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:56:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-171	\N	white pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:55:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-172	\N	walnuts	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:54:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-173	\N	poulty seasoning	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:53:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-174	\N	star spice	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:52:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-175	\N	marshmallows	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:51:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-176	\N	baking chocolate	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:50:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-177	\N	powdered cocoa	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:49:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-178	\N	confectioners sugar	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:48:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-179	\N	corn syrup	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:47:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-180	\N	oven cleaner	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:46:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-181	\N	white sugar	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:45:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-182	\N	vanilla extract	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:44:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-183	\N	salsa	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:43:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-184	\N	chili powder	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:42:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-185	\N	oregano	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:41:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-186	\N	vegetable stock	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:40:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-187	\N	green bell pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:39:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-188	\N	canned kidney beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:38:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-189	\N	canned black beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:37:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-190	\N	canned tomato sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:36:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-191	\N	pumpkin puree	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:35:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-192	\N	nutmeg	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:34:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-193	\N	ground cloves	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:33:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-194	\N	ground ginger	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:32:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-195	\N	sandwich bags	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:31:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-196	\N	loose tea	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:30:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-198	\N	corn tortillas	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:28:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-199	\N	Vegetarian	TagType	\N	\N	\N	f	\N	2021-04-11 04:27:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-200	\N	arrugula	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:26:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-201	\N	gnocchi	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:25:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-202	\N	gorgonzola	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:24:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-203	\N	sour cream	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:23:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-204	\N	Fish	TagType	\N	\N	\N	f	\N	2021-04-11 04:22:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-205	\N	potato chips	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:21:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-206	\N	white bread	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:20:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-207	\N	dill	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:19:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-208	\N	lemon zest	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:18:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-209	\N	canned garbanzo beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:17:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-210	\N	canned tuna	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:16:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-211	\N	scallion	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:15:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-212	\N	fresh ginger	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:14:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-213	\N	cranberries	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:13:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-214	\N	kids shampoo	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:12:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-215	\N	light bulb	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:11:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-217	\N	canned sprouts	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:09:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-218	\N	Quick To Prepare 3	Rating	\N	\N	3.10000000000000009	f	\N	2021-04-11 04:08:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-219	\N	Quick To Prepare 2	Rating	\N	\N	2.10000000000000009	f	\N	2021-04-11 04:07:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-220	\N	friday snack	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:06:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-221	\N	diet coke	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:05:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-222	\N	napkins	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:04:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-223	\N	cat food	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:03:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-224	\N	dog food	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:02:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-225	\N	shampoo	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:01:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-226	\N	shower soap	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:00:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-227	\N	potatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:59:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-228	\N	smoked ham	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:58:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-229	\N	pecans	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:57:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-230	\N	kielbasa	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:56:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-231	\N	canned whole tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:55:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-232	\N	cajun seasoning	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:54:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-233	\N	ham steak	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:53:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-234	\N	green split peas	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:52:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-235	\N	kitty litter	NonEdible	\N	\N	\N	f	\N	2021-04-11 03:51:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-236	\N	toilet paper	NonEdible	\N	\N	\N	f	\N	2021-04-11 03:50:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-237	\N	peanut butter	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:49:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-238	\N	tortillas	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:48:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-239	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:47:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-240	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:46:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-241	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:45:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-242	\N	ground coriander	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:44:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-243	\N	ground cinnamon	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:43:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-244	\N	Farro	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:42:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-245	\N	frozen peas	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:41:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-247	\N	fresh parsley	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:39:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-248	\N	boursin cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:38:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-249	\N	fresh chives	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:37:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-250	\N	white wine vinegar	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:36:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-251	\N	stew meat	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:35:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-252	\N	guiness beer	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:34:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-253	\N	coffee	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:33:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-254	\N	gum	NonEdible	\N	\N	\N	f	\N	2021-04-11 03:32:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-348	\N	butter	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:58:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-349	\N	white mushrooms	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:57:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-350	\N	flour	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:56:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-351	\N	thyme	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:55:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-352	\N	dijon mustard	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:54:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-353	\N	diced canned tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:53:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-354	\N	parsley	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:52:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-355	\N	red bell pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:51:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-356	\N	black pitted olives	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:50:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-357	\N	lemon	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:49:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-358	\N	cinnamon	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:48:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-359	\N	honey	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:47:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-360	\N	salt	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:46:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-361	\N	brown sugar	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:45:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-362	lll	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:44:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-363	\N	Kids Like It 3	Rating	\N	\N	3	f	\N	2021-04-11 01:43:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-364	\N	Kids Like It 2	Rating	\N	\N	2	f	\N	2021-04-11 01:42:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-365	\N	Kids Like It 1	Rating	\N	\N	1	f	\N	2021-04-11 01:41:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-366	ddd	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:40:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-255	\N	ground cumin	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:31:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-256	\N	soy sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:30:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-257	\N	round steak	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:29:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-258	\N	beef chuck roast	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:28:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-259	\N	dried marjoram	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:27:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-260	\N	black-eyed peas	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:26:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-261	\N	red wine vinegar	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:25:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-262	\N	fresh mint	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:24:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-263	\N	pistachios	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:23:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-264	\N	boxed gravy	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:22:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-265	\N	trash bags	NonEdible	\N	\N	\N	f	\N	2021-04-11 03:21:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-266	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:20:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-267	\N	Christmas	TagType	\N	\N	\N	f	\N	2021-04-11 03:19:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-268	\N	Thanksgiving	TagType	\N	\N	\N	f	\N	2021-04-11 03:18:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-269	\N	sliced sausage	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:17:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-270	\N	dish soap	NonEdible	\N	\N	\N	f	\N	2021-04-11 03:16:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-271	\N	allspice	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:15:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-272	\N	whole cloves	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:14:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-273	\N	cider	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:13:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-274	\N	unsweetened chocolate	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:12:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-275	\N	bag for Christmas Hats	NonEdible	\N	\N	\N	f	\N	2021-04-11 03:11:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-276	\N	envelopes	NonEdible	\N	\N	\N	f	\N	2021-04-11 03:10:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-277	\N	romano cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:09:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-278	\N	sherry	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:08:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-279	\N	gruyere cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:07:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-280	\N	radishes	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:06:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-281	\N	sea salt	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:05:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-282	\N	baguette	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:04:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-283	\N	paper towels	NonEdible	\N	\N	\N	f	\N	2021-04-11 03:03:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-284	\N	jalapeno pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:02:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-285	\N	unsalted cashews	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:01:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-286	\N	curry powder	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:00:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-287	\N	fresh cilantro	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:59:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-288	\N	fresh tarragon	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:58:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-289	\N	turnips	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:57:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-293	\N	baking powder	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:53:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-294	\N	powdered sugar	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:52:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-295	\N	chocolate bar	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:51:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-296	\N	fennel seeds	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:50:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-297	\N	cardamon	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:49:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-298	\N	square baking dish	NonEdible	\N	\N	\N	f	\N	2021-04-11 02:48:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-299	\N	dry wipes	NonEdible	\N	\N	\N	f	\N	2021-04-11 02:47:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-300	\N	Healthy 5	Rating	\N	\N	5	f	\N	2021-04-11 02:46:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-301	\N	Soup	TagType	\N	\N	\N	f	\N	2021-04-11 02:45:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-302		Halal	TagType	\N	\N	\N	f	\N	2021-04-11 02:44:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-303		Kosher	TagType	\N	\N	\N	f	\N	2021-04-11 02:43:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-304	\N	unused	TagType	\N	\N	\N	f	\N	2021-04-11 02:42:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-307	\N	frozen green beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:39:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-308	\N	bay leaves	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:38:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-309	\N	dried thyme	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:37:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-310	\N	fresh pumpkin	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:36:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-311	\N	pork roast	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:35:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-312	\N	diced green chilis	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:34:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-314	\N	kuggin	NonEdible	\N	\N	\N	f	\N	2021-04-11 02:32:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-315	\N	cheap 2	Rating	\N	\N	2	f	\N	2021-04-11 02:31:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-316	\N	Quick To Prepare 5	Rating	\N	\N	5	f	\N	2021-04-11 02:30:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-317	\N	Quick To Prepare 4	Rating	\N	\N	4	f	\N	2021-04-11 02:29:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-318	\N	sesame oil	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:28:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-319	\N	Elegance 5	Rating	\N	\N	5	f	\N	2021-04-11 02:27:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-320		Main Dish	DishType	\N	\N	\N	f	\N	2021-04-11 02:26:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-321	\N	Yummy 4	Rating	\N	\N	4	f	\N	2021-04-11 02:25:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-322	\N	Yummy 3	Rating	\N	\N	3	f	\N	2021-04-11 02:24:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-323	rr	crockpot	TagType	\N	\N	\N	f	\N	2021-04-11 02:23:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-324	\N	Yummy 5	Rating	\N	\N	5	f	\N	2021-04-11 02:22:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-325	\N	Yummy 1	Rating	\N	\N	1	f	\N	2021-04-11 02:21:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-326	\N	Yummy 2	Rating	\N	\N	2	f	\N	2021-04-11 02:20:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-327	\N	Kids Like It 5	Rating	\N	\N	5	f	\N	2021-04-11 02:19:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-328	\N	Kids Like It 4	Rating	\N	\N	4	f	\N	2021-04-11 02:18:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-329	\N	Ease of Prep 5	Rating	\N	\N	5	f	\N	2021-04-11 02:17:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-330	\N	Quick To Table 5	Rating	\N	\N	5	f	\N	2021-04-11 02:16:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-331	dd	Type TAG	TagType	\N	\N	\N	f	\N	2021-04-11 02:15:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-333	\N	Appetizer	DishType	t	\N	\N	f	\N	2021-04-11 02:13:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-334	\N	black pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:12:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-335	\N	red pepper flakes	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:11:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-336	\N	olive oil	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:10:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-337	\N	egg	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:09:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-338	\N	canned white beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:08:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-339	\N	canned tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:07:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-340	\N	sausage	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:06:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-341	\N	tomato paste	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:05:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-342	\N	zucchini	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:04:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-343	\N	cumin	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:03:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-344	rrr	cheap 3	Rating	\N	\N	3	f	\N	2021-04-11 02:02:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-345	\N	laughing cow cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:01:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-347	\N	vegetable oil	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:59:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-387	\N	Difficulty	Rating	\N	\N	\N	f	\N	2021-04-11 01:19:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-395	\N	Elegance 4	Rating	\N	\N	4	f	\N	2021-04-11 01:11:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-396	\N	Elegance 3	Rating	\N	\N	3	f	\N	2021-04-11 01:10:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-397	\N	Elegance 2	Rating	\N	\N	2	f	\N	2021-04-11 01:09:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-398	\N	Elegance 1	Rating	\N	\N	1	f	\N	2021-04-11 01:08:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-399	\N	Ease of Prep 4	Rating	\N	\N	4	f	\N	2021-04-11 01:07:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-400	\N	Ease of Prep 3	Rating	\N	\N	3	f	\N	2021-04-11 01:06:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-401	\N	Ease of Prep 2	Rating	\N	\N	2	f	\N	2021-04-11 01:05:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-402	\N	Ease of Prep 1	Rating	\N	\N	1	f	\N	2021-04-11 01:04:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-406	\N	chicken breasts	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:00:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-408	dd	notused3	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:58:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-415	\N	cheap 1	Rating	\N	\N	1	f	\N	2021-04-11 00:51:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-416	dd	Quick to Prepare 1	Rating	\N	\N	1.10000000000000009	f	\N	2021-04-11 00:50:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-417	\N	Healthy 4	Rating	\N	\N	4	f	\N	2021-04-11 00:49:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-418	jj	notused2	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:48:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-419	\N	Healthy 3	Rating	\N	\N	3	f	\N	2021-04-11 00:47:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-420	\N	unused	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:46:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-422	\N	Healthy 2	Rating	\N	\N	2	f	\N	2021-04-11 00:44:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-424	\N	Healthy 1	Rating	\N	\N	1	f	\N	2021-04-11 00:42:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-425	\N	Quick To Table 4	Rating	\N	\N	4	f	\N	2021-04-11 00:41:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-426	\N	Quick To Table 3	Rating	\N	\N	3	f	\N	2021-04-11 00:40:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-427	\N	Quick To Table 2	Rating	\N	\N	2	f	\N	2021-04-11 00:39:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-428	\N	Quick To Table 1	Rating	\N	\N	1	f	\N	2021-04-11 00:38:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-432	dd	Side Dish	DishType	\N	\N	\N	f	\N	2021-04-11 00:34:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-433	tt	Dessert	DishType	\N	\N	\N	f	\N	2021-04-11 00:33:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-434	\N	chicken	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:32:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-435	\N	ground beef	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:31:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-436	\N	elbow maccaroni	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:30:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-437	\N	chicken stock	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:29:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-438	\N	farfalla	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:28:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-439	\N	spaghetti	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:27:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-440	\N	pancetta	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:26:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-441	\N	bacon	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:25:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-442	\N	pork chops	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:24:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-443	\N	chicken thighs	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:23:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-444	\N	half and half	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:22:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-445	\N	unused	TagType	\N	\N	\N	f	\N	2021-04-11 00:21:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-446	\N	raisin	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:20:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-447	\N	jasmine rice	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:19:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-448	\N	coconut milk	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:18:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-449	\N	rice wine vinegar	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:17:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-450	\N	fish sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:16:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-451	\N	shitake mushrooms	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:15:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-452	\N	green onion	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:14:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-453	\N	mozzarella	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:13:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-454	\N	canned mixed vegetables	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:12:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-455	\N	bulgur	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:11:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-456	\N	green lentils	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:10:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-457	\N	Worcestershire sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:09:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-458	\N	apple juice	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:08:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-459	\N	canned salmon	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:07:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-460	\N	cornstarch	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:06:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-461	\N	beer	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:05:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-462	\N	plain yogurt	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:04:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-463	\N	lime	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:03:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-464	\N	dried dill	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:02:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-465	\N	cabbage	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:01:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-466	\N	bowtie pasta	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:00:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-467	\N	cherry tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-10 23:59:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-468	\N	dinner in a bag	Ingredient	\N	\N	\N	f	\N	2021-04-10 23:58:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-469	\N	glue	NonEdible	\N	\N	\N	f	\N	2021-04-10 23:57:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-470	\N	soft cat food	NonEdible	\N	\N	\N	f	\N	2021-04-10 23:56:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-471	\N	pantry dish	TagType	\N	\N	\N	f	\N	2021-04-10 23:55:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-472	\N	sliced pepperoni	Ingredient	\N	\N	\N	f	\N	2021-04-10 23:54:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
-473	\N	boneless pork chops	Ingredient	\N	\N	\N	f	\N	2021-04-10 23:53:31.48136+00	\N	\N	\N	f	\N	1	\N	\N	\N
+1154	are cute	baby rutabegas	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:47:21.046+02	\N	\N	\N	f	\N	1	\N	\N	\N
+346	\N	Meat	TagType	\N	\N	\N	f	\N	2021-04-11 04:00:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1	\N	green chili - preprepared	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:45:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+2	dd	cheap 5	Rating	\N	\N	5	f	\N	2021-04-11 09:44:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+3	\N	salt and pepper shaker	NonEdible	\N	\N	\N	f	\N	2021-04-11 09:43:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+4	\N	prepared pie crust	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:42:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+5	\N	big envelopes	NonEdible	\N	\N	\N	f	\N	2021-04-11 09:41:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+6	\N	duck	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:40:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+7	\N	Finger Food	TagType	\N	\N	\N	f	\N	2021-04-11 09:39:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+8	\N	Skillet Dish	TagType	\N	\N	\N	f	\N	2021-04-11 09:38:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+10	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:36:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+11	\N	Mexican	TagType	\N	\N	\N	f	\N	2021-04-11 09:35:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+12	\N	applesauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:34:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+13	\N	rice	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:33:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+15	\N	celery	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:31:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+16	\N	onion	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:30:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+17	\N	vegetable soup	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:29:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+18	\N	cheddar cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:28:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+20	\N	cream	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:26:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+21	\N	broccoli	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:25:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+22	\N	artichoke hearts	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:24:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+23	\N	white wine	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:23:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+24	\N	Pasta	TagType	\N	\N	\N	f	\N	2021-04-11 09:22:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+25	\N	canned corn	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:21:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+26	\N	dry red beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:20:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+27	\N	prosciutto	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:19:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+28	\N	ham hock	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:18:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+29	\N	tabasco	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:17:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+30	\N	ground lamb	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:16:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+31	\N	cordon blue	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:15:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+32	\N	lettuce	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:14:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+34	\N	cucumber	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:12:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+36	\N	feta cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:10:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+37	\N	feta cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:09:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+38	\N	salmon	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:08:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+39	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:07:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+40	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:06:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+44	\N	bread	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:02:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+45	\N	oranges	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:01:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+46	\N	cod	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:00:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+47	\N	cayenne pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:59:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+48	\N	chives	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:58:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+49	\N	risotto rice	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:57:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+50	\N	saffron	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:56:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+51	\N	mascarpone	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:55:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+52	\N	tarragon	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:54:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+53	\N	snow peas	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:53:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+54	\N	caraway seeds	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:52:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+55	\N	shallot	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:51:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+56	\N	leek	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:50:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+57	\N	bay leaf	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:49:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+58	\N	fresh thyme	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:48:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+59	\N	red potatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:47:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+60	\N	spinach	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:46:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+61	\N	egg noodles	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:45:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+62	\N	bread crumbs	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:44:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+63	\N	sponge	NonEdible	\N	\N	\N	f	\N	2021-04-11 08:43:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+64	\N	cheap 4	Rating	\N	\N	4	f	\N	2021-04-11 08:42:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+65	\N	apples	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:41:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+66	\N	muesli	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:40:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+67	\N	milk	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:39:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+68	\N	yogurt	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:38:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+69	\N	eggs	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:37:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+70	\N	creme fraiche	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:36:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+71	\N	grated swiss cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:35:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+72	\N	pie crust	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:34:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+73	\N	lardons	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:33:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+74	\N	lardons	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:32:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+75	\N	cucumbers	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:31:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+76	\N	red pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:30:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+77	\N	white vinegar	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:29:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+78	\N	red lentils	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:28:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+80	\N	chocolate chips	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:26:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+81	\N	carrots	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:25:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+82	\N	dry black beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:24:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+83	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:23:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+84	\N	yeast	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:22:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+85	\N	salt and pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:21:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+86	\N	unused	TagType	\N	\N	\N	f	\N	2021-04-11 08:20:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+89	\N	merguez	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:17:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+90	\N	frozen hamburgers	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:16:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+91	\N	tortellini	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:15:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+92	\N	pesto pasta sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:14:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+93	\N	saram wrap	NonEdible	\N	\N	\N	f	\N	2021-04-11 08:13:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+94	\N	dry cat food	NonEdible	\N	\N	\N	f	\N	2021-04-11 08:12:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+95	\N	crackers	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:11:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+96	\N	brown cookies	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:10:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+97	\N	pears	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:09:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+98	\N	grapefruit	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:08:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+99	\N	kalamata olives	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:07:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+100	\N	plum tomato	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:06:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+101	\N	fresh basil	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:05:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+102	\N	capers	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:04:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+103	\N	orange zest	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:03:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+104	\N	lemon juice	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:02:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+105	\N	fusilli	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:01:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+106	\N	quail eggs	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:00:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+107	\N	fresh dill	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:59:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+108	\N	yellow bell pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:58:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+109	\N	asparagus	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:57:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+110	\N	canned diced tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:56:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+111	\N	baby spinach	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:55:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+112	\N	garam masala	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:54:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+113	\N	canned chickpeas	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:53:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+114	\N	couscous	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:52:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+115	\N	rotisserie chicken	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:51:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+117	\N	campanelle	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:49:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+118	\N	leeks	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:48:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+119	\N	fresh oregano	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:47:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+120	\N	eggplant	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:46:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+121	\N	penne	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:45:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+122	\N	goat cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:44:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+123	\N	white rice	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:43:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+124	\N	strip steaks	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:42:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+125	\N	blue cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:41:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+126	\N	heavy cream	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:40:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+127	\N	roasted red peppers	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:39:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+129	\N	mayonnaise	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:37:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+130	\N	sun dried tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:36:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+131	\N	parmesan cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:35:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+132	\N	pine nuts	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:34:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+133	\N	balsamic vinegar	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:33:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+134	\N	farfalle	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:32:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+135	\N	arugula	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:31:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+136	\N	salami	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:30:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+137	\N	granola bars	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:29:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+138	\N	brioche	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:28:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+139	\N	nutella	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:27:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+140	\N	compote	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:26:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+141	\N	toothpaste	NonEdible	\N	\N	\N	f	\N	2021-04-11 07:25:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+142	\N	Good For Picnics	TagType	\N	\N	\N	f	\N	2021-04-11 07:24:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+143	\N	Low Fat	TagType	\N	\N	\N	f	\N	2021-04-11 07:23:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+144	\N	window cleaner	NonEdible	\N	\N	\N	f	\N	2021-04-11 07:22:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+145	\N	mopping fluid	NonEdible	\N	\N	\N	f	\N	2021-04-11 07:21:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+147	\N	english muffins	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:19:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+148	\N	coffee filters	NonEdible	\N	\N	\N	f	\N	2021-04-11 07:18:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+149	\N	page protectors	NonEdible	\N	\N	\N	f	\N	2021-04-11 07:17:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+150	\N	blue pen	NonEdible	\N	\N	\N	f	\N	2021-04-11 07:16:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+151	\N	clementines	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:15:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+152	\N	Low Carbohydrates	TagType	\N	\N	\N	f	\N	2021-04-11 07:14:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+153	\N	Low Salt	TagType	\N	\N	\N	f	\N	2021-04-11 07:13:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+154	\N	Low Calorie	TagType	\N	\N	\N	f	\N	2021-04-11 07:12:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+155	dd	unused	TagType	\N	\N	\N	f	\N	2021-04-11 07:11:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+156	\N	Low Glycemic Index	TagType	\N	\N	\N	f	\N	2021-04-11 07:10:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+158	\N	notused1	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:08:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+159	\N	gizzards	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:07:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+161	\N	shell pasta	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:05:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+162	\N	sliced ham	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:04:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+163	\N	light cream	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:03:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+164	\N	canned white kidney beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:02:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+165	\N	beef stock	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:01:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+166	\N	spaghetti sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:00:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+167	\N	sweet potatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:59:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+168	\N	paprika	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:58:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+169	\N	mustard powder	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:57:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+170	\N	whipping cream	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:56:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+171	\N	white pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:55:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+172	\N	walnuts	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:54:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+173	\N	poulty seasoning	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:53:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+174	\N	star spice	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:52:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+175	\N	marshmallows	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:51:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+177	\N	powdered cocoa	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:49:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+179	\N	corn syrup	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:47:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+180	\N	oven cleaner	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:46:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+182	\N	vanilla extract	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:44:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+183	\N	salsa	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:43:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+184	\N	chili powder	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:42:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+185	\N	oregano	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:41:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+186	\N	vegetable stock	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:40:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+187	\N	green bell pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:39:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+188	\N	canned kidney beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:38:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+189	\N	canned black beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:37:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+190	\N	canned tomato sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:36:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+191	\N	pumpkin puree	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:35:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+192	\N	nutmeg	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:34:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+193	\N	ground cloves	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:33:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+194	\N	ground ginger	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:32:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+195	\N	sandwich bags	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:31:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+196	\N	loose tea	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:30:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+198	\N	corn tortillas	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:28:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+199	\N	Vegetarian	TagType	\N	\N	\N	f	\N	2021-04-11 06:27:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+200	\N	arrugula	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:26:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+201	\N	gnocchi	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:25:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+202	\N	gorgonzola	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:24:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+203	\N	sour cream	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:23:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+204	\N	Fish	TagType	\N	\N	\N	f	\N	2021-04-11 06:22:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+205	\N	potato chips	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:21:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+206	\N	white bread	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:20:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+207	\N	dill	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:19:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+208	\N	lemon zest	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:18:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+209	\N	canned garbanzo beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:17:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+210	\N	canned tuna	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:16:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+211	\N	scallion	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:15:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+212	\N	fresh ginger	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:14:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+213	\N	cranberries	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:13:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+214	\N	kids shampoo	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:12:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+215	\N	light bulb	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:11:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+217	\N	canned sprouts	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:09:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+218	\N	Quick To Prepare 3	Rating	\N	\N	3.1	f	\N	2021-04-11 06:08:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+219	\N	Quick To Prepare 2	Rating	\N	\N	2.1	f	\N	2021-04-11 06:07:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+220	\N	friday snack	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:06:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+221	\N	diet coke	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:05:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+222	\N	napkins	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:04:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+223	\N	cat food	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:03:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+224	\N	dog food	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:02:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+225	\N	shampoo	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:01:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+226	\N	shower soap	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:00:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+227	\N	potatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:59:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+228	\N	smoked ham	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:58:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+229	\N	pecans	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:57:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+230	\N	kielbasa	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:56:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+231	\N	canned whole tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:55:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+232	\N	cajun seasoning	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:54:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+233	\N	ham steak	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:53:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+234	\N	green split peas	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:52:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+235	\N	kitty litter	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:51:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+236	\N	toilet paper	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:50:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+238	\N	tortillas	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:48:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+239	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:47:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+240	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:46:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+241	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:45:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+242	\N	ground coriander	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:44:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+243	\N	ground cinnamon	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:43:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+244	\N	Farro	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:42:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+245	\N	frozen peas	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:41:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+247	\N	fresh parsley	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:39:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+248	\N	boursin cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:38:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+249	\N	fresh chives	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:37:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+250	\N	white wine vinegar	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:36:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+251	\N	stew meat	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:35:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+252	\N	guiness beer	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:34:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+253	\N	coffee	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:33:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+254	\N	gum	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:32:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+349	\N	white mushrooms	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:57:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+351	\N	thyme	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:55:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+353	\N	diced canned tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:53:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+354	\N	parsley	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:52:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+355	\N	red bell pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:51:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+356	\N	black pitted olives	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:50:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+357	\N	lemon	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:49:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+358	\N	cinnamon	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:48:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+359	\N	honey	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:47:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+360	\N	salt	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:46:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+362	lll	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:44:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+363	\N	Kids Like It 3	Rating	\N	\N	3	f	\N	2021-04-11 03:43:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+364	\N	Kids Like It 2	Rating	\N	\N	2	f	\N	2021-04-11 03:42:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+365	\N	Kids Like It 1	Rating	\N	\N	1	f	\N	2021-04-11 03:41:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+366	ddd	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:40:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+255	\N	ground cumin	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:31:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+257	\N	round steak	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:29:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+258	\N	beef chuck roast	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:28:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+259	\N	dried marjoram	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:27:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+260	\N	black-eyed peas	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:26:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+261	\N	red wine vinegar	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:25:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+262	\N	fresh mint	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:24:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+263	\N	pistachios	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:23:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+264	\N	boxed gravy	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:22:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+265	\N	trash bags	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:21:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+266	\N	delete	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:20:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+267	\N	Christmas	TagType	\N	\N	\N	f	\N	2021-04-11 05:19:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+268	\N	Thanksgiving	TagType	\N	\N	\N	f	\N	2021-04-11 05:18:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+269	\N	sliced sausage	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:17:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+270	\N	dish soap	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:16:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+271	\N	allspice	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:15:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+272	\N	whole cloves	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:14:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+273	\N	cider	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:13:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+274	\N	unsweetened chocolate	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:12:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+275	\N	bag for Christmas Hats	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:11:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+276	\N	envelopes	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:10:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+277	\N	romano cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:09:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+278	\N	sherry	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:08:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+279	\N	gruyere cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:07:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+280	\N	radishes	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:06:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+281	\N	sea salt	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:05:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+282	\N	baguette	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:04:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+283	\N	paper towels	NonEdible	\N	\N	\N	f	\N	2021-04-11 05:03:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+284	\N	jalapeno pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:02:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+285	\N	unsalted cashews	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:01:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+286	\N	curry powder	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:00:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+287	\N	fresh cilantro	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:59:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+288	\N	fresh tarragon	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:58:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+289	\N	turnips	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:57:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+295	\N	chocolate bar	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:51:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+296	\N	fennel seeds	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:50:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+297	\N	cardamon	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:49:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+298	\N	square baking dish	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:48:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+299	\N	dry wipes	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:47:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+300	\N	Healthy 5	Rating	\N	\N	5	f	\N	2021-04-11 04:46:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+301	\N	Soup	TagType	\N	\N	\N	f	\N	2021-04-11 04:45:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+302		Halal	TagType	\N	\N	\N	f	\N	2021-04-11 04:44:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+303		Kosher	TagType	\N	\N	\N	f	\N	2021-04-11 04:43:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+304	\N	unused	TagType	\N	\N	\N	f	\N	2021-04-11 04:42:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+307	\N	frozen green beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:39:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+308	\N	bay leaves	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:38:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+309	\N	dried thyme	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:37:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+310	\N	fresh pumpkin	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:36:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+311	\N	pork roast	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:35:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+312	\N	diced green chilis	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:34:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+314	\N	kuggin	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:32:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+315	\N	cheap 2	Rating	\N	\N	2	f	\N	2021-04-11 04:31:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+316	\N	Quick To Prepare 5	Rating	\N	\N	5	f	\N	2021-04-11 04:30:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+317	\N	Quick To Prepare 4	Rating	\N	\N	4	f	\N	2021-04-11 04:29:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+318	\N	sesame oil	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:28:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+319	\N	Elegance 5	Rating	\N	\N	5	f	\N	2021-04-11 04:27:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+320		Main Dish	DishType	\N	\N	\N	f	\N	2021-04-11 04:26:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+321	\N	Yummy 4	Rating	\N	\N	4	f	\N	2021-04-11 04:25:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+322	\N	Yummy 3	Rating	\N	\N	3	f	\N	2021-04-11 04:24:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+323	rr	crockpot	TagType	\N	\N	\N	f	\N	2021-04-11 04:23:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+324	\N	Yummy 5	Rating	\N	\N	5	f	\N	2021-04-11 04:22:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+325	\N	Yummy 1	Rating	\N	\N	1	f	\N	2021-04-11 04:21:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+326	\N	Yummy 2	Rating	\N	\N	2	f	\N	2021-04-11 04:20:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+327	\N	Kids Like It 5	Rating	\N	\N	5	f	\N	2021-04-11 04:19:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+328	\N	Kids Like It 4	Rating	\N	\N	4	f	\N	2021-04-11 04:18:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+329	\N	Ease of Prep 5	Rating	\N	\N	5	f	\N	2021-04-11 04:17:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+330	\N	Quick To Table 5	Rating	\N	\N	5	f	\N	2021-04-11 04:16:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+331	dd	Type TAG	TagType	\N	\N	\N	f	\N	2021-04-11 04:15:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+333	\N	Appetizer	DishType	t	\N	\N	f	\N	2021-04-11 04:13:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+334	\N	black pepper	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:12:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+335	\N	red pepper flakes	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:11:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+336	\N	olive oil	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:10:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+337	\N	egg	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:09:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+338	\N	canned white beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:08:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+339	\N	canned tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:07:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+340	\N	sausage	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:06:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+341	\N	tomato paste	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:05:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+342	\N	zucchini	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:04:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+343	\N	cumin	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:03:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+344	rrr	cheap 3	Rating	\N	\N	3	f	\N	2021-04-11 04:02:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+345	\N	laughing cow cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:01:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+347	\N	vegetable oil	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:59:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+387	\N	Difficulty	Rating	\N	\N	\N	f	\N	2021-04-11 03:19:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+395	\N	Elegance 4	Rating	\N	\N	4	f	\N	2021-04-11 03:11:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+396	\N	Elegance 3	Rating	\N	\N	3	f	\N	2021-04-11 03:10:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+397	\N	Elegance 2	Rating	\N	\N	2	f	\N	2021-04-11 03:09:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+398	\N	Elegance 1	Rating	\N	\N	1	f	\N	2021-04-11 03:08:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+399	\N	Ease of Prep 4	Rating	\N	\N	4	f	\N	2021-04-11 03:07:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+400	\N	Ease of Prep 3	Rating	\N	\N	3	f	\N	2021-04-11 03:06:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+401	\N	Ease of Prep 2	Rating	\N	\N	2	f	\N	2021-04-11 03:05:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+402	\N	Ease of Prep 1	Rating	\N	\N	1	f	\N	2021-04-11 03:04:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+406	\N	chicken breasts	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:00:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+408	dd	notused3	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:58:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+415	\N	cheap 1	Rating	\N	\N	1	f	\N	2021-04-11 02:51:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+416	dd	Quick to Prepare 1	Rating	\N	\N	1.1	f	\N	2021-04-11 02:50:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+417	\N	Healthy 4	Rating	\N	\N	4	f	\N	2021-04-11 02:49:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+418	jj	notused2	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:48:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+419	\N	Healthy 3	Rating	\N	\N	3	f	\N	2021-04-11 02:47:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+420	\N	unused	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:46:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+422	\N	Healthy 2	Rating	\N	\N	2	f	\N	2021-04-11 02:44:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+424	\N	Healthy 1	Rating	\N	\N	1	f	\N	2021-04-11 02:42:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+425	\N	Quick To Table 4	Rating	\N	\N	4	f	\N	2021-04-11 02:41:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+426	\N	Quick To Table 3	Rating	\N	\N	3	f	\N	2021-04-11 02:40:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+427	\N	Quick To Table 2	Rating	\N	\N	2	f	\N	2021-04-11 02:39:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+428	\N	Quick To Table 1	Rating	\N	\N	1	f	\N	2021-04-11 02:38:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+432	dd	Side Dish	DishType	\N	\N	\N	f	\N	2021-04-11 02:34:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+433	tt	Dessert	DishType	\N	\N	\N	f	\N	2021-04-11 02:33:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+434	\N	chicken	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:32:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+435	\N	ground beef	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:31:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+436	\N	elbow maccaroni	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:30:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+437	\N	chicken stock	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:29:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+438	\N	farfalla	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:28:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+439	\N	spaghetti	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:27:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+440	\N	pancetta	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:26:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+441	\N	bacon	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:25:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+442	\N	pork chops	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:24:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+443	\N	chicken thighs	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:23:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+444	\N	half and half	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:22:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+445	\N	unused	TagType	\N	\N	\N	f	\N	2021-04-11 02:21:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+446	\N	raisin	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:20:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+447	\N	jasmine rice	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:19:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+448	\N	coconut milk	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:18:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+449	\N	rice wine vinegar	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:17:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+450	\N	fish sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:16:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+451	\N	shitake mushrooms	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:15:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+452	\N	green onion	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:14:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+453	\N	mozzarella	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:13:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+454	\N	canned mixed vegetables	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:12:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+455	\N	bulgur	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:11:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+456	\N	green lentils	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:10:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+457	\N	Worcestershire sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:09:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+458	\N	apple juice	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:08:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+459	\N	canned salmon	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:07:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+460	\N	cornstarch	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:06:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+461	\N	beer	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:05:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+462	\N	plain yogurt	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:04:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+463	\N	lime	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:03:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+464	\N	dried dill	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:02:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+465	\N	cabbage	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:01:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+466	\N	bowtie pasta	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:00:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+467	\N	cherry tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:59:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+468	\N	dinner in a bag	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:58:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+469	\N	glue	NonEdible	\N	\N	\N	f	\N	2021-04-11 01:57:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+470	\N	soft cat food	NonEdible	\N	\N	\N	f	\N	2021-04-11 01:56:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+471	\N	pantry dish	TagType	\N	\N	\N	f	\N	2021-04-11 01:55:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+472	\N	sliced pepperoni	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:54:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
+473	\N	boneless pork chops	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:53:31.48136+02	\N	\N	\N	f	\N	1	\N	\N	\N
 501	\N	tag2	TagType	f	t	0	f	\N	\N	\N	\N	\N	f	\N	1	\N	\N	\N
 502	\N	tag3	TagType	f	t	0	f	\N	\N	\N	\N	\N	f	\N	1	\N	\N	\N
 503	\N	tag4	TagType	f	t	0	f	\N	\N	\N	\N	\N	f	\N	1	\N	\N	\N
@@ -519,262 +502,281 @@ COPY public.tag (tag_id, description, name, tag_type, tag_type_default, is_verif
 504	\N	tag5	TagType	f	t	0	f	\N	\N	\N	\N	\N	f	\N	1	\N	\N	\N
 505	\N	notdisplayed	Ingredient	f	t	0	f	\N	\N	\N	\N	\N	f	\N	1	\N	\N	\N
 506	\N	notdisplayed	Ingredient	f	t	0	t	\N	\N	\N	\N	\N	f	\N	1	\N	\N	\N
-1089	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:02.318+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1092	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:02.785+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1093	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:03.158+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1094	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:03.52+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1095	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:03.701+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1098	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:04.618+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1101	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:04.959+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1102	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:05.341+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1103	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:05.723+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1104	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:05.898+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1107	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:06.703+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1110	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:07.199+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1111	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:07.531+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1112	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:07.903+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1113	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:08.058+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1116	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:09.115+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1119	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:09.724+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1120	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:10.121+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1121	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:10.519+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1122	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:10.821+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1125	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:12.017+00	\N	\N	\N	f	\N	1	\N	\N	\N
+1089	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:02.318+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1092	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:02.785+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1093	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:03.158+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1094	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:03.52+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1095	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:03.701+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1098	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:04.618+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1101	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:04.959+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1102	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:05.341+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1103	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:05.723+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1104	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:05.898+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1107	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:06.703+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1110	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:07.199+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1111	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:07.531+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1112	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:07.903+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1113	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:08.058+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1116	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:09.115+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1119	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:09.724+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1120	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:10.121+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1121	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:10.519+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1122	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:10.821+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1125	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:12.017+02	\N	\N	\N	f	\N	1	\N	\N	\N
 1126	testdescription	testname	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	f	\N	1	\N	\N	\N
-1129	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:12.471+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1130	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:12.887+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1131	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:13.296+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1132	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:13.487+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1135	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:14.526+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1138	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:15.027+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1139	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:15.564+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1140	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:16.078+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1141	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:16.371+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1144	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:17.735+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1147	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:18.307+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1148	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:18.858+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1149	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:19.421+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1150	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:19.675+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1153	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:20.826+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1157	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:21.507+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1158	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:22.054+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1159	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:22.5+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1160	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:22.763+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1163	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:23.845+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1166	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:24.531+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1167	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:25.163+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1168	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:25.664+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1169	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:25.887+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1172	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:27.071+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1175	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:27.768+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1176	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:28.241+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1177	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:28.839+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1178	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:29.106+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1181	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:30.402+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1184	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:31.012+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1185	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:31.628+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1186	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:32.226+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1187	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:32.491+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1190	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:33.896+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1002	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:44.741+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1003	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:44.949+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1004	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:45.086+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1005	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:45.161+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1008	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:45.575+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1011	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:45.996+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1012	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:46.157+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1013	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:46.311+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1014	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:46.398+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1017	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:46.871+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1020	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:47.685+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1021	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:47.914+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1022	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:48.198+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1023	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:48.339+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1026	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:48.929+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1029	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:49.826+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1030	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:50.073+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1031	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:50.317+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1032	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:50.432+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1035	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:51.093+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1038	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:51.471+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1039	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:51.708+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1040	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:51.916+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1041	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:52.028+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1044	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:52.666+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1047	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:52.942+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1048	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:53.173+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1049	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:53.407+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1050	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:53.532+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1053	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:54.226+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1056	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:54.561+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1057	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:54.918+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1058	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:55.204+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1059	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:55.333+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1062	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:56.031+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1065	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:56.366+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1066	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:56.636+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1067	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:57.037+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1068	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:57.199+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1071	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:57.992+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1074	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:58.342+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1075	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:58.717+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1076	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:59.001+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1077	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:59.141+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1080	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:00.1+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1083	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:00.485+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1084	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:00.845+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1085	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:01.214+00	\N	\N	\N	f	\N	1	\N	\N	\N
-50532	\N	cream cheese	TagType	\N	\N	\N	f	\N	2022-04-11 07:47:01.214+00	\N	\N	\N	f	\N	1	\N	\N	\N
-1086	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:01.408+00	\N	\N	\N	f	\N	1	\N	\N	\N
-393	\N	Milk and Cream	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:13:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-394	\N	sausage	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:12:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-292	\N	Elegance	Rating	\N	\N	\N	f	\N	2021-04-11 02:54:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-291	\N	Ease of Prep	Rating	\N	\N	\N	f	\N	2021-04-11 02:55:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-407	\N	Dish Type	TagType	\N	\N	\N	f	\N	2021-04-11 00:59:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-410	\N	Nuts	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:56:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-423	\N	Nuts, Grains and Dry Beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:43:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-429	\N	Meat Type	TagType	\N	\N	\N	f	\N	2021-04-11 00:37:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-368	\N	Chicken	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:38:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-372	\N	Beef	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:34:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-376	\N	pasta	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:30:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-375	\N	Pork	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:31:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-378	\N	Eggs and Dairy	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:28:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-369	\N	New	TagType	t	\N	\N	f	\N	2021-04-11 01:37:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-14	\N	Rice	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:32:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-370	\N	New	Ingredient	t	\N	\N	f	\N	2021-04-11 01:36:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-379	\N	Condiments	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:27:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1016	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:46.757+00	\N	\N	\N	t	\N	1	\N	\N	\N
-390	\N	Vegetables	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:16:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-381	\N	Cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:25:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-386	\N	Canned Vegetables	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:20:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-392	\N	Drinks	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:14:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-431	\N	Canned Fish	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:35:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-382	\N	Baking	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:24:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-388	\N	Produce	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:18:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-377	\N	Spices	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:29:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-403	\N	Frozen	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:03:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-384	\N	Office Supplies	NonEdible	\N	\N	\N	f	\N	2021-04-11 01:22:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-367	\N	Animal Products	NonEdible	\N	\N	\N	f	\N	2021-04-11 01:39:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-421	\N	lunch meats	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:45:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-9	\N	Mutton	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:37:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-35	\N	Cultural Roots	TagType	\N	\N	\N	f	\N	2021-04-11 07:11:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-88	\N	Prepared Meats	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:18:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-157	\N	Preparation Type	TagType	\N	\N	\N	f	\N	2021-04-11 05:09:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-216	\N	Kitchen Supplies	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:10:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-246	\N	Special Diet	TagType	\N	\N	\N	f	\N	2021-04-11 03:40:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-313	\N	Household Supplies	NonEdible	\N	\N	\N	f	\N	2021-04-11 02:33:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-371	mmm	Meat	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:35:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-373	\N	Fish	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:33:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-374	\N	Poultry	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:32:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-380	\N	New	NonEdible	t	\N	\N	f	\N	2021-04-11 01:26:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-383	\N	cleaning supplies	NonEdible	\N	\N	\N	f	\N	2021-04-11 01:23:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-385	\N	Oil and Vinegar	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:21:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-389	\N	Personal Hygiene	NonEdible	\N	\N	\N	f	\N	2021-04-11 01:17:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-391	\N	Taste Factor	Rating	\N	\N	\N	f	\N	2021-04-11 01:15:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-404	\N	Holiday	TagType	\N	\N	\N	f	\N	2021-04-11 01:02:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-405	\N	Prepared Soup	Ingredient	\N	\N	\N	f	\N	2021-04-11 01:01:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-409	\N	Bakery - Bread Products	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:57:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-411	\N	Spreads	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:55:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-412	\N	Tomato and Pasta Sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:54:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-413	\N	Snacks	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:53:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-414	\N	Coffee and Tea	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:52:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-160	\N	Quick To Prepare	Rating	\N	\N	\N	f	\N	2021-04-11 05:06:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-305	\N	Healthy	Rating	\N	\N	\N	f	\N	2021-04-11 02:41:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-306	\N	Kids Like It	Rating	\N	\N	\N	f	\N	2021-04-11 02:40:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-290	\N	Quick To Table	Rating	\N	\N	\N	f	\N	2021-04-11 02:56:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-332	\N	cheap	Rating	t	\N	\N	f	\N	2021-04-11 02:14:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-87	\N	Occasions	TagType	\N	\N	\N	f	\N	2021-04-11 06:19:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-430	\N	Cereals	Ingredient	\N	\N	\N	f	\N	2021-04-11 00:36:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
-197	\N	Low In ...	TagType	\N	\N	\N	f	\N	2021-04-11 04:29:31.48136+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1129	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:12.471+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1130	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:12.887+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1131	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:13.296+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1132	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:13.487+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1135	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:14.526+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1138	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:15.027+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1139	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:15.564+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1140	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:16.078+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1141	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:16.371+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1144	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:17.735+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1147	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:18.307+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1148	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:18.858+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1149	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:19.421+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1150	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:19.675+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1153	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:20.826+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1157	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:21.507+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1158	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:22.054+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1159	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:22.5+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1160	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:22.763+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1163	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:23.845+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1166	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:24.531+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1167	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:25.163+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1168	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:25.664+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1169	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:25.887+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1172	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:27.071+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1175	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:27.768+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1176	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:28.241+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1177	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:28.839+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1178	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:29.106+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1181	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:30.402+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1184	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:31.012+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1185	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:31.628+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1186	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:32.226+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1187	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:32.491+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1190	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:33.896+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1002	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:44.741+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1003	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:44.949+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1004	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:45.086+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1005	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:45.161+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1008	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:45.575+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1011	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:45.996+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1012	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:46.157+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1013	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:46.311+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1014	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:46.398+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1017	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:46.871+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1020	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:47.685+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1021	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:47.914+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1022	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:48.198+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1023	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:48.339+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1026	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:48.929+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1029	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:49.826+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1030	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:50.073+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1031	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:50.317+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1032	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:50.432+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1035	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:51.093+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1038	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:51.471+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1039	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:51.708+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1040	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:51.916+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1041	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:52.028+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1044	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:52.666+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1047	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:52.942+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1048	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:53.173+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1049	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:53.407+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1050	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:53.532+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1053	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:54.226+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1056	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:54.561+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1057	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:54.918+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1058	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:55.204+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1059	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:55.333+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1062	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:56.031+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1065	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:56.366+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1066	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:56.636+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1067	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:57.037+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1068	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:57.199+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1071	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:57.992+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1074	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:58.342+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1075	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:58.717+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1076	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:59.001+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1077	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:59.141+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1080	\N	c	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:00.1+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1083	\N	testTagSibling	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:00.485+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1084	\N	testTagSibling2	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:00.845+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1085	\N	testTagChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:01.214+02	\N	\N	\N	f	\N	1	\N	\N	\N
+50532	\N	cream cheese	TagType	\N	\N	\N	f	\N	2022-04-11 09:47:01.214+02	\N	\N	\N	f	\N	1	\N	\N	\N
+1086	\N	testTagAnotherChild	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:01.408+02	\N	\N	\N	f	\N	1	\N	\N	\N
+393	\N	Milk and Cream	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:13:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+394	\N	sausage	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:12:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+292	\N	Elegance	Rating	\N	\N	\N	f	\N	2021-04-11 04:54:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+291	\N	Ease of Prep	Rating	\N	\N	\N	f	\N	2021-04-11 04:55:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+407	\N	Dish Type	TagType	\N	\N	\N	f	\N	2021-04-11 02:59:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+410	\N	Nuts	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:56:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+423	\N	Nuts, Grains and Dry Beans	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:43:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+429	\N	Meat Type	TagType	\N	\N	\N	f	\N	2021-04-11 02:37:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+368	\N	Chicken	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:38:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+372	\N	Beef	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:34:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+376	\N	pasta	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:30:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+375	\N	Pork	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:31:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+378	\N	Eggs and Dairy	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:28:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+369	\N	New	TagType	t	\N	\N	f	\N	2021-04-11 03:37:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+14	\N	Rice	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:32:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+370	\N	New	Ingredient	t	\N	\N	f	\N	2021-04-11 03:36:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+379	\N	Condiments	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:27:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1016	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:46.757+02	\N	\N	\N	t	\N	1	\N	\N	\N
+390	\N	Vegetables	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:16:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+381	\N	Cheese	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:25:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+386	\N	Canned Vegetables	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:20:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+392	\N	Drinks	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:14:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+431	\N	Canned Fish	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:35:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+382	\N	Baking	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:24:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+388	\N	Produce	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:18:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+377	\N	Spices	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:29:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+403	\N	Frozen	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:03:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+384	\N	Office Supplies	NonEdible	\N	\N	\N	f	\N	2021-04-11 03:22:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+367	\N	Animal Products	NonEdible	\N	\N	\N	f	\N	2021-04-11 03:39:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+421	\N	lunch meats	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:45:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+9	\N	Mutton	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:37:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+35	\N	Cultural Roots	TagType	\N	\N	\N	f	\N	2021-04-11 09:11:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+88	\N	Prepared Meats	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:18:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+157	\N	Preparation Type	TagType	\N	\N	\N	f	\N	2021-04-11 07:09:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+216	\N	Kitchen Supplies	NonEdible	\N	\N	\N	f	\N	2021-04-11 06:10:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+246	\N	Special Diet	TagType	\N	\N	\N	f	\N	2021-04-11 05:40:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+313	\N	Household Supplies	NonEdible	\N	\N	\N	f	\N	2021-04-11 04:33:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+371	mmm	Meat	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:35:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+373	\N	Fish	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:33:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+374	\N	Poultry	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:32:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+380	\N	New	NonEdible	t	\N	\N	f	\N	2021-04-11 03:26:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+383	\N	cleaning supplies	NonEdible	\N	\N	\N	f	\N	2021-04-11 03:23:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+385	\N	Oil and Vinegar	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:21:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+389	\N	Personal Hygiene	NonEdible	\N	\N	\N	f	\N	2021-04-11 03:17:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+391	\N	Taste Factor	Rating	\N	\N	\N	f	\N	2021-04-11 03:15:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+404	\N	Holiday	TagType	\N	\N	\N	f	\N	2021-04-11 03:02:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+405	\N	Prepared Soup	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:01:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+409	\N	Bakery - Bread Products	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:57:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+411	\N	Spreads	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:55:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+412	\N	Tomato and Pasta Sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:54:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+413	\N	Snacks	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:53:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+414	\N	Coffee and Tea	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:52:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+160	\N	Quick To Prepare	Rating	\N	\N	\N	f	\N	2021-04-11 07:06:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+305	\N	Healthy	Rating	\N	\N	\N	f	\N	2021-04-11 04:41:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+306	\N	Kids Like It	Rating	\N	\N	\N	f	\N	2021-04-11 04:40:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+290	\N	Quick To Table	Rating	\N	\N	\N	f	\N	2021-04-11 04:56:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+332	\N	cheap	Rating	t	\N	\N	f	\N	2021-04-11 04:14:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+87	\N	Occasions	TagType	\N	\N	\N	f	\N	2021-04-11 08:19:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+430	\N	Cereals	Ingredient	\N	\N	\N	f	\N	2021-04-11 02:36:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
+197	\N	Low In ...	TagType	\N	\N	\N	f	\N	2021-04-11 06:29:31.48136+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1000	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1001	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:44.528+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1006	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:45.308+00	\N	2021-04-11 07:46:45.444+00	\N	t	\N	1	\N	\N	\N
-1007	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:45.48+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1001	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:44.528+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1006	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:45.308+02	\N	2021-04-11 09:46:45.444+02	\N	t	\N	1	\N	\N	\N
+1007	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:45.48+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1009	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1010	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:45.918+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1015	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:46.564+00	\N	2021-04-11 07:46:46.721+00	\N	t	\N	1	\N	\N	\N
+1010	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:45.918+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1015	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:46.564+02	\N	2021-04-11 09:46:46.721+02	\N	t	\N	1	\N	\N	\N
 1018	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1019	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:47.562+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1024	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:48.572+00	\N	2021-04-11 07:46:48.744+00	\N	t	\N	1	\N	\N	\N
-1025	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:48.795+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1019	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:47.562+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1024	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:48.572+02	\N	2021-04-11 09:46:48.744+02	\N	t	\N	1	\N	\N	\N
+1025	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:48.795+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1027	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1028	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:49.722+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1033	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:50.696+00	\N	2021-04-11 07:46:50.898+00	\N	t	\N	1	\N	\N	\N
-1034	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:50.956+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1028	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:49.722+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1033	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:50.696+02	\N	2021-04-11 09:46:50.898+02	\N	t	\N	1	\N	\N	\N
+1034	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:50.956+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1036	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1037	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:51.36+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1042	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:52.312+00	\N	2021-04-11 07:46:52.496+00	\N	t	\N	1	\N	\N	\N
-1043	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:52.526+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1037	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:51.36+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1042	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:52.312+02	\N	2021-04-11 09:46:52.496+02	\N	t	\N	1	\N	\N	\N
+1043	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:52.526+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1045	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1046	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:52.818+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1051	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:53.832+00	\N	2021-04-11 07:46:54.047+00	\N	t	\N	1	\N	\N	\N
-1052	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:54.075+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1046	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:52.818+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1051	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:53.832+02	\N	2021-04-11 09:46:54.047+02	\N	t	\N	1	\N	\N	\N
+1052	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:54.075+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1054	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1055	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:54.422+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1060	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:55.637+00	\N	2021-04-11 07:46:55.863+00	\N	t	\N	1	\N	\N	\N
-1061	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:55.886+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1055	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:54.422+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1060	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:55.637+02	\N	2021-04-11 09:46:55.863+02	\N	t	\N	1	\N	\N	\N
+1061	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:55.886+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1063	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1064	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:56.213+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1069	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:57.521+00	\N	2021-04-11 07:46:57.788+00	\N	t	\N	1	\N	\N	\N
-1070	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:57.812+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1064	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:56.213+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1069	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:57.521+02	\N	2021-04-11 09:46:57.788+02	\N	t	\N	1	\N	\N	\N
+1070	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:57.812+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1072	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1073	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:58.175+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1078	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:59.484+00	\N	2021-04-11 07:46:59.812+00	\N	t	\N	1	\N	\N	\N
-1079	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:46:59.873+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1073	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:58.175+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1078	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:59.484+02	\N	2021-04-11 09:46:59.812+02	\N	t	\N	1	\N	\N	\N
+1079	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:46:59.873+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1081	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1082	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:00.31+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1087	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:01.852+00	\N	2021-04-11 07:47:02.114+00	\N	t	\N	1	\N	\N	\N
-1088	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:02.143+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1082	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:00.31+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1087	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:01.852+02	\N	2021-04-11 09:47:02.114+02	\N	t	\N	1	\N	\N	\N
+1088	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:02.143+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1090	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1091	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:02.589+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1096	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:04.124+00	\N	2021-04-11 07:47:04.392+00	\N	t	\N	1	\N	\N	\N
-1097	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:04.412+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1091	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:02.589+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1096	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:04.124+02	\N	2021-04-11 09:47:04.392+02	\N	t	\N	1	\N	\N	\N
+1097	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:04.412+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1099	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1100	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:04.805+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1105	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:06.228+00	\N	2021-04-11 07:47:06.516+00	\N	t	\N	1	\N	\N	\N
-1106	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:06.534+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1100	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:04.805+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1105	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:06.228+02	\N	2021-04-11 09:47:06.516+02	\N	t	\N	1	\N	\N	\N
+1106	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:06.534+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1108	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1109	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:06.952+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1114	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:08.497+00	\N	2021-04-11 07:47:08.852+00	\N	t	\N	1	\N	\N	\N
-1115	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:08.881+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1109	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:06.952+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1114	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:08.497+02	\N	2021-04-11 09:47:08.852+02	\N	t	\N	1	\N	\N	\N
+1115	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:08.881+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1117	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1118	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:09.453+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1123	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:11.394+00	\N	2021-04-11 07:47:11.771+00	\N	t	\N	1	\N	\N	\N
-1124	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:11.804+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1118	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:09.453+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1123	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:11.394+02	\N	2021-04-11 09:47:11.771+02	\N	t	\N	1	\N	\N	\N
+1124	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:11.804+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1127	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1128	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:12.271+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1133	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:13.888+00	\N	2021-04-11 07:47:14.238+00	\N	t	\N	1	\N	\N	\N
-1134	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:14.262+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1128	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:12.271+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1133	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:13.888+02	\N	2021-04-11 09:47:14.238+02	\N	t	\N	1	\N	\N	\N
+1134	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:14.262+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1136	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1137	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:14.755+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1142	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:16.976+00	\N	2021-04-11 07:47:17.424+00	\N	t	\N	1	\N	\N	\N
-1143	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:17.462+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1137	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:14.755+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1142	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:16.976+02	\N	2021-04-11 09:47:17.424+02	\N	t	\N	1	\N	\N	\N
+1143	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:17.462+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1145	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1146	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:18.03+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1151	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:20.227+00	\N	2021-04-11 07:47:20.606+00	\N	t	\N	1	\N	\N	\N
-1152	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:20.626+00	\N	\N	\N	t	\N	1	\N	\N	\N
-43	be be be be begas	rutaruta	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:03:31.48136+00	2021-04-11 07:46:47.518+00	\N	\N	t	\N	1	\N	\N	\N
+1146	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:18.03+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1151	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:20.227+02	\N	2021-04-11 09:47:20.606+02	\N	t	\N	1	\N	\N	\N
+1152	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:20.626+02	\N	\N	\N	t	\N	1	\N	\N	\N
+43	be be be be begas	rutaruta	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:03:31.48136+02	2021-04-11 09:46:47.518+02	\N	\N	t	\N	1	\N	\N	\N
 1155	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1156	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:21.289+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1161	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:23.232+00	\N	2021-04-11 07:47:23.604+00	\N	t	\N	1	\N	\N	\N
-1162	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:23.625+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1156	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:21.289+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1161	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:23.232+02	\N	2021-04-11 09:47:23.604+02	\N	t	\N	1	\N	\N	\N
+1162	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:23.625+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1164	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1165	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:24.231+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1170	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:26.407+00	\N	2021-04-11 07:47:26.821+00	\N	t	\N	1	\N	\N	\N
-1171	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:26.842+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1165	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:24.231+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1170	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:26.407+02	\N	2021-04-11 09:47:26.821+02	\N	t	\N	1	\N	\N	\N
+1171	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:26.842+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1173	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1174	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:27.544+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1179	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:29.731+00	\N	2021-04-11 07:47:30.134+00	\N	t	\N	1	\N	\N	\N
-1180	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:30.164+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1174	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:27.544+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1179	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:29.731+02	\N	2021-04-11 09:47:30.134+02	\N	t	\N	1	\N	\N	\N
+1180	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:30.164+02	\N	\N	\N	t	\N	1	\N	\N	\N
 1182	main1	parent	TagType	\N	\N	\N	f	\N	\N	\N	\N	\N	t	\N	1	\N	\N	\N
-1183	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:30.735+00	\N	\N	\N	t	\N	1	\N	\N	\N
-1188	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:33.174+00	\N	2021-04-11 07:47:33.613+00	\N	t	\N	1	\N	\N	\N
-1189	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 07:47:33.647+00	\N	\N	\N	t	\N	1	\N	\N	\N
+1183	\N	testTag	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:30.735+02	\N	\N	\N	t	\N	1	\N	\N	\N
+1188	\N	a	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:33.174+02	\N	2021-04-11 09:47:33.613+02	\N	t	\N	1	\N	\N	\N
+1189	\N	b	TagType	\N	\N	\N	f	\N	2021-04-11 09:47:33.647+02	\N	\N	\N	t	\N	1	\N	\N	\N
+361	\N	brown sugar	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:45:31.48136+02	\N	\N	\N	f	\N	1	\N	226657	\N
+116	\N	butternut squash	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:50:31.48136+02	\N	\N	\N	f	\N	1	\N	226221	\N
+79	\N	baking soda	Ingredient	\N	\N	\N	f	\N	2021-04-11 08:27:31.48136+02	\N	\N	\N	f	\N	1	\N	224668	\N
+42	\N	jelly	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:04:31.48136+02	\N	\N	\N	f	\N	1	\N	227151	\N
+178	\N	confectioners sugar	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:48:31.48136+02	\N	\N	\N	f	\N	1	\N	225425	\N
+350	\N	flour	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:56:31.48136+02	\N	\N	\N	f	\N	1	\N	225733	\N
+237	\N	peanut butter	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:49:31.48136+02	\N	\N	\N	f	\N	1	\N	226562	\N
+348	\N	butter	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:58:31.48136+02	\N	\N	\N	f	\N	1	\N	224636	\N
+41	\N	peanuts	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:05:31.48136+02	\N	\N	\N	f	\N	1	\N	225387	\N
+293	\N	baking powder	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:53:31.48136+02	\N	\N	\N	f	\N	1	\N	226873	\N
+352	\N	dijon mustard	Ingredient	\N	\N	\N	f	\N	2021-04-11 03:54:31.48136+02	\N	\N	\N	f	\N	1	\N	226974	\N
+128	\N	light brown sugar	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:38:31.48136+02	\N	\N	\N	f	\N	1	\N	226657	\N
+146	\N	soft butter	Ingredient	\N	\N	\N	f	\N	2021-04-11 07:20:31.48136+02	\N	\N	\N	f	\N	1	\N	224636	\N
+256	\N	soy sauce	Ingredient	\N	\N	\N	f	\N	2021-04-11 05:30:31.48136+02	\N	\N	\N	f	\N	1	\N	228025	\N
+176	\N	baking chocolate	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:50:31.48136+02	\N	\N	\N	f	\N	1	\N	225042	\N
+294	\N	powdered sugar	Ingredient	\N	\N	\N	f	\N	2021-04-11 04:52:31.48136+02	\N	\N	\N	f	\N	1	\N	225425	\N
+181	\N	white sugar	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:45:31.48136+02	\N	\N	\N	f	\N	1	\N	225108	\N
+19	\N	garlic	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:27:31.48136+02	\N	\N	\N	f	\N	1	\N	227637	\N
+33	\N	tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:13:31.48136+02	\N	\N	\N	f	\N	1	\N	225744	\N
 \.
 
 
 --
--- Data for Name: category_tags; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: category_tags; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.category_tags (category_id, tag_id) FROM stdin;
@@ -1296,7 +1298,7 @@ COPY public.category_tags (category_id, tag_id) FROM stdin;
 
 
 --
--- Data for Name: dish; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: dish; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status, created_on, reference) FROM stdin;
@@ -1312,121 +1314,121 @@ COPY public.dish (dish_id, description, dish_name, user_id, last_added, auto_tag
 1018	\N	tagTest	\N	\N	\N	\N	\N
 1019	\N	tagTest	\N	\N	\N	\N	\N
 1020	\N	tagTest	\N	\N	\N	\N	\N
-1	\N	Israeli CousIIcous	20	\N	105	2021-04-11 09:45:31.48136+00	\N
-2	\N	Breakfast Casserole	20	\N	105	2021-04-11 09:44:31.48136+00	\N
-3	\N	dijon-tarragon cream chicken	20	\N	105	2021-04-11 09:43:31.48136+00	\N
-4	\N	Thai Chicken with Basil Stir-Fry	20	\N	\N	2021-04-11 09:42:31.48136+00	\N
-5	\N	red beans and rice	20	\N	\N	2021-04-11 09:41:31.48136+00	\N
-6	\N	chicken estragon	20	\N	\N	2021-04-11 09:40:31.48136+00	\N
-7	\N	quick chicken curry	20	\N	\N	2021-04-11 09:39:31.48136+00	\N
-8	\N	spicy pumpkin chili	20	\N	\N	2021-04-11 09:38:31.48136+00	\N
-9	\N	ginger beef	20	\N	\N	2021-04-11 09:37:31.48136+00	\N
-10	\N	four vegetable soup	20	\N	\N	2021-04-11 09:36:31.48136+00	\N
-11	\N	seared pork chops with mushroom gravy	20	\N	\N	2021-04-11 09:35:31.48136+00	\N
-12	\N	greek island chicken	20	\N	\N	2021-04-11 09:34:31.48136+00	\N
-14	\N	Pecan-Crusted Pork with Pumpkin Butter	20	\N	\N	2021-04-11 09:32:31.48136+00	\N
-15	\N	Chef John's Salmon Cakes	20	\N	\N	2021-04-11 09:31:31.48136+00	\N
-17	\N	pasta with butternut squash, spinach and prosciutto	20	\N	\N	2021-04-11 09:29:31.48136+00	\N
-18	\N	cod with leeks, tomatoes, and olives	20	\N	\N	2021-04-11 09:28:31.48136+00	\N
-19	\N	lamb and eggplant pasta with goat cheese	20	\N	\N	2021-04-11 09:27:31.48136+00	\N
-20	\N	skillet lemon chicken with rice and peas	20	\N	\N	2021-04-11 09:26:31.48136+00	\N
-21	\N	steak with blue cheese butter and sour cream potatoes	20	\N	\N	2021-04-11 09:25:31.48136+00	\N
-22	\N	pork chops with roasted red pepper cream	20	\N	\N	2021-04-11 09:24:31.48136+00	\N
-23	\N	cod with tarragon and potatoes	20	\N	\N	2021-04-11 09:23:31.48136+00	\N
-47	\N	Chicken Cassolet	20	\N	\N	2021-04-11 08:59:31.48136+00	\N
-48	\N	quick pasta primavera	20	\N	\N	2021-04-11 08:58:31.48136+00	\N
-49	\N	moroccan chicken soup	20	\N	\N	2021-04-11 08:57:31.48136+00	\N
-50	\N	farfalla with sun-dried tomatoes, arugula and goat cheese	20	\N	\N	2021-04-11 08:56:31.48136+00	\N
-51	\N	pan-seared chicken with mushrooms and boursin	20	\N	\N	2021-04-11 08:55:31.48136+00	\N
-52	\N	crispy dijon chicken breasts	20	\N	\N	2021-04-11 08:54:31.48136+00	\N
-53	\N	pasta with lemony chicken and asparagus	20	\N	\N	2021-04-11 08:53:31.48136+00	\N
-54	\N	Broccoli Beef	20	\N	\N	2021-04-11 08:52:31.48136+00	\N
-55	\N	Chef John's Beef Goulash	20	\N	\N	2021-04-11 08:51:31.48136+00	\N
-56	\N	Hoppin' John	20	\N	\N	2021-04-11 08:50:31.48136+00	\N
-57	\N	snickerdoodles	20	\N	\N	2021-04-11 08:49:31.48136+00	\N
-58	\N	hot spiced cider	20	\N	\N	2021-04-11 08:48:31.48136+00	\N
-59	\N	buckeyes	20	\N	\N	2021-04-11 08:47:31.48136+00	\N
-60	\N	Salmon with Asparagus and Chive Butter Sauce	20	\N	\N	2021-04-11 08:46:31.48136+00	\N
-61	\N	Slow Cooker Beef Stew	20	\N	\N	2021-04-11 08:45:31.48136+00	\N
-62	\N	Fish Tacos	20	\N	\N	2021-04-11 08:44:31.48136+00	\N
-63	\N	Tuna and Pasta Salad	20	\N	\N	2021-04-11 08:43:31.48136+00	\N
-64	\N	Chef John's Chicken Kiev	20	\N	\N	2021-04-11 08:42:31.48136+00	\N
-99	\N	Swedish Beef Crockpot	20	\N	\N	2021-04-11 08:07:31.48136+00	\N
-106	\N	Quiche Lorraine	20	\N	\N	2021-04-11 08:00:31.48136+00	\N
-13	\N	green chili	20	2018-01-12 22:00:00+00	\N	2021-04-11 09:33:31.48136+00	\N
-16	\N	Cheeseburger Macaroni	20	2018-02-03 06:22:03.125+00	\N	2021-04-11 09:30:31.48136+00	\N
-24	\N	ble	20	2018-01-27 22:00:00+00	\N	2021-04-11 09:22:31.48136+00	\N
-25	\N	Ham and Potato Soup	20	2018-02-24 11:33:40.506+00	\N	2021-04-11 09:21:31.48136+00	\N
-26	\N	slow cooker black bean soup	20	2018-02-07 22:00:00+00	\N	2021-04-11 09:20:31.48136+00	\N
-27	\N	tuna casserole I	20	2017-12-08 22:00:00+00	\N	2021-04-11 09:19:31.48136+00	\N
-28	\N	Porcupine Meatballs	20	2018-01-12 22:00:00+00	\N	2021-04-11 09:18:31.48136+00	\N
-29	\N	Broiled Salmon with Potato Crust	20	2018-01-05 22:00:00+00	\N	2021-04-11 09:17:31.48136+00	\N
-30	\N	chocolate crinkles	20	2017-12-09 22:00:00+00	\N	2021-04-11 09:16:31.48136+00	\N
-31	\N	garbanzo bean salad	20	2017-11-17 22:00:00+00	\N	2021-04-11 09:15:31.48136+00	\N
-32	\N	christmas bread	20	2017-12-22 22:00:00+00	\N	2021-04-11 09:14:31.48136+00	\N
-33	\N	homemade eggnog	20	2017-12-09 22:00:00+00	\N	2021-04-11 09:13:31.48136+00	\N
-34	\N	ginger candied carrots	20	2017-12-22 22:00:00+00	\N	2021-04-11 09:12:31.48136+00	\N
-35	\N	pecan pie cookies	20	2017-12-09 22:00:00+00	\N	2021-04-11 09:11:31.48136+00	\N
-36	\N	Frozen Dinner	20	2018-02-24 11:33:40.506+00	\N	2021-04-11 09:10:31.48136+00	\N
-37	\N	lentils and spicy sausage	20	2018-01-27 22:00:00+00	\N	2021-04-11 09:09:31.48136+00	\N
-38	\N	tuna caper spaghetti	20	2017-12-08 22:00:00+00	\N	2021-04-11 09:08:31.48136+00	\N
-39	\N	carbonara	20	2018-02-02 22:00:00+00	\N	2021-04-11 09:07:31.48136+00	\N
-40	\N	Split Pea and Ham Soup	20	2017-12-01 22:00:00+00	\N	2021-04-11 09:06:31.48136+00	\N
-41	\N	pizzadillas	20	2018-01-12 22:00:00+00	\N	2021-04-11 09:05:31.48136+00	\N
-42	\N	Lentil and Bulgur Pilaf	20	2018-01-12 22:00:00+00	\N	2021-04-11 09:04:31.48136+00	\N
-43	\N	arrugula gnocchi	20	2018-02-07 22:00:00+00	\N	2021-04-11 09:03:31.48136+00	\N
-44	\N	Red Chili	20	2018-02-10 16:56:28.335+00	\N	2021-04-11 09:02:31.48136+00	\N
-45	\N	broccoli and carrots	20	2018-02-10 16:56:28.335+00	\N	2021-04-11 09:01:31.48136+00	\N
-46	\N	curry lentils	20	2018-02-10 16:56:28.335+00	\N	2021-04-11 09:00:31.48136+00	\N
-65	\N	Slow Cooker Chicken Chili	20	2018-02-02 22:00:00+00	\N	2021-04-11 08:41:31.48136+00	\N
-66	\N	Vegetarian Korma	20	2018-02-03 06:22:03.125+00	\N	2021-04-11 08:40:31.48136+00	\N
-67	\N	Pie Crust	20	2017-11-20 22:00:00+00	\N	2021-04-11 08:39:31.48136+00	\N
-68	\N	Sweet Potato Casserole	20	2017-11-20 22:00:00+00	\N	2021-04-11 08:38:31.48136+00	\N
-69	\N	Zucchini Soup	20	2018-01-19 22:00:00+00	\N	2021-04-11 08:37:31.48136+00	\N
-70	\N	pan-seared cod with herb butter sauce	20	2018-01-27 22:00:00+00	\N	2021-04-11 08:36:31.48136+00	\N
-71	\N	pecan sandies	20	2017-12-09 22:00:00+00	\N	2021-04-11 08:35:31.48136+00	\N
-72	\N	Pumpkin Pie filling	20	2017-11-20 22:00:00+00	\N	2021-04-11 08:34:31.48136+00	\N
-73	\N	fudge	20	2017-12-09 22:00:00+00	\N	2021-04-11 08:33:31.48136+00	\N
-74	\N	couscous	20	2017-12-08 22:00:00+00	\N	2021-04-11 08:32:31.48136+00	\N
-75	\N	cranberry sauce	20	2017-11-20 22:00:00+00	\N	2021-04-11 08:31:31.48136+00	\N
-76	\N	beef pumpkin stew	20	2018-01-27 22:00:00+00	\N	2021-04-11 08:30:31.48136+00	\N
-77	\N	Beef and Guiness Stew	20	2017-11-10 22:00:00+00	\N	2021-04-11 08:29:31.48136+00	\N
-78	\N	Tomato Bacon Pasta	20	2018-01-19 22:00:00+00	\N	2021-04-11 08:28:31.48136+00	\N
-79	\N	gingerbread	20	2017-12-09 22:00:00+00	\N	2021-04-11 08:27:31.48136+00	\N
-80	\N	moroccan stew	20	2017-12-15 22:00:00+00	\N	2021-04-11 08:26:31.48136+00	\N
-81	\N	Crock Pot Chicken Jambalaya	20	2018-01-19 22:00:00+00	\N	2021-04-11 08:25:31.48136+00	\N
-82	\N	Crock Pot Olive Garden Pasta	20	2017-11-17 22:00:00+00	\N	2021-04-11 08:24:31.48136+00	\N
-83	\N	Kate Salad	20	2018-01-05 22:00:00+00	\N	2021-04-11 08:23:31.48136+00	\N
-84	\N	Prosciutto-Wrapped Cod	20	2017-11-17 22:00:00+00	\N	2021-04-11 08:22:31.48136+00	\N
-85	\N	cod with mediterranean salsa	20	2017-11-10 22:00:00+00	\N	2021-04-11 08:21:31.48136+00	\N
-86	\N	pea and ham pasta	20	2018-02-24 11:33:40.506+00	\N	2021-04-11 08:20:31.48136+00	\N
-87	\N	mixed veggies	20	2017-11-17 22:00:00+00	\N	2021-04-11 08:19:31.48136+00	\N
-88	\N	golden chicken rice	20	2018-01-05 22:00:00+00	\N	2021-04-11 08:18:31.48136+00	\N
-89	\N	Gulliver's Creamed Corn	20	2017-11-20 22:00:00+00	\N	2021-04-11 08:17:31.48136+00	\N
-90	\N	scoozi	20	2017-12-01 22:00:00+00	\N	2021-04-11 08:16:31.48136+00	\N
-91	\N	red pepper risotto	20	2018-02-24 11:33:40.506+00	\N	2021-04-11 08:15:31.48136+00	\N
-92	\N	Mom's Stuffing	20	2017-11-20 22:00:00+00	\N	2021-04-11 08:14:31.48136+00	\N
-93	\N	Turkey Gravy	20	2017-11-20 22:00:00+00	\N	2021-04-11 08:13:31.48136+00	\N
-94	\N	madame farfalla	20	2017-11-10 22:00:00+00	\N	2021-04-11 08:12:31.48136+00	\N
-95	\N	French Onion Soup	20	2017-12-22 22:00:00+00	\N	2021-04-11 08:11:31.48136+00	\N
-96	\N	heuvos rancheros	20	2018-01-27 22:00:00+00	\N	2021-04-11 08:10:31.48136+00	\N
-97	\N	mashed potatoes	20	2018-02-24 11:33:40.506+00	\N	2021-04-11 08:09:31.48136+00	\N
-98	\N	quick burgers and pasta	20	2018-02-10 16:56:28.335+00	\N	2021-04-11 08:08:31.48136+00	\N
-100	\N	crispy cucumber salad	20	2018-01-27 22:00:00+00	\N	2021-04-11 08:06:31.48136+00	\N
-101	\N	crockpot corn chowder	20	2018-02-10 16:56:28.335+00	\N	2021-04-11 08:05:31.48136+00	\N
-102	\N	quiche lorraine	20	2018-02-17 09:22:14.13+00	\N	2021-04-11 08:04:31.48136+00	\N
-103	\N	Cream of Roasted Carrot Soup	20	2018-02-17 09:22:14.13+00	\N	2021-04-11 08:03:31.48136+00	\N
-104	\N	schnitzel with sauce	20	2018-02-24 11:33:40.506+00	\N	2021-04-11 08:02:31.48136+00	\N
-105	\N	Chicken Flautas	20	2018-02-24 11:33:40.506+00	\N	2021-04-11 08:01:31.48136+00	\N
-107	\N	tuna casserole II	20	2018-02-17 09:22:14.13+00	\N	2021-04-11 07:59:31.48136+00	\N
-108	\N	chocolate chip cookies	20	2018-02-17 09:22:14.13+00	\N	2021-04-11 07:58:31.48136+00	\N
-109	\N	Stir Fry - Mostly Green with Orange	20	2018-02-17 09:22:14.13+00	\N	2021-04-11 07:57:31.48136+00	\N
-110	\N	Jack Salad	20	2018-02-17 09:22:14.13+00	\N	2021-04-11 07:56:31.48136+00	\N
-111	\N	to delete	20	2018-02-24 11:21:01.186+00	\N	2021-04-11 07:55:31.48136+00	\N
-112	\N	side salad	20	2018-02-24 11:33:40.506+00	\N	2021-04-11 07:54:31.48136+00	\N
-113	\N	Side of Rice	20	2018-02-24 11:33:40.506+00	\N	2021-04-11 07:53:31.48136+00	\N
-114	\N	peas, carrots and corn	20	2018-02-24 11:33:40.506+00	\N	2021-04-11 07:52:31.48136+00	\N
-115	\N	Boo-yah	20	2018-02-24 11:33:40.506+00	\N	2021-04-11 07:51:31.48136+00	\N
+1	\N	Israeli CousIIcous	20	\N	105	2021-04-11 11:45:31.48136+02	\N
+2	\N	Breakfast Casserole	20	\N	105	2021-04-11 11:44:31.48136+02	\N
+3	\N	dijon-tarragon cream chicken	20	\N	105	2021-04-11 11:43:31.48136+02	\N
+4	\N	Thai Chicken with Basil Stir-Fry	20	\N	\N	2021-04-11 11:42:31.48136+02	\N
+5	\N	red beans and rice	20	\N	\N	2021-04-11 11:41:31.48136+02	\N
+6	\N	chicken estragon	20	\N	\N	2021-04-11 11:40:31.48136+02	\N
+7	\N	quick chicken curry	20	\N	\N	2021-04-11 11:39:31.48136+02	\N
+8	\N	spicy pumpkin chili	20	\N	\N	2021-04-11 11:38:31.48136+02	\N
+9	\N	ginger beef	20	\N	\N	2021-04-11 11:37:31.48136+02	\N
+10	\N	four vegetable soup	20	\N	\N	2021-04-11 11:36:31.48136+02	\N
+11	\N	seared pork chops with mushroom gravy	20	\N	\N	2021-04-11 11:35:31.48136+02	\N
+12	\N	greek island chicken	20	\N	\N	2021-04-11 11:34:31.48136+02	\N
+14	\N	Pecan-Crusted Pork with Pumpkin Butter	20	\N	\N	2021-04-11 11:32:31.48136+02	\N
+15	\N	Chef John's Salmon Cakes	20	\N	\N	2021-04-11 11:31:31.48136+02	\N
+17	\N	pasta with butternut squash, spinach and prosciutto	20	\N	\N	2021-04-11 11:29:31.48136+02	\N
+18	\N	cod with leeks, tomatoes, and olives	20	\N	\N	2021-04-11 11:28:31.48136+02	\N
+19	\N	lamb and eggplant pasta with goat cheese	20	\N	\N	2021-04-11 11:27:31.48136+02	\N
+20	\N	skillet lemon chicken with rice and peas	20	\N	\N	2021-04-11 11:26:31.48136+02	\N
+21	\N	steak with blue cheese butter and sour cream potatoes	20	\N	\N	2021-04-11 11:25:31.48136+02	\N
+22	\N	pork chops with roasted red pepper cream	20	\N	\N	2021-04-11 11:24:31.48136+02	\N
+23	\N	cod with tarragon and potatoes	20	\N	\N	2021-04-11 11:23:31.48136+02	\N
+47	\N	Chicken Cassolet	20	\N	\N	2021-04-11 10:59:31.48136+02	\N
+48	\N	quick pasta primavera	20	\N	\N	2021-04-11 10:58:31.48136+02	\N
+49	\N	moroccan chicken soup	20	\N	\N	2021-04-11 10:57:31.48136+02	\N
+50	\N	farfalla with sun-dried tomatoes, arugula and goat cheese	20	\N	\N	2021-04-11 10:56:31.48136+02	\N
+51	\N	pan-seared chicken with mushrooms and boursin	20	\N	\N	2021-04-11 10:55:31.48136+02	\N
+52	\N	crispy dijon chicken breasts	20	\N	\N	2021-04-11 10:54:31.48136+02	\N
+53	\N	pasta with lemony chicken and asparagus	20	\N	\N	2021-04-11 10:53:31.48136+02	\N
+54	\N	Broccoli Beef	20	\N	\N	2021-04-11 10:52:31.48136+02	\N
+55	\N	Chef John's Beef Goulash	20	\N	\N	2021-04-11 10:51:31.48136+02	\N
+56	\N	Hoppin' John	20	\N	\N	2021-04-11 10:50:31.48136+02	\N
+57	\N	snickerdoodles	20	\N	\N	2021-04-11 10:49:31.48136+02	\N
+58	\N	hot spiced cider	20	\N	\N	2021-04-11 10:48:31.48136+02	\N
+59	\N	buckeyes	20	\N	\N	2021-04-11 10:47:31.48136+02	\N
+60	\N	Salmon with Asparagus and Chive Butter Sauce	20	\N	\N	2021-04-11 10:46:31.48136+02	\N
+61	\N	Slow Cooker Beef Stew	20	\N	\N	2021-04-11 10:45:31.48136+02	\N
+62	\N	Fish Tacos	20	\N	\N	2021-04-11 10:44:31.48136+02	\N
+63	\N	Tuna and Pasta Salad	20	\N	\N	2021-04-11 10:43:31.48136+02	\N
+64	\N	Chef John's Chicken Kiev	20	\N	\N	2021-04-11 10:42:31.48136+02	\N
+99	\N	Swedish Beef Crockpot	20	\N	\N	2021-04-11 10:07:31.48136+02	\N
+106	\N	Quiche Lorraine	20	\N	\N	2021-04-11 10:00:31.48136+02	\N
+13	\N	green chili	20	2018-01-12 23:00:00+01	\N	2021-04-11 11:33:31.48136+02	\N
+16	\N	Cheeseburger Macaroni	20	2018-02-03 07:22:03.125+01	\N	2021-04-11 11:30:31.48136+02	\N
+24	\N	ble	20	2018-01-27 23:00:00+01	\N	2021-04-11 11:22:31.48136+02	\N
+25	\N	Ham and Potato Soup	20	2018-02-24 12:33:40.506+01	\N	2021-04-11 11:21:31.48136+02	\N
+26	\N	slow cooker black bean soup	20	2018-02-07 23:00:00+01	\N	2021-04-11 11:20:31.48136+02	\N
+27	\N	tuna casserole I	20	2017-12-08 23:00:00+01	\N	2021-04-11 11:19:31.48136+02	\N
+28	\N	Porcupine Meatballs	20	2018-01-12 23:00:00+01	\N	2021-04-11 11:18:31.48136+02	\N
+29	\N	Broiled Salmon with Potato Crust	20	2018-01-05 23:00:00+01	\N	2021-04-11 11:17:31.48136+02	\N
+30	\N	chocolate crinkles	20	2017-12-09 23:00:00+01	\N	2021-04-11 11:16:31.48136+02	\N
+31	\N	garbanzo bean salad	20	2017-11-17 23:00:00+01	\N	2021-04-11 11:15:31.48136+02	\N
+32	\N	christmas bread	20	2017-12-22 23:00:00+01	\N	2021-04-11 11:14:31.48136+02	\N
+33	\N	homemade eggnog	20	2017-12-09 23:00:00+01	\N	2021-04-11 11:13:31.48136+02	\N
+34	\N	ginger candied carrots	20	2017-12-22 23:00:00+01	\N	2021-04-11 11:12:31.48136+02	\N
+35	\N	pecan pie cookies	20	2017-12-09 23:00:00+01	\N	2021-04-11 11:11:31.48136+02	\N
+36	\N	Frozen Dinner	20	2018-02-24 12:33:40.506+01	\N	2021-04-11 11:10:31.48136+02	\N
+37	\N	lentils and spicy sausage	20	2018-01-27 23:00:00+01	\N	2021-04-11 11:09:31.48136+02	\N
+38	\N	tuna caper spaghetti	20	2017-12-08 23:00:00+01	\N	2021-04-11 11:08:31.48136+02	\N
+39	\N	carbonara	20	2018-02-02 23:00:00+01	\N	2021-04-11 11:07:31.48136+02	\N
+40	\N	Split Pea and Ham Soup	20	2017-12-01 23:00:00+01	\N	2021-04-11 11:06:31.48136+02	\N
+41	\N	pizzadillas	20	2018-01-12 23:00:00+01	\N	2021-04-11 11:05:31.48136+02	\N
+42	\N	Lentil and Bulgur Pilaf	20	2018-01-12 23:00:00+01	\N	2021-04-11 11:04:31.48136+02	\N
+43	\N	arrugula gnocchi	20	2018-02-07 23:00:00+01	\N	2021-04-11 11:03:31.48136+02	\N
+44	\N	Red Chili	20	2018-02-10 17:56:28.335+01	\N	2021-04-11 11:02:31.48136+02	\N
+45	\N	broccoli and carrots	20	2018-02-10 17:56:28.335+01	\N	2021-04-11 11:01:31.48136+02	\N
+46	\N	curry lentils	20	2018-02-10 17:56:28.335+01	\N	2021-04-11 11:00:31.48136+02	\N
+65	\N	Slow Cooker Chicken Chili	20	2018-02-02 23:00:00+01	\N	2021-04-11 10:41:31.48136+02	\N
+66	\N	Vegetarian Korma	20	2018-02-03 07:22:03.125+01	\N	2021-04-11 10:40:31.48136+02	\N
+67	\N	Pie Crust	20	2017-11-20 23:00:00+01	\N	2021-04-11 10:39:31.48136+02	\N
+68	\N	Sweet Potato Casserole	20	2017-11-20 23:00:00+01	\N	2021-04-11 10:38:31.48136+02	\N
+69	\N	Zucchini Soup	20	2018-01-19 23:00:00+01	\N	2021-04-11 10:37:31.48136+02	\N
+70	\N	pan-seared cod with herb butter sauce	20	2018-01-27 23:00:00+01	\N	2021-04-11 10:36:31.48136+02	\N
+71	\N	pecan sandies	20	2017-12-09 23:00:00+01	\N	2021-04-11 10:35:31.48136+02	\N
+72	\N	Pumpkin Pie filling	20	2017-11-20 23:00:00+01	\N	2021-04-11 10:34:31.48136+02	\N
+73	\N	fudge	20	2017-12-09 23:00:00+01	\N	2021-04-11 10:33:31.48136+02	\N
+74	\N	couscous	20	2017-12-08 23:00:00+01	\N	2021-04-11 10:32:31.48136+02	\N
+75	\N	cranberry sauce	20	2017-11-20 23:00:00+01	\N	2021-04-11 10:31:31.48136+02	\N
+76	\N	beef pumpkin stew	20	2018-01-27 23:00:00+01	\N	2021-04-11 10:30:31.48136+02	\N
+77	\N	Beef and Guiness Stew	20	2017-11-10 23:00:00+01	\N	2021-04-11 10:29:31.48136+02	\N
+78	\N	Tomato Bacon Pasta	20	2018-01-19 23:00:00+01	\N	2021-04-11 10:28:31.48136+02	\N
+79	\N	gingerbread	20	2017-12-09 23:00:00+01	\N	2021-04-11 10:27:31.48136+02	\N
+80	\N	moroccan stew	20	2017-12-15 23:00:00+01	\N	2021-04-11 10:26:31.48136+02	\N
+81	\N	Crock Pot Chicken Jambalaya	20	2018-01-19 23:00:00+01	\N	2021-04-11 10:25:31.48136+02	\N
+82	\N	Crock Pot Olive Garden Pasta	20	2017-11-17 23:00:00+01	\N	2021-04-11 10:24:31.48136+02	\N
+83	\N	Kate Salad	20	2018-01-05 23:00:00+01	\N	2021-04-11 10:23:31.48136+02	\N
+84	\N	Prosciutto-Wrapped Cod	20	2017-11-17 23:00:00+01	\N	2021-04-11 10:22:31.48136+02	\N
+85	\N	cod with mediterranean salsa	20	2017-11-10 23:00:00+01	\N	2021-04-11 10:21:31.48136+02	\N
+86	\N	pea and ham pasta	20	2018-02-24 12:33:40.506+01	\N	2021-04-11 10:20:31.48136+02	\N
+87	\N	mixed veggies	20	2017-11-17 23:00:00+01	\N	2021-04-11 10:19:31.48136+02	\N
+88	\N	golden chicken rice	20	2018-01-05 23:00:00+01	\N	2021-04-11 10:18:31.48136+02	\N
+89	\N	Gulliver's Creamed Corn	20	2017-11-20 23:00:00+01	\N	2021-04-11 10:17:31.48136+02	\N
+90	\N	scoozi	20	2017-12-01 23:00:00+01	\N	2021-04-11 10:16:31.48136+02	\N
+91	\N	red pepper risotto	20	2018-02-24 12:33:40.506+01	\N	2021-04-11 10:15:31.48136+02	\N
+92	\N	Mom's Stuffing	20	2017-11-20 23:00:00+01	\N	2021-04-11 10:14:31.48136+02	\N
+93	\N	Turkey Gravy	20	2017-11-20 23:00:00+01	\N	2021-04-11 10:13:31.48136+02	\N
+94	\N	madame farfalla	20	2017-11-10 23:00:00+01	\N	2021-04-11 10:12:31.48136+02	\N
+95	\N	French Onion Soup	20	2017-12-22 23:00:00+01	\N	2021-04-11 10:11:31.48136+02	\N
+96	\N	heuvos rancheros	20	2018-01-27 23:00:00+01	\N	2021-04-11 10:10:31.48136+02	\N
+97	\N	mashed potatoes	20	2018-02-24 12:33:40.506+01	\N	2021-04-11 10:09:31.48136+02	\N
+98	\N	quick burgers and pasta	20	2018-02-10 17:56:28.335+01	\N	2021-04-11 10:08:31.48136+02	\N
+100	\N	crispy cucumber salad	20	2018-01-27 23:00:00+01	\N	2021-04-11 10:06:31.48136+02	\N
+101	\N	crockpot corn chowder	20	2018-02-10 17:56:28.335+01	\N	2021-04-11 10:05:31.48136+02	\N
+102	\N	quiche lorraine	20	2018-02-17 10:22:14.13+01	\N	2021-04-11 10:04:31.48136+02	\N
+103	\N	Cream of Roasted Carrot Soup	20	2018-02-17 10:22:14.13+01	\N	2021-04-11 10:03:31.48136+02	\N
+104	\N	schnitzel with sauce	20	2018-02-24 12:33:40.506+01	\N	2021-04-11 10:02:31.48136+02	\N
+105	\N	Chicken Flautas	20	2018-02-24 12:33:40.506+01	\N	2021-04-11 10:01:31.48136+02	\N
+107	\N	tuna casserole II	20	2018-02-17 10:22:14.13+01	\N	2021-04-11 09:59:31.48136+02	\N
+108	\N	chocolate chip cookies	20	2018-02-17 10:22:14.13+01	\N	2021-04-11 09:58:31.48136+02	\N
+109	\N	Stir Fry - Mostly Green with Orange	20	2018-02-17 10:22:14.13+01	\N	2021-04-11 09:57:31.48136+02	\N
+110	\N	Jack Salad	20	2018-02-17 10:22:14.13+01	\N	2021-04-11 09:56:31.48136+02	\N
+111	\N	to delete	20	2018-02-24 12:21:01.186+01	\N	2021-04-11 09:55:31.48136+02	\N
+112	\N	side salad	20	2018-02-24 12:33:40.506+01	\N	2021-04-11 09:54:31.48136+02	\N
+113	\N	Side of Rice	20	2018-02-24 12:33:40.506+01	\N	2021-04-11 09:53:31.48136+02	\N
+114	\N	peas, carrots and corn	20	2018-02-24 12:33:40.506+01	\N	2021-04-11 09:52:31.48136+02	\N
+115	\N	Boo-yah	20	2018-02-24 12:33:40.506+01	\N	2021-04-11 09:51:31.48136+02	\N
 500	\N	dish1	500	\N	\N	\N	\N
 501	\N	dish2	500	\N	\N	\N	\N
 502	\N	dish3	500	\N	\N	\N	\N
@@ -1446,7 +1448,7 @@ COPY public.dish (dish_id, description, dish_name, user_id, last_added, auto_tag
 
 
 --
--- Data for Name: dish_items; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: dish_items; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.dish_items (dish_item_id, dish_id, tag_id, whole_quantity, fractional_quantity, quantity, unit_id, marker, unit_size, raw_modifiers, raw_entry, modifiers_processed, user_size) FROM stdin;
@@ -2991,7 +2993,7 @@ COPY public.dish_items (dish_item_id, dish_id, tag_id, whole_quantity, fractiona
 
 
 --
--- Data for Name: dish_tags; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: dish_tags; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.dish_tags (dish_id, tag_id) FROM stdin;
@@ -4536,7 +4538,7 @@ COPY public.dish_tags (dish_id, tag_id) FROM stdin;
 
 
 --
--- Data for Name: domain_unit; Type: TABLE DATA; Schema: public; Owner: bankuser
+-- Data for Name: domain_unit; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.domain_unit (domain_unit_id, domain_type, unit_id) FROM stdin;
@@ -4642,182 +4644,15 @@ COPY public.domain_unit (domain_unit_id, domain_type, unit_id) FROM stdin;
 \.
 
 
---
--- Data for Name: units; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.units (unit_id, type, subtype, name, is_liquid, is_list_unit, is_dish_unit, is_weight, is_volume, is_tag_specific, excluded_domains, one_way_conversion) FROM stdin;
-1000	HYBRID	SOLID	cup	f	f	t	f	f	f	METRIC	f
-1001	HYBRID	SOLID	tablespoon	f	f	t	f	f	f		f
-1002	HYBRID	SOLID	teaspoon	f	f	t	f	f	f		f
-1003	METRIC	VOLUME	liter	t	t	t	f	f	f		f
-1004	METRIC	VOLUME	milliliter	t	t	t	f	f	f		f
-1005	US	VOLUME	gallon	t	t	t	f	f	f		f
-1006	US	VOLUME	pint	t	f	t	f	f	f		f
-1007	US	VOLUME	fl oz	t	t	t	f	f	f		f
-1008	US	WEIGHT	lb	f	t	t	f	f	f		f
-1009	US	WEIGHT	oz	f	t	t	f	f	f		f
-1010	US	VOLUME	quart	t	t	t	f	f	f		f
-1011	UNIT	NONE	unit	f	t	t	f	f	f		f
-1013	METRIC	WEIGHT	gram	f	t	t	f	f	f		f
-1014	METRIC	WEIGHT	kilogram	f	t	t	f	f	f		f
-1015	METRIC	VOLUME	centiliter	t	f	t	f	f	f		f
-1016	METRIC	WEIGHT	milligram	f	t	t	f	f	f		f
-1017	US	VOLUME	cup (fluid)	t	f	t	f	f	f		f
-1019	US	LIQUID	teaspoon (fluid)	t	f	t	f	f	f		f
-1021	US	LIQUID	tablespoon (fluid)	t	f	t	f	f	f		f
-1022	HYBRID	SOLID	slice	f	f	t	f	f	f		f
-1023	HYBRID	SOLID	stick	f	f	t	f	f	f		f
-1024	UK	VOLUME	gallon (UK)	t	t	t	f	f	f		f
-1025	UK	VOLUME	pint (UK)	t	f	t	f	f	f		f
-1026	UK	VOLUME	fl oz (UK)	t	t	t	f	f	f		f
-1027	UK	VOLUME	quart (UK)	t	t	t	f	f	f		f
-1028	UK	VOLUME	cup (fluid) (UK)	t	f	t	f	f	f		f
-1029	HYBRID	VOLUME	can	f	t	t	f	f	f		t
-1030	HYBRID	VOLUME	large can	f	t	t	f	f	f		t
-1031	HYBRID	VOLUME	small can	f	t	t	f	f	f		t
-1032	US	VOLUME	#2 can	f	f	t	f	f	f		f
-1033	US	VOLUME	14.5 oz can	f	f	t	f	f	f		f
-1034	US	VOLUME	#2.5 can	f	f	t	f	f	f		f
-1035	US	VOLUME	#3 can	f	f	t	f	f	f		f
-1036	US	VOLUME	29 oz can	f	f	t	f	f	f		f
-1037	HYBRID	WEIGHT	bulb	f	f	t	f	f	t		f
-1038	HYBRID	WEIGHT	ear	f	t	t	f	f	t		f
-1039	HYBRID	WEIGHT	head	f	t	t	f	f	t		f
-1040	HYBRID	WEIGHT	leaf	f	f	t	f	f	t		f
-1041	HYBRID	WEIGHT	package	f	t	t	f	f	t		f
-1042	HYBRID	WEIGHT	packet	f	t	t	f	f	t		f
-1043	HYBRID	WEIGHT	pod	f	f	t	f	f	t		f
-1044	HYBRID	WEIGHT	ring	f	f	t	f	f	t		f
-1045	HYBRID	WEIGHT	sheet	f	f	t	f	f	t		f
-1046	HYBRID	WEIGHT	spear	f	f	t	f	f	t		f
-1047	HYBRID	WEIGHT	sprig	f	f	t	f	f	t		f
-1048	HYBRID	WEIGHT	stalk	f	f	t	f	f	t		f
-1049	HYBRID	WEIGHT	butter stick	f	f	t	f	f	t	METRIC,UK	f
-1050	HYBRID	WEIGHT	wedge	f	f	t	f	f	t		f
-1051	UK	VOLUME	teaspoon (fluid) (UK)	t	f	t	f	f	f		f
-1052	UK	VOLUME	tablespoon (fluid) (UK)	t	f	t	f	f	f		f
-\.
 
 
 --
--- Data for Name: factors; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: factors; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
-
-COPY public.factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default) FROM stdin;
-1	0.0625	1005	1017	\N	\N	\N	\N	\N
-2	0.5	1006	1017	\N	\N	\N	\N	\N
-3	0.25	1010	1017	\N	\N	\N	\N	\N
-4	0.125	1017	1007	\N	\N	\N	\N	\N
-5	0.0078125	1005	1007	\N	\N	\N	\N	\N
-6	0.0625	1006	1007	\N	\N	\N	\N	\N
-7	0.03125	1010	1007	\N	\N	\N	\N	\N
-8	0.00100000000000000002	1014	1013	\N	\N	\N	\N	\N
-9	0.00220000000000000013	1008	1013	\N	\N	\N	\N	\N
-10	0.0352733686067019034	1009	1013	\N	\N	\N	\N	\N
-11	2.20462261999999987	1008	1014	\N	\N	\N	\N	\N
-12	35.2733686067019008	1009	1014	\N	\N	\N	\N	\N
-13	100	1015	1003	\N	\N	\N	\N	\N
-14	4.22675000000000001	1017	1003	\N	\N	\N	\N	\N
-15	0.264170000000000016	1005	1003	\N	\N	\N	\N	\N
-16	1000	1004	1003	\N	\N	\N	\N	\N
-17	2.11337639999999993	1006	1003	\N	\N	\N	\N	\N
-18	1.05668820999999991	1010	1003	\N	\N	\N	\N	\N
-19	0.0042267499999999996	1017	1004	\N	\N	\N	\N	\N
-20	0.000264169999999999986	1005	1004	\N	\N	\N	\N	\N
-21	0.00211337639999999985	1006	1004	\N	\N	\N	\N	\N
-22	0.00105668819999999992	1010	1004	\N	\N	\N	\N	\N
-23	0.125	1005	1006	\N	\N	\N	\N	\N
-24	0.5	1010	1006	\N	\N	\N	\N	\N
-25	0.25	1005	1010	\N	\N	\N	\N	\N
-26	2.20000000000000011e-06	1008	1016	\N	\N	\N	\N	\N
-27	3.52699999999999994e-05	1009	1016	\N	\N	\N	\N	\N
-28	0.0105668820999999993	1010	1015	\N	\N	\N	\N	\N
-29	0.0422674999999999995	1017	1015	\N	\N	\N	\N	\N
-30	0.00264172051241560015	1005	1015	\N	\N	\N	\N	\N
-31	0.0211337639999999993	1006	1015	\N	\N	\N	\N	\N
-32	0.00100000000000000002	1003	1004	\N	\N	\N	\N	\N
-33	0.100000000000000006	1015	1004	\N	\N	\N	\N	\N
-34	0.0100000000000000002	1003	1015	\N	\N	\N	\N	\N
-35	10	1004	1015	\N	\N	\N	\N	\N
-36	0.0625	1008	1009	\N	\N	\N	\N	\N
-37	16	1009	1008	\N	\N	\N	\N	\N
-38	0.333333333299999979	1021	1019	\N	\N	\N	\N	\N
-39	0.333333333329999981	1001	1002	\N	\N	\N	\N	\N
-40	0.0208333333330000016	1000	1002	\N	\N	\N	\N	\N
-41	0.0208333333330000016	1017	1019	\N	\N	\N	\N	\N
-42	0.0208333333330000016	1000	1002	\N	\N	\N	\N	\N
-43	0.0625	1000	1001	\N	\N	\N	\N	\N
-44	0.0625	1017	1021	\N	\N	\N	\N	\N
-45	3	1002	1001	\N	\N	\N	\N	\N
-46	3	1019	1021	\N	\N	\N	\N	\N
-47	0.00390625	1005	1021	\N	\N	\N	\N	\N
-48	0.03125	1006	1021	\N	\N	\N	\N	\N
-49	0.5	1007	1021	\N	\N	\N	\N	\N
-50	0.015625	1010	1021	\N	\N	\N	\N	\N
-51	0.00130208333000000009	1005	1019	\N	\N	\N	\N	\N
-52	0.0104166666666000007	1006	1019	\N	\N	\N	\N	\N
-53	0.166666666600000013	1007	1019	\N	\N	\N	\N	\N
-54	0.00520833333332999977	1010	1019	\N	\N	\N	\N	\N
-55	128	1007	1005	\N	\N	\N	\N	\N
-56	16	1007	1006	\N	\N	\N	\N	\N
-57	8	1007	1017	\N	\N	\N	\N	\N
-58	33.8140227000000024	1007	1003	\N	\N	\N	\N	\N
-59	0.0338140229999999986	1007	1004	\N	\N	\N	\N	\N
-60	0.338142029999999982	1007	1015	\N	\N	\N	\N	\N
-61	1000	1013	1014	\N	\N	\N	\N	\N
-62	16	1001	1000	\N	\N	\N	\N	\N
-63	48	1002	1000	\N	\N	\N	\N	\N
-64	3.51950797278540017	1028	1003	\N	\N	\N	\N	\N
-65	0.219969248299090009	1024	1003	\N	\N	\N	\N	\N
-66	1.75975398639270009	1025	1003	\N	\N	\N	\N	\N
-67	0.879876993196350043	1027	1003	\N	\N	\N	\N	\N
-68	0.00021996924829909001	1024	1004	\N	\N	\N	\N	\N
-69	0.00175975398639269991	1025	1004	\N	\N	\N	\N	\N
-70	0.000879876993196349955	1027	1004	\N	\N	\N	\N	\N
-71	0.125	1024	1025	\N	\N	\N	\N	\N
-72	0.5	1025	1028	\N	\N	\N	\N	\N
-73	0.25	1024	1027	\N	\N	\N	\N	\N
-74	0.00879876993196350085	1027	1015	\N	\N	\N	\N	\N
-75	0.0351950797278540034	1028	1015	\N	\N	\N	\N	\N
-76	0.00219969248299089993	1024	1015	\N	\N	\N	\N	\N
-77	0.0175975398639270017	1025	1015	\N	\N	\N	\N	\N
-78	0.0208333333333329991	1028	1051	\N	\N	\N	\N	\N
-79	0.0625	1028	1052	\N	\N	\N	\N	\N
-80	0.00312500000000000017	1024	1052	\N	\N	\N	\N	\N
-81	0.0250000099999999996	1025	1052	\N	\N	\N	\N	\N
-82	0.625	1026	1052	\N	\N	\N	\N	\N
-83	0.0125000000000000007	1027	1052	\N	\N	\N	\N	\N
-84	0.00104166999999999997	1024	1051	\N	\N	\N	\N	\N
-85	0.00833333999999999984	1025	1051	\N	\N	\N	\N	\N
-86	0.20833299999999999	1026	1051	\N	\N	\N	\N	\N
-87	0.00520833333332999977	1027	1051	\N	\N	\N	\N	\N
-88	160	1026	1024	\N	\N	\N	\N	\N
-89	20	1026	1025	\N	\N	\N	\N	\N
-90	10	1026	1028	\N	\N	\N	\N	\N
-91	35.1950797278540009	1026	1003	\N	\N	\N	\N	\N
-92	0.0351950797278540034	1026	1004	\N	\N	\N	\N	\N
-93	0.351950797278540006	1026	1015	\N	\N	\N	\N	\N
-94	56.3121275645659978	1052	1003	\N	\N	\N	\N	\N
-95	0.563121275645659947	1052	1015	\N	\N	\N	\N	\N
-96	0.0563121275645670008	1052	1004	\N	\N	\N	\N	\N
-97	168.936382693700011	1051	1003	\N	\N	\N	\N	\N
-98	1.68936382693699993	1051	1015	\N	\N	\N	\N	\N
-99	0.16893638269370001	1051	1004	\N	\N	\N	\N	\N
-100	0.00351950797278539982	1028	1004	\N	\N	\N	\N	\N
-101	0.0625	1024	1028	\N	\N	\N	\N	\N
-102	0.25	1027	1028	\N	\N	\N	\N	\N
-103	1	1029	1032	\N	\N	\N	\N	\N
-104	1	1029	1033	\N	\N	\N	\N	\N
-105	1	1030	1034	\N	\N	\N	\N	\N
-106	1	1030	1035	\N	\N	\N	\N	\N
-107	1	1030	1036	\N	\N	\N	\N	\N
-\.
-
 
 
 --
--- Data for Name: food_categories; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: food_categories; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.food_categories (category_id, category_code, name) FROM stdin;
@@ -4825,23 +4660,18 @@ COPY public.food_categories (category_id, category_code, name) FROM stdin;
 
 
 --
--- Data for Name: food_category_mapping; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: food_category_mapping; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.food_category_mapping (food_category_mapping_id, category_id, tag_id) FROM stdin;
 \.
 
 
---
--- Data for Name: food_conversions; Type: TABLE DATA; Schema: public; Owner: postgres
---
 
-COPY public.food_conversions (conversion_id, food_id, fdc_id, amount, unit_name, gram_weight, unit_id, food_conversion_id, integral, marker, sub_amount, info, unit_size, unit_default) FROM stdin;
-\.
 
 
 --
--- Data for Name: foods; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: foods; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.foods (food_id, fdc_id, name, category_id, marker, has_factor, conversion_id, original_name, integral) FROM stdin;
@@ -4849,49 +4679,57 @@ COPY public.foods (food_id, fdc_id, name, category_id, marker, has_factor, conve
 
 
 --
--- Data for Name: list; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: list; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.list (list_id, created_on, user_id, list_types, list_layout_id, last_update, meal_plan_id, is_starter_list, name) FROM stdin;
-500	2021-04-11 09:46:31.681524+00	500	BaseList	\N	\N	\N	f	list3
-501	2021-04-11 09:46:31.681524+00	20	ActiveList	\N	\N	\N	f	list2
-502	2021-04-11 09:46:31.681524+00	500	ActiveList	\N	\N	\N	f	list1
-402	2021-04-11 09:46:31.681524+00	20	ActiveList	\N	\N	\N	f	list1
+500	2021-04-11 11:46:31.681524+02	500	BaseList	\N	\N	\N	f	list3
+501	2021-04-11 11:46:31.681524+02	20	ActiveList	\N	\N	\N	f	list2
+502	2021-04-11 11:46:31.681524+02	500	ActiveList	\N	\N	\N	f	list1
+402	2021-04-11 11:46:31.681524+02	20	ActiveList	\N	\N	\N	f	list1
 \.
 
 
 --
--- Data for Name: list_item; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: list_item; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
-COPY public.list_item (item_id, added_on, crossed_off, free_text, source, list_id, list_category, tag_id, used_count, category_id, dish_sources, list_sources, removed_on, updated_on) FROM stdin;
-500	2021-04-11 09:46:31.681524+00	\N	\N	\N	500	\N	501	1	\N	\N	\N	\N	\N
-501	2021-04-11 09:46:31.681524+00	\N	\N	\N	500	\N	502	1	\N	\N	\N	\N	\N
-502	2021-04-11 09:46:31.681524+00	\N	\N	\N	500	\N	503	1	\N	\N	\N	\N	\N
-503	2021-04-11 09:46:31.681524+00	\N	\N	\N	500	\N	500	1	\N	\N	\N	\N	\N
-504	2021-04-11 09:46:31.681524+00	\N	\N	\N	500	\N	504	1	\N	\N	\N	\N	\N
-505	2021-04-11 09:46:31.681524+00	\N	\N	\N	501	\N	16	1	\N	16;90	\N	\N	\N
-506	2021-04-11 09:46:31.681524+00	\N	\N	\N	501	\N	18	1	\N	54;55	\N	\N	\N
-507	2021-04-11 09:46:31.681524+00	\N	\N	\N	501	\N	21	1	\N	90	\N	\N	\N
-508	2021-04-11 09:46:31.681524+00	\N	\N	\N	501	\N	359	1	\N	55;56	501	\N	\N
-509	2021-04-11 09:46:31.681524+00	\N	\N	\N	501	\N	470	1	\N	\N	402	\N	\N
-510	2021-04-11 09:46:31.681524+00	\N	\N	\N	501	\N	210	1	\N	\N	402	\N	\N
-511	2021-04-11 09:46:31.681524+00	\N	\N	\N	501	\N	211	1	\N	\N	402	\N	\N
-512	2021-04-11 09:46:31.681524+00	\N	\N	\N	501	\N	113	2	\N	;83;	\N	\N	\N
+COPY public.list_item (item_id, added_on, crossed_off, source, list_id, list_category, tag_id, used_count, category_id, dish_sources, list_sources, removed_on, updated_on, quantity, raw_quantity, whole_quantity, fractional_quantity, specification_type, unit_id, unit_size, amount_text) FROM stdin;
+500	2021-04-11 11:46:31.681524+02	\N	\N	500	\N	501	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+501	2021-04-11 11:46:31.681524+02	\N	\N	500	\N	502	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+502	2021-04-11 11:46:31.681524+02	\N	\N	500	\N	503	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+503	2021-04-11 11:46:31.681524+02	\N	\N	500	\N	500	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+504	2021-04-11 11:46:31.681524+02	\N	\N	500	\N	504	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+505	2021-04-11 11:46:31.681524+02	\N	\N	501	\N	16	1	\N	16;90	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+506	2021-04-11 11:46:31.681524+02	\N	\N	501	\N	18	1	\N	54;55	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+507	2021-04-11 11:46:31.681524+02	\N	\N	501	\N	21	1	\N	90	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+508	2021-04-11 11:46:31.681524+02	\N	\N	501	\N	359	1	\N	55;56	501	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+509	2021-04-11 11:46:31.681524+02	\N	\N	501	\N	470	1	\N	\N	402	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+510	2021-04-11 11:46:31.681524+02	\N	\N	501	\N	210	1	\N	\N	402	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+511	2021-04-11 11:46:31.681524+02	\N	\N	501	\N	211	1	\N	\N	402	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+512	2021-04-11 11:46:31.681524+02	\N	\N	501	\N	113	2	\N	;83;	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 \.
 
 
 --
--- Data for Name: list_stat_configs; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: list_item_details; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.list_item_details (item_detail_id, item_id, used_count, linked_list_id, linked_dish_id, whole_quantity, fractional_quantity, quantity, unit_id, marker, unit_size, raw_entry, contains_unspecified, is_user_size, nonspecified) FROM stdin;
+\.
+
+
+--
+-- Data for Name: list_stat_configs; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.list_stat_configs (added_dish_factor, added_single_factor, added_list_factor, added_starterlist_factor, removed_dish_factor, removed_single_factor, removed_list_factor, removed_starterlist_factor, frequent_threshold) FROM stdin;
-25	25	25	25	20	40	20	20	0.800000000000000044
+25	25	25	25	20	40	20	20	0.8
 \.
 
 
 --
--- Data for Name: list_tag_stats; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: list_tag_stats; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.list_tag_stats (list_tag_stat_id, added_count, removed_count, tag_id, user_id, added_to_dish, added_single, added_dish, added_list, added_starterlist, removed_single, removed_dish, removed_list, removed_starterlist) FROM stdin;
@@ -5306,21 +5144,21 @@ COPY public.list_tag_stats (list_tag_stat_id, added_count, removed_count, tag_id
 
 
 --
--- Data for Name: meal_plan; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: meal_plan; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id) FROM stdin;
-500	2021-04-11 09:46:31.681524+00	Manual	meal plan 1	500	\N
-501	2021-04-11 09:46:31.681524+00	Manual	meal plan 2	500	\N
-503	2021-04-11 09:46:31.681524+00	Manual	meal plan 1	20	\N
-504	2021-04-11 09:46:31.681524+00	Manual	meal plan 2	20	\N
-506	2021-04-11 09:46:31.681524+00	Manual	meal plan 2	20	\N
-505	2021-04-11 09:46:31.681524+00	Manual	meal plan 5	500	\N
+500	2021-04-11 11:46:31.681524+02	Manual	meal plan 1	500	\N
+501	2021-04-11 11:46:31.681524+02	Manual	meal plan 2	500	\N
+503	2021-04-11 11:46:31.681524+02	Manual	meal plan 1	20	\N
+504	2021-04-11 11:46:31.681524+02	Manual	meal plan 2	20	\N
+506	2021-04-11 11:46:31.681524+02	Manual	meal plan 2	20	\N
+505	2021-04-11 11:46:31.681524+02	Manual	meal plan 5	500	\N
 \.
 
 
 --
--- Data for Name: meal_plan_slot; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: meal_plan_slot; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.meal_plan_slot (meal_plan_slot_id, dish_dish_id, meal_plan_id) FROM stdin;
@@ -5342,7 +5180,7 @@ COPY public.meal_plan_slot (meal_plan_slot_id, dish_dish_id, meal_plan_id) FROM 
 
 
 --
--- Data for Name: modifier_mappings; Type: TABLE DATA; Schema: public; Owner: bankuser
+-- Data for Name: modifier_mappings; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.modifier_mappings (mapping_id, modifier_type, modifier, mapped_modifier, reference_id) FROM stdin;
@@ -5425,49 +5263,48 @@ COPY public.modifier_mappings (mapping_id, modifier_type, modifier, mapped_modif
 
 
 --
--- Data for Name: proposal; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: proposal; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.proposal (proposal_id, user_id, is_refreshable, created) FROM stdin;
-500	20	f	2021-04-11 09:46:31.681524+00
-501	20	f	2021-04-11 09:46:31.681524+00
-502	20	f	2021-04-11 09:46:31.681524+00
+500	20	f	2021-04-11 11:46:31.681524+02
+501	20	f	2021-04-11 11:46:31.681524+02
+502	20	f	2021-04-11 11:46:31.681524+02
 \.
 
 
 --
--- Data for Name: proposal_context; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: proposal_context; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.proposal_context (proposal_context_id, proposal_id, current_attempt_index, current_approach_type, current_approach_index, meal_plan_id, target_id, target_hash_code, proposal_hash_code) FROM stdin;
-500	500	\N	WHEEL_MIXED	0	\N	500	-623001283	0
 502	502	\N	WHEEL_MIXED	0	\N	501	\N	\N
-501	501	\N	WHEEL_MIXED	0	\N	501	-623001283	0
+500	500	\N	WHEEL	0	\N	500	-1625096600	-1044098428
+501	501	\N	WHEEL_MIXED	1	\N	501	1486523399	50425398
 \.
 
 
 --
--- Data for Name: proposal_approach; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: proposal_approach; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.proposal_approach (proposal_approach_id, proposal_context_id, approach_number, instructions) FROM stdin;
-500	500	0	4;1;2;3
 510	501	0	4;1;3
 511	501	1	1;3;4
 510	501	0	4;1;3
 511	501	1	1;3;4
+500	500	0	1;3
 \.
 
 
 --
--- Data for Name: proposal_slot; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: proposal_slot; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id, slot_dish_tag_id) FROM stdin;
 500	1	\N	500	\N	320
 501	2	\N	500	66	320
 502	3	\N	500	\N	320
-503	4	\N	500	\N	320
 510	1	\N	500	\N	320
 511	2	\N	501	66	320
 512	3	\N	501	\N	320
@@ -5475,12 +5312,14 @@ COPY public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_
 620	1	\N	502	96	320
 521	2	\N	502	66	320
 522	3	\N	502	105	320
-523	4	\N	502	115	320
+503	4	\N	500	515	320
+523	4	\N	502	\N	320
+10000	1	\N	501	\N	320
 \.
 
 
 --
--- Data for Name: proposal_dish; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: proposal_dish; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.proposal_dish (dish_slot_id, slot_id, dish_id, matched_tag_ids) FROM stdin;
@@ -5489,7 +5328,6 @@ COPY public.proposal_dish (dish_slot_id, slot_id, dish_id, matched_tag_ids) FROM
 502	500	5	64
 503	500	42	64
 504	500	39	322
-505	501	106	322;64;321
 507	501	16	322;399;321
 508	501	103	322;64;321
 509	501	76	322;321
@@ -5512,8 +5350,6 @@ COPY public.proposal_dish (dish_slot_id, slot_id, dish_id, matched_tag_ids) FROM
 537	511	16	322;399;321
 538	511	103	322;64;321
 539	511	76	322;321
-540	512	65	322;399;406
-541	512	105	322;64;406
 542	512	104	322;406
 543	512	64	406
 544	512	52	406
@@ -5538,11 +5374,64 @@ COPY public.proposal_dish (dish_slot_id, slot_id, dish_id, matched_tag_ids) FROM
 647	523	63	81
 648	523	10	81
 649	523	77	81
+10000	512	5	64;81
+10001	512	25	322;81
+10002	512	82	81
+10003	512	40	81
+10004	512	88	81
+10005	512	26	81
+10006	512	109	81
+10007	512	65	322;399
+540	512	65	322;399
+541	512	105	322;64
+10008	500	65	322;399;406
+10009	500	105	322;64;406
+10010	500	3	406
+10011	500	4	406
+10012	500	6	406
+10013	501	39	321
+10014	501	103	321
+10015	501	115	321
+10016	502	5	64;81
+10017	502	25	322;81
+10018	502	10	81
+10019	502	61	81
+10020	502	63	81
+10021	503	37	89
+10022	503	96	89
+10023	503	54	322
+10024	503	62	322
+505	501	106	64;321
+10025	511	39	321
+10026	511	103	321
+10027	511	115	321
+10028	511	42	64
+10029	512	10	81
+10030	512	61	81
+10031	512	63	81
+10032	513	37	89
+10033	513	96	89
+10034	513	54	322
+10035	513	62	322
+10036	513	106	64
+10037	10000	65	322;399;406
+10038	10000	105	322;64;406
+10039	10000	3	406
+10040	10000	4	406
+10041	10000	6	406
 \.
 
 
 --
--- Data for Name: shadow_tags; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: q; Type: TABLE DATA; Schema: public; Owner: listshopstarter
+--
+
+COPY public.q (copy_single_dish) FROM stdin;
+\.
+
+
+--
+-- Data for Name: shadow_tags; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.shadow_tags (shadow_tag_id, dish_id, tag_id) FROM stdin;
@@ -5550,7 +5439,7 @@ COPY public.shadow_tags (shadow_tag_id, dish_id, tag_id) FROM stdin;
 
 
 --
--- Data for Name: tag_relation; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: tag_relation; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.tag_relation (tag_relation_id, child_tag_id, parent_tag_id) FROM stdin;
@@ -6200,19 +6089,19 @@ COPY public.tag_relation (tag_relation_id, child_tag_id, parent_tag_id) FROM std
 
 
 --
--- Data for Name: target; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: target; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.target (target_id, created, last_updated, last_used, target_name, target_tag_ids, user_id, proposal_id, target, expires, target_type) FROM stdin;
-500	2018-05-21 09:15:22.451+00	\N	\N	testing	64;322;399	20	\N	TargetEntity	\N	Standard
-501	2018-05-21 09:15:22.451+00	\N	\N	testing	64;322;399	20	\N	TargetEntity	\N	Standard
-502	2018-05-21 09:15:22.451+00	\N	\N	testing	64;322;399	500	\N	TargetEntity	\N	Standard
-503	2018-05-21 09:15:22.451+00	\N	\N	testing	64;322;399	500	\N	TargetEntity	2018-05-21 10:15:22.451+00	Standard
+500	2018-05-21 11:15:22.451+02	\N	\N	testing	64;322;399	20	\N	TargetEntity	\N	Standard
+501	2018-05-21 11:15:22.451+02	\N	\N	testing	64;322;399	20	\N	TargetEntity	\N	Standard
+502	2018-05-21 11:15:22.451+02	\N	\N	testing	64;322;399	500	\N	TargetEntity	\N	Standard
+503	2018-05-21 11:15:22.451+02	\N	\N	testing	64;322;399	500	\N	TargetEntity	2018-05-21 12:15:22.451+02	Standard
 \.
 
 
 --
--- Data for Name: target_slot; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: target_slot; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.target_slot (target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids, target) FROM stdin;
@@ -6236,7 +6125,7 @@ COPY public.target_slot (target_slot_id, slot_dish_tag_id, slot_order, target_id
 
 
 --
--- Data for Name: tokens; Type: TABLE DATA; Schema: public; Owner: bankuser
+-- Data for Name: tokens; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.tokens (token_id, created_on, token_type, token_value, user_id) FROM stdin;
@@ -6244,7 +6133,7 @@ COPY public.tokens (token_id, created_on, token_type, token_value, user_id) FROM
 
 
 --
--- Data for Name: user_devices; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: user_devices; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login) FROM stdin;
@@ -6252,7 +6141,7 @@ COPY public.user_devices (user_device_id, user_id, name, model, os, os_version, 
 
 
 --
--- Data for Name: user_properties; Type: TABLE DATA; Schema: public; Owner: bankuser
+-- Data for Name: user_properties; Type: TABLE DATA; Schema: public; Owner: listshopstarter
 --
 
 COPY public.user_properties (user_property_id, user_id, property_key, property_value, is_system) FROM stdin;
@@ -6262,273 +6151,280 @@ COPY public.user_properties (user_property_id, user_id, property_key, property_v
 
 
 --
--- Name: authority_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: authority_id_seq; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.authority_id_seq', 10000, false);
 
 
 --
--- Name: authority_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: authority_seq; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.authority_seq', 1, false);
 
 
 --
--- Name: auto_tag_instructions_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: auto_tag_instructions_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.auto_tag_instructions_sequence', 10000, false);
 
 
 --
--- Name: campaign_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: campaign_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.campaign_sequence', 1000, false);
 
 
 --
--- Name: category_relation_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: category_relation_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.category_relation_sequence', 10000, false);
 
 
 --
--- Name: dish_item_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: dish_item_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.dish_item_sequence', 2536, true);
 
 
 --
--- Name: dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.dish_sequence', 10000, false);
 
 
 --
--- Name: domain_unit_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: domain_unit_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.domain_unit_sequence', 1098, true);
 
 
 --
--- Name: factor_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: factor_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.factor_sequence', 999, true);
 
 
 --
--- Name: food_category_mapping_seq; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: food_category_mapping_seq; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.food_category_mapping_seq', 1000, false);
 
 
 --
--- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.hibernate_sequence', 1, false);
 
 
 --
--- Name: list_item_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: list_item_detail_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.list_item_detail_sequence', 1000, false);
+
+
+--
+-- Name: list_item_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.list_item_sequence', 10000, false);
 
 
 --
--- Name: list_layout_category_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: list_layout_category_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.list_layout_category_sequence', 10000, false);
 
 
 --
--- Name: list_layout_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: list_layout_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.list_layout_sequence', 10000, false);
 
 
 --
--- Name: list_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: list_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.list_sequence', 10000, false);
 
 
 --
--- Name: list_tag_stats_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: list_tag_stats_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.list_tag_stats_sequence', 10000, false);
 
 
 --
--- Name: meal_plan_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: meal_plan_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.meal_plan_sequence', 10000, false);
 
 
 --
--- Name: meal_plan_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: meal_plan_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.meal_plan_slot_sequence', 10000, false);
 
 
 --
--- Name: modifier_mapping_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: modifier_mapping_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.modifier_mapping_sequence', 1000, false);
 
 
 --
--- Name: proposal_approach_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: proposal_approach_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.proposal_approach_sequence', 10000, false);
 
 
 --
--- Name: proposal_context_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: proposal_context_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.proposal_context_sequence', 10000, false);
 
 
 --
--- Name: proposal_context_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: proposal_context_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.proposal_context_slot_sequence', 10000, false);
 
 
 --
--- Name: proposal_dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: proposal_dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
-SELECT pg_catalog.setval('public.proposal_dish_sequence', 10000, false);
+SELECT pg_catalog.setval('public.proposal_dish_sequence', 10041, true);
 
 
 --
--- Name: proposal_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: proposal_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.proposal_sequence', 10000, false);
 
 
 --
--- Name: proposal_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: proposal_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
-SELECT pg_catalog.setval('public.proposal_slot_sequence', 10000, false);
+SELECT pg_catalog.setval('public.proposal_slot_sequence', 10000, true);
 
 
 --
--- Name: shadow_tags_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: shadow_tags_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.shadow_tags_sequence', 10000, false);
 
 
 --
--- Name: tag_relation_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: tag_relation_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.tag_relation_sequence', 10000, false);
 
 
 --
--- Name: tag_search_group_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: tag_search_group_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.tag_search_group_sequence', 1, false);
 
 
 --
--- Name: tag_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: tag_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.tag_sequence', 10000, false);
 
 
 --
--- Name: target_proposal_dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: target_proposal_dish_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.target_proposal_dish_sequence', 10000, false);
 
 
 --
--- Name: target_proposal_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: target_proposal_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.target_proposal_sequence', 10000, false);
 
 
 --
--- Name: target_proposal_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: target_proposal_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.target_proposal_slot_sequence', 10000, false);
 
 
 --
--- Name: target_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: target_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.target_sequence', 10000, false);
 
 
 --
--- Name: target_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: target_slot_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.target_slot_sequence', 10000, false);
 
 
 --
--- Name: token_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: token_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.token_sequence', 57000, false);
 
 
 --
--- Name: unit_sequence; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: unit_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.unit_sequence', 1000, false);
 
 
 --
--- Name: user_device_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: user_device_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.user_device_sequence', 1, false);
 
 
 --
--- Name: user_id_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: user_id_sequence; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.user_id_sequence', 10000, false);
 
 
 --
--- Name: user_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bankuser
+-- Name: user_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: listshopstarter
 --
 
 SELECT pg_catalog.setval('public.user_properties_id_seq', 10000, false);
@@ -6537,4 +6433,6 @@ SELECT pg_catalog.setval('public.user_properties_id_seq', 10000, false);
 --
 -- PostgreSQL database dump complete
 --
+
+
 

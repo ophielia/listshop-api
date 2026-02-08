@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -178,7 +177,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 ListItemEntity existingItem = destinationMap.get(item.getTag().getId());
                 ItemStateContext context = new ItemStateContext(existingItem, destinationListId);
                 context.setListItem(item);
-                ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
+                ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context, userId);
 
                 addedItems.add(result);
             }
@@ -197,7 +196,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             for (ListItemEntity item : operationItems) {
                 ItemStateContext context = new ItemStateContext(item, sourceListId);
                 context.setTag(item.getTag());
-                ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
+                ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context, userId);
                 if (result == null) {
                     removedItems.add(item);
                 } else {
@@ -400,7 +399,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ItemStateContext itemStateContext = new ItemStateContext(item, listId);
         itemStateContext.setTag(tag);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext, userId);
 
         if (isNew) {
             shoppingListEntity.getItems().add(result);
@@ -457,7 +456,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         for (ListItemEntity item : itemEntities) {
             ItemStateContext context = new ItemStateContext(item, listId);
             context.setTag(item.getTag());
-            ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
+            ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context, userId);
             if (result == null) {
                 deletedItems.add(item);
             } else {
@@ -481,7 +480,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         ListItemEntity item = itemEntityOpt.get();
         ItemStateContext context = new ItemStateContext(item, listId);
         context.setTag(item.getTag());
-        listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
+        listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context, userId);
 
         saveListChanges(shoppingListEntity, List.of(item), List.of(item), ListOperationType.LIST_REMOVE);
     }
@@ -697,7 +696,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             boolean isNew = item == null;
             ItemStateContext context = new ItemStateContext(item, targetList.getId());
             context.setListItem(itemToAdd);
-            ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
+            ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context, addFromList.getUserId());
 
             newOrUpdatedListItems.add(result);
             if (isNew) {
@@ -778,18 +777,18 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         for (ListItemEntity item : shoppingList.getItems()) {
             Long tagId = item.getTag().getId();
             if (tagIdsToRemove.contains(tagId)) {
-                removeDishItem(item, listId, dishId, changedItems, removedTagIds);
+                removeDishItem(item, listId, dishId, changedItems, removedTagIds, userId);
             }
         }
         saveListChanges(shoppingList, changedItems, removedTagIds, ListOperationType.DISH_REMOVE);
     }
 
     private void removeDishItem(ListItemEntity item, Long listId, Long dishId, List<ListItemEntity> changedItems,
-                                List<ListItemEntity> removedIds) throws ItemProcessingException {
+                                List<ListItemEntity> removedIds, Long userId) throws ItemProcessingException {
         ItemStateContext context = new ItemStateContext(item, listId);
         context.setDishId(dishId);
 
-        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context);
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, context, userId);
         if (result == null) {
             removedIds.add(item);
         } else {
@@ -814,7 +813,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             ListItemEntity itemInList = listItemsByTag.get(tagId);
             ItemStateContext testContext = new ItemStateContext(itemInList, listId);
             testContext.setListId(fromListId);
-            ListItemEntity resultItems = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext);
+            ListItemEntity resultItems = listItemStateMachine.handleEvent(ListItemEvent.REMOVE_ITEM, testContext, userId);
             if (resultItems != null) {
                 changedItems.add(itemInList);
             } else {
@@ -849,7 +848,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         ItemStateContext context = new ItemStateContext(item, listId);
         context.setCrossedOff(crossedOff);
-        ListItemEntity changedItem = listItemStateMachine.handleEvent(ListItemEvent.CROSS_OFF_ITEM, context);
+        ListItemEntity changedItem = listItemStateMachine.handleEvent(ListItemEvent.CROSS_OFF_ITEM, context, userId);
 
 
         saveListChanges(shoppingListEntity, List.of(changedItem), ListOperationType.NONE);
@@ -869,7 +868,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         for (ListItemEntity item : items) {
             ItemStateContext context = new ItemStateContext(item, listId);
             context.setCrossedOff(crossOff);
-            listItemStateMachine.handleEvent(ListItemEvent.CROSS_OFF_ITEM, context);
+            listItemStateMachine.handleEvent(ListItemEvent.CROSS_OFF_ITEM, context, userId);
 
         }
 
@@ -888,7 +887,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
             shoppingList.getItems().remove(changed);
             shoppingList.getItems().add(changed);
         }
-        //shoppingList.setItems(collector.getAllItems());
         if (collector.hasChanges()) {
             shoppingList.setLastUpdate(new Date());
         }
@@ -913,13 +911,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
                 .toList();
         itemChangeRepository.saveItemChangeStatistics(shoppingList, changedItems, removedTagIds, shoppingList.getUserId(), operationType);
         removedItems.forEach(removed -> shoppingList.getItems().remove(removed));
-     /*   List<ListItemEntity> filteredItems = shoppingList.getItems().stream()
-                .filter(item -> !removedItems.contains(item.getTag().getId()))
-                .collect(Collectors.toList());
-        shoppingList.setItems(filteredItems);*/
+
         // make changes in list object
         if ((changedItems != null && !changedItems.isEmpty()) ||
-                (removedItems != null && !removedItems.isEmpty())) {
+                (!removedItems.isEmpty())) {
             shoppingList.setLastUpdate(new Date());
             shoppingListRepository.save(shoppingList);
         }
@@ -1018,14 +1013,18 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     private List<ListItemEntity> addDishItemsToList(ShoppingListEntity shoppingList, List<DishItemEntity> dishItems) throws ShoppingListException, ItemProcessingException {
+        List<TagType> tagTypesToExclude = Arrays.asList(TagType.DishType, TagType.Rating);
         List<ListItemEntity> items = shoppingList.getItems();
+        List<DishItemEntity> dishItemsToAdd = dishItems.stream()
+                .filter( i -> !tagTypesToExclude.contains( i.getTag().getTagType()))
+                .toList();
         // gather tags for dish to add
-        if (dishItems == null || dishItems.isEmpty()) {
+        if (dishItemsToAdd == null || dishItems.isEmpty()) {
             return new ArrayList<>();
         }
 
         // tag ids for dish items
-        Set<Long> tagIdsInDish = dishItems.stream()
+        Set<Long> tagIdsInDish = dishItemsToAdd.stream()
                 .map(DishItemEntity::getTag)
                 .map(TagEntity::getId)
                 .collect(Collectors.toSet());
@@ -1037,13 +1036,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         List<ListItemEntity> newOrUpdatedListItems = new ArrayList<>();
         List<Long> addedDishIds = new ArrayList<>();
-        for (DishItemEntity dishItemToAdd : dishItems) {
+        for (DishItemEntity dishItemToAdd : dishItemsToAdd) {
 
             ListItemEntity item = tagToItem.get(dishItemToAdd.getTag().getId());
             boolean isNew = item == null;
             ItemStateContext context = new ItemStateContext(item, shoppingList.getId());
             context.setDishItem(dishItemToAdd);
-            ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context);
+            ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, context, shoppingList.getUserId());
 
             addedDishIds.add(dishItemToAdd.getDish().getId());
             newOrUpdatedListItems.add(result);

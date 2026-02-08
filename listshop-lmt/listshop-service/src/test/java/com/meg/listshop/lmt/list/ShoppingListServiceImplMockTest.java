@@ -63,7 +63,7 @@ class ShoppingListServiceImplMockTest {
     private ListItemStateMachine listItemStateMachine = Mockito.mock(ListItemStateMachine.class);
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         shoppingListService = new ShoppingListServiceImpl(tagService,
                 dishService,
@@ -79,7 +79,6 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testGetListById() {
         Long userId = 99L;
-        String userName = "userName";
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -103,7 +102,6 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testGetListById_NoItems() {
         Long userId = 99L;
-        String userName = "userName";
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -134,7 +132,6 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testGetListById_NoUser() {
         Long userId = 99L;
-        String userName = "userName";
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -158,7 +155,7 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testGetListById_BadUser() {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -223,9 +220,9 @@ class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testDeleteList_NoListsFound() {
+    void testDeleteList_NoListsFound() {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -239,9 +236,9 @@ class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testDeleteList_BadList() {
+    void testDeleteList_BadList() {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -264,9 +261,9 @@ class ShoppingListServiceImplMockTest {
     }
 
     @Test
-    public void testDeleteList_LastList() {
+    void testDeleteList_LastList() {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -288,7 +285,7 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testAddItemToListByTag() throws ItemProcessingException {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -332,7 +329,7 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testUpdateItemCount() {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -380,7 +377,7 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testDeleteAllItemsFromList() throws ItemProcessingException {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -420,7 +417,7 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testDeleteAllItemsFromList_ListNotFound() throws ItemProcessingException {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -446,7 +443,7 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testGetListsByUsername() {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -468,7 +465,7 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testCrossOffAllItems() throws ItemProcessingException {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -502,7 +499,7 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testUpdateItemCrossedOff() throws ItemProcessingException {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -527,7 +524,8 @@ class ShoppingListServiceImplMockTest {
 
 
         Mockito.when(shoppingListRepository.getWithItemsByListId(listId)).thenReturn(Optional.of(shoppingList));
-        Mockito.when(listItemStateMachine.handleEvent(eq(ListItemEvent.CROSS_OFF_ITEM), any(ItemStateContext.class)))
+        Mockito.when(listItemStateMachine.handleEvent(eq(ListItemEvent.CROSS_OFF_ITEM), any(ItemStateContext.class),
+                        any(Long.class)))
                 .thenReturn(item);
         // test call
         shoppingListService.updateItemCrossedOff(userId, listId, itemId, true);
@@ -583,7 +581,7 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testGetStarterList() {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -608,7 +606,7 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testGetMostRecentList() {
         Long userId = 99L;
-        String userName = "userName";
+        
         UserEntity user = new UserEntity();
         user.setId(userId);
 
@@ -637,7 +635,7 @@ class ShoppingListServiceImplMockTest {
     @Test
     void testCreateList_duplicateName() throws ShoppingListException, ItemProcessingException {
         Long userId = 99L;
-        String userName = "userName";
+        
         String listName = "ShoppingList";
         Long listLayoutId = 666L;
 
@@ -724,7 +722,6 @@ class ShoppingListServiceImplMockTest {
                 .thenReturn(listLayoutEntity);
         mealPlanService.updateLastAddedDateForDishes(mealPlan);
 
-        //itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
         Mockito.when(shoppingListRepository.save(argument.capture()))
                 .thenReturn(createdShoppingList);
 
@@ -870,7 +867,7 @@ class ShoppingListServiceImplMockTest {
                 .thenReturn(dishItems);
 
         Mockito.when(listItemStateMachine.handleEvent(any(ListItemEvent.class),
-                        any(ItemStateContext.class)))
+                        any(ItemStateContext.class),any(Long.class)))
                 .thenReturn(new ListItemEntity());
         Mockito.doNothing().when(dishService).updateLastAddedForDishes(any(List.class));
         Mockito.when(shoppingListRepository.save(argument.capture()))
@@ -907,7 +904,7 @@ class ShoppingListServiceImplMockTest {
                 .thenReturn(Optional.of(shoppingList));
         Mockito.when(tagService.getItemsForDish(userId, dishId))
                 .thenReturn(dish1.getItems());
-        Mockito.when(listItemStateMachine.handleEvent(any(ListItemEvent.class), any(ItemStateContext.class)))
+        Mockito.when(listItemStateMachine.handleEvent(any(ListItemEvent.class), any(ItemStateContext.class),any(Long.class)))
                 .thenReturn(new ListItemEntity());
         Mockito.doNothing().when(itemChangeRepository).saveItemChangeStatistics(
                 any(ShoppingListEntity.class),
@@ -996,7 +993,6 @@ class ShoppingListServiceImplMockTest {
         Mockito.when(shoppingListRepository.findById(sourceListId))
                 .thenReturn(Optional.of(sourceList));
 
-        //itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
         Mockito.when(shoppingListRepository.save(argument.capture()))
                 .thenReturn(sourceList);
 
@@ -1037,7 +1033,6 @@ class ShoppingListServiceImplMockTest {
         Mockito.when(shoppingListRepository.findById(sourceListId))
                 .thenReturn(Optional.of(sourceList));
 
-        //itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
         Mockito.when(shoppingListRepository.save(argument.capture()))
                 .thenReturn(sourceList);
 
@@ -1073,7 +1068,6 @@ class ShoppingListServiceImplMockTest {
         Mockito.when(shoppingListRepository.findById(sourceListId))
                 .thenReturn(Optional.of(sourceList));
 
-        //itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
         Mockito.when(shoppingListRepository.save(argument.capture()))
                 .thenReturn(sourceList);
 
@@ -1119,7 +1113,6 @@ class ShoppingListServiceImplMockTest {
         Mockito.when(shoppingListRepository.findById(destinationListId))
                 .thenReturn(Optional.of(destinationList));
 
-        //itemChangeRepository.saveItemChanges(any(ShoppingListEntity.class), any(ItemCollector.class), eq(userId), any(CollectorContext.class));
         Mockito.when(shoppingListRepository.save(argument.capture()))
                 .thenReturn(sourceList);
 

@@ -9,7 +9,6 @@ package com.meg.listshop.admin.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.meg.listshop.Application;
 import com.meg.listshop.admin.model.PostSearchTags;
 import com.meg.listshop.admin.model.PostUpdateTags;
@@ -30,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -84,12 +82,11 @@ class AdminTagRestControllerTest {
     private TagRepository tagRepository;
     @Autowired
     private WebApplicationContext webApplicationContext;
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
 
     @BeforeEach
     @WithMockUser
-    public void setup() throws Exception {
+    void setup() {
 
         this.mockMvc = webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
@@ -143,7 +140,6 @@ class AdminTagRestControllerTest {
                 .andReturn();
 
         String jsonList = result.getResponse().getContentAsString();
-        ObjectMapper objectMapper = new ObjectMapper();
         FoodListResource afterList = objectMapper.readValue(jsonList, FoodListResource.class);
         Assertions.assertNotNull(afterList);
 
@@ -230,25 +226,6 @@ class AdminTagRestControllerTest {
 
     @Test
     @WithMockUser
-    void testFullTagInfoConversionSamplesBasic() throws Exception {
-        // oregano
-        // chicken breast
-        // tomatoes
-
-        long tagId = 9991029;
-        MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")
-                        .with(user(userDetails)))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-
-        Assertions.assertNotNull(result);
-        ObjectMapper mapper = new ObjectMapper();
-        AdminTagFullInfoResource resultObject = mapper.readValue(result.getResponse().getContentAsString(), AdminTagFullInfoResource.class);
-        Assertions.assertNotNull(resultObject);
-    }
-
-    @Test
-    @WithMockUser
     void testFullTagInfoConversionSamplesOregano() throws Exception {
         // oregano - that is to say, one factor, converting to grams, no markers or unit sizes
         long tagId = 888888;
@@ -264,7 +241,7 @@ class AdminTagRestControllerTest {
         // so we should have three samples, all converting to grams, without any markers or unit sizes
         ConversionGrid grid = resultObject.getTag().getConversionGrid();
         Assertions.assertNotNull(grid);
-        Assertions.assertEquals(3, grid.getSamples().size(), "expected 3 samples");
+        Assertions.assertEquals(4, grid.getSamples().size(), "expected 4 samples");
         long commaCount = grid.getSamples().stream()
                 .filter(s -> s.getFromAmount().contains(",") ||
                         s.getToAmount().contains(","))
@@ -318,7 +295,7 @@ class AdminTagRestControllerTest {
         // so we should have 15 (3 x 5) samples, converting to units, with markers and unit sizes
         ConversionGrid grid = resultObject.getTag().getConversionGrid();
         Assertions.assertNotNull(grid);
-        Assertions.assertEquals(15, grid.getSamples().size(), "expected 45 samples");
+        Assertions.assertEquals(18, grid.getSamples().size(), "expected 18 samples");
         long commaCount = grid.getSamples().stream()
                 .filter(s -> s.getFromUnit().contains(",") ||
                         s.getToUnit().contains(","))
@@ -526,13 +503,10 @@ class AdminTagRestControllerTest {
     }
 
     private String json(Object o) throws IOException {
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-
         return objectMapper.writeValueAsString(o);
     }
 
     private TagListResource deserializeTagListResource(String json) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(json, TagListResource.class);
 
     }

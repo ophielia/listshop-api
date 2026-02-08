@@ -428,8 +428,7 @@ return returnval;
         List<String> tags = new ArrayList<>();
         if (s.getLinkedDishId() != null && !s.getLinkedDishId().isEmpty()) {
             tags.add(ItemSourceType.Dish.getPrefix() + s.getLinkedDishId());
-        }
-        if (s.getLinkedListId() != null
+        } else if (s.getLinkedListId() != null
                 && !s.getLinkedListId().isEmpty()
                 && !s.getLinkedListId().equals(listId)) {
             tags.add(ItemSourceType.List.getPrefix() + s.getLinkedListId());
@@ -710,7 +709,6 @@ return returnval;
                 .removed(listItemEntity.getRemovedOn())
                 .crossedOff(listItemEntity.getCrossedOff())
                 .usedCount(listItemEntity.getUsedCount())
-                .freeText(listItemEntity.getFreeText())
                 .handles(listItemEntity.getHandles());
     }
 
@@ -808,7 +806,6 @@ return returnval;
                 Long.valueOf(input.getTagId()) : null;
         ListItemEntity listItemEntity = new ListItemEntity(id);
         listItemEntity.setTag(toEntity(input.getTag()));
-        listItemEntity.setFreeText(input.getFreeText());
         listItemEntity.setListId(listId);
         listItemEntity.setTagId(tagId);
         listItemEntity.setAddedOn(input.getAddedOn());

@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.data.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meg.listshop.lmt.api.model.FractionType;
 import jakarta.persistence.*;
@@ -54,18 +53,6 @@ public class ListItemDetailEntity {
     @Column(name = "unit_id")
     private Long unitId;
 
-    @Column(name = "orig_whole_quantity")
-    private Integer originalWholeQuantity;
-
-    @Column(name = "orig_fractional_quantity")
-    @Enumerated(EnumType.STRING)
-    private FractionType originalFractionalQuantity;
-
-    @Column(name = "orig_quantity")
-    private Double originalQuantity;
-
-    @Column(name = "orig_unit_id")
-    private Long originalUnitId;
 
     private String marker;
 
@@ -74,6 +61,16 @@ public class ListItemDetailEntity {
 
     @Column(name = "raw_entry")
     private String rawEntry;
+
+    @Column(name = "nonspecified")
+    private boolean unspecified = false;
+
+    @Column(name = "contains_unspecified")
+    private boolean containsUnspecified = false;
+
+
+    @Column(name = "is_user_size")
+    private boolean isUserSize = false;
 
     public ListItemDetailEntity() {
         // necessary for jpa construction
@@ -155,38 +152,6 @@ public class ListItemDetailEntity {
         this.unitId = unitId;
     }
 
-    public Integer getOriginalWholeQuantity() {
-        return originalWholeQuantity;
-    }
-
-    public void setOriginalWholeQuantity(Integer originalWholeQuantity) {
-        this.originalWholeQuantity = originalWholeQuantity;
-    }
-
-    public FractionType getOriginalFractionalQuantity() {
-        return originalFractionalQuantity;
-    }
-
-    public void setOriginalFractionalQuantity(FractionType originalFractionalQuantity) {
-        this.originalFractionalQuantity = originalFractionalQuantity;
-    }
-
-    public Double getOriginalQuantity() {
-        return originalQuantity;
-    }
-
-    public void setOriginalQuantity(Double originalQuantity) {
-        this.originalQuantity = originalQuantity;
-    }
-
-    public Long getOriginalUnitId() {
-        return originalUnitId;
-    }
-
-    public void setOriginalUnitId(Long originalUnitId) {
-        this.originalUnitId = originalUnitId;
-    }
-
     public String getMarker() {
         return marker;
     }
@@ -211,22 +176,48 @@ public class ListItemDetailEntity {
         this.rawEntry = rawEntry;
     }
 
+    public boolean isUnspecified() {
+        return unspecified;
+    }
+
+    public void setUnspecified(boolean specified) {
+        unspecified = specified;
+
+    }
+
+    public boolean isContainsUnspecified() {
+        return containsUnspecified;
+    }
+
+    public void setContainsUnspecified(boolean containsUnspecified) {
+        this.containsUnspecified = containsUnspecified;
+    }
+
+    public boolean isUserSize() {
+        return isUserSize;
+    }
+
+    public void setUserSize(boolean userSize) {
+        isUserSize = userSize;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         ListItemDetailEntity that = (ListItemDetailEntity) o;
-        return Objects.equals(itemDetailId, that.itemDetailId) && Objects.equals(count, that.count) && Objects.equals(linkedListId, that.linkedListId) && Objects.equals(linkedDishId, that.linkedDishId) && Objects.equals(wholeQuantity, that.wholeQuantity) && fractionalQuantity == that.fractionalQuantity && Objects.equals(quantity, that.quantity) && Objects.equals(unitId, that.unitId) && Objects.equals(originalWholeQuantity, that.originalWholeQuantity) && originalFractionalQuantity == that.originalFractionalQuantity && Objects.equals(originalQuantity, that.originalQuantity) && Objects.equals(originalUnitId, that.originalUnitId);
+        return count == that.count && unspecified == that.unspecified && Objects.equals(itemDetailId, that.itemDetailId) && Objects.equals(item, that.item) && Objects.equals(linkedListId, that.linkedListId) && Objects.equals(linkedDishId, that.linkedDishId) && Objects.equals(quantity, that.quantity) && Objects.equals(unitId, that.unitId) && Objects.equals(unitSize, that.unitSize);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(itemDetailId, count, linkedListId, linkedDishId, wholeQuantity, fractionalQuantity, quantity, unitId, originalWholeQuantity, originalFractionalQuantity, originalQuantity, originalUnitId);
+        return Objects.hash(itemDetailId, item, count, linkedListId, linkedDishId, quantity, unitId, unitSize, unspecified);
     }
 
     @Override
     public String toString() {
         return "ListItemDetailEntity{" +
                 "itemDetailId=" + itemDetailId +
+                ", item=" + item +
                 ", count=" + count +
                 ", linkedListId=" + linkedListId +
                 ", linkedDishId=" + linkedDishId +
@@ -234,10 +225,12 @@ public class ListItemDetailEntity {
                 ", fractionalQuantity=" + fractionalQuantity +
                 ", quantity=" + quantity +
                 ", unitId=" + unitId +
-                ", originalWholeQuantity=" + originalWholeQuantity +
-                ", originalFractionalQuantity=" + originalFractionalQuantity +
-                ", originalQuantity=" + originalQuantity +
-                ", originalUnitId=" + originalUnitId +
+                ", marker='" + marker + '\'' +
+                ", unitSize='" + unitSize + '\'' +
+                ", rawEntry='" + rawEntry + '\'' +
+                ", isUserSize='" + isUserSize + '\'' +
+                ", containsUnspecified='" + containsUnspecified + '\'' +
+                ", unspecified=" + unspecified +
                 '}';
     }
 }

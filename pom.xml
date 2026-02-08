@@ -23,8 +23,8 @@
         <springdoc.version>1.7.0</springdoc.version>
         <testcontainers.version>2.0.2</testcontainers.version>
         <jackson.version>2.19.2</jackson.version>
-        <flyway.version>10.22.0</flyway.version>
-        <logback.version>1.5.24</logback.version>
+        <flyway.version>9.22.3</flyway.version>
+        <logback.version>1.5.26</logback.version>
         <junit.jupiter.version>5.12.2</junit.jupiter.version>
     </properties>
 
@@ -330,7 +330,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.10</version>
+                <version>3.18.0</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>

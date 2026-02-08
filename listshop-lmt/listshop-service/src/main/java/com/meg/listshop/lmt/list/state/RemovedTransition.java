@@ -1,15 +1,20 @@
 package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
+import com.meg.listshop.lmt.api.model.v2.SpecificationType;
+import com.meg.listshop.lmt.conversion.ListConversionService;
 import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.lmt.data.repository.ListItemRepository;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -17,54 +22,102 @@ import java.util.List;
 @Transactional
 public class RemovedTransition extends AbstractTransition {
 
-    public RemovedTransition(ListItemRepository listItemRepository, ListItemDetailRepository listItemDetailRepository) {
+    private static final Logger log = LoggerFactory.getLogger(RemovedTransition.class);
+
+    private final ListConversionService conversionService;
+
+    public RemovedTransition(ListItemRepository listItemRepository,
+                             ListItemDetailRepository listItemDetailRepository,
+                             ListConversionService conversionService) {
         super(listItemRepository, listItemDetailRepository);
+        this.conversionService = conversionService;
     }
 
     public ListItemEntity transitionToState(ListItemEvent listItemEvent, ItemStateContext itemStateContext) throws ItemProcessingException {
         validateContextForRemove(itemStateContext);
-        ListItemEntity targetItem = itemStateContext.getTargetItem();
-        validateItemForRemove(targetItem);
-        // if context is removing by tag, we remove the entire item, and all details
-        if (itemStateContext.getTag() != null) {
-            // remove entire item - physically
-            return removeItemPhysically(targetItem);
-        }
-        int startCount = targetItem.getDetailCount();
-        // just remove detail of dish or list
-        removeDishOrListDetails(targetItem, itemStateContext.getDishId(), itemStateContext.getListId());
+        ListItemEntity item = itemStateContext.getTargetItem();
+        prepareItemForRemoval(item);
 
+        ProcessingType processingType = determineProcessingType(itemStateContext);
+        item = switch (processingType) {
+            case DISH -> processRemoveDishItem(item, itemStateContext);
+            case LIST -> processRemoveListItem(item, itemStateContext);
+            case SIMPLE_ITEM -> processRemoveSimpleItem(item);
+            default -> throw new ItemProcessingException("Unexpected processing type");
+            //TODO java 21 -  test for null here
+        };
 
-        if (targetItem.getDetailCount() == 0) {
-            return removeItemPhysically(targetItem);
-        }
-
-
-        if (targetItem.getDetailCount() > 0 &&
-                startCount != targetItem.getDetailCount()) {
-            return listItemRepository.save(targetItem);
-        }
-
-        return targetItem;
+        return item;
     }
 
-    private void removeDishOrListDetails(ListItemEntity targetItem, Long dishId, Long listId) {
-        List<ListItemDetailEntity> toRemove = new ArrayList<>();
-        List<ListItemDetailEntity> toKeep = new ArrayList<>();
-        boolean removeAllDetails = dishId == null && listId == null;
-        targetItem.getDetails().forEach(detail -> {
-            if (listId != null && listId.equals(detail.getLinkedListId()) ||
-                    dishId != null && dishId.equals(detail.getLinkedDishId())) {
-                detail.setItem(null);
-                toRemove.add(detail);
-            } else if (removeAllDetails) {
-                toRemove.add(detail);
-            } else if (!removeAllDetails) {
-                toKeep.add(detail);
-            }
-        });
-        listItemDetailRepository.deleteAll(toRemove);
-        targetItem.setDetails(toKeep);
+    private ListItemEntity processRemoveSimpleItem(ListItemEntity item) {
+        // simple item (tag) is removed physically from db, with all its items
+        return removeItemPhysically(item);
+    }
+
+    private ListItemEntity processRemoveListItem(ListItemEntity item, ItemStateContext context) throws ItemProcessingException {
+        Long listIdToRemove = context.getListId();
+        // item is specified
+        boolean isUnspecifiedAtBegin = item.getSpecificationType() != null && item.getSpecificationType() == SpecificationType.NONE;
+
+        // gather all items belonging to list
+        List<ListItemDetailEntity> toRemove = item.getDetails().stream()
+                .filter(d -> DetailFilter.bothNotNullAndMatch(d.getLinkedListId(), listIdToRemove))
+                .toList();
+
+
+        // if we're removing all details, than just remove the entire item
+        if (toRemove.size() == item.getDetails().size()) {
+            return removeItemPhysically(item);
+        }
+
+        // remove these items
+        removeDetails(item, toRemove);
+
+        // re-sum item if necessary
+        if (!isUnspecifiedAtBegin) {
+            conversionService.sumItemDetails(item, context);
+        }
+        // save changes to item and return
+        // save changes to item
+        item.setUpdatedOn(new Date());
+        return listItemRepository.save(item);
+    }
+
+    private void removeDetails(ListItemEntity item, List<ListItemDetailEntity> listToRemove) {
+        for (ListItemDetailEntity detail : listToRemove) {
+            item.getDetails().remove(detail);
+            detail.setItem(null);
+        }
+        listItemDetailRepository.deleteAll(listToRemove);
+    }
+
+    private ListItemEntity processRemoveDishItem(ListItemEntity item, ItemStateContext context) throws ItemProcessingException {
+        Long dishIdToRemove = context.getDishId();
+        // item is specified
+        boolean isUnspecifiedAtBegin = item.getSpecificationType() != null && item.getSpecificationType() == SpecificationType.NONE;
+
+        // gather all items belonging to list
+        List<ListItemDetailEntity> toRemove = item.getDetails().stream()
+                .filter(d -> DetailFilter.bothNotNullAndMatch(d.getLinkedDishId(), dishIdToRemove))
+                .toList();
+
+        // if we're removing all details, than just remove the entire item
+        if (toRemove.size() == item.getDetails().size()) {
+            return removeItemPhysically(item);
+        }
+
+        // remove these items
+        removeDetails(item, toRemove);
+
+        // re-sum item if necessary
+        if (!isUnspecifiedAtBegin) {
+            conversionService.sumItemDetails(item, context);
+        }
+        // save changes to item and return
+        // save changes to item
+        item.setUpdatedOn(new Date());
+        return listItemRepository.save(item);
     }
 
     private ListItemEntity removeItemPhysically(ListItemEntity itemToRemove) {
@@ -83,12 +136,13 @@ public class RemovedTransition extends AbstractTransition {
         }
     }
 
-    private void validateItemForRemove(ListItemEntity item) throws ItemProcessingException {
+    private void prepareItemForRemoval(ListItemEntity item) {
         // item has a non null list of details
         // otherwise difficult to remove
         if (item.getDetails() == null) {
             String message = String.format("Target item [%s] doesn't have details.", item.getId());
-            throw new ItemProcessingException(message);
+            log.warn(message);
+            item.setDetails(new ArrayList<>());
         }
     }
 }
