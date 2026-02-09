@@ -368,9 +368,9 @@
                     <artifactId>flyway-maven-plugin</artifactId>
                     <version>${flyway.version}</version>
                     <configuration>
-                        <url>jdbc:postgresql://134.122.18.248:5432/listshop</url>
+                        <url>jdbc:postgresql://localhost:5432/listshop</url>
                         <user>listshopstarter</user>
-                        <password>rainyM0rning202498tb</password>
+                        <password>***</password>
                         <table>flyway_schema_history</table>
                     </configuration>
                     <dependencies>
