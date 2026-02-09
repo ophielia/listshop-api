@@ -1,6 +1,6 @@
 <configuration>
     <appender name="json" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+        <encoder class="ch.qos.logback.classic.encoder.JsonEncoder">
             <customFields>{"appName":"${project.name}", "version":"${project.version}", "logSource":"app"}</customFields>
         </encoder>
     </appender>
