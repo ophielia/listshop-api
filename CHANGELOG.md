@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.20.1]  - February 2026
+### Fixed
+
+
 ## [1.20.0]  - February 2026
 ### Fixed
 - ounces as modifier
