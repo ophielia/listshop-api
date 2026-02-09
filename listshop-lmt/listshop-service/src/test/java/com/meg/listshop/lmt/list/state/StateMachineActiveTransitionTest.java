@@ -41,6 +41,8 @@ import java.util.Date;
 @ActiveProfiles("test")
 @Sql(value = {"/com/meg/listshop/lmt/list/state/StateMachineActiveTransitionTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/com/meg/listshop/lmt/list/state/StateMachineActiveTransitionTest-rollback.sql"},
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class StateMachineActiveTransitionTest {
 
     private static final Long KILO_UNIT_ID = 1014L;
