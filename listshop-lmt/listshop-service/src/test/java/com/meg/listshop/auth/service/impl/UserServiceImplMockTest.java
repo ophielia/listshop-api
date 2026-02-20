@@ -7,6 +7,7 @@
 
 package com.meg.listshop.auth.service.impl;
 
+import com.meg.listshop.auth.api.exceptions.UserCreateException;
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
 import com.meg.listshop.auth.api.model.ClientType;
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
@@ -20,7 +21,11 @@ import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+import com.meg.listshop.lmt.api.exception.ItemProcessingException;
+import com.meg.listshop.lmt.api.model.ListGenerateProperties;
+import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
+import com.meg.listshop.lmt.list.ShoppingListException;
+import com.meg.listshop.lmt.list.ShoppingListService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +41,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Date;
 import java.util.Optional;
@@ -59,6 +63,8 @@ class UserServiceImplMockTest {
     private AuthorityRepository authorityRepository;
     @Mock
     private AuthenticationManager authenticationManager;
+    @Mock
+    private ShoppingListService shoppingListService;
 
     @Mock
     private AdminUserDetailsRepository adminUserDetailsRepository;
@@ -75,7 +81,7 @@ class UserServiceImplMockTest {
     @BeforeEach
     public void setUp() {
         userService = new UserServiceImpl(userRepository, userDeviceRepository, authorityRepository,
-                authenticationManager, adminUserDetailsRepository);
+                authenticationManager, adminUserDetailsRepository, shoppingListService);
     }
 
     @Test
@@ -95,8 +101,7 @@ class UserServiceImplMockTest {
 
 
     @Test
-    void testCreateUser() throws BadParameterException {
-        final String username = "george";
+    void testCreateUser() throws BadParameterException, UserCreateException {
         final String email = "george@will.run";
         final String password = "Passw0rd";
 
@@ -113,7 +118,40 @@ class UserServiceImplMockTest {
         Mockito.when(userRepository.save(dateCapture.capture())).thenAnswer(i -> i.getArguments()[0]);
         Mockito.when(authorityRepository.save(Mockito.any(AuthorityEntity.class))).thenReturn(testAuthority);
 
-        UserEntity result = userService.createUser(email, password);
+        UserEntity result = userService.createUser(email, password, false);
+        Assertions.assertNotNull(result);
+        Assertions.assertNotNull(result.getAuthorities());
+        UserEntity datePasswordCheck = dateCapture.getValue();
+        Assertions.assertNotNull(datePasswordCheck);
+        Assertions.assertTrue(DateUtils.isAfterOrEqual(datePasswordCheck.getCreationDate(), new Date()));
+        Assertions.assertTrue(BCrypt.checkpw(password, datePasswordCheck.getPassword()));
+        Assertions.assertNotEquals(datePasswordCheck.getPassword(), password);
+
+    }
+
+    @Test
+    void testCreateUserAndCreateList() throws BadParameterException, UserCreateException, ShoppingListException, ItemProcessingException {
+        final String email = "george@will.run";
+        final String password = "Passw0rd";
+
+        UserEntity testUser = new UserEntity();
+        testUser.setId(TestConstants.USER_3_ID);
+        testUser.setEmail(email);
+        AuthorityEntity testAuthority = new AuthorityEntity();
+        testAuthority.setUser(testUser);
+        testAuthority.setName(AuthorityName.ROLE_USER);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        ArgumentCaptor<UserEntity> dateCapture = ArgumentCaptor.forClass(UserEntity.class);
+        Mockito.when(userRepository.save(dateCapture.capture())).thenAnswer( i -> {
+                 UserEntity user = (UserEntity)i.getArguments()[0];
+                 user.setId(1L);
+                 return user;
+        });
+        Mockito.when(authorityRepository.save(Mockito.any(AuthorityEntity.class))).thenReturn(testAuthority);
+        Mockito.when(shoppingListService.generateListForUser(Mockito.any(Long.class), Mockito.any(ListGenerateProperties.class))).thenReturn(new ShoppingListEntity());
+
+        UserEntity result = userService.createUser(email, password, true);
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getAuthorities());
         UserEntity datePasswordCheck = dateCapture.getValue();

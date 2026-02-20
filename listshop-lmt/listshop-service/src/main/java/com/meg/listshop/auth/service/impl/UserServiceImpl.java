@@ -13,10 +13,16 @@ import com.meg.listshop.auth.data.repository.AdminUserDetailsRepository;
 import com.meg.listshop.auth.data.repository.AuthorityRepository;
 import com.meg.listshop.auth.data.repository.UserDeviceRepository;
 import com.meg.listshop.auth.data.repository.UserRepository;
+import com.meg.listshop.auth.api.exceptions.UserCreateException;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.exception.AuthenticationException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+import com.meg.listshop.lmt.api.model.ListGenerateProperties;
+import com.meg.listshop.lmt.list.ShoppingListException;
+import com.meg.listshop.lmt.list.ShoppingListService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,18 +52,21 @@ public class UserServiceImpl implements UserService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final ShoppingListService shoppingListService;
+
     protected final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, UserDeviceRepository userDeviceRepository,
                            AuthorityRepository authorityRepository, AuthenticationManager authenticationManager,
-                           AdminUserDetailsRepository adminUserDetailsRepository) {
+                           AdminUserDetailsRepository adminUserDetailsRepository, ShoppingListService shoppingListService) {
         this.userRepository = userRepository;
         this.userDeviceRepository = userDeviceRepository;
         this.authorityRepository = authorityRepository;
         this.authenticationManager = authenticationManager;
         this.adminUserRepository = adminUserDetailsRepository;
+        this.shoppingListService = shoppingListService;
     }
 
     @Override
@@ -78,7 +87,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity createUser(String email, String decodedPassword) throws BadParameterException {
+    @Transactional(rollbackOn = {UserCreateException.class})
+    public UserEntity createUser(String email, String decodedPassword, boolean createList)  throws BadParameterException, UserCreateException {
         logger.info(String.format("Creating user: [%s]",email));
         // check if username exists
         UserEntity existingUser = userRepository.findByEmail(email);
@@ -99,6 +109,17 @@ public class UserServiceImpl implements UserService {
         // create authorities
         var authority = createUserAuthorityForUser(createdUser);
         createdUser.getAuthorities().add(authority);
+
+        // create list if requested
+        if (createList) {
+            try {
+                ListGenerateProperties listGenerateProperties = new ListGenerateProperties();
+                shoppingListService.generateListForUser(createdUser.getId(),listGenerateProperties);
+            } catch (ShoppingListException  | ItemProcessingException e ) {
+                // couldn't create the list, so rollback user
+                throw new UserCreateException("Unable to create list for user", e);
+            }
+        }
         // save authorities and return
         logger.debug(String.format("Finished creating new user[%s]",createdUser));
         return userRepository.save(createdUser);

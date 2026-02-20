@@ -125,11 +125,6 @@
             <artifactId>jna</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- swagger dependencies -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-        </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
         <dependency>
