@@ -26,6 +26,7 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -60,7 +61,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(UserRepository userRepository, UserDeviceRepository userDeviceRepository,
                            AuthorityRepository authorityRepository, AuthenticationManager authenticationManager,
-                           AdminUserDetailsRepository adminUserDetailsRepository, ShoppingListService shoppingListService) {
+                           AdminUserDetailsRepository adminUserDetailsRepository, @Lazy ShoppingListService shoppingListService) {
         this.userRepository = userRepository;
         this.userDeviceRepository = userDeviceRepository;
         this.authorityRepository = authorityRepository;

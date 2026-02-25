@@ -2,11 +2,9 @@ package com.meg.listshop.common;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.Link;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class StringTools {
@@ -16,12 +14,6 @@ public class StringTools {
         throw new IllegalAccessError("Utility class");
     }
 
-    public static String safeLink(Optional<Link> link) {
-        if (link.isPresent()) {
-            return link.get().getHref();
-        }
-        return "";
-    }
 
     public static String makeUniqueName(String listName, List<String> similarNames) {
         int suffixStart = Math.max(1, similarNames.size());
