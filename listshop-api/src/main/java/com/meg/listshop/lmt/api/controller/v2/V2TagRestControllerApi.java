@@ -1,0 +1,39 @@
+package com.meg.listshop.lmt.api.controller.v2;
+
+import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.model.Tag;
+import com.meg.listshop.lmt.api.model.TagListResource;
+import com.meg.listshop.lmt.api.model.TagPut;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * Created by margaretmartin on 13/05/2017.
+ */
+
+@RestController
+@RequestMapping("/v2/tag")
+public interface V2TagRestControllerApi {
+
+
+    @GetMapping(value = "/user")
+    ResponseEntity<TagListResource> retrieveUserTagList(
+            Authentication authentication,
+            HttpServletRequest request);
+
+    @PostMapping(value = "{tagId}/child", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable("tagId") Long tagId, @RequestBody Tag input,
+                                   @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException;
+
+
+    @GetMapping( value = "/{tagId}", produces = "application/json")
+    ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId);
+
+    @PutMapping(value = "{tagId}", produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> updateTag(Authentication authentication, HttpServletRequest request, @PathVariable("tagId") Long tagId,
+                                     @RequestBody TagPut input) throws BadParameterException;
+
+
+}
