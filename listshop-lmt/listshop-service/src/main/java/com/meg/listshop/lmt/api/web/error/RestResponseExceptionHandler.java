@@ -7,6 +7,7 @@
 
 package com.meg.listshop.lmt.api.web.error;
 
+import com.meg.listshop.auth.api.exceptions.UserCreateException;
 import com.meg.listshop.lmt.api.exception.*;
 import com.meg.listshop.lmt.api.model.ApiError;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +34,16 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         logger.error(message, ex);
         //
         var apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), message);
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler({UserCreateException.class})
+    public ResponseEntity<Object> handleUserCreateException(final Exception ex, final WebRequest request) {
+        var message = "Unable to create and initialize user.";
+        logger.info(ex.getClass().getName());
+        logger.error(message, ex);
+        //
+        var apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), message);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 

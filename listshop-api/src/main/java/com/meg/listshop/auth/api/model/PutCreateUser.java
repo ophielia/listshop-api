@@ -14,6 +14,8 @@ public class PutCreateUser {
     private User user;
     @JsonProperty("device_info")
     private ClientDeviceInfo deviceInfo;
+    @JsonProperty("create_list")
+    private boolean createList = false;
 
     public PutCreateUser() {
         // empty constructor for jackson
@@ -34,5 +36,13 @@ public class PutCreateUser {
 
     public void setDeviceInfo(ClientDeviceInfo deviceInfo) {
         this.deviceInfo = deviceInfo;
+    }
+
+    public boolean getCreateList() {
+        return createList;
+    }
+
+    public void setCreateList(boolean createList) {
+        this.createList = createList;
     }
 }

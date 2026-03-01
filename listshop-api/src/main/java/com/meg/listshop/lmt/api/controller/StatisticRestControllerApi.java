@@ -2,7 +2,6 @@ package com.meg.listshop.lmt.api.controller;
 
 import com.meg.listshop.lmt.api.model.StatisticListPost;
 import com.meg.listshop.lmt.api.model.StatisticListResource;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +18,7 @@ public interface StatisticRestControllerApi {
 
 
     @GetMapping(produces = "application/json")
-    ResponseEntity<CollectionModel<StatisticListResource>> getUserStatistics(Principal principal, @RequestParam(value = "limit", required = false) String limit);
+    ResponseEntity<StatisticListResource> getUserStatistics(Principal principal, @RequestParam(value = "limit", required = false) String limit);
 
     @PostMapping(produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createUserStatistics(Principal principal, @RequestBody StatisticListPost statisticList);

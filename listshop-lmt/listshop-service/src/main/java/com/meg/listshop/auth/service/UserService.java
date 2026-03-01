@@ -10,6 +10,7 @@ package com.meg.listshop.auth.service;
 import com.meg.listshop.auth.api.model.ClientDeviceInfo;
 import com.meg.listshop.auth.data.entity.AdminUserDetailsEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.api.exceptions.UserCreateException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface UserService {
 
     UserEntity save(UserEntity user);
 
-    UserEntity createUser(String decodedEmail, String decodedPassword) throws BadParameterException;
+    UserEntity createUser(String decodedEmail, String decodedPassword, boolean createList) throws BadParameterException, UserCreateException;
 
     UserEntity updateLoginForUser(String username, String token, ClientDeviceInfo deviceInfo);
 

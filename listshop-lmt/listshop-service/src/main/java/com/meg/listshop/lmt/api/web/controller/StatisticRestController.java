@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.hateoas.CollectionModel;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,11 +30,9 @@ import java.util.List;
 @CrossOrigin
 public class StatisticRestController implements StatisticRestControllerApi {
 
+    private static final Logger logger = LoggerFactory.getLogger(StatisticRestController.class);
     private final ListTagStatisticService listTagStatisticService;
     private final UserService userService;
-
-    private static final Logger  logger = LoggerFactory.getLogger(StatisticRestController.class);
-
     @Value("${statistic.list.default.limit:100}")
     private int statisticListDefaultLimit;
 
@@ -47,7 +45,7 @@ public class StatisticRestController implements StatisticRestControllerApi {
 
 
     @Override
-    public ResponseEntity<CollectionModel<StatisticListResource>> getUserStatistics(Principal principal, @RequestParam(value = "limit", required = false) String limit) {
+    public ResponseEntity<StatisticListResource> getUserStatistics(Principal principal, @RequestParam(value = "limit", required = false) String limit) {
         UserEntity user = this.userService.getUserByUserEmail(principal.getName());
 
         int resultLimit = 0;

@@ -14,7 +14,6 @@ import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -176,7 +175,7 @@ public class DishRestController implements DishRestControllerApi {
         return new ResponseEntity(resource, HttpStatus.OK);
     }
 
-    public ResponseEntity<CollectionModel<TagResource>> getTagsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId) {
+    public ResponseEntity<TagListResource> getTagsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("retrieving dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
@@ -186,6 +185,7 @@ public class DishRestController implements DishRestControllerApi {
                 .map(TagResource::new)
                 .collect(Collectors.toList());
         tagList.forEach(tr -> tr.fillLinks(request, tr));
+        var returnValue = new TagListResource(tagList);
         return new ResponseEntity(tagList, HttpStatus.OK);
     }
 
