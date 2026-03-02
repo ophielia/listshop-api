@@ -14,7 +14,7 @@ import com.meg.listshop.lmt.api.model.DishSortKey;
 import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.api.model.V2ModelMapper;
 import com.meg.listshop.lmt.api.model.v2.*;
-import com.meg.listshop.lmt.api.model.v2.DishListResource;
+import com.meg.listshop.lmt.api.model.v2.DishList;
 import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 import com.meg.listshop.lmt.dish.DishSearchCriteria;
@@ -57,13 +57,13 @@ public class DishRestController implements V2DishRestControllerApi {
         this.dishSearchService = dishSearchService;
     }
 
-    public ResponseEntity<DishListResource> retrieveDishes(HttpServletRequest request,
-                                                           Authentication authentication,
-                                                           @RequestParam(value = "searchFragment", required = false) String searchFragment,
-                                                           @RequestParam(value = "includedTags", required = false) String includedTags,
-                                                           @RequestParam(value = "excludedTags", required = false) String excludedTags,
-                                                           @RequestParam(value = "sortKey", required = false) String sortKey,
-                                                           @RequestParam(value = "sortDirection", required = false) String sortDirection
+    public ResponseEntity<DishList> retrieveDishes(HttpServletRequest request,
+                                                   Authentication authentication,
+                                                   @RequestParam(value = "searchFragment", required = false) String searchFragment,
+                                                   @RequestParam(value = "includedTags", required = false) String includedTags,
+                                                   @RequestParam(value = "excludedTags", required = false) String excludedTags,
+                                                   @RequestParam(value = "sortKey", required = false) String sortKey,
+                                                   @RequestParam(value = "sortDirection", required = false) String sortDirection
     ) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Entered retrieveDishes includedTags: [{}], excludedTags: [{}], sortKey: [{}], sortDirection: [{}]", includedTags, excludedTags, sortKey, sortDirection);
@@ -75,7 +75,7 @@ public class DishRestController implements V2DishRestControllerApi {
             dishList = findDishes(userDetails.getId(), includedTags, excludedTags, searchFragment, sortKey, sortDirection);
         }
 
-        DishListResource resource = new DishListResource(dishList);
+        DishList resource = new DishList(dishList);
         resource.fillLinks(request, resource);
         return new ResponseEntity<>(resource, HttpStatus.OK);
 

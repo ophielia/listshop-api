@@ -5,16 +5,16 @@ import com.meg.listshop.lmt.api.model.TagResource;
 
 import java.util.List;
 
-public class TagListResource {
+public class TagList {
 
     @JsonProperty("tag_list")
     private List<TagResource> tagList;
 
-    public TagListResource(List<TagResource> tagList) {
+    public TagList(List<TagResource> tagList) {
         this.tagList = tagList;
     }
 
-    public TagListResource() {
+    public TagList() {
     }
 
 

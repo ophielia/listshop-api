@@ -48,12 +48,12 @@ public class TagRestController implements V2TagRestControllerApi {
             HttpServletRequest request) {
         Long userId = null;
         if (authentication == null) {
-            String message = "Retrieving tags for anonymous user";
+            String message = "V2 Retrieving tags for anonymous user";
             logger.info(message);
         } else {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             userId = userDetails.getId();
-            String message = String.format("Retrieving tags for user [%S]", userId);
+            String message = String.format("V2 Retrieving tags for user [%S]", userId);
             logger.info(message);
         }
 

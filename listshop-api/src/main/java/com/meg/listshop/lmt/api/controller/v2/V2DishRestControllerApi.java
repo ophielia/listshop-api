@@ -1,7 +1,7 @@
 package com.meg.listshop.lmt.api.controller.v2;
 
 import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.model.v2.DishListResource;
+import com.meg.listshop.lmt.api.model.v2.DishList;
 import com.meg.listshop.lmt.api.model.v2.DishResource;
 import com.meg.listshop.lmt.api.model.v2.IngredientListResource;
 import com.meg.listshop.lmt.api.model.v2.IngredientPut;
@@ -21,13 +21,13 @@ import jakarta.servlet.http.HttpServletRequest;
 public interface V2DishRestControllerApi {
 
     @GetMapping(produces = "application/json")
-    ResponseEntity<DishListResource> retrieveDishes(HttpServletRequest request,
-                                                    Authentication authentication,
-                                                    @RequestParam(value = "searchFragment", required = false) String searchFragment,
-                                                    @RequestParam(value = "includedTags", required = false) String includedTags,
-                                                    @RequestParam(value = "excludedTags", required = false) String excludedTags,
-                                                    @RequestParam(value = "sortKey", required = false) String sortKey,
-                                                    @RequestParam(value = "sortDirection", required = false) String sortDirection
+    ResponseEntity<DishList> retrieveDishes(HttpServletRequest request,
+                                            Authentication authentication,
+                                            @RequestParam(value = "searchFragment", required = false) String searchFragment,
+                                            @RequestParam(value = "includedTags", required = false) String includedTags,
+                                            @RequestParam(value = "excludedTags", required = false) String excludedTags,
+                                            @RequestParam(value = "sortKey", required = false) String sortKey,
+                                            @RequestParam(value = "sortDirection", required = false) String sortDirection
     );
 
     @GetMapping(value = "/{dishId}", produces = "application/json")

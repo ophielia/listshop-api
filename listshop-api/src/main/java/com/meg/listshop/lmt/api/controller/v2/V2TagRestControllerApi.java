@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public interface V2TagRestControllerApi {
 
 
-    @GetMapping(value = "/user")
+    @GetMapping()
     ResponseEntity<TagListResource> retrieveUserTagList(
             Authentication authentication,
             HttpServletRequest request);

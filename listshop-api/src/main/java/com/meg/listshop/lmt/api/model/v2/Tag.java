@@ -2,10 +2,6 @@ package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.listshop.lmt.api.model.Dish;
-import com.meg.listshop.lmt.api.model.TagType;
-
-import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Tag {
@@ -104,5 +100,19 @@ public class Tag {
     public Tag withParentId(String parentId) {
         this.parentId = parentId;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Tag{" +
+                "tagId='" + tagId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", tagType='" + tagType + '\'' +
+                ", power=" + power +
+                ", isGroup=" + isGroup +
+                ", parentId='" + parentId + '\'' +
+                '}';
     }
 }

@@ -6,135 +6,58 @@ import java.util.List;
 
 public class Ingredient {
 
-    @JsonProperty("id")
-    private String id;
-    @JsonProperty("tag_id")
-    private String tagId;
-    @JsonProperty("tag_display")
-    private String tagDisplay;
-    @JsonProperty("whole_quantity")
-    private Integer wholeQuantity;
-    @JsonProperty("fractional_quantity")
-    private String fractionalQuantity;
-    @JsonProperty("quantity_display")
-    private String quantityDisplay;
-    @JsonProperty("unit_id")
-    private String unitId;
-    @JsonProperty("unit_name")
-    private String unitName;
-    @JsonProperty("raw_modifiers")
-    private List<String> rawModifiers;
-    @JsonProperty("unit_display")
-    private String unitDisplay;
-    @JsonProperty("raw_entry")
-    private String rawEntry;
+    @JsonProperty("item_id")
+    private String itemId;
+    private NestedTag tag;
+    private Amount amount;
+    private String display;
 
     public Ingredient() {
-        // empty constructor
     }
 
-    public String getId() {
-        return id;
+    public Ingredient withItemId(String itemId) {
+        this.itemId = itemId;
+        return this;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public Ingredient withTag(NestedTag tag) {
+        this.tag = tag;
+        return this;
     }
 
-    public String getTagId() {
-        return tagId;
+    public Ingredient withAmount(Amount amount) {
+        this.amount = amount;
+        return this;
     }
 
-    public void setTagId(String tagId) {
-        this.tagId = tagId;
+    public Ingredient withDisplay(String display) {
+        this.display = display;
+        return this;
     }
 
-    public String getTagDisplay() {
-        return tagDisplay;
+    public String getItemId() {
+        return itemId;
     }
 
-    public void setTagDisplay(String tagDisplay) {
-        this.tagDisplay = tagDisplay;
+    public NestedTag getTag() {
+        return tag;
     }
 
-    public Integer getWholeQuantity() {
-        return wholeQuantity;
+    public Amount getAmount() {
+        return amount;
     }
 
-    public void setWholeQuantity(Integer wholeQuantity) {
-        this.wholeQuantity = wholeQuantity;
-    }
-
-    public String getFractionalQuantity() {
-        return fractionalQuantity;
-    }
-
-    public void setFractionalQuantity(String fractionalQuantity) {
-        this.fractionalQuantity = fractionalQuantity;
-    }
-
-    public String getQuantityDisplay() {
-        return quantityDisplay;
-    }
-
-    public void setQuantityDisplay(String quantityDisplay) {
-        this.quantityDisplay = quantityDisplay;
-    }
-
-    public String getUnitId() {
-        return unitId;
-    }
-
-    public void setUnitId(String unitId) {
-        this.unitId = unitId;
-    }
-
-    public String getUnitName() {
-        return unitName;
-    }
-
-    public void setUnitName(String unitName) {
-        this.unitName = unitName;
-    }
-
-    public List<String> getRawModifiers() {
-        return rawModifiers;
-    }
-
-    public void setRawModifiers(List<String> rawModifiers) {
-        this.rawModifiers = rawModifiers;
-    }
-
-    public String getUnitDisplay() {
-        return unitDisplay;
-    }
-
-    public void setUnitDisplay(String unitDisplay) {
-        this.unitDisplay = unitDisplay;
-    }
-
-    public String getRawEntry() {
-        return rawEntry;
-    }
-
-    public void setRawEntry(String rawEntry) {
-        this.rawEntry = rawEntry;
+    public String getDisplay() {
+        return display;
     }
 
     @Override
     public String toString() {
         return "Ingredient{" +
-                "id='" + id + '\'' +
-                ", tagId='" + tagId + '\'' +
-                ", tagDisplay='" + tagDisplay + '\'' +
-                ", wholeQuantity=" + wholeQuantity +
-                ", fractionalQuantity='" + fractionalQuantity + '\'' +
-                ", quantityDisplay='" + quantityDisplay + '\'' +
-                ", unitId='" + unitId + '\'' +
-                ", unitName='" + unitName + '\'' +
-                ", rawModifiers='" + rawModifiers + '\'' +
-                ", unitDisplay='" + unitDisplay + '\'' +
-                ", rawEntry='" + rawEntry + '\'' +
+                "itemId='" + itemId + '\'' +
+                ", tag=" + tag +
+                ", amount=" + amount +
+                ", display='" + display + '\'' +
                 '}';
     }
 }
