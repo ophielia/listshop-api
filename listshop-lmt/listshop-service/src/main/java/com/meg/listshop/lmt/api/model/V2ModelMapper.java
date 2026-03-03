@@ -8,6 +8,8 @@
 package com.meg.listshop.lmt.api.model;
 
 import com.meg.listshop.lmt.api.model.v2.Ingredient;
+import com.meg.listshop.lmt.api.model.v2.Dish;
+import com.meg.listshop.lmt.api.model.v2.NestedDish;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
@@ -139,7 +141,19 @@ public class V2ModelMapper {
                 .userId(dishDto.getDish().getUserId());
     }
 
+    public static NestedDish toV2NestedDishModel(DishEntity dishEntity) {
+        return new NestedDish(dishEntity.getId(), dishEntity.getDishName());
+    }
+
     public static com.meg.listshop.lmt.api.model.v2.Dish toV2DishModel(DishEntity dishEntity) {
+
+
+        Dish dish = new Dish(dishEntity.getId())
+                .withDishName(dishEntity.getDishName())
+                .withDescription(dishEntity.getDescription())
+                .withReference(dishEntity.getReference())
+                .withUserId(String.valueOf(dishEntity.getUserId()))
+                .withLastAdded(dishEntity.getLastAdded());
         // tags and ingredients - to do....
 
         return new com.meg.listshop.lmt.api.model.v2.Dish(dishEntity.getId())

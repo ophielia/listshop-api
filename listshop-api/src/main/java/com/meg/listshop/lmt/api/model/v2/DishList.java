@@ -8,16 +8,16 @@ import java.util.Objects;
 public class DishList {
 
     @JsonProperty("dish_list")
-    private List<Dish> dishes;
+    private List<NestedDish> dishes;
 
     public DishList() {
     }
 
-    public DishList(List<Dish> dishes) {
+    public DishList(List<NestedDish> dishes) {
         this.dishes = dishes;
     }
 
-    public List<Dish> getDishes() {
+    public List<NestedDish> getDishes() {
         return dishes;
     }
 

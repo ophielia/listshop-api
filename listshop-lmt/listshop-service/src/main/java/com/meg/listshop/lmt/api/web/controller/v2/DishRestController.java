@@ -66,23 +66,19 @@ public class DishRestController implements V2DishRestControllerApi {
                                                    @RequestParam(value = "sortDirection", required = false) String sortDirection
     ) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        logger.info("Entered retrieveDishes includedTags: [{}], excludedTags: [{}], sortKey: [{}], sortDirection: [{}]", includedTags, excludedTags, sortKey, sortDirection);
-        List<DishResource> dishList;
-        if (ObjectUtils.isEmpty(includedTags) && ObjectUtils.isEmpty(excludedTags)
-                && ObjectUtils.isEmpty(sortKey) && ObjectUtils.isEmpty(sortDirection)) {
-            dishList = getAllDishes(userDetails.getId());
-        } else {
-            dishList = findDishes(userDetails.getId(), includedTags, excludedTags, searchFragment, sortKey, sortDirection);
-        }
+        logger.info("Entered retrieveDishes user: [{}], includedTags: [{}], excludedTags: [{}], sortKey: [{}], sortDirection: [{}]", userDetails.getId(), includedTags, excludedTags, sortKey, sortDirection);
+        DishSearchCriteria criteria = criteriaForParameters(userDetails.getId(), includedTags, excludedTags, searchFragment, sortKey, sortDirection);
+        List<NestedDish> dishList =  dishSearchService.findDishes(criteria).stream()
+                .map(V2ModelMapper::toV2NestedDishModel)
+                .collect(Collectors.toList());
 
         DishList resource = new DishList(dishList);
-        resource.fillLinks(request, resource);
         return new ResponseEntity<>(resource, HttpStatus.OK);
 
     }
 
     @Override
-    public ResponseEntity<DishResource> retrieveDish(HttpServletRequest request, Authentication authentication, Long dishId) {
+    public ResponseEntity<DishList> retrieveDish(HttpServletRequest request, Authentication authentication, Long dishId) {
         //@GetMapping(value = "/{dishId}", produces = "application/json")
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("retrieving dish [%S] for user [%S]", dishId, userDetails.getId());
@@ -94,7 +90,7 @@ public class DishRestController implements V2DishRestControllerApi {
         DishDTO dish = this.dishService
                 .getDishForV2Display(userDetails.getId(), dishId);
 
-        DishResource resource = new DishResource(V2ModelMapper.toModel(dish, true));
+        DishList resource = new DishList(V2ModelMapper.toModel(dish, true));
 
         return new ResponseEntity(resource, HttpStatus.OK);
     }
@@ -287,9 +283,41 @@ public class DishRestController implements V2DishRestControllerApi {
         return longValue;
     }
 
+    private DishSearchCriteria criteriaForParameters(Long userId, String includedTags, String excludedTags,
+                                      String searchFragment, String sortKey, String sortDirection) {
 
-    private List<DishResource> findDishes(Long userId, String includedTags, String excludedTags,
+
+        var criteria = new DishSearchCriteria(userId);
+        if (includedTags != null) {
+            List<Long> tagIdList = FlatStringUtils.inflateStringToLongList(includedTags,",");
+            criteria.setIncludedTagIds(tagIdList);
+        }
+        if (excludedTags != null) {
+            List<Long> tagIdList = FlatStringUtils.inflateStringToLongList(excludedTags,",");
+            criteria.setExcludedTagIds(tagIdList);
+        }
+        if (!ObjectUtils.isEmpty(sortKey)) {
+            var dishSortKey = Enums.getIfPresent(DishSortKey.class, sortKey).orNull();
+            criteria.setSortKey(dishSortKey);
+        } else {
+            criteria.setSortKey(DishSortKey.CreatedOn);
+        }
+        if (!ObjectUtils.isEmpty(sortDirection)) {
+            var dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
+            criteria.setSortDirection(dishSortDirection);
+        } else {
+            criteria.setSortDirection(DishSortDirection.DESC);
+        }
+        if (!ObjectUtils.isEmpty(searchFragment)) {
+            criteria.setNameFragment(searchFragment);
+        }
+        return criteria;
+
+    }
+
+    private List<DishList> findDishes(Long userId, String includedTags, String excludedTags,
                                           String searchFragment, String sortKey, String sortDirection) {
+
         String message = String.format("find dishesfor user [%S] - search [%S]", userId, searchFragment);
         logger.info(message);
 
@@ -305,25 +333,28 @@ public class DishRestController implements V2DishRestControllerApi {
         if (!ObjectUtils.isEmpty(sortKey)) {
             var dishSortKey = Enums.getIfPresent(DishSortKey.class, sortKey).orNull();
             criteria.setSortKey(dishSortKey);
+        } else {
+            criteria.setSortKey(DishSortKey.CreatedOn);
         }
         if (!ObjectUtils.isEmpty(sortDirection)) {
             var dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
             criteria.setSortDirection(dishSortDirection);
+        } else {
+            criteria.setSortDirection(DishSortDirection.DESC);
         }
         if (!ObjectUtils.isEmpty(searchFragment)) {
             criteria.setNameFragment(searchFragment);
         }
         logger.debug("Searching for dishes with criteria [{}]. ", criteria);
-        return dishSearchService.findDishes(criteria).stream()
+         dishSearchService.findDishes(criteria).stream()
                 .map(d -> V2ModelMapper.toV2DishModel(d))
-                .map(DishResource::new)
                 .collect(Collectors.toList());
+
     }
 
-    private List<DishResource> getAllDishes(Long userId) {
+    private List<NestedDish> getAllDishes(Long userId) {
         return dishService.getDishesForUser(userId).stream()
-                .map(d -> V2ModelMapper.toV2DishModel(d))
-                .map(DishResource::new)
+                .map(V2ModelMapper::toV2NestedDishModel)
                 .collect(Collectors.toList());
 
     }

@@ -14,8 +14,8 @@ public class NestedDish {
     NestedDish() {
     }
 
-    public NestedDish(String dishId, String name) {
-        this.dishId = dishId;
+    public NestedDish(Long dishId, String name) {
+        this.dishId = String.valueOf(dishId);
         this.name = name;
     }
 

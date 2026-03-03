@@ -34,6 +34,10 @@ public class Dish {
         // for jackson
     }
 
+    public Dish(Long dishId) {
+        this.dishId = String.valueOf(dishId);
+    }
+
     public Dish withDishId(String dishId) {
         this.dishId = dishId;
         return this;
