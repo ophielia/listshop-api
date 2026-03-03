@@ -37,7 +37,7 @@ public class Tag {
 
     private Boolean isLiquid;
 
-    Tag() {
+    public Tag() {
     }
 
     public Tag(String name) {
