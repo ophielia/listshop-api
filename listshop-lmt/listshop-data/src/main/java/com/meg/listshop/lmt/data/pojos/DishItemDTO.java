@@ -18,7 +18,6 @@ public class DishItemDTO {
     private FractionType fractionalQuantity;
     private String fractionDisplay;
     private String tagDisplay;
-    private String unitDisplay;
     private List<String> rawModifiers;
     private String unitName;
     private String marker;
@@ -153,15 +152,6 @@ public class DishItemDTO {
     public void setTagDisplay(String tagDisplay) {
         this.tagDisplay = tagDisplay;
     }
-
-    public String getUnitDisplay() {
-        return unitDisplay;
-    }
-
-    public void setUnitDisplay(String unitDisplay) {
-        this.unitDisplay = unitDisplay;
-    }
-
 
     public void setRawEntry(String rawEntry) {
         this.rawEntry = rawEntry;

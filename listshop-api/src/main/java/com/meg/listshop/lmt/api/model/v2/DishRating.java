@@ -15,6 +15,9 @@ public class DishRating {
 
     public DishRating() {
     }
+    public DishRating(com.meg.listshop.lmt.api.model.DishRatingInfo ratingInfo) {
+       //MM start here
+    }
 
     public DishRating withDish(NestedDish dish) {
         this.dish = dish;

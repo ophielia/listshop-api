@@ -22,7 +22,7 @@ public class Dish {
 
     private List<Ingredient> ingredients = new ArrayList<>();
 
-    private Ratings ratings;
+    private List<RatingInfo> dishRatings = new ArrayList<>();
 
     @JsonProperty("user_id")
     private String userId;
@@ -68,8 +68,8 @@ public class Dish {
         return this;
     }
 
-    public Dish withRatings(Ratings ratings) {
-        this.ratings = ratings;
+    public Dish withRatings(List<RatingInfo> dishRatings) {
+        this.dishRatings = dishRatings;
         return this;
     }
 
@@ -107,8 +107,8 @@ public class Dish {
         return ingredients;
     }
 
-    public Ratings getRatings() {
-        return ratings;
+    public DishRatings getRatings() {
+        return dishRatings;
     }
 
     public String getUserId() {

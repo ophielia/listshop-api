@@ -13,6 +13,7 @@ public class Ingredient {
     private String display;
 
     public Ingredient() {
+    // empty constructor for Jackson
     }
 
     public Ingredient withItemId(String itemId) {

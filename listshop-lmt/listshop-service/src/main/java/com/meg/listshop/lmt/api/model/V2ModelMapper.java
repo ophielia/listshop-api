@@ -7,15 +7,15 @@
 
 package com.meg.listshop.lmt.api.model;
 
-import com.meg.listshop.lmt.api.model.v2.Ingredient;
+import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.lmt.api.model.v2.Dish;
-import com.meg.listshop.lmt.api.model.v2.NestedDish;
+import com.meg.listshop.lmt.api.model.v2.RatingInfo;
 import com.meg.listshop.lmt.data.entity.*;
-import com.meg.listshop.lmt.data.pojos.DishDTO;
-import com.meg.listshop.lmt.data.pojos.DishItemDTO;
-import com.meg.listshop.lmt.data.pojos.SuggestionDTO;
+import com.meg.listshop.lmt.data.pojos.*;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 public class V2ModelMapper {
@@ -31,28 +31,23 @@ public class V2ModelMapper {
             return null;
         }
 
-        Ingredient ingredient = new Ingredient();
-        ingredient.setId(String.valueOf(ingredientDto.getDishItemId()));
-        ingredient.setTagId(String.valueOf(ingredientDto.getTagId()));
-        ingredient.setTagDisplay(ingredientDto.getTagDisplay());
-        ingredient.setWholeQuantity(ingredientDto.getWholeQuantity());
-        if (ingredientDto.getFractionalQuantity() != null) {
-            ingredient.setFractionalQuantity(ingredientDto.getFractionalQuantity().name());
-        }
-        ingredient.setUnitId(String.valueOf(ingredientDto.getUnitId()));
-        ingredient.setUnitName(ingredientDto.getUnitName());
-        ingredient.setRawModifiers(ingredientDto.getRawModifiers());
-        ingredient.setRawEntry(ingredientDto.getRawEntry());
-        ingredient.setUnitDisplay(ingredientDto.getUnitDisplay());
-        String quantityDisplay = "";
-        if (ingredientDto.getWholeQuantity() != null) {
-            quantityDisplay = quantityDisplay + ingredientDto.getWholeQuantity();
-        }
-        if (ingredientDto.getFractionalQuantity() != null) {
-            quantityDisplay = quantityDisplay + " " + ingredientDto.getFractionalQuantity().getDisplayName();
-        }
-        ingredient.setQuantityDisplay(quantityDisplay);
-        return ingredient;
+        NestedTag tag = new NestedTag(ingredientDto.getTagId(), ingredientDto.getTagDisplay());
+        String quantityDisplay = "" + ingredientDto.getQuantity();
+        Amount amount = new Amount()
+                .withFractionalQuantity(ingredientDto.getFractionDisplay())
+                .withUnitDisplay(ingredientDto.getUnitName())
+                .withUnitId(String.valueOf(ingredientDto.getUnitId()))
+                .withWholeQuantity(ingredientDto.getWholeQuantity())
+                .withQuantityDisplay(quantityDisplay)
+                .withRawModifiers(ingredientDto.getRawModifiers())
+                .withRawEntry(ingredientDto.getRawEntry());
+        String display = String.format("%s %s", ingredientDto.getRawEntry(), ingredientDto.getTagDisplay()).trim();
+
+        return new Ingredient()
+                .withItemId(String.valueOf(ingredientDto.getDishItemId()))
+                .withTag(tag)
+                .withAmount(amount)
+                .withDisplay(display);
     }
 
     public static ShoppingList toModel(ShoppingListEntity shoppingListEntity, List<ShoppingListCategory> itemCategories) {
@@ -118,28 +113,31 @@ public class V2ModelMapper {
                 .handles(listItemEntity.getHandles());
     }
 
-    public static com.meg.listshop.lmt.api.model.v2.Dish toModel(DishDTO dishDto, boolean includeTags) {
+    public static Dish toModel(DishDTO dishDto, boolean includeTags) {
         // tags
-        List<Tag> dishTags = new ArrayList<>();
+        List<NestedTag> dishTags = new ArrayList<>();
         if (includeTags) {
             dishTags = toModelItemsAsTags(dishDto.getTags());
         }
         // ingredients
         List<Ingredient> ingredients = new ArrayList<>();
         if (includeTags) {
-            ingredients = toModelIngredients(dishDto.getIngredients());
+            ingredients = toIngredientsModel(dishDto.getIngredients());
         }
+        // ratings
+        List<RatingInfo> dishRatings = toRatingsModel(dishDto.getRatingDto());
 
-        return new com.meg.listshop.lmt.api.model.v2.Dish(dishDto.getDish().getId())
-                .description(dishDto.getDish().getDescription())
-                .dishName(dishDto.getDish().getDishName())
-                .reference(dishDto.getDish().getReference())
-                .tags(dishTags)
-                .ratings(dishDto.getRatings())
-                .ingredients(ingredients)
-                .lastAdded(dishDto.getDish().getLastAdded())
-                .userId(dishDto.getDish().getUserId());
+        return new Dish(dishDto.getDish().getId())
+                .withDescription(dishDto.getDish().getDescription())
+                .withDishName(dishDto.getDish().getDishName())
+                .withReference(dishDto.getDish().getReference())
+                .withTags(dishTags)
+                .withRatings(dishRatings)
+                .withIngredients(ingredients)
+                .withLastAdded(dishDto.getDish().getLastAdded())
+                .withUserId(String.valueOf(dishDto.getDish().getUserId()));
     }
+
 
     public static NestedDish toV2NestedDishModel(DishEntity dishEntity) {
         return new NestedDish(dishEntity.getId(), dishEntity.getDishName());
@@ -190,7 +188,7 @@ public class V2ModelMapper {
         return tags;
     }
 
-    private static List<Ingredient> toModelIngredients(List<DishItemDTO> ingredientDTOs) {
+    private static List<Ingredient> toIngredientsModel(List<DishItemDTO> ingredientDTOs) {
         if (ingredientDTOs == null) {
             return new ArrayList<>();
         }
@@ -199,6 +197,30 @@ public class V2ModelMapper {
             ingredients.add(toModel(dishItemDTO));
         }
         return ingredients;
+    }
+
+    private static List<RatingInfo>  toRatingsModel(RatingsDTO ratings) {
+        List<RatingInfo> ratingInfo = new ArrayList<>();
+        if (ratings == null) {
+            return ratingInfo;
+        }
+        Map<Long, TagInfoDTO> tagMap = ratings.getRatingTags().stream()
+                .collect(Collectors.toMap(TagInfoDTO::getParentId, Function.identity()));
+        ratings.getRatingHeaders().stream()
+                .forEach(ratingHeader -> {
+                    NestedTag headerTag = new NestedTag(ratingHeader.getId(), ratingHeader.getName());
+                    TagInfoDTO ratingValue = tagMap.get(ratingHeader.getId());
+                    if (ratingValue != null && ratingValue.getPower() != null) {
+                        int power = (int) ratingValue.getPower().doubleValue();
+                        int maxPower = ratings.getMaxRatingPower();
+                        RatingInfo info = new RatingInfo()
+                                .withTag(headerTag)
+                                .withPower(power)
+                                .withPower(maxPower);
+                        ratingInfo.add(info);
+                    }
+                });
+        return ratingInfo;
     }
 
     private static void enhanceCategories(List<ShoppingListCategory> filledCategories
@@ -210,42 +232,30 @@ public class V2ModelMapper {
         filledCategories.forEach(c -> enhanceSources(c.getItems()));
     }
 
-    private static List<Tag> toModelItemsAsTags(List<DishItemEntity> itemEntities) {
+    private static List<NestedTag> toModelItemsAsTags(List<DishItemEntity> itemEntities) {
         if (itemEntities == null) {
             return new ArrayList<>();
         }
-        return toModel(itemEntities.stream().map(DishItemEntity::getTag).toList());
+        return toNestedTagModel(itemEntities.stream().map(DishItemEntity::getTag).toList());
     }
 
-    private static List<Tag> toModel(List<TagEntity> tagEntities) {
-        List<Tag> tags = new ArrayList<>();
+    private static List<NestedTag> toNestedTagModel(List<TagEntity> tagEntities) {
+        List<NestedTag> tags = new ArrayList<>();
         if (tagEntities == null) {
             return tags;
         }
         for (TagEntity entity : tagEntities) {
-            tags.add(toModel(entity));
+            tags.add(toNestedTagModel(entity));
         }
         return tags;
     }
 
-    public static Tag toModel(TagEntity tagEntity) {
+    public static NestedTag toNestedTagModel(TagEntity tagEntity) {
         if (tagEntity == null) {
             return null;
         }
 
-        return new Tag(tagEntity.getId())
-                .name(tagEntity.getName())
-                .description(tagEntity.getDescription())
-                .userId(String.valueOf(tagEntity.getUserId()))
-                .tagType(tagEntity.getTagType().name())
-                .power(tagEntity.getPower())
-                .isGroup(tagEntity.getIsGroup())
-                // don't need dishes in tags  .dishes(dishesToModel(tagEntity.getDishes()))
-                .assignSelect(!tagEntity.getIsGroup())
-                .searchSelect(tagEntity.getIsGroup())
-                .parentId(String.valueOf(tagEntity.getParentId()))
-                .isLiquid(tagEntity.getIsLiquid())
-                .toDelete(tagEntity.isToDelete());
+        return new NestedTag(tagEntity.getId(), tagEntity.getName());
     }
 
     public static Suggestion toModel(SuggestionDTO suggestionDTO) {

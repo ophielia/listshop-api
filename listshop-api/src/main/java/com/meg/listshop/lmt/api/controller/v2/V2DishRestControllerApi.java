@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.api.controller.v2;
 
 import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.model.v2.Dish;
 import com.meg.listshop.lmt.api.model.v2.DishList;
 import com.meg.listshop.lmt.api.model.v2.DishResource;
 import com.meg.listshop.lmt.api.model.v2.IngredientListResource;
@@ -31,7 +32,7 @@ public interface V2DishRestControllerApi {
     );
 
     @GetMapping(value = "/{dishId}", produces = "application/json")
-    ResponseEntity<DishResource> retrieveDish(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
+    ResponseEntity<Dish> retrieveDish(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
 
     @GetMapping(value = "/{dishId}/ingredients", produces = "application/json")
     ResponseEntity<IngredientListResource> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId) throws BadParameterException;

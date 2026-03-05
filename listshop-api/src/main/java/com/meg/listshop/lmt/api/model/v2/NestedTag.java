@@ -16,8 +16,8 @@ public class NestedTag {
     NestedTag() {
     }
 
-    public NestedTag(String tagId, String name) {
-        this.tagId = tagId;
+    public NestedTag(Long tagId, String name) {
+        this.tagId = String.valueOf(tagId);
         this.name = name;
     }
 

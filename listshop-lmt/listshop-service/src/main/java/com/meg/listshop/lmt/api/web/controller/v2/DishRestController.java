@@ -78,21 +78,19 @@ public class DishRestController implements V2DishRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<DishList> retrieveDish(HttpServletRequest request, Authentication authentication, Long dishId) {
+    public ResponseEntity<Dish> retrieveDish(HttpServletRequest request, Authentication authentication, Long dishId) {
         //@GetMapping(value = "/{dishId}", produces = "application/json")
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("retrieving dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);
 
         // get dish, with tags, ingredients and ratings
-        // sub objects sorted, but in "raw" form
-        // will be "translated" in V2ModelMapper
         DishDTO dish = this.dishService
                 .getDishForV2Display(userDetails.getId(), dishId);
 
-        DishList resource = new DishList(V2ModelMapper.toModel(dish, true));
+        Dish dishModel = V2ModelMapper.toModel(dish, true);
 
-        return new ResponseEntity(resource, HttpStatus.OK);
+        return new ResponseEntity(dishModel, HttpStatus.OK);
     }
 
     @Override

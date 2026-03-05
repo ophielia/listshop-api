@@ -240,6 +240,12 @@ public class TagServiceImpl implements TagService {
         return dbTag;
     }
 
+    public List<TagInfoDTO> getTagInfoList(List<Long> tagIds) {
+        TagSearchCriteria criteria = new TagSearchCriteria();
+        criteria.setTagIds(tagIds);
+        return getTagInfoList(criteria);
+    }
+
     public List<TagInfoDTO> getTagInfoList(Long userId, List<TagType> tagTypes) {
         return tagInfoCustomRepository.retrieveTagInfoByUser(userId, tagTypes);
     }

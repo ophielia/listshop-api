@@ -9,9 +9,17 @@ public class RatingInfo {
     @JsonProperty("tag")
     private NestedTag tag;
     private Integer power;
+    @JsonProperty("max_power")
     private Integer maxPower;
 
     public RatingInfo() {
+    }
+
+
+    public RatingInfo(com.meg.listshop.lmt.api.model.RatingInfo ratingInfo) {
+        this.tag = new NestedTag(ratingInfo.getRatingTagId(), ratingInfo.getRatingTagLabel());
+        this.power = ratingInfo.getPower();
+        this.maxPower = ratingInfo.getMaxPower();
     }
 
     public RatingInfo withTag(NestedTag tag) {

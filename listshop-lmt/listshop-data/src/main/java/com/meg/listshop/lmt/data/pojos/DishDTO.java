@@ -8,6 +8,7 @@ import java.util.List;
 
 public class DishDTO {
 
+    private RatingsDTO ratingDto;
     private DishEntity dish;
     private List<DishItemDTO> ingredients;
     private List<DishItemEntity> tags;
@@ -19,6 +20,13 @@ public class DishDTO {
         this.ingredients = ingredients;
         this.tags = tags;
         this.ratings = ratings;
+    }
+
+    public DishDTO(DishEntity dish, List<DishItemDTO> ingredients, List<DishItemEntity> tags, RatingsDTO ratingsDTO) {
+        this.dish = dish;
+        this.ingredients = ingredients;
+        this.tags = tags;
+        this.ratingDto = ratingsDTO;
     }
 
     public DishEntity getDish() {
@@ -37,6 +45,10 @@ public class DishDTO {
         return ratings;
     }
 
+    public RatingsDTO getRatingDto() {
+        return ratingDto;
+    }
+
     @Override
     public String toString() {
         return "DishDTO{" +
@@ -44,6 +56,7 @@ public class DishDTO {
                 ", ingredients=" + ingredients +
                 ", tags=" + tags +
                 ", ratings=" + ratings +
+                ", ratingDto=" + ratingDto +
                 '}';
     }
 }

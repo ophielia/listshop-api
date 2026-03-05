@@ -19,6 +19,8 @@ import java.util.Set;
 public interface TagService {
     @Value("${service.tagservice.main.dish.tagid}")
     Long MAIN_DISH_TAG_ID = 320L;
+    @Value("${service.tagservice.max.rating.value:5}")
+    Integer MAX_RATiNG_POWER = 5;
 
     TagEntity save(TagEntity tag);
 
@@ -69,6 +71,8 @@ public interface TagService {
 
     List<TagEntity> getReplacedTagsFromIds(Set<Long> tagKeys);
 
+
+    List<TagInfoDTO> getTagInfoList(List<Long> tagIds);
 
     List<TagInfoDTO> getTagInfoList(Long userId, List<TagType> tagTypes);
 

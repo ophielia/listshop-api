@@ -16,6 +16,10 @@ public class Amount {
     private String unitId;
     @JsonProperty("unit_display")
     private String unitDisplay;
+    @JsonProperty("raw_entry")
+    private String rawEntry;
+    @JsonProperty("raw_modifiers")
+    private List<String> rawModifiers;
 
     public Amount() {
         // empty constructor
@@ -43,6 +47,17 @@ public class Amount {
 
     public Amount withUnitDisplay(String unitDisplay) {
         this.unitDisplay = unitDisplay;
+        return this;
+    }
+
+
+    public Amount withRawEntry(String rawEntry) {
+        this.rawEntry = rawEntry;
+        return this;
+    }
+
+    public Amount withRawModifiers(List<String> rawModifiers) {
+        this.rawModifiers = rawModifiers;
         return this;
     }
 
@@ -74,6 +89,8 @@ public class Amount {
                 ", quantityDisplay='" + quantityDisplay + '\'' +
                 ", unitId='" + unitId + '\'' +
                 ", unitDisplay='" + unitDisplay + '\'' +
+                ", rawEntry='" + rawEntry + '\'' +
+                ", rawModifiers='" + rawModifiers + '\'' +
                 '}';
     }
 }

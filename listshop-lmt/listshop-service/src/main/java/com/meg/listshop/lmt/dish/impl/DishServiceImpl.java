@@ -22,6 +22,8 @@ import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
+import com.meg.listshop.lmt.data.pojos.RatingsDTO;
+import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
 import com.meg.listshop.lmt.dish.DishService;
@@ -338,13 +340,24 @@ public class DishServiceImpl implements DishService {
         // tags
         List<DishItemEntity> tags = dish.getItems().stream()
                 .filter(di -> includedInStandard.contains(di.getTag().getTagType()))
-                .collect(Collectors.toList());
+                .toList();
         tags.sort(Comparator.comparing(functionGetTagName));
 
         // ratings
-        RatingUpdateInfo ratings = tagService.getRatingUpdateInfoForDishIds(Collections.singletonList(dishId));
+        List<Long> ratingTagIds = dish.getItems().stream()
+                .map(DishItemEntity::getTag)
+                .filter(tag -> tag.getTagType().equals(TagType.Rating))
+                .map(TagEntity::getId)
+                .toList();
+        List<TagInfoDTO> ratingTags = tagService.getTagInfoList(ratingTagIds);
+        List<Long> headerIds = ratingTags.stream()
+                .map(TagInfoDTO::getParentId)
+                .filter(Objects::nonNull)
+                .toList();
+        List<TagEntity> ratingHeaderTags = tagService.getTagsForIdList(headerIds);
+        RatingsDTO ratingsDTO = new RatingsDTO(ratingTags, ratingHeaderTags, TagService.MAX_RATiNG_POWER);
 
-        return new DishDTO(dish, ingredients, tags, ratings);
+        return new DishDTO(dish, ingredients, tags, ratingsDTO);
     }
 
     @Override

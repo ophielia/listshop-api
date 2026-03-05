@@ -1,7 +1,6 @@
 package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.listshop.lmt.api.model.DishRatingInfo;
 import com.meg.listshop.lmt.api.model.RatingInfo;
 
 import java.util.Set;
@@ -9,27 +8,27 @@ import java.util.Set;
 /**
  * Created by margaretmartin on 12/04/2018.
  */
-public class Ratings {
+public class DishRatings {
 
     @JsonProperty("headers")
     private Set<RatingInfo> ratingHeaders;
 
-    @JsonProperty("dish_ratings")
-    private Set<RatingInfo> dishRatingInfoSet;
+    @JsonProperty("ratings")
+    private Set<DishRating> ratingsInfo;
 
-    public Ratings() {
+    public DishRatings() {
     }
 
-    public Ratings(Set<RatingInfo> ratingHeaders, Set<RatingInfo> dishRatingInfoSet) {
+    public DishRatings(Set<RatingInfo> ratingHeaders, Set<DishRating> ratingsInfo) {
         this.ratingHeaders = ratingHeaders;
-        this.dishRatingInfoSet = dishRatingInfoSet;
+        this.ratingsInfo = ratingsInfo;
     }
 
     @Override
     public String toString() {
         return "Ratings{" +
                 "ratingHeaders=" + ratingHeaders +
-                ", dishRatingInfoSet=" + dishRatingInfoSet +
+                ", dishRatingInfoSet=" + ratingsInfo +
                 '}';
     }
 }
