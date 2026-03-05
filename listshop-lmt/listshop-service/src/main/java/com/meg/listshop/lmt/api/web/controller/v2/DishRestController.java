@@ -94,7 +94,7 @@ public class DishRestController implements V2DishRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<IngredientListResource> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, Long dishId) throws BadParameterException {
+    public ResponseEntity<IngredientList> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, Long dishId) throws BadParameterException {
         //@GetMapping(value = "/{dishId}/ingredients", produces = "application/json")
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -102,11 +102,10 @@ public class DishRestController implements V2DishRestControllerApi {
             throw new BadParameterException("Dish id cannot be null in getIngredientsByDishId");
         }
         List<DishItemDTO> rawIngredients = dishService.getDishIngredients(userDetails.getId(), dishId);
-        List<IngredientResource> ingredients = rawIngredients.stream()
+        List<Ingredient> ingredients = rawIngredients.stream()
                 .map(V2ModelMapper::toModel)
-                .map(IngredientResource::new)
-                .collect(Collectors.toList());
-        var returnValue = new IngredientListResource(ingredients);
+                .toList();
+        var returnValue = new IngredientList(ingredients);
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
@@ -310,50 +309,6 @@ public class DishRestController implements V2DishRestControllerApi {
             criteria.setNameFragment(searchFragment);
         }
         return criteria;
-
-    }
-
-    private List<DishList> findDishes(Long userId, String includedTags, String excludedTags,
-                                          String searchFragment, String sortKey, String sortDirection) {
-
-        String message = String.format("find dishesfor user [%S] - search [%S]", userId, searchFragment);
-        logger.info(message);
-
-        var criteria = new DishSearchCriteria(userId);
-        if (includedTags != null) {
-            List<Long> tagIdList = FlatStringUtils.inflateStringToLongList(includedTags,",");
-            criteria.setIncludedTagIds(tagIdList);
-        }
-        if (excludedTags != null) {
-            List<Long> tagIdList = FlatStringUtils.inflateStringToLongList(excludedTags,",");
-            criteria.setExcludedTagIds(tagIdList);
-        }
-        if (!ObjectUtils.isEmpty(sortKey)) {
-            var dishSortKey = Enums.getIfPresent(DishSortKey.class, sortKey).orNull();
-            criteria.setSortKey(dishSortKey);
-        } else {
-            criteria.setSortKey(DishSortKey.CreatedOn);
-        }
-        if (!ObjectUtils.isEmpty(sortDirection)) {
-            var dishSortDirection = Enums.getIfPresent(DishSortDirection.class, sortDirection).orNull();
-            criteria.setSortDirection(dishSortDirection);
-        } else {
-            criteria.setSortDirection(DishSortDirection.DESC);
-        }
-        if (!ObjectUtils.isEmpty(searchFragment)) {
-            criteria.setNameFragment(searchFragment);
-        }
-        logger.debug("Searching for dishes with criteria [{}]. ", criteria);
-         dishSearchService.findDishes(criteria).stream()
-                .map(d -> V2ModelMapper.toV2DishModel(d))
-                .collect(Collectors.toList());
-
-    }
-
-    private List<NestedDish> getAllDishes(Long userId) {
-        return dishService.getDishesForUser(userId).stream()
-                .map(V2ModelMapper::toV2NestedDishModel)
-                .collect(Collectors.toList());
 
     }
 }

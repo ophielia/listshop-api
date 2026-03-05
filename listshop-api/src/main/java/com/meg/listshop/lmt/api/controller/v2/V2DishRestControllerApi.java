@@ -1,11 +1,8 @@
 package com.meg.listshop.lmt.api.controller.v2;
 
 import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.model.v2.Dish;
-import com.meg.listshop.lmt.api.model.v2.DishList;
+import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.lmt.api.model.v2.DishResource;
-import com.meg.listshop.lmt.api.model.v2.IngredientListResource;
-import com.meg.listshop.lmt.api.model.v2.IngredientPut;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +32,7 @@ public interface V2DishRestControllerApi {
     ResponseEntity<Dish> retrieveDish(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
 
     @GetMapping(value = "/{dishId}/ingredients", produces = "application/json")
-    ResponseEntity<IngredientListResource> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId) throws BadParameterException;
+    ResponseEntity<IngredientList> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId) throws BadParameterException;
 
     @PostMapping(value = "/{dishId}/ingredients", produces = "application/json")
     ResponseEntity<Object> addIngredientToDish(Authentication authentication, @PathVariable("dishId") Long dishId, @RequestBody IngredientPut ingredient);
