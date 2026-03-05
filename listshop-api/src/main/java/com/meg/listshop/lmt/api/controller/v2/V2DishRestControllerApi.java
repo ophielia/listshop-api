@@ -2,16 +2,12 @@ package com.meg.listshop.lmt.api.controller.v2;
 
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.v2.*;
-import com.meg.listshop.lmt.api.model.v2.DishResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-/**
- * Created by margaretmartin on 13/05/2017.
- */
 
 @RestController
 @RequestMapping("/v2/dish")

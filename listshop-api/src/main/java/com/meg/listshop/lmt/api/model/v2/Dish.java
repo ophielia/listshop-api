@@ -107,7 +107,7 @@ public class Dish {
         return ingredients;
     }
 
-    public DishRatings getRatings() {
+    public List<RatingInfo> getRatings() {
         return dishRatings;
     }
 

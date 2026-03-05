@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.api.model.v2;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;

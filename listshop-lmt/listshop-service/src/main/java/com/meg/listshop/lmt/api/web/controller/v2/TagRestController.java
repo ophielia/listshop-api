@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * Created by margaretmartin on 13/05/2017.
  */
 
-@Controller
+@Controller(value="V2TagRestController")
 public class TagRestController implements V2TagRestControllerApi {
 
     private final TagService tagService;

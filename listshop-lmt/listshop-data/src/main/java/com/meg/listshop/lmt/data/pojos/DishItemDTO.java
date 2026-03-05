@@ -1,5 +1,6 @@
 package com.meg.listshop.lmt.data.pojos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.api.model.FractionType;
 
@@ -164,6 +165,17 @@ public class DishItemDTO {
     public boolean hasAmount() {
         return unitId != null
                 && ( quantity != null || wholeQuantity != null || fractionalQuantity != null);
+    }
+
+    public String getQuantityDisplay() {
+        String quantityDisplay = "";
+        if (getWholeQuantity() != null) {
+            quantityDisplay = quantityDisplay + getWholeQuantity();
+        }
+        if (getFractionalQuantity() != null) {
+            quantityDisplay = quantityDisplay + " " + getFractionalQuantity().getDisplayName();
+        }
+        return quantityDisplay;
     }
 
     @Override

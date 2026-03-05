@@ -1,21 +1,22 @@
 package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.listshop.lmt.api.model.TagResource;
 
 import java.util.List;
 
 public class TagList {
 
     @JsonProperty("tag_list")
-    private List<TagResource> tagList;
+    private List<Tag> tagList;
 
-    public TagList(List<TagResource> tagList) {
+    public TagList(List<Tag> tagList) {
         this.tagList = tagList;
     }
 
     public TagList() {
     }
 
-
+    public List<Tag> getTagList() {
+        return tagList;
+    }
 }

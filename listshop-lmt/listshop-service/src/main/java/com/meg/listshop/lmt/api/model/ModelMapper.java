@@ -523,35 +523,6 @@ return returnval;
                 .toDelete(tagEntity.isToDelete());
     }
 
-    public static Ingredient toModel(DishItemDTO ingredientDto) {
-        if (ingredientDto == null) {
-            return null;
-        }
-
-        Ingredient ingredient = new Ingredient();
-        ingredient.setId(String.valueOf(ingredientDto.getDishItemId()));
-        ingredient.setTagId(String.valueOf(ingredientDto.getTagId()));
-        ingredient.setTagDisplay(ingredientDto.getTagDisplay());
-        ingredient.setWholeQuantity(ingredientDto.getWholeQuantity());
-        if (ingredientDto.getFractionalQuantity() != null) {
-            ingredient.setFractionalQuantity(ingredientDto.getFractionalQuantity().name());
-        }
-        ingredient.setUnitId(String.valueOf(ingredientDto.getUnitId()));
-        ingredient.setUnitName(ingredientDto.getUnitName());
-        ingredient.setRawModifiers(ingredientDto.getRawModifiers());
-        ingredient.setRawEntry(ingredientDto.getRawEntry());
-        ingredient.setUnitDisplay(ingredientDto.getUnitDisplay());
-        String quantityDisplay = "";
-        if (ingredientDto.getWholeQuantity() != null) {
-            quantityDisplay = quantityDisplay + ingredientDto.getWholeQuantity();
-        }
-        if (ingredientDto.getFractionalQuantity() != null) {
-            quantityDisplay = quantityDisplay + " " + ingredientDto.getFractionalQuantity().getDisplayName();
-        }
-        ingredient.setQuantityDisplay(quantityDisplay);
-        return ingredient;
-    }
-
     public static Tag itemToTagModel(DishItemEntity itemEntity) {
         if (itemEntity == null) {
             return null;

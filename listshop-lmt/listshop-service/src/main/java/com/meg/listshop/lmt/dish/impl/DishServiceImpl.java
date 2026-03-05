@@ -340,8 +340,8 @@ public class DishServiceImpl implements DishService {
         // tags
         List<DishItemEntity> tags = dish.getItems().stream()
                 .filter(di -> includedInStandard.contains(di.getTag().getTagType()))
+                .sorted(Comparator.comparing(functionGetTagName))
                 .toList();
-        tags.sort(Comparator.comparing(functionGetTagName));
 
         // ratings
         List<Long> ratingTagIds = dish.getItems().stream()

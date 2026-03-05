@@ -32,7 +32,7 @@ public class V2ModelMapper {
         }
 
         NestedTag tag = new NestedTag(ingredientDto.getTagId(), ingredientDto.getTagDisplay());
-        String quantityDisplay = "" + ingredientDto.getQuantity();
+        String quantityDisplay = ingredientDto.getQuantityDisplay();
         Amount amount = new Amount()
                 .withFractionalQuantity(ingredientDto.getFractionDisplay())
                 .withUnitDisplay(ingredientDto.getUnitName())
@@ -41,6 +41,7 @@ public class V2ModelMapper {
                 .withQuantityDisplay(quantityDisplay)
                 .withRawModifiers(ingredientDto.getRawModifiers())
                 .withRawEntry(ingredientDto.getRawEntry());
+        //MM two things to add here - raw quantity, fractional part as enum (in addition, not replacing)
         String display = String.format("%s %s", ingredientDto.getRawEntry(), ingredientDto.getTagDisplay()).trim();
 
         return new Ingredient()
@@ -143,25 +144,6 @@ public class V2ModelMapper {
         return new NestedDish(dishEntity.getId(), dishEntity.getDishName());
     }
 
-    public static com.meg.listshop.lmt.api.model.v2.Dish toV2DishModel(DishEntity dishEntity) {
-
-
-        Dish dish = new Dish(dishEntity.getId())
-                .withDishName(dishEntity.getDishName())
-                .withDescription(dishEntity.getDescription())
-                .withReference(dishEntity.getReference())
-                .withUserId(String.valueOf(dishEntity.getUserId()))
-                .withLastAdded(dishEntity.getLastAdded());
-        // tags and ingredients - to do....
-
-        return new com.meg.listshop.lmt.api.model.v2.Dish(dishEntity.getId())
-                .description(dishEntity.getDescription())
-                .dishName(dishEntity.getDishName())
-                .reference(dishEntity.getReference())
-                .lastAdded(dishEntity.getLastAdded())
-                .userId(dishEntity.getUserId());
-    }
-
     private static void enhanceSources(List<ShoppingListItem> items) {
         if (items == null) {
             return;
@@ -169,7 +151,7 @@ public class V2ModelMapper {
 
         items.forEach(i -> {
             List<String> sourceList = i.getSources().stream()
-                    .map(s -> toV1SourceTags(s))
+                    .map(V2ModelMapper::toV1SourceTags)
                     .flatMap(List::stream)
                     .toList();
             i.sourceKeys(sourceList);

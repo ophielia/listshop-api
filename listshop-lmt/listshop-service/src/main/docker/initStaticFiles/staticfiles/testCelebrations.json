@@ -1,15 +1,230 @@
 {
-  "celebrations": [
+  "description": null,
+  "reference": null,
+  "tags": [],
+  "ingredients": [
     {
-      "handle": "It's Marisa's Birthday!!!",
-      "start_date": "2023-07-23T07:34:59.771+00:00",
-      "end_date": "2024-07-23T17:34:59.771+00:00",
-      "hostess_title": "We're celebrating!",
-      "hostess_text": "The sky is blue.",
-      "hostess_display": false,
-      "party_title": "It's finally here!",
-      "party_text": "The List Shop app is now available on the App Store!",
-      "throw_confetti_count": 3
+      "tag": {
+        "name": "Worcestershire sauce",
+        "tag_id": "457"
+      },
+      "amount": {
+        "whole_quantity": null,
+        "fractional_quantity": null,
+        "quantity_display": "",
+        "unit_id": "null",
+        "unit_display": null,
+        "raw_entry": null,
+        "raw_modifiers": []
+      },
+      "display": "null Worcestershire sauce",
+      "item_id": "2548"
+    },
+    {
+      "tag": {
+        "name": "canned diced tomatoes",
+        "tag_id": "110"
+      },
+      "amount": {
+        "whole_quantity": null,
+        "fractional_quantity": null,
+        "quantity_display": "",
+        "unit_id": "null",
+        "unit_display": null,
+        "raw_entry": null,
+        "raw_modifiers": []
+      },
+      "display": "null canned diced tomatoes",
+      "item_id": "2547"
+    },
+    {
+      "tag": {
+        "name": "cheddar cheese",
+        "tag_id": "18"
+      },
+      "amount": {
+        "whole_quantity": null,
+        "fractional_quantity": null,
+        "quantity_display": "",
+        "unit_id": "null",
+        "unit_display": null,
+        "raw_entry": null,
+        "raw_modifiers": []
+      },
+      "display": "null cheddar cheese",
+      "item_id": "2552"
+    },
+    {
+      "tag": {
+        "name": "chili powder",
+        "tag_id": "184"
+      },
+      "amount": {
+        "whole_quantity": null,
+        "fractional_quantity": null,
+        "quantity_display": "",
+        "unit_id": "null",
+        "unit_display": null,
+        "raw_entry": null,
+        "raw_modifiers": []
+      },
+      "display": "null chili powder",
+      "item_id": "2550"
+    },
+    {
+      "tag": {
+        "name": "green bell pepper",
+        "tag_id": "187"
+      },
+      "amount": {
+        "whole_quantity": null,
+        "fractional_quantity": null,
+        "quantity_display": "",
+        "unit_id": "null",
+        "unit_display": null,
+        "raw_entry": null,
+        "raw_modifiers": []
+      },
+      "display": "null green bell pepper",
+      "item_id": "2546"
+    },
+    {
+      "tag": {
+        "name": "green onion",
+        "tag_id": "452"
+      },
+      "amount": {
+        "whole_quantity": null,
+        "fractional_quantity": null,
+        "quantity_display": "",
+        "unit_id": "null",
+        "unit_display": null,
+        "raw_entry": null,
+        "raw_modifiers": []
+      },
+      "display": "null green onion",
+      "item_id": "2553"
+    },
+    {
+      "tag": {
+        "name": "ground beef",
+        "tag_id": "435"
+      },
+      "amount": {
+        "whole_quantity": null,
+        "fractional_quantity": null,
+        "quantity_display": "",
+        "unit_id": "null",
+        "unit_display": null,
+        "raw_entry": null,
+        "raw_modifiers": []
+      },
+      "display": "null ground beef",
+      "item_id": "2545"
+    },
+    {
+      "tag": {
+        "name": "salt",
+        "tag_id": "360"
+      },
+      "amount": {
+        "whole_quantity": null,
+        "fractional_quantity": null,
+        "quantity_display": "",
+        "unit_id": "null",
+        "unit_display": null,
+        "raw_entry": null,
+        "raw_modifiers": []
+      },
+      "display": "null salt",
+      "item_id": "2551"
+    },
+    {
+      "tag": {
+        "name": "white rice",
+        "tag_id": "123"
+      },
+      "amount": {
+        "whole_quantity": null,
+        "fractional_quantity": null,
+        "quantity_display": "",
+        "unit_id": "null",
+        "unit_display": null,
+        "raw_entry": null,
+        "raw_modifiers": []
+      },
+      "display": "null white rice",
+      "item_id": "2549"
     }
-  ]
+  ],
+  "ratings": [
+    {
+      "power": 5,
+      "tag": {
+        "name": "Elegance",
+        "tag_id": "292"
+      },
+      "max_power": null
+    },
+    {
+      "power": 5,
+      "tag": {
+        "name": "Ease of Prep",
+        "tag_id": "291"
+      },
+      "max_power": null
+    },
+    {
+      "power": 5,
+      "tag": {
+        "name": "Taste Factor",
+        "tag_id": "391"
+      },
+      "max_power": null
+    },
+    {
+      "power": 5,
+      "tag": {
+        "name": "Quick To Prepare",
+        "tag_id": "160"
+      },
+      "max_power": null
+    },
+    {
+      "power": 5,
+      "tag": {
+        "name": "Healthy",
+        "tag_id": "305"
+      },
+      "max_power": null
+    },
+    {
+      "power": 5,
+      "tag": {
+        "name": "Kids Like It",
+        "tag_id": "306"
+      },
+      "max_power": null
+    },
+    {
+      "power": 5,
+      "tag": {
+        "name": "Quick To Table",
+        "tag_id": "290"
+      },
+      "max_power": null
+    },
+    {
+      "power": 5,
+      "tag": {
+        "name": "cheap",
+        "tag_id": "332"
+      },
+      "max_power": null
+    }
+  ],
+  "dish_id": "9999992",
+  "name": "Test Rating Dish",
+  "user_id": "20",
+  "last_added": "2019-10-05T07:23:55.673+00:00"
 }

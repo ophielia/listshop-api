@@ -24,9 +24,18 @@ public enum FractionType {
         this.display = displayName;
     }
 
+    public static FractionType fromName(String name) {
+        for (FractionType fractionType : values()) {
+            if (fractionType.name().equals(name)) {
+                return fractionType;
+            }
+        }
+        return null;
+    }
+
     public static FractionType fromDisplayName(String displayName) {
         for (FractionType fractionType : values()) {
-            if (fractionType.name().equals(displayName)) {
+            if (fractionType.getDisplayName().equals(displayName)) {
                 return fractionType;
             }
         }

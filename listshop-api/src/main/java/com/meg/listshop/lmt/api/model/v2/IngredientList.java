@@ -17,6 +17,11 @@ public class IngredientList {
         this.ingredients = ingredients;
     }
 
+
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
     @Override
     public String toString() {
         return "IngredientList{" +

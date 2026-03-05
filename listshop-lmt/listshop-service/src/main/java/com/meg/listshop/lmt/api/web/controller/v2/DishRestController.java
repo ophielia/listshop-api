@@ -192,7 +192,7 @@ public class DishRestController implements V2DishRestControllerApi {
         Integer wholeQuantity = 0;
         Double fractionQuantity = 0.0;
         if (ingredient.getFractionalQuantity() != null && !ingredient.getFractionalQuantity().isEmpty()) {
-            FractionType fraction = FractionType.fromDisplayName(ingredient.getFractionalQuantity());
+            FractionType fraction = FractionType.fromName(ingredient.getFractionalQuantity());
             if (fraction == null) {
                 double fractionValue = RoundingUtils.doubleFromStringFraction(ingredient.getFractionalQuantity());
                 fraction = FractionUtils.getFractionTypeForDecimal(new BigDecimal(fractionValue));
