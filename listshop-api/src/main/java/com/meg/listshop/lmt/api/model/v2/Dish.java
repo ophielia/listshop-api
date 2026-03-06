@@ -1,11 +1,13 @@
 package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@JsonPropertyOrder({ "dish_id","name", "description", "reference", "user_id","last_added", "tags", "ingredients", "ratings"  })
 public class Dish {
 
     @JsonProperty("dish_id")
@@ -22,6 +24,7 @@ public class Dish {
 
     private List<Ingredient> ingredients = new ArrayList<>();
 
+    @JsonProperty("ratings")
     private List<RatingInfo> dishRatings = new ArrayList<>();
 
     @JsonProperty("user_id")

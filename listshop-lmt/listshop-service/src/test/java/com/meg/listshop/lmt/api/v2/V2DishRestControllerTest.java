@@ -121,13 +121,20 @@ class V2DishRestControllerTest {
 
     @Test
     @WithMockUser
-    void readSingleDish_ObjectNotFoundException() {
+    void readSingleDishAmounts() throws Exception {
+        Long testId = 9999993L;
+        Dish result = retrieveDish(userDetails, testId);
+        Assertions.assertEquals(String.valueOf(testId), result.getDishId());
+    }
+
+    @Test
+    @WithMockUser
+    void readSingleDish_ObjectNotFoundException() throws Exception {
         Long testId = 99999999394L;
-        Assertions.assertThrows(ObjectNotFoundException.class, () -> mockMvc.perform(get(urlRoot
+        mockMvc.perform(get(urlRoot
                         + testId)
                         .with(user(userDetails)))
-                .andExpect(status().isNotFound())) ;
-
+                .andExpect(status().isNotFound()) ;
     }
 
 

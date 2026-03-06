@@ -11,6 +11,8 @@ public class Amount {
     private Integer wholeQuantity;
     @JsonProperty("fractional_quantity")
     private String fractionalQuantity;
+    @JsonProperty
+    private Double quantity;
     @JsonProperty("quantity_display")
     private String quantityDisplay;
     @JsonProperty("unit_id")
@@ -33,6 +35,11 @@ public class Amount {
 
     public Amount withFractionalQuantity(String fractionalQuantity) {
         this.fractionalQuantity = fractionalQuantity;
+        return this;
+    }
+
+    public Amount withQuantity(Double quantity) {
+        this.quantity = quantity;
         return this;
     }
 

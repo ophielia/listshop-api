@@ -33,16 +33,22 @@ public class V2ModelMapper {
 
         NestedTag tag = new NestedTag(ingredientDto.getTagId(), ingredientDto.getTagDisplay());
         String quantityDisplay = ingredientDto.getQuantityDisplay();
+
         Amount amount = new Amount()
                 .withFractionalQuantity(ingredientDto.getFractionDisplay())
+                .withWholeQuantity(ingredientDto.getWholeQuantity())
+                .withQuantity(ingredientDto.getQuantity())
                 .withUnitDisplay(ingredientDto.getUnitName())
                 .withUnitId(String.valueOf(ingredientDto.getUnitId()))
-                .withWholeQuantity(ingredientDto.getWholeQuantity())
                 .withQuantityDisplay(quantityDisplay)
                 .withRawModifiers(ingredientDto.getRawModifiers())
                 .withRawEntry(ingredientDto.getRawEntry());
-        //MM two things to add here - raw quantity, fractional part as enum (in addition, not replacing)
-        String display = String.format("%s %s", ingredientDto.getRawEntry(), ingredientDto.getTagDisplay()).trim();
+        String display;
+        if (ingredientDto.getQuantity() > 0) {
+          display = String.format("%s %s", ingredientDto.getRawEntry(), ingredientDto.getTagDisplay()).trim();
+        } else {
+            display = ingredientDto.getTagDisplay();
+        }
 
         return new Ingredient()
                 .withItemId(String.valueOf(ingredientDto.getDishItemId()))
