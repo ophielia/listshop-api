@@ -2,10 +2,14 @@ package com.meg.listshop.lmt.api.web.controller.v2;
 
 
 import com.meg.listshop.auth.service.CustomUserDetails;
-import com.meg.listshop.lmt.api.controller.TagRestControllerApi;
+import com.meg.listshop.common.ControllerUtils;
 import com.meg.listshop.lmt.api.controller.v2.V2TagRestControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.api.model.TagResource;
+import com.meg.listshop.lmt.api.model.V2ModelMapper;
+import com.meg.listshop.lmt.api.model.TagPut;
+import com.meg.listshop.lmt.api.model.v2.Tag;
+import com.meg.listshop.lmt.api.model.v2.TagList;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.service.tag.TagService;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,8 +47,8 @@ public class TagRestController implements V2TagRestControllerApi {
         this.tagService = tagService;
     }
 
-
-    public ResponseEntity<TagListResource> retrieveUserTagList(
+//MM 2308 - do this one
+    public ResponseEntity<TagList> retrieveUserTagList(
             Authentication authentication,
             HttpServletRequest request) {
         Long userId = null;
@@ -58,16 +63,15 @@ public class TagRestController implements V2TagRestControllerApi {
         }
 
         List<TagInfoDTO> infoTags = tagService.getTagInfoList(userId, Collections.emptyList());
-        List<TagResource> resourceList = infoTags.stream()
-                .map(ModelMapper::toModel)
-                .map(TagResource::new)
+        List<Tag> tagList = infoTags.stream()
+                .map(V2ModelMapper::toModel)
                 .collect(Collectors.toList());
-        var returnValue = new TagListResource(resourceList);
+        var returnValue = new TagList(tagList);
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
     public ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable("tagId") Long tagId, @RequestBody Tag input,
-                                          @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException {
+                                          @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException, MalformedURLException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Creating add tag for user [%S]", userDetails.getId());
         logger.info(message);
@@ -77,18 +81,19 @@ public class TagRestController implements V2TagRestControllerApi {
             userId = userDetails.getId();
         }
 
-        var tagEntity = ModelMapper.toEntity(input);
+        var tagEntity = V2ModelMapper.toEntity(input);
         TagEntity result = this.tagService.createTag(tagId, tagEntity, userId);
         if (result != null) {
-            var tagModel = ModelMapper.toModel(result);
-            var resource = new TagResource(tagModel);
-            return ResponseEntity.created(resource.selfLink(request, resource)).build();
+            var tagModel = V2ModelMapper.toModel(result);
+            var location = ControllerUtils.locationURI(request, "/v2/tags", result.getId());
+            return ResponseEntity.created(location).build();
         } else {
             return ResponseEntity.noContent().build();
         }
 
     }
 
+    //MM 2308 - do this one
     public ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId) {
         // invalid dishId - returns invalid id supplied - 400
         var tagEntity = this.tagService
@@ -97,9 +102,9 @@ public class TagRestController implements V2TagRestControllerApi {
         if (tagEntity == null) {
             return ResponseEntity.notFound().build();
         }
-        var tagModel = ModelMapper.toModel(tagEntity);
+        var tagModel = V2ModelMapper.toModel(tagEntity);
 
-        return new ResponseEntity(new TagResource(tagModel), HttpStatus.OK);
+        return new ResponseEntity(tagModel, HttpStatus.OK);
 
     }
 

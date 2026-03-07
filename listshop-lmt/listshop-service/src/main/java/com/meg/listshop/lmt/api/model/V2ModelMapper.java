@@ -10,11 +10,9 @@ package com.meg.listshop.lmt.api.model;
 import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.lmt.api.model.v2.Dish;
 import com.meg.listshop.lmt.api.model.v2.RatingInfo;
+import com.meg.listshop.lmt.api.model.v2.Tag;
 import com.meg.listshop.lmt.data.entity.*;
-import com.meg.listshop.lmt.data.pojos.DishDTO;
-import com.meg.listshop.lmt.data.pojos.DishItemDTO;
-import com.meg.listshop.lmt.data.pojos.RatingInfoDTO;
-import com.meg.listshop.lmt.data.pojos.SuggestionDTO;
+import com.meg.listshop.lmt.data.pojos.*;
 
 import java.util.*;
 
@@ -270,4 +268,31 @@ public class V2ModelMapper {
         return suggestion;
     }
 
+    public static Tag toModel(TagInfoDTO tagInfoDTO) {
+        //MM 2308 - do this one
+        return null;
+    }
+
+
+    public static Tag toModel(TagEntity entity) {
+        //MM 2308 - do this one
+        return null;
+    }
+
+    public static TagEntity toEntity(Tag tag) {
+        if (tag == null) {
+            return null;
+        }
+        Long tagId = tag.getTagId() != null ? Long.valueOf(tag.getTagId()) : null;
+        TagEntity tagEntity = new TagEntity(tagId);
+
+        tagEntity.setName(tag.getName().trim());
+        tagEntity.setDescription(tag.getDescription());
+        if (tag.getTagType() != null) {
+            tagEntity.setTagType(TagType.valueOf(tag.getTagType()));
+        }
+        tagEntity.setPower(tag.getPower());
+
+        return tagEntity;
+    }
 }
