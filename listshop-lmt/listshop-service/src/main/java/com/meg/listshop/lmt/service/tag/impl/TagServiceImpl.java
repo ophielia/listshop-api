@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
@@ -294,8 +293,13 @@ public class TagServiceImpl implements TagService {
     }
 
     private TagEntity getExistingTag(TagEntity newtag, Long userId) {
-        Optional<TagEntity> tag = tagRepository.findTagDuplicate(newtag.getName().toLowerCase().trim(), newtag.getTagType(), newtag.getIsGroup(), userId);
-        return tag.orElse(null);
+        if (userId == null) {
+            return tagRepository.findStandardTagDuplicate(newtag.getName().toLowerCase().trim(), newtag.getTagType(), newtag.getIsGroup())
+                    .orElse(null);
+        }
+        return tagRepository.findUserTagDuplicate(newtag.getName().toLowerCase().trim(), newtag.getTagType(), newtag.getIsGroup(), userId)
+                .orElse(null);
+
     }
 
     @Override
