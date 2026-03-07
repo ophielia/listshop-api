@@ -1,6 +1,5 @@
 package com.meg.listshop.lmt.api.model.v2;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -19,10 +18,10 @@ public class Amount {
     private String unitId;
     @JsonProperty("unit_display")
     private String unitDisplay;
-    @JsonProperty("raw_entry")
-    private String rawEntry;
-    @JsonProperty("raw_modifiers")
-    private List<String> rawModifiers;
+    @JsonProperty("display")
+    private String display;
+    @JsonProperty("modifiers")
+    private List<String> modifiers;
 
     public Amount() {
         // empty constructor
@@ -59,13 +58,13 @@ public class Amount {
     }
 
 
-    public Amount withRawEntry(String rawEntry) {
-        this.rawEntry = rawEntry;
+    public Amount withDisplay(String displayValue) {
+        this.display = displayValue;
         return this;
     }
 
-    public Amount withRawModifiers(List<String> rawModifiers) {
-        this.rawModifiers = rawModifiers;
+    public Amount withModifiers(List<String> rawModifiers) {
+        this.modifiers = rawModifiers;
         return this;
     }
 
@@ -89,6 +88,18 @@ public class Amount {
         return unitDisplay;
     }
 
+    public String getDisplay() {
+        return display;
+    }
+
+    public List<String> getModifiers() {
+        return modifiers;
+    }
+
+    public double getQuantity() {
+    return quantity;
+    }
+
     @Override
     public String toString() {
         return "Amount{" +
@@ -97,8 +108,9 @@ public class Amount {
                 ", quantityDisplay='" + quantityDisplay + '\'' +
                 ", unitId='" + unitId + '\'' +
                 ", unitDisplay='" + unitDisplay + '\'' +
-                ", rawEntry='" + rawEntry + '\'' +
-                ", rawModifiers='" + rawModifiers + '\'' +
+                ", rawEntry='" + display + '\'' +
+                ", rawModifiers='" + modifiers + '\'' +
                 '}';
     }
+
 }

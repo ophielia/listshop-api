@@ -79,7 +79,6 @@ public class DishRestController implements V2DishRestControllerApi {
 
     @Override
     public ResponseEntity<Dish> retrieveDish(HttpServletRequest request, Authentication authentication, Long dishId) {
-        //@GetMapping(value = "/{dishId}", produces = "application/json")
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("retrieving dish [%S] for user [%S]", dishId, userDetails.getId());
         logger.info(message);

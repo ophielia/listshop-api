@@ -6,13 +6,10 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.FractionType;
-import com.meg.listshop.lmt.api.model.v2.Dish;
-import com.meg.listshop.lmt.api.model.v2.Ingredient;
-import com.meg.listshop.lmt.api.model.v2.IngredientList;
-import com.meg.listshop.lmt.api.model.v2.IngredientPut;
+import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.test.TestConstants;
+import io.swagger.v3.core.util.ObjectMapperFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +36,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.isA;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -105,17 +101,7 @@ class V2DishRestControllerTest {
     @WithMockUser
     void readSingleDishNoAmounts() throws Exception {
         Long testId = 9999992L;
-        MvcResult result = mockMvc.perform(get(urlRoot
-                        + testId)
-                        .with(user(userDetails)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andReturn();
-        Assertions.assertNotNull(result);
-        String jsonList = result.getResponse().getContentAsString();
-        ObjectMapper objectMapper = new ObjectMapper();
-        Dish afterDish = objectMapper.readValue(jsonList, Dish.class);
+        Dish afterDish = retrieveDish(userDetails, testId);
         Assertions.assertEquals(String.valueOf(testId), afterDish.getDishId());
     }
 
@@ -124,7 +110,47 @@ class V2DishRestControllerTest {
     void readSingleDishAmounts() throws Exception {
         Long testId = 9999993L;
         Dish result = retrieveDish(userDetails, testId);
+
         Assertions.assertEquals(String.valueOf(testId), result.getDishId());
+        // test collections
+        Assertions.assertEquals(6, result.getIngredients().size(), "Ingredient size is wrong");
+        Assertions.assertEquals(3, result.getTags().size(), "Tag size is wrong");
+        Assertions.assertEquals(4, result.getRatings().size(), "Rating size is wrong");
+        // test ingredient
+        Ingredient cheddarCheese = result.getIngredients().stream()
+                .filter(i -> i.getTag().getTagId().equals("18"))
+                .findFirst()
+                .orElse(null);
+        Assertions.assertNotNull(cheddarCheese, "Cheddar cheese ingredient not found");
+        Assertions.assertEquals("cheddar cheese", cheddarCheese.getTag().getName());
+        Assertions.assertEquals("18", cheddarCheese.getTag().getTagId());
+
+        Assertions.assertEquals(1.5, cheddarCheese.getAmount().getQuantity(),"quantity is wrong");
+        Assertions.assertEquals(1, cheddarCheese.getAmount().getWholeQuantity(), "whole quantity is wrong");
+        Assertions.assertEquals("OneHalf", cheddarCheese.getAmount().getFractionalQuantity(), "fractional quantity is wrong");
+        Assertions.assertEquals("1 1/2", cheddarCheese.getAmount().getQuantityDisplay(), "quantity display is wrong");
+        Assertions.assertEquals("1008", cheddarCheese.getAmount().getUnitId(), "unit id is wrong");
+        Assertions.assertEquals("lb", cheddarCheese.getAmount().getUnitDisplay(), "unit display is wrong");
+        Assertions.assertEquals("1 1/2 pound", cheddarCheese.getAmount().getDisplay(), "display is wrong");
+        List<String> modifiers = cheddarCheese.getAmount().getModifiers();
+        Assertions.assertEquals(1, modifiers.size(), "modifiers size is wrong");
+        // test tags
+        NestedTag nestedTag = result.getTags().stream()
+                .filter(t -> t.getTagId().equals("199"))
+                .findFirst()
+                .orElse(null);
+        Assertions.assertNotNull(nestedTag, "tag 199 not found");
+        Assertions.assertEquals("Vegetarian", nestedTag.getName());
+        // test ratings
+        RatingInfo tasty = result.getRatings().stream()
+                .filter(r -> r.getTag().getTagId().equals("391"))
+                .findFirst()
+                .orElse(null);
+        Assertions.assertNotNull(tasty, "tasty rating not found");
+        Assertions.assertEquals("Taste Factor", tasty.getTag().getName(), "tag name is wrong");
+        Assertions.assertEquals(1, tasty.getPower(), "tasty rating power is wrong");
+        Assertions.assertEquals(5, tasty.getMaxPower(), "tasty rating max power is wrong");
+
     }
 
     @Test
@@ -167,8 +193,7 @@ class V2DishRestControllerTest {
         Ingredient ingredient = dishResult.getIngredients().get(0);
         Assertions.assertEquals(ingredient.getAmount().getUnitId(), ingredientPut.getUnitId());
         Assertions.assertEquals(ingredient.getAmount().getWholeQuantity(), ingredientPut.getWholeQuantity());
-        Assertions.assertEquals(FractionType.fromDisplayName(ingredient.getAmount().getFractionalQuantity()),
-                FractionType.valueOf(ingredientPut.getFractionalQuantity()));
+        Assertions.assertEquals(ingredientPut.getFractionalQuantity(),ingredient.getAmount().getFractionalQuantity());
         Assertions.assertEquals("1 1/2", ingredient.getAmount().getQuantityDisplay());
     }
 

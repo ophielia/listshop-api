@@ -1,9 +1,11 @@
 package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.Objects;
 
+@JsonPropertyOrder({ "tag", "power", "max_power" })
 public class RatingInfo {
 
     @JsonProperty("tag")

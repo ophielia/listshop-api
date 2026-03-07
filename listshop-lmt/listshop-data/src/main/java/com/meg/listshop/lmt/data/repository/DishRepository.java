@@ -1,6 +1,7 @@
 package com.meg.listshop.lmt.data.repository;
 
 import com.meg.listshop.lmt.data.entity.DishEntity;
+import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

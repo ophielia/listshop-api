@@ -11,11 +11,12 @@ import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.lmt.api.model.v2.Dish;
 import com.meg.listshop.lmt.api.model.v2.RatingInfo;
 import com.meg.listshop.lmt.data.entity.*;
-import com.meg.listshop.lmt.data.pojos.*;
+import com.meg.listshop.lmt.data.pojos.DishDTO;
+import com.meg.listshop.lmt.data.pojos.DishItemDTO;
+import com.meg.listshop.lmt.data.pojos.RatingInfoDTO;
+import com.meg.listshop.lmt.data.pojos.SuggestionDTO;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 public class V2ModelMapper {
@@ -32,29 +33,39 @@ public class V2ModelMapper {
         }
 
         NestedTag tag = new NestedTag(ingredientDto.getTagId(), ingredientDto.getTagDisplay());
-        String quantityDisplay = ingredientDto.getQuantityDisplay();
-
-        Amount amount = new Amount()
-                .withFractionalQuantity(ingredientDto.getFractionDisplay())
-                .withWholeQuantity(ingredientDto.getWholeQuantity())
-                .withQuantity(ingredientDto.getQuantity())
-                .withUnitDisplay(ingredientDto.getUnitName())
-                .withUnitId(String.valueOf(ingredientDto.getUnitId()))
-                .withQuantityDisplay(quantityDisplay)
-                .withRawModifiers(ingredientDto.getRawModifiers())
-                .withRawEntry(ingredientDto.getRawEntry());
         String display;
-        if (ingredientDto.getQuantity() > 0) {
-          display = String.format("%s %s", ingredientDto.getRawEntry(), ingredientDto.getTagDisplay()).trim();
+        Amount amount = null;
+        if (ingredientDto.getQuantity() != null && ingredientDto.getQuantity() > 0) {
+            String quantityDisplay = ingredientDto.getQuantityDisplay();
+            amount = new Amount()
+                    .withFractionalQuantity(fractionTypeToName(ingredientDto.getFractionalQuantity()))
+                    .withWholeQuantity(ingredientDto.getWholeQuantity())
+                    .withQuantity(ingredientDto.getQuantity())
+                    .withUnitDisplay(ingredientDto.getUnitName())
+                    .withUnitId(String.valueOf(ingredientDto.getUnitId()))
+                    .withQuantityDisplay(quantityDisplay)
+                    .withModifiers(ingredientDto.getRawModifiers())
+                    .withDisplay(ingredientDto.getRawEntry());
+
+            display = String.format("%s %s", ingredientDto.getRawEntry(), ingredientDto.getTagDisplay()).trim();
         } else {
             display = ingredientDto.getTagDisplay();
+
         }
+
 
         return new Ingredient()
                 .withItemId(String.valueOf(ingredientDto.getDishItemId()))
                 .withTag(tag)
                 .withAmount(amount)
                 .withDisplay(display);
+    }
+
+    private static String fractionTypeToName(FractionType fractionType) {
+        if (fractionType == null) {
+            return null;
+        }
+        return fractionType.name();
     }
 
     public static ShoppingList toModel(ShoppingListEntity shoppingListEntity, List<ShoppingListCategory> itemCategories) {
@@ -132,7 +143,7 @@ public class V2ModelMapper {
             ingredients = toIngredientsModel(dishDto.getIngredients());
         }
         // ratings
-        List<RatingInfo> dishRatings = toRatingsModel(dishDto.getRatingDto());
+        List<RatingInfo> dishRatings = toRatingsModel(dishDto.getRatings());
 
         return new Dish(dishDto.getDish().getId())
                 .withDescription(dishDto.getDish().getDescription())
@@ -187,28 +198,31 @@ public class V2ModelMapper {
         return ingredients;
     }
 
-    private static List<RatingInfo>  toRatingsModel(RatingsDTO ratings) {
+    private static List<RatingInfo> toRatingsModel(List<RatingInfoDTO> ratings) {
         List<RatingInfo> ratingInfo = new ArrayList<>();
         if (ratings == null) {
             return ratingInfo;
         }
-        Map<Long, TagInfoDTO> tagMap = ratings.getRatingTags().stream()
-                .collect(Collectors.toMap(TagInfoDTO::getParentId, Function.identity()));
-        ratings.getRatingHeaders().stream()
-                .forEach(ratingHeader -> {
-                    NestedTag headerTag = new NestedTag(ratingHeader.getId(), ratingHeader.getName());
-                    TagInfoDTO ratingValue = tagMap.get(ratingHeader.getId());
-                    if (ratingValue != null && ratingValue.getPower() != null) {
-                        int power = (int) ratingValue.getPower().doubleValue();
-                        int maxPower = ratings.getMaxRatingPower();
-                        RatingInfo info = new RatingInfo()
-                                .withTag(headerTag)
-                                .withPower(power)
-                                .withPower(maxPower);
-                        ratingInfo.add(info);
-                    }
-                });
-        return ratingInfo;
+        return ratings.stream()
+                .map(V2ModelMapper::toRatingModel)
+                .toList();
+    }
+
+    private static RatingInfo toRatingModel(RatingInfoDTO dto) {
+        RatingInfo info = new RatingInfo();
+        if (dto == null) {
+            return info;
+        }
+        NestedTag tag = new NestedTag(dto.ratingId(), dto.display());
+        int power = (int) dto.power().doubleValue();
+        int maxPower = 5;
+        if (dto.maxPower() != null) {
+            maxPower = (int) dto.maxPower().doubleValue();
+        }
+        info = info.withPower(power)
+                .withMaxPower(maxPower)
+                .withTag(tag);
+        return info;
     }
 
     private static void enhanceCategories(List<ShoppingListCategory> filledCategories

@@ -1,9 +1,13 @@
 package com.meg.listshop.lmt.api.model.v2;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.List;
 
+@JsonPropertyOrder({ "item_id", "display", "tag", "amount"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Ingredient {
 
     @JsonProperty("item_id")

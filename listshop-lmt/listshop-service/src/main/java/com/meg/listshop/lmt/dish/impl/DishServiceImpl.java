@@ -15,14 +15,13 @@ import com.meg.listshop.conversion.service.ConversionService;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import com.meg.listshop.lmt.api.model.FractionType;
-import com.meg.listshop.lmt.api.model.RatingUpdateInfo;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
-import com.meg.listshop.lmt.data.pojos.RatingsDTO;
+import com.meg.listshop.lmt.data.pojos.RatingInfoDTO;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
@@ -344,20 +343,9 @@ public class DishServiceImpl implements DishService {
                 .toList();
 
         // ratings
-        List<Long> ratingTagIds = dish.getItems().stream()
-                .map(DishItemEntity::getTag)
-                .filter(tag -> tag.getTagType().equals(TagType.Rating))
-                .map(TagEntity::getId)
-                .toList();
-        List<TagInfoDTO> ratingTags = tagService.getTagInfoList(ratingTagIds);
-        List<Long> headerIds = ratingTags.stream()
-                .map(TagInfoDTO::getParentId)
-                .filter(Objects::nonNull)
-                .toList();
-        List<TagEntity> ratingHeaderTags = tagService.getTagsForIdList(headerIds);
-        RatingsDTO ratingsDTO = new RatingsDTO(ratingTags, ratingHeaderTags, TagService.MAX_RATiNG_POWER);
+        List<RatingInfoDTO> ratingTags = dishItemRepository.getRatingsForDish(dishId);
 
-        return new DishDTO(dish, ingredients, tags, ratingsDTO);
+        return new DishDTO(dish, ingredients, tags, ratingTags);
     }
 
     @Override
@@ -468,15 +456,13 @@ public class DishServiceImpl implements DishService {
     private void setModifiersFromRawModifiers(DishItemDTO dishItemDTO, DishItemEntity dishItemEntity, TagEntity tag) {
         List<String> rawModifiers = dishItemDTO.getRawModifiers();
         if (rawModifiers == null || rawModifiers.isEmpty()) {
-
-
             dishItemEntity.setRawModifiers(null);
             dishItemEntity.setMarker(null);
             dishItemEntity.setUnitSize(DEFAULT_UNIT_SIZE);
             dishItemEntity.setModifiersProcessed(true);
             return;
         }
-        dishItemEntity.setRawModifiers(FlatStringUtils.flattenListToString(rawModifiers, "|"));
+        dishItemEntity.setRawModifiers(FlatStringUtils.flattenListToString(rawModifiers, "\\|"));
         if (tag.getConversionId() != null) {
             fillIngredientModifiers(tag.getConversionId(), rawModifiers, dishItemEntity);
             dishItemEntity.setModifiersProcessed(true);

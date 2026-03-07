@@ -2,10 +2,12 @@ package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({ "tag_id", "name" })
 public class NestedTag {
 
     @JsonProperty("tag_id")
@@ -18,6 +20,11 @@ public class NestedTag {
 
     public NestedTag(Long tagId, String name) {
         this.tagId = String.valueOf(tagId);
+        this.name = name;
+    }
+
+    public NestedTag(String tagId, String name) {
+        this.tagId = tagId;
         this.name = name;
     }
 

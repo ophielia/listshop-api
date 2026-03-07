@@ -11,6 +11,7 @@ import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
+import com.meg.listshop.lmt.data.pojos.RatingInfoDTO;
 import com.meg.listshop.lmt.data.repository.DishItemRepository;
 import com.meg.listshop.lmt.data.repository.DishRepository;
 import com.meg.listshop.lmt.dish.DishService;
@@ -266,7 +267,7 @@ class DishServiceImplMockTest {
         Long unitId = 99999L;
         Long conversionId = 999999L;
         String rawModifiers = "chopped extra large";
-        List<String> modifierTokens = List.of("chopped", "extra large");
+        List<String> modifierTokens = List.of("chopped", "extra",  "large");
         String marker = "chopped";
         String unitSize = "extra large";
 
@@ -324,7 +325,7 @@ class DishServiceImplMockTest {
         Assertions.assertEquals(FractionType.OneEighth, ingredientResult.getFractionalQuantity());
         Assertions.assertEquals(marker, ingredientResult.getMarker());
         Assertions.assertEquals(unitSize, ingredientResult.getUnitSize());
-        Assertions.assertEquals(FlatStringUtils.flattenListToString(modifierTokens,"|"), ingredientResult.getRawModifiers());
+        Assertions.assertEquals(FlatStringUtils.flattenListToString(modifierTokens,"\\|"), ingredientResult.getRawModifiers());
         Assertions.assertEquals(1.125, ingredientResult.getQuantity(), 0.001);
         Assertions.assertEquals(unitId, ingredientResult.getUnitId());
         Assertions.assertTrue(ingredientResult.getModifiersProcessed());
@@ -397,7 +398,7 @@ class DishServiceImplMockTest {
         Assertions.assertEquals(FractionType.OneEighth, ingredientResult.getFractionalQuantity());
         Assertions.assertEquals(marker, ingredientResult.getMarker());
         Assertions.assertEquals(unitSize, ingredientResult.getUnitSize());
-        Assertions.assertEquals(FlatStringUtils.flattenListToString(modifierTokens,"|"), ingredientResult.getRawModifiers());
+        Assertions.assertEquals(FlatStringUtils.flattenListToString(modifierTokens,"\\|"), ingredientResult.getRawModifiers());
         Assertions.assertEquals(1.125, ingredientResult.getQuantity(), 0.001);
         Assertions.assertEquals(unitId, ingredientResult.getUnitId());
         Assertions.assertTrue(ingredientResult.getModifiersProcessed());
@@ -712,7 +713,7 @@ class DishServiceImplMockTest {
         Assertions.assertEquals(ingredientResult.getWholeQuantity(), (Integer) 1);
         Assertions.assertEquals(marker, ingredientResult.getMarker());
         Assertions.assertEquals(unitSize, ingredientResult.getUnitSize());
-        Assertions.assertEquals(FlatStringUtils.flattenListToString(modifierTokens,"|"), ingredientResult.getRawModifiers());
+        Assertions.assertEquals(FlatStringUtils.flattenListToString(modifierTokens,"\\|"), ingredientResult.getRawModifiers());
         Assertions.assertEquals(1.0, ingredientResult.getQuantity(), 0.001);
         Assertions.assertEquals(unitId, ingredientResult.getUnitId());
         Assertions.assertTrue(ingredientResult.getModifiersProcessed());    }
@@ -783,7 +784,7 @@ class DishServiceImplMockTest {
         Assertions.assertEquals(FractionType.OneEighth, ingredientResult.getFractionalQuantity());
         Assertions.assertEquals(marker, ingredientResult.getMarker());
         Assertions.assertEquals(unitSize, ingredientResult.getUnitSize());
-        Assertions.assertEquals(FlatStringUtils.flattenListToString(modifierTokens,"|"), ingredientResult.getRawModifiers());
+        Assertions.assertEquals(FlatStringUtils.flattenListToString(modifierTokens,"\\|"), ingredientResult.getRawModifiers());
         Assertions.assertEquals(1.125, ingredientResult.getQuantity(), 0.001);
         Assertions.assertEquals(unitId, ingredientResult.getUnitId());
         Assertions.assertTrue(ingredientResult.getModifiersProcessed());
@@ -855,7 +856,7 @@ class DishServiceImplMockTest {
         Assertions.assertEquals(FractionType.OneEighth, ingredientResult.getFractionalQuantity());
         Assertions.assertEquals(marker, ingredientResult.getMarker());
         Assertions.assertEquals(unitSize, ingredientResult.getUnitSize());
-        Assertions.assertEquals(FlatStringUtils.flattenListToString(modifierTokens,"|"), ingredientResult.getRawModifiers());
+        Assertions.assertEquals(FlatStringUtils.flattenListToString(modifierTokens,"\\|"), ingredientResult.getRawModifiers());
         Assertions.assertEquals(1.125, ingredientResult.getQuantity(), 0.001);
         Assertions.assertEquals(unitId, ingredientResult.getUnitId());
         Assertions.assertTrue(ingredientResult.getModifiersProcessed());
@@ -889,15 +890,18 @@ class DishServiceImplMockTest {
         DishItemDTO ingredient2 = buildIngredient(ingredientId2, ingredientTagId2, wholeAmount2, fractionalAmount2, unitId2);
         DishItemDTO ingredient3 = buildIngredient(ingredientId3, ingredientTagId3, wholeAmount3, fractionalAmount3, unitId3);
         List<DishItemDTO> ingredients = Arrays.asList(ingredient1, ingredient2, ingredient3);
-
+        RatingInfoDTO ratingInfo1 = buildRating("999","Yummy",2.0,5.0);
+        RatingInfoDTO ratingInfo2 = buildRating("999","Yummy",2.0,5.0);
+        RatingInfoDTO ratingInfo3 = buildRating("999","Yummy",2.0,5.0);
+        List<RatingInfoDTO> ratingInfo = Arrays.asList(ratingInfo1, ratingInfo2, ratingInfo3);
         RatingUpdateInfo updateInfo = ServiceTestUtils.buildDummyRatingUpdateInfo();
 
         Mockito.when(dishRepository.findByDishIdForUser(userId, dishId))
                         .thenReturn(Optional.of(dish));
         Mockito.when(dishItemRepository.getIngredientsForDish(dishId))
                         .thenReturn(ingredients);
-        Mockito.when(tagService.getRatingUpdateInfoForDishIds(Collections.singletonList(dishId)))
-                        .thenReturn(updateInfo);
+        Mockito.when(dishItemRepository.getRatingsForDish(dishId))
+                .thenReturn(ratingInfo);
 
         DishDTO result = dishService.getDishForV2Display(userId, dishId);
 
@@ -940,6 +944,10 @@ class DishServiceImplMockTest {
         Assert.assertTrue(ingredientResult.getModifiersProcessed());
         */
 
+    }
+
+    private RatingInfoDTO buildRating(String id, String name, double power, double maxPower) {
+        return new RatingInfoDTO(name, Long.valueOf(id), power, maxPower);
     }
 
     private void assertFractionDisplay(DishItemDTO dishItemDTO, String value) {

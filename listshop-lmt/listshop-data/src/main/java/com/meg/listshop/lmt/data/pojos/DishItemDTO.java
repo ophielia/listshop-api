@@ -37,7 +37,7 @@ public class DishItemDTO {
         this.quantity = quantity;
         this.wholeQuantity = wholeQuantity;
         this.tagDisplay = tagDisplay;
-        this.rawModifiers = FlatStringUtils.inflateStringToList(rawModifiersString,"|");
+        this.rawModifiers = FlatStringUtils.inflateStringToList(rawModifiersString,"\\|");
         this.unitName = unitName;
         this.marker = marker;
         this.unitSize = unitSize;
@@ -175,7 +175,7 @@ public class DishItemDTO {
         if (getFractionalQuantity() != null) {
             quantityDisplay = quantityDisplay + " " + getFractionalQuantity().getDisplayName();
         }
-        return quantityDisplay;
+        return quantityDisplay.trim();
     }
 
     @Override

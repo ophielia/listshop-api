@@ -84,7 +84,7 @@ insert into dish_items (dish_item_id, dish_id, tag_id,
                         unit_id,quantity, whole_quantity, fractional_quantity,
                         raw_entry,raw_modifiers )
 values (nextval('dish_item_sequence'), 9999993, 18,
-        1008, 1.5, 1, 'OneHalf', '1/2 pound', 'grated'),
+        1008, 1.5, 1, 'OneHalf', '1 1/2 pound', 'grated'),
 -- worcestershire sauce
 (nextval('dish_item_sequence'), 9999993, 457,
  1001, 3.0, 3.0, null, '3 tablespoons', null),
@@ -96,12 +96,18 @@ values (nextval('dish_item_sequence'), 9999993, 18,
  1029, 2, 2, null, '2 cans', null),
 -- green bell pepper
  (nextval('dish_item_sequence'), 9999993, 187,
-  1011, 4, 4.0, null, '4', 'large'),
+  1011, 4, 4.0, null, '4 ripe extra large', 'extra large|ripe'),
 -- ground beef
 (nextval('dish_item_sequence'), 9999993, 435,
- 1008, 3.5, 3.0, 'OneHalf', '3 pounds', null);
+ 1008, 3.5, 3.0, 'OneHalf', '3.5 pounds', null);
 
 
+update tag t
+set power = 5
+from tag_relation r
+where r.child_tag_id = t.tag_id
+  and tag_type = 'Rating'
+  and r.parent_tag_id is null;
 
 
 
