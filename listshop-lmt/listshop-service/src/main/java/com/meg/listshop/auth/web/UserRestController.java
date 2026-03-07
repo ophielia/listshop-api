@@ -143,6 +143,9 @@ public class UserRestController implements UserRestControllerApi {
 
     @Override
     public ResponseEntity<Object> deleteUser(Authentication authentication) {
+        if (authentication == null) {
+            throw new ObjectNotFoundException("User not found");
+        }
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.info("Begin delete user [{}]", userDetails.getUsername());
         this.userService.deleteUser(userDetails.getUsername());

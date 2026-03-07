@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 public class CustomUserDetails implements UserDetails {
 
+    private String token;
     private Long id;
     private String username;
     private String password;
@@ -49,6 +50,14 @@ public class CustomUserDetails implements UserDetails {
         this.username = username;
         this.password = password;
         this.authorities = authorities;
+    }
+
+    public CustomUserDetails(Long id,
+                             String username,
+                             String token) {
+        this.id = id;
+        this.username = username;
+        this.token = token;
     }
 
     @Override
@@ -88,6 +97,14 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getToken() {
+        return token;
     }
 
     private static List<GrantedAuthority> mapToGrantedAuthorities(List<AuthorityEntity> authorities) {

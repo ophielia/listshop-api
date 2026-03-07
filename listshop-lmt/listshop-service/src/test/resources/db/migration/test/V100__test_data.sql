@@ -30,7 +30,7 @@ COPY public.users (user_id, email, enabled, last_password_reset_date, password, 
 29	michelle	t	\N	$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi	michelle	\N	\N
 2	testname	\N	\N	password	testname	\N	\N
 34	dad@userdetails.com	\N	\N	password	testname	\N	\N
-500	testuser@testuser.com	t	\N	$2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK	testuser	\N	\N
+500	testuser@testuser.com	t	\N	$2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK	testuser@testuser.com	\N	\N
 501	adduser	t	\N	password	adduser	\N	\N
 502	deleteuser	t	\N	password	deleteuser	\N	\N
 \.
@@ -6137,6 +6137,8 @@ COPY public.tokens (token_id, created_on, token_type, token_value, user_id) FROM
 --
 
 COPY public.user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login) FROM stdin;
+1158	500	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token123456	2026-02-27 06:04:39.119000 +00:00
+1159	26	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token56789	2026-02-27 06:04:39.119000 +00:00
 \.
 
 

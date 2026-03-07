@@ -14,6 +14,7 @@ public final class TestConstants {
 
     public final static String USER_1_EMAIL = "testuser@testuser.com";
     public static final Long USER_1_ID = 500L;
+    public static final String USER_1_TOKEN = "token123456";
     public final static String USER_2_NAME = "adduser";
     public static final Long USER_2_ID = 501L;
     public final static String USER_3_NAME = "me";
@@ -22,6 +23,7 @@ public final class TestConstants {
     public static final Long USER_4_ID = 502L;
 
     public final static String USER_5_NAME = "mom@test.com";
+    public final static String USER_5_TOKEN = "token56789";
     public static final Long USER_5_ID = 26L;
 
     public static final Long MEAL_PLAN_1_ID = 500L;

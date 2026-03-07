@@ -727,196 +727,97 @@ insert into public.list (list_id, created_on, user_id, list_types, list_layout_i
 values (50983, '2021-10-16 08:55:43.279000 +00:00', 61, null, 5, '2022-01-08 14:20:12.085000', null, false, 'Super U');
 
 insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52050, '2019-11-28 05:11:35.604000 +00:00', 'Manual', 'Thanksgiving', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52051, '2020-01-04 11:30:16.461000 +00:00', 'Manual', 'batter up box', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52052, '2020-03-28 08:56:14.117000 +00:00', 'Manual', 'misty silence', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52053, '2020-04-04 09:57:37.156000 +00:00', 'Manual', 'delicate mouse', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52054, '2020-04-10 17:20:57.466000 +00:00', 'Manual', 'dry wildflower', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52055, '2020-04-18 08:40:00.142000 +00:00', 'Manual', 'rapid art', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52056, '2020-04-24 16:34:34.147000 +00:00', 'Manual', 'muddy bush', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52057, '2020-05-02 10:59:56.629000 +00:00', 'Manual', 'fancy dream', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52058, '2020-05-08 10:43:55.011000 +00:00', 'Manual', 'polished field', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52059, '2020-05-15 18:21:50.331000 +00:00', 'Manual', 'green dream', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52060, '2020-05-21 18:11:05.979000 +00:00', 'Manual', 'young forest', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52061, '2020-05-30 07:20:54.397000 +00:00', 'Manual', 'square heart', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52062, '2020-06-06 08:39:50.353000 +00:00', 'Manual', 'delicate rain', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52063, '2020-06-13 07:54:29.013000 +00:00', 'Manual', 'dawn glade', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52064, '2020-06-19 22:15:52.356000 +00:00', 'Manual', 'nameless water', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52065, '2020-06-28 09:29:59.791000 +00:00', 'Manual', 'still cooking', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52066, '2020-07-26 07:25:16.822000 +00:00', 'Manual', 'purple frog', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52067, '2020-02-15 11:31:27.497000 +00:00', 'Manual', 'lunch collection', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52068, '2020-08-01 17:52:44.908000 +00:00', 'Manual', 'super sound', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52069, '2020-08-08 14:58:29.700000 +00:00', 'Manual', 'wispy salad', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52070, '2020-08-16 08:11:26.371000 +00:00', 'Manual', 'shiny bonus', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52071, '2020-08-22 14:03:24.334000 +00:00', 'Manual', 'round feather', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52072, '2020-08-29 07:44:47.175000 +00:00', 'Manual', 'cool king', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52073, '2020-09-04 06:03:33.319000 +00:00', 'Manual', 'dry art', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52074, '2020-09-12 06:18:28.465000 +00:00', 'Manual', 'wispy rain', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52075, '2020-09-19 09:22:25.577000 +00:00', 'Manual', 'divine field', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52076, '2020-09-27 13:41:03.374000 +00:00', 'Manual', 'noisy dawn', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52077, '2020-10-03 09:23:33.668000 +00:00', 'Manual', 'still river', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52078, '2020-10-10 09:29:11.305000 +00:00', 'Manual', 'late sun', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52079, '2020-10-17 09:23:45.937000 +00:00', 'Manual', 'lingering king', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52080, '2020-10-30 20:49:10.467000 +00:00', 'Manual', 'lingering dream', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52081, '2020-11-07 10:03:32.671000 +00:00', 'Manual', 'holy hat', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52082, '2020-11-14 09:05:19.729000 +00:00', 'Manual', 'broken mode', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52083, '2020-11-21 11:40:38.552000 +00:00', 'Manual', 'orange breeze', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52084, '2020-11-29 21:37:39.971000 +00:00', 'Manual', 'rapid pond', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52085, '2020-12-05 10:13:39.986000 +00:00', 'Manual', 'bold mode', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52086, '2020-12-12 08:32:26.084000 +00:00', 'Manual', 'shrill frost', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52087, '2020-12-19 10:48:03.423000 +00:00', 'Manual', 'hidden shape', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52088, '2020-12-24 06:15:44.626000 +00:00', 'Manual', 'Christmas', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52089, '2021-01-02 12:22:16.855000 +00:00', 'Manual', 'cold tooth', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52090, '2021-01-08 16:59:45.359000 +00:00', 'Manual', 'wild cherry', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52091, '2021-01-14 18:03:24.158000 +00:00', 'Manual', 'muddy poetry', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52092, '2021-01-24 09:05:09.997000 +00:00', 'Manual', 'red brook', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52093, '2021-01-30 10:01:15.440000 +00:00', 'Manual', 'rough mud', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52094, '2021-02-04 21:39:13.531000 +00:00', 'Manual', 'bitter sea', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52095, '2021-02-14 08:54:47.974000 +00:00', 'Manual', 'snowy hall', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52096, '2021-02-20 11:13:05.940000 +00:00', 'Manual', 'noisy silence', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52097, '2021-02-27 12:13:45.267000 +00:00', 'Manual', 'purple flower', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52098, '2021-03-06 10:05:48.943000 +00:00', 'Manual', 'late fire', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52099, '2021-03-14 06:58:22.285000 +00:00', 'Manual', 'raspy surf', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52100, '2021-03-19 05:22:39.677000 +00:00', 'Manual', 'muddy flower', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52101, '2021-03-26 18:41:02.460000 +00:00', 'Manual', 'wild butterfly', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52102, '2021-04-03 06:27:28.098000 +00:00', 'Manual', 'sparkling cake', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52103, '2021-04-10 12:46:34.053000 +00:00', 'Manual', 'lingering hall', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52104, '2021-04-24 09:32:40.531000 +00:00', 'Manual', 'snowy king', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52105, '2021-05-01 20:17:14.852000 +00:00', 'Manual', 'spring fire', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52106, '2021-05-08 08:58:52.545000 +00:00', 'Manual', 'lucky glade', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52107, '2021-05-16 15:23:03.787000 +00:00', 'Manual', 'divine brook', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52108, '2021-05-22 14:16:45.871000 +00:00', 'Manual', 'green frost', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52109, '2020-03-21 08:06:44.088000 +00:00', 'Manual', 'oh the beaches', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52110, '2021-05-29 05:48:52.763000 +00:00', 'Manual', 'empty silence', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52111, '2021-06-05 05:41:32.998000 +00:00', 'Manual', 'icy fire', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52112, '2021-06-06 18:19:41.754000 +00:00', 'Manual', 'billowing bar', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52113, '2021-06-19 06:29:35.790000 +00:00', 'Manual', 'old violet', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52114, '2021-06-26 10:14:08.457000 +00:00', 'Manual', 'rapid queen', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52115, '2021-07-25 06:50:58.081000 +00:00', 'Manual', 'portable', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52116, '2021-08-03 23:39:13.766000 +00:00', 'Manual', 'frosty boat', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52117, '2021-08-24 18:48:09.905000 +00:00', 'Manual', 'twilight limit', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52118, '2021-08-29 11:55:06.296000 +00:00', 'Manual', 'half caste', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52119, '2021-09-04 07:14:22.147000 +00:00', 'Manual', 'yellow violet', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52120, '2021-09-08 20:27:12.567000 +00:00', 'Manual', 'summer sea', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52121, '2021-09-18 08:44:50.988000 +00:00', 'Manual', 'muddy cherry', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52122, '2021-09-23 20:34:38.429000 +00:00', 'Manual', 'rough wildflower', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52123, '2021-09-26 15:47:00.987000 +00:00', 'Manual', 'tiny bar', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52124, '2021-10-05 15:51:56.759000 +00:00', 'Manual', 'shy sound', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52125, '2021-10-09 08:38:56.482000 +00:00', 'Manual', 'empty river', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52126, '2021-10-16 08:32:31.401000 +00:00', 'Manual', 'rapid union', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52127, '2021-11-04 19:56:42.758000 +00:00', 'Manual', 'south beach ideas', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52128, '2021-11-04 20:40:35.394000 +00:00', 'Manual', 'steep lab', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52129, '2021-11-14 18:35:18.286000 +00:00', 'Manual', 'polished credit', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52130, '2021-11-19 06:43:08.800000 +00:00', 'Manual', 'sparkling dust', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52131, '2021-12-02 22:01:53.037000 +00:00', 'Manual', 'frosty butterfly', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52132, '2021-12-17 06:55:55.082000 +00:00', 'Manual', 'sparkling resonance', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52133, '2022-01-01 14:48:34.533000 +00:00', 'Manual', 'The New Year!!!', 61, null);
-insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
-values (52134, '2022-01-08 09:22:33.836000 +00:00', 'Manual', 'bold meadow', 61, null);
+values (52050, '2019-11-28 05:11:35.604000 +00:00', 'Manual', 'Thanksgiving', 61, null),
+       (52051, '2020-01-04 11:30:16.461000 +00:00', 'Manual', 'batter up box', 61, null),
+       (52052, '2020-03-28 08:56:14.117000 +00:00', 'Manual', 'misty silence', 61, null),
+       (52053, '2020-04-04 09:57:37.156000 +00:00', 'Manual', 'delicate mouse', 61, null),
+       (52054, '2020-04-10 17:20:57.466000 +00:00', 'Manual', 'dry wildflower', 61, null),
+       (52055, '2020-04-18 08:40:00.142000 +00:00', 'Manual', 'rapid art', 61, null),
+       (52056, '2020-04-24 16:34:34.147000 +00:00', 'Manual', 'muddy bush', 61, null),
+       (52057, '2020-05-02 10:59:56.629000 +00:00', 'Manual', 'fancy dream', 61, null),
+       (52058, '2020-05-08 10:43:55.011000 +00:00', 'Manual', 'polished field', 61, null),
+       (52059, '2020-05-15 18:21:50.331000 +00:00', 'Manual', 'green dream', 61, null),
+       (52060, '2020-05-21 18:11:05.979000 +00:00', 'Manual', 'young forest', 61, null),
+       (52061, '2020-05-30 07:20:54.397000 +00:00', 'Manual', 'square heart', 61, null),
+       (52062, '2020-06-06 08:39:50.353000 +00:00', 'Manual', 'delicate rain', 61, null),
+       (52063, '2020-06-13 07:54:29.013000 +00:00', 'Manual', 'dawn glade', 61, null),
+       (52064, '2020-06-19 22:15:52.356000 +00:00', 'Manual', 'nameless water', 61, null),
+       (52065, '2020-06-28 09:29:59.791000 +00:00', 'Manual', 'still cooking', 61, null),
+       (52066, '2020-07-26 07:25:16.822000 +00:00', 'Manual', 'purple frog', 61, null),
+       (52067, '2020-02-15 11:31:27.497000 +00:00', 'Manual', 'lunch collection', 61, null),
+       (52068, '2020-08-01 17:52:44.908000 +00:00', 'Manual', 'super sound', 61, null),
+       (52069, '2020-08-08 14:58:29.700000 +00:00', 'Manual', 'wispy salad', 61, null),
+       (52070, '2020-08-16 08:11:26.371000 +00:00', 'Manual', 'shiny bonus', 61, null),
+       (52071, '2020-08-22 14:03:24.334000 +00:00', 'Manual', 'round feather', 61, null),
+       (52072, '2020-08-29 07:44:47.175000 +00:00', 'Manual', 'cool king', 61, null),
+       (52073, '2020-09-04 06:03:33.319000 +00:00', 'Manual', 'dry art', 61, null),
+       (52074, '2020-09-12 06:18:28.465000 +00:00', 'Manual', 'wispy rain', 61, null),
+       (52075, '2020-09-19 09:22:25.577000 +00:00', 'Manual', 'divine field', 61, null),
+       (52076, '2020-09-27 13:41:03.374000 +00:00', 'Manual', 'noisy dawn', 61, null),
+       (52077, '2020-10-03 09:23:33.668000 +00:00', 'Manual', 'still river', 61, null),
+       (52078, '2020-10-10 09:29:11.305000 +00:00', 'Manual', 'late sun', 61, null),
+       (52079, '2020-10-17 09:23:45.937000 +00:00', 'Manual', 'lingering king', 61, null),
+       (52080, '2020-10-30 20:49:10.467000 +00:00', 'Manual', 'lingering dream', 61, null),
+       (52081, '2020-11-07 10:03:32.671000 +00:00', 'Manual', 'holy hat', 61, null),
+       (52082, '2020-11-14 09:05:19.729000 +00:00', 'Manual', 'broken mode', 61, null),
+       (52083, '2020-11-21 11:40:38.552000 +00:00', 'Manual', 'orange breeze', 61, null),
+       (52084, '2020-11-29 21:37:39.971000 +00:00', 'Manual', 'rapid pond', 61, null),
+       (52085, '2020-12-05 10:13:39.986000 +00:00', 'Manual', 'bold mode', 61, null),
+       (52086, '2020-12-12 08:32:26.084000 +00:00', 'Manual', 'shrill frost', 61, null),
+       (52087, '2020-12-19 10:48:03.423000 +00:00', 'Manual', 'hidden shape', 61, null),
+       (52088, '2020-12-24 06:15:44.626000 +00:00', 'Manual', 'Christmas', 61, null),
+       (52089, '2021-01-02 12:22:16.855000 +00:00', 'Manual', 'cold tooth', 61, null),
+       (52090, '2021-01-08 16:59:45.359000 +00:00', 'Manual', 'wild cherry', 61, null),
+       (52091, '2021-01-14 18:03:24.158000 +00:00', 'Manual', 'muddy poetry', 61, null),
+       (52092, '2021-01-24 09:05:09.997000 +00:00', 'Manual', 'red brook', 61, null),
+       (52093, '2021-01-30 10:01:15.440000 +00:00', 'Manual', 'rough mud', 61, null),
+       (52094, '2021-02-04 21:39:13.531000 +00:00', 'Manual', 'bitter sea', 61, null),
+       (52095, '2021-02-14 08:54:47.974000 +00:00', 'Manual', 'snowy hall', 61, null),
+       (52096, '2021-02-20 11:13:05.940000 +00:00', 'Manual', 'noisy silence', 61, null),
+       (52097, '2021-02-27 12:13:45.267000 +00:00', 'Manual', 'purple flower', 61, null),
+       (52098, '2021-03-06 10:05:48.943000 +00:00', 'Manual', 'late fire', 61, null),
+       (52099, '2021-03-14 06:58:22.285000 +00:00', 'Manual', 'raspy surf', 61, null),
+       (52100, '2021-03-19 05:22:39.677000 +00:00', 'Manual', 'muddy flower', 61, null),
+       (52101, '2021-03-26 18:41:02.460000 +00:00', 'Manual', 'wild butterfly', 61, null),
+       (52102, '2021-04-03 06:27:28.098000 +00:00', 'Manual', 'sparkling cake', 61, null),
+       (52103, '2021-04-10 12:46:34.053000 +00:00', 'Manual', 'lingering hall', 61, null),
+       (52104, '2021-04-24 09:32:40.531000 +00:00', 'Manual', 'snowy king', 61, null),
+       (52105, '2021-05-01 20:17:14.852000 +00:00', 'Manual', 'spring fire', 61, null),
+       (52106, '2021-05-08 08:58:52.545000 +00:00', 'Manual', 'lucky glade', 61, null),
+       (52107, '2021-05-16 15:23:03.787000 +00:00', 'Manual', 'divine brook', 61, null),
+       (52108, '2021-05-22 14:16:45.871000 +00:00', 'Manual', 'green frost', 61, null),
+       (52109, '2020-03-21 08:06:44.088000 +00:00', 'Manual', 'oh the beaches', 61, null),
+       (52110, '2021-05-29 05:48:52.763000 +00:00', 'Manual', 'empty silence', 61, null),
+       (52111, '2021-06-05 05:41:32.998000 +00:00', 'Manual', 'icy fire', 61, null),
+       (52112, '2021-06-06 18:19:41.754000 +00:00', 'Manual', 'billowing bar', 61, null),
+       (52113, '2021-06-19 06:29:35.790000 +00:00', 'Manual', 'old violet', 61, null),
+       (52114, '2021-06-26 10:14:08.457000 +00:00', 'Manual', 'rapid queen', 61, null),
+       (52115, '2021-07-25 06:50:58.081000 +00:00', 'Manual', 'portable', 61, null),
+       (52116, '2021-08-03 23:39:13.766000 +00:00', 'Manual', 'frosty boat', 61, null),
+       (52117, '2021-08-24 18:48:09.905000 +00:00', 'Manual', 'twilight limit', 61, null),
+       (52118, '2021-08-29 11:55:06.296000 +00:00', 'Manual', 'half caste', 61, null),
+       (52119, '2021-09-04 07:14:22.147000 +00:00', 'Manual', 'yellow violet', 61, null),
+       (52120, '2021-09-08 20:27:12.567000 +00:00', 'Manual', 'summer sea', 61, null),
+       (52121, '2021-09-18 08:44:50.988000 +00:00', 'Manual', 'muddy cherry', 61, null),
+       (52122, '2021-09-23 20:34:38.429000 +00:00', 'Manual', 'rough wildflower', 61, null),
+       (52123, '2021-09-26 15:47:00.987000 +00:00', 'Manual', 'tiny bar', 61, null),
+       (52124, '2021-10-05 15:51:56.759000 +00:00', 'Manual', 'shy sound', 61, null),
+       (52125, '2021-10-09 08:38:56.482000 +00:00', 'Manual', 'empty river', 61, null),
+       (52126, '2021-10-16 08:32:31.401000 +00:00', 'Manual', 'rapid union', 61, null),
+       (52127, '2021-11-04 19:56:42.758000 +00:00', 'Manual', 'south beach ideas', 61, null),
+       (52128, '2021-11-04 20:40:35.394000 +00:00', 'Manual', 'steep lab', 61, null),
+       (52129, '2021-11-14 18:35:18.286000 +00:00', 'Manual', 'polished credit', 61, null),
+       (52130, '2021-11-19 06:43:08.800000 +00:00', 'Manual', 'sparkling dust', 61, null),
+       (52131, '2021-12-02 22:01:53.037000 +00:00', 'Manual', 'frosty butterfly', 61, null),
+       (52132, '2021-12-17 06:55:55.082000 +00:00', 'Manual', 'sparkling resonance', 61, null),
+       (52133, '2022-01-01 14:48:34.533000 +00:00', 'Manual', 'The New Year!!!', 61, null),
+       (52134, '2022-01-08 09:22:33.836000 +00:00', 'Manual', 'bold meadow', 61, null);
 
-insert into public.target (target_id, created, last_updated, last_used, target_name, target_tag_ids, user_id,
-                           proposal_id, target, expires, target_type)
-values (50565, '2018-04-21 11:15:22.451000 +00:00', null, null, 'testing', '64;322;399', 61, 50000, null, null, null);
-insert into public.target (target_id, created, last_updated, last_used, target_name, target_tag_ids, user_id,
-                           proposal_id, target, expires, target_type)
-values (50566, '2018-05-12 07:39:03.206000 +00:00', null, null, 'testZ', '64', 61, 50003, null, null, null);
-
-insert into public.proposal (proposal_id, user_id, is_refreshable, created)
-values (1022, 61, false, '2018-10-06 07:49:52.777000 +00:00');
-insert into public.proposal (proposal_id, user_id, is_refreshable, created)
-values (1023, 61, false, '2018-10-06 07:51:54.923000 +00:00');
-insert into public.proposal (proposal_id, user_id, is_refreshable, created)
-values (1024, 61, false, '2018-10-13 07:47:34.643000 +00:00');
-insert into public.proposal (proposal_id, user_id, is_refreshable, created)
-values (1025, 61, false, '2019-07-21 19:18:33.418000 +00:00');
 
 insert into public.user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number,
                                  client_device_id, client_version, token, last_login)
 values (506, 61, 'iPhone 6', 'iPhone', 'iOS', '12.4', 'Mobile', '26', '2C73FB19-3E57-4078-B517-7E5F248F4E19', '1.4.1',
-        'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZSIsImF1ZGllbmNlIjoibW9iaWxlIiwiY3JlYXRlZCI6MTYwNDA4NzAzNDc1N30._ISdZadv8TDlW3zP9v0ppK9G69XHSCuVDTCbZd809SICZ_mBBY6E1Bdrf_g1ia1MXTaTSKyi0DVeE-6s4q-Cxg',
+        'tokenUserToBeDeleted',
         '2020-11-20 22:27:00.477000 +00:00');
 insert into public.user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number,
                                  client_device_id, client_version, token, last_login)
@@ -3991,95 +3892,3 @@ insert into public.meal_plan_slot (meal_plan_slot_id, dish_dish_id, meal_plan_id
 values (68596, 87, 52134);
 
 
-insert into public.proposal_context (proposal_context_id, proposal_id, current_attempt_index, current_approach_type,
-                                     current_approach_index, meal_plan_id, target_id, target_hash_code,
-                                     proposal_hash_code)
-values (50026, 1022, null, 'WHEEL_MIXED', 0, null, 50002, '-1280990656', '0');
-insert into public.proposal_context (proposal_context_id, proposal_id, current_attempt_index, current_approach_type,
-                                     current_approach_index, meal_plan_id, target_id, target_hash_code,
-                                     proposal_hash_code)
-values (50027, 1023, null, 'WHEEL', 0, null, 50003, '1914170299', '0');
-insert into public.proposal_context (proposal_context_id, proposal_id, current_attempt_index, current_approach_type,
-                                     current_approach_index, meal_plan_id, target_id, target_hash_code,
-                                     proposal_hash_code)
-values (50028, 1024, null, 'WHEEL', 0, null, 50004, '-1244720841', '0');
-insert into public.proposal_context (proposal_context_id, proposal_id, current_attempt_index, current_approach_type,
-                                     current_approach_index, meal_plan_id, target_id, target_hash_code,
-                                     proposal_hash_code)
-values (50029, 1025, null, 'WHEEL', 0, null, 50005, '833369601', '0');
-
-insert into public.target_slot (target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids, target)
-values (1234, 320, 1, 50565, '323', null);
-insert into public.target_slot (target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids, target)
-values (1236, 320, 2, 50565, '24', null);
-insert into public.target_slot (target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids, target)
-values (1238, 320, 3, 50565, '204', null);
-insert into public.target_slot (target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids, target)
-values (1240, 320, 4, 50565, '199', null);
-insert into public.target_slot (target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids, target)
-values (1242, 320, 1, 50566, '323', null);
-insert into public.target_slot (target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids, target)
-values (1244, 320, 2, 50566, '24', null);
-insert into public.target_slot (target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids, target)
-values (1246, 320, 3, 50566, '301', null);
-insert into public.target_slot (target_slot_id, slot_dish_tag_id, slot_order, target_id, target_tag_ids, target)
-values (1248, 320, 4, 50566, '346', null);
-
-
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1087, 1, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1088, 1, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1089, 1, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1090, 2, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1091, 1, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1092, 1, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1093, 1, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1094, 2, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1095, 1, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1096, 1, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1097, 1, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1098, 2, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1099, 1, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1100, 1, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1101, 1, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1102, 2, null, 1022, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1103, 1, null, 1023, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1104, 1, null, 1024, null, 320);
-insert into public.proposal_slot (slot_id, slot_number, flat_matched_tag_ids, proposal_id, picked_dish_id,
-                                  slot_dish_tag_id)
-values (1105, 1, null, 1025, null, 320);
