@@ -26,7 +26,7 @@ public interface V2TagRestControllerApi {
             HttpServletRequest request);
 
     @PostMapping(value = "{tagId}/child", produces = "application/json", consumes = "application/json")
-    ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable("tagId") Long tagId, @RequestBody Tag input,
+    ResponseEntity<Object> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable("tagId") Long tagId, @RequestBody Tag input,
                                    @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException, MalformedURLException;
 
 

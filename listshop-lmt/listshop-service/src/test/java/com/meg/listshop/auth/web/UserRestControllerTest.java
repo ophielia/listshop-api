@@ -53,6 +53,7 @@ import static org.hamcrest.Matchers.equalToIgnoringCase;
 class UserRestControllerTest {
 
     private static final String USER_WITH_PROPERTIES_TOKEN = "tokenUserWithProperties";
+
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 

@@ -5,7 +5,6 @@ import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.common.ControllerUtils;
 import com.meg.listshop.lmt.api.controller.v2.V2TagRestControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.model.TagResource;
 import com.meg.listshop.lmt.api.model.V2ModelMapper;
 import com.meg.listshop.lmt.api.model.TagPut;
 import com.meg.listshop.lmt.api.model.v2.Tag;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 13/05/2017.
@@ -47,7 +45,7 @@ public class TagRestController implements V2TagRestControllerApi {
         this.tagService = tagService;
     }
 
-//MM 2308 - do this one
+
     public ResponseEntity<TagList> retrieveUserTagList(
             Authentication authentication,
             HttpServletRequest request) {
@@ -65,13 +63,13 @@ public class TagRestController implements V2TagRestControllerApi {
         List<TagInfoDTO> infoTags = tagService.getTagInfoList(userId, Collections.emptyList());
         List<Tag> tagList = infoTags.stream()
                 .map(V2ModelMapper::toModel)
-                .collect(Collectors.toList());
+                .toList();
         var returnValue = new TagList(tagList);
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
-    public ResponseEntity<Tag> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable("tagId") Long tagId, @RequestBody Tag input,
-                                          @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException, MalformedURLException {
+    public ResponseEntity<Object> addAsChild(Authentication authentication, HttpServletRequest request, @PathVariable("tagId") Long tagId, @RequestBody Tag input,
+                                             @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException, MalformedURLException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Creating add tag for user [%S]", userDetails.getId());
         logger.info(message);
@@ -84,7 +82,6 @@ public class TagRestController implements V2TagRestControllerApi {
         var tagEntity = V2ModelMapper.toEntity(input);
         TagEntity result = this.tagService.createTag(tagId, tagEntity, userId);
         if (result != null) {
-            var tagModel = V2ModelMapper.toModel(result);
             var location = ControllerUtils.locationURI(request, "/v2/tags", result.getId());
             return ResponseEntity.created(location).build();
         } else {
@@ -104,7 +101,7 @@ public class TagRestController implements V2TagRestControllerApi {
         }
         var tagModel = V2ModelMapper.toModel(tagEntity);
 
-        return new ResponseEntity(tagModel, HttpStatus.OK);
+        return new ResponseEntity<>(tagModel, HttpStatus.OK);
 
     }
 

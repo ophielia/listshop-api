@@ -27,7 +27,12 @@ public class Tag {
     @JsonProperty("parent_id")
     private String parentId;
 
-    Tag() {
+    public Tag() {
+        // empty constructor
+    }
+
+    public Tag(Long tagId) {
+        this.tagId = String.valueOf(tagId);
     }
 
     public String getTagId() {

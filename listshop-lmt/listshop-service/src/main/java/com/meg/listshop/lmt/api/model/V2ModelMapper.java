@@ -269,14 +269,24 @@ public class V2ModelMapper {
     }
 
     public static Tag toModel(TagInfoDTO tagInfoDTO) {
-        //MM 2308 - do this one
-        return null;
+        return new Tag(tagInfoDTO.getTagId())
+                .withUserId(String.valueOf(tagInfoDTO.getUserId()))
+                .withName(tagInfoDTO.getName())
+                .withDescription(tagInfoDTO.getDescription())
+                .withTagType(tagInfoDTO.getTagType())
+                .withPower(tagInfoDTO.getPower())
+                .withGroup(tagInfoDTO.isGroup())
+                .withParentId(String.valueOf(tagInfoDTO.getParentId()));
     }
 
 
     public static Tag toModel(TagEntity entity) {
-        //MM 2308 - do this one
-        return null;
+        return new Tag(entity.getId())
+                .withUserId(String.valueOf(entity.getUserId()))
+                .withName(entity.getName())
+                .withDescription(entity.getDescription())
+                .withTagType(entity.getTagType().name())
+                .withPower(entity.getPower());
     }
 
     public static TagEntity toEntity(Tag tag) {
