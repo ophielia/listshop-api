@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.admin.controller;
