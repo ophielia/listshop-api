@@ -96,7 +96,6 @@ public class TagRestController implements V2TagRestControllerApi {
 
     }
 
-    //MM 2308 - do this one
     public ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId) {
         // invalid dishId - returns invalid id supplied - 400
         var tagInfoList = this.tagService
