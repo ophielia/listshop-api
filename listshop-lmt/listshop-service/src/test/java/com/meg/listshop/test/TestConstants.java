@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.test;
@@ -18,6 +17,7 @@ public final class TestConstants {
     public final static String USER_2_NAME = "adduser";
     public static final Long USER_2_ID = 501L;
     public final static String USER_3_NAME = "me";
+    public final static String USER_3_TOKEN = "token20user";
     public static final Long USER_3_ID = 20L;
     public final static String USER_4_NAME = "deleteuser";
     public static final Long USER_4_ID = 502L;

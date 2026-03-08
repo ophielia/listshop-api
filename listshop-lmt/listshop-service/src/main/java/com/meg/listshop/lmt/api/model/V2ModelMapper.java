@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.api.model;
@@ -275,7 +274,6 @@ public class V2ModelMapper {
                 .withDescription(tagInfoDTO.getDescription())
                 .withTagType(tagInfoDTO.getTagType())
                 .withPower(tagInfoDTO.getPower())
-                .withGroup(tagInfoDTO.isGroup())
                 .withParentId(String.valueOf(tagInfoDTO.getParentId()));
     }
 

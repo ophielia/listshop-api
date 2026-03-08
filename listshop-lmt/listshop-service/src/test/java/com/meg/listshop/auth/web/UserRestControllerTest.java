@@ -538,10 +538,8 @@ class UserRestControllerTest {
                 .header(TestUtils.authToken(TestConstants.USER_4_TOKEN))
                 .contentType(ContentType.JSON)
                 .when()
-                .log().all()
                 .get(url)
                 .then()
-                .log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body("user_properties", Matchers.hasSize(2))
                 .body("user_properties.key", Matchers.hasItem("key1"))
@@ -564,10 +562,8 @@ class UserRestControllerTest {
                 .contentType(ContentType.JSON)
                 .when()
                 .body(payloadAsString)
-                .log().all()
                 .post(url)
                 .then()
-                .log().all()
                 .statusCode(HttpStatus.OK.value());
 
         // retrieve what we just saved
@@ -575,10 +571,8 @@ class UserRestControllerTest {
                 .header(TestUtils.authToken(USER_WITH_PROPERTIES_TOKEN))
                 .contentType(ContentType.JSON)
                 .when()
-                .log().all()
                 .get(url)
                 .then()
-                .log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body("user_properties", Matchers.hasSize(4))
                 .body("user_properties.key", Matchers.hasItem("key1"))
@@ -606,10 +600,8 @@ class UserRestControllerTest {
                 .contentType(ContentType.JSON)
                 .when()
                 .body(payloadAsString)
-                .log().all()
                 .post(url)
                 .then()
-                .log().all()
                 .statusCode(HttpStatus.OK.value());
 
         // retrieve what we just saved
@@ -617,10 +609,8 @@ class UserRestControllerTest {
                 .header(TestUtils.authToken(USER_WITH_PROPERTIES_TOKEN))
                 .contentType(ContentType.JSON)
                 .when()
-                .log().all()
                 .get(url)
                 .then()
-                .log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body("user_properties.key", Matchers.hasItem("test_property"))
                 .body("user_properties.value", Matchers.hasItem("scintillating value"));
@@ -640,10 +630,8 @@ class UserRestControllerTest {
                 .contentType(ContentType.JSON)
                 .when()
                 .body(payloadAsString)
-                .log().all()
                 .post(url)
                 .then()
-                .log().all()
                 .statusCode(HttpStatus.OK.value());
 
         // retrieve what we just saved
@@ -651,10 +639,8 @@ class UserRestControllerTest {
                 .header(TestUtils.authToken(USER_WITH_PROPERTIES_TOKEN))
                 .contentType(ContentType.JSON)
                 .when()
-                .log().all()
                 .get(url)
                 .then()
-                .log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body("user_properties.key", Matchers.not(Matchers.hasItem("another_property")));
 

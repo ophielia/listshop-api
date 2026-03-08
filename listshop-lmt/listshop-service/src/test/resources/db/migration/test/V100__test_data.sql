@@ -772,6 +772,7 @@ COPY public.tag (tag_id, description, name, tag_type, tag_type_default, is_verif
 181	\N	white sugar	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:45:31.48136+02	\N	\N	\N	f	\N	1	\N	225108	\N
 19	\N	garlic	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:27:31.48136+02	\N	\N	\N	f	\N	1	\N	227637	\N
 33	\N	tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:13:31.48136+02	\N	\N	\N	f	\N	1	\N	225744	\N
+333333	\N	tomato bisque	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:13:31.48136+02	\N	\N	\N	f	20	1	\N	225744	\N
 \.
 
 
@@ -6140,6 +6141,7 @@ COPY public.user_devices (user_device_id, user_id, name, model, os, os_version, 
 1158	500	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token123456	2026-02-27 06:04:39.119000 +00:00
 1159	26	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token56789	2026-02-27 06:04:39.119000 +00:00
 1160	502	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token502user	2026-02-27 06:04:39.119000 +00:00
+1161	20	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token20user	2026-02-27 06:04:39.119000 +00:00
 \.
 
 
@@ -6417,6 +6419,13 @@ SELECT pg_catalog.setval('public.unit_sequence', 1000, false);
 --
 
 SELECT pg_catalog.setval('public.user_device_sequence', 1, false);
+
+
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
 
 
 --

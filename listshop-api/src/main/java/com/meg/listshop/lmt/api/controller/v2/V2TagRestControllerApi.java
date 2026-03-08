@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.controller.v2;
 
 import com.meg.listshop.lmt.api.exception.BadParameterException;
@@ -30,7 +36,7 @@ public interface V2TagRestControllerApi {
                                    @RequestParam(value = "asStandard", required = false, defaultValue = "false") boolean asStandard) throws BadParameterException, MalformedURLException;
 
 
-    @GetMapping( value = "/{tagId}", produces = "application/json")
+    @GetMapping( value = "{tagId}", produces = "application/json")
     ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId);
 
     @PutMapping(value = "{tagId}", produces = "application/json", consumes = "application/json")

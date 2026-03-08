@@ -1,5 +1,12 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.model.v2;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -20,9 +27,6 @@ public class Tag {
     private String tagType;
 
     private Double power;
-
-    @JsonProperty("is_group")
-    private boolean isGroup;
 
     @JsonProperty("parent_id")
     private String parentId;
@@ -59,9 +63,7 @@ public class Tag {
         return power;
     }
 
-    public boolean isGroup() {
-        return isGroup;
-    }
+
 
     public String getParentId() {
         return parentId;
@@ -97,11 +99,6 @@ public class Tag {
         return this;
     }
 
-    public Tag withGroup(boolean isGroup) {
-        this.isGroup = isGroup;
-        return this;
-    }
-
     public Tag withParentId(String parentId) {
         this.parentId = parentId;
         return this;
@@ -116,7 +113,6 @@ public class Tag {
                 ", description='" + description + '\'' +
                 ", tagType='" + tagType + '\'' +
                 ", power=" + power +
-                ", isGroup=" + isGroup +
                 ", parentId='" + parentId + '\'' +
                 '}';
     }

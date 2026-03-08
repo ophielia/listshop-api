@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.api.v2;
@@ -10,10 +9,9 @@ package com.meg.listshop.lmt.api.v2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.lmt.api.model.Tag;
-import com.meg.listshop.lmt.api.model.TagListResource;
-import com.meg.listshop.lmt.api.model.TagResource;
 import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.api.model.v2.Tag;
+import com.meg.listshop.lmt.api.model.v2.TagList;
 import com.meg.listshop.test.TestConstants;
 import com.meg.listshop.test.TestUtils;
 import io.restassured.RestAssured;
@@ -32,7 +30,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
 
@@ -48,14 +45,12 @@ class V2TagRestControllerTest {
 
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
-
+    private final String token = TestConstants.USER_1_TOKEN;
+    private final String tokenUserWithTags = TestConstants.USER_3_TOKEN;
     @LocalServerPort
     public int serverPort;
-
     @Autowired
     private ObjectMapper objectMapper;
-
-    private String token = TestConstants.USER_1_TOKEN;
 
     @PostConstruct
     public void initRestAssured() {
@@ -66,25 +61,74 @@ class V2TagRestControllerTest {
 
     @Test
     void readSingleTag() {
-        Long testId = TestConstants.TAG_1_ID;
+        Long testId = 128L;
         String url = "/v2/tag/" + testId;
-        given()
+        String json = given()
                 .header(TestUtils.authToken(token))
                 .when()
                 .get(url)
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("tag.tag_id", Matchers.isA(String.class))
-                .body("tag.tag_id", Matchers.equalTo(testId.toString()));
+                .body("tag_id", Matchers.isA(String.class))
+                .body("tag_id", Matchers.equalTo(testId.toString()))
+                .extract().asString();
+        Assertions.assertNotNull(json);
+    }
+
+    @Test
+    void readSingleTagForUser() {
+        String url = "/v2/tag/333333";
+        given()
+                .header(TestUtils.authToken(tokenUserWithTags))
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("tag_id", Matchers.isA(String.class))
+                .body("tag_id", Matchers.equalTo("333333"));
+    }
+
+    @Test
+    void readTagsForUser() {
+        String url = "/v2/tag";
+        TagList tagList = given()
+                .header(TestUtils.authToken(tokenUserWithTags))
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("tag_list.user_id", Matchers.hasItems("0", "20"))
+                .extract().as(TagList.class);
+        Assertions.assertNotNull(tagList);
+        Assertions.assertTrue( tagList.getTagList().size() >= 478);
+    }
+
+
+    @Test
+    void readStandardTags() {
+        String url = "/v2/tag";
+        TagList tagList = given()
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("tag_list.user_id", Matchers.hasItems("0"))
+                .body("tag_list.user_id", Matchers.not(Matchers.hasItems("20")))
+                .extract().as(TagList.class);
+        Assertions.assertNotNull(tagList);
+        Assertions.assertTrue( tagList.getTagList().size() >= 477);
     }
 
     @Test
     void addAsChild() throws Exception {
         String url = "/v2/tag/" + TestConstants.PARENT_TAG_ID_2 + "/child";
 
-        Tag tag = new Tag("testTag");
-        tag = tag.tagType(TagType.Rating.name());
+        Tag tag = new Tag().withName("testTag")
+                .withTagType(TagType.Rating.name());
         String tagString = json(tag);
 
         String locationValue = given()
@@ -115,20 +159,20 @@ class V2TagRestControllerTest {
                 .body("tag.user_id", Matchers.equalTo(TestConstants.USER_1_ID.toString()));
 
         // now, check that parent id is correct"
-        TagListResource afterList = given()
+        TagList afterList = given()
                 .header(TestUtils.authToken(token))
                 .when()
-                .get("/tag/user")
+                .get("/v2/tag")
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(TagListResource.class);
+                .as(TagList.class);
 
-        Optional<TagResource> resultTag = afterList.getEmbeddedList().getTagResourceList().stream()
-                .filter(t -> t.getTag().getId().equals(idString))
-                .findFirst();
-        Assertions.assertTrue(resultTag.isPresent());
-        Assertions.assertEquals(String.valueOf(TestConstants.PARENT_TAG_ID_2), resultTag.get().getTag().getParentId(), "parent tag id should equal that given for create call");
+        Tag resultTag = afterList.getTagList().stream()
+                .filter(t -> t.getTagId().equals(idString))
+                .findFirst()
+                .orElse(null);
+        Assertions.assertEquals(String.valueOf(TestConstants.PARENT_TAG_ID_2), resultTag.getParentId(), "parent tag id should equal that given for create call");
 
     }
 
@@ -137,8 +181,8 @@ class V2TagRestControllerTest {
         Long parentId = 88L; // prepared meats
         String url = "/v2/tag/" + parentId + "/child";
 
-        Tag tag = new Tag("Meaty Ingredient");
-        tag = tag.tagType(TagType.Ingredient.name());
+        Tag tag = new Tag().withName("Meaty Ingredient")
+                .withTagType(TagType.Ingredient.name());
         String tagString = json(tag);
 
         String locationValue = given()
@@ -176,11 +220,11 @@ class V2TagRestControllerTest {
     }
 
     @Test
-    void addAsChild_Standard() throws Exception {
+    void addAsChildStandard() throws Exception {
         String url = "/v2/tag/" + TestConstants.PARENT_TAG_ID_2 + "/child?asStandard=true";
 
-        Tag tag = new Tag("testTag-standard");
-        tag = tag.tagType(TagType.Rating.name());
+        Tag tag = new Tag().withName("testTag-standard")
+                .withTagType(TagType.Rating.name());
         String tagString = json(tag);
 
         String locationValue = given()
@@ -200,21 +244,21 @@ class V2TagRestControllerTest {
         String idString = locationValue.substring(locationValue.lastIndexOf("/") + 1);
 
         // now, check that parent id is correct"
-        TagListResource afterList = given()
+        TagList tagList = given()
                 .header(TestUtils.authToken(token))
                 .when()
-                .get("/v2/tag/user")
+                .get("/v2/tag")
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(TagListResource.class);
+                .as(TagList.class);
 
-        Optional<TagResource> resultTag = afterList.getEmbeddedList().getTagResourceList().stream()
-                .filter(t -> t.getTag().getId().equals(idString))
-                .findFirst();
-        Assertions.assertTrue(resultTag.isPresent());
-        Assertions.assertEquals(String.valueOf(TestConstants.PARENT_TAG_ID_2), resultTag.get().getTag().getParentId(), "parent tag id should equal that given for create call");
-        Assertions.assertEquals(String.valueOf(0L), resultTag.get().getTag().getUserId(), "user id should be 0");
+        Tag afterTag = tagList.getTagList().stream()
+                .filter(t -> t.getTagId().equals(idString))
+                .findFirst()
+                .orElse(null);
+        Assertions.assertEquals(String.valueOf(TestConstants.PARENT_TAG_ID_2), afterTag.getParentId(), "parent tag id should equal that given for create call");
+        Assertions.assertEquals(String.valueOf(0L), afterTag.getUserId(), "user id should be 0");
 
     }
 
@@ -223,8 +267,8 @@ class V2TagRestControllerTest {
         Long parentId = 88L;
         String url = "/v2/tag/" + parentId + "/child?asStandard=true";
 
-        Tag tag = new Tag("mystery MEAT");
-        tag = tag.tagType(TagType.Ingredient.name());
+        Tag tag = new Tag().withName("mystery MEAT")
+                .withTagType(TagType.Ingredient.name());
         String tagString = json(tag);
 
         String locationValue = given()
@@ -242,8 +286,8 @@ class V2TagRestControllerTest {
         String idString = locationValue.substring(locationValue.lastIndexOf("/") + 1);
 
         // recreate same tag
-        Tag recreateTag = new Tag("mystery MEAT");
-        recreateTag = recreateTag.tagType(TagType.Ingredient.name());
+        Tag recreateTag = new Tag().withName("mystery MEAT")
+                .withTagType(TagType.Ingredient.name());
         String recreateTagString = json(recreateTag);
 
         String recreateLocationValue = given()

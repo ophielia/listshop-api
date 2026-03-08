@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.web.controller.v2;
 
 
@@ -93,13 +99,13 @@ public class TagRestController implements V2TagRestControllerApi {
     //MM 2308 - do this one
     public ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId) {
         // invalid dishId - returns invalid id supplied - 400
-        var tagEntity = this.tagService
-                .getTagById(tagId);
+        var tagInfoList = this.tagService
+                .getTagInfoList(Collections.singletonList(tagId));
 
-        if (tagEntity == null) {
+        if (tagInfoList == null || tagInfoList.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        var tagModel = V2ModelMapper.toModel(tagEntity);
+        var tagModel = V2ModelMapper.toModel(tagInfoList.get(0));
 
         return new ResponseEntity<>(tagModel, HttpStatus.OK);
 
