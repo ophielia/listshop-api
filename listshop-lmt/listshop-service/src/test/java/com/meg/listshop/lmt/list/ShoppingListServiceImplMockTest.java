@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -8,6 +14,7 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.ItemChangeRepository;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
+import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.dish.DishService;
@@ -184,13 +191,13 @@ class ShoppingListServiceImplMockTest {
         user.setId(userId);
 
         Long listId = 199L;
-        ShoppingListEntity shoppingList = ServiceTestUtils.buildShoppingList(userId, listId);
+        ShoppingListEntity shoppingList = ServiceTestUtils.buildShoppingList(userId,listId);
         ShoppingListEntity shoppingListForSave = ServiceTestUtils.buildShoppingList(userId, listId);
-        List<ShoppingListEntity> listOfLists = Arrays.asList(
-                ServiceTestUtils.buildShoppingList(userId, 1L),
-                shoppingList,
-                ServiceTestUtils.buildShoppingList(userId, 1011L),
-                ServiceTestUtils.buildShoppingList(userId, 1021L)
+        List<ShoppingListDTO> listOfLists = Arrays.asList(
+                ServiceTestUtils.buildShoppingListDTO(userId, 1L),
+                ServiceTestUtils.buildShoppingListDTO(listId, userId),
+                ServiceTestUtils.buildShoppingListDTO(userId, 1011L),
+                ServiceTestUtils.buildShoppingListDTO(userId, 1021L)
         );
 
 
@@ -203,7 +210,7 @@ class ShoppingListServiceImplMockTest {
 
         ArgumentCaptor<ShoppingListEntity> listArgument = ArgumentCaptor.forClass(ShoppingListEntity.class);
 
-        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(listOfLists);
+        Mockito.when(shoppingListRepository.findByUserId(userId)).thenReturn(listOfLists);
         Mockito.when(itemRepository.findByListId(listId)).thenReturn(items);
         Mockito.when(shoppingListRepository.findByListIdAndUserId(listId, userId)).thenReturn(Optional.of(shoppingListForSave));
         Mockito.when(shoppingListRepository.save(listArgument.capture())).thenReturn(shoppingListForSave);
@@ -212,7 +219,7 @@ class ShoppingListServiceImplMockTest {
         // test call
         shoppingListService.deleteList(userId, listId);
 
-        Mockito.verify(shoppingListRepository, times(1)).findByUserIdOrderByLastUpdateDesc(userId);
+        Mockito.verify(shoppingListRepository, times(1)).findByUserId(userId);
         Mockito.verify(shoppingListRepository, times(1)).delete(listId);
         Mockito.verify(shoppingListRepository, times(1)).flush();
 
@@ -243,14 +250,14 @@ class ShoppingListServiceImplMockTest {
         user.setId(userId);
 
         Long listId = 199L;
-        List<ShoppingListEntity> listOfLists = Arrays.asList(
-                ServiceTestUtils.buildShoppingList(userId, 1L),
-                ServiceTestUtils.buildShoppingList(userId, 101L),
-                ServiceTestUtils.buildShoppingList(userId, 1011L),
-                ServiceTestUtils.buildShoppingList(userId, 1021L)
+        List<ShoppingListDTO> listOfLists = Arrays.asList(
+                ServiceTestUtils.buildShoppingListDTO( 1L,userId),
+                ServiceTestUtils.buildShoppingListDTO( 101L,userId),
+                ServiceTestUtils.buildShoppingListDTO( 1011L,userId),
+                ServiceTestUtils.buildShoppingListDTO( 1021L,userId)
         );
 
-        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(listOfLists);
+        Mockito.when(shoppingListRepository.findByUserId(userId)).thenReturn(listOfLists);
 
         // test call
         Assertions.assertThrows(ObjectNotFoundException.class, () -> {
@@ -268,9 +275,9 @@ class ShoppingListServiceImplMockTest {
         user.setId(userId);
 
         Long listId = 199L;
-        List<ShoppingListEntity> listOfLists = Collections.singletonList(ServiceTestUtils.buildShoppingList(userId, listId));
+        List<ShoppingListDTO> listOfLists = Collections.singletonList(ServiceTestUtils.buildShoppingListDTO( listId, userId));
 
-        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(listOfLists);
+        Mockito.when(shoppingListRepository.findByUserId(userId)).thenReturn(listOfLists);
 
 
         Assertions.assertThrows(ActionInvalidException.class, () -> {
@@ -452,13 +459,13 @@ class ShoppingListServiceImplMockTest {
         shoppingList.setUserId(userId);
 
 
-        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId)).thenReturn(new ArrayList<>());
+        Mockito.when(shoppingListRepository.findByUserId(userId)).thenReturn(new ArrayList<>());
 
         // test call
         shoppingListService.getListsByUserId(userId);
 
 
-        Mockito.verify(shoppingListRepository, times(1)).findByUserIdOrderByLastUpdateDesc(userId);
+        Mockito.verify(shoppingListRepository, times(1)).findByUserId(userId);
 
     }
 
@@ -611,26 +618,25 @@ class ShoppingListServiceImplMockTest {
         user.setId(userId);
 
         Long listId = 199L;
-        ShoppingListEntity shoppingList = new ShoppingListEntity(listId);
-        shoppingList.setUserId(userId);
-        ShoppingListEntity shoppingList2 = new ShoppingListEntity(999L);
-        shoppingList.setUserId(userId);
-        List<ShoppingListEntity> listOfLists = Arrays.asList(shoppingList, shoppingList2);
+        ShoppingListDTO shoppingList = ServiceTestUtils.buildShoppingListDTO(listId, userId);
+        ShoppingListDTO shoppingList2 = ServiceTestUtils.buildShoppingListDTO(999L, userId);
+        List<ShoppingListDTO> listOfLists = Arrays.asList(shoppingList, shoppingList2);
 
 
-        Mockito.when(shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId))
+        Mockito.when(shoppingListRepository.findByUserId(userId))
                 .thenReturn(listOfLists);
 
         // test call
         ShoppingListEntity result = shoppingListService.getMostRecentList(userId);
 
 
-        Mockito.verify(shoppingListRepository, times(1)).findByUserIdOrderByLastUpdateDesc(userId);
+        Mockito.verify(shoppingListRepository, times(1)).findByUserId(userId);
 
         // Assertions
         Assertions.assertNotNull(result);
         Assertions.assertEquals(listId, result.getId());
     }
+
 
     @Test
     void testCreateList_duplicateName() throws ShoppingListException, ItemProcessingException {
@@ -1426,7 +1432,7 @@ class ShoppingListServiceImplMockTest {
         String userName = "george";
         Long userId = 999L;
         Long listId = 99L;
-        ShoppingListEntity updateFrom = new ShoppingListEntity();
+        ShoppingListDTO updateFrom = new ShoppingListDTO();
         updateFrom.setName("has been updated");
         updateFrom.setIsStarterList(false);
 

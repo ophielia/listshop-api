@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -6,8 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShoppingListItemDetails {
 
-    @JsonProperty("detail_id")
-    private String itemDetailId;
+    @JsonProperty("item_id")
+    private String itemId;
 
     @JsonProperty("dish_id")
     private String dishId;
@@ -22,7 +28,7 @@ public class ShoppingListItemDetails {
     }
 
     public ShoppingListItemDetails withItemDetailId(String itemDetailId) {
-        this.itemDetailId = itemDetailId;
+        this.itemId = itemDetailId;
         return this;
     }
 
@@ -41,8 +47,8 @@ public class ShoppingListItemDetails {
         return this;
     }
 
-    public String getItemDetailId() {
-        return itemDetailId;
+    public String getItemId() {
+        return itemId;
     }
 
     public String getDishId() {
@@ -60,7 +66,7 @@ public class ShoppingListItemDetails {
     @Override
     public String toString() {
         return "ShoppingListItemDetails{" +
-                "itemDetailId='" + itemDetailId + '\'' +
+                "itemDetailId='" + itemId + '\'' +
                 ", dishId='" + dishId + '\'' +
                 ", listId='" + listId + '\'' +
                 ", amount=" + amount +

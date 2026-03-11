@@ -4,18 +4,30 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.lmt.api.web.controller;
+package com.meg.listshop.lmt.api.web.controller.v2;
 
 import com.google.common.base.Enums;
 import com.meg.listshop.auth.service.CustomUserDetails;
-import com.meg.listshop.lmt.api.controller.ShoppingListRestControllerApi;
+import com.meg.listshop.common.ControllerUtils;
+import com.meg.listshop.common.StringTools;
+import com.meg.listshop.lmt.api.controller.v2.V2ShoppingListRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+
 import com.meg.listshop.lmt.api.model.*;
+
+import com.meg.listshop.lmt.api.model.ShoppingListCategory;
+import com.meg.listshop.lmt.api.model.v2.*;
+import com.meg.listshop.lmt.api.model.v2.MergeRequest;
+import com.meg.listshop.lmt.api.model.v2.MergeResult;
+import com.meg.listshop.lmt.api.model.v2.ShoppingList;
+import com.meg.listshop.lmt.api.model.v2.ShoppingListPut;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
+import com.meg.listshop.lmt.data.pojos.CategoryDTO;
 import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
+import com.meg.listshop.lmt.data.pojos.SourceDTO;
 import com.meg.listshop.lmt.list.ShoppingListException;
-import com.meg.listshop.lmt.list.ShoppingListService;
+import com.meg.listshop.lmt.list.v2.V2ShoppingListService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,44 +41,46 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.net.URI;
+import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Created by margaretmartin on 20/10/2017.
  */
-@Controller
-public class ShoppingListRestController implements ShoppingListRestControllerApi {
+@Controller(value = "V2ShoppingListRestController")
+public class ShoppingListRestController implements V2ShoppingListRestControllerApi {
+
 
     private static final Logger logger = LoggerFactory.getLogger(ShoppingListRestController.class);
 
-    private final ShoppingListService shoppingListService;
+    private final V2ShoppingListService shoppingListService;
 
     @Autowired
-    public ShoppingListRestController(ShoppingListService shoppingListService) {
+    public ShoppingListRestController(V2ShoppingListService shoppingListService) {
         this.shoppingListService = shoppingListService;
     }
 
-    public ResponseEntity<ShoppingListListResource> retrieveLists(HttpServletRequest request, Authentication authentication) {
+    @Override
+    public ResponseEntity<ShoppingListList> retrieveLists(HttpServletRequest request, Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         String message = String.format("Retrieving all lists for user [%S]", userDetails.getId());
         logger.info(message);
-        List<ShoppingListResource> shoppingListList = shoppingListService
+        List<NestedShoppingList> shoppingListList = shoppingListService
                 .getListsByUserId(userDetails.getId())
                 .stream()
-                .map(t -> ModelMapper.toModel(t))
-                .map(ShoppingListResource::new)
+                .map(V2ModelMapper::toNestedListModel)
                 .collect(Collectors.toList());
 
-        ShoppingListListResource resource = new ShoppingListListResource(shoppingListList);
-        resource.fillLinks(request, resource);
-        return new ResponseEntity<>(resource, HttpStatus.OK);
+        ShoppingListList listOfLists = new ShoppingListList(shoppingListList);
+
+        return new ResponseEntity<>(listOfLists, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Object> createList(HttpServletRequest request, Authentication authentication, @RequestBody ListGenerateProperties listGenerateProperties) {
+    public ResponseEntity<Object> createList(HttpServletRequest request, Authentication authentication, @RequestBody ListGenerateProperties listGenerateProperties) throws MalformedURLException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Creating list for user [%S]", authentication.getName());
         logger.info(message);
@@ -78,56 +92,60 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
             logger.error("Exception while creating List.", e);
         }
         if (result != null) {
-            ShoppingListResource resource = new ShoppingListResource(ModelMapper.toModel(result, null));
-            String link = resource.selfLink(request, resource).toString();
-            return ResponseEntity.created(URI.create(link)).build();
+            var location = ControllerUtils.locationURI(request, "/v2/shoppinglist", result.getId());
+            return ResponseEntity.created(location).build();
         }
         return ResponseEntity.badRequest().build();
     }
 
 
     @Override
-    public ResponseEntity<MergeResultResource> mergeList(Authentication authentication, @RequestBody MergeRequest mergeRequest) {
+    public ResponseEntity<MergeResult> mergeList(Authentication authentication, @RequestBody MergeRequest mergeRequest) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Merging list for user [%S]", userDetails.getId());
         logger.info(message);
 
         Long listId = mergeRequest.getListId();
-        Long layoutId = mergeRequest.getLayoutId();
+        String layoutId = mergeRequest.getLayoutId();
 
         MergeResult mergeResult = this.shoppingListService.mergeFromClient(userDetails.getId(), mergeRequest);
 
         // check for conflicts (won't be any until we implement this)
         if (mergeResult.getMergeConflicts() == null) {
             // retrieve the list, and put it into the result
-            ShoppingListEntity shoppingList = this.shoppingListService.getListForUserById(userDetails.getId(), listId);
+            ShoppingListDTO shoppingList = this.shoppingListService.getListDTOForUser(userDetails.getId(), listId);
             // possibly set layout id in shopping list
-            if (layoutId != null && !layoutId.equals(shoppingList.getListLayoutId())) {
-                shoppingList.setListLayoutId(layoutId);
+            if (layoutId != null && !layoutId.equals(shoppingList.getLayoutId())) {
+                shoppingList.setLayoutId(StringTools.stringToLong(layoutId));
             }
-            List<ShoppingListCategory> categories = shoppingListService.categorizeList(shoppingList);
-            shoppingListService.fillSources(shoppingList);
-            mergeResult.setShoppingList(ModelMapper.toModel(shoppingList, categories));
-            MergeResultResource resource = new MergeResultResource(mergeResult);
 
-            return new ResponseEntity<>(resource, HttpStatus.OK);
+            Map<Long, String> unitMapping= shoppingListService.retrieveUnitMapping(shoppingList.getListId());
+            List<CategoryDTO> categories = shoppingListService.retrieveListCategories(shoppingList.getListId());
+            List<SourceDTO> sources = shoppingListService.retrieveListSources(shoppingList.getListId());
+            shoppingList.setUnitMapping(unitMapping);
+            shoppingList.setCategories(categories);
+            shoppingList.setSources(sources);
+
+            mergeResult.setShoppingList(V2ModelMapper.toModel(shoppingList));
+
+            return new ResponseEntity<>(mergeResult, HttpStatus.OK);
         }
 
         return ResponseEntity.badRequest().build();
     }
+
+
 
     @Override
     public ResponseEntity<Object> updateList(HttpServletRequest request, Authentication authentication, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         final String message = String.format("Updating list for list [%d]", listId);
         logger.info(message);
-        ShoppingListDTO updateFrom = ModelMapper.toDTO(shoppingList);
+        ShoppingListDTO updateFrom = V2ModelMapper.toDto(shoppingList);
 
         ShoppingListEntity result = shoppingListService.updateList(userDetails.getId(), listId, updateFrom);
         if (result != null) {
-            ShoppingListResource resource = new ShoppingListResource(ModelMapper.toModel(result, null));
-            String link = resource.selfLink(request, resource).toString();
-            return ResponseEntity.ok(URI.create(link));
+            return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();
     }
@@ -162,47 +180,42 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<ShoppingListResource> retrieveMostRecentList(HttpServletRequest request, Authentication authentication) {
+    public ResponseEntity<ShoppingList> retrieveMostRecentList(HttpServletRequest request, Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Retrieving most recent list for user {}", userDetails.getId());
-        ShoppingListEntity result = shoppingListService.getMostRecentList(userDetails.getId());
-        if (result == null ) {
+        ShoppingListDTO result = shoppingListService.getMostRecentList(userDetails.getId());
+        if (result == null) {
             throw new ObjectNotFoundException(String.format("No lists found for user [%s] in retrieveMostRecentList()", userDetails.getId()));
         }
-        List<ShoppingListCategory> categories = shoppingListService.categorizeList(result);
-        shoppingListService.fillSources(result);
-        return singleResult(request, result, categories);
+
+        return singleResult(result);
     }
 
-    public ResponseEntity<ShoppingListResource> retrieveStarterList(HttpServletRequest request, Authentication authentication) {
+    public ResponseEntity<ShoppingList> retrieveStarterList(HttpServletRequest request, Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Retrieving starter list for user {}", userDetails.getId());
-        ShoppingListEntity result = shoppingListService.getStarterList(userDetails.getId());
+        ShoppingListDTO result = shoppingListService.getStarterList(userDetails.getId());
         if (result == null) {
             throw new ObjectNotFoundException(String.format("No lists found for user [%s] in retrieveStarterList()", userDetails.getId()));
         }
-        List<ShoppingListCategory> categories = shoppingListService.categorizeList(result);
-        shoppingListService.fillSources(result);
-        return singleResult(request, result, categories);
+        return singleResult(result);
     }
 
     @Override
-    public ResponseEntity<ShoppingListResource> retrieveListById(HttpServletRequest request, Authentication authentication, @PathVariable("listId") Long listId) {
+    public ResponseEntity<ShoppingList> retrieveListById(HttpServletRequest request, Authentication authentication, @PathVariable("listId") Long listId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Retrieving list [{}] by id for user [{}]", listId, userDetails.getId());
 
-        ShoppingListEntity result = shoppingListService.getListForUserById(userDetails.getId(), listId);
+        ShoppingListDTO result = shoppingListService.getListDTOForUser(userDetails.getId(), listId);
         if (result == null) {
             return ResponseEntity.notFound().build();
         }
-        List<ShoppingListCategory> categories = shoppingListService.categorizeList(result);
-        shoppingListService.fillSources(result);
-        return singleResult(request, result, categories);
+        return singleResult(result);
     }
 
 
     @Override
-    public ResponseEntity<ShoppingList> deleteList(Authentication authentication, @PathVariable("listId") Long listId) {
+    public ResponseEntity<Object> deleteList(Authentication authentication, @PathVariable("listId") Long listId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Deleting list [{}] for user [{}]", listId, userDetails.getId());
         shoppingListService.deleteList(userDetails.getId(), listId);
@@ -285,20 +298,19 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
     @Override
-    public ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId) {
+    public ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId) throws MalformedURLException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Generating list from mealplan [{}] for user [{}]", mealPlanId, userDetails.getId());
         ShoppingListEntity shoppingListEntity = null;
         try {
             shoppingListEntity = this.shoppingListService.generateListFromMealPlan(userDetails.getId(), mealPlanId);
-        } catch (ShoppingListException  | ItemProcessingException e) {
+        } catch (ShoppingListException | ItemProcessingException e) {
             logger.error("Exception while adding dishes to new list from mealplan [{}].", mealPlanId, e);
             return ResponseEntity.internalServerError().build();
         }
         if (shoppingListEntity != null) {
-            ShoppingListResource resource = new ShoppingListResource(ModelMapper.toModel(shoppingListEntity, null));
-            String link = resource.selfLink(request, resource).toString();
-            return ResponseEntity.created(URI.create(link)).build();
+            var location = ControllerUtils.locationURI(request, "/v2/shoppinglist", shoppingListEntity.getId());
+            return ResponseEntity.created(location).build();
         }
         return ResponseEntity.noContent().build();
     }
@@ -335,7 +347,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
     @Override
-    public ResponseEntity<Object> addDishToList(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("dishId") Long dishId) {
+    public ResponseEntity<Object> addDishToList(Authentication authentication,  Long listId,  Long dishId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding dish [{}] to list [{}] for user [{}]", dishId, listId, userDetails.getId());
         try {
@@ -402,16 +414,17 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     }
 
 
-    private ResponseEntity<ShoppingListResource> singleResult(HttpServletRequest request, ShoppingListEntity result, List<ShoppingListCategory> categories) {
+    private ResponseEntity<ShoppingList> singleResult(ShoppingListDTO result) {
         if (result != null) {
-
-            ShoppingList shoppingList = ModelMapper.toModel(result, categories);
-            ShoppingListResource resource = new ShoppingListResource(shoppingList);
-            resource.fillLinks(request, resource);
-            return new ResponseEntity<>(resource, HttpStatus.OK);
+            result.setUnitMapping(shoppingListService.retrieveUnitMapping(result.getListId()));
+            result.setCategories(shoppingListService.retrieveListCategories(result.getListId()));
+            result.setSources(shoppingListService.retrieveListSources(result.getListId()));
+            ShoppingList shoppingList = V2ModelMapper.toModel(result);
+            return new ResponseEntity<>(shoppingList, HttpStatus.OK);
         }
         return ResponseEntity.noContent().build();
     }
 
 
 }
+

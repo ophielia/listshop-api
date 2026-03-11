@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.web.controller.v2;
 
 import com.github.dockerjava.api.exception.BadRequestException;
@@ -12,7 +18,7 @@ import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.DishSortDirection;
 import com.meg.listshop.lmt.api.model.DishSortKey;
 import com.meg.listshop.lmt.api.model.FractionType;
-import com.meg.listshop.lmt.api.model.V2ModelMapper;
+import com.meg.listshop.lmt.api.model.v2.V2ModelMapper;
 import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.lmt.api.model.v2.DishList;
 import com.meg.listshop.lmt.data.pojos.DishDTO;

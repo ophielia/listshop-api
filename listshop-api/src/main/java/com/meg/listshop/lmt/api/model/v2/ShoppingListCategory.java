@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,9 +29,10 @@ public class ShoppingListCategory {
         // empty constructor for Jackson
     }
 
-    public ShoppingListCategory(String categoryId, int displayOrder, List<ShoppingListItem> items) {
+    public ShoppingListCategory(String categoryId, String name, int displayOrder, List<ShoppingListItem> items) {
         this.categoryId = categoryId;
         this.displayOrder = displayOrder;
         this.items = items;
+        this.name = name;
     }
 }

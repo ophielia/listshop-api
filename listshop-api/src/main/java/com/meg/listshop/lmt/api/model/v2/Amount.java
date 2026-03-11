@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,6 +18,8 @@ public class Amount {
     private String fractionalQuantity;
     @JsonProperty
     private Double quantity;
+    @JsonProperty("rounded_quantity")
+    private Double roundedQuantity;
     @JsonProperty("quantity_display")
     private String quantityDisplay;
     @JsonProperty("unit_id")
@@ -39,6 +47,12 @@ public class Amount {
 
     public Amount withQuantity(Double quantity) {
         this.quantity = quantity;
+        return this;
+    }
+
+
+    public Amount withRoundedQuantity(Double quantity) {
+        this.roundedQuantity = quantity;
         return this;
     }
 

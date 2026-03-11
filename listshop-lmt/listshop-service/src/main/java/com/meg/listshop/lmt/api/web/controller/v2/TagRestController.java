@@ -11,7 +11,7 @@ import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.common.ControllerUtils;
 import com.meg.listshop.lmt.api.controller.v2.V2TagRestControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.model.V2ModelMapper;
+import com.meg.listshop.lmt.api.model.v2.V2ModelMapper;
 import com.meg.listshop.lmt.api.model.TagPut;
 import com.meg.listshop.lmt.api.model.v2.Tag;
 import com.meg.listshop.lmt.api.model.v2.TagList;

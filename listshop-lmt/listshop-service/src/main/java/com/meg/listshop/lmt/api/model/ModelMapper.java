@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.api.model;
@@ -661,6 +660,17 @@ return returnval;
 
     }
 
+    public static ShoppingList toModel(ShoppingListDTO listDTO) {
+        return new ShoppingList(listDTO.getListId())
+                .createdOn(listDTO.getCreatedOn())
+                .isStarterList(listDTO.isStarterList())
+                .name(listDTO.getName())
+                .updated(listDTO.getLastUpdate())
+                .itemCount(listDTO.getItemCount())
+                .userId(listDTO.getUserId());
+
+    }
+
 
     private static void enhanceCategories(String listId, List<ShoppingListCategory> filledCategories
     ) {
@@ -794,6 +804,15 @@ return returnval;
         shoppingListEntity.setName(shoppingList.getName());
         shoppingListEntity.setIsStarterList(shoppingList.getStarterList());
         return shoppingListEntity;
+    }
+
+
+    public static ShoppingListDTO toDTO(ShoppingListPut shoppingList) {
+
+        return  new ShoppingListDTO(shoppingList.getList_id(),
+                shoppingList.getName(),
+                null, null, null,
+                shoppingList.getStarterList(),0);
     }
 
     public static UserPropertyEntity toEntity(UserProperty property) {

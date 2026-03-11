@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,6 +39,9 @@ public class NestedShoppingList {
 
     public NestedShoppingList(String listId) {
         this.listId = listId;
+    }
+    public NestedShoppingList(Long listId) {
+        this.listId = String.valueOf(listId);
     }
 
     public NestedShoppingList withListId(String listId) {

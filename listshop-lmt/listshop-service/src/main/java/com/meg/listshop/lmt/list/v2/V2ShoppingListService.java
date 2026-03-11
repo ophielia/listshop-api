@@ -4,33 +4,42 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.lmt.list;
+package com.meg.listshop.lmt.list.v2;
 
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
-import com.meg.listshop.lmt.api.model.*;
+
+import com.meg.listshop.lmt.api.model.ItemOperationType;
+import com.meg.listshop.lmt.api.model.ListAddProperties;
+import com.meg.listshop.lmt.api.model.ListGenerateProperties;
+import com.meg.listshop.lmt.api.model.v2.MergeRequest;
+import com.meg.listshop.lmt.api.model.v2.MergeResult;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
+import com.meg.listshop.lmt.data.pojos.CategoryDTO;
 import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
+import com.meg.listshop.lmt.data.pojos.SourceDTO;
+import com.meg.listshop.lmt.list.ShoppingListException;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by margaretmartin on 30/10/2017.
  */
 @Transactional
-public interface ShoppingListService {
+public interface V2ShoppingListService {
 
     String FREQUENT = "frequent";
 
-    List<ShoppingListEntity> getListsByUserId(Long userId);
+    List<ShoppingListDTO> getListsByUserId(Long userId);
 
     void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException, ItemProcessingException;
 
     ShoppingListEntity generateListForUser(Long userId, ListGenerateProperties listGeneratProperties) throws ShoppingListException, ItemProcessingException;
 
-    ShoppingListEntity getStarterList(Long userId);
+    ShoppingListDTO getStarterList(Long userId);
 
-    ShoppingListEntity getMostRecentList(Long userId);
+    ShoppingListDTO getMostRecentList(Long userId);
 
     ShoppingListEntity getListForUserById(Long userId, Long listId);
 
@@ -46,7 +55,7 @@ public interface ShoppingListService {
 
     ShoppingListEntity generateListFromMealPlan(Long userId, Long mealPlanId) throws ShoppingListException, ItemProcessingException;
 
-    List<ShoppingListCategory> categorizeList(ShoppingListEntity shoppingListEntity);
+    List<CategoryDTO> categorizeList(ShoppingListEntity shoppingListEntity);
 
     void addDishToList(Long userId, Long listId, Long dishId) throws ShoppingListException, ItemProcessingException;
 
@@ -64,10 +73,6 @@ public interface ShoppingListService {
 
     void deleteAllItemsFromList(Long userId, Long listId) throws ItemProcessingException;
 
-    // Note - this method doesn't check yet for MergeConflicts.  But the signature
-    // is there to build the interface, so that MergeConflicts can be added later
-    // less painfully.  Right now just going for basic functionality - taking the
-    // last modified item.
     MergeResult mergeFromClient(Long userId, MergeRequest mergeRequest);
 
     void addListToList(Long userId, Long listId, Long fromListId) throws ItemProcessingException;
@@ -77,4 +82,12 @@ public interface ShoppingListService {
     void addItemToListByTag(Long userId, Long listId, Long tagId) throws ItemProcessingException;
 
     void updateItemCount(Long userId, Long listId, Long tagId, Integer usedCount);
+
+    List<CategoryDTO> retrieveListCategories(Long id);
+
+    List<SourceDTO> retrieveListSources(Long id);
+
+    ShoppingListDTO getListDTOForUser(Long userId, Long listId);
+
+    Map<Long, String> retrieveUnitMapping(Long listId);
 }

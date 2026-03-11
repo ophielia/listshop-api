@@ -1,7 +1,13 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.listshop.lmt.api.model.LegendSource;
+
 
 import java.util.Date;
 import java.util.List;
@@ -45,6 +51,11 @@ public class ShoppingList {
 
     public ShoppingList(String listId) {
         this.listId = listId;
+    }
+
+
+    public ShoppingList(Long listId) {
+        this.listId = String.valueOf(listId);
     }
 
     public ShoppingList withListId(String listId) {

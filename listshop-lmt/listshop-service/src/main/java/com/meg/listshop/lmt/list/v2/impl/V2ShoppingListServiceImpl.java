@@ -4,7 +4,7 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.lmt.list.impl;
+package com.meg.listshop.lmt.list.v2.impl;
 
 import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.common.StringTools;
@@ -14,6 +14,7 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.ItemChangeRepository;
 import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.data.pojos.CategoryDTO;
 import com.meg.listshop.lmt.data.pojos.ItemMappingDTO;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
@@ -23,10 +24,11 @@ import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.list.BaseShoppingListService;
 import com.meg.listshop.lmt.list.ListTagStatisticService;
 import com.meg.listshop.lmt.list.ShoppingListException;
-import com.meg.listshop.lmt.list.ShoppingListService;
+
 import com.meg.listshop.lmt.list.state.ItemStateContext;
 import com.meg.listshop.lmt.list.state.ListItemEvent;
 import com.meg.listshop.lmt.list.state.ListItemStateMachine;
+import com.meg.listshop.lmt.list.v2.V2ShoppingListService;
 import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
@@ -44,8 +46,8 @@ import java.util.stream.Collectors;
  */
 @Service
 @Transactional(rollbackFor = ItemProcessingException.class)
-public class ShoppingListServiceImpl extends BaseShoppingListService implements ShoppingListService {
-    private static final Logger logger = LoggerFactory.getLogger(ShoppingListServiceImpl.class);
+public class V2ShoppingListServiceImpl extends BaseShoppingListService implements V2ShoppingListService {
+    private static final Logger logger = LoggerFactory.getLogger(V2ShoppingListServiceImpl.class);
 
     private final TagService tagService;
     private final DishService dishService;
@@ -66,15 +68,15 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
     String defaultShoppingListName;
 
     @Autowired
-    public ShoppingListServiceImpl(TagService tagService,
-                                   DishService dishService,
-                                   ShoppingListRepository shoppingListRepository,
-                                   LayoutService listLayoutService,
-                                   MealPlanService mealPlanService,
-                                   ItemRepository itemRepository,
-                                   ItemChangeRepository itemChangeRepository,
-                                   ListTagStatisticService listTagStatisticService,
-                                   ListItemStateMachine listItemStateMachine) {
+    public V2ShoppingListServiceImpl(TagService tagService,
+                                     DishService dishService,
+                                     ShoppingListRepository shoppingListRepository,
+                                     LayoutService listLayoutService,
+                                     MealPlanService mealPlanService,
+                                     ItemRepository itemRepository,
+                                     ItemChangeRepository itemChangeRepository,
+                                     ListTagStatisticService listTagStatisticService,
+                                     ListItemStateMachine listItemStateMachine) {
         this.tagService = tagService;
         this.dishService = dishService;
         this.shoppingListRepository = shoppingListRepository;
@@ -88,8 +90,8 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
 
 
     @Override
-    public List<ShoppingListEntity> getListsByUserId(Long userId) {
-        return shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId);
+    public List<ShoppingListDTO> getListsByUserId(Long userId) {
+        return shoppingListRepository.findByUserId(userId);
     }
 
     @Override
@@ -105,7 +107,7 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
         boolean starterListChanged = updateFrom.isStarterList() && !copyTo.getIsStarterList();
 
         // copy fields from updateFrom
-        copyTo.setIsStarterList(updateFrom.isStarterList());
+        copyTo.setIsStarterList(updateFrom.getIsStarterList());
         copyTo.setName(updateFrom.getName());
 
         if (starterListChanged) {
@@ -319,7 +321,7 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
     }
 
     @Override
-    public ShoppingListEntity getStarterList(Long userId) {
+    public ShoppingListDTO getStarterList(Long userId) {
 
         List<ShoppingListEntity> foundLists = shoppingListRepository.findByUserIdAndIsStarterListTrue(userId);
         if (!foundLists.isEmpty()) {
@@ -329,11 +331,12 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
     }
 
     @Override
-    public ShoppingListEntity getMostRecentList(Long userId) {
+    public ShoppingListDTO getMostRecentList(Long userId) {
 
-        List<ShoppingListEntity> foundLists = shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId);
+        List<ShoppingListDTO> foundLists = shoppingListRepository.findByUserId(userId);
         if (!foundLists.isEmpty()) {
-            return foundLists.get(0);
+            Long listId = foundLists.get(0).getListId();
+            return shoppingListRepository.findById(listId).orElse(null);
         }
         return null;
     }
@@ -371,23 +374,22 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
     @Override
     @Transactional
     public void deleteList(Long userId, Long listId) {
-        List<ShoppingListEntity> allLists = getListsByUserId(userId);
+        List<ShoppingListDTO> allLists = getListsByUserId(userId);
         if (allLists == null || allLists.isEmpty()) {
             throw new ActionInvalidException(String.format("No lists found for user [%s]", userId));
         }
         if (allLists.size() < 2) {
             throw new ActionInvalidException(String.format("Can't delete the last list for user [%s]", userId));
         }
-        Optional<ShoppingListEntity> toDeleteOpt = allLists.stream()
-                .filter(l -> l.getId().equals(listId)).findFirst();
+        Optional<ShoppingListDTO> toDeleteOpt = allLists.stream()
+                .filter(l -> l.getListId().equals(listId)).findFirst();
         if (toDeleteOpt.isEmpty()) {
             throw new ObjectNotFoundException(String.format("Can't find list [%s] for userName [%s] to delete.", listId, userId));
         }
 
-        ShoppingListEntity toDelete = toDeleteOpt.get();
+        ShoppingListDTO toDelete = toDeleteOpt.get();
 
-        shoppingListRepository.delete(toDelete.getId());
-        shoppingListRepository.flush();
+        shoppingListRepository.delete(toDelete.getListId());
     }
 
     @Override
@@ -534,7 +536,7 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
     }
 
     @Override
-    public List<ShoppingListCategory> categorizeList(ShoppingListEntity shoppingListEntity) {
+    public List<CategoryDTO> categorizeList(ShoppingListEntity shoppingListEntity) {
 
         if (shoppingListEntity == null) {
             return new ArrayList<>();
@@ -557,7 +559,7 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
 
                     // add frequent handle
                     if (frequentTagIds.contains(im.getTagId())) {
-                        item.addHandle(ShoppingListService.FREQUENT);
+                        item.addHandle(V2ShoppingListService.FREQUENT);
                     }
                     // handle category
                     ShoppingListCategory category;
@@ -620,7 +622,7 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
     }
 
     @Override
-    public MergeResult mergeFromClient(Long userId, MergeRequest mergeRequest) {
+    public com.meg.listshop.lmt.api.model.v2.MergeResult mergeFromClient(Long userId, MergeRequest mergeRequest) {
         Long listToMergeId = mergeRequest.getListId();
         if (listToMergeId == null) {
             // oops - no list id
