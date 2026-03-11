@@ -55,8 +55,6 @@ public interface V2ShoppingListService {
 
     ShoppingListEntity generateListFromMealPlan(Long userId, Long mealPlanId) throws ShoppingListException, ItemProcessingException;
 
-    List<CategoryDTO> categorizeList(ShoppingListEntity shoppingListEntity);
-
     void addDishToList(Long userId, Long listId, Long dishId) throws ShoppingListException, ItemProcessingException;
 
     void fillSources(ShoppingListEntity result);

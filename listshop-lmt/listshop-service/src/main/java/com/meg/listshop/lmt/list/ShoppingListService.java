@@ -22,7 +22,7 @@ public interface ShoppingListService {
 
     String FREQUENT = "frequent";
 
-    List<ShoppingListEntity> getListsByUserId(Long userId);
+    List<ShoppingListEntity> getShoppingListsByUserId(Long userId);
 
     void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException, ItemProcessingException;
 
@@ -40,7 +40,8 @@ public interface ShoppingListService {
 
     ShoppingListEntity updateList(Long userId, Long listId, ShoppingListDTO updateFrom);
 
-    void performItemOperation(Long userId, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId) throws ItemProcessingException;
+    void performItemOperation(Long userId, Long sourceListId, ItemOperationType operationType,
+                              List<Long> tagIds, Long destinationListId) throws ItemProcessingException;
 
     void deleteItemFromList(Long userId, Long listId, Long itemId) throws ItemProcessingException;
 

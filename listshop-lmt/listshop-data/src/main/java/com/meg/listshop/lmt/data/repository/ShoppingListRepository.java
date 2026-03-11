@@ -28,6 +28,18 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
 
     List<ShoppingListEntity> findByUserIdAndIsStarterListTrue(Long userid);
 
+    @Query(value = """
+select l.list_id, l.name, l.created_on, l.last_update, l.user_id, l.is_starter_list, 0 
+from list l where l.user_id = ?1 and l.is_starter_list = true
+""", nativeQuery = true)
+    List<ShoppingListDTO> findDTOByUserIdAndIsStarterListTrue(Long userid);
+
+    @Query(value = """
+select l.list_id, l.name, l.created_on, l.last_update, l.user_id, l.is_starter_list, 0 
+from list l where l.list_id = ?1
+""", nativeQuery = true)
+    ShoppingListDTO findDTOById(Long listId);
+
     List<ShoppingListEntity> findByUserIdOrderByLastUpdateDesc(Long userid);
 
     @Query(value = """
@@ -48,4 +60,8 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
     @Modifying
     @Query("delete from ShoppingListEntity t where t.listId = ?1")
     void delete(Long entityId);
+
+    @Modifying
+    @Query("update ShoppingListEntity t set t.isStarterList = ?3 where t.userId = ?1 and t.listId <> ?2")
+    void updateStarterList(Long userId, Long listId, boolean isStarterList);
 }

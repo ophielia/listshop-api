@@ -54,9 +54,9 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         String message = String.format("Retrieving all lists for user [%S]", userDetails.getId());
         logger.info(message);
         List<ShoppingListResource> shoppingListList = shoppingListService
-                .getListsByUserId(userDetails.getId())
+                .getShoppingListsByUserId(userDetails.getId())
                 .stream()
-                .map(t -> ModelMapper.toModel(t))
+                .map(t -> ModelMapper.toModel(t, null))
                 .map(ShoppingListResource::new)
                 .collect(Collectors.toList());
 

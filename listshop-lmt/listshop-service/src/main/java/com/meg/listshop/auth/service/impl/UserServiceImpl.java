@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.auth.service.impl;
@@ -21,7 +20,7 @@ import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.ListGenerateProperties;
 import com.meg.listshop.lmt.list.ShoppingListException;
-import com.meg.listshop.lmt.list.ShoppingListService;
+import com.meg.listshop.lmt.list.v2.V2ShoppingListService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +52,7 @@ public class UserServiceImpl implements UserService {
 
     private final AuthenticationManager authenticationManager;
 
-    private final ShoppingListService shoppingListService;
+    private final V2ShoppingListService shoppingListService;
 
     protected final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -61,7 +60,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(UserRepository userRepository, UserDeviceRepository userDeviceRepository,
                            AuthorityRepository authorityRepository, AuthenticationManager authenticationManager,
-                           AdminUserDetailsRepository adminUserDetailsRepository, @Lazy ShoppingListService shoppingListService) {
+                           AdminUserDetailsRepository adminUserDetailsRepository, @Lazy V2ShoppingListService shoppingListService) {
         this.userRepository = userRepository;
         this.userDeviceRepository = userDeviceRepository;
         this.authorityRepository = authorityRepository;
