@@ -16,7 +16,6 @@ import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 
 import com.meg.listshop.lmt.api.model.*;
 
-import com.meg.listshop.lmt.api.model.ShoppingListCategory;
 import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.lmt.api.model.v2.MergeRequest;
 import com.meg.listshop.lmt.api.model.v2.MergeResult;
@@ -27,7 +26,7 @@ import com.meg.listshop.lmt.data.pojos.CategoryDTO;
 import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
 import com.meg.listshop.lmt.data.pojos.SourceDTO;
 import com.meg.listshop.lmt.list.ShoppingListException;
-import com.meg.listshop.lmt.list.v2.V2ShoppingListService;
+import com.meg.listshop.lmt.list.v2.ShoppingListService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,10 +54,10 @@ public class ShoppingListRestController implements V2ShoppingListRestControllerA
 
     private static final Logger logger = LoggerFactory.getLogger(ShoppingListRestController.class);
 
-    private final V2ShoppingListService shoppingListService;
+    private final ShoppingListService shoppingListService;
 
     @Autowired
-    public ShoppingListRestController(V2ShoppingListService shoppingListService) {
+    public ShoppingListRestController(ShoppingListService shoppingListService) {
         this.shoppingListService = shoppingListService;
     }
 

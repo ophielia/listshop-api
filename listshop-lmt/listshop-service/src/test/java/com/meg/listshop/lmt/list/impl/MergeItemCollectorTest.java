@@ -11,7 +11,7 @@ import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.list.v2.V2ShoppingListService;
+import com.meg.listshop.lmt.list.v2.ShoppingListService;
 import com.meg.listshop.lmt.service.MergeItemCollector;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.test.TestConstants;
@@ -49,7 +49,7 @@ class MergeItemCollectorTest {
 
 
     @Autowired
-    private V2ShoppingListService shoppingListService;
+    private ShoppingListService shoppingListService;
     @Autowired
     private TagService tagService;
 

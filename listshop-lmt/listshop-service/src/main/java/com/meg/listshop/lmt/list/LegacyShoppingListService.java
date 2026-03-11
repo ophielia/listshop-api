@@ -18,7 +18,7 @@ import java.util.List;
  * Created by margaretmartin on 30/10/2017.
  */
 @Transactional
-public interface ShoppingListService {
+public interface LegacyShoppingListService {
 
     String FREQUENT = "frequent";
 

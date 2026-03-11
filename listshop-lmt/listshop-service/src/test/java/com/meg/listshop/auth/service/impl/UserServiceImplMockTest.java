@@ -24,7 +24,7 @@ import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.ListGenerateProperties;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.list.ShoppingListException;
-import com.meg.listshop.lmt.list.v2.V2ShoppingListService;
+import com.meg.listshop.lmt.list.v2.ShoppingListService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +63,7 @@ class UserServiceImplMockTest {
     @Mock
     private AuthenticationManager authenticationManager;
     @Mock
-    private V2ShoppingListService shoppingListService;
+    private ShoppingListService shoppingListService;
 
     @Mock
     private AdminUserDetailsRepository adminUserDetailsRepository;

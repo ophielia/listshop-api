@@ -27,7 +27,7 @@ import java.util.Map;
  * Created by margaretmartin on 30/10/2017.
  */
 @Transactional
-public interface V2ShoppingListService {
+public interface ShoppingListService {
 
     String FREQUENT = "frequent";
 

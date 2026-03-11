@@ -23,7 +23,7 @@ import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.list.BaseShoppingListService;
 import com.meg.listshop.lmt.list.ListTagStatisticService;
 import com.meg.listshop.lmt.list.ShoppingListException;
-import com.meg.listshop.lmt.list.ShoppingListService;
+import com.meg.listshop.lmt.list.LegacyShoppingListService;
 import com.meg.listshop.lmt.list.state.ItemStateContext;
 import com.meg.listshop.lmt.list.state.ListItemEvent;
 import com.meg.listshop.lmt.list.state.ListItemStateMachine;
@@ -44,8 +44,8 @@ import java.util.stream.Collectors;
  */
 @Service
 @Transactional(rollbackFor = ItemProcessingException.class)
-public class ShoppingListServiceImpl extends BaseShoppingListService implements ShoppingListService {
-    private static final Logger logger = LoggerFactory.getLogger(ShoppingListServiceImpl.class);
+public class LegacyShoppingListServiceImpl extends BaseShoppingListService implements LegacyShoppingListService {
+    private static final Logger logger = LoggerFactory.getLogger(LegacyShoppingListServiceImpl.class);
 
     @Value("${service.shoppinglistservice.merge.items.deleted.after.days}")
     int mergeDeleteAfterDays = 6;
@@ -54,15 +54,15 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
     String defaultShoppingListName;
 
     @Autowired
-    public ShoppingListServiceImpl(TagService tagService,
-                                   DishService dishService,
-                                   ShoppingListRepository shoppingListRepository,
-                                   LayoutService listLayoutService,
-                                   MealPlanService mealPlanService,
-                                   ItemRepository itemRepository,
-                                   ItemChangeRepository itemChangeRepository,
-                                   ListTagStatisticService listTagStatisticService,
-                                   ListItemStateMachine listItemStateMachine) {
+    public LegacyShoppingListServiceImpl(TagService tagService,
+                                         DishService dishService,
+                                         ShoppingListRepository shoppingListRepository,
+                                         LayoutService listLayoutService,
+                                         MealPlanService mealPlanService,
+                                         ItemRepository itemRepository,
+                                         ItemChangeRepository itemChangeRepository,
+                                         ListTagStatisticService listTagStatisticService,
+                                         ListItemStateMachine listItemStateMachine) {
         super(tagService,
                 dishService,
                 shoppingListRepository,
@@ -546,7 +546,7 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
 
                     // add frequent handle
                     if (frequentTagIds.contains(im.getTagId())) {
-                        item.addHandle(ShoppingListService.FREQUENT);
+                        item.addHandle(LegacyShoppingListService.FREQUENT);
                     }
                     // handle category
                     ShoppingListCategory category;
