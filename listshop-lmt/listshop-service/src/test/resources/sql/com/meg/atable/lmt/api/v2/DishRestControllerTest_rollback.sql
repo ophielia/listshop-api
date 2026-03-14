@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 -- rollback
 delete from dish_items where dish_id in ( 9999992, 9999993 );
 
@@ -27,5 +33,7 @@ where created_on >= now() - interval '1 second'
 delete
 from dish
 where dish_id in ( 9999992, 9999993 );
+
+delete from user_devices where user_id = 20;
 
 

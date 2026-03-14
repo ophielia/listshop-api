@@ -1,9 +1,13 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
-import com.meg.listshop.auth.data.entity.UserEntity;
-import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
@@ -12,23 +16,20 @@ import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.dish.DishTestBuilder;
 import com.meg.listshop.test.TestConstants;
+import com.meg.listshop.test.TestUtils;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import jakarta.annotation.PostConstruct;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -36,19 +37,12 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-//@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
-@WebAppConfiguration
 @ActiveProfiles("test")
 @Sql(value = {"/sql/com/meg/atable/lmt/api/DishRestControllerTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -59,106 +53,76 @@ class DishRestControllerTest {
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
-    public static final Comparator<DishResource> CREATEDON = Comparator.comparing((DishResource o) -> o.getDish().getId());
+    @LocalServerPort
+    public int serverPort;
 
-    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype());
-    private MockMvc mockMvc;
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-    private UserDetails userDetails;
+    public static final Comparator<DishResource> CREATEDON = Comparator.comparing((DishResource o) -> o.getDish().getId());
 
     @Autowired
     private DishService dishService;
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Autowired
     private UserService userService;
 
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter = Arrays.stream(converters)
-                .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
-                .findAny()
-                .orElse(null);
-
-        Assertions.assertNotNull("the JSON message converter must not be null");
+    @PostConstruct
+    public void initRestAssured() {
+        RestAssured.port = serverPort;
+        RestAssured.urlEncodingEnabled = false;
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
-
-    @BeforeEach
-    @WithMockUser
-    public void setup() throws Exception {
-        this.mockMvc = webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
-
-        UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
-        userDetails = new CustomUserDetails(userAccount.getId(),
-                TestConstants.USER_3_NAME,
-                null,
-                null,
-                null,
-                true,
-                null);
-
-    }
-
 
     @Test
-    @WithMockUser
     void readSingleDish() throws Exception {
         Long testId = TestConstants.DISH_1_ID;
-        MvcResult result = mockMvc.perform(get("/dish/"
-                        + testId)
-                        .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.dish.dish_id", isA(Number.class)))
-                .andExpect(jsonPath("$.dish.dish_id").value(testId))
-                .andReturn();
-        Assertions.assertNotNull(result);
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .get("/dish/" + testId)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("dish.dish_id", is(testId.intValue()));
     }
 
     @Test
-    @WithMockUser
     void readSingleDish_ObjectNotFoundException() throws Exception {
         Long testId = TestConstants.DISH_7_ID;
-        MvcResult result = mockMvc.perform(get("/dish/"
-                        + testId)
-                        .with(user(userDetails)))
-                .andExpect(status().isNotFound())
-                .andReturn();
-
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .get("/dish/" + testId)
+                .then()
+                .statusCode(404);
     }
 
     @Test
-    @WithMockUser
     void readDishes() throws Exception {
-        mockMvc.perform(get("/dish")
-                        .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentType(contentType));
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .get("/dish")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON);
     }
 
     @Test
-    @WithMockUser
     void createDish() throws Exception {
-
         String dishJson = json(new Dish(
                 TestConstants.USER_3_ID, "created dish"));
 
-        this.mockMvc.perform(post("/dish")
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(dishJson))
-                .andExpect(status().isCreated());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(dishJson)
+                .when()
+                .post("/dish")
+                .then()
+                .statusCode(201);
     }
 
 
     @Test
-    @WithMockUser
     void updateDish() throws Exception {
         DishEntity toUpdate = dishService.getDishForUserById(TestConstants.USER_3_NAME, TestConstants.DISH_1_ID);
         String updateName = "updated:" + toUpdate.getDishName();
@@ -168,12 +132,14 @@ class DishRestControllerTest {
         updateDish.description(updateDescription);
         String dishJson = json(updateDish);
 
-        this.mockMvc.perform(put("/dish/" + toUpdate.getId())
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(dishJson))
-                .andDo(print())
-                .andExpect(status().is2xxSuccessful());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(dishJson)
+                .when()
+                .put("/dish/" + toUpdate.getId())
+                .then()
+                .statusCode(anyOf(is(200), is(204), is(206)));
 
         DishEntity result = dishService.getDishForUserById(TestConstants.USER_3_NAME, TestConstants.DISH_1_ID);
         Assertions.assertEquals(updateName, result.getDishName());
@@ -182,42 +148,45 @@ class DishRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testGetTagsByDishId() throws Exception {
-        mockMvc.perform(get("/dish/" + TestConstants.DISH_2_ID + "/tag")
-                        .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentType(contentType));
-
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .get("/dish/" + TestConstants.DISH_2_ID + "/tag")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON);
     }
 
     @Test
-    @WithMockUser
     void testAddTagToDish() throws Exception {
         String url = "/dish/" + TestConstants.DISH_1_ID + "/tag/" + TestConstants.TAG_CARROTS;
-        this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
     }
 
     @Test
-    @WithMockUser
     void testDeleteTagFromDish() throws Exception {
         String url = "/dish/" + TestConstants.DISH_1_ID + "/tag/344";
-        this.mockMvc.perform(delete(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().is2xxSuccessful());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .when()
+                .delete(url)
+                .then()
+                .statusCode(anyOf(is(200), is(204), is(206)));
 
-        Dish result = retrieveDish(userDetails, TestConstants.DISH_1_ID);
-        Optional<Tag> threeFourFourTag = result.getTags().stream().filter(t -> t.getId().equals(344L)).findFirst();
+        Dish result = retrieveDish(TestConstants.USER_3_TOKEN, TestConstants.DISH_1_ID);
+        Optional<Tag> threeFourFourTag = result.getTags().stream().filter(t -> t.getId().equals("344")).findFirst();
         Assertions.assertFalse(threeFourFourTag.isPresent());
     }
 
     @Test
-    @WithMockUser
     void testAddAndRemoveTags() throws Exception {
         List<Long> addTags = Arrays.asList(TestConstants.TAG_1_ID, TestConstants.TAG_2_ID, TestConstants.TAG_3_ID);
         List<Long> deleteTags = Arrays.asList(55L, 104L);
@@ -225,14 +194,16 @@ class DishRestControllerTest {
         String addList = FlatStringUtils.flattenListOfLongsToString(addTags, ",");
         String deleteList = FlatStringUtils.flattenListOfLongsToString(deleteTags, ",");
         String url = "/dish/" + TestConstants.DISH_1_ID + "/tag?addTags=" + addList + "&removeTags=" + deleteList;
-        this.mockMvc.perform(put(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().is2xxSuccessful());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(anyOf(is(200), is(204), is(206)));
     }
 
     @Test
-    @WithMockUser
     void testFindDishes() throws Exception {
         List<Long> excludedTags = Arrays.asList(TestConstants.TAG_3_ID);
         List<Long> includedTags = Arrays.asList(TestConstants.TAG_PASTA);
@@ -241,14 +212,19 @@ class DishRestControllerTest {
         String excludedList = FlatStringUtils.flattenListOfLongsToString(excludedTags, ",");
         String url = "/dish?includedTags=" + includedList + "&excludedTags=" + excludedList
                 + "&sortKey=Name" + "&sortDirection=ASC";
-        MvcResult result = this.mockMvc.perform(get(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(content().contentType(contentType))
-                .andReturn();
+        String responseBody = given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract()
+                .body().asString();
 
         ObjectMapper mapper = new ObjectMapper();
-        DishListResource embeddedList = mapper.readValue(result.getResponse().getContentAsString(), DishListResource.class);
+        DishListResource embeddedList = mapper.readValue(responseBody, DishListResource.class);
         List<DishResource> dishList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getDishResourceList() : new ArrayList<DishResource>();
         // sort list by name, asc
         // list as expected
@@ -272,18 +248,23 @@ class DishRestControllerTest {
         // check sort by created, desc
         url = "/dish?includedTags=" + includedList + "&excludedTags=" + excludedList
                 + "&sortKey=CreatedOn" + "&sortDirection=DESC";
-        result = this.mockMvc.perform(get(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(content().contentType(contentType))
-                .andReturn();
+        responseBody = given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract()
+                .body().asString();
 
-        embeddedList = mapper.readValue(result.getResponse().getContentAsString(), DishListResource.class);
+        embeddedList = mapper.readValue(responseBody, DishListResource.class);
         dishList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getDishResourceList() : new ArrayList<DishResource>();
         // sort list by id, desc
         // expected results
         List<Long> expectedCreatedOnResults = dishList.stream()
-                .map(d -> d.getDish().getId())
+                .map(d -> Long.valueOf(d.getDish().getId()))
                 .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
         Assertions.assertNotNull(listAsExpected);
@@ -292,7 +273,7 @@ class DishRestControllerTest {
         // list as received
         List<Long> longsAsReceived = dishList
                 .stream()
-                .map(rdr -> rdr.getDish().getId())
+                .map(rdr -> Long.valueOf(rdr.getDish().getId()))
                 .collect(Collectors.toList());
         Assertions.assertNotNull(listAsReceived);
 
@@ -302,7 +283,6 @@ class DishRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testFindDishesOrig() throws Exception {
         List<Long> excludedTags = Arrays.asList(TestConstants.TAG_1_ID, TestConstants.TAG_2_ID, TestConstants.TAG_3_ID);
         List<Long> includedTags = Arrays.asList(TestConstants.TAG_MEAT, TestConstants.TAG_PASTA);
@@ -310,10 +290,14 @@ class DishRestControllerTest {
         String includedList = FlatStringUtils.flattenListOfLongsToString(includedTags, ",");
         String excludedList = FlatStringUtils.flattenListOfLongsToString(excludedTags, ",");
         String url = "/dish?includedTags=" + includedList + "&excludedTags=" + excludedList;
-        this.mockMvc.perform(get(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(content().contentType(contentType));
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON);
 
 
     }
@@ -330,31 +314,36 @@ class DishRestControllerTest {
 
         // get dish, and assert tag 325 is present
         // (start condition)
-        MvcResult result = mockMvc.perform(get("/dish/"
-                        + dishId + "/tag")
-                        .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$..tag", hasSize(17)))
-                .andExpect(jsonPath("$..tag.tag_id", hasItem(originalTag)))
-                .andExpect(jsonPath("$..tag.tag_id", not(hasItem(expectedTag))))
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .get("/dish/" + dishId + "/tag")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("", hasSize(17))
+                .body("tag.tag_id", hasItem(originalTag))
+                .body("tag.tag_id", not(hasItem(expectedTag)));
 
         // tested call
-        mockMvc.perform(put("/dish/"
-                        + dishId + "/rating/" + ratingIdAsString + "/" + stepAsString)
-                        .with(user(userDetails)))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .put("/dish/" + dishId + "/rating/" + ratingIdAsString + "/" + stepAsString)
+                .then()
+                .statusCode(204);
 
         // verify after condition - should have tag 324 - and no longer have tag 325
-        mockMvc.perform(get("/dish/"
-                        + dishId + "/tag")
-                        .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$..tag", hasSize(17)))
-                .andExpect(jsonPath("$..tag.tag_id", hasItem(expectedTag)))
-                .andExpect(jsonPath("$..tag.tag_id", not(hasItem(originalTag))));
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .get("/dish/" + dishId + "/tag")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("", hasSize(17))
+                .body("tag.tag_id", hasItem(expectedTag))
+                .body("tag.tag_id", not(hasItem(originalTag)));
 
 
     }
@@ -370,18 +359,22 @@ class DishRestControllerTest {
 
         // get dish, and assert tags are present
         // (start condition)
-        mockMvc.perform(get("/dish/"
-                        + dishId + "/tag")
-                        .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$..tag", hasSize(17)));
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .get("/dish/" + dishId + "/tag")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("", hasSize(17));
 
         // tested call
-        mockMvc.perform(put("/dish/"
-                        + dishId + "/rating/" + ratingIdAsString + "/" + stepAsString)
-                        .with(user(userDetails)))
-                .andExpect(status().isNotFound());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .put("/dish/" + dishId + "/rating/" + ratingIdAsString + "/" + stepAsString)
+                .then()
+                .statusCode(404);
 
     }
 
@@ -396,21 +389,24 @@ class DishRestControllerTest {
                 .withName("testDeleteLastTag_NoDelete")
                 .buildModel();
 
-        Long createdId = createDish(userDetails, dish);
+        Long createdId = createDish(TestConstants.USER_3_TOKEN, dish);
 
-        Dish created = retrieveDish(userDetails, createdId);
+        Dish created = retrieveDish(TestConstants.USER_3_TOKEN, createdId);
         Assertions.assertNotNull(created);
 
-        removeRatingTags(userDetails, createdId);
+        removeRatingTags(TestConstants.USER_3_TOKEN, createdId);
 
         // delete tag - main dish
         String url = String.format("/dish/%d/tag/%d", createdId, mainDishId);
-        this.mockMvc.perform(delete(url)
-                        .with(user(userDetails)))
-                .andExpect(status().is2xxSuccessful());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .delete(url)
+                .then()
+                .statusCode(anyOf(is(200), is(204), is(206)));
 
         // retrieve dish
-        Dish afterDelete = retrieveDish(userDetails, createdId);
+        Dish afterDelete = retrieveDish(TestConstants.USER_3_TOKEN, createdId);
         Assertions.assertNotNull(afterDelete);
         Set<String> dishTagIds = afterDelete.getTags().stream().map(Tag::getId).collect(Collectors.toSet());
         Assertions.assertEquals(2, dishTagIds.size());  // no change
@@ -430,21 +426,24 @@ class DishRestControllerTest {
                 .withName("testDeleteLastTag_NoDelete")
                 .buildModel();
 
-        Long createdId = createDish(userDetails, dish);
+        Long createdId = createDish(TestConstants.USER_3_TOKEN, dish);
 
-        Dish created = retrieveDish(userDetails, createdId);
+        Dish created = retrieveDish(TestConstants.USER_3_TOKEN, createdId);
         Assertions.assertNotNull(created);
 
-        removeRatingTags(userDetails, createdId);
+        removeRatingTags(TestConstants.USER_3_TOKEN, createdId);
 
         // delete tag - main dish
         String url = String.format("/dish/%d/tag/%d", createdId, mainDishId);
-        this.mockMvc.perform(delete(url)
-                        .with(user(userDetails)))
-                .andExpect(status().is2xxSuccessful());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .delete(url)
+                .then()
+                .statusCode(anyOf(is(200), is(204), is(206)));
 
         // retrieve dish
-        Dish afterDelete = retrieveDish(userDetails, createdId);
+        Dish afterDelete = retrieveDish(TestConstants.USER_3_TOKEN, createdId);
         Assertions.assertNotNull(afterDelete);
         Set<String> dishTagIds = afterDelete.getTags().stream().map(Tag::getId).collect(Collectors.toSet());
         Assertions.assertEquals(2, dishTagIds.size());
@@ -464,26 +463,29 @@ class DishRestControllerTest {
                 .withName("testDeleteLastTag_PartialDelete")
                 .buildModel();
 
-        Long createdId = createDish(userDetails, dish);
+        Long createdId = createDish(TestConstants.USER_3_TOKEN, dish);
 
-        Dish created = retrieveDish(userDetails, createdId);
+        Dish created = retrieveDish(TestConstants.USER_3_TOKEN, createdId);
         Assertions.assertNotNull(created);
 
         // remove rating tags
-        removeRatingTags(userDetails, createdId);
+        removeRatingTags(TestConstants.USER_3_TOKEN, createdId);
 
         // remove mainDish, blackPepper, and oliveOil should
         // result in deletion of blackPepper and oliveOil, but not mainDish
         List<Long> deleteTags = Arrays.asList(mainDishId, blackPepperId, oliveOilId);
         String deleteList = FlatStringUtils.flattenListOfLongsToString(deleteTags, ",");
         String url = String.format("/dish/%d/tag?removeTags=%s", createdId, deleteList);
-        this.mockMvc.perform(put(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().is2xxSuccessful());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(anyOf(is(200), is(204), is(206)));
 
         // retrieve list, and check
-        Dish updated = retrieveDish(userDetails, createdId);
+        Dish updated = retrieveDish(TestConstants.USER_3_TOKEN, createdId);
         Assertions.assertNotNull(updated);
 
         Assertions.assertEquals(1, updated.getTags().size());
@@ -492,8 +494,8 @@ class DishRestControllerTest {
 
     }
 
-    private void removeRatingTags(UserDetails userDetails, Long createdId) throws Exception {
-        Dish created = retrieveDish(userDetails, createdId);
+    private void removeRatingTags(String token, Long createdId) throws Exception {
+        Dish created = retrieveDish(token, createdId);
         List<String> deleteTags = created.getTags().stream()
                 .filter(t -> t.getTagType().equals("Rating"))
                 .map(Tag::getId)
@@ -501,10 +503,13 @@ class DishRestControllerTest {
 
         String deleteList = FlatStringUtils.flattenListToString(deleteTags, ",");
         String url = String.format("/dish/%d/tag?removeTags=%s", createdId, deleteList);
-        this.mockMvc.perform(put(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().is2xxSuccessful());
+        given()
+                .header(TestUtils.authToken(token))
+                .contentType(ContentType.JSON)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(anyOf(is(200), is(204), is(206)));
 
     }
 
@@ -523,12 +528,12 @@ class DishRestControllerTest {
                 .withName("testDeleteLastTag_PartialDelete")
                 .buildModel();
 
-        Long createdId = createDish(userDetails, dish);
+        Long createdId = createDish(TestConstants.USER_3_TOKEN, dish);
 
-        Dish created = retrieveDish(userDetails, createdId);
+        Dish created = retrieveDish(TestConstants.USER_3_TOKEN, createdId);
         Assertions.assertNotNull(created);
 
-        removeRatingTags(userDetails, createdId);
+        removeRatingTags(TestConstants.USER_3_TOKEN, createdId);
 
         // remove mainDish, blackPepper, and oliveOil should
         // result in deletion of mainDish, blackPepper and oliveOil: could deleted
@@ -536,13 +541,16 @@ class DishRestControllerTest {
         List<Long> deleteTags = Arrays.asList(mainDishId, blackPepperId, oliveOilId);
         String deleteList = FlatStringUtils.flattenListOfLongsToString(deleteTags, ",");
         String url = String.format("/dish/%d/tag?removeTags=%s", createdId, deleteList);
-        this.mockMvc.perform(put(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().is2xxSuccessful());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(anyOf(is(200), is(204), is(206)));
 
         // retrieve list, and check
-        Dish updated = retrieveDish(userDetails, createdId);
+        Dish updated = retrieveDish(TestConstants.USER_3_TOKEN, createdId);
         Assertions.assertNotNull(updated);
 
         Assertions.assertEquals(1, updated.getTags().size());
@@ -550,40 +558,47 @@ class DishRestControllerTest {
         Assertions.assertEquals(String.valueOf(appetizerId), lastTag.getId());
     }
 
-    private Long createDish(UserDetails userDetails, Dish dish) throws Exception {
+    private Long createDish(String token, Dish dish) throws Exception {
         String dishJson = json(dish);
 
         String url = "/dish";
 
-        MvcResult result = this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(dishJson))
-                .andExpect(status().isCreated())
-                .andReturn();
+        Response response = given()
+                .header(TestUtils.authToken(token))
+                .contentType(ContentType.JSON)
+                .body(dishJson)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(201)
+                .extract()
+                .response();
 
-        List<String> headers = result.getResponse().getHeaders("Location");
-        String header = headers.get(0);
+        String header = response.getHeader("Location");
         String stringId = header.substring(header.lastIndexOf("/") + 1);
         return Long.valueOf(stringId);
     }
 
-    private Dish retrieveDish(UserDetails userDetails, Long dishId) throws Exception {
-        MvcResult listResultsAfter = this.mockMvc.perform(get("/dish/" + dishId)
-                        .with(user(userDetails)))
-                .andReturn();
+    private Dish retrieveDish(String token, Long dishId) throws Exception {
+        String responseBody = given()
+                .header(TestUtils.authToken(token))
+                .when()
+                .get("/dish/" + dishId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
+
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonList = listResultsAfter.getResponse().getContentAsString();
-        DishResource afterList = objectMapper.readValue(jsonList, DishResource.class);
+        DishResource afterList = objectMapper.readValue(responseBody, DishResource.class);
         Assertions.assertNotNull(afterList);
         return afterList.getDish();
     }
 
 
     private String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(o);
     }
 
 }

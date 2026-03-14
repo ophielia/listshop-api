@@ -1,51 +1,35 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.v2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
-import com.meg.listshop.auth.data.entity.UserEntity;
-import com.meg.listshop.auth.service.CustomUserDetails;
-import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.test.TestConstants;
-import io.swagger.v3.core.util.ObjectMapperFactory;
+import com.meg.listshop.test.TestUtils;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static io.restassured.RestAssured.given;
 
-@ExtendWith(MockitoExtension.class)
-@SpringBootTest(classes = Application.class)
-@WebAppConfiguration
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @ActiveProfiles("test")
 @Sql(value = {"/sql/com/meg/atable/lmt/api/v2/DishRestControllerTest.sql"},
@@ -57,59 +41,30 @@ class V2DishRestControllerTest {
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
-    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype());
+    @LocalServerPort
+    public int serverPort;
+
     private final String urlRoot = "/v2/dish/";
-    private MockMvc mockMvc;
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-    private UserDetails userDetails;
-    @Autowired
-    private WebApplicationContext webApplicationContext;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter = Arrays.stream(converters)
-                .filter(MappingJackson2HttpMessageConverter.class::isInstance)
-                .findAny()
-                .orElse(null);
-
+    @PostConstruct
+    public void initRestAssured() {
+        RestAssured.port = serverPort;
+        RestAssured.urlEncodingEnabled = false;
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
-
-    @BeforeEach
-    @WithMockUser
-    void setup()  {
-        this.mockMvc = webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
-
-        UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
-        userDetails = new CustomUserDetails(userAccount.getId(),
-                TestConstants.USER_3_NAME,
-                null,
-                null,
-                null,
-                true,
-                null);
-
-    }
-
 
     @Test
-    @WithMockUser
     void readSingleDishNoAmounts() throws Exception {
         Long testId = 9999992L;
-        Dish afterDish = retrieveDish(userDetails, testId);
+        Dish afterDish = retrieveDish(testId);
         Assertions.assertEquals(String.valueOf(testId), afterDish.getDishId());
     }
 
     @Test
-    @WithMockUser
     void readSingleDishAmounts() throws Exception {
         Long testId = 9999993L;
-        Dish result = retrieveDish(userDetails, testId);
+        Dish result = retrieveDish(testId);
+        Assertions.assertNotNull(result);
 
         Assertions.assertEquals(String.valueOf(testId), result.getDishId());
         // test collections
@@ -134,6 +89,7 @@ class V2DishRestControllerTest {
         Assertions.assertEquals("1 1/2 pound", cheddarCheese.getAmount().getDisplay(), "display is wrong");
         List<String> modifiers = cheddarCheese.getAmount().getModifiers();
         Assertions.assertEquals(1, modifiers.size(), "modifiers size is wrong");
+
         // test tags
         NestedTag nestedTag = result.getTags().stream()
                 .filter(t -> t.getTagId().equals("199"))
@@ -154,24 +110,24 @@ class V2DishRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void readSingleDish_ObjectNotFoundException() throws Exception {
         Long testId = 99999999394L;
-        mockMvc.perform(get(urlRoot
-                        + testId)
-                        .with(user(userDetails)))
-                .andExpect(status().isNotFound()) ;
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .get(urlRoot + testId)
+                .then()
+                .statusCode(404);
     }
 
 
     @Test
-    @WithMockUser
     void testAddIngredientToDish() throws Exception {
         Dish dish = new Dish()
                 .withDishName("Yummy new dish");
 
 
-        Long testId = createDish(userDetails, dish);
+        Long testId = createDish(dish);
 
         IngredientPut ingredientPut = new IngredientPut();
         ingredientPut.setTagId("12");
@@ -180,30 +136,31 @@ class V2DishRestControllerTest {
         ingredientPut.setUnitId("1000");
         String payload = json(ingredientPut);
         String url = urlRoot + testId + "/ingredients";
-        this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .content(payload)
-                        .contentType(contentType))
-                .andDo(print())
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
-        Dish dishResult = retrieveDish(userDetails, testId);
+        Dish dishResult = retrieveDish(testId);
         Assertions.assertNotNull(dishResult);
         Assertions.assertEquals(1, dishResult.getIngredients().size(), "should be 1 ingredient");
         Ingredient ingredient = dishResult.getIngredients().get(0);
         Assertions.assertEquals(ingredient.getAmount().getUnitId(), ingredientPut.getUnitId());
         Assertions.assertEquals(ingredient.getAmount().getWholeQuantity(), ingredientPut.getWholeQuantity());
-        Assertions.assertEquals(ingredientPut.getFractionalQuantity(),ingredient.getAmount().getFractionalQuantity());
+        Assertions.assertEquals(ingredientPut.getFractionalQuantity(), ingredient.getAmount().getFractionalQuantity());
         Assertions.assertEquals("1 1/2", ingredient.getAmount().getQuantityDisplay());
     }
 
 
     @Test
-    @WithMockUser
     void testUpdateIngredientInDish() throws Exception {
         Dish dish = new Dish().withDishName("update new dish");
 
-        Long testId = createDish(userDetails, dish);
+        Long testId = createDish(dish);
 
         IngredientPut ingredientPut = new IngredientPut();
         ingredientPut.setTagId("12");
@@ -212,14 +169,16 @@ class V2DishRestControllerTest {
         ingredientPut.setUnitId("1000");
         String payload = json(ingredientPut);
         String url = urlRoot + testId + "/ingredients";
-        this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .content(payload)
-                        .contentType(contentType))
-                .andDo(print())
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
-        Dish dishResult = retrieveDish(userDetails, testId);
+        Dish dishResult = retrieveDish(testId);
         Assertions.assertNotNull(dishResult);
         Assertions.assertEquals(1, dishResult.getIngredients().size(), "should be 1 ingredient");
         Ingredient ingredient = dishResult.getIngredients().get(0);
@@ -234,14 +193,16 @@ class V2DishRestControllerTest {
         ingredientUpdate.setUnitId("1011");
         payload = json(ingredientUpdate);
 
-        this.mockMvc.perform(put(url)
-                        .with(user(userDetails))
-                        .content(payload)
-                        .contentType(contentType))
-                .andDo(print())
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(204);
 
-        dishResult = retrieveDish(userDetails, testId);
+        dishResult = retrieveDish(testId);
         Assertions.assertNotNull(dishResult);
         Assertions.assertEquals(1, dishResult.getIngredients().size(), "should be 1 ingredient");
         ingredient = dishResult.getIngredients().get(0);
@@ -253,11 +214,10 @@ class V2DishRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testDeleteIngredientFromDish() throws Exception {
         Dish dish = new Dish().withDishName("update new dish");
 
-        Long testId = createDish(userDetails, dish);
+        Long testId = createDish(dish);
 
         IngredientPut ingredientPut = new IngredientPut();
         ingredientPut.setTagId("12");
@@ -266,14 +226,16 @@ class V2DishRestControllerTest {
         ingredientPut.setUnitId("1000");
         String payload = json(ingredientPut);
         String url = urlRoot + testId + "/ingredients";
-        this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .content(payload)
-                        .contentType(contentType))
-                .andDo(print())
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
-        Dish dishResult = retrieveDish(userDetails, testId);
+        Dish dishResult = retrieveDish(testId);
         Assertions.assertNotNull(dishResult);
         Assertions.assertEquals(1, dishResult.getIngredients().size(), "should be 1 ingredient");
         Ingredient ingredient = dishResult.getIngredients().get(0);
@@ -281,26 +243,27 @@ class V2DishRestControllerTest {
 
         // now - delete it
         String deleteUrl = urlRoot + testId + "/ingredients/" + ingredientId;
-        this.mockMvc.perform(delete(deleteUrl)
-                        .with(user(userDetails))
-                        .content(payload)
-                        .contentType(contentType))
-                .andDo(print())
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .delete(deleteUrl)
+                .then()
+                .statusCode(204);
 
-        dishResult = retrieveDish(userDetails, testId);
+        dishResult = retrieveDish(testId);
         Assertions.assertNotNull(dishResult);
         Assertions.assertEquals(0, dishResult.getIngredients().size(), "ingredients should be empty");
     }
 
 
     @Test
-    @WithMockUser
     void testGetIngredientsForDish() throws Exception {
         Dish dish = new Dish().withDishName("Yummy new dish");
 
 
-        Long testId = createDish(userDetails, dish);
+        Long testId = createDish(dish);
 
         IngredientPut ingredientPut = new IngredientPut();
         ingredientPut.setTagId("12");
@@ -309,83 +272,93 @@ class V2DishRestControllerTest {
         ingredientPut.setUnitId("1000");
         String payload = json(ingredientPut);
         String url = urlRoot + testId + "/ingredients";
-        this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .content(payload)
-                        .contentType(contentType))
-                .andDo(print())
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
         ingredientPut.setTagId("112");
         ingredientPut.setWholeQuantity(12);
         ingredientPut.setUnitId("1000");
         payload = json(ingredientPut);
 
-        this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .content(payload)
-                        .contentType(contentType))
-                .andDo(print())
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
         ingredientPut.setTagId("113");
         ingredientPut.setWholeQuantity(13);
         ingredientPut.setUnitId("1011");
         payload = json(ingredientPut);
 
-        this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .content(payload)
-                        .contentType(contentType))
-                .andDo(print())
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
         // now get the ingredients
-        MvcResult listResultsAfter = this.mockMvc.perform(get(urlRoot + testId + "/ingredients")
-                        .with(user(userDetails)))
-                .andReturn();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonList = listResultsAfter.getResponse().getContentAsString();
-        IngredientList afterList = objectMapper.readValue(jsonList, IngredientList.class);
+        IngredientList afterList = given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .get(urlRoot + testId + "/ingredients")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(IngredientList.class);
+
         Assertions.assertNotNull(afterList);
         Assertions.assertEquals(3, afterList.getIngredients().size());
     }
 
 
-    private Long createDish(UserDetails userDetails, Dish dish) throws Exception {
+    private Long createDish(Dish dish) throws Exception {
         String dishJson = json(dish);
 
         String url = "/dish";
 
-        MvcResult result = this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(dishJson))
-                .andExpect(status().isCreated())
-                .andReturn();
+        String location = given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(dishJson)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(201)
+                .extract()
+                .header("Location");
 
-        List<String> headers = result.getResponse().getHeaders("Location");
-        String header = headers.get(0);
-        String stringId = header.substring(header.lastIndexOf("/") + 1);
+        String stringId = location.substring(location.lastIndexOf("/") + 1);
         return Long.valueOf(stringId);
     }
 
-    private Dish retrieveDish(UserDetails userDetails, Long dishId) throws Exception {
-        MvcResult listResultsAfter = this.mockMvc.perform(get(urlRoot + dishId)
-                        .with(user(userDetails)))
-                .andReturn();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonList = listResultsAfter.getResponse().getContentAsString();
-        Dish afterDish = objectMapper.readValue(jsonList, Dish.class);
-        Assertions.assertNotNull(afterDish);
-        return afterDish;
+    private Dish retrieveDish(Long dishId) throws Exception {
+        return given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .when()
+                .get(urlRoot + dishId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(Dish.class);
     }
 
 
     private String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(o);
     }
 
 }
