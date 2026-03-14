@@ -58,13 +58,13 @@ insert into list (created_on, list_layout_id, list_types, user_id, list_id, name
 values (now(), 1, 'General', 20, 509992, 'list with amounts', false);
 
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
-                      list_sources, quantity, unit_id, amount_text)
-VALUES (509992, 501, 5099920, now(), null,  1, null, null, 1.5, 1000, '1.5 cups'),
-       (509992, 502, 5099921, now(), null,  1, null, '509991', 2.0, 1011, '2 units'),
-       (509992, 503, 5099922, now(), null,  1, null, null, 1.0, 1001, '1 tablespoon'),
-       (509992, 500, 5099923, now(), null,  1, null, null, 0.5, 1008, '0.5 lb'),
-       (509992, 504, 5099924, now(), null,  1, null, '509991', 1.0, 1041, '1 package'),
-       (509992, 504, 5099925, now(), null,  1, null, '509991', 3.0, 1013, '3 grams');
+                      list_sources, quantity, raw_quantity,unit_id, amount_text)
+VALUES (509992, 501, 5099920, now(), null,  1, null, null, 1.5, 1.5,1000, '1.5 cups'),
+       (509992, 502, 5099921, now(), null,  1, null, '509991', 2.0, 2.0,1011, '2 units'),
+       (509992, 503, 5099922, now(), null,  1, null, null, 1.0,1.0, 1001, '1 tablespoon'),
+       (509992, 500, 5099923, now(), null,  1, null, null, 0.5, 0.5,1008, '0.5 lb'),
+       (509992, 504, 5099924, now(), null,  1, null, '509991', 1.0, 1.0,1041, '1 package'),
+       (509992, 504, 5099925, now(), null,  1, null, '509991', 3.0,3.0, 1013, '3 grams');
 
 INSERT INTO list_item_details (item_detail_id, item_id, used_count, linked_list_id, linked_dish_id, quantity, unit_id, raw_entry)
 VALUES  (50999200, 5099920, 1, 7777, null, 1.5, 1000, '1.5 cups'),

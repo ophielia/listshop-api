@@ -40,8 +40,15 @@ public class ShoppingListDTO {
         this.lastUpdate = castToDate(lastUpdate);
         this.userId = userId instanceof Long ? (Long) userId : ((Number) userId).longValue();
         this.isStarterList = isStarterList instanceof Boolean ? (Boolean) isStarterList : ((Number) isStarterList).intValue() != 0;
-        this.layoutId = layoutId instanceof Long ? (Long) layoutId : ((Number) layoutId).longValue();
+        this.layoutId = convertToLong(layoutId);
         this.itemCount = itemCount instanceof Integer ? (Integer) itemCount : ((Number) itemCount).intValue();
+    }
+
+    private Long convertToLong(Object layoutId) {
+        if (layoutId == null) {
+            return null;
+        }
+        return layoutId instanceof Long ? (Long) layoutId : ((Number) layoutId).longValue();
     }
 
     private Date castToDate(Object object) {

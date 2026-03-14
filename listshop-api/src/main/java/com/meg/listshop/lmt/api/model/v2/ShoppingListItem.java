@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -5,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShoppingListItem {
@@ -33,6 +40,9 @@ public class ShoppingListItem {
 
     @JsonProperty("used_count")
     private Integer usedCount;
+
+    @JsonProperty("sources")
+    private Set<String> sources;
 
     private List<ShoppingListItemDetails> details;
 
@@ -94,6 +104,11 @@ public class ShoppingListItem {
         return this;
     }
 
+    public ShoppingListItem withSources(Set<String> sources) {
+        this.sources = sources;
+        return this;
+    }
+
     public String getItemId() {
         return itemId;
     }
@@ -128,6 +143,10 @@ public class ShoppingListItem {
 
     public Integer getUsedCount() {
         return usedCount;
+    }
+
+    public Set<String> getSources() {
+        return sources;
     }
 
     public List<ShoppingListItemDetails> getDetails() {

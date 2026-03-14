@@ -219,6 +219,7 @@ public class V2ModelMapper {
                 .withAmount(amount)
                 .withDetails(itemDetails)
                 .withListId(listItemDTO.getListId().toString())
+                .withSources(listItemDTO.getSources())
                 .withAddedOn(listItemDTO.getAddedOn())
                 .withUpdated(listItemDTO.getUpdatedOn())
                 .withRemoved(listItemDTO.getRemovedOn())
@@ -242,7 +243,6 @@ public class V2ModelMapper {
         String linkedDishId = detailEntity.getLinkedDishId() != null ? String.valueOf(detailEntity.getLinkedDishId()) : null;
         String linkedListId = detailEntity.getLinkedListId() != null ? String.valueOf(detailEntity.getLinkedListId()) : null;
         return new ShoppingListItemDetails()
-                .withItemDetailId(String.valueOf(detailEntity.getItem().getId()))
                 .withDishId(linkedDishId)
                 .withListId(linkedListId)
                 .withAmount(amount);

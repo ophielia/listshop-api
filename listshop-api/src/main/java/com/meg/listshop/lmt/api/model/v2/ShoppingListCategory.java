@@ -37,4 +37,20 @@ public class ShoppingListCategory {
         this.items = items;
         this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public int getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public List<ShoppingListItem> getItems() {
+        return items;
+    }
 }

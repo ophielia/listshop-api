@@ -10,6 +10,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.api.model.v2.*;
+import com.meg.listshop.lmt.api.model.v2.ShoppingList;
+import com.meg.listshop.lmt.api.model.v2.ShoppingListCategory;
+import com.meg.listshop.lmt.api.model.v2.ShoppingListItem;
+import com.meg.listshop.lmt.api.model.v2.ShoppingListPut;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.test.TestConstants;
@@ -151,7 +156,7 @@ class V2ShoppingListRestControllerTest {
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("shopping_list.list_id", Matchers.isA(Number.class));
+                .body("list_id", Matchers.isA(String.class));
 
     }
 
@@ -166,8 +171,8 @@ class V2ShoppingListRestControllerTest {
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("shopping_list.list_id", Matchers.isA(Number.class))
-                .body("shopping_list.list_id", Matchers.equalTo(testId.intValue()));
+                .body("list_id", Matchers.isA(String.class))
+                .body("list_id", Matchers.equalTo(String.valueOf(testId)));
     }
 
     @Test
@@ -191,11 +196,28 @@ class V2ShoppingListRestControllerTest {
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
+                .body("list_id", Matchers.isA(String.class))
+                .body("list_id", Matchers.equalTo(String.valueOf(testId)))
+                .body("categories", Matchers.hasSize(1))
+                .body("categories.name", Matchers.hasItems("Produce"))
+                .body("categories[0].items", Matchers.hasSize(6))
+                .body("categories[0].items[0].tag.tag_id", Matchers.equalTo("500"))
+                .body("categories[0].items[0].tag.name", Matchers.equalTo("tag1"))
+                .body("categories[0].items[0].amount.quantity", Matchers.equalTo(0.5F))
+                .body("categories[0].items[0].amount.rounded_quantity", Matchers.equalTo(0.5F))
+                .body("categories[0].items[0].amount.quantity_display", Matchers.equalTo("0.5 lb"))
+                .body("categories[0].items[0].amount.unit_id", Matchers.equalTo("1008"))
+                .body("categories[0].items[0].amount.unit_display", Matchers.equalTo("lb"))
+                .body("categories[0].items[0].amount.display", Matchers.equalTo("0.5 lb"))
+                .body("categories[0].items[0].details", Matchers.hasSize(1))
+                .body("categories[0].items[0].details[0]", Matchers.hasKey("amount"))
+                .body("categories[0].items[0].details[0].dish_id", Matchers.equalTo("50999010"))
+
+
+                .body("legend", Matchers.hasSize(6))
+                .body("legend.source_type",
+                        Matchers.hasItems("DISH", "LIST"))
                 .extract().asString();
-                //.body("shopping_list.list_id", Matchers.isA(Number.class))
-                //.body("shopping_list.legend", Matchers.hasSize(6))
-                //.body("shopping_list.legend.key",
-                //        Matchers.containsInAnyOrder("d5099901", "d50999010", "d509990100", "d509990101", "l6666", "l7777"));
         Assertions.assertNotNull(json);
 
     }
@@ -220,14 +242,14 @@ class V2ShoppingListRestControllerTest {
         ShoppingList standardLayoutList = retrieveList(dadStarterJwtToken, standardLayoutListId);
         Map<String, ShoppingListItem> standardResultMap = standardLayoutList.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(standardResultMap);
 
 
         ShoppingList customLayoutList = retrieveList(meJwtToken, customLayoutListId);
         Map<String, ShoppingListItem> customResultMap = customLayoutList.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(customResultMap);
 
         // item count should be equal
@@ -241,7 +263,7 @@ class V2ShoppingListRestControllerTest {
         Assertions.assertTrue(specialCategory.isPresent(), "on category should be called 'Special'");
         Assertions.assertEquals(1, specialCategory.get().getItems().size(), "special contains one item");
         ShoppingListItem tomatoes = specialCategory.get().getItems().get(0);
-        Assertions.assertEquals("tomatoes", tomatoes.getTagName(), "tomatoes are tomatoes");
+        Assertions.assertEquals("tomatoes", tomatoes.getTag().getName(), "tomatoes are tomatoes");
     }
 
     @Test
@@ -293,9 +315,9 @@ class V2ShoppingListRestControllerTest {
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("shopping_list.list_id", Matchers.isA(Number.class))
-                .body("shopping_list.list_id", Matchers.equalTo(oldStarterId.intValue()))
-                .body("shopping_list.is_starter_list", Matchers.equalTo(false));
+                .body("list_id", Matchers.isA(String.class))
+                .body("list_id", Matchers.equalTo(String.valueOf(oldStarterId)))
+                .body("is_starter_list", Matchers.equalTo(false));
 
 
     }
@@ -363,7 +385,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(jwtToken, newListId);
         Map<String, ShoppingListItem> resultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(resultMap);
 
         // check tag occurences in result
@@ -451,8 +473,8 @@ class V2ShoppingListRestControllerTest {
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("shopping_list.list_id", Matchers.isA(Number.class))
-                .body("shopping_list.list_id", Matchers.equalTo(listId.intValue()));
+                .body("list_id", Matchers.isA(String.class))
+                .body("list_id", Matchers.equalTo(String.valueOf(listId)));
     }
 
     @Test
@@ -494,7 +516,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingList listWithNewItem = retrieveList(jwtToken, listId);
         Map<String, ShoppingListItem> standardResultMap = listWithNewItem.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(standardResultMap);
         Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId)));
     }
@@ -523,8 +545,8 @@ class V2ShoppingListRestControllerTest {
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("shopping_list.list_id", Matchers.isA(Number.class))
-                .body("shopping_list.list_id", Matchers.equalTo(listId.intValue()))
+                .body("list_id", Matchers.isA(String.class))
+                .body("list_id", Matchers.equalTo(String.valueOf(listId)))
                 .extract()
                 .asString();
 
@@ -559,9 +581,9 @@ class V2ShoppingListRestControllerTest {
 
         Map<String, ShoppingListItem> standardResultMap = result.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .filter(i -> i.getSourceKeys() != null &&
-                        i.getSourceKeys().contains("d" + TestConstants.DISH_7_ID))
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .filter(i -> i.getSources() != null &&
+                        i.getSources().contains("DISH" + TestConstants.DISH_7_ID))
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(standardResultMap);
         Assertions.assertEquals(2, standardResultMap.keySet().size());
         Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId1)));
@@ -605,19 +627,19 @@ class V2ShoppingListRestControllerTest {
 
         Map<String, ShoppingListItem> standardResultMap = result.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(standardResultMap);
         // test brocolli is there, twice, with sources 109, and 45 (dish)
         ShoppingListItem broccoliItem = standardResultMap.get(String.valueOf(broccoliId));
         Assertions.assertNotNull(broccoliItem, "broccoli item should be present");
-        Assertions.assertEquals(2, broccoliItem.getSourceKeys().size());
-        Assertions.assertTrue(broccoliItem.getSourceKeys().contains("d" + TestConstants.DISH_8_ID));
-        Assertions.assertTrue(broccoliItem.getSourceKeys().contains("d" + TestConstants.DISH_2_ID));
+        Assertions.assertEquals(2, broccoliItem.getSources().size());
+        Assertions.assertTrue(broccoliItem.getSources().contains("DISH" + TestConstants.DISH_8_ID));
+        Assertions.assertTrue(broccoliItem.getSources().contains("DISH" + TestConstants.DISH_2_ID));
         // test feta cheese is there, from dish 1, tag_id 37
         ShoppingListItem fetaItem = standardResultMap.get(String.valueOf(fetaId));
         Assertions.assertNotNull(fetaItem, "feta item should be present");
-        Assertions.assertEquals(1, fetaItem.getSourceKeys().size());
-        Assertions.assertTrue(fetaItem.getSourceKeys().contains("d" + TestConstants.DISH_1_ID));
+        Assertions.assertEquals(1, fetaItem.getSources().size());
+        Assertions.assertTrue(fetaItem.getSources().contains("DISH" + TestConstants.DISH_1_ID));
     }
 
     private String createList(String jsonProperties, String token) {
@@ -672,9 +694,9 @@ class V2ShoppingListRestControllerTest {
 
         Map<String, ShoppingListItem> standardResultMap = result.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .filter(i -> i.getSourceKeys() != null &&
-                        i.getSourceKeys().contains("d" + TestConstants.DISH_7_ID))
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .filter(i -> i.getSources() != null &&
+                        i.getSources().contains("DISH" + TestConstants.DISH_7_ID))
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(standardResultMap);
         Assertions.assertEquals(2, standardResultMap.keySet().size());
         Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId1)));
@@ -722,23 +744,23 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(jwtToken, listId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
 
         Assertions.assertNotNull(sourceResultMap);
         // check tag occurences in result
         // 501 - 1
         Assertions.assertNotNull(sourceResultMap.get("81"));
-        Assertions.assertEquals(Optional.of(1).get(), sourceResultMap.get("81").getUsedCount());
+        Assertions.assertEquals(Optional.of(1).get(), sourceResultMap.get("81").getDetails().size());
 
         // 502 - 3
         Assertions.assertNotNull(sourceResultMap.get("1"));
-        Assertions.assertEquals(Integer.valueOf(3), sourceResultMap.get("1").getUsedCount());  // showing 1 in result map
+        Assertions.assertEquals(Integer.valueOf(3), sourceResultMap.get("1").getDetails().size());  // showing 1 in result map
         // 503 - 2
         Assertions.assertNotNull(sourceResultMap.get("12"));
-        Assertions.assertEquals(Integer.valueOf(2), sourceResultMap.get("12").getUsedCount()); // showing 1 in result map
+        Assertions.assertEquals(Integer.valueOf(2), sourceResultMap.get("12").getDetails().size()); // showing 1 in result map
         // 436 - 1
         Assertions.assertNotNull(sourceResultMap.get("436"));
-        Assertions.assertEquals(Integer.valueOf(1), sourceResultMap.get("436").getUsedCount());
+        Assertions.assertEquals(Integer.valueOf(1), sourceResultMap.get("436").getDetails().size());
 
     }
 
@@ -762,7 +784,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(meJwtToken, listId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(sourceResultMap);
 
         // check result
@@ -774,7 +796,7 @@ class V2ShoppingListRestControllerTest {
         Map<String, ShoppingListItem> activeMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getCrossedOff() == null)
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertEquals(10, activeMap.keySet().size(), "10 active items");
         Assertions.assertTrue(activeMap.containsKey("33"), "33 should be actice");
         Assertions.assertTrue(activeMap.containsKey("16"), "16 should be actice");
@@ -783,7 +805,7 @@ class V2ShoppingListRestControllerTest {
         Map<String, ShoppingListItem> crossedOffMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getCrossedOff() != null)
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertEquals(5, crossedOffMap.keySet().size(), "5 crossed off items");
         Assertions.assertTrue(crossedOffMap.containsKey("19"), "33 should be crossed off");
         Assertions.assertTrue(crossedOffMap.containsKey("34"), "16 should be crossed off");
@@ -810,7 +832,7 @@ class V2ShoppingListRestControllerTest {
         Map<String, ShoppingListItem> crossedOffItems = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(c -> c.getCrossedOff() != null)
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(crossedOffItems);
 
         // check result
@@ -840,7 +862,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(meJwtToken, listId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(sourceResultMap);
 
         // check result
@@ -852,7 +874,7 @@ class V2ShoppingListRestControllerTest {
         Map<String, ShoppingListItem> activeMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getCrossedOff() == null)
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertEquals(9, activeMap.keySet().size(), "9 active items");
         Assertions.assertTrue(activeMap.containsKey("16"), "16 should be actice");
 
@@ -860,7 +882,7 @@ class V2ShoppingListRestControllerTest {
         Map<String, ShoppingListItem> crossedOffMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getCrossedOff() != null)
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertEquals(4, crossedOffMap.keySet().size(), "4 crossed off items");
         Assertions.assertTrue(crossedOffMap.containsKey("19"), "19 should be crossed off");
     }
@@ -886,7 +908,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(meJwtToken, listId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(sourceResultMap);
 
         // check result
@@ -914,7 +936,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(meJwtToken, listId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(sourceResultMap);
 
         // check result
@@ -962,11 +984,11 @@ class V2ShoppingListRestControllerTest {
         ShoppingList result = retrieveList(jwtToken, listId);
         // affirm we have tag id 1 there - in Category Dry, with id 1
         ShoppingListItem resultItem = result.getCategories().stream().flatMap(c -> c.getItems().stream())
-                .filter(item -> item.getTag().getId().equals(targetTagId))
+                .filter(item -> item.getTag().getTagId().equals(targetTagId))
                 .findFirst().orElse(null);
         Assertions.assertNotNull(resultItem);
-        Assertions.assertTrue(resultItem.getSourceKeys().contains("d" + dish1Id));
-        Assertions.assertTrue(resultItem.getSourceKeys().contains("d" + dish2Id));
+        Assertions.assertTrue(resultItem.getSources().contains("DISH" + dish1Id));
+        Assertions.assertTrue(resultItem.getSources().contains("DISH" + dish2Id));
         Assertions.assertEquals(Integer.valueOf(2), resultItem.getUsedCount());
 
 
@@ -985,12 +1007,19 @@ class V2ShoppingListRestControllerTest {
         result = retrieveList(jwtToken, listId);
         // affirm we have tag id 1 there - in Category Dry, with id 1
         resultItem = result.getCategories().stream().flatMap(c -> c.getItems().stream())
-                .filter(item -> item.getTag().getId().equals(targetTagId))
+                .filter(item -> item.getTag().getTagId().equals(targetTagId))
                 .findFirst().orElse(null);
         Assertions.assertNotNull(resultItem);
-        Assertions.assertFalse(resultItem.getSourceKeys().contains("d" + dish1Id));
-        Assertions.assertTrue(resultItem.getSourceKeys().contains("d" + dish2Id));
+        ShoppingListItemDetails toCheck = pullDetailWithDishId(resultItem,dish1Id);
+        Assertions.assertNull(toCheck);
+        Assertions.assertNotNull(pullDetailWithDishId(resultItem,dish2Id));
         Assertions.assertEquals(Integer.valueOf(1), resultItem.getUsedCount());
+    }
+
+    private ShoppingListItemDetails pullDetailWithDishId(ShoppingListItem resultItem, String dish1Id) {
+        return resultItem.getDetails().stream()
+                .filter(item -> item.getDishId().equals(dish1Id))
+                .findFirst().orElse(null);
     }
 
     @Test
@@ -1047,7 +1076,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(jwtToken, listId);
         Map<String, ShoppingListItem> resultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(resultMap);
         Assertions.assertTrue(resultMap.isEmpty());
     }
@@ -1080,7 +1109,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(meJwtToken, sourceListId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
 
         Assertions.assertNotNull(sourceResultMap);
         Assertions.assertEquals(2, sourceResultMap.keySet().size());
@@ -1090,16 +1119,16 @@ class V2ShoppingListRestControllerTest {
         ShoppingList destination = retrieveList(meJwtToken, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
         Assertions.assertNotNull(destinationResultMap);
         Assertions.assertEquals(5, destinationResultMap.keySet().size());
         // 500 should be there with count 1
         Assertions.assertTrue(destinationResultMap.containsKey("500"));
         ShoppingListItem testElement = destinationResultMap.get("500");
-        Assertions.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(1), testElement.getDetails().size());
         // 502 should be there with a count of 2
         testElement = destinationResultMap.get("502");
-        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(2), testElement.getDetails().size());
 
     }
 
@@ -1131,24 +1160,24 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(meJwtToken, sourceListId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
 
         Assertions.assertEquals(4, sourceResultMap.keySet().size());
         // check destination list
         ShoppingList destination = retrieveList(meJwtToken, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
 
         Assertions.assertNotNull(destinationResultMap);
         Assertions.assertEquals(5, destinationResultMap.keySet().size());
         // 500 should be there with count 1
         Assertions.assertTrue(destinationResultMap.containsKey("500"));
         ShoppingListItem testElement = destinationResultMap.get("500");
-        Assertions.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(1), testElement.getDetails().size());
         // 501 should be there with a count of 2
         testElement = destinationResultMap.get("501");
-        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(2), testElement.getDetails().size());
 
     }
 
@@ -1180,7 +1209,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(meJwtToken, sourceListId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
 
         Assertions.assertNotNull(sourceResultMap);
         Assertions.assertEquals(2, sourceResultMap.keySet().size());
@@ -1190,18 +1219,18 @@ class V2ShoppingListRestControllerTest {
         ShoppingList destination = retrieveList(meJwtToken, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
 
         Assertions.assertNotNull(destinationResultMap);
         Assertions.assertEquals(5, destinationResultMap.keySet().size());
         // 500 should be there with count 1, crossedOff
         Assertions.assertTrue(destinationResultMap.containsKey("500"));
         ShoppingListItem testElement = destinationResultMap.get("500");
-        Assertions.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getDetails().size()));
         Assertions.assertNull(testElement.getCrossedOff());  // when item is moved, it loses it's crossed off status
         // 502 should be there with a count of 2
         testElement = destinationResultMap.get("502");
-        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getDetails().size()));
     }
 
     @Test
@@ -1233,7 +1262,7 @@ class V2ShoppingListRestControllerTest {
 
         Map<String, ShoppingListItem> allSourceResultMap = list.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
 
         Assertions.assertNotNull(allSourceResultMap);
         Assertions.assertEquals(2, allSourceResultMap.keySet().size());
@@ -1244,18 +1273,18 @@ class V2ShoppingListRestControllerTest {
         ShoppingList destination = retrieveList(meJwtToken, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
 
         Assertions.assertNotNull(destinationResultMap);
         Assertions.assertEquals(4, destinationResultMap.keySet().size());
         // 505 should be there with count 2, not crossedOff
         Assertions.assertTrue(destinationResultMap.containsKey("505"));
         ShoppingListItem testElement = destinationResultMap.get("505");
-        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getDetails().size()));
         Assertions.assertNull(testElement.getCrossedOff());
         // 502 should be there with a count of 2
         testElement = destinationResultMap.get("502");
-        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getUsedCount()));
+        Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getDetails().size()));
     }
 
 
@@ -1286,7 +1315,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(meJwtToken, sourceListId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
 
         Assertions.assertNotNull(sourceResultMap);
         Assertions.assertEquals(2, sourceResultMap.keySet().size());
@@ -1311,7 +1340,7 @@ class V2ShoppingListRestControllerTest {
         List<String> crossedOffIds = before.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getRemoved() != null)
-                .map(i -> i.getTag().getId())
+                .map(i -> i.getTag().getTagId())
                 .toList();
 
         String url = "/v2/shoppinglist/" + sourceListId + "/item";
@@ -1329,7 +1358,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(meJwtToken, sourceListId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
 
 
         Assertions.assertNotNull(sourceResultMap);
@@ -1367,7 +1396,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingList source = retrieveList(meJwtToken, sourceListId);
         Map<String, ShoppingListItem> destinationResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
+                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
 
         Assertions.assertNotNull(destinationResultMap);
         Assertions.assertEquals(0, destinationResultMap.keySet().size());
@@ -1387,16 +1416,14 @@ class V2ShoppingListRestControllerTest {
         String listId = createList(jsonProperties, meJwtToken);
 
         String url = "/v2/shoppinglist";
-        String jsonList = given()
+        ShoppingList beforeList = given()
                 .header(TestUtils.authToken(meJwtToken))
                 .when()
                 .get(url + "/" + listId)
                 .then()
                 .statusCode(200)
                 .extract()
-                .asString();
-        ObjectMapper objectMapper = new ObjectMapper();
-        ShoppingListResource beforeList = objectMapper.readValue(jsonList, ShoppingListResource.class);
+                .as(ShoppingList.class);
         Assertions.assertNotNull(beforeList);
 
         // add dish which contains tag carrots - 109
@@ -1418,16 +1445,15 @@ class V2ShoppingListRestControllerTest {
                 .statusCode(204);
 
         // check results
-        jsonList = given()
+        ShoppingList afterDishTwo = given()
                 .header(TestUtils.authToken(meJwtToken))
                 .when()
                 .get(url + "/" + listId)
                 .then()
                 .statusCode(200)
                 .extract()
-                .asString();
-        ShoppingListResource afterAddDishTwo = objectMapper.readValue(jsonList, ShoppingListResource.class);
-        Assertions.assertNotNull(afterAddDishTwo);
+                .as(ShoppingList.class);
+        Assertions.assertNotNull(afterDishTwo);
 
         // cross off all items on list
         String crossOffItemsUrl = String.format("%s/%s/item/shop?crossOff=true", url, listId);
@@ -1439,15 +1465,14 @@ class V2ShoppingListRestControllerTest {
                 .statusCode(204);
 
         // check results
-        jsonList = given()
+        ShoppingList afterCrossedOff = given()
                 .header(TestUtils.authToken(meJwtToken))
                 .when()
                 .get(url + "/" + listId)
                 .then()
                 .statusCode(200)
                 .extract()
-                .asString();
-        ShoppingListResource afterCrossedOff = objectMapper.readValue(jsonList, ShoppingListResource.class);
+                .as(ShoppingList.class);
         Assertions.assertNotNull(afterCrossedOff);
 
 
@@ -1461,17 +1486,14 @@ class V2ShoppingListRestControllerTest {
                 .statusCode(204);
 
         // get Shopping List and confirm that carrots are still crossed off
-        jsonList = given()
+        ShoppingList list = given()
                 .header(TestUtils.authToken(meJwtToken))
                 .when()
                 .get(url + "/" + listId)
                 .then()
                 .statusCode(200)
                 .extract()
-                .asString();
-        ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
-        Assertions.assertNotNull(afterList);
-        ShoppingList list = afterList.getShoppingList();
+                .as(ShoppingList.class);
         Optional<ShoppingListCategory> produce = list.getCategories()
                 .stream()
                 .filter(c -> c.getName().equals("Produce"))
@@ -1482,23 +1504,20 @@ class V2ShoppingListRestControllerTest {
                 .findFirst();
         Assertions.assertTrue(carrotOpt.isPresent(), "carrots present in list");
         ShoppingListItem carrot = carrotOpt.get();
-        Assertions.assertEquals(1, carrot.getSourceKeys().size(), "only one source key for carrots shown");
+        Assertions.assertEquals(1, carrot.getSources().size(), "only one source key for carrots shown");
         Assertions.assertNotNull(carrot.getCrossedOff(), "carrots should be crossed off");
     }
 
     private ShoppingList retrieveList(String token, Long listId) throws Exception {
-        String jsonList = given()
+        ShoppingList shoppingList = given()
                 .header(TestUtils.authToken(token))
                 .when()
                 .get("/v2/shoppinglist/" + listId)
                 .then()
                 .statusCode(200)
                 .extract()
-                .asString();
-        ObjectMapper objectMapper = new ObjectMapper();
-        ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
-        Assertions.assertNotNull(afterList);
-        return afterList.getShoppingList();
+                .as(ShoppingList.class);
+        return shoppingList;
     }
 
     private String json(Object o) throws IOException {

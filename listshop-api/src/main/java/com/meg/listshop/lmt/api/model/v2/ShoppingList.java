@@ -6,6 +6,7 @@
 
 package com.meg.listshop.lmt.api.model.v2;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -110,5 +111,45 @@ public class ShoppingList {
         return this;
     }
 
+    public String getListId() {
+        return listId;
+    }
+
+    public Date getCreatedOn() {
+        return createdOn;
+    }
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public String getLayoutId() {
+        return layoutId;
+    }
+
+    public Integer getItemCount() {
+        return itemCount;
+    }
+
+    public List<LegendSource> getLegendSources() {
+        return legendSources;
+    }
+
+    public List<ShoppingListCategory> getCategories() {
+        return categories;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    @JsonIgnore
+    public Boolean getStarterList() {
+        return isStarterList;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
 
