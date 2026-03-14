@@ -71,4 +71,8 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
     @Modifying
     @Query("update ShoppingListEntity t set t.isStarterList = ?3 where t.userId = ?1 and t.listId <> ?2")
     void updateStarterList(Long userId, Long listId, boolean isStarterList);
+
+    @Modifying
+    @Query("update ShoppingListEntity t set t.isStarterList = false where t.userId = ?1")
+    void clearStarterListForUser(Long userId);
 }

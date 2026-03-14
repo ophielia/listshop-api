@@ -68,10 +68,12 @@ public interface ItemRepository extends JpaRepository<ListItemEntity, Long> {
     )
     List<ListItemEntity> getItemsChangedAfter(@Param("changedAfter") Date changedAfter, @Param("listId") Long shoppingListId);
 
-    @Query(value = "select * from list_item i " +
-            "where list_id = :listId and tag_id = :tagId",
-            nativeQuery = true)
+    @Query(value = "select i from ListItemEntity i where i.listId = :listId and i.tag.tagId = :tagId")
     ListItemEntity getItemByListAndTag(@Param("listId") Long listId, @Param("tagId") Long tagId);
+
+    @Query(value = "select i from ListItemEntity i where i.listId = :listId and i.tag.tagId = :tagId")
+    @EntityGraph(value = "filledItem")
+    ListItemEntity getFilledItemByListAndTag(@Param("listId") Long listId, @Param("tagId") Long tagId);
 
     @Query(value = """
             select distinct tag_id from list_item i join list_item_details id using (item_id)

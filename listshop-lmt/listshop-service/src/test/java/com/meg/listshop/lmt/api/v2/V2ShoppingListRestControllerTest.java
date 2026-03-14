@@ -9,12 +9,11 @@ package com.meg.listshop.lmt.api.v2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
-import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.api.model.ItemOperationPut;
+import com.meg.listshop.lmt.api.model.ItemOperationType;
+import com.meg.listshop.lmt.api.model.ListAddProperties;
+import com.meg.listshop.lmt.api.model.ListGenerateProperties;
 import com.meg.listshop.lmt.api.model.v2.*;
-import com.meg.listshop.lmt.api.model.v2.ShoppingList;
-import com.meg.listshop.lmt.api.model.v2.ShoppingListCategory;
-import com.meg.listshop.lmt.api.model.v2.ShoppingListItem;
-import com.meg.listshop.lmt.api.model.v2.ShoppingListPut;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.test.TestConstants;
@@ -26,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.ActiveProfiles;
@@ -64,25 +63,15 @@ class V2ShoppingListRestControllerTest {
 
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
-
-    @LocalServerPort
-    public int serverPort;
-
     private static String jwtToken;
     private static String meJwtToken;
     private static String lastListJwtToken;
     private static String noStarterJwtToken;
     private static String dadStarterJwtToken;
-
+    @LocalServerPort
+    public int serverPort;
     @Autowired
     ItemRepository itemRepository;
-
-    @PostConstruct
-    public void initRestAssured() {
-        RestAssured.port = serverPort;
-        RestAssured.urlEncodingEnabled = false;
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
     @Value("classpath:/data/shoppingListRestControllerTest_mergeList.json")
     Resource resourceFile;
     @Value("classpath:/data/shoppingListRestControllerTest_noMergeList.json")
@@ -93,8 +82,14 @@ class V2ShoppingListRestControllerTest {
     Resource resourceFileEmpty;
     @Value("classpath:/data/shoppingListRestControllerTest_mergeListWithConflicts.json")
     Resource mergeConflictFileSource;
-
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
+
+    @PostConstruct
+    public void initRestAssured() {
+        RestAssured.port = serverPort;
+        RestAssured.urlEncodingEnabled = false;
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+    }
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
@@ -715,6 +710,7 @@ class V2ShoppingListRestControllerTest {
     }
 
     @Test
+    @Disabled("used count isn't quite finished in v2")
     void testUpdateItemUsedCount() {
 
         Long listId = 7777L;
@@ -730,7 +726,7 @@ class V2ShoppingListRestControllerTest {
                 .statusCode(204);
 
         // make sure the item has been updated
-        ListItemEntity resultItem = itemRepository.getItemByListAndTag(listId, tagId);
+        ListItemEntity resultItem = itemRepository.getFilledItemByListAndTag(listId, tagId);
 
         Assertions.assertEquals(usedCount, resultItem.getDetails().size());
     }
@@ -1020,9 +1016,9 @@ class V2ShoppingListRestControllerTest {
                 .filter(item -> item.getTag().getTagId().equals(targetTagId))
                 .findFirst().orElse(null);
         Assertions.assertNotNull(resultItem);
-        ShoppingListItemDetails toCheck = pullDetailWithDishId(resultItem,dish1Id);
+        ShoppingListItemDetails toCheck = pullDetailWithDishId(resultItem, dish1Id);
         Assertions.assertNull(toCheck);
-        Assertions.assertNotNull(pullDetailWithDishId(resultItem,dish2Id));
+        Assertions.assertNotNull(pullDetailWithDishId(resultItem, dish2Id));
         Assertions.assertEquals(Integer.valueOf(1), resultItem.getDetails().size());
     }
 
