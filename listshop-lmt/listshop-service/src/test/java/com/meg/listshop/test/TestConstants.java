@@ -16,7 +16,7 @@ public final class TestConstants {
     public static final String USER_1_TOKEN = "token123456";
     public final static String USER_2_NAME = "adduser";
     public static final Long USER_2_ID = 501L;
-    public final static String USER_3_NAME = "me";
+    public final static String USER_3_NAME = "meg@the-list-shop.com";
     public final static String USER_3_TOKEN = "token20user";
     public static final Long USER_3_ID = 20L;
     public final static String USER_4_NAME = "deleteuser";

@@ -1,6 +1,13 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.web.controller;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
+import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.api.controller.MealPlanRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
@@ -14,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,9 +53,10 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<MealPlanListResource> retrieveMealPlans(HttpServletRequest request, Principal principal) {
+    public ResponseEntity<MealPlanListResource> retrieveMealPlans(HttpServletRequest request, Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         List<MealPlanResource> mealPlanList = mealPlanService
-                .getMealPlansForUserName(principal.getName())
+                .getMealPlansForUserName(userDetails.getUsername())
                 .stream()
                 .map(mealPlanEntity -> ModelMapper.toModel(mealPlanEntity, false))
                 .map(MealPlanResource::new)
@@ -61,10 +70,11 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> createMealPlan(HttpServletRequest request, Principal principal, @RequestBody MealPlan input) {
+    public ResponseEntity<Object> createMealPlan(HttpServletRequest request, Authentication authentication, @RequestBody MealPlan input) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         MealPlanEntity mealPlanEntity = ModelMapper.toEntity(input);
 
-        MealPlanEntity result = mealPlanService.createMealPlan(principal.getName(), mealPlanEntity);
+        MealPlanEntity result = mealPlanService.createMealPlan(userDetails.getUsername(), mealPlanEntity);
 
         if (result != null) {
             MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(result, false));
@@ -86,8 +96,9 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> createMealPlanFromTargetProposal(HttpServletRequest request, Principal principal, @PathVariable("proposalId") Long proposalId) {
-        MealPlanEntity result = mealPlanService.createMealPlanFromProposal(principal.getName(), proposalId);
+    public ResponseEntity<Object> createMealPlanFromTargetProposal(HttpServletRequest request, Authentication authentication, @PathVariable("proposalId") Long proposalId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        MealPlanEntity result = mealPlanService.createMealPlanFromProposal(userDetails.getUsername(), proposalId);
 
         if (result != null) {
             MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(result, false));
@@ -108,8 +119,9 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> copyMealPlan(HttpServletRequest request, Principal principal, @PathVariable("mealPlanId") Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException {
-        MealPlanEntity mealPlan = this.mealPlanService.copyMealPlan(principal.getName(), mealPlanId);
+    public ResponseEntity<Object> copyMealPlan(HttpServletRequest request, Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        MealPlanEntity mealPlan = this.mealPlanService.copyMealPlan(userDetails.getUsername(), mealPlanId);
 
         if (mealPlan != null) {
             MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(mealPlan, false));
@@ -122,24 +134,26 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
 
 
     @Override
-    public ResponseEntity<MealPlan> deleteMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) {
-
-        mealPlanService.deleteMealPlan(principal.getName(), mealPlanId);
+    public ResponseEntity<MealPlan> deleteMealPlan(Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        mealPlanService.deleteMealPlan(userDetails.getUsername(), mealPlanId);
         return ResponseEntity.noContent().build();
     }
 
-    //@RequestMapping(method = RequestMethod.POST, value = "/{mealPlanId}/name", produces = "application/json")
-    public ResponseEntity<Object> renameMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId,
+    @Override
+    public ResponseEntity<Object> renameMealPlan(Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId,
                                                  @PathVariable("newName") String newName) throws ObjectNotYoursException, ObjectNotFoundException {
-        this.mealPlanService.renameMealPlan(principal.getName(), mealPlanId, newName);
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        this.mealPlanService.renameMealPlan(userDetails.getUsername(), mealPlanId, newName);
         return ResponseEntity.noContent().build();
     }
 
 
     @Override
-    public ResponseEntity<Object> addDishToMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId,
+    public ResponseEntity<Object> addDishToMealPlan(Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId,
                                                     @PathVariable("dishId") Long dishId) {
-        UserEntity user = userService.getUserByUserEmail(principal.getName());
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        UserEntity user = userService.getUserById(userDetails.getId());
 
         this.mealPlanService.addDishToMealPlan(user.getEmail(), mealPlanId, dishId);
 
@@ -147,8 +161,9 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteDishFromMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId, @PathVariable("dishId") Long dishId) {
-        UserEntity user = userService.getUserByUserEmail(principal.getName());
+    public ResponseEntity<Object> deleteDishFromMealPlan(Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId, @PathVariable("dishId") Long dishId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        UserEntity user = userService.getUserById(userDetails.getId());
 
         this.mealPlanService.deleteDishFromMealPlan(user.getEmail(), mealPlanId, dishId);
 
@@ -156,9 +171,9 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    //@RequestMapping(method=RequestMethod.GET, value = "/{mealPlanId}/ratings", produces = "application/json")
-    public ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) {
-        UserEntity user = userService.getUserByUserEmail(principal.getName());
+    public ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        UserEntity user = userService.getUserById(userDetails.getId());
 
         RatingUpdateInfo ratingInfo = this.mealPlanService.getRatingsForMealPlan(user.getEmail(), mealPlanId);
         RatingUpdateInfoResource ratingResource = new RatingUpdateInfoResource(ratingInfo);

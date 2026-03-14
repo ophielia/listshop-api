@@ -24,7 +24,7 @@ SET row_security = off;
 
 COPY public.users (user_id, email, enabled, last_password_reset_date, password, username, creation_date, last_login) FROM stdin;
 1	rufus	t	\N	$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi	rufus	\N	\N
-20	me	t	\N	$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi	me	\N	\N
+20	meg@the-list-shop.com	t	\N	$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi	meg@the-list-shop.com	\N	\N
 23	carrie	t	\N	$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi	carrie	\N	\N
 26	mom@test.com	t	\N	$2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK	mom@test.com	\N	\N
 29	michelle	t	\N	$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi	michelle	\N	\N
