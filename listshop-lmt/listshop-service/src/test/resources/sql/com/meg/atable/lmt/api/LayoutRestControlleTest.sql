@@ -3,14 +3,18 @@ delete
 from users
 where user_id in (99999);
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username)
-VALUES (99999, 'username@testitytest.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
+VALUES (99999, 'email@email.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
         'email@email.com');
+insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login)
+values (99999, 99999, 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'token99999', now());
 delete
 from users
 where user_id in (101010);
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username)
 VALUES (101010, 'user@emptyuser.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
         'user@emptyuser.com');
+insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login)
+values (101010, 101010, 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'token101010', now());
 
 delete
 from users
@@ -18,6 +22,8 @@ where user_id in (121212);
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username)
 VALUES (121212, 'user@brandnewuser.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
         'user@brandnewuser.com');
+insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login)
+values (121212, 121212, 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'token121212', now());
 
 
 
@@ -64,6 +70,12 @@ INSERT INTO category_tags (category_id, tag_id)
 VALUES (998901, 9991235);
 INSERT INTO category_tags (category_id, tag_id)
 VALUES (998901, 9991236);
+
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
 
 /* tags for automatic assignment */
 INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,

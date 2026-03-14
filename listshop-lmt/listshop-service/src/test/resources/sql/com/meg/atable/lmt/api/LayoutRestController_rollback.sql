@@ -17,9 +17,17 @@ delete from tag where tag_id in (9991234,
                                  1000126,
                                   9991237);
 
+delete from user_devices where user_id in (99999, 101010, 121212);
 delete from users where user_id = 99999;
 delete from users where user_id = 101010;
 delete from users where user_id = 121212;
+
+
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
 
 
 /* tags for automatic assignment */
