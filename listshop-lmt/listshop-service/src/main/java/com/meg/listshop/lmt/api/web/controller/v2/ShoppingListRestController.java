@@ -136,11 +136,13 @@ public class ShoppingListRestController implements V2ShoppingListRestControllerA
 
 
     @Override
-    public ResponseEntity<Object> updateList(HttpServletRequest request, Authentication authentication, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList) {
+    public ResponseEntity<Object> updateList(HttpServletRequest request, Authentication authentication,
+                                             @PathVariable("listId") Long listId,
+                                             @RequestBody ShoppingListPut shoppingList) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         final String message = String.format("Updating list for list [%d]", listId);
         logger.info(message);
-        ShoppingListDTO updateFrom = V2ModelMapper.toDto(shoppingList);
+        ShoppingListDTO updateFrom = V2ModelMapper.toDto(shoppingList, userDetails.getId());
 
         ShoppingListEntity result = shoppingListService.updateList(userDetails.getId(), listId, updateFrom);
         if (result != null) {

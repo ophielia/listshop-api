@@ -29,13 +29,13 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
     List<ShoppingListEntity> findByUserIdAndIsStarterListTrue(Long userid);
 
     @Query(value = """
-            select l.list_id, l.name, l.created_on, l.last_update, l.user_id, l.is_starter_list, 0 
+            select l.list_id, l.name, l.created_on, l.last_update, l.user_id, l.is_starter_list,l.list_layout_id, 0 
             from list l where l.user_id = ?1 and l.is_starter_list = true
             """, nativeQuery = true)
     List<ShoppingListDTO> findDTOByUserIdAndIsStarterListTrue(Long userid);
 
     @Query(value = """
-            select l.list_id, l.name, l.created_on, l.last_update, l.user_id, l.is_starter_list, 0 
+            select l.list_id, l.name, l.created_on, l.last_update, l.user_id, l.is_starter_list, l.list_layout_id,0 
             from list l where l.list_id = ?1
             """, nativeQuery = true)
     ShoppingListDTO findDTOById(Long listId);
@@ -50,12 +50,12 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingListEntity
     List<ShoppingListEntity> findByUserIdOrderByLastUpdateDesc(Long userid);
 
     @Query(value = """
-            select l.list_id, l.name, l.created_on, l.last_update, l.user_id, l.is_starter_list, count(distinct t.item_id)  
+            select l.list_id, l.name, l.created_on, l.last_update, l.user_id, l.is_starter_list, l.list_layout_id,count(distinct t.item_id)  
                     from list l
                     left outer join list_item t on t.list_id = l.list_id
                     where l.user_id = ?1
                     and t.crossed_off is null and t.removed_on is null
-                    group by 1,2,3,4,5,6
+                    group by 1,2,3,4,5,6,7
                     order by l.last_update desc
             """, nativeQuery = true)
     List<ShoppingListDTO> findByUserId(Long userid);

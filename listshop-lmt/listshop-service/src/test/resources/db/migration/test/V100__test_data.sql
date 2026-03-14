@@ -6142,6 +6142,7 @@ COPY public.user_devices (user_device_id, user_id, name, model, os, os_version, 
 1159	26	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token56789	2026-02-27 06:04:39.119000 +00:00
 1160	502	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token502user	2026-02-27 06:04:39.119000 +00:00
 1161	20	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token20user	2026-02-27 06:04:39.119000 +00:00
+1161	34	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token34user	2026-02-27 06:04:39.119000 +00:00
 \.
 
 

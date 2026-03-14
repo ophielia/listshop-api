@@ -73,8 +73,7 @@ class V2ShoppingListRestControllerTest {
     private static String lastListJwtToken;
     private static String noStarterJwtToken;
     private static String dadStarterJwtToken;
-    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype());
+
     @Autowired
     ItemRepository itemRepository;
 
@@ -114,7 +113,7 @@ class V2ShoppingListRestControllerTest {
         meJwtToken = TestConstants.USER_3_TOKEN;
         lastListJwtToken = "token99999"; // this one is not in TestConstants, but used for user with ID 99999
         noStarterJwtToken = TestConstants.USER_4_TOKEN;
-        dadStarterJwtToken = "token34"; // not in TestConstants
+        dadStarterJwtToken = "token34user"; // not in TestConstants
     }
 
 
@@ -144,7 +143,7 @@ class V2ShoppingListRestControllerTest {
                 .contentType(ContentType.JSON)
                 .body(payload)
                 .when()
-                .put("/shoppinglist/" + testId)
+                .put("/v2/shoppinglist/" + testId)
                 .then()
                 .statusCode(200);
 
@@ -152,7 +151,7 @@ class V2ShoppingListRestControllerTest {
         given()
                 .header(TestUtils.authToken(meJwtToken))
                 .when()
-                .get("/shoppinglist/mostrecent")
+                .get("/v2/shoppinglist/mostrecent")
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
@@ -167,7 +166,7 @@ class V2ShoppingListRestControllerTest {
         given()
                 .header(TestUtils.authToken(meJwtToken))
                 .when()
-                .get("/shoppinglist/starter")
+                .get("/v2/shoppinglist/starter")
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
@@ -307,6 +306,17 @@ class V2ShoppingListRestControllerTest {
                 .then()
                 .statusCode(200);
 
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .get("/v2/shoppinglist/" + testId)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("list_id", Matchers.isA(String.class))
+                .body("list_id", Matchers.equalTo(String.valueOf(testId)))
+                .body("is_starter_list", Matchers.equalTo(true));
+
         // now retrieve old starter list and ensure that isStarter is false
         given()
                 .header(TestUtils.authToken(meJwtToken))
@@ -394,10 +404,10 @@ class V2ShoppingListRestControllerTest {
         Assertions.assertNotNull(resultMap.get("1"));
         // 503 - 2
         Assertions.assertNotNull(resultMap.get("12"));
-        Assertions.assertEquals(Optional.of(1).get(), resultMap.get("12").getUsedCount()); // showing 1 in result map
+        Assertions.assertEquals(Optional.of(1).get(), resultMap.get("12").getDetails().size()); // showing 1 in result map
         // 436 - 1
         Assertions.assertNotNull(resultMap.get("436"));
-        Assertions.assertEquals(Integer.valueOf(1), resultMap.get("436").getUsedCount());
+        Assertions.assertEquals(Integer.valueOf(1), resultMap.get("436").getDetails().size());
 
     }
 
@@ -722,7 +732,7 @@ class V2ShoppingListRestControllerTest {
         // make sure the item has been updated
         ListItemEntity resultItem = itemRepository.getItemByListAndTag(listId, tagId);
 
-        Assertions.assertEquals(usedCount, resultItem.getUsedCount());
+        Assertions.assertEquals(usedCount, resultItem.getDetails().size());
     }
 
     @Test
@@ -989,7 +999,7 @@ class V2ShoppingListRestControllerTest {
         Assertions.assertNotNull(resultItem);
         Assertions.assertTrue(resultItem.getSources().contains("DISH" + dish1Id));
         Assertions.assertTrue(resultItem.getSources().contains("DISH" + dish2Id));
-        Assertions.assertEquals(Integer.valueOf(2), resultItem.getUsedCount());
+        Assertions.assertEquals(Integer.valueOf(2), resultItem.getDetails().size());
 
 
         // the remove test
@@ -1013,7 +1023,7 @@ class V2ShoppingListRestControllerTest {
         ShoppingListItemDetails toCheck = pullDetailWithDishId(resultItem,dish1Id);
         Assertions.assertNull(toCheck);
         Assertions.assertNotNull(pullDetailWithDishId(resultItem,dish2Id));
-        Assertions.assertEquals(Integer.valueOf(1), resultItem.getUsedCount());
+        Assertions.assertEquals(Integer.valueOf(1), resultItem.getDetails().size());
     }
 
     private ShoppingListItemDetails pullDetailWithDishId(ShoppingListItem resultItem, String dish1Id) {

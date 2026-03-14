@@ -9,12 +9,13 @@ package com.meg.listshop.lmt.list.v2.impl;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.api.model.v2.MergeRequest;
 import com.meg.listshop.lmt.api.model.v2.MergeResult;
 import com.meg.listshop.lmt.api.model.v2.SourceReferenceType;
 import com.meg.listshop.lmt.data.ItemChangeRepository;
-import com.meg.listshop.lmt.data.entity.*;
+import com.meg.listshop.lmt.data.entity.ListItemEntity;
+import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
+import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.data.pojos.*;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
@@ -22,10 +23,10 @@ import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.list.BaseShoppingListService;
 import com.meg.listshop.lmt.list.LegacyShoppingListService;
 import com.meg.listshop.lmt.list.ListTagStatisticService;
-
 import com.meg.listshop.lmt.list.state.ListItemStateMachine;
 import com.meg.listshop.lmt.list.v2.ShoppingListService;
-import com.meg.listshop.lmt.service.*;
+import com.meg.listshop.lmt.service.LayoutService;
+import com.meg.listshop.lmt.service.MealPlanService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,7 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = ItemProcessingException.class)
 public class ShoppingListServiceImpl extends BaseShoppingListService implements ShoppingListService {
     private static final Logger logger = LoggerFactory.getLogger(ShoppingListServiceImpl.class);
+
     @Autowired
     public ShoppingListServiceImpl(TagService tagService,
                                    DishService dishService,
@@ -57,6 +59,7 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
         super(tagService, dishService, shoppingListRepository, listLayoutService,
                 mealPlanService, itemRepository, itemChangeRepository, listTagStatisticService, listItemStateMachine);
     }
+
     @Override
     public MergeResult mergeFromClient(Long userId, MergeRequest mergeRequest) {
         return null;
@@ -119,20 +122,23 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
                 .filter(detail -> detail.getLinkedListId() != null && !detail.getLinkedListId().equals(listItem.getListId()))
                 .forEach(detail -> sources.add(new SourceDTO(detail.getLinkedListId(), null, SourceReferenceType.LIST.name())));
         return sources.stream()
-                .map(s -> s.getReferenceType().name() + s.getReferenceId() )
+                .map(s -> s.getReferenceType().name() + s.getReferenceId())
                 .collect(Collectors.toSet());
     }
 
     private List<ItemToCategoryDTO> retrieveItemToCategoryMapping(Long listId, Long userLayoutId) {
         List<ItemToCategoryDTO> mappings = new ArrayList<>();
-        mappings.addAll(itemRepository.getUserItemToCategoryMapping(userLayoutId,listId));
-        mappings.addAll(itemRepository.getStandardItemToCategoryMapping(listId));
+        mappings.addAll(itemRepository.getUserItemToCategoryMapping(userLayoutId, listId));
+        Set<Long> tagIds = mappings.stream().map(ItemToCategoryDTO::tagId).collect(Collectors.toSet());
+        itemRepository.getStandardItemToCategoryMapping(listId).stream()
+                .filter(mapping -> !tagIds.contains(mapping.tagId()))
+                .forEach(mapping -> mappings.add(mapping));
         return mappings;
     }
 
     private Map<String, CategoryDTO> retrieveCategoriesForListAndLayout(Long userLayoutId, Long listId) {
         // from repository, get distinct list_categories for all items in list
-        Map<String, CategoryDTO> categoryMap = getUserCategoriesForList(userLayoutId,listId);
+        Map<String, CategoryDTO> categoryMap = getUserCategoriesForList(userLayoutId, listId);
         List<ListLayoutCategoryEntity> standardCategories = listLayoutService.getStandardCategoriesForList(listId);
         standardCategories.stream()
                 .filter(category -> !categoryMap.containsKey(toTrimmedLower(category.getName())))
@@ -149,7 +155,7 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
     }
 
     private Map<String, CategoryDTO> getUserCategoriesForList(Long userLayoutId, Long listId) {
-        List<ListLayoutCategoryEntity> layoutCategories = listLayoutService.getUserCategoriesForList(userLayoutId,listId);
+        List<ListLayoutCategoryEntity> layoutCategories = listLayoutService.getUserCategoriesForList(userLayoutId, listId);
         if (layoutCategories == null || layoutCategories.isEmpty()) {
             return new HashMap<>();
         }

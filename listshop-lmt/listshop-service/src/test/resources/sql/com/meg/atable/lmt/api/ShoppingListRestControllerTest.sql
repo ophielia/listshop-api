@@ -5,6 +5,8 @@ where user_id in (99999);
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username)
 VALUES (99999, 'username@testitytest.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
         'email@email.com');
+insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login)
+    values (99999, 99999, 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'token99999', now());
 insert into list (created_on, list_layout_id, name, user_id, list_id)
 values (now(), 1, 'BaseList', 99999, 99999);
 INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,
@@ -557,6 +559,12 @@ values (90909090, '2022-04-16 03:32:39.320000 +00:00', null, null,  90909090, nu
         now(),
         now())
 ;
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 --details
 insert into list_item_details
 (item_detail_id, item_id, linked_dish_id, used_count)
