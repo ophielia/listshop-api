@@ -1,7 +1,14 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+import com.meg.listshop.lmt.api.model.LayoutCategory;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -32,9 +39,16 @@ public interface LayoutService {
 
     List<ListLayoutCategoryEntity> getUserCategories(String userName);
 
+    List<ListLayoutCategoryEntity> getUserCategoriesForList(Long userLayoutId, Long listId);
+
+    List<ListLayoutCategoryEntity> getStandardCategoriesForList(Long listId);
+
     List<LayoutCategoryDTO> getDefaultCategories();
 
     void addTagToCategory(Long layoutCategoryId, TagEntity tag);
 
     void moveTagToDefaultCategory(Long tagId, Long categoryId);
+
+
+
 }

@@ -812,7 +812,7 @@ return returnval;
         return  new ShoppingListDTO(shoppingList.getList_id(),
                 shoppingList.getName(),
                 null, null, null,
-                shoppingList.getStarterList(),0);
+                shoppingList.getStarterList(),null,0);
     }
 
     public static UserPropertyEntity toEntity(UserProperty property) {

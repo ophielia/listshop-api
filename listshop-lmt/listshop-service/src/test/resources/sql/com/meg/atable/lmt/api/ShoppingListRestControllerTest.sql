@@ -52,10 +52,32 @@ values
     (50999010, null, 'four vegetable soup', 20, '2022-03-12 10:37:26.878000 +00:00', 105,'2019-08-17 21:14:14.773362 +00:00', '17 '),
     (509990100, null, 'crispy cucumber salad', 20, '2021-05-08 09:02:13.478000 +00:00', 105,'2019-08-17 19:44:14.773362 +00:00', '30 '),
     (509990101, null, 'crockpot corn chowder', 20, '2022-03-19 09:50:06.144000 +00:00', 105,'2019-08-17 19:43:14.773362 +00:00', null);
+
+-- list 509992 - copy of list 509990 but with amount information
+insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
+values (now(), 1, 'General', 20, 509992, 'list with amounts', false);
+
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
+                      list_sources, quantity, unit_id, amount_text)
+VALUES (509992, 501, 5099920, now(), null,  1, null, null, 1.5, 1000, '1.5 cups'),
+       (509992, 502, 5099921, now(), null,  1, null, '509991', 2.0, 1011, '2 units'),
+       (509992, 503, 5099922, now(), null,  1, null, null, 1.0, 1001, '1 tablespoon'),
+       (509992, 500, 5099923, now(), null,  1, null, null, 0.5, 1008, '0.5 lb'),
+       (509992, 504, 5099924, now(), null,  1, null, '509991', 1.0, 1041, '1 package'),
+       (509992, 504, 5099925, now(), null,  1, null, '509991', 3.0, 1013, '3 grams');
+
+INSERT INTO list_item_details (item_detail_id, item_id, used_count, linked_list_id, linked_dish_id, quantity, unit_id, raw_entry)
+VALUES  (50999200, 5099920, 1, 7777, null, 1.5, 1000, '1.5 cups'),
+        (50999201, 5099921, 1, 6666, null, 2.0, 1011, '2 units'),
+        (50999202, 5099922, 1, null, 5099901, 1.0, 1001, '1 tablespoon'),
+        (50999203, 5099923, 1, null, 50999010, 0.5, 1008, '0.5 lb'),
+        (50999204, 5099924, 1, null, 509990100, 1.0, 1041, '1 package'),
+        (50999205, 5099925, 1, null, 509990101, 3.0, 1013, '3 grams');
+
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
                       list_sources)
 VALUES (509990, 501, 509990, now(), null,  1, null, null),
-       (509990, 502, 509991, now(), null,  1, null, '509991'),
+       (509990, 502, 509991, now(), now(),  1, null, '509991'),
        (509990, 503, 509992, now(), null,  1, null, null),
        (509990, 500, 509993, now(), null,  1, null, null),
        (509990, 504, 509994, now(), null,  1, null, '509991'),
@@ -446,6 +468,12 @@ values (11000001111, 11000001, 109, 1),
        (22110011111, 22110011, 109, 1),
        (22110012111, 22110012, 109, 1),
        (22110013111, 22110013, 109, 1);
+
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
 
 -- my user layout list
 

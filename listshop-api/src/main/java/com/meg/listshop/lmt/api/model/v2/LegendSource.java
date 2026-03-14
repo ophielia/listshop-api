@@ -6,14 +6,16 @@
 
 package com.meg.listshop.lmt.api.model.v2;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LegendSource {
 
     @JsonProperty("list_id")
     private String referenceId;
     private String display;
-    @JsonProperty("dish_id")
+    @JsonProperty("source_type")
     private String referenceType;
 
 
@@ -22,7 +24,7 @@ public class LegendSource {
         // empty constructor for jackson
     }
 
-    public LegendSource(Long referenceId, String referenceType, String display) {
+    public LegendSource(Long referenceId, String display, String referenceType) {
         this.referenceId = String.valueOf(referenceId);
         this.referenceType = referenceType;
         this.display = display;

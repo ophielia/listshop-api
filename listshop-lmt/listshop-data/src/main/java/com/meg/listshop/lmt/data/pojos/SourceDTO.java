@@ -19,6 +19,19 @@ public class SourceDTO {
         this.name = name;
     }
 
+
+   /* public SourceDTO(Long referenceId, String name,SourceReferenceType sourceReferenceType) {
+        this.referenceId = referenceId;
+        this.name = name;
+        this.sourceReferenceType = sourceReferenceType;
+    }*/
+
+    public SourceDTO(Object referenceId, String name, String sourceReferenceType) {
+        this.referenceId = referenceId instanceof Long ? (Long) referenceId : ((Number) referenceId).longValue();
+        this.name = name;
+        this.sourceReferenceType = sourceReferenceType != null ? SourceReferenceType.valueOf(sourceReferenceType) : null;
+    }
+
     public void setReferenceType(SourceReferenceType sourceReferenceType) {
         this.sourceReferenceType = sourceReferenceType;
     }

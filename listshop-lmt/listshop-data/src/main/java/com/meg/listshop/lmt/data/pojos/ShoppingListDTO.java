@@ -26,20 +26,38 @@ public class ShoppingListDTO {
     private List<SourceDTO> sources;
     private Map<Long, String> unitMapping;
 
-    public ShoppingListDTO(Long listId,
+    public ShoppingListDTO(Object listId,
                            String name,
-                           Date createdOn,
-                           Date lastUpdate,
-                           Long userId,
-                           boolean isStarterList,
-                           int itemCount) {
-        this.listId = listId;
+                           Object createdOn,
+                           Object lastUpdate,
+                           Object userId,
+                           Object isStarterList,
+                           Object layoutId,
+                           Object itemCount) {
+        this.listId = listId instanceof Long ? (Long) listId : ((Number) listId).longValue();
         this.name = name;
-        this.createdOn = createdOn;
-        this.lastUpdate = lastUpdate;
-        this.userId = userId;
-        this.isStarterList = isStarterList;
-        this.itemCount = itemCount;
+        this.createdOn = castToDate(createdOn);
+        this.lastUpdate = castToDate(lastUpdate);
+        this.userId = userId instanceof Long ? (Long) userId : ((Number) userId).longValue();
+        this.isStarterList = isStarterList instanceof Boolean ? (Boolean) isStarterList : ((Number) isStarterList).intValue() != 0;
+        this.layoutId = layoutId instanceof Long ? (Long) layoutId : ((Number) layoutId).longValue();
+        this.itemCount = itemCount instanceof Integer ? (Integer) itemCount : ((Number) itemCount).intValue();
+    }
+
+    private Date castToDate(Object object) {
+        if (object == null) {
+            return null;
+        }
+        if (object instanceof Date) {
+            return (Date) object;
+        }
+        if (object instanceof java.time.Instant) {
+            return Date.from((java.time.Instant) object);
+        }
+        if (object instanceof java.sql.Timestamp) {
+            return new Date(((java.sql.Timestamp) object).getTime());
+        }
+        return null;
     }
 
     public ShoppingListDTO(ShoppingListEntity shoppingList, List<CategoryDTO> categories, List<SourceDTO> sources, Map<Long, String> unitMapping) {

@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -148,6 +154,17 @@ public class LayoutServiceImpl implements LayoutService {
 
         // return categories for this layout
         return getAvailableCategoriesForLayout(userDefaultLayout);
+    }
+
+    @Override
+    public List<ListLayoutCategoryEntity> getUserCategoriesForList(Long userLayoutId, Long listId) {
+        return listLayoutRepository.findUserListCategoriesForList(userLayoutId, listId);
+
+    }
+
+    @Override
+    public List<ListLayoutCategoryEntity> getStandardCategoriesForList(Long listId) {
+        return listLayoutRepository.findStandardCategoriesForList( listId);
     }
 
     @Override

@@ -491,7 +491,7 @@ public class BaseShoppingListService  {
 
     
 
-    private Long determineUserLayout(Long userId, Long listLayoutId) {
+    protected Long determineUserLayout(Long userId, Long listLayoutId) {
         Optional<ListLayoutEntity> layout;
         if (listLayoutId == null) {
             layout = Optional.ofNullable(listLayoutService.getDefaultUserLayout(userId));

@@ -108,7 +108,7 @@ public class ServiceTestUtils {
 
 
     public static ShoppingListDTO buildShoppingListDTO(Long listId, Long userId) {
-        return new ShoppingListDTO(listId, null, null, null, userId, false, 1);
+        return new ShoppingListDTO(listId, null, null, null, userId, false, null,1);
     }
 
     public static UserEntity buildUser(Long userId, String userName) {

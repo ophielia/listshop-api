@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.entity;
 
 import com.meg.listshop.common.data.entity.UnitEntity;
@@ -12,6 +18,15 @@ import java.util.*;
  */
 @Entity
 @Table(name = "list_item")
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "filledItem",
+                attributeNodes = {
+                        @NamedAttributeNode(value = "details"),
+                        @NamedAttributeNode(value = "tag")
+                }
+        )
+})
 public class ListItemEntity {
 
     @Id

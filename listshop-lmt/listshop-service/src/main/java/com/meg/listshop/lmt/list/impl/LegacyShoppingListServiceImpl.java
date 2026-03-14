@@ -579,7 +579,7 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
         return result;
     }
 
-    private Long determineUserLayout(Long userId, Long listLayoutId) {
+    protected Long determineUserLayout(Long userId, Long listLayoutId) {
         Optional<ListLayoutEntity> layout;
         if (listLayoutId == null) {
             layout = Optional.ofNullable(listLayoutService.getDefaultUserLayout(userId));
