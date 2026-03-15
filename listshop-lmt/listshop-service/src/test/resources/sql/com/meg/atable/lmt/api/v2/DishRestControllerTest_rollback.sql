@@ -34,6 +34,6 @@ delete
 from dish
 where dish_id in ( 9999992, 9999993 );
 
-delete from user_devices where user_id = 20;
+
 
 
