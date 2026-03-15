@@ -6,19 +6,13 @@
 
 package com.meg.listshop.lmt.api.model.v2;
 
-//import com.meg.listshop.lmt.api.model.*;
-//import com.meg.listshop.lmt.api.model.*;
-//import com.meg.listshop.lmt.api.model.LegendSource;
-
 import com.meg.listshop.common.FractionUtils;
 import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.api.model.Suggestion;
 import com.meg.listshop.lmt.api.model.TagType;
-import com.meg.listshop.lmt.data.entity.DishEntity;
-import com.meg.listshop.lmt.data.entity.DishItemEntity;
-import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.*;
+import org.checkerframework.checker.units.qual.N;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,9 +119,15 @@ public class V2ModelMapper {
                 .withUpdated(dto.getLastUpdate())
                 .withItemCount(dto.getItemCount())
                 .withUserId(String.valueOf(dto.getUserId()))
-                .withIsStarterList(dto.isStarterList());
+                .withIsStarterList(toBoolean(dto.isStarterList()));
     }
 
+    private static boolean toBoolean(Boolean value) {
+        if (value == null) {
+            return false;
+        }
+        return value;
+    }
     public static ShoppingList toModel(ShoppingListDTO listDTO) {
         // unit map
         Map<Long, String> unitMap = listDTO.getUnitMapping();
@@ -397,5 +397,31 @@ public class V2ModelMapper {
                 shoppingList.getStarterList(),
                 null,
                 0);
+    }
+
+    public static ListLayout toModel(ListLayoutEntity listLayoutEntity) {
+        List<ListLayoutCategory> categories = new ArrayList<>();
+        if (listLayoutEntity.getCategories() != null) {
+            categories = listLayoutEntity.getCategories().stream()
+                    .map(V2ModelMapper::toModel)
+                    .toList();
+        }
+        return new ListLayout(listLayoutEntity.getId())
+                .withDefault(toBoolean(listLayoutEntity.getDefault()))
+                .withUserId(String.valueOf(listLayoutEntity.getUserId()))
+                .withName(listLayoutEntity.getName())
+                .withCategories(categories);
+    }
+
+    public static ListLayoutCategory toModel(ListLayoutCategoryEntity categoryEntity) {
+        List<NestedTag> tags = categoryEntity.getTags().stream()
+                .map(V2ModelMapper::toNestedTagModel)
+                .toList();
+        ListLayoutCategory category =  new ListLayoutCategory(categoryEntity.getId());
+                category.setName(categoryEntity.getName());
+                category.setDefault(toBoolean(categoryEntity.getDefault()));
+                category.setTags(tags);
+                category.setDisplayOrder(categoryEntity.getDisplayOrder());
+                return category;
     }
 }

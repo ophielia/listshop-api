@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.tag;
 
 import com.meg.listshop.lmt.api.exception.BadParameterException;
@@ -71,8 +77,7 @@ public interface TagService {
 
     List<TagEntity> getReplacedTagsFromIds(Set<Long> tagKeys);
 
-
-    List<TagInfoDTO> getTagInfoList(List<Long> tagIds);
+    TagInfoDTO getTagInfoList(Long userId, Long tagId);
 
     List<TagInfoDTO> getTagInfoList(Long userId, List<TagType> tagTypes);
 

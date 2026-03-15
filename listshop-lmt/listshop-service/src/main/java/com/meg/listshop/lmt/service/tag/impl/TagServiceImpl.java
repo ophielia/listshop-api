@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 /**
  * Created by margaretmartin on 13/05/2017.
  */
@@ -239,10 +245,15 @@ public class TagServiceImpl implements TagService {
         return dbTag;
     }
 
-    public List<TagInfoDTO> getTagInfoList(List<Long> tagIds) {
+    public TagInfoDTO getTagInfoList(Long userId, Long tagId) {
         TagSearchCriteria criteria = new TagSearchCriteria();
-        criteria.setTagIds(tagIds);
-        return getTagInfoList(criteria);
+        criteria.setTagIds(Collections.singletonList(tagId));
+        criteria.setUserId(userId);
+        List<TagInfoDTO> allFound = getTagInfoList(criteria);
+        if (allFound == null || allFound.isEmpty()) {
+            return null;
+        }
+        return allFound.get(0);
     }
 
     public List<TagInfoDTO> getTagInfoList(Long userId, List<TagType> tagTypes) {

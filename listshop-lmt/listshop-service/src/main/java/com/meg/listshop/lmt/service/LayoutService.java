@@ -8,7 +8,6 @@ package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.model.LayoutCategory;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -49,6 +48,7 @@ public interface LayoutService {
 
     void moveTagToDefaultCategory(Long tagId, Long categoryId);
 
+    List<ListLayoutEntity> getAllLayoutsV2(Long userId);
 
-
+    ListLayoutCategoryEntity getDefaultCategoryForTag(Long userDetailsId, Long tagId);
 }

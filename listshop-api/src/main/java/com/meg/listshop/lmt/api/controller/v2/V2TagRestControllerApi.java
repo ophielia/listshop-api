@@ -37,7 +37,7 @@ public interface V2TagRestControllerApi {
 
 
     @GetMapping( value = "{tagId}", produces = "application/json")
-    ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId);
+    ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId,Authentication authentication);
 
     @PutMapping(value = "{tagId}", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> updateTag(Authentication authentication, HttpServletRequest request, @PathVariable("tagId") Long tagId,

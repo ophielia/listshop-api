@@ -97,7 +97,7 @@ class UserRestControllerTest {
         final String password = "UGFzc3cwcmQ=";
         User user = new User(username, email);
         user.setPassword(password);
-        final String userjson = json(user);
+        final String userjson = jacksonJson(user);
 
         given()
                 .contentType(ContentType.JSON)
@@ -124,7 +124,7 @@ class UserRestControllerTest {
         PutCreateUser createPayload = new PutCreateUser();
         createPayload.setUser(user);
         createPayload.setDeviceInfo(deviceInfo);
-        String payload = json(createPayload);
+        String payload = jacksonJson(createPayload);
 
         given()
                 .contentType(ContentType.JSON)
@@ -147,7 +147,7 @@ class UserRestControllerTest {
         PostTokenRequest tokenRequest = new PostTokenRequest();
         tokenRequest.setTokenType(TokenType.PasswordReset.toString());
         tokenRequest.setTokenParameter(TestConstants.USER_1_EMAIL);
-        String payload = json(tokenRequest);
+        String payload = jacksonJson(tokenRequest);
 
         // make call - ensure 200 as return code
         String url = "/user/token/tokenrequest";
@@ -179,7 +179,7 @@ class UserRestControllerTest {
         postToken.setTokenType(TokenType.PasswordReset.toString());
         postToken.setTokenParameter("new password");
         postToken.setToken("token_password_reset");
-        String payload = json(postToken);
+        String payload = jacksonJson(postToken);
 
         // make call - ensure 200 as return code
         String url = "/user/token";
@@ -208,7 +208,7 @@ class UserRestControllerTest {
         postToken.setTokenType(TokenType.PasswordReset.toString());
         // no password in post token
         postToken.setToken("token_password_reset");
-        String payload = json(postToken);
+        String payload = jacksonJson(postToken);
 
         // make call - ensure 400 as return code
         String url = "/user/token";
@@ -232,7 +232,7 @@ class UserRestControllerTest {
         // no token type
         postToken.setTokenParameter("new password");
         postToken.setToken("token_password_reset");
-        String payload = json(postToken);
+        String payload = jacksonJson(postToken);
 
         // make call - ensure 400 as return code
         String url = "/user/token";
@@ -256,7 +256,7 @@ class UserRestControllerTest {
         postToken.setTokenType("PasswordReset");
         postToken.setTokenParameter("new password");
         postToken.setToken("token_password_resetnotfound");
-        String payload = json(postToken);
+        String payload = jacksonJson(postToken);
 
         // make call - ensure 400 as return code
         String url = "/user/token";
@@ -280,7 +280,7 @@ class UserRestControllerTest {
         postToken.setTokenType("PasswordReset");
         postToken.setTokenParameter("new password");
         postToken.setToken("token_password_reset_expired");
-        String payload = json(postToken);
+        String payload = jacksonJson(postToken);
 
         // make call - ensure 400 as return code
         String url = "/user/token";
@@ -313,7 +313,7 @@ class UserRestControllerTest {
         var postChangePassword = new PostChangePassword();
         postChangePassword.setNewPassword(newPasswordEncoded);
         postChangePassword.setOriginalPassword(originalPasswordEncoded);
-        String payload = json(postChangePassword);
+        String payload = jacksonJson(postChangePassword);
 
         // make call - ensure 200 as return code
         String url = "/user/password";
@@ -355,7 +355,7 @@ class UserRestControllerTest {
         var postChangePassword = new PostChangePassword();
         postChangePassword.setNewPassword(newPasswordEncoded);
         postChangePassword.setOriginalPassword(originalPasswordEncoded);
-        String payload = json(postChangePassword);
+        String payload = jacksonJson(postChangePassword);
 
         // make call - ensure 200 as return code
         String url = "/user/password";
@@ -419,7 +419,7 @@ class UserRestControllerTest {
         parameters.add("name@whichdoesntexist.com");
         payload.setParameters(parameters);
 
-        String payloadAsString = json(payload);
+        String payloadAsString = jacksonJson(payload);
 
         // make call - ensure 200 as return code
         String url = "/user/name";
@@ -440,7 +440,7 @@ class UserRestControllerTest {
         parameters.add(TestConstants.USER_5_NAME);
         payloadForExistingUser.setParameters(parameters);
 
-        payloadAsString = json(payloadForExistingUser);
+        payloadAsString = jacksonJson(payloadForExistingUser);
         resultString = given()
                 .contentType(ContentType.JSON)
                 .when()
@@ -646,11 +646,6 @@ class UserRestControllerTest {
 
     }
 
-
-    private String json(Object o) throws IOException {
-        Gson mapper = new Gson();
-        return mapper.toJson(o);
-    }
 
     private String jacksonJson(Object payload) throws IOException {
         ObjectMapper mapper = new ObjectMapper();

@@ -5444,6 +5444,7 @@ COPY public.shadow_tags (shadow_tag_id, dish_id, tag_id) FROM stdin;
 --
 
 COPY public.tag_relation (tag_relation_id, child_tag_id, parent_tag_id) FROM stdin;
+238236	333333	430
 238	126	393
 239	163	393
 240	20	393

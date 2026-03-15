@@ -811,7 +811,7 @@ return returnval;
 
         return  new ShoppingListDTO(shoppingList.getList_id(),
                 shoppingList.getName(),
-                null, null, null,
+                null, null, 0,
                 shoppingList.getStarterList(),null,0);
     }
 

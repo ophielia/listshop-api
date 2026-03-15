@@ -96,18 +96,27 @@ public class TagRestController implements V2TagRestControllerApi {
 
     }
 
-    public ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId) {
+    public ResponseEntity<Tag> readTag(HttpServletRequest request, @PathVariable("tagId") Long tagId,Authentication authentication) {
+        CustomUserDetails userDetails = getUserDetails(authentication);
+        Long userId = userDetails != null ? userDetails.getId() : null;
         // invalid dishId - returns invalid id supplied - 400
-        var tagInfoList = this.tagService
-                .getTagInfoList(Collections.singletonList(tagId));
+        var tagInfo = this.tagService
+                .getTagInfoList(userId,tagId);
 
-        if (tagInfoList == null || tagInfoList.isEmpty()) {
+        if (tagInfo == null ) {
             return ResponseEntity.notFound().build();
         }
-        var tagModel = V2ModelMapper.toModel(tagInfoList.get(0));
+        var tagModel = V2ModelMapper.toModel(tagInfo);
 
         return new ResponseEntity<>(tagModel, HttpStatus.OK);
 
+    }
+
+    private CustomUserDetails getUserDetails(Authentication authentication) {
+        if (authentication == null) {
+            return null;
+        }
+        return (CustomUserDetails) authentication.getPrincipal();
     }
 
     @PutMapping(value = "{tagId}", produces = "application/json", consumes = "application/json")

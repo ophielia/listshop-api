@@ -101,6 +101,31 @@ public class LayoutServiceImpl implements LayoutService {
     }
 
     @Override
+    public List<ListLayoutEntity> getAllLayoutsV2(Long userId) {
+
+        List<ListLayoutEntity> layouts = new ArrayList<>();
+        layouts.add(getFilledStandardLayout(userId));
+        if (userId != null) {
+            layouts.addAll(listLayoutRepository.getUserLayouts(userId));
+        }
+
+        return layouts;
+    }
+
+    @Override
+    public ListLayoutCategoryEntity getDefaultCategoryForTag(Long userId, Long tagId) {
+        // retrieve user default for tag
+        if (userId != null) {
+            ListLayoutCategoryEntity userDefault = categoryRepository.getDefaultCategoryForTagAndUser(userId, tagId);
+            if (userDefault != null) {
+                return userDefault;
+            }
+        }
+        // retrieve standard default for tag
+        return categoryRepository.getStandardCategoryForTag(tagId);
+    }
+
+    @Override
     public void assignDefaultCategoryToTag(List<TagEntity> siblings, TagEntity tagToAssign) {
         Long idToAssign = null;
         if (!siblings.isEmpty()) {
@@ -164,7 +189,7 @@ public class LayoutServiceImpl implements LayoutService {
 
     @Override
     public List<ListLayoutCategoryEntity> getStandardCategoriesForList(Long listId) {
-        return listLayoutRepository.findStandardCategoriesForList( listId);
+        return listLayoutRepository.findStandardCategoriesForList(listId);
     }
 
     @Override
@@ -283,7 +308,7 @@ public class LayoutServiceImpl implements LayoutService {
         if (tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
             return;
         }
-        doAddCategory(categoryEntity,tag);
+        doAddCategory(categoryEntity, tag);
 
     }
 

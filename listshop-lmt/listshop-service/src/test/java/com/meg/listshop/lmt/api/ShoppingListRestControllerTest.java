@@ -112,7 +112,7 @@ class ShoppingListRestControllerTest {
         meJwtToken = TestConstants.USER_3_TOKEN;
         lastListJwtToken = "token99999"; // this one is not in TestConstants, but used for user with ID 99999
         noStarterJwtToken = TestConstants.USER_4_TOKEN;
-        dadStarterJwtToken = "token34"; // not in TestConstants
+        dadStarterJwtToken = "token34user"; // not in TestConstants
     }
 
 
