@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.api;
@@ -20,6 +19,10 @@ import com.meg.listshop.lmt.data.repository.TagRelationRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.LayoutService;
 import com.meg.listshop.test.TestConstants;
+import com.meg.listshop.test.TestUtils;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import jakarta.annotation.PostConstruct;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,15 +32,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -48,19 +48,14 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static io.restassured.RestAssured.given;
 
 /**
  * Created by margaretmartin on 13/05/2017.
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = Application.class)
-@WebAppConfiguration
+@SpringBootTest(classes = Application.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @AutoConfigureJsonTesters
 @ActiveProfiles("test")
@@ -69,6 +64,9 @@ class TagRestControllerTest {
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
+    @LocalServerPort
+    public int serverPort;
+
     private static UserDetails userDetails;
     @Autowired
     private
@@ -76,24 +74,23 @@ class TagRestControllerTest {
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype());
 
-    private MockMvc mockMvc;
     @Autowired
     private TagRepository tagRepository;
     @Autowired
     private LayoutService listLayoutService;
     @Autowired
     private TagRelationRepository tagRelationRepository;
-    @Autowired
-    private WebApplicationContext webApplicationContext;
+
+    @PostConstruct
+    public void initRestAssured() {
+        RestAssured.port = serverPort;
+        RestAssured.urlEncodingEnabled = false;
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+    }
 
 
     @BeforeEach
-    @WithMockUser
     public void setup() throws Exception {
-
-        this.mockMvc = webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
 
 
         userDetails = new CustomUserDetails(TestConstants.USER_1_ID,
@@ -111,11 +108,15 @@ class TagRestControllerTest {
     void readSingleTag() throws Exception {
         Long testId = TestConstants.TAG_1_ID;
         String url = "/tag/" + testId;
-        mockMvc.perform(get(url))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.tag.tag_id", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.tag.tag_id").value(testId));
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("tag.tag_id", Matchers.isA(String.class))
+                .body("tag.tag_id", Matchers.equalTo(testId.toString()));
 
     }
 
@@ -127,11 +128,14 @@ class TagRestControllerTest {
         newtag.tagType(TagType.Rating.name());
         String tagJson = json(newtag);
 
-        this.mockMvc.perform(post("/tag")
-                        .contentType(contentType)
-                        .with(user(userDetails))
-                        .content(tagJson))
-                .andExpect(status().isCreated());
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(tagJson)
+                .when()
+                .post("/tag")
+                .then()
+                .statusCode(201);
     }
 
     @Test
@@ -142,36 +146,48 @@ class TagRestControllerTest {
         newtag.tagType(TagType.Rating.name());
         String tagJson = json(newtag);
 
-        MvcResult result = this.mockMvc.perform(post("/tag")
-                        .contentType(contentType)
-                        .with(user(userDetails))
-                        .content(tagJson))
-                .andExpect(status().isCreated())
-                .andReturn();
+        String location = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(tagJson)
+                .when()
+                .post("/tag")
+                .then()
+                .statusCode(201)
+                .extract()
+                .header("Location");
 
-        Assertions.assertNotNull(result);
-        List<String> headers = result.getResponse().getHeaders("Location");
-        String[] locationParts = headers.get(0).split("/");
+        Assertions.assertNotNull(location);
+        String[] locationParts = location.split("/");
         String id = locationParts[locationParts.length - 1];
         Assertions.assertNotNull(id);
 
         String fetchUrl = "/tag/" + id;
-        MvcResult tagResult = mockMvc.perform(get(fetchUrl))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.tag.user_id").value(TestConstants.USER_1_ID))
-                .andReturn();
+        String resultJson = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .when()
+                .get(fetchUrl)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("tag.user_id", Matchers.equalTo(TestConstants.USER_1_ID.toString()))
+                .extract()
+                .asString();
 
-        String resultJson = tagResult.getResponse().getContentAsString();
         TagResource resourceResult = objectMapper.readValue(resultJson, TagResource.class);
         Assertions.assertNotNull(resourceResult);
 
         // verify that tag with found id belongs to default group
-        MvcResult allResultForParent = this.mockMvc.perform(get("/tag/user")
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andReturn();
-        String resultList = allResultForParent.getResponse().getContentAsString();
+        String resultList = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .when()
+                .get("/tag/user")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract()
+                .asString();
+
         TagListResource afterList = objectMapper.readValue(resultList, TagListResource.class);
         Map<String, Tag> tagMap = afterList.getEmbeddedList().getTagResourceList().stream()
                 .map(TagResource::getTag)
@@ -190,25 +206,33 @@ class TagRestControllerTest {
         newtag.tagType(TagType.Ingredient.name());
         String tagJson = json(newtag);
 
-        MvcResult result = this.mockMvc.perform(post("/tag?asStandard=true")
-                        .contentType(contentType)
-                        .with(user(userDetails))
-                        .content(tagJson))
-                .andExpect(status().isCreated())
-                .andReturn();
+        String location = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(tagJson)
+                .when()
+                .post("/tag?asStandard=true")
+                .then()
+                .statusCode(201)
+                .extract()
+                .header("Location");
 
-        Assertions.assertNotNull(result);
-        List<String> headers = result.getResponse().getHeaders("Location");
-        String[] locationParts = headers.get(0).split("/");
+        Assertions.assertNotNull(location);
+        String[] locationParts = location.split("/");
         String id = locationParts[locationParts.length - 1];
         Assertions.assertNotNull(id);
 
         // verify that tag with found id belongs to default group
-        MvcResult allResultForParent = this.mockMvc.perform(get("/tag/user?asStandard=true")
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andReturn();
-        String resultList = allResultForParent.getResponse().getContentAsString();
+        String resultList = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .when()
+                .get("/tag/user?asStandard=true")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract()
+                .asString();
+
         TagListResource afterList = objectMapper.readValue(resultList, TagListResource.class);
         Map<String, Tag> tagMap = afterList.getEmbeddedList().getTagResourceList().stream()
                 .map(TagResource::getTag)
@@ -229,33 +253,43 @@ class TagRestControllerTest {
         tag = tag.tagType(TagType.Rating.name());
         String tagString = json(tag);
 
-        MvcResult result = this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(tagString))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
+        String locationValue = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(tagString)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(200)).and(Matchers.lessThan(300))))
+                .extract()
+                .header("Location");
 
         // affirm that newly created tag has user_id matching user_details
         // and parent id matching parent_tag_id_2
         // get newly created id
-        String locationValue = result.getResponse().getHeader("Location");
         String idString = locationValue.substring(locationValue.lastIndexOf("/") + 1);
         Long newId = Long.valueOf(idString);
 
         String fetchUrl = "/tag/" + newId;
-        mockMvc.perform(get(fetchUrl))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.tag.user_id").value(TestConstants.USER_1_ID));
+        given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .when()
+                .get(fetchUrl)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("tag.user_id", Matchers.equalTo(TestConstants.USER_1_ID.toString()));
 
         // now, check that parent id is correct"
-        MvcResult allResultForParent = this.mockMvc.perform(get("/tag/user")
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andReturn();
+        String resultJson = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .when()
+                .get("/tag/user")
+                .then()
+                .statusCode(200)
+                .extract()
+                .asString();
 
-        String resultJson = allResultForParent.getResponse().getContentAsString();
         TagListResource afterList = objectMapper.readValue(resultJson, TagListResource.class);
         Optional<TagResource> resultTag = afterList.getEmbeddedList().getTagResourceList().stream()
                 .filter(t -> t.getTag().getId().equals(idString))
@@ -274,28 +308,34 @@ class TagRestControllerTest {
         tag = tag.tagType(TagType.Ingredient.name());
         String tagString = json(tag);
 
-        MvcResult result = this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(tagString))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
+        String locationValue = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(tagString)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(200)).and(Matchers.lessThan(300))))
+                .extract()
+                .header("Location");
 
         // get newly created id
-        String locationValue = result.getResponse().getHeader("Location");
         String idString = locationValue.substring(locationValue.lastIndexOf("/") + 1);
         Long newId = Long.valueOf(idString);
 
         // now, try to recreate the same tag
-        MvcResult resultRecreate = this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(tagString))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
+        String recreateLocationValue = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(tagString)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(200)).and(Matchers.lessThan(300))))
+                .extract()
+                .header("Location");
 
         // get the resulting id
-        String recreateLocationValue = resultRecreate.getResponse().getHeader("Location");
         String recreateIdString = recreateLocationValue.substring(recreateLocationValue.lastIndexOf("/") + 1);
         Long recreatedId = Long.valueOf(recreateIdString);
 
@@ -310,26 +350,32 @@ class TagRestControllerTest {
         tag = tag.tagType(TagType.Rating.name());
         String tagString = json(tag);
 
-        MvcResult result = this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(tagString))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
+        String locationValue = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(tagString)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(200)).and(Matchers.lessThan(300))))
+                .extract()
+                .header("Location");
 
         // affirm that newly created tag has user_id matching user_details
         // and parent id matching parent_tag_id_2
         // get newly created id
-        String locationValue = result.getResponse().getHeader("Location");
         String idString = locationValue.substring(locationValue.lastIndexOf("/") + 1);
 
         // now, check that parent id is correct"
-        MvcResult allResultForParent = this.mockMvc.perform(get("/tag/user")
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andReturn();
+        String resultJson = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .when()
+                .get("/tag/user")
+                .then()
+                .statusCode(200)
+                .extract()
+                .asString();
 
-        String resultJson = allResultForParent.getResponse().getContentAsString();
         TagListResource afterList = objectMapper.readValue(resultJson, TagListResource.class);
         Optional<TagResource> resultTag = afterList.getEmbeddedList().getTagResourceList().stream()
                 .filter(t -> t.getTag().getId().equals(idString))
@@ -349,15 +395,18 @@ class TagRestControllerTest {
         tag = tag.tagType(TagType.Ingredient.name());
         String tagString = json(tag);
 
-        MvcResult result = this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(tagString))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
+        String locationValue = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(tagString)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(200)).and(Matchers.lessThan(300))))
+                .extract()
+                .header("Location");
 
         // get newly created id
-        String locationValue = result.getResponse().getHeader("Location");
         String idString = locationValue.substring(locationValue.lastIndexOf("/") + 1);
 
         // recreate same tag
@@ -365,13 +414,16 @@ class TagRestControllerTest {
         recreateTag = recreateTag.tagType(TagType.Ingredient.name());
         String recreateTagString = json(recreateTag);
 
-        MvcResult recreateResult = this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(recreateTagString))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-        String recreateLocation = result.getResponse().getHeader("Location");
+        String recreateLocation = given()
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
+                .contentType(ContentType.JSON)
+                .body(recreateTagString)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(200)).and(Matchers.lessThan(300))))
+                .extract()
+                .header("Location");
         String recreateId = recreateLocation.substring(recreateLocation.lastIndexOf("/") + 1);
 
         Assertions.assertEquals(idString, recreateId);

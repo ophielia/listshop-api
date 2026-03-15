@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.common.FlatStringUtils;
@@ -12,9 +18,12 @@ import com.meg.listshop.lmt.service.proposal.*;
 import com.meg.listshop.test.TestConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,7 +45,7 @@ import static org.mockito.ArgumentMatchers.any;
 /**
  * Created by margaretmartin on 03/06/2018.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest()
 @Testcontainers
 @ActiveProfiles("test")
@@ -49,15 +58,15 @@ class ProposalGeneratorServiceImplTest {
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
-    @MockBean
+    @Mock
     @Qualifier(value = "newSearch")
     private ProposalProcessor newSearchProcessor;
 
-    @MockBean
+    @Mock
     @Qualifier(value = "refreshSearch")
     private ProposalProcessor refreshProcessor;
 
-    @MockBean
+    @Mock
     @Qualifier(value = "fillInSearch")
     private ProposalProcessor fillInProcessor;
 

@@ -42,7 +42,7 @@ COPY public.users (user_id, email, enabled, last_password_reset_date, password, 
 
 COPY public.authority (authority_id, name, user_id) FROM stdin;
 1	ROLE_USER	1
-2	ROLE_USER	20
+2	ROLE_ADMIN	20
 3	ROLE_USER	23
 4	ROLE_USER	26
 5	ROLE_USER	500

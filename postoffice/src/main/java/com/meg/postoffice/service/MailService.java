@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.postoffice.service;
@@ -17,11 +16,9 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-
 
 import java.io.IOException;
 
