@@ -6,6 +6,7 @@
 
 package com.meg.listshop.lmt.api.model.v2;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
@@ -53,6 +54,7 @@ public class ListLayout {
         return this;
     }
 
+    @JsonIgnore
     public boolean isDefault() {
         return isDefault;
     }

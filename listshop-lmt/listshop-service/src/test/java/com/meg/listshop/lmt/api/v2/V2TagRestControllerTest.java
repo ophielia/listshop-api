@@ -61,7 +61,7 @@ class V2TagRestControllerTest {
 
     @Test
     void readSingleTag() {
-        Long testId = 128L;
+        Long testId = 67L;
         String url = "/v2/tag/" + testId;
         String json = given()
                 .header(TestUtils.authToken(token))

@@ -9,6 +9,10 @@ package com.meg.listshop.lmt.api.v2;
 import com.meg.listshop.Application;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.MappingPost;
+import com.meg.listshop.lmt.api.model.v2.ListLayout;
+import com.meg.listshop.lmt.api.model.v2.ListLayoutCategory;
+import com.meg.listshop.lmt.api.model.v2.ListLayoutList;
+import com.meg.listshop.lmt.api.model.v2.NestedTag;
 import com.meg.listshop.test.TestUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -27,6 +31,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
 
@@ -65,6 +74,7 @@ class V2LayoutRestControllerTest {
         // create mapping post - map apples and oranges to default category Frozen
         // 10, 'Frozen'
         String categoryTemplateId = "10";
+        String userId = "99999";
 
         MappingPost mapping = new MappingPost();
         mapping.setCategoryId(categoryTemplateId);
@@ -72,7 +82,7 @@ class V2LayoutRestControllerTest {
         String payload = json(mapping);
 
         // make call
-        String url = "/layout/user/mapping";
+        String url = "/v2/layout/user/mapping";
         given()
                 .header(TestUtils.authToken(baseUserToken))
                 .contentType(ContentType.JSON)
@@ -81,10 +91,10 @@ class V2LayoutRestControllerTest {
                 .post(url)
                 .then()
                 .statusCode(200);
-        Assertions.assertTrue(false);
+
         // retrieve user layouts
-        String getResultUrl = "/layout/user";
-        String responseContent = given()
+        String getResultUrl = "/v2/layout";
+        ListLayoutList layoutLists = given()
                 .header(TestUtils.authToken(baseUserToken))
                 .contentType(ContentType.JSON)
                 .when()
@@ -92,32 +102,29 @@ class V2LayoutRestControllerTest {
                 .then()
                 .statusCode(200)
                 .extract()
-                .body().asString();
+                .body()
+                .as(ListLayoutList.class);
 
         // get default layout
-/*        ListLayoutListResource resource = parseResourceFromString(responseContent);
-        Assertions.assertNotNull(resource);
-        Optional<ListLayout> listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
-                .map(ListLayoutResource::getListLayout)
+        ListLayout defaultLayout = layoutLists.getListLayouts().stream()
+                .filter(l -> l.getUserId().equals(userId))
                 .filter(ListLayout::isDefault)
-                .findFirst();
-        Assertions.assertTrue(listLayoutResult.isPresent(), "default exists");
-        ListLayout layout = listLayoutResult.get();
+                .findFirst()
+                .orElse(null);
+        Assertions.assertNotNull(defaultLayout);
+        ListLayoutCategory frozenCategory = defaultLayout.getCategories().stream()
+                .filter(listLayoutCategory -> listLayoutCategory.getName().equalsIgnoreCase("frozen"))
+                .findFirst()
+                .orElse(null);
+        Assertions.assertNotNull(frozenCategory);
 
-        // assert category "Frozen" exists
-        Optional<ListLayoutCategory> frozenCategoryOpt = layout.getCategories().stream()
-                .filter(listLayoutCategory -> listLayoutCategory.getName().equalsIgnoreCase("Frozen"))
-                .findFirst();
-        Assertions.assertTrue(frozenCategoryOpt.isPresent());
-        ListLayoutCategory category = frozenCategoryOpt.get();
-
-        // assert apples, oranges, and lemon are in frozen
-        Set<String> tagIds = category.getTags().stream()
-                .map(Tag::getId)
+        Set<String> tagIds = frozenCategory.getTags().stream()
+                .map(NestedTag::getTagId)
                 .collect(Collectors.toSet());
         Assertions.assertTrue(tagIds.contains(tagIdApple), "apples are there");
         Assertions.assertTrue(tagIds.contains(tagIdOrange), "oranges are there");
         Assertions.assertTrue(tagIds.contains(tagIdLemon), "lemons are there");
+
 
         // Part II - move these tags to a different category
         //  999901, 'Special Category'
@@ -137,7 +144,7 @@ class V2LayoutRestControllerTest {
                 .statusCode(200);
 
         // retrieve user layouts
-        responseContent = given()
+        ListLayoutList specialResult = given()
                 .header(TestUtils.authToken(baseUserToken))
                 .contentType(ContentType.JSON)
                 .when()
@@ -145,46 +152,46 @@ class V2LayoutRestControllerTest {
                 .then()
                 .statusCode(200)
                 .extract()
-                .body().asString();
+                .body()
+                .as(ListLayoutList.class);
 
         // get default layout
-        resource = parseResourceFromString(responseContent);
-        Assertions.assertNotNull(resource);
-        listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
-                .map(ListLayoutResource::getListLayout)
+        ListLayout newLayout = specialResult.getListLayouts().stream()
+                .filter(l -> l.getUserId().equals(userId))
                 .filter(ListLayout::isDefault)
-                .findFirst();
-        Assertions.assertTrue(listLayoutResult.isPresent(), "default exists");
-        layout = listLayoutResult.get();
+                .findFirst()
+                .orElse(null);
+        Assertions.assertNotNull(newLayout);
 
         // assert category "Special" exists
-        Map<String, ListLayoutCategory> allCategories = layout.getCategories().stream()
+        Map<String, ListLayoutCategory> allCategories = newLayout.getCategories().stream()
                 .collect(Collectors.toMap(ListLayoutCategory::getName, Function.identity()));
         ListLayoutCategory specialCategory = allCategories.get("Special Category");
-        ListLayoutCategory frozenCategory = allCategories.get("Frozen");
+        ListLayoutCategory newFrozenCategory = allCategories.get("Frozen");
 
         //  lemon is in special
         Set<String> tagIdsInSpecial = specialCategory.getTags().stream()
-                .map(Tag::getId)
+                .map(NestedTag::getTagId)
                 .collect(Collectors.toSet());
         Assertions.assertFalse(tagIdsInSpecial.contains(tagIdApple), "apples are not there");
         Assertions.assertFalse(tagIdsInSpecial.contains(tagIdOrange), "oranges are not there");
         Assertions.assertTrue(tagIdsInSpecial.contains(tagIdLemon), "lemons are there");
 
         //  lemon is not in frozen
-        Set<String> tagIdsInFrozen = frozenCategory.getTags().stream()
-                .map(Tag::getId)
+        Set<String> tagIdsInFrozen = newFrozenCategory.getTags().stream()
+                .map(NestedTag::getTagId)
                 .collect(Collectors.toSet());
         Assertions.assertTrue(tagIdsInFrozen.contains(tagIdApple), "apples are  there");
         Assertions.assertTrue(tagIdsInFrozen.contains(tagIdOrange), "oranges are  there");
         Assertions.assertFalse(tagIdsInFrozen.contains(tagIdLemon), "lemons are not there");
-        */
+
     }
 
     @Test
     void testPostUserMappingsNewUser() throws Exception {
         // do mappings with user which doesn't have any layout or categoriew
         String categoryTemplateId = "10";
+        String userId = "121212";
 
         MappingPost mapping = new MappingPost();
         mapping.setCategoryId(categoryTemplateId);
@@ -192,7 +199,7 @@ class V2LayoutRestControllerTest {
         String payload = json(mapping);
 
         // make call
-        String url = "/layout/user/mapping";
+        String url = "/v2/layout/user/mapping";
         given()
                 .header(TestUtils.authToken(newUserToken))
                 .contentType(ContentType.JSON)
@@ -203,8 +210,8 @@ class V2LayoutRestControllerTest {
                 .statusCode(200);
 
         // retrieve user layouts
-        String getResultUrl = "/layout/user";
-        String responseContent = given()
+        String getResultUrl = "/v2/layout";
+        ListLayoutList listLayoutList = given()
                 .header(TestUtils.authToken(newUserToken))
                 .contentType(ContentType.JSON)
                 .when()
@@ -212,29 +219,26 @@ class V2LayoutRestControllerTest {
                 .then()
                 .statusCode(200)
                 .extract()
-                .body().asString();
+                .body()
+                .as(ListLayoutList.class);
 
         // get default layout
-        Assertions.assertTrue(false);
-       /* ListLayoutListResource resource = parseResourceFromString(responseContent);
-        Assertions.assertNotNull(resource);
-        Optional<ListLayout> listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
-                .map(ListLayoutResource::getListLayout)
+        ListLayout defaultLayout = listLayoutList.getListLayouts().stream()
+                .filter(listLayout -> listLayout.getUserId().equals(userId))
                 .filter(ListLayout::isDefault)
-                .findFirst();
-        Assertions.assertTrue(listLayoutResult.isPresent(), "default exists");
-        ListLayout layout = listLayoutResult.get();
-
+                .findFirst()
+                .orElse(null);
+        Assertions.assertNotNull(defaultLayout);
         // assert category "Frozen" exists
-        Optional<ListLayoutCategory> frozenCategoryOpt = layout.getCategories().stream()
+        ListLayoutCategory frozenCategory = defaultLayout.getCategories().stream()
                 .filter(listLayoutCategory -> listLayoutCategory.getName().equalsIgnoreCase("Frozen"))
-                .findFirst();
-        Assertions.assertTrue(frozenCategoryOpt.isPresent());
-        ListLayoutCategory category = frozenCategoryOpt.get();
+                .findFirst()
+                .orElse(null);
+        Assertions.assertNotNull(frozenCategory);
 
         // assert apples, oranges, and lemon are in frozen
-        Set<String> tagIds = category.getTags().stream()
-                .map(Tag::getId)
+        Set<String> tagIds = frozenCategory.getTags().stream()
+                .map(NestedTag::getTagId)
                 .collect(Collectors.toSet());
         Assertions.assertTrue(tagIds.contains(tagIdApple), "apples are there");
         Assertions.assertTrue(tagIds.contains(tagIdOrange), "oranges are there");
@@ -258,7 +262,7 @@ class V2LayoutRestControllerTest {
                 .statusCode(200);
 
         // retrieve user layouts
-        responseContent = given()
+        ListLayoutList afterList = given()
                 .header(TestUtils.authToken(newUserToken))
                 .contentType(ContentType.JSON)
                 .when()
@@ -266,41 +270,37 @@ class V2LayoutRestControllerTest {
                 .then()
                 .statusCode(200)
                 .extract()
-                .body().asString();
+                .body()
+                .as(ListLayoutList.class);
 
-        // get default layout
-        resource = parseResourceFromString(responseContent);
-        Assertions.assertNotNull(resource);
-        listLayoutResult = resource.getEmbeddedList().getListLayoutResourceList().stream()
-                .map(ListLayoutResource::getListLayout)
+        ListLayout afterDefault = afterList.getListLayouts().stream()
+                .filter(listLayout -> listLayout.getUserId().equals(userId))
                 .filter(ListLayout::isDefault)
-                .findFirst();
-        Assertions.assertTrue(listLayoutResult.isPresent(), "default exists");
-        layout = listLayoutResult.get();
+                .findFirst()
+                .orElse(null);
 
         // assert category "Special" exists
-        Map<String, ListLayoutCategory> allCategories = layout.getCategories().stream()
+        Map<String, ListLayoutCategory> allCategories = afterDefault.getCategories().stream()
                 .collect(Collectors.toMap(ListLayoutCategory::getName, Function.identity()));
         ListLayoutCategory specialCategory = allCategories.get("Special Category");
-        ListLayoutCategory frozenCategory = allCategories.get("Frozen");
+        ListLayoutCategory afterFrozenCategory = allCategories.get("Frozen");
 
         //  lemon is in special
         Set<String> tagIdsInSpecial = specialCategory.getTags().stream()
-                .map(Tag::getId)
+                .map(NestedTag::getTagId)
                 .collect(Collectors.toSet());
         Assertions.assertFalse(tagIdsInSpecial.contains(tagIdApple), "apples are not there");
         Assertions.assertFalse(tagIdsInSpecial.contains(tagIdOrange), "oranges are not there");
         Assertions.assertTrue(tagIdsInSpecial.contains(tagIdLemon), "lemons are there");
 
         //  lemon is not in frozen
-        Set<String> tagIdsInFrozen = frozenCategory.getTags().stream()
-                .map(Tag::getId)
+        Set<String> tagIdsInFrozen = afterFrozenCategory.getTags().stream()
+                .map(NestedTag::getTagId)
                 .collect(Collectors.toSet());
         Assertions.assertTrue(tagIdsInFrozen.contains(tagIdApple), "apples are  there");
         Assertions.assertTrue(tagIdsInFrozen.contains(tagIdOrange), "oranges are  there");
         Assertions.assertFalse(tagIdsInFrozen.contains(tagIdLemon), "lemons are not there");
 
-        */
     }
 
     @Test
@@ -314,7 +314,6 @@ class V2LayoutRestControllerTest {
                 .statusCode(200)
                 .body("list_layouts[0].name", Matchers.equalTo("RoughGrained"))
                 .body("list_layouts[0].categories", Matchers.hasSize(7))
-                .body("list_layouts[0].default", Matchers.equalTo(true))
                 .body("list_layouts[0].layout_id", Matchers.equalTo("5"))
                 .body("list_layouts[0].is_default", Matchers.equalTo(true))
                 .body("list_layouts[0].user_id", Matchers.equalTo("null"))

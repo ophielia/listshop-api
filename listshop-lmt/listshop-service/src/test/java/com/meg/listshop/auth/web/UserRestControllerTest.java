@@ -478,7 +478,7 @@ class UserRestControllerTest {
 
         String url = "/user/properties";
         given()
-                .header(TestUtils.authToken(TestConstants.USER_5_TOKEN))
+                .header(TestUtils.authToken(TestConstants.USER_1_TOKEN))
                 .contentType(ContentType.JSON)
                 .when()
                 .log().all()

@@ -251,7 +251,10 @@ public class TagServiceImpl implements TagService {
         criteria.setUserId(userId);
         List<TagInfoDTO> allFound = getTagInfoList(criteria);
         if (allFound == null || allFound.isEmpty()) {
-            return null;
+            criteria.setUserId(null);
+            return getTagInfoList(criteria).stream()
+                    .findFirst()
+                    .orElse(null);
         }
         return allFound.get(0);
     }
