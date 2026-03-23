@@ -344,7 +344,7 @@ class V2LayoutRestControllerTest {
         String url = "/v2/layout";
         String result = given()
                 .contentType(ContentType.JSON)
-                .header(TestUtils.authToken(dadStarterJwtToken))
+                .header(TestUtils.authToken(newUserToken))
                 .when()
                 .get(url)
                 .then()
@@ -354,14 +354,58 @@ class V2LayoutRestControllerTest {
         Assertions.assertNotNull(result, "response should not be null");
     }
 
-
-    void testGetCategoryForTag() {
+@Test
+    void testGetCategoryForTagDefault() {
+        String tagId = "81"; // carrots
+        String url = "/v2/layout/tag/" + tagId ;
+    ListLayoutCategory result = given()
+                .contentType(ContentType.JSON)
+                .header(TestUtils.authToken(dadStarterJwtToken))
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .extract().as(ListLayoutCategory.class);
+        Assertions.assertNotNull(result, "response should not be null");
+        // we expect to retrieve the layout "Dads special category", which is the default for carrots for this user
+    Assertions.assertEquals("Dads Special Category", result.getName());
+    Assertions.assertEquals("1000128", result.getId());
     }
 
+    @Test
     void testGetCategoryForTagUserCategoryExists() {
+        String tagId = "1000128"; // carrots
+        String url = "/v2/layout/tag/" + tagId ;
+        ListLayoutCategory result = given()
+                .contentType(ContentType.JSON)
+                .header(TestUtils.authToken(dadStarterJwtToken))
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .extract().as(ListLayoutCategory.class);
+        Assertions.assertNotNull(result, "response should not be null");
+        // we expect to retrieve the layout "special category", which is the default for this tag
+        Assertions.assertEquals("Dads Special Category", result.getName());
+        Assertions.assertEquals("1000128", result.getId());
     }
 
+    @Test
     void testGetCategoryForTagUserNoUser() {
+        String tagId = "81"; // carrots
+        String url = "/v2/layout/tag/" + tagId ;
+        ListLayoutCategory result = given()
+                .contentType(ContentType.JSON)
+                .header(TestUtils.authToken(baseUserToken))
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .extract().as(ListLayoutCategory.class);
+        Assertions.assertNotNull(result, "response should not be null");
+        // we expect to retrieve the layout "Produce", which is the default for carrots
+        Assertions.assertEquals("Produce", result.getName());
+        Assertions.assertEquals("6", result.getId());
     }
 
 

@@ -424,4 +424,12 @@ public class V2ModelMapper {
                 category.setDisplayOrder(categoryEntity.getDisplayOrder());
                 return category;
     }
+
+    public static ListLayoutCategory toShortModel(ListLayoutCategoryEntity categoryEntity) {
+        ListLayoutCategory category =  new ListLayoutCategory(categoryEntity.getId());
+                category.setName(categoryEntity.getName());
+                category.setDefault(toBoolean(categoryEntity.getDefault()));
+                category.setDisplayOrder(categoryEntity.getDisplayOrder());
+                return category;
+    }
 }

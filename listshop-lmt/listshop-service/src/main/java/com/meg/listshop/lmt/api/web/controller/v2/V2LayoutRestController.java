@@ -27,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -97,10 +98,10 @@ public class V2LayoutRestController implements V2LayoutRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<ListLayoutCategory> getCategoryForTag(HttpServletRequest request, @RequestParam Long tagId, Authentication authentication) {
+    public ResponseEntity<ListLayoutCategory> getCategoryForTag(HttpServletRequest request, @PathVariable("tagId") Long tagId, Authentication authentication) {
         CustomUserDetails userDetails = getUserDetails(authentication);
         ListLayoutCategoryEntity categoryEntity = layoutService.getDefaultCategoryForTag(userDetails.getId(), tagId);
-        ListLayoutCategory category = V2ModelMapper.toModel(categoryEntity);
+        ListLayoutCategory category = V2ModelMapper.toShortModel(categoryEntity);
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
 

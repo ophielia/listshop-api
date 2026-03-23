@@ -2,10 +2,12 @@
 delete
 from users
 where user_id in (99999);
+
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username)
 VALUES (99999, 'email@email.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
         'email@email.com');
-insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login)
+insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number,
+                          client_device_id, client_version, token, last_login)
 values (99999, 99999, 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'token99999', now());
 delete
 from users
@@ -13,7 +15,8 @@ where user_id in (101010);
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username)
 VALUES (101010, 'user@emptyuser.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
         'user@emptyuser.com');
-insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login)
+insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number,
+                          client_device_id, client_version, token, last_login)
 values (101010, 101010, 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'token101010', now());
 
 delete
@@ -22,9 +25,9 @@ where user_id in (121212);
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username)
 VALUES (121212, 'user@brandnewuser.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
         'user@brandnewuser.com');
-insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login)
+insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number,
+                          client_device_id, client_version, token, last_login)
 values (121212, 121212, 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'token121212', now());
-
 
 
 
@@ -33,7 +36,7 @@ values (999, 'Special Layout', 99999, true);
 
 
 insert into list_category (category_id, name, layout_id, display_order, is_default)
-values ( 999901, 'Special Category', 999, 20, false);
+values (999901, 'Special Category', 999, 20, false);
 
 INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,
                  power)
@@ -62,7 +65,7 @@ values (998, 'Everyday Layout', 99999, false);
 
 
 insert into list_category (category_id, name, layout_id, display_order, is_default)
-values ( 998901, 'Forbidden Area', 998, 20, false);
+values (998901, 'Forbidden Area', 998, 20, false);
 
 INSERT INTO category_tags (category_id, tag_id)
 VALUES (998901, 9991234);
@@ -81,12 +84,25 @@ VALUES (998901, 9991236);
 INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,
                  power, user_id)
 VALUES (1000123, NULL, 'Hamilton', 'Ingredient', NULL, NULL, NULL, NULL),
-(1000124, NULL, 'Eliza', 'Ingredient', NULL, NULL, NULL, NULL),
-(1000126, NULL, 'Peggy', 'Ingredient', NULL, NULL, NULL,99999),
-(1000125, NULL, 'Alexander', 'Ingredient', NULL, NULL, NULL, NULL);
+       (1000124, NULL, 'Eliza', 'Ingredient', NULL, NULL, NULL, NULL),
+       (1000126, NULL, 'Peggy', 'Ingredient', NULL, NULL, NULL, 99999),
+       (1000125, NULL, 'Alexander', 'Ingredient', NULL, NULL, NULL, NULL),
+       -- dad tag
+       (1000128, NULL, 'Dads Tag', 'Ingredient', NULL, NULL, NULL, 34);
 
 insert into public.tag_relation (tag_relation_id, child_tag_id, parent_tag_id)
 values (1000123, 1000123, 388),
        (1000124, 1000124, 1000123),
        (1000126, 1000124, 1000123),
-       (1000125, 1000125, 1000123);
+       (1000125, 1000125, 1000123),
+       (1000128, 1000128, 388);
+
+-- dads tag assignments
+insert into list_layout (layout_id, name, user_id, is_default)
+values (1000128, 'Dads Special Layout', 34, true);
+insert into list_category (category_id, name, layout_id, display_order, is_default)
+values (1000128, 'Dads Special Category', 1000128, 20, false);
+insert into category_tags (category_id, tag_id) VALUES
+    (1000128,1000128),
+    (1000128,81);
+

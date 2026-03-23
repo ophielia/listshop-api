@@ -49,5 +49,6 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
             "join category_tags ct on c.category_id = ct.category_id " +
             "where l.is_default = true and tag_id = :tagId " +
             "and l.user_id = :userId", nativeQuery = true)
-    ListLayoutCategoryEntity getDefaultCategoryForTagAndUser(Long userId, Long tagId);
+    ListLayoutCategoryEntity getDefaultCategoryForTagAndUser(@Param("userId")Long userId,
+                                                             @Param("tagId") Long tagId);
 }

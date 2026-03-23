@@ -33,6 +33,6 @@ public interface V2LayoutRestControllerApi {
     ResponseEntity<ListLayoutList> retrieveAllLayouts(HttpServletRequest request, Authentication authentication);
 
     @GetMapping(value = "/tag/{tagId}" ,produces = "application/json")
-    ResponseEntity<ListLayoutCategory> getCategoryForTag(HttpServletRequest request, @RequestParam Long tagId, Authentication authentication);
+    ResponseEntity<ListLayoutCategory> getCategoryForTag(HttpServletRequest request, @PathVariable("tagId") Long tagId, Authentication authentication);
 
 }
