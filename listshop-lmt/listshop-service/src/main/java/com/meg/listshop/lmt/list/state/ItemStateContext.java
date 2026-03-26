@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.conversion.data.pojo.DomainType;
@@ -5,6 +11,7 @@ import com.meg.listshop.lmt.conversion.BasicAmount;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.SimpleListItemDTO;
 
 public class ItemStateContext {
     private ListItemEntity targetItem;
@@ -17,6 +24,7 @@ public class ItemStateContext {
     private boolean isCrossedOff;
     private BasicAmount tagAmount;
     private DomainType userDomain;
+    private SimpleListItemDTO item;
 
     public ItemStateContext(ListItemEntity targetItem, Long targetListId) {
         this.targetItem = targetItem;
@@ -110,5 +118,13 @@ public class ItemStateContext {
 
     public DomainType getUserDomain() {
         return userDomain;
+    }
+
+    public void setItem(SimpleListItemDTO itemDTO) {
+        this.item = itemDTO;
+    }
+
+    public SimpleListItemDTO getItem() {
+        return item;
     }
 }

@@ -10,6 +10,7 @@ import com.github.dockerjava.api.exception.BadRequestException;
 import com.google.common.base.Enums;
 
 import com.meg.listshop.auth.service.CustomUserDetails;
+import com.meg.listshop.common.ControllerUtils;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.common.FractionUtils;
 import com.meg.listshop.common.RoundingUtils;
@@ -164,13 +165,13 @@ public class DishRestController implements V2DishRestControllerApi {
         }
 
         DishItemDTO dishItemDTO = new DishItemDTO();
-        dishItemDTO.setDishItemId(stringToLongOrException(ingredient.getId()));
-        dishItemDTO.setTagId(stringToLongOrException(ingredient.getTagId()));
+        dishItemDTO.setDishItemId(ControllerUtils.stringToLongOrException(ingredient.getId()));
+        dishItemDTO.setTagId(ControllerUtils.stringToLongOrException(ingredient.getTagId()));
 
         if (!ingredientHasAmount(ingredient)) {
             return dishItemDTO;
         }
-        Long unitId = stringToLongOrDefault(ingredient.getUnitId(), defaultUnitId);
+        Long unitId = ControllerUtils.stringToLongOrDefault(ingredient.getUnitId(), defaultUnitId);
         dishItemDTO.setUnitId(unitId);
 
         // check quantity and round if necessary
@@ -251,29 +252,9 @@ public class DishRestController implements V2DishRestControllerApi {
                 ingredient.getWholeQuantity() != null;
     }
 
-    private Long stringToLongOrException(String toConvert) {
-        if (toConvert == null) {
-            return null;
-        }
-        try {
-            return Long.parseLong(toConvert);
-        } catch (NumberFormatException e) {
-            throw new BadRequestException(String.format("Id [%s] cannot be converted to Long.", toConvert));
-        }
-    }
 
-    private Long stringToLongOrDefault(String toConvert, Long defaultValue) {
-        if (toConvert == null) {
-            return defaultValue;
-        }
-        try {
-            return Long.parseLong(toConvert);
-        } catch (NumberFormatException e) {
-            String message = String.format("Id [%s] cannot be converted to Long.", toConvert);
-            logger.info(message);
-        }
-        return defaultValue;
-    }
+
+
 
     private Long longValueOf(String longValueAsString) {
         Long longValue = null;

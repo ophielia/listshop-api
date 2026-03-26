@@ -53,11 +53,8 @@ public class BaseShoppingListService  {
 
     protected final ItemChangeRepository itemChangeRepository;
 
-    @Value("${service.shoppinglistservice.merge.items.deleted.after.days}")
-    int mergeDeleteAfterDays = 6;
-
     @Value("${service.shoppinglistservice.default.list.name}")
-    String defaultShoppingListName;
+    public String defaultShoppingListName;
 
 
     public BaseShoppingListService(TagService tagService,
@@ -103,7 +100,7 @@ public class BaseShoppingListService  {
         }
     }
 
-    private void doCrossOffActions(ShoppingListEntity sourceList, ItemOperationType operationType, List<Long> tagIds) {
+    protected void doCrossOffActions(ShoppingListEntity sourceList, ItemOperationType operationType, List<Long> tagIds) {
         // get item
         List<ListItemEntity> items = sourceList.getItems();
 
@@ -743,7 +740,7 @@ public class BaseShoppingListService  {
         shoppingListRepository.save(shoppingList);
     }
 
-    private void saveListChanges(ShoppingListEntity shoppingList, List<ListItemEntity> items,
+    protected void saveListChanges(ShoppingListEntity shoppingList, List<ListItemEntity> items,
                                  ListOperationType operationType) {
         itemChangeRepository.saveItemChangeStatistics(shoppingList, items, Collections.emptyList(), shoppingList.getUserId(), operationType);
         // make changes in list object
@@ -786,47 +783,9 @@ public class BaseShoppingListService  {
 
     }
 
-    protected List<ListItemEntity> convertClientItemsToItemEntities(Long userId, MergeRequest mergeRequest) {
-        Map<String, ListItemEntity> mergeMap = mergeRequest.getMergeItems().stream()
-                .filter(i -> i.getTagId() != null)
-                .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
-        Set<Long> tagKeys = mergeMap.keySet().stream().map(Long::valueOf).collect(Collectors.toSet());
 
-        if (tagKeys.isEmpty()) {
-            return new ArrayList<>();
-        }
-        if (mergeRequest.isCheckTagConflict()) {
-            checkTagConflict(userId, tagKeys, mergeMap);
-        }
-        List<TagEntity> outdatedClientTags = tagService.getReplacedTagsFromIds(tagKeys);
-        Map<Long, TagEntity> outdatedClientDictionary = new HashMap<>();
-        if (!outdatedClientTags.isEmpty()) {
-            Set<Long> outdatedIds = outdatedClientTags.stream().map(TagEntity::getReplacementTagId).collect(Collectors.toSet());
-            outdatedClientDictionary = tagService.getDictionaryForIds(outdatedIds);
-        }
-        Map<Long, TagEntity> tagDictionary = tagService.getDictionaryForIds(mergeMap.keySet().stream()
-                .map(Long::valueOf).collect(Collectors.toSet()));
 
-        Map<Long, ListItemEntity> itemMap = new HashMap<>();
-        for (Map.Entry<String, ListItemEntity> entry : mergeMap.entrySet()) {
-            String tagIdString = entry.getKey();
-            ListItemEntity item = entry.getValue();
-            Long tagId = Long.valueOf(tagIdString);
-            TagEntity tag = tagDictionary.get(tagId);
-            if (!outdatedClientDictionary.isEmpty() && tag.getReplacementTagId() != null) {
-                TagEntity replacementTag = outdatedClientDictionary.get(tag.getReplacementTagId());
-                item.setTag(replacementTag);
-                addItemToClientMap(item, itemMap);
-                continue;
-            }
-            item.setTag(tag);
-            addItemToClientMap(item, itemMap);
-        }
-
-        return new ArrayList<>(itemMap.values());
-    }
-
-    private void checkTagConflict(Long userId, Set<Long> tagKeys, Map<String, ListItemEntity> mergeMap) {
+    protected void checkTagConflict(Long userId, Set<Long> tagKeys, Map<String, ListItemEntity> mergeMap) {
         List<LongTagIdPairDTO> conflicts = tagService.getStandardUserDuplicates(userId, tagKeys);
         for (LongTagIdPairDTO conflict : conflicts) {
             ListItemEntity replaceItem = mergeMap.get(String.valueOf(conflict.getLeftId()));
@@ -843,7 +802,7 @@ public class BaseShoppingListService  {
 
     }
 
-    private void addItemToClientMap(ListItemEntity item, Map<Long, ListItemEntity> itemMap) {
+    protected void addItemToClientMap(ListItemEntity item, Map<Long, ListItemEntity> itemMap) {
         if (item.getTag() == null) {
             return;
         }

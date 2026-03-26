@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.common.CommonUtils;
@@ -6,11 +12,13 @@ import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
+import com.meg.listshop.lmt.conversion.BasicAmount;
 import com.meg.listshop.lmt.conversion.ListConversionService;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.SimpleListItemDTO;
 import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.lmt.data.repository.ListItemRepository;
 import jakarta.transaction.Transactional;
@@ -141,13 +149,16 @@ Result is scaled, summed and saved.
     */
     private void processAddSimpleItem(ListItemEntity item, @NotNull ItemStateContext itemStateContext) throws ItemProcessingException {
         TagEntity tag = itemStateContext.getTag();
-        Long listSearchId = CommonUtils.elvis(itemStateContext.getTargetListId(), itemStateContext.getListId());
+        Long assignedListId = CommonUtils.elvis(itemStateContext.getTargetListId(), itemStateContext.getListId());
         // find existing
-        ListItemDetailEntity existing = item.getDetails().stream().filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedListId(), listSearchId)).filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedDishId(), null)).findFirst().orElse(null);
-        // convert dish item to list context or unit, if available
+        ListItemDetailEntity existing = item.getDetails().stream().filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedListId(), assignedListId)).filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedDishId(), null)).findFirst().orElse(null);
+
+        // convert item to list context or unit, if available
+        BasicAmount basicAmount = pullAmountFromSimpleItem(itemStateContext.getItem(), tag);
+
         ConvertibleAmount converted = null;
         try {
-            converted = conversionService.convertTagForList(tag, itemStateContext.getTagAmount(), existing, item, itemStateContext.getUserDomain());
+            converted = conversionService.convertTagForList(tag, basicAmount, existing, item, itemStateContext.getUserDomain());
         } catch (ConversionPathException | ConversionFactorException e) {
             // we weren't able to convert this - it happens sometimes
             String message = String.format("weren't able to convert tag [%s] to list context. ", tag.getId());
@@ -156,7 +167,7 @@ Result is scaled, summed and saved.
 
         // add list item
         if (converted != null && converted.getUnit() != null) {
-            addSpecifiedAmountForTag(converted, item, listSearchId, existing, itemStateContext);
+            addSpecifiedAmountForTag(converted, item, assignedListId, existing, itemStateContext);
         } else {
             addNonSpecifiedAmount(existing, item, null, itemStateContext);
         }
@@ -165,6 +176,14 @@ Result is scaled, summed and saved.
         // save changes to item
         item.setUpdatedOn(new Date());
         listItemRepository.save(item);
+
+    }
+
+    private BasicAmount pullAmountFromSimpleItem(SimpleListItemDTO item, TagEntity tag) {
+        if (item == null || item.getQuantity() == 0) {
+            return null;
+        }
+        return new BasicAmount(item.getQuantity(), item.getMarker(), item.getUnitSize(), item.getUnitId(),tag);
 
     }
 
@@ -204,11 +223,12 @@ Result is scaled, summed and saved.
     }
 
     private void addSpecifiedAmountForTag(ConvertibleAmount converted, ListItemEntity item, Long listId, ListItemDetailEntity existing, @NotNull ItemStateContext context) {
+        //MM 2311 - will need to calculate rawEntry here, and prepare original entry
         genericAddSpecifiedAmount(converted, item, existing, false, null, null, listId, context);
     }
 
     private void genericAddSpecifiedAmount(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, boolean containsUnspecified, String rawEntry, Long linkedDishId, Long linkedListId, @NotNull ItemStateContext context) {
-
+//MM 2311 - needs original amount (collapsed into json) for simple item add only
         if (existing != null) {
             doAddToExisting(converted, existing, context);
             return;

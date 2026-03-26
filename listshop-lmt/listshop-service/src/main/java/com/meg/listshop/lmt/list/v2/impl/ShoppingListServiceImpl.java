@@ -10,10 +10,7 @@ import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
-import com.meg.listshop.lmt.api.model.ContextType;
-import com.meg.listshop.lmt.api.model.Item;
-import com.meg.listshop.lmt.api.model.ModelMapper;
-import com.meg.listshop.lmt.api.model.StatisticCountType;
+import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.api.model.v2.MergeRequest;
 import com.meg.listshop.lmt.api.model.v2.MergeResult;
 import com.meg.listshop.lmt.api.model.v2.SourceReferenceType;
@@ -29,6 +26,8 @@ import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.list.BaseShoppingListService;
 import com.meg.listshop.lmt.list.LegacyShoppingListService;
 import com.meg.listshop.lmt.list.ListTagStatisticService;
+import com.meg.listshop.lmt.list.state.ItemStateContext;
+import com.meg.listshop.lmt.list.state.ListItemEvent;
 import com.meg.listshop.lmt.list.state.ListItemStateMachine;
 import com.meg.listshop.lmt.list.v2.ShoppingListService;
 import com.meg.listshop.lmt.service.*;
@@ -149,42 +148,6 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
         return new ArrayList<>(itemMap.values());
     }
 
-    private void addItemToClientMap(ListItemEntity item, Map<Long, ListItemEntity> itemMap) {
-        if (item.getTag() == null) {
-            return;
-        }
-        Long tagId = item.getTag().getId();
-        ListItemEntity toAddTo = itemMap.get(tagId);
-        if (itemMap.containsKey(tagId)) {
-            int count = toAddTo.getUsedCount() != null ? toAddTo.getUsedCount() : 0;
-            toAddTo.setUsedCount(count + 1);
-            toAddTo.setRemovedOn(DateUtils.maxDate(toAddTo.getRemovedOn(), item.getRemovedOn()));
-            toAddTo.setCrossedOff(DateUtils.maxDate(toAddTo.getCrossedOff(), item.getCrossedOff()));
-            toAddTo.setUpdatedOn(DateUtils.maxDate(toAddTo.getUpdatedOn(), item.getUpdatedOn()));
-            toAddTo.setAddedOn(DateUtils.maxDate(toAddTo.getAddedOn(), item.getAddedOn()));
-            itemMap.put(tagId, toAddTo);
-            return;
-        }
-        itemMap.put(tagId, item);
-    }
-
-    private void checkTagConflict(Long userId, Set<Long> tagKeys, Map<String, ListItemEntity> mergeMap) {
-        List<LongTagIdPairDTO> conflicts = tagService.getStandardUserDuplicates(userId, tagKeys);
-        for (LongTagIdPairDTO conflict : conflicts) {
-            ListItemEntity replaceItem = mergeMap.get(String.valueOf(conflict.getLeftId()));
-            if (replaceItem != null) {
-
-                replaceItem.setTagId(conflict.getRightId());
-                if (replaceItem.getTag() != null) {
-                    replaceItem.getTag().setId(conflict.getRightId());
-                }
-                mergeMap.put(String.valueOf(conflict.getRightId()), replaceItem);
-                mergeMap.remove(String.valueOf(conflict.getLeftId()));
-            }
-        }
-
-    }
-
     private boolean requiresMerge(MergeRequest mergeRequest) {
         // for older clients which aren't sending info - we keep the old behavior, which is to always merge
         if (mergeRequest.getLastOfflineChange() == null && mergeRequest.getLastSynced() == null) {
@@ -292,10 +255,9 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
         if (layoutCategories == null || layoutCategories.isEmpty()) {
             return new HashMap<>();
         }
-        Map<String, CategoryDTO> categoryMap = layoutCategories.stream()
+        return layoutCategories.stream()
                 .map(category -> new CategoryDTO(category.getId(), category.getName(), category.getDisplayOrder()))
                 .collect(Collectors.toMap(CategoryDTO::getComparisonName, Function.identity()));
-        return categoryMap;
     }
 
     @Override
@@ -318,6 +280,35 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
         return units.stream().collect(Collectors.toMap(UnitEntity::getId, UnitEntity::getName));
     }
 
+    @Override
+    public void addItemToList(Long userId, Long listId, SimpleListItemDTO itemDTO) throws ItemProcessingException {
+        Long tagId = itemDTO.getTagId();
+        ShoppingListEntity shoppingListEntity = getListForUserById(userId, listId);
+        if (shoppingListEntity == null) {
+            return;
+        }
+
+        ListItemEntity item = shoppingListEntity.getItems().stream()
+                .filter(l -> l.getTag().getId().equals(tagId))
+                .findFirst()
+                .orElse(null);
+        boolean isNew = item == null;
+
+        TagEntity tag = tagService.getTagById(tagId);
+        ItemStateContext itemStateContext = new ItemStateContext(item, listId);
+        itemStateContext.setTag(tag);
+        itemStateContext.setItem(itemDTO);
+
+        ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext, userId);
+
+        if (isNew) {
+            shoppingListEntity.getItems().add(result);
+        }
+
+        saveListChanges(shoppingListEntity,
+                Collections.singletonList(result),
+                ListOperationType.TAG_ADD);
+    }
 
     public ShoppingListDTO getStarterList(Long userId) {
 
@@ -364,8 +355,5 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
         shoppingListRepository.clearStarterListForUser(userId);
     }
 
-    private void setStarterList(Long userId, Long listId, boolean isStarterList) {
-        shoppingListRepository.updateStarterList(userId, listId, isStarterList);
-    }
 
 }

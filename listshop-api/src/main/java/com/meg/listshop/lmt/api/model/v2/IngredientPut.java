@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,24 +18,27 @@ public class IngredientPut {
     private String tagId;
     @JsonProperty("tag_display")
     private String tagDisplay;
+    @JsonProperty("raw_entry")
+    private String rawEntry;
+
+    @JsonProperty
+    private Amount amount;
+    /*
     @JsonProperty("whole_quantity")
     private Integer wholeQuantity;
-    @JsonProperty("quantity")
-    private Double quantity;
     @JsonProperty("fractional_quantity")
     private String fractionalQuantity;
+    @JsonProperty("quantity")
+    private Double quantity;
     @JsonProperty("quantity_display")
     private String quantityDisplay;
     @JsonProperty("unit_id")
     private String unitId;
-    @JsonProperty("unit_name")
-    private String unitName;
-    @JsonProperty("raw_modifiers")
-    private List<String> rawModifiers;
-    @JsonProperty("raw_entry")
-    private String rawEntry;
     @JsonProperty("unit_display")
     private String unitDisplay;
+    @JsonProperty("raw_modifiers")
+    private List<String> rawModifiers;
+*/
 
     public IngredientPut() {
         // empty constructor
@@ -60,59 +69,87 @@ public class IngredientPut {
     }
 
     public Integer getWholeQuantity() {
-        return wholeQuantity;
+        if (amount!= null) {
+            return amount.getWholeQuantity();
+        }
+        return null;
     }
 
     public void setWholeQuantity(Integer wholeQuantity) {
-        this.wholeQuantity = wholeQuantity;
+        if (amount == null) {
+            amount = new Amount();
+        }
+        amount = this.amount.withWholeQuantity(wholeQuantity);
     }
 
     public String getFractionalQuantity() {
-        return fractionalQuantity;
+        if (amount!= null) {
+            amount.getFractionalQuantity();
+        }
+        return null;
     }
 
     public void setFractionalQuantity(String fractionalQuantity) {
-        this.fractionalQuantity = fractionalQuantity;
+        if (amount == null) {
+            amount = new Amount();
+        }
+        amount = amount.withFractionalQuantity(fractionalQuantity);
     }
 
     public String getQuantityDisplay() {
-        return quantityDisplay;
+        if (amount!= null) {
+            return amount.getQuantityDisplay();
+        }
+        return null;
     }
 
     public void setQuantityDisplay(String quantityDisplay) {
-        this.quantityDisplay = quantityDisplay;
+        if (amount == null) {
+            amount = new Amount();
+        }
+        amount = amount.withQuantityDisplay(quantityDisplay);
     }
 
     public String getUnitId() {
-        return unitId;
+        if (amount!= null) {
+            amount.getUnitId();
+        }
+        return null;
     }
 
     public void setUnitId(String unitId) {
-        this.unitId = unitId;
-    }
-
-    public String getUnitName() {
-        return unitName;
-    }
-
-    public void setUnitName(String unitName) {
-        this.unitName = unitName;
+        if (amount == null) {
+            amount = new Amount();
+        }
+        amount = amount.withUnitId(unitId);
     }
 
     public List<String> getRawModifiers() {
-        return rawModifiers;
+        if (amount!= null) {
+            amount.getModifiers();
+        }
+        return null;
     }
 
     public void setRawModifiers(List<String> rawModifiers) {
-        this.rawModifiers = rawModifiers;
+        if (amount == null) {
+            amount = new Amount();
+        }
+        amount = amount.withModifiers(rawModifiers);
     }
 
     public String getUnitDisplay() {
-        return unitDisplay;
+        if (amount!= null) {
+            return amount.getUnitDisplay();
+        }
+        return null;
     }
 
     public void setUnitDisplay(String unitDisplay) {
-        this.unitDisplay = unitDisplay;
+        if (amount == null) {
+            amount = new Amount();
+        }
+        amount = amount.withUnitDisplay(unitDisplay);
     }
 
     public String getRawEntry() {
@@ -124,28 +161,27 @@ public class IngredientPut {
     }
 
     public Double getQuantity() {
-        return quantity;
+        if (amount!= null) {
+            return amount.getQuantity();
+        }
+        return null;
     }
 
     public void setQuantity(Double quantity) {
-        this.quantity = quantity;
+        if (amount == null) {
+            amount = new Amount();
+        }
+        amount = amount.withQuantity(quantity);
     }
 
     @Override
     public String toString() {
-        return "Ingredient{" +
+        return "IngredientPut{" +
                 "id='" + id + '\'' +
                 ", tagId='" + tagId + '\'' +
                 ", tagDisplay='" + tagDisplay + '\'' +
-                ", wholeQuantity=" + wholeQuantity +
-                ", fractionalQuantity='" + fractionalQuantity + '\'' +
-                ", quantityDisplay='" + quantityDisplay + '\'' +
-                ", unitId='" + unitId + '\'' +
-                ", unitName='" + unitName + '\'' +
-                ", rawModifiers='" + rawModifiers + '\'' +
-                ", unitDisplay='" + unitDisplay + '\'' +
-                ", quantity='" + quantity + '\'' +
                 ", rawEntry='" + rawEntry + '\'' +
+                ", amount=" + amount +
                 '}';
     }
 }

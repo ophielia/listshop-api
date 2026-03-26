@@ -6,9 +6,12 @@
 
 package com.meg.listshop.lmt.api.web.controller.v2;
 
+import com.github.dockerjava.api.exception.BadRequestException;
 import com.google.common.base.Enums;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.common.ControllerUtils;
+import com.meg.listshop.common.FractionUtils;
+import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.v2.V2ShoppingListRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
@@ -24,13 +27,16 @@ import com.meg.listshop.lmt.api.model.v2.ShoppingListPut;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.data.pojos.CategoryDTO;
 import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
+import com.meg.listshop.lmt.data.pojos.SimpleListItemDTO;
 import com.meg.listshop.lmt.data.pojos.SourceDTO;
 import com.meg.listshop.lmt.list.ShoppingListException;
 import com.meg.listshop.lmt.list.v2.ShoppingListService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -40,9 +46,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -55,6 +63,9 @@ public class ShoppingListRestController implements V2ShoppingListRestControllerA
     private static final Logger logger = LoggerFactory.getLogger(ShoppingListRestController.class);
 
     private final ShoppingListService shoppingListService;
+
+    @Value("${conversionservice.single.unit.id:1011}")
+    private Long defaultUnitId;
 
     @Autowired
     public ShoppingListRestController(ShoppingListService shoppingListService) {
@@ -224,6 +235,7 @@ public class ShoppingListRestController implements V2ShoppingListRestControllerA
 
     }
 
+
     @Override
     public ResponseEntity<Object> updateItemCountByTag(Authentication authentication, @PathVariable("listId") Long listId,
                                                        @PathVariable("tagId") Long tagId,
@@ -236,11 +248,103 @@ public class ShoppingListRestController implements V2ShoppingListRestControllerA
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<Object> addItemToListByTag(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("tagId") Long tagId) throws ItemProcessingException {
+    public ResponseEntity<Object> addItemToList(Authentication authentication, @PathVariable("listId") Long listId, @RequestBody PostListItem postListItem) throws ItemProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        logger.info("Adding tag [{}] to list [{}] for user [{}]", tagId, listId, userDetails.getId());
-        this.shoppingListService.addItemToListByTag(userDetails.getId(), listId, tagId);
+        logger.info("Adding tag to list [{}] for user [{}]",  listId, userDetails.getId());
+        SimpleListItemDTO item = validateListItem(listId, postListItem);
+
+        this.shoppingListService.addItemToList(userDetails.getId(), listId, item);
         return ResponseEntity.noContent().build();
+    }
+
+    private SimpleListItemDTO validateListItem(Long listId, PostListItem listPost) {
+        if (listPost == null) {
+            throw new BadRequestException("item post is null");
+        }
+        if (listPost.getTagId() == null) {
+            throw new BadRequestException("Tag id is null.");
+        }
+        SimpleListItemDTO itemDTO = new SimpleListItemDTO();
+        itemDTO.setListId(listId);
+        itemDTO.setTagId(ControllerUtils.stringToLongOrException(listPost.getTagId()));
+
+        if (!itemHasAmount(listPost)) {
+            return itemDTO;
+        }
+        // get unit id
+        Amount amount = listPost.getAmount();
+        Long unitId = ControllerUtils.stringToLongOrDefault(amount.getUnitId(), defaultUnitId);
+        itemDTO.setUnitId(unitId);
+
+        // convert fraction
+        if (amount.getQuantity() > 0) {
+            validateAndFillFromQuantity(itemDTO, listPost);
+        } else {
+            validateAndFillFromParts(itemDTO, listPost);
+        }
+        itemDTO.setRawModifiers(amount.getModifiers());
+        return itemDTO;
+    }
+
+    private void validateAndFillFromParts(SimpleListItemDTO itemDTO, PostListItem listItem) {
+        Amount amount = listItem.getAmount();
+        String rawEntry = listItem.getRawEntry() == null? "":listItem.getRawEntry();
+        Integer wholeQuantity = 0;
+        Double fractionQuantity = 0.0;
+        if (amount.getFractionalQuantity() != null && !amount.getFractionalQuantity().isEmpty()) {
+            FractionType fraction = FractionType.fromName(amount.getFractionalQuantity());
+            if (fraction == null) {
+                double fractionValue = RoundingUtils.doubleFromStringFraction(amount.getFractionalQuantity());
+                fraction = FractionUtils.getFractionTypeForDecimal(new BigDecimal(fractionValue));
+
+            }
+
+            fractionQuantity = FractionType.doubleValueOf(fraction);
+            // handle entry changes -- also fraction types of 0 and 1
+            rawEntry = rawEntry.replace(amount.getFractionalQuantity(), fraction.getDisplayName());
+            itemDTO.setFractionalQuantity(fraction);
+        }
+
+        if (amount.getWholeQuantity() != null) {
+            wholeQuantity = amount.getWholeQuantity();
+        }
+
+        Double quantity = wholeQuantity.doubleValue();
+        quantity += fractionQuantity;
+
+        itemDTO.setWholeQuantity(wholeQuantity);
+        itemDTO.setQuantity(quantity);
+        itemDTO.setRawEntry(rawEntry);
+
+
+    }
+
+    private void validateAndFillFromQuantity(SimpleListItemDTO itemDTO,  PostListItem listPost) {
+        Amount amount = listPost.getAmount();
+        Double quantity = 0.0;
+        Double originalQuantity = amount.getQuantity();
+        BigDecimal bigDecimal = new BigDecimal(String.valueOf(originalQuantity));
+        int wholeNumber = bigDecimal.intValue();
+        BigDecimal decimalPart = bigDecimal.subtract(new BigDecimal(wholeNumber));
+        FractionType fraction = FractionUtils.getFractionTypeForDecimal(decimalPart);
+        quantity += wholeNumber;
+        quantity += FractionType.doubleValueOf(fraction);
+
+        String rawEntry = listPost.getRawEntry();
+        if (!Objects.equals(quantity, originalQuantity)) {
+            // a change was made - replace in raw entry
+            rawEntry = rawEntry.replace(String.valueOf(originalQuantity), String.valueOf(quantity) );
+        }
+
+        itemDTO.setWholeQuantity(wholeNumber);
+        itemDTO.setFractionalQuantity(fraction);
+        itemDTO.setQuantity(quantity);
+        itemDTO.setRawEntry(rawEntry);
+    }
+
+    private boolean itemHasAmount(PostListItem listPost) {
+        return listPost.getAmount() != null
+                && listPost.getAmount().getQuantity() > 0;
     }
 
     @Override

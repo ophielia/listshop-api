@@ -16,6 +16,7 @@ import com.meg.listshop.lmt.api.model.v2.MergeResult;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.data.pojos.CategoryDTO;
 import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
+import com.meg.listshop.lmt.data.pojos.SimpleListItemDTO;
 import com.meg.listshop.lmt.data.pojos.SourceDTO;
 import com.meg.listshop.lmt.list.ShoppingListException;
 import jakarta.transaction.Transactional;
@@ -77,7 +78,7 @@ public interface ShoppingListService {
 
     void addToListFromMealPlan(Long userId, Long listId, Long mealPlanId) throws ShoppingListException, ItemProcessingException;
 
-    void addItemToListByTag(Long userId, Long listId, Long tagId) throws ItemProcessingException;
+    void addItemToList(Long userId, Long listId, SimpleListItemDTO tagId) throws ItemProcessingException;
 
     void updateItemCount(Long userId, Long listId, Long tagId, Integer usedCount);
 

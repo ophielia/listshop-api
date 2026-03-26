@@ -6,7 +6,6 @@
 
 package com.meg.listshop.lmt.list.impl;
 
-import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
@@ -15,15 +14,14 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.ItemChangeRepository;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.ItemMappingDTO;
-import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
 import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.list.BaseShoppingListService;
+import com.meg.listshop.lmt.list.LegacyShoppingListService;
 import com.meg.listshop.lmt.list.ListTagStatisticService;
 import com.meg.listshop.lmt.list.ShoppingListException;
-import com.meg.listshop.lmt.list.LegacyShoppingListService;
 import com.meg.listshop.lmt.list.state.ItemStateContext;
 import com.meg.listshop.lmt.list.state.ListItemEvent;
 import com.meg.listshop.lmt.list.state.ListItemStateMachine;
@@ -32,7 +30,6 @@ import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,12 +43,6 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = ItemProcessingException.class)
 public class LegacyShoppingListServiceImpl extends BaseShoppingListService implements LegacyShoppingListService {
     private static final Logger logger = LoggerFactory.getLogger(LegacyShoppingListServiceImpl.class);
-
-    @Value("${service.shoppinglistservice.merge.items.deleted.after.days}")
-    int mergeDeleteAfterDays = 6;
-
-    @Value("${service.shoppinglistservice.default.list.name}")
-    String defaultShoppingListName;
 
     @Autowired
     public LegacyShoppingListServiceImpl(TagService tagService,
@@ -78,8 +69,6 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
     public List<ShoppingListEntity> getShoppingListsByUserId(Long userId) {
         return shoppingListRepository.findByUserIdOrderByLastUpdateDesc(userId);
     }
-
-
 
     @Override
     public ShoppingListEntity updateList(Long userId, Long listId, ShoppingListDTO updateFrom) {
@@ -129,25 +118,11 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
         }
     }
 
-    private void doCrossOffActions(ShoppingListEntity sourceList, ItemOperationType operationType, List<Long> tagIds) {
-        // get item
-        List<ListItemEntity> items = sourceList.getItems();
-
-        Date crossOffDate = operationType.equals(ItemOperationType.CrossOff) ? new Date() : null;
-
-        items.stream().filter(i -> i.getRemovedOn() == null)
-                .filter(i -> tagIds.contains(i.getTag().getId()))
-                .forEach(i -> i.setCrossedOff(crossOffDate));
-
-        sourceList.setLastUpdate(new Date());
-        itemRepository.saveAll(items);
-
-    }
-
+    @Override
     public void doMoveRemoveItemOperations(ShoppingListEntity sourceList, Long userId, Long sourceListId, ItemOperationType operationType,
                                            List<Long> tagIds, Long destinationListId) throws ItemProcessingException {
 
-        List<ListItemEntity> operationItems = null;
+        List<ListItemEntity> operationItems;
         if (operationType.equals(ItemOperationType.RemoveCrossedOff) ||
                 operationType.equals(ItemOperationType.RemoveAll)) {
             operationItems = getListItemsForOperationType(operationType, sourceList);
@@ -206,23 +181,6 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
 
     }
 
-    @Override
-    public void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException, ItemProcessingException {
-        // retrieve list
-        ShoppingListEntity list = getListForUserById(userId, listId);
-        if (list == null) {
-            throw new ObjectNotFoundException(String.format("No list found for user [%s] with list id [%s])", userId, listId));
-        }
-
-        // get dishes to add
-        List<Long> dishIds = listAddProperties.getDishSourceIds();
-        if (dishIds.isEmpty()) {
-            return;
-        }
-
-        doAddDishesToList(userId, list, dishIds);
-    }
-
     private void doAddDishesToList(Long userId, ShoppingListEntity list, List<Long> dishIds) throws ShoppingListException, ItemProcessingException {
         // get dish items
         List<DishItemEntity> dishItems = dishService.getDishItems(userId, dishIds);
@@ -237,7 +195,7 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
         // check list name
         String listNameFromProperties = listGenerateProperties.getListName();
         if (listNameFromProperties == null || listNameFromProperties.isEmpty()) {
-            listNameFromProperties = defaultShoppingListName;
+            listNameFromProperties = this.defaultShoppingListName;
         }
         String listName = ensureListNameIsUnique(userId, listNameFromProperties);
         // create list
@@ -488,7 +446,7 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
         MealPlanEntity mealPlan = mealPlanService.getMealPlanForUserById(userId, mealPlanId);
 
         // create new inprocess list
-        ShoppingListEntity savedNewList = createList(userId, defaultShoppingListName);
+        ShoppingListEntity savedNewList = createList(userId, this.defaultShoppingListName);
 
         // add to the new list
         return addToListFromMealPlan(userId, savedNewList, mealPlan);
@@ -874,16 +832,6 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
         itemRepository.saveAll(items);
     }
 
-    private void saveListChanges(ShoppingListEntity shoppingList, List<ListItemEntity> items,
-                                 ListOperationType operationType) {
-        itemChangeRepository.saveItemChangeStatistics(shoppingList, items, Collections.emptyList(), shoppingList.getUserId(), operationType);
-        // make changes in list object
-        if (items != null && !items.isEmpty()) {
-            shoppingList.setLastUpdate(new Date());
-            shoppingListRepository.save(shoppingList);
-        }
-    }
-
     private void saveListChanges(ShoppingListEntity shoppingList, List<ListItemEntity> changedItems,
                                  List<ListItemEntity> removedItems, ListOperationType operationType) {
         List<Long> removedTagIds = removedItems.stream()
@@ -901,41 +849,44 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
         }
     }
 
+    protected List<ListItemEntity> convertClientItemsToItemEntities(Long userId, MergeRequest mergeRequest) {
+        Map<String, ListItemEntity> mergeMap = mergeRequest.getMergeItems().stream()
+                .filter(i -> i.getTagId() != null)
+                .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
+        Set<Long> tagKeys = mergeMap.keySet().stream().map(Long::valueOf).collect(Collectors.toSet());
 
-    private void checkTagConflict(Long userId, Set<Long> tagKeys, Map<String, ListItemEntity> mergeMap) {
-        List<LongTagIdPairDTO> conflicts = tagService.getStandardUserDuplicates(userId, tagKeys);
-        for (LongTagIdPairDTO conflict : conflicts) {
-            ListItemEntity replaceItem = mergeMap.get(String.valueOf(conflict.getLeftId()));
-            if (replaceItem != null) {
+        if (tagKeys.isEmpty()) {
+            return new ArrayList<>();
+        }
+        if (mergeRequest.isCheckTagConflict()) {
+            checkTagConflict(userId, tagKeys, mergeMap);
+        }
+        List<TagEntity> outdatedClientTags = tagService.getReplacedTagsFromIds(tagKeys);
+        Map<Long, TagEntity> outdatedClientDictionary = new HashMap<>();
+        if (!outdatedClientTags.isEmpty()) {
+            Set<Long> outdatedIds = outdatedClientTags.stream().map(TagEntity::getReplacementTagId).collect(Collectors.toSet());
+            outdatedClientDictionary = tagService.getDictionaryForIds(outdatedIds);
+        }
+        Map<Long, TagEntity> tagDictionary = tagService.getDictionaryForIds(mergeMap.keySet().stream()
+                .map(Long::valueOf).collect(Collectors.toSet()));
 
-                replaceItem.setTagId(conflict.getRightId());
-                if (replaceItem.getTag() != null) {
-                    replaceItem.getTag().setId(conflict.getRightId());
-                }
-                mergeMap.put(String.valueOf(conflict.getRightId()), replaceItem);
-                mergeMap.remove(String.valueOf(conflict.getLeftId()));
+        Map<Long, ListItemEntity> itemMap = new HashMap<>();
+        for (Map.Entry<String, ListItemEntity> entry : mergeMap.entrySet()) {
+            String tagIdString = entry.getKey();
+            ListItemEntity item = entry.getValue();
+            Long tagId = Long.valueOf(tagIdString);
+            TagEntity tag = tagDictionary.get(tagId);
+            if (!outdatedClientDictionary.isEmpty() && tag.getReplacementTagId() != null) {
+                TagEntity replacementTag = outdatedClientDictionary.get(tag.getReplacementTagId());
+                item.setTag(replacementTag);
+                addItemToClientMap(item, itemMap);
+                continue;
             }
+            item.setTag(tag);
+            addItemToClientMap(item, itemMap);
         }
 
-    }
-
-    private void addItemToClientMap(ListItemEntity item, Map<Long, ListItemEntity> itemMap) {
-        if (item.getTag() == null) {
-            return;
-        }
-        Long tagId = item.getTag().getId();
-        ListItemEntity toAddTo = itemMap.get(tagId);
-        if (itemMap.containsKey(tagId)) {
-            int count = toAddTo.getUsedCount() != null ? toAddTo.getUsedCount() : 0;
-            toAddTo.setUsedCount(count + 1);
-            toAddTo.setRemovedOn(DateUtils.maxDate(toAddTo.getRemovedOn(), item.getRemovedOn()));
-            toAddTo.setCrossedOff(DateUtils.maxDate(toAddTo.getCrossedOff(), item.getCrossedOff()));
-            toAddTo.setUpdatedOn(DateUtils.maxDate(toAddTo.getUpdatedOn(), item.getUpdatedOn()));
-            toAddTo.setAddedOn(DateUtils.maxDate(toAddTo.getAddedOn(), item.getAddedOn()));
-            itemMap.put(tagId, toAddTo);
-            return;
-        }
-        itemMap.put(tagId, item);
+        return new ArrayList<>(itemMap.values());
     }
 
     private List<ListItemEntity> addDishItemsToList(ShoppingListEntity shoppingList, List<DishItemEntity> dishItems) throws ShoppingListException, ItemProcessingException {

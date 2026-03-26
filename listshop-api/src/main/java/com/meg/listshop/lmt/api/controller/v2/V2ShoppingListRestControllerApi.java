@@ -10,11 +10,7 @@ import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.ItemOperationPut;
 import com.meg.listshop.lmt.api.model.ListAddProperties;
 import com.meg.listshop.lmt.api.model.ListGenerateProperties;
-import com.meg.listshop.lmt.api.model.v2.MergeRequest;
-import com.meg.listshop.lmt.api.model.v2.ShoppingListPut;
-import com.meg.listshop.lmt.api.model.v2.MergeResult;
-import com.meg.listshop.lmt.api.model.v2.ShoppingList;
-import com.meg.listshop.lmt.api.model.v2.ShoppingListList;
+import com.meg.listshop.lmt.api.model.v2.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
@@ -62,8 +58,9 @@ public interface V2ShoppingListRestControllerApi {
     @DeleteMapping(value = "/{listId}", produces = "application/json")
     ResponseEntity<Object> deleteList(Authentication principal, @PathVariable("listId") Long listId);
 
-    @PostMapping(value = "/{listId}/tag/{tagId}", produces = "application/json")
-    ResponseEntity<Object> addItemToListByTag(Authentication principal, @PathVariable("listId") Long listId, @PathVariable("tagId") Long tagId) throws ItemProcessingException;
+    @PostMapping(value = "/{listId}/item", produces = "application/json")
+    ResponseEntity<Object> addItemToList(Authentication principal, @PathVariable("listId") Long listId,
+                                         @RequestBody PostListItem postListItem) throws ItemProcessingException;
 
     @DeleteMapping(value = "/{listId}/item/{itemId}", produces = "application/json")
     ResponseEntity<Object> deleteItemFromList(Authentication principal, @PathVariable("listId") Long listId, @PathVariable("itemId") Long itemId,
