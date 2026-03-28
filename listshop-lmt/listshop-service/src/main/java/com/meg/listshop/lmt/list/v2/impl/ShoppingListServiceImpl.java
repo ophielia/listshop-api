@@ -11,9 +11,11 @@ import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.api.model.v2.Amount;
 import com.meg.listshop.lmt.api.model.v2.MergeRequest;
 import com.meg.listshop.lmt.api.model.v2.MergeResult;
 import com.meg.listshop.lmt.api.model.v2.SourceReferenceType;
+import com.meg.listshop.lmt.conversion.BasicAmount;
 import com.meg.listshop.lmt.data.ItemChangeRepository;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
@@ -295,9 +297,10 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
         boolean isNew = item == null;
 
         TagEntity tag = tagService.getTagById(tagId);
+        BasicAmount amount = pullAmountFromSimpleItem(itemDTO, tag);
         ItemStateContext itemStateContext = new ItemStateContext(item, listId);
         itemStateContext.setTag(tag);
-        itemStateContext.setItem(itemDTO);
+        itemStateContext.setTagAmount(amount);
 
         ListItemEntity result = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, itemStateContext, userId);
 
@@ -310,7 +313,14 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
                 ListOperationType.TAG_ADD);
     }
 
-    public ShoppingListDTO getStarterList(Long userId) {
+    private BasicAmount pullAmountFromSimpleItem(SimpleListItemDTO item, TagEntity tag) {
+        if (item == null || item.getQuantity() == null || item.getQuantity() == 0.0) {
+            return null;
+        }
+        return new BasicAmount(item.getQuantity(), item.getMarker(), item.getUnitSize(), item.getUnitId(), tag);
+    }
+
+        public ShoppingListDTO getStarterList(Long userId) {
 
         List<ShoppingListDTO> foundLists = shoppingListRepository.findDTOByUserIdAndIsStarterListTrue(userId);
         if (!foundLists.isEmpty()) {

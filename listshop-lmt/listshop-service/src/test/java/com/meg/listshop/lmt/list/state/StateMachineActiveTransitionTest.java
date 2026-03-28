@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.Application;
@@ -1008,12 +1014,5 @@ class StateMachineActiveTransitionTest {
         Assertions.assertNotNull(result.getAddedOn());
     }
 
-    private void dateInLastTwoSeconds(Date toCheck) {
-        LocalDateTime oneSecondAgo = LocalDateTime.now().minusSeconds(2);
-        LocalDateTime timeToCheck = LocalDateTime.ofInstant(toCheck.toInstant(), ZoneId.systemDefault());
-        System.out.println(oneSecondAgo);
-        System.out.println(timeToCheck);
-        Assertions.assertTrue(timeToCheck.isAfter(oneSecondAgo));
 
-    }
 }

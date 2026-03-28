@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,7 +22,6 @@ public class DishRating {
     public DishRating() {
     }
     public DishRating(com.meg.listshop.lmt.api.model.DishRatingInfo ratingInfo) {
-       //MM start here
     }
 
     public DishRating withDish(NestedDish dish) {

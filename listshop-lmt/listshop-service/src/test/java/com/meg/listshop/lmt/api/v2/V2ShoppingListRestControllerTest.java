@@ -8,6 +8,7 @@ package com.meg.listshop.lmt.api.v2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
+import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.ItemOperationPut;
 import com.meg.listshop.lmt.api.model.ItemOperationType;
@@ -23,10 +24,7 @@ import io.restassured.http.ContentType;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -483,50 +481,6 @@ class V2ShoppingListRestControllerTest {
     }
 
     @Test
-    void testAddTagToList() throws Exception {
-        Long tagId = TestConstants.TAG_PASTA;
-        ListGenerateProperties properties = new ListGenerateProperties();
-        properties.setAddFromStarter(true);
-        properties.setGenerateMealplan(false);
-
-        String jsonProperties = json(properties);
-
-
-        String location = given()
-                .header(TestUtils.authToken(jwtToken))
-                .contentType(ContentType.JSON)
-                .body(jsonProperties)
-                .when()
-                .post("/v2/shoppinglist")
-                .then()
-                .statusCode(201)
-                .extract()
-                .header("Location");
-
-        Assertions.assertNotNull(location);
-        String[] urlTokens = StringUtils.split(location, "/");
-        Long listId = Long.valueOf(urlTokens[(urlTokens).length - 1]);
-
-
-        String url = "/v2/shoppinglist/" + listId + "/tag/" + tagId;
-        given()
-                .header(TestUtils.authToken(jwtToken))
-                .contentType(ContentType.JSON)
-                .when()
-                .post(url)
-                .then()
-                .statusCode(204);
-
-        // retrieve list and verify
-        ShoppingList listWithNewItem = retrieveList(jwtToken, listId);
-        Map<String, ShoppingListItem> standardResultMap = listWithNewItem.getCategories().stream()
-                .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
-        Assertions.assertNotNull(standardResultMap);
-        Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId)));
-    }
-
-    @Test
     void testRemoveListFromList() {
         Long listId = 609990L;
         Long fromListId = 609991L;
@@ -595,7 +549,6 @@ class V2ShoppingListRestControllerTest {
         Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId2)));
 
     }
-
 
     @Test
     void testAddDishesToList() throws Exception {
@@ -1293,7 +1246,6 @@ class V2ShoppingListRestControllerTest {
         Assertions.assertEquals(Long.valueOf(2), Long.valueOf(testElement.getDetails().size()));
     }
 
-
     @Test
     void deleteItemOperation_Remove() throws Exception {
         Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
@@ -1529,6 +1481,239 @@ class V2ShoppingListRestControllerTest {
     private String json(Object o) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(o);
+    }
+
+    @Nested
+    class TagTests {
+        @Test
+        void testAddTagToList() throws Exception {
+            Long tagId = TestConstants.TAG_PASTA;
+            ListGenerateProperties properties = new ListGenerateProperties();
+            properties.setAddFromStarter(true);
+            properties.setGenerateMealplan(false);
+
+            String jsonProperties = json(properties);
+
+
+            String location = given()
+                    .header(TestUtils.authToken(jwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(jsonProperties)
+                    .when()
+                    .post("/v2/shoppinglist")
+                    .then()
+                    .statusCode(201)
+                    .extract()
+                    .header("Location");
+
+            Assertions.assertNotNull(location);
+            String[] urlTokens = StringUtils.split(location, "/");
+            Long listId = Long.valueOf(urlTokens[(urlTokens).length - 1]);
+
+            PostListItem listPost = new PostListItem(tagId.toString(), null);
+
+            String url = "/v2/shoppinglist/" + listId + "/item";
+            given()
+                    .header(TestUtils.authToken(jwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(json(listPost))
+                    .when()
+                    .post(url)
+                    .then()
+                    .statusCode(204);
+
+            // retrieve list and verify
+            ShoppingList listWithNewItem = retrieveList(jwtToken, listId);
+            Map<String, ShoppingListItem> standardResultMap = listWithNewItem.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            Assertions.assertNotNull(standardResultMap);
+            Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId)));
+        }
+
+        @Test
+        void testAddTagToListWithAmount() throws Exception {
+            Long tagId = TestConstants.TAG_PASTA;
+            Long kgUnitId = 1014L;
+            Long listId = createNewList(jwtToken);
+
+            Amount amount = new Amount()
+                    .withQuantity(1.5)
+                    .withWholeQuantity(1)
+                    .withFractionalQuantity("OneHalf")
+                    .withUnitId(kgUnitId.toString());
+
+            PostListItem listPost = new PostListItem(tagId.toString(), amount);
+            String url = "/v2/shoppinglist/" + listId + "/item";
+            given()
+                    .header(TestUtils.authToken(jwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(json(listPost))
+                    .when()
+                    .post(url)
+                    .then()
+                    .statusCode(204);
+
+            // retrieve list and verify
+            ShoppingList listWithNewItem = retrieveList(jwtToken, listId);
+            Map<String, ShoppingListItem> standardResultMap = listWithNewItem.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            Assertions.assertNotNull(standardResultMap);
+            Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId)));
+            ShoppingListItem testElement = standardResultMap.get(String.valueOf(tagId));
+            Assertions.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getDetails().size()));
+            Assertions.assertEquals(3.307, RoundingUtils.roundToThousandths(testElement.getDetails().get(0).getAmount().getQuantity()), 0.001);
+            Assertions.assertEquals("1008", testElement.getDetails().get(0).getAmount().getUnitId());
+            Assertions.assertEquals("lb", testElement.getDetails().get(0).getAmount().getUnitDisplay());
+            Assertions.assertEquals("3 1/3 lb", testElement.getDetails().get(0).getAmount().getDisplay());
+            Assertions.assertEquals(3.307, RoundingUtils.roundToThousandths(testElement.getAmount().getQuantity()), 0.001);
+            Assertions.assertEquals("1008", testElement.getAmount().getUnitId());
+            Assertions.assertEquals("lb", testElement.getAmount().getUnitDisplay());
+            Assertions.assertEquals("3 1/3 lb", testElement.getAmount().getDisplay());
+            Assertions.assertEquals(3, testElement.getAmount().getWholeQuantity());
+            Assertions.assertEquals("OneThird", testElement.getAmount().getFractionalQuantity());
+        }
+
+        @Test
+        void testAddTagWithExistingAmountSameDomain() throws Exception {
+            Long tagId = TestConstants.TAG_PASTA;
+            Amount amount = new Amount()
+                    .withQuantity(1.5)
+                    .withWholeQuantity(1)
+                    .withFractionalQuantity("OneHalf")
+                    .withUnitId(TestConstants.UNIT_ID_LB.toString());
+            Long listId = prepareListWithTagAndAmount(jwtToken,tagId.toString(), amount);
+
+            // now, add the same amount again
+            PostListItem listPost = new PostListItem(tagId.toString(), amount);
+            String url = "/v2/shoppinglist/" + listId + "/item";
+            given()
+                    .header(TestUtils.authToken(jwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(json(listPost))
+                    .when()
+                    .post(url)
+                    .then()
+                    .statusCode(204);
+
+            // retrieve list and verify
+            ShoppingList listWithNewItem = retrieveList(jwtToken, listId);
+            Map<String, ShoppingListItem> standardResultMap = listWithNewItem.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            Assertions.assertNotNull(standardResultMap);
+            Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId)));
+            ShoppingListItem testElement = standardResultMap.get(String.valueOf(tagId));
+            Assertions.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getDetails().size()));
+            Assertions.assertEquals(3.000, RoundingUtils.roundToThousandths(testElement.getDetails().get(0).getAmount().getQuantity()), 0.001);
+            Assertions.assertEquals("1008", testElement.getDetails().get(0).getAmount().getUnitId());
+            Assertions.assertEquals("lb", testElement.getDetails().get(0).getAmount().getUnitDisplay());
+            Assertions.assertEquals("3 lb", testElement.getDetails().get(0).getAmount().getDisplay());
+            Assertions.assertEquals(3.000, RoundingUtils.roundToThousandths(testElement.getAmount().getQuantity()), 0.001);
+            Assertions.assertEquals("1008", testElement.getAmount().getUnitId());
+            Assertions.assertEquals("lb", testElement.getAmount().getUnitDisplay());
+            Assertions.assertEquals("3 lb", testElement.getAmount().getDisplay());
+            Assertions.assertEquals(3, testElement.getAmount().getWholeQuantity());
+            Assertions.assertNull(testElement.getAmount().getFractionalQuantity());
+        }
+
+        @Test
+        void testAddTagWithExistingAmountDifferentDomain() throws Exception {
+            Long tagId = TestConstants.TAG_PASTA;
+            Long kgUnitId = TestConstants.UNIT_ID_KG;
+            Long lbUnitId = TestConstants.UNIT_ID_LB;
+            Amount amount = new Amount()
+                    .withQuantity(1.5)
+                    .withWholeQuantity(1)
+                    .withFractionalQuantity("OneHalf")
+                    .withUnitId(kgUnitId.toString());
+            Long listId = prepareListWithTagAndAmount(jwtToken,tagId.toString(), amount);
+
+            // add 1.5 pounds
+            Amount amountToAdd = new Amount()
+                    .withQuantity(1.5)
+                    .withWholeQuantity(1)
+                    .withFractionalQuantity("OneHalf")
+                    .withUnitId(lbUnitId.toString());
+
+            // add this amount
+            PostListItem listPost = new PostListItem(tagId.toString(), amountToAdd);
+            String url = "/v2/shoppinglist/" + listId + "/item";
+            given()
+                    .header(TestUtils.authToken(jwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(json(listPost))
+                    .when()
+                    .post(url)
+                    .then()
+                    .statusCode(204);
+
+
+            // retrieve list and verify
+            ShoppingList listWithNewItem = retrieveList(jwtToken, listId);
+            Map<String, ShoppingListItem> standardResultMap = listWithNewItem.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            Assertions.assertNotNull(standardResultMap);
+            Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId)));
+            ShoppingListItem testElement = standardResultMap.get(String.valueOf(tagId));
+            Assertions.assertEquals(Long.valueOf(1), Long.valueOf(testElement.getDetails().size()));
+            Assertions.assertEquals(4.875, RoundingUtils.roundToThousandths(testElement.getDetails().get(0).getAmount().getQuantity()), 0.001);
+            Assertions.assertEquals("1008", testElement.getDetails().get(0).getAmount().getUnitId());
+            Assertions.assertEquals("lb", testElement.getDetails().get(0).getAmount().getUnitDisplay());
+            Assertions.assertEquals("4 7/8 lb", testElement.getDetails().get(0).getAmount().getDisplay());
+            Assertions.assertEquals(4.875, RoundingUtils.roundToThousandths(testElement.getAmount().getQuantity()), 0.001);
+            Assertions.assertEquals("1008", testElement.getAmount().getUnitId());
+            Assertions.assertEquals("lb", testElement.getAmount().getUnitDisplay());
+            Assertions.assertEquals("4 7/8 lb", testElement.getAmount().getDisplay());
+            Assertions.assertEquals(4, testElement.getAmount().getWholeQuantity());
+            Assertions.assertEquals("SevenEighths", testElement.getAmount().getFractionalQuantity());
+        }
+
+        // testAddTagExistingAmountNewWithoutAmount
+        // testAddTagExistingNoAmountNewWithAmount
+
+        private Long prepareListWithTagAndAmount(String token,  String tagId, Amount amount) throws Exception {
+            Long newListId = createNewList(token);
+
+
+            PostListItem listPost = new PostListItem(tagId, amount);
+            String url = "/v2/shoppinglist/" + newListId + "/item";
+            given()
+                    .header(TestUtils.authToken(jwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(json(listPost))
+                    .when()
+                    .post(url)
+                    .then()
+                    .statusCode(204);
+            return newListId;
+        }
+        private Long createNewList(String token) throws Exception {
+            ListGenerateProperties properties = new ListGenerateProperties();
+            properties.setAddFromStarter(true);
+            properties.setGenerateMealplan(false);
+
+            String jsonProperties = json(properties);
+
+
+            String location = given()
+                    .header(TestUtils.authToken(token))
+                    .contentType(ContentType.JSON)
+                    .body(jsonProperties)
+                    .when()
+                    .post("/v2/shoppinglist")
+                    .then()
+                    .statusCode(201)
+                    .extract()
+                    .header("Location");
+
+            Assertions.assertNotNull(location);
+            String[] urlTokens = StringUtils.split(location, "/");
+            return Long.valueOf(urlTokens[(urlTokens).length - 1]);
+
+        }
     }
 
 }

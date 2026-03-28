@@ -104,7 +104,8 @@ public final class TestConstants {
 
     public static final Long TARGET_3_SLOT_ID = 506L;
 
-
+    public static final Long UNIT_ID_KG = 1014L;
+    public static final Long UNIT_ID_LB = 1008L;
 
     public static final Long PROPOSAL_1_ID = 500L;  // status
     public static final Long PROPOSAL_1_SLOT_4_ID = 503L;
