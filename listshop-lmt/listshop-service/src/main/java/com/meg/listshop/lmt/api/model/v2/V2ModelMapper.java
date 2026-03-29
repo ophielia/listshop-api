@@ -214,11 +214,12 @@ public class V2ModelMapper {
 
         Amount amount = extractAmount(listItemDTO, unitMap);
         NestedTag tag = new NestedTag(listItemDTO.getTag().getId(), listItemDTO.getTag().getName());
+        String specType = listItemDTO.getSpecificationType() != null ? listItemDTO.getSpecificationType().name() : SpecificationType.NONE.name();
         return new ShoppingListItem(listItemDTO.getItemId())
                 .withTag(tag)
                 .withAmount(amount)
                 .withDetails(itemDetails)
-                .withAmountType(listItemDTO.getSpecificationType().name())
+                .withAmountType(specType)
                 .withListId(listItemDTO.getListId().toString())
                 .withSources(listItemDTO.getSources())
                 .withAddedOn(listItemDTO.getAddedOn())

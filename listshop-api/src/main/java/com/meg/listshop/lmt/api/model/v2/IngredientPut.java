@@ -6,6 +6,7 @@
 
 package com.meg.listshop.lmt.api.model.v2;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -44,14 +45,21 @@ public class IngredientPut {
         // empty constructor
     }
 
+    @JsonIgnore
     public String getId() {
         return id;
+    }
+
+    @JsonIgnore
+    public Amount getAmount() {
+        return amount;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
+    @JsonIgnore
     public String getTagId() {
         return tagId;
     }
@@ -60,16 +68,9 @@ public class IngredientPut {
         this.tagId = tagId;
     }
 
-    public String getTagDisplay() {
-        return tagDisplay;
-    }
-
-    public void setTagDisplay(String tagDisplay) {
-        this.tagDisplay = tagDisplay;
-    }
-
+    @JsonIgnore
     public Integer getWholeQuantity() {
-        if (amount!= null) {
+        if (amount != null) {
             return amount.getWholeQuantity();
         }
         return null;
@@ -82,8 +83,9 @@ public class IngredientPut {
         amount = this.amount.withWholeQuantity(wholeQuantity);
     }
 
+    @JsonIgnore
     public String getFractionalQuantity() {
-        if (amount!= null) {
+        if (amount != null) {
             amount.getFractionalQuantity();
         }
         return null;
@@ -96,22 +98,9 @@ public class IngredientPut {
         amount = amount.withFractionalQuantity(fractionalQuantity);
     }
 
-    public String getQuantityDisplay() {
-        if (amount!= null) {
-            return amount.getQuantityDisplay();
-        }
-        return null;
-    }
-
-    public void setQuantityDisplay(String quantityDisplay) {
-        if (amount == null) {
-            amount = new Amount();
-        }
-        amount = amount.withQuantityDisplay(quantityDisplay);
-    }
-
+    @JsonIgnore
     public String getUnitId() {
-        if (amount!= null) {
+        if (amount != null) {
             amount.getUnitId();
         }
         return null;
@@ -124,34 +113,15 @@ public class IngredientPut {
         amount = amount.withUnitId(unitId);
     }
 
+    @JsonIgnore
     public List<String> getRawModifiers() {
-        if (amount!= null) {
+        if (amount != null) {
             amount.getModifiers();
         }
         return null;
     }
 
-    public void setRawModifiers(List<String> rawModifiers) {
-        if (amount == null) {
-            amount = new Amount();
-        }
-        amount = amount.withModifiers(rawModifiers);
-    }
-
-    public String getUnitDisplay() {
-        if (amount!= null) {
-            return amount.getUnitDisplay();
-        }
-        return null;
-    }
-
-    public void setUnitDisplay(String unitDisplay) {
-        if (amount == null) {
-            amount = new Amount();
-        }
-        amount = amount.withUnitDisplay(unitDisplay);
-    }
-
+    @JsonIgnore
     public String getRawEntry() {
         return rawEntry;
     }
@@ -160,8 +130,9 @@ public class IngredientPut {
         this.rawEntry = rawEntry;
     }
 
+    @JsonIgnore
     public Double getQuantity() {
-        if (amount!= null) {
+        if (amount != null) {
             return amount.getQuantity();
         }
         return null;

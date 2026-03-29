@@ -171,13 +171,13 @@ public class DishRestController implements V2DishRestControllerApi {
         if (!ingredientHasAmount(ingredient)) {
             return dishItemDTO;
         }
-        Long unitId = ControllerUtils.stringToLongOrDefault(ingredient.getUnitId(), defaultUnitId);
+        Long unitId = ControllerUtils.stringToLongOrDefault(ingredient.getAmount().getUnitId(), defaultUnitId);
         dishItemDTO.setUnitId(unitId);
 
         // check quantity and round if necessary
 
         // check fraction, and round if necessary
-        if (ingredient.getQuantity() != null ) {
+        if (ingredient.getAmount() != null && ingredient.getAmount().getQuantity() > 0) {
             // fill from quantity
             validateAndFillFromQuantity(dishItemDTO, ingredient);
         } else {
@@ -197,22 +197,22 @@ public class DishRestController implements V2DishRestControllerApi {
         String rawEntry = ingredient.getRawEntry() == null? "":ingredient.getRawEntry();
         Integer wholeQuantity = 0;
         Double fractionQuantity = 0.0;
-        if (ingredient.getFractionalQuantity() != null && !ingredient.getFractionalQuantity().isEmpty()) {
-            FractionType fraction = FractionType.fromName(ingredient.getFractionalQuantity());
+        if (ingredient.getAmount().getFractionalQuantity() != null && !ingredient.getAmount().getFractionalQuantity().isEmpty()) {
+            FractionType fraction = FractionType.fromName(ingredient.getAmount().getFractionalQuantity());
             if (fraction == null) {
-                double fractionValue = RoundingUtils.doubleFromStringFraction(ingredient.getFractionalQuantity());
+                double fractionValue = RoundingUtils.doubleFromStringFraction(ingredient.getAmount().getFractionalQuantity());
                 fraction = FractionUtils.getFractionTypeForDecimal(new BigDecimal(fractionValue));
 
             }
 
             fractionQuantity = FractionType.doubleValueOf(fraction);
             // handle entry changes -- also fraction types of 0 and 1
-            rawEntry = rawEntry.replace(ingredient.getFractionalQuantity(), fraction.getDisplayName());
+            rawEntry = rawEntry.replace(ingredient.getAmount().getFractionalQuantity(), fraction.getDisplayName());
             dishItemDTO.setFractionalQuantity(fraction);
         }
 
-        if (ingredient.getWholeQuantity() != null) {
-            wholeQuantity = ingredient.getWholeQuantity();
+        if (ingredient.getAmount().getWholeQuantity() != null) {
+            wholeQuantity = ingredient.getAmount().getWholeQuantity();
         }
 
         Double quantity = wholeQuantity.doubleValue();
@@ -226,7 +226,7 @@ public class DishRestController implements V2DishRestControllerApi {
 
     private void validateAndFillFromQuantity(DishItemDTO dishItemDTO, IngredientPut ingredient) {
         Double quantity = 0.0;
-        Double originalQuantity = ingredient.getQuantity();
+        Double originalQuantity = ingredient.getAmount().getQuantity();
         BigDecimal bigDecimal = new BigDecimal(String.valueOf(originalQuantity));
         int wholeNumber = bigDecimal.intValue();
         BigDecimal decimalPart = bigDecimal.subtract(new BigDecimal(wholeNumber));

@@ -140,6 +140,7 @@ class V2DishRestControllerTest {
                 .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
                 .contentType(ContentType.JSON)
                 .body(payload)
+                .log().all()
                 .when()
                 .post(url)
                 .then()
@@ -149,9 +150,9 @@ class V2DishRestControllerTest {
         Assertions.assertNotNull(dishResult);
         Assertions.assertEquals(1, dishResult.getIngredients().size(), "should be 1 ingredient");
         Ingredient ingredient = dishResult.getIngredients().get(0);
-        Assertions.assertEquals(ingredient.getAmount().getUnitId(), ingredientPut.getUnitId());
-        Assertions.assertEquals(ingredient.getAmount().getWholeQuantity(), ingredientPut.getWholeQuantity());
-        Assertions.assertEquals(ingredientPut.getFractionalQuantity(), ingredient.getAmount().getFractionalQuantity());
+        Assertions.assertEquals(ingredientPut.getAmount().getUnitId(),ingredient.getAmount().getUnitId());
+        Assertions.assertEquals(ingredientPut.getAmount().getWholeQuantity(),ingredient.getAmount().getWholeQuantity());
+        Assertions.assertEquals(ingredientPut.getAmount().getFractionalQuantity(), ingredient.getAmount().getFractionalQuantity());
         Assertions.assertEquals("1 1/2", ingredient.getAmount().getQuantityDisplay());
     }
 
@@ -207,10 +208,10 @@ class V2DishRestControllerTest {
         Assertions.assertEquals(1, dishResult.getIngredients().size(), "should be 1 ingredient");
         ingredient = dishResult.getIngredients().get(0);
 
-        Assertions.assertEquals(ingredient.getAmount().getUnitId(), ingredientUpdate.getUnitId());
-        Assertions.assertEquals(ingredient.getAmount().getWholeQuantity(), ingredientUpdate.getWholeQuantity());
-        Assertions.assertEquals(ingredient.getAmount().getFractionalQuantity(), ingredientUpdate.getFractionalQuantity());
-        Assertions.assertEquals("101", ingredient.getAmount().getQuantityDisplay());
+        Assertions.assertEquals(ingredientUpdate.getAmount().getUnitId(),ingredient.getAmount().getUnitId());
+        Assertions.assertEquals(ingredientUpdate.getAmount().getWholeQuantity(),ingredient.getAmount().getWholeQuantity());
+        Assertions.assertEquals(ingredientUpdate.getAmount().getFractionalQuantity(),ingredient.getAmount().getFractionalQuantity());
+        Assertions.assertEquals(ingredient.getAmount().getQuantityDisplay(),"101");
     }
 
     @Test

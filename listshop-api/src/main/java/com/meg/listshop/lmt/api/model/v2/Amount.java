@@ -19,9 +19,9 @@ public class Amount {
     @JsonProperty("fractional_quantity")
     private String fractionalQuantity;
     @JsonProperty
-    private Double quantity;
+    private double quantity;
     @JsonProperty("rounded_quantity")
-    private Double roundedQuantity;
+    private double roundedQuantity;
     @JsonProperty("quantity_display")
     private String quantityDisplay;
     @JsonProperty("unit_id")
