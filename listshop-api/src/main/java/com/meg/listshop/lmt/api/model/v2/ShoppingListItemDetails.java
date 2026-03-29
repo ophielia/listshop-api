@@ -20,6 +20,9 @@ public class ShoppingListItemDetails {
 
     private Amount amount;
 
+    @JsonProperty("contains_unspecified")
+    private boolean containsUnspecified;
+
     public ShoppingListItemDetails() {
         // necessary for json construction
     }
@@ -40,6 +43,14 @@ public class ShoppingListItemDetails {
         return this;
     }
 
+    public ShoppingListItemDetails withContainsUnspecified(boolean containsUnspecified) {
+        this.containsUnspecified = containsUnspecified;
+        return this;
+    }
+
+    public boolean isContainsUnspecified() {
+        return containsUnspecified;
+    }
 
     public String getDishId() {
         return dishId;

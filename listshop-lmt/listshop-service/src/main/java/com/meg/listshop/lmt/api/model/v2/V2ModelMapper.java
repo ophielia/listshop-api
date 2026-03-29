@@ -218,6 +218,7 @@ public class V2ModelMapper {
                 .withTag(tag)
                 .withAmount(amount)
                 .withDetails(itemDetails)
+                .withAmountType(listItemDTO.getSpecificationType().name())
                 .withListId(listItemDTO.getListId().toString())
                 .withSources(listItemDTO.getSources())
                 .withAddedOn(listItemDTO.getAddedOn())
@@ -245,6 +246,7 @@ public class V2ModelMapper {
         return new ShoppingListItemDetails()
                 .withDishId(linkedDishId)
                 .withListId(linkedListId)
+                .withContainsUnspecified(detailEntity.isContainsUnspecified())
                 .withAmount(amount);
     }
 

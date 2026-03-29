@@ -280,7 +280,6 @@ public class ListItemEntity {
     public String toString() {
         return "ListItemEntity{" +
                 "item_id=" + itemId +
-                ", details=" + details +
                 ", tag=" + tag +
                 ", rawDishSources='" + rawDishSources + '\'' +
                 ", rawListSources='" + rawListSources + '\'' +

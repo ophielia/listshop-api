@@ -44,6 +44,9 @@ public class ShoppingListItem {
     @JsonProperty("sources")
     private Set<String> sources;
 
+    @JsonProperty("amount_type")
+    private String amountType;
+
     private List<ShoppingListItemDetails> details;
 
     public ShoppingListItem(Long id) {
@@ -109,6 +112,10 @@ public class ShoppingListItem {
         return this;
     }
 
+    public ShoppingListItem withAmountType(String amountType) {
+        this.amountType = amountType;
+        return this;
+    }
     public String getItemId() {
         return itemId;
     }
@@ -149,6 +156,10 @@ public class ShoppingListItem {
         return sources;
     }
 
+    public String getAmountType() {
+        return amountType;
+    }
+
     public List<ShoppingListItemDetails> getDetails() {
         return details;
     }
@@ -166,6 +177,7 @@ public class ShoppingListItem {
                 ", listId='" + listId + '\'' +
                 ", usedCount=" + usedCount +
                 ", details=" + details +
+                ", amountType=" + amountType +
                 '}';
     }
 }

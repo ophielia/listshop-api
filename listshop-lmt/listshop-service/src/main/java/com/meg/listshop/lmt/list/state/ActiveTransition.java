@@ -190,6 +190,7 @@ Result is scaled, summed and saved.
     private void addNonSpecifiedAmount(ListItemDetailEntity existing, ListItemEntity item, Long dishId, @NotNull ItemStateContext context) {
         if (existing != null) {
             existing.setCount(existing.getCount() + 1);
+            existing.setContainsUnspecified(true);
             return;
         }
         Long detailListId = context.getTargetListId();
