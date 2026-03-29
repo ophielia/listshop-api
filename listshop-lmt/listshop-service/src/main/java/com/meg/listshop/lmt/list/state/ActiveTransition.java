@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.common.CommonUtils;
@@ -6,11 +12,14 @@ import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
+import com.meg.listshop.lmt.conversion.BasicAmount;
 import com.meg.listshop.lmt.conversion.ListConversionService;
+import com.meg.listshop.lmt.conversion.QuantityElements;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.SimpleListItemDTO;
 import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.lmt.data.repository.ListItemRepository;
 import jakarta.transaction.Transactional;
@@ -21,6 +30,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+
+import static com.meg.listshop.common.FractionUtils.splitQuantityIntoElements;
 
 @Component
 @Qualifier("activeTransition")
@@ -168,9 +179,18 @@ Result is scaled, summed and saved.
 
     }
 
+    private BasicAmount pullAmountFromSimpleItem(SimpleListItemDTO item, TagEntity tag) {
+        if (item == null || item.getQuantity() == 0) {
+            return null;
+        }
+        return new BasicAmount(item.getQuantity(), item.getMarker(), item.getUnitSize(), item.getUnitId(),tag);
+
+    }
+
     private void addNonSpecifiedAmount(ListItemDetailEntity existing, ListItemEntity item, Long dishId, @NotNull ItemStateContext context) {
         if (existing != null) {
             existing.setCount(existing.getCount() + 1);
+            existing.setContainsUnspecified(true);
             return;
         }
         Long detailListId = context.getTargetListId();
@@ -203,8 +223,11 @@ Result is scaled, summed and saved.
         genericAddSpecifiedAmount(converted, item, existing, false, rawEntry, dishId, linkedListId, context);
     }
 
-    private void addSpecifiedAmountForTag(ConvertibleAmount converted, ListItemEntity item, Long listId, ListItemDetailEntity existing, @NotNull ItemStateContext context) {
-        genericAddSpecifiedAmount(converted, item, existing, false, null, null, listId, context);
+    private void addSpecifiedAmountForTag(ConvertibleAmount converted, ListItemEntity item, Long listId,
+                                          ListItemDetailEntity existing, @NotNull ItemStateContext context) {
+       String rawEntry = context.getTagRawEntry();
+        genericAddSpecifiedAmount(converted, item, existing, false, rawEntry, null, listId, context);
+
     }
 
     private void genericAddSpecifiedAmount(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, boolean containsUnspecified, String rawEntry, Long linkedDishId, Long linkedListId, @NotNull ItemStateContext context) {
@@ -218,7 +241,7 @@ Result is scaled, summed and saved.
         newDetail.setLinkedListId(linkedListId);
         newDetail.setLinkedDishId(linkedDishId);
         newDetail.setCount(1);
-        newDetail.setQuantity(converted.getQuantity());
+        setQuantityInDetail(newDetail, converted.getQuantity());
         newDetail.setRawEntry(rawEntry);
         newDetail.setUnitSize(converted.getUnitSize());
         newDetail.setMarker(converted.getMarker());
@@ -240,7 +263,8 @@ Result is scaled, summed and saved.
             // if simple add is possible (units equal) do it
 
             Double newQuantity = existing.getQuantity() + converted.getQuantity();
-            existing.setQuantity(newQuantity);
+            setQuantityInDetail(existing, newQuantity);
+            conversionService.recalculateDisplay(existing, converted.getUnit());
             Integer count = CommonUtils.elvis(existing.getCount(), 1);
             existing.setCount(count + 1);
             return;
@@ -256,13 +280,13 @@ Result is scaled, summed and saved.
         }
 
         if (convertedExisting != null) {
-            existing.setQuantity(convertedExisting.getQuantity());
+            setQuantityInDetail(existing, convertedExisting.getQuantity());
             existing.setUnitId(convertedExisting.getUnit().getId());
             existing.setUnitSize(convertedExisting.getUnitSize());
             existing.setMarker(convertedExisting.getMarker());
             Integer count = CommonUtils.elvis(existing.getCount(), 1);
             existing.setCount(count + 1);
-
+            conversionService.recalculateDisplay(existing, convertedExisting.getUnit());
             return;
         }
         // otherwise, add mixed amount
@@ -270,15 +294,22 @@ Result is scaled, summed and saved.
 
     }
 
+    private void setQuantityInDetail(ListItemDetailEntity existing, Double newQuantity) {
+        QuantityElements elements = splitQuantityIntoElements(newQuantity);
+        existing.setFractionalQuantity(elements.fractionType());
+        existing.setWholeQuantity(elements.wholeNumber());
+        existing.setQuantity(elements.quantity());
+    }
+
     private void doAddMixedDetail(ConvertibleAmount converted, ListItemDetailEntity existing) {
         if (existing.getUnitId() == null) {
             // converted must have amount info - copy it into existing
-            existing.setQuantity(converted.getQuantity());
+            setQuantityInDetail(existing, converted.getQuantity());
             existing.setUnitId(converted.getUnit().getId());
             existing.setMarker(converted.getMarker());
             existing.setUnitSize(converted.getUnitSize());
             existing.setUserSize(converted.getUserSize());
-
+            conversionService.recalculateDisplay(existing, converted.getUnit());
         }
         // update count, and set unspecified
         Integer count = CommonUtils.elvis(existing.getCount(), 1);

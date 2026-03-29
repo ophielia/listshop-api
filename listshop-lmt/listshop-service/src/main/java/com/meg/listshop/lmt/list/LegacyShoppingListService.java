@@ -1,8 +1,15 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list;
 
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
+import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
@@ -11,11 +18,11 @@ import java.util.List;
  * Created by margaretmartin on 30/10/2017.
  */
 @Transactional
-public interface ShoppingListService {
+public interface LegacyShoppingListService {
 
     String FREQUENT = "frequent";
 
-    List<ShoppingListEntity> getListsByUserId(Long userId);
+    List<ShoppingListEntity> getShoppingListsByUserId(Long userId);
 
     void addDishesToList(Long userId, Long listId, ListAddProperties listAddProperties) throws ShoppingListException, ItemProcessingException;
 
@@ -31,9 +38,10 @@ public interface ShoppingListService {
 
     void deleteList(Long userId, Long listId);
 
-    ShoppingListEntity updateList(Long userId, Long listId, ShoppingListEntity updateFrom);
+    ShoppingListEntity updateList(Long userId, Long listId, ShoppingListDTO updateFrom);
 
-    void performItemOperation(Long userId, Long sourceListId, ItemOperationType operationType, List<Long> tagIds, Long destinationListId) throws ItemProcessingException;
+    void performItemOperation(Long userId, Long sourceListId, ItemOperationType operationType,
+                              List<Long> tagIds, Long destinationListId) throws ItemProcessingException;
 
     void deleteItemFromList(Long userId, Long listId, Long itemId) throws ItemProcessingException;
 

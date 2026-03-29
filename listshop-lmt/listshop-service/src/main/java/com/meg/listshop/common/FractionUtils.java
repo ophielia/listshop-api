@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.common;
 
 import com.meg.listshop.lmt.api.model.FractionType;
@@ -93,5 +99,16 @@ public class FractionUtils {
         int wholeNumberPart = (int) rounded;
 
         return new QuantityElements(rounded, wholeNumberPart, fractionType);
+    }
+
+    public static String getQuantityDisplay(Integer wholeQuantity, FractionType fractionalQuantity) {
+        String quantityDisplay = "";
+        if (wholeQuantity != null) {
+            quantityDisplay = quantityDisplay + wholeQuantity;
+        }
+        if (fractionalQuantity != null) {
+            quantityDisplay = quantityDisplay + " " + fractionalQuantity.getDisplayName();
+        }
+        return quantityDisplay.trim();
     }
 }

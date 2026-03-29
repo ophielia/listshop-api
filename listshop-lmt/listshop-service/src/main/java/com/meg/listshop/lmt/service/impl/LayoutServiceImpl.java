@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -95,6 +101,31 @@ public class LayoutServiceImpl implements LayoutService {
     }
 
     @Override
+    public List<ListLayoutEntity> getAllLayoutsV2(Long userId) {
+
+        List<ListLayoutEntity> layouts = new ArrayList<>();
+        layouts.add(getFilledStandardLayout(userId));
+        if (userId != null) {
+            layouts.addAll(listLayoutRepository.getUserLayouts(userId));
+        }
+
+        return layouts;
+    }
+
+    @Override
+    public ListLayoutCategoryEntity getDefaultCategoryForTag(Long userId, Long tagId) {
+        // retrieve user default for tag
+        if (userId != null) {
+            ListLayoutCategoryEntity userDefault = categoryRepository.getDefaultCategoryForTagAndUser(userId, tagId);
+            if (userDefault != null) {
+                return userDefault;
+            }
+        }
+        // retrieve standard default for tag
+        return categoryRepository.getStandardCategoryForTag(tagId);
+    }
+
+    @Override
     public void assignDefaultCategoryToTag(List<TagEntity> siblings, TagEntity tagToAssign) {
         Long idToAssign = null;
         if (!siblings.isEmpty()) {
@@ -148,6 +179,17 @@ public class LayoutServiceImpl implements LayoutService {
 
         // return categories for this layout
         return getAvailableCategoriesForLayout(userDefaultLayout);
+    }
+
+    @Override
+    public List<ListLayoutCategoryEntity> getUserCategoriesForList(Long userLayoutId, Long listId) {
+        return listLayoutRepository.findUserListCategoriesForList(userLayoutId, listId);
+
+    }
+
+    @Override
+    public List<ListLayoutCategoryEntity> getStandardCategoriesForList(Long listId) {
+        return listLayoutRepository.findStandardCategoriesForList(listId);
     }
 
     @Override
@@ -266,7 +308,7 @@ public class LayoutServiceImpl implements LayoutService {
         if (tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
             return;
         }
-        doAddCategory(categoryEntity,tag);
+        doAddCategory(categoryEntity, tag);
 
     }
 

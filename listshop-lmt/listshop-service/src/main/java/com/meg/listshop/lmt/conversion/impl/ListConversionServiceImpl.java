@@ -1,9 +1,12 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.conversion.impl;
 
-import com.meg.listshop.common.AmountTextBuilder;
-import com.meg.listshop.common.CommonUtils;
-import com.meg.listshop.common.RoundingUtils;
-import com.meg.listshop.common.UnitType;
+import com.meg.listshop.common.*;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.pojo.*;
@@ -24,6 +27,7 @@ import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -37,6 +41,9 @@ public class ListConversionServiceImpl implements ListConversionService {
     private static final Logger log = LoggerFactory.getLogger(ListConversionServiceImpl.class);
     private final UnitRepository unitRepo;
     private final ConverterService converterService;
+
+    @Value("${conversionservice.single.unit.id:1011}")
+    private Long SINGLE_UNIT_ID;
 
     @Autowired
     public ListConversionServiceImpl(UnitRepository unitRepo, ConverterService converterService) {
@@ -170,6 +177,37 @@ public class ListConversionServiceImpl implements ListConversionService {
         added = converterService.add(converted, addTo, addRequest);
 
         return added;
+    }
+
+    @Override
+    public void recalculateDisplay(ListItemDetailEntity itemDetail, UnitEntity unit) {
+        // return immediately if detail is null
+        if (itemDetail == null) {
+            return;
+        }
+        // get quantity display for detail
+        String quantityDisplay = FractionUtils.getQuantityDisplay(itemDetail.getWholeQuantity(), itemDetail.getFractionalQuantity());
+
+        // get unit text, id for detail
+        String unitText;
+        Long unitId;
+        if (unit != null) {
+            unitId = unit.getId();
+            unitText = unit.getName();
+        } else {
+            unitId = itemDetail.getUnitId();
+            UnitEntity unitEntity = getUnit(unitId);
+            unitText = unitEntity.getName();
+        }
+
+        // if this is the "unit" unit (ex. 1 unit carrot) then set unit text to empty
+        if (unitId.equals(SINGLE_UNIT_ID)) {
+            unitText = "";
+        }
+
+        // put text together, and set in raw entry
+        String text = String.format("%s %s", quantityDisplay, unitText).trim();
+        itemDetail.setRawEntry(text);
     }
 
     private void setInItem(ConvertibleAmount amount, ListItemEntity item) {

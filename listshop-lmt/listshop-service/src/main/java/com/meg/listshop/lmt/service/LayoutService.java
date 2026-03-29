@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -32,9 +38,17 @@ public interface LayoutService {
 
     List<ListLayoutCategoryEntity> getUserCategories(String userName);
 
+    List<ListLayoutCategoryEntity> getUserCategoriesForList(Long userLayoutId, Long listId);
+
+    List<ListLayoutCategoryEntity> getStandardCategoriesForList(Long listId);
+
     List<LayoutCategoryDTO> getDefaultCategories();
 
     void addTagToCategory(Long layoutCategoryId, TagEntity tag);
 
     void moveTagToDefaultCategory(Long tagId, Long categoryId);
+
+    List<ListLayoutEntity> getAllLayoutsV2(Long userId);
+
+    ListLayoutCategoryEntity getDefaultCategoryForTag(Long userDetailsId, Long tagId);
 }

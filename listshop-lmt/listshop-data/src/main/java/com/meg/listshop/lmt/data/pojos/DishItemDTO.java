@@ -1,5 +1,12 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.pojos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.api.model.FractionType;
 
@@ -18,7 +25,6 @@ public class DishItemDTO {
     private FractionType fractionalQuantity;
     private String fractionDisplay;
     private String tagDisplay;
-    private String unitDisplay;
     private List<String> rawModifiers;
     private String unitName;
     private String marker;
@@ -37,7 +43,7 @@ public class DishItemDTO {
         this.quantity = quantity;
         this.wholeQuantity = wholeQuantity;
         this.tagDisplay = tagDisplay;
-        this.rawModifiers = FlatStringUtils.inflateStringToList(rawModifiersString,"|");
+        this.rawModifiers = FlatStringUtils.inflateStringToList(rawModifiersString,"\\|");
         this.unitName = unitName;
         this.marker = marker;
         this.unitSize = unitSize;
@@ -154,15 +160,6 @@ public class DishItemDTO {
         this.tagDisplay = tagDisplay;
     }
 
-    public String getUnitDisplay() {
-        return unitDisplay;
-    }
-
-    public void setUnitDisplay(String unitDisplay) {
-        this.unitDisplay = unitDisplay;
-    }
-
-
     public void setRawEntry(String rawEntry) {
         this.rawEntry = rawEntry;
     }
@@ -174,6 +171,17 @@ public class DishItemDTO {
     public boolean hasAmount() {
         return unitId != null
                 && ( quantity != null || wholeQuantity != null || fractionalQuantity != null);
+    }
+
+    public String getQuantityDisplay() {
+        String quantityDisplay = "";
+        if (getWholeQuantity() != null) {
+            quantityDisplay = quantityDisplay + getWholeQuantity();
+        }
+        if (getFractionalQuantity() != null) {
+            quantityDisplay = quantityDisplay + " " + getFractionalQuantity().getDisplayName();
+        }
+        return quantityDisplay.trim();
     }
 
     @Override

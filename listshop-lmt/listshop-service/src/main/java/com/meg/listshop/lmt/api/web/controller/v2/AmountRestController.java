@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.web.controller.v2;
 
 
@@ -5,7 +11,7 @@ import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.conversion.data.pojo.DomainType;
 import com.meg.listshop.lmt.api.controller.v2.AmountRestControllerApi;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
-import com.meg.listshop.lmt.api.model.V2ModelMapper;
+import com.meg.listshop.lmt.api.model.v2.V2ModelMapper;
 import com.meg.listshop.lmt.api.model.SuggestionListResource;
 import com.meg.listshop.lmt.data.pojos.SuggestionDTO;
 import com.meg.listshop.lmt.service.food.AmountService;

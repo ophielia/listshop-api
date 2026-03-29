@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.web.controller;
 
 import com.google.common.base.Enums;
@@ -7,8 +13,9 @@ import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
+import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
 import com.meg.listshop.lmt.list.ShoppingListException;
-import com.meg.listshop.lmt.list.ShoppingListService;
+import com.meg.listshop.lmt.list.LegacyShoppingListService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +41,11 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
     private static final Logger logger = LoggerFactory.getLogger(ShoppingListRestController.class);
 
-    private final ShoppingListService shoppingListService;
+    private final LegacyShoppingListService legacyShoppingListService;
 
     @Autowired
-    public ShoppingListRestController(ShoppingListService shoppingListService) {
-        this.shoppingListService = shoppingListService;
+    public ShoppingListRestController(LegacyShoppingListService legacyShoppingListService) {
+        this.legacyShoppingListService = legacyShoppingListService;
     }
 
     public ResponseEntity<ShoppingListListResource> retrieveLists(HttpServletRequest request, Authentication authentication) {
@@ -46,8 +53,8 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
         String message = String.format("Retrieving all lists for user [%S]", userDetails.getId());
         logger.info(message);
-        List<ShoppingListResource> shoppingListList = shoppingListService
-                .getListsByUserId(userDetails.getId())
+        List<ShoppingListResource> shoppingListList = legacyShoppingListService
+                .getShoppingListsByUserId(userDetails.getId())
                 .stream()
                 .map(t -> ModelMapper.toModel(t, null))
                 .map(ShoppingListResource::new)
@@ -66,7 +73,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
         ShoppingListEntity result = null;
         try {
-            result = shoppingListService.generateListForUser(userDetails.getId(), listGenerateProperties);
+            result = legacyShoppingListService.generateListForUser(userDetails.getId(), listGenerateProperties);
         } catch (ShoppingListException | ItemProcessingException e) {
             logger.error("Exception while creating List.", e);
         }
@@ -88,18 +95,18 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         Long listId = mergeRequest.getListId();
         Long layoutId = mergeRequest.getLayoutId();
 
-        MergeResult mergeResult = this.shoppingListService.mergeFromClient(userDetails.getId(), mergeRequest);
+        MergeResult mergeResult = this.legacyShoppingListService.mergeFromClient(userDetails.getId(), mergeRequest);
 
         // check for conflicts (won't be any until we implement this)
         if (mergeResult.getMergeConflicts() == null) {
             // retrieve the list, and put it into the result
-            ShoppingListEntity shoppingList = this.shoppingListService.getListForUserById(userDetails.getId(), listId);
+            ShoppingListEntity shoppingList = this.legacyShoppingListService.getListForUserById(userDetails.getId(), listId);
             // possibly set layout id in shopping list
             if (layoutId != null && !layoutId.equals(shoppingList.getListLayoutId())) {
                 shoppingList.setListLayoutId(layoutId);
             }
-            List<ShoppingListCategory> categories = shoppingListService.categorizeList(shoppingList);
-            shoppingListService.fillSources(shoppingList);
+            List<ShoppingListCategory> categories = legacyShoppingListService.categorizeList(shoppingList);
+            legacyShoppingListService.fillSources(shoppingList);
             mergeResult.setShoppingList(ModelMapper.toModel(shoppingList, categories));
             MergeResultResource resource = new MergeResultResource(mergeResult);
 
@@ -114,9 +121,9 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         final String message = String.format("Updating list for list [%d]", listId);
         logger.info(message);
-        ShoppingListEntity updateFrom = ModelMapper.toEntity(shoppingList);
+        ShoppingListDTO updateFrom = ModelMapper.toDTO(shoppingList);
 
-        ShoppingListEntity result = shoppingListService.updateList(userDetails.getId(), listId, updateFrom);
+        ShoppingListEntity result = legacyShoppingListService.updateList(userDetails.getId(), listId, updateFrom);
         if (result != null) {
             ShoppingListResource resource = new ShoppingListResource(ModelMapper.toModel(result, null));
             String link = resource.selfLink(request, resource).toString();
@@ -145,7 +152,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         List<Long> tagIdsForUpdate = itemOperation.getTagIds();
 
         try {
-            shoppingListService.performItemOperation(userDetails.getId(), listId, operationType, tagIdsForUpdate, destinationListId);
+            legacyShoppingListService.performItemOperation(userDetails.getId(), listId, operationType, tagIdsForUpdate, destinationListId);
         } catch (ItemProcessingException e) {
             logger.error("Exception while performing item operations on list [{}]..", listId, e);
             return ResponseEntity.internalServerError().build();
@@ -158,24 +165,24 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<ShoppingListResource> retrieveMostRecentList(HttpServletRequest request, Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Retrieving most recent list for user {}", userDetails.getId());
-        ShoppingListEntity result = shoppingListService.getMostRecentList(userDetails.getId());
-        if (result == null) {
+        ShoppingListEntity result = legacyShoppingListService.getMostRecentList(userDetails.getId());
+        if (result == null ) {
             throw new ObjectNotFoundException(String.format("No lists found for user [%s] in retrieveMostRecentList()", userDetails.getId()));
         }
-        List<ShoppingListCategory> categories = shoppingListService.categorizeList(result);
-        shoppingListService.fillSources(result);
+        List<ShoppingListCategory> categories = legacyShoppingListService.categorizeList(result);
+        legacyShoppingListService.fillSources(result);
         return singleResult(request, result, categories);
     }
 
     public ResponseEntity<ShoppingListResource> retrieveStarterList(HttpServletRequest request, Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Retrieving starter list for user {}", userDetails.getId());
-        ShoppingListEntity result = shoppingListService.getStarterList(userDetails.getId());
+        ShoppingListEntity result = legacyShoppingListService.getStarterList(userDetails.getId());
         if (result == null) {
             throw new ObjectNotFoundException(String.format("No lists found for user [%s] in retrieveStarterList()", userDetails.getId()));
         }
-        List<ShoppingListCategory> categories = shoppingListService.categorizeList(result);
-        shoppingListService.fillSources(result);
+        List<ShoppingListCategory> categories = legacyShoppingListService.categorizeList(result);
+        legacyShoppingListService.fillSources(result);
         return singleResult(request, result, categories);
     }
 
@@ -184,12 +191,12 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Retrieving list [{}] by id for user [{}]", listId, userDetails.getId());
 
-        ShoppingListEntity result = shoppingListService.getListForUserById(userDetails.getId(), listId);
+        ShoppingListEntity result = legacyShoppingListService.getListForUserById(userDetails.getId(), listId);
         if (result == null) {
             return ResponseEntity.notFound().build();
         }
-        List<ShoppingListCategory> categories = shoppingListService.categorizeList(result);
-        shoppingListService.fillSources(result);
+        List<ShoppingListCategory> categories = legacyShoppingListService.categorizeList(result);
+        legacyShoppingListService.fillSources(result);
         return singleResult(request, result, categories);
     }
 
@@ -198,7 +205,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<ShoppingList> deleteList(Authentication authentication, @PathVariable("listId") Long listId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Deleting list [{}] for user [{}]", listId, userDetails.getId());
-        shoppingListService.deleteList(userDetails.getId(), listId);
+        legacyShoppingListService.deleteList(userDetails.getId(), listId);
         return ResponseEntity.noContent().build();
 
     }
@@ -211,14 +218,14 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         final String message = String.format("Update count for tag [%d] to [%d] in list [%d]", tagId, usedCount, listId);
         logger.info(message);
-        this.shoppingListService.updateItemCount(userDetails.getId(), listId, tagId, usedCount);
+        this.legacyShoppingListService.updateItemCount(userDetails.getId(), listId, tagId, usedCount);
         return ResponseEntity.noContent().build();
     }
 
     public ResponseEntity<Object> addItemToListByTag(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("tagId") Long tagId) throws ItemProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding tag [{}] to list [{}] for user [{}]", tagId, listId, userDetails.getId());
-        this.shoppingListService.addItemToListByTag(userDetails.getId(), listId, tagId);
+        this.legacyShoppingListService.addItemToListByTag(userDetails.getId(), listId, tagId);
         return ResponseEntity.noContent().build();
     }
 
@@ -234,7 +241,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         }
 
         try {
-            this.shoppingListService.deleteItemFromList(userDetails.getId(), listId, itemId);
+            this.legacyShoppingListService.deleteItemFromList(userDetails.getId(), listId, itemId);
         } catch (ItemProcessingException e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -247,7 +254,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     ) throws ItemProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Setting crossed off for item [{}] on list [{}] for user [{}]", itemId, listId, userDetails.getId());
-        this.shoppingListService.updateItemCrossedOff(userDetails.getId(), listId, itemId, crossedOff);
+        this.legacyShoppingListService.updateItemCrossedOff(userDetails.getId(), listId, itemId, crossedOff);
 
         return ResponseEntity.noContent().build();
     }
@@ -256,7 +263,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
                                                          @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff) throws ItemProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Setting crossed off [{}] for all items on list [{}] for user [{}]", crossedOff, listId, userDetails.getId());
-        this.shoppingListService.crossOffAllItems(userDetails.getId(), listId, crossedOff);
+        this.legacyShoppingListService.crossOffAllItems(userDetails.getId(), listId, crossedOff);
 
         return ResponseEntity.noContent().build();
     }
@@ -267,7 +274,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Deleting all items from list [{}] for user [{}]", listId, userDetails.getId());
         try {
-            this.shoppingListService.deleteAllItemsFromList(userDetails.getId(), listId);
+            this.legacyShoppingListService.deleteAllItemsFromList(userDetails.getId(), listId);
         } catch (ItemProcessingException e) {
             logger.info("issue while removing items [{}]", e);
             return ResponseEntity.internalServerError().build();
@@ -283,7 +290,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         logger.info("Generating list from mealplan [{}] for user [{}]", mealPlanId, userDetails.getId());
         ShoppingListEntity shoppingListEntity = null;
         try {
-            shoppingListEntity = this.shoppingListService.generateListFromMealPlan(userDetails.getId(), mealPlanId);
+            shoppingListEntity = this.legacyShoppingListService.generateListFromMealPlan(userDetails.getId(), mealPlanId);
         } catch (ShoppingListException  | ItemProcessingException e) {
             logger.error("Exception while adding dishes to new list from mealplan [{}].", mealPlanId, e);
             return ResponseEntity.internalServerError().build();
@@ -301,7 +308,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding to list [{}] from meal plan [{}] for user [{}]", listId, mealPlanId, userDetails.getId());
         try {
-            this.shoppingListService.addToListFromMealPlan(userDetails.getId(), listId, mealPlanId);
+            this.legacyShoppingListService.addToListFromMealPlan(userDetails.getId(), listId, mealPlanId);
         } catch (ShoppingListException | ItemProcessingException e) {
             logger.error("Exception while adding mealplan [{}] to list [{}] for user [{}].", mealPlanId, listId, userDetails.getId(), e);
             return ResponseEntity.internalServerError().build();
@@ -317,7 +324,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         logger.info(message);
 
         try {
-            shoppingListService.addDishesToList(userDetails.getId(), listId, listAddProperties);
+            legacyShoppingListService.addDishesToList(userDetails.getId(), listId, listAddProperties);
         } catch (ShoppingListException | ItemProcessingException e) {
             logger.error("Exception while adding dishes to list [{}].", listId, e);
             return ResponseEntity.internalServerError().build();
@@ -332,7 +339,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Adding dish [{}] to list [{}] for user [{}]", dishId, listId, userDetails.getId());
         try {
-            this.shoppingListService.addDishToList(userDetails.getId(), listId, dishId);
+            this.legacyShoppingListService.addDishToList(userDetails.getId(), listId, dishId);
         } catch (ShoppingListException | ItemProcessingException s) {
             logger.error("Unable to add Dish [{}] to List [{}]", dishId, listId, s);
             return ResponseEntity.badRequest().build();
@@ -348,7 +355,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
 
 
         try {
-            this.shoppingListService.removeDishFromList(userDetails.getId(), listId, dishId);
+            this.legacyShoppingListService.removeDishFromList(userDetails.getId(), listId, dishId);
         } catch (ItemProcessingException e) {
             logger.error("Exception while removing dish [{}] from list [{}].", dishId, listId, e);
             return ResponseEntity.badRequest().build();
@@ -364,7 +371,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         logger.info("Adding list [{}] to list [{}] for user [{}]", fromListId, listId, userDetails.getId());
 
         try {
-            this.shoppingListService.addListToList(userDetails.getId(), listId, fromListId);
+            this.legacyShoppingListService.addListToList(userDetails.getId(), listId, fromListId);
         } catch (ItemProcessingException e) {
             logger.error("Exception while adding dishes to list [{}] from list [{}].", listId, fromListId, e);
             return ResponseEntity.badRequest().build();
@@ -378,7 +385,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Removing list [{}] from list [{}] for user [{}]", fromListId, listId, userDetails.getId());
         try {
-            this.shoppingListService.removeListItemsFromList(userDetails.getId(), listId, fromListId);
+            this.legacyShoppingListService.removeListItemsFromList(userDetails.getId(), listId, fromListId);
         } catch (ItemProcessingException e) {
             logger.error("Exception while removing list [{}] from List [{}].", listId, fromListId, e);
         }
@@ -389,7 +396,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<Object> changeListLayout(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("layoutId") Long layoutId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Chaning list layout [{}] for list [{}] for user [{}]", layoutId, listId, userDetails.getId());
-        this.shoppingListService.changeListLayout(userDetails.getId(), listId, layoutId);
+        this.legacyShoppingListService.changeListLayout(userDetails.getId(), listId, layoutId);
 
         return ResponseEntity.noContent().build();
     }

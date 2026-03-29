@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.repository;
 
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
@@ -17,7 +23,7 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
             " from list_category c " +
             "join list_layout l on l.layout_id = c.layout_id " +
             "join category_tags ct on c.category_id = ct.category_id " +
-            "where tag_id = :tagId " +
+            "where l.is_default = true and tag_id = :tagId " +
             "and l.user_id is null", nativeQuery = true)
     ListLayoutCategoryEntity getStandardCategoryForTag(@Param("tagId") Long tagId);
 
@@ -36,4 +42,13 @@ public interface ListLayoutCategoryRepository extends JpaRepository<ListLayoutCa
     @Query("select llc from ListLayoutCategoryEntity llc " +
             "where llc.categoryId in (?1)")
     List<ListLayoutCategoryEntity> getByIds(Set<Long> idsToAssign);
+
+    @Query(value = "select c.category_id, c.name, c.layout_id, c.display_order, c.is_default" +
+            " from list_category c " +
+            "join list_layout l on l.layout_id = c.layout_id " +
+            "join category_tags ct on c.category_id = ct.category_id " +
+            "where l.is_default = true and tag_id = :tagId " +
+            "and l.user_id = :userId", nativeQuery = true)
+    ListLayoutCategoryEntity getDefaultCategoryForTagAndUser(@Param("userId")Long userId,
+                                                             @Param("tagId") Long tagId);
 }

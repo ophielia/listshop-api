@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.api;
@@ -15,30 +14,30 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.test.TestConstants;
+import com.meg.listshop.test.TestUtils;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.StreamUtils;
-import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -48,17 +47,12 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static io.restassured.RestAssured.given;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
 @Testcontainers
-@SpringBootTest(classes = Application.class)
-@WebAppConfiguration
+@SpringBootTest(classes = Application.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Sql(value = {"/sql/com/meg/atable/lmt/api/ShoppingListRestControllerTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -69,15 +63,25 @@ class ShoppingListRestControllerTest {
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
 
-    private static UserDetails userDetails;
-    private static UserDetails meUserDetails;
-    private static UserDetails lastListUserDetails;
-    private static UserDetails noStarterUserDetails;
-    private static UserDetails dadStarterUserDetails;
+    @LocalServerPort
+    public int serverPort;
+
+    private static String jwtToken;
+    private static String meJwtToken;
+    private static String lastListJwtToken;
+    private static String noStarterJwtToken;
+    private static String dadStarterJwtToken;
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype());
     @Autowired
     ItemRepository itemRepository;
+
+    @PostConstruct
+    public void initRestAssured() {
+        RestAssured.port = serverPort;
+        RestAssured.urlEncodingEnabled = false;
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+    }
     @Value("classpath:/data/shoppingListRestControllerTest_mergeList.json")
     Resource resourceFile;
     @Value("classpath:/data/shoppingListRestControllerTest_noMergeList.json")
@@ -88,9 +92,7 @@ class ShoppingListRestControllerTest {
     Resource resourceFileEmpty;
     @Value("classpath:/data/shoppingListRestControllerTest_mergeListWithConflicts.json")
     Resource mergeConflictFileSource;
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-    private MockMvc mockMvc;
+
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     @Autowired
@@ -105,72 +107,27 @@ class ShoppingListRestControllerTest {
     }
 
     @BeforeEach
-    @WithMockUser
     void setup() {
-
-        this.mockMvc = webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
-
-
-        userDetails = new CustomUserDetails(TestConstants.USER_1_ID,
-                TestConstants.USER_1_EMAIL,
-                null,
-                null,
-                null,
-                true,
-                null);
-
-        meUserDetails = new CustomUserDetails(TestConstants.USER_3_ID,
-                TestConstants.USER_3_NAME,
-                null,
-                null,
-                null,
-                true,
-                null);
-
-        lastListUserDetails = new CustomUserDetails(99999L,
-                "username@testitytest.com",
-                "username@testitytest.com",
-                null,
-                null,
-                true,
-                null);
-
-        noStarterUserDetails = new CustomUserDetails(TestConstants.USER_4_ID,
-                TestConstants.USER_4_NAME,
-                null,
-                null,
-                null,
-                true,
-                null);
-
-        dadStarterUserDetails = new CustomUserDetails(34L,
-                "dad@userdetails.com",
-                null,
-                null,
-                null,
-                true,
-                null);
-
+        jwtToken = TestConstants.USER_1_TOKEN;
+        meJwtToken = TestConstants.USER_3_TOKEN;
+        lastListJwtToken = "token99999"; // this one is not in TestConstants, but used for user with ID 99999
+        noStarterJwtToken = TestConstants.USER_4_TOKEN;
+        dadStarterJwtToken = "token34user"; // not in TestConstants
     }
 
 
     @Test
-    @WithMockUser
-    void testRetrieveLists() throws Exception {
-
-        mockMvc.perform(get("/shoppinglist")
-                        .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentType(contentType));
-
-
+    void testRetrieveLists() {
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .when()
+                .get("/shoppinglist")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON);
     }
 
     @Test
-    @WithMockUser
     void testRetrieveMostRecentList() throws Exception {
         Long testId = 509990L;
 
@@ -180,82 +137,94 @@ class ShoppingListRestControllerTest {
                 .isStarterList(false);
         String payload = json(shoppingList);
 
-        mockMvc.perform(put("/shoppinglist/" + testId)
-                        .with(user(meUserDetails))
-                        .content(payload).contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .put("/shoppinglist/" + testId)
+                .then()
+                .statusCode(200);
+
         // now, testing the most recent call
-        mockMvc.perform(get("/shoppinglist/mostrecent")
-                        .with(user(meUserDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .get("/shoppinglist/mostrecent")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("shopping_list.list_id", Matchers.isA(Number.class));
 
     }
 
     @Test
-    @WithMockUser
-    void testRetrieveStarterList() throws Exception {
+    void testRetrieveStarterList() {
         Long testId = 509991L;
 
-        mockMvc.perform(get("/shoppinglist/starter")
-                        .with(user(meUserDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.shopping_list.list_id").value(testId));
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .get("/shoppinglist/starter")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("shopping_list.list_id", Matchers.isA(Number.class))
+                .body("shopping_list.list_id", Matchers.equalTo(testId.intValue()));
     }
 
     @Test
-    @WithMockUser
-    void testRetrieveStarterListNotFound() throws Exception {
-        mockMvc.perform(get("/shoppinglist/starter")
-                        .with(user(noStarterUserDetails)))
-                .andExpect(status().isNotFound());
+    void testRetrieveStarterListNotFound() {
+        given()
+                .header(TestUtils.authToken(noStarterJwtToken))
+                .when()
+                .get("/shoppinglist/starter")
+                .then()
+                .statusCode(404);
     }
 
     @Test
-    @WithMockUser
-    void testRetrieveListById() throws Exception {
+    void testRetrieveListById() {
         Long testId = 509990L;
 
-        mockMvc.perform(get("/shoppinglist/" + testId)
-                        .with(user(meUserDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.shopping_list.legend", Matchers.hasSize(6)))
-                .andExpect(jsonPath("$.shopping_list.legend[*].key",
-                        Matchers.containsInAnyOrder("d5099901", "d50999010", "d509990100", "d509990101", "l6666", "l7777")))
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .get("/shoppinglist/" + testId)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("shopping_list.list_id", Matchers.isA(Number.class))
+                .body("shopping_list.legend", Matchers.hasSize(6))
+                .body("shopping_list.legend.key",
+                        Matchers.containsInAnyOrder("d5099901", "d50999010", "d509990100", "d509990101", "l6666", "l7777"));
     }
 
     @Test
-    void testRetrieveListById_NotFound() throws Exception {
+    void testRetrieveListById_NotFound() {
         Long dummyTestId = 12345678901L;
 
-        mockMvc.perform(get("/shoppinglist/" + dummyTestId)
-                        .with(user(meUserDetails)))
-                .andExpect(status().isNotFound())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .get("/shoppinglist/" + dummyTestId)
+                .then()
+                .statusCode(404);
     }
 
     @Test
-    @WithMockUser
     void testCustomLayout() throws Exception {
         Long customLayoutListId = 10101010L;
         Long standardLayoutListId = 90909090L;
 
-        ShoppingList standardLayoutList = retrieveList(dadStarterUserDetails, standardLayoutListId);
+        ShoppingList standardLayoutList = retrieveList(dadStarterJwtToken, standardLayoutListId);
         Map<String, ShoppingListItem> standardResultMap = standardLayoutList.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assertions.assertNotNull(standardResultMap);
 
 
-        ShoppingList customLayoutList = retrieveList(meUserDetails, customLayoutListId);
+        ShoppingList customLayoutList = retrieveList(meJwtToken, customLayoutListId);
         Map<String, ShoppingListItem> customResultMap = customLayoutList.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -276,7 +245,6 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testUpdateList() throws Exception {
         Long testId = 509991L;
 
@@ -286,16 +254,18 @@ class ShoppingListRestControllerTest {
 
         String payload = json(shoppingList);
 
-        mockMvc.perform(put("/shoppinglist/" + testId)
-                        .with(user(meUserDetails))
-                        .content(payload).contentType(contentType))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .put("/shoppinglist/" + testId)
+                .then()
+                .statusCode(200);
 
     }
 
     @Test
-    @WithMockUser
     void testUpdateList_starterListChange() throws Exception {
         Long testId = 509990L;
         Long oldStarterId = 509991L;
@@ -306,77 +276,91 @@ class ShoppingListRestControllerTest {
 
         String payload = json(shoppingList);
 
-        mockMvc.perform(put("/shoppinglist/" + testId)
-                        .with(user(meUserDetails))
-                        .content(payload).contentType(contentType))
-                .andExpect(status().isOk());
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .put("/shoppinglist/" + testId)
+                .then()
+                .statusCode(200);
 
         // now retrieve old starter list and ensure that isStarter is false
-        mockMvc.perform(get("/shoppinglist/" + oldStarterId)
-                        .with(user(meUserDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.shopping_list.list_id").value(oldStarterId))
-                .andExpect(jsonPath("$.shopping_list.is_starter_list").value(false));
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .get("/shoppinglist/" + oldStarterId)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("shopping_list.list_id", Matchers.isA(Number.class))
+                .body("shopping_list.list_id", Matchers.equalTo(oldStarterId.intValue()))
+                .body("shopping_list.is_starter_list", Matchers.equalTo(false));
 
 
     }
 
     @Test
-    @WithMockUser
-    void testDeleteList() throws Exception {
+    void testDeleteList() {
         Long testId = TestConstants.LIST_2_ID;
 
-        mockMvc.perform(delete("/shoppinglist/" + testId)
-                        .with(user(meUserDetails)))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .delete("/shoppinglist/" + testId)
+                .then()
+                .statusCode(204);
 
     }
 
     @Test
-    @WithMockUser
-    void testDeleteList_LastList() throws Exception {
+    void testDeleteList_LastList() {
         Long testId = 99999L;
 
-        mockMvc.perform(delete("/shoppinglist/" + testId)
-                        .with(user(lastListUserDetails)))
-                .andExpect(status().isBadRequest());
+        given()
+                .header(TestUtils.authToken(lastListJwtToken))
+                .when()
+                .delete("/shoppinglist/" + testId)
+                .then()
+                .statusCode(400);
 
     }
 
     @Test
-    @WithMockUser
-    void testDeleteItemFromList() throws Exception {
+    void testDeleteItemFromList() {
         Long listId = TestConstants.LIST_3_ID;
         String url = "/shoppinglist/" + listId + "/item/" + 501L;
-        mockMvc.perform(delete(url)
-                        .with(user(userDetails)))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .when()
+                .delete(url)
+                .then()
+                .statusCode(204);
     }
 
     @Test
-    @WithMockUser
     void testGenerateFromMealPlan() throws Exception {
 
 
         Long mealPlanId = 65505L;
 
         String url = "/shoppinglist/mealplan/" + mealPlanId;
-        MvcResult result = this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isCreated())
-                .andReturn();
+        String location = given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(201)
+                .extract()
+                .header("Location");
 
-        List<String> responses = result.getResponse().getHeaders("Location");
-        Assertions.assertNotNull(responses);
-        Assertions.assertTrue(responses.size() > 0);
-        String[] urlTokens = StringUtils.split(responses.get(0), "/");
+        Assertions.assertNotNull(location);
+        String[] urlTokens = StringUtils.split(location, "/");
         Long newListId = Long.valueOf(urlTokens[(urlTokens).length - 1]);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(userDetails, newListId);
+        ShoppingList source = retrieveList(jwtToken, newListId);
         Map<String, ShoppingListItem> resultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -396,7 +380,6 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testCreateList() throws Exception {
         ListGenerateProperties properties = new ListGenerateProperties();
         properties.setAddFromStarter(true);
@@ -406,65 +389,73 @@ class ShoppingListRestControllerTest {
 
         String url = "/shoppinglist";
 
-        this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isCreated());
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(201);
 
     }
 
     @Test
-    @WithMockUser
-    void testSetCrossedOffForItem() throws Exception {
+    void testSetCrossedOffForItem() {
         Long listId = 6666L;
         String url = "/shoppinglist/" + listId + "/item/shop/" + 60660L
                 + "?crossOff=true";
-        mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
     }
 
     @Test
-    @WithMockUser
-    void testCrossOffAllItemsOnList() throws Exception {
+    void testCrossOffAllItemsOnList() {
 
         Long listId = TestConstants.LIST_1_ID;
         String url = "/shoppinglist/" + listId + "/item/shop"
                 + "?crossOff=true";
-        mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
     }
 
     @Test
-    @WithMockUser
-    void testAddListToList() throws Exception {
+    void testAddListToList() {
         Long listId = TestConstants.LIST_3_ID;
         Long fromListId = TestConstants.LIST_1_ID;
 
         String url = "/shoppinglist/" + listId + "/list/" + fromListId;
-        mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
         // retrieve list and verify
-        // now retrieve old starter list and ensure that isStarter is false
-        mockMvc.perform(get("/shoppinglist/" + listId)
-                        .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.shopping_list.list_id").value(listId))
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .when()
+                .get("/shoppinglist/" + listId)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("shopping_list.list_id", Matchers.isA(Number.class))
+                .body("shopping_list.list_id", Matchers.equalTo(listId.intValue()));
     }
 
     @Test
-    @WithMockUser
     void testAddTagToList() throws Exception {
         Long tagId = TestConstants.TAG_PASTA;
         ListGenerateProperties properties = new ListGenerateProperties();
@@ -474,29 +465,33 @@ class ShoppingListRestControllerTest {
         String jsonProperties = json(properties);
 
 
-        MvcResult createResult = this.mockMvc.perform(post("/shoppinglist")
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isCreated())
-                .andReturn();
+        String location = given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .post("/shoppinglist")
+                .then()
+                .statusCode(201)
+                .extract()
+                .header("Location");
 
-        List<String> responses = createResult.getResponse().getHeaders("Location");
-        Assertions.assertNotNull(responses);
-        Assertions.assertTrue(responses.size() > 0);
-        String[] urlTokens = StringUtils.split(responses.get(0), "/");
+        Assertions.assertNotNull(location);
+        String[] urlTokens = StringUtils.split(location, "/");
         Long listId = Long.valueOf(urlTokens[(urlTokens).length - 1]);
 
 
         String url = "/shoppinglist/" + listId + "/tag/" + tagId;
-        mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
         // retrieve list and verify
-        ShoppingList listWithNewItem = retrieveList(userDetails, listId);
+        ShoppingList listWithNewItem = retrieveList(jwtToken, listId);
         Map<String, ShoppingListItem> standardResultMap = listWithNewItem.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -505,29 +500,35 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
-    void testRemoveListFromList() throws Exception {
+    void testRemoveListFromList() {
         Long listId = 609990L;
         Long fromListId = 609991L;
 
         String url = "/shoppinglist/" + listId + "/list/" + fromListId;
-        mockMvc.perform(delete(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent())
-                .andReturn();
+        String listAfterDelete = given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .delete(url)
+                .then()
+                .statusCode(204)
+                .extract()
+                .asString();
 
         // retrieve list and verify
-        MvcResult result = mockMvc.perform(get("/shoppinglist/" + listId)
-                        .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.shopping_list.list_id", Matchers.isA(Number.class)))
-                .andExpect(jsonPath("$.shopping_list.list_id").value(listId))
-                .andReturn();
+        listAfterDelete = given()
+                .header(TestUtils.authToken(jwtToken))
+                .when()
+                .get("/shoppinglist/" + listId)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("shopping_list.list_id", Matchers.isA(Number.class))
+                .body("shopping_list.list_id", Matchers.equalTo(listId.intValue()))
+                .extract()
+                .asString();
 
 
-        String listAfterDelete = result.getResponse().getContentAsString();
         // contains tag ids 500, 503
         Assertions.assertTrue(listAfterDelete.contains("\"tag_id\":\"503\","));
         Assertions.assertTrue(listAfterDelete.contains("\"tag_id\":\"500\","));
@@ -539,18 +540,20 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testAddDishToList() throws Exception {
         Long listId = TestConstants.LIST_1_ID;
         Long tagId1 = 500L;
         Long tagId2 = 501L;
         String url = "/shoppinglist/" + listId + "/dish/" + TestConstants.DISH_7_ID;
-        mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
-        ShoppingList result = retrieveList(userDetails, listId);
+        ShoppingList result = retrieveList(jwtToken, listId);
         Assertions.assertNotNull(result);
         Assertions.assertTrue(result.getCategories().size() > 0);
 
@@ -568,7 +571,6 @@ class ShoppingListRestControllerTest {
 
 
     @Test
-    @WithMockUser
     void testAddDishesToList() throws Exception {
         Long broccoliId = 21L;
         Long fetaId = 37L;
@@ -576,7 +578,7 @@ class ShoppingListRestControllerTest {
         properties.setAddFromStarter(true);
         properties.setGenerateMealplan(false);
         String jsonProperties = json(properties);
-        String listId = createList(jsonProperties, meUserDetails);
+        String listId = createList(jsonProperties, meJwtToken);
 
         ListAddProperties addProperties = new ListAddProperties();
 
@@ -588,13 +590,16 @@ class ShoppingListRestControllerTest {
         String addDishProperties = json(addProperties);
 
         String url = "/shoppinglist/" + listId + "/dish";
-        mockMvc.perform(post(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(addDishProperties))
-                .andExpect(status().is2xxSuccessful());
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(addDishProperties)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(200)).and(Matchers.lessThan(300))));
 
-        ShoppingList result = retrieveList(meUserDetails, Long.valueOf(listId));
+        ShoppingList result = retrieveList(meJwtToken, Long.valueOf(listId));
         Assertions.assertNotNull(result);
         Assertions.assertTrue(result.getCategories().size() > 0);
 
@@ -615,44 +620,53 @@ class ShoppingListRestControllerTest {
         Assertions.assertTrue(fetaItem.getSourceKeys().contains("d" + TestConstants.DISH_1_ID));
     }
 
-    private String createList(String jsonProperties, UserDetails userDetails) throws Exception {
+    private String createList(String jsonProperties, String token) {
         String url = "/shoppinglist";
-        MvcResult result = this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isCreated())
-                .andReturn();
-        List<String> locations = result.getResponse().getHeaders("Location");
-        String[] splitLocation = locations.get(0).split("/");
+        String location = given()
+                .header(TestUtils.authToken(token))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(201)
+                .extract()
+                .header("Location");
+        String[] splitLocation = location.split("/");
         return splitLocation[splitLocation.length - 1];
     }
 
     @Test
-    @WithMockUser
     void testAddDishToNewList() throws Exception {
         ListGenerateProperties properties = new ListGenerateProperties();
         properties.setAddFromStarter(true);
         properties.setGenerateMealplan(false);
         String jsonProperties = json(properties);
-        MvcResult newResult = this.mockMvc.perform(post("/shoppinglist")
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andReturn();
-        List<String> headers = newResult.getResponse().getHeaders("Location");
-        String listIdString = headers.get(0).replace("http://localhost/tag/", "");
-        Long newListId = Long.valueOf(listIdString);
+        String location = given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .post("/shoppinglist")
+                .then()
+                .statusCode(201)
+                .extract()
+                .header("Location");
+        String[] splitLocation = location.split("/");
+        Long newListId = Long.valueOf(splitLocation[splitLocation.length - 1]);
 
         Long tagId1 = 500L;
         Long tagId2 = 501L;
         String url = "/shoppinglist/" + newListId + "/dish/" + TestConstants.DISH_7_ID;
-        mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
-        ShoppingList result = retrieveList(userDetails, newListId);
+        ShoppingList result = retrieveList(jwtToken, newListId);
         Assertions.assertNotNull(result);
         Assertions.assertTrue(result.getCategories().size() > 0);
 
@@ -669,17 +683,19 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
-    void testUpdateItemUsedCount() throws Exception {
+    void testUpdateItemUsedCount() {
 
         Long listId = 7777L;
         Long tagId = 500L;
         Integer usedCount = 6;
         String url = "/shoppinglist/" + listId + "/tag/" + tagId + "/count/" + usedCount;
-        mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(204);
 
         // make sure the item has been updated
         ListItemEntity resultItem = itemRepository.getItemByListAndTag(listId, tagId);
@@ -688,20 +704,22 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testAddMealPlanToList() throws Exception {
 
         Long listId = 51000L;
         Long mealPlanId = 65505L;
 
         String url = "/shoppinglist/" + listId + "/mealplan/" + mealPlanId;
-        mockMvc.perform(put(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(204);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(userDetails, listId);
+        ShoppingList source = retrieveList(jwtToken, listId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -725,21 +743,23 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testMergeList() throws Exception {
         String testMergeList = StreamUtils.copyToString(resourceFile.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 110000L;
 
         String url = "/shoppinglist/shared";
-        mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(testMergeList))
-                .andExpect(status().isOk());
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(testMergeList)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(200);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(meUserDetails, listId);
+        ShoppingList source = retrieveList(meJwtToken, listId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -770,21 +790,23 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testMergeList_SkipMerge() throws Exception {
         String testMergeList = StreamUtils.copyToString(resourceFileNoMerge.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 110099L;
 
         String url = "/shoppinglist/shared";
-        mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(testMergeList))
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(testMergeList)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(200)).and(Matchers.lessThan(300))));
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(meUserDetails, listId);
+        ShoppingList source = retrieveList(meJwtToken, listId);
         Map<String, ShoppingListItem> crossedOffItems = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(c -> c.getCrossedOff() != null)
@@ -799,21 +821,23 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testMergeList_Stale() throws Exception {
         String testMergeList = StreamUtils.copyToString(resourceFileStale.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 11000001L;
 
         String url = "/shoppinglist/shared";
-        mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(testMergeList))
-                .andExpect(status().isOk());
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(testMergeList)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(200);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(meUserDetails, listId);
+        ShoppingList source = retrieveList(meJwtToken, listId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -842,7 +866,6 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testMergeList_Empty() throws Exception {
         // load statistics into file
         String testMergeList = StreamUtils.copyToString(resourceFileEmpty.getInputStream(), StandardCharsets.UTF_8);
@@ -850,14 +873,17 @@ class ShoppingListRestControllerTest {
         Long listId = 130000L;
 
         String url = "/shoppinglist/shared";
-        mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(testMergeList))
-                .andExpect(status().isOk());
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(testMergeList)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(200);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(meUserDetails, listId);
+        ShoppingList source = retrieveList(meJwtToken, listId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -869,21 +895,23 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testMergeList_TagConflict() throws Exception {
         String testMergeList = StreamUtils.copyToString(mergeConflictFileSource.getInputStream(), StandardCharsets.UTF_8);
 
         Long listId = 120000L;
 
         String url = "/shoppinglist/shared";
-        mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(testMergeList))
-                .andExpect(status().isOk());
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(testMergeList)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(200);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(meUserDetails, listId);
+        ShoppingList source = retrieveList(meJwtToken, listId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -904,7 +932,6 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void testRemoveDishFromList() throws Exception {
         Long listId = TestConstants.LIST_1_ID;
         String dish1Id = "66500";
@@ -913,20 +940,26 @@ class ShoppingListRestControllerTest {
 
         // add dish 66500 - contains tag id 1
         String url = "/shoppinglist/" + listId + "/dish/" + dish1Id;
-        mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
         // add dish 66501, contains tag id 1
         url = "/shoppinglist/" + listId + "/dish/" + dish2Id;
-        mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
         // affirm list has tag_id 1 2 times (tag_id 1 is green chili)
-        ShoppingList result = retrieveList(userDetails, listId);
+        ShoppingList result = retrieveList(jwtToken, listId);
         // affirm we have tag id 1 there - in Category Dry, with id 1
         ShoppingListItem resultItem = result.getCategories().stream().flatMap(c -> c.getItems().stream())
                 .filter(item -> item.getTag().getId().equals(targetTagId))
@@ -940,13 +973,16 @@ class ShoppingListRestControllerTest {
         // the remove test
         // remove dish 66500 (dish1Id)
         url = "/shoppinglist/" + listId + "/dish/" + dish1Id;
-        mockMvc.perform(delete(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .delete(url)
+                .then()
+                .statusCode(204);
 
         // assert list has tag_id 1 1 time
-        result = retrieveList(userDetails, listId);
+        result = retrieveList(jwtToken, listId);
         // affirm we have tag id 1 there - in Category Dry, with id 1
         resultItem = result.getCategories().stream().flatMap(c -> c.getItems().stream())
                 .filter(item -> item.getTag().getId().equals(targetTagId))
@@ -958,20 +994,21 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
-    void testChangeListLayout() throws Exception {
+    void testChangeListLayout() {
 
         Long listId = TestConstants.LIST_1_ID;
         String url = "/shoppinglist/" + listId + "/layout/" + TestConstants.LIST_LAYOUT_2_ID;
-        mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(204);
 
     }
 
     @Test
-    @WithMockUser
     void deleteAllItemsFromList() throws Exception {
 
         ListGenerateProperties properties = new ListGenerateProperties();
@@ -982,27 +1019,32 @@ class ShoppingListRestControllerTest {
 
         String url = "/shoppinglist";
 
-        MvcResult result = this.mockMvc.perform(post(url)
-                        .with(user(userDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isCreated())
-                .andReturn();
+        String location = given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(201)
+                .extract()
+                .header("Location");
 
-        List<String> responses = result.getResponse().getHeaders("Location");
-        Assertions.assertNotNull(responses);
-        Assertions.assertTrue(responses.size() > 0);
-        String[] urlTokens = StringUtils.split(responses.get(0), "/");
+        Assertions.assertNotNull(location);
+        String[] urlTokens = StringUtils.split(location, "/");
         Long listId = Long.valueOf(urlTokens[(urlTokens).length - 1]);
 
         String clearUrl = "/shoppinglist/" + listId + "/item";
-        mockMvc.perform(delete(clearUrl)
-                        .with(user(userDetails))
-                        .contentType(contentType))
-                .andExpect(status().isNoContent());
+        given()
+                .header(TestUtils.authToken(jwtToken))
+                .contentType(ContentType.JSON)
+                .when()
+                .delete(clearUrl)
+                .then()
+                .statusCode(204);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(userDetails, listId);
+        ShoppingList source = retrieveList(jwtToken, listId);
         Map<String, ShoppingListItem> resultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1011,7 +1053,6 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void deleteItemOperation_Move() throws Exception {
         Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
         Long destinationListId = 6666L;  // 501, 502, 503, 505
@@ -1026,15 +1067,17 @@ class ShoppingListRestControllerTest {
 
         String url = "/shoppinglist/" + sourceListId + "/item";
 
-        this.mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(200);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(meUserDetails, sourceListId);
+        ShoppingList source = retrieveList(meJwtToken, sourceListId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1044,7 +1087,7 @@ class ShoppingListRestControllerTest {
         // 500 shouldn't be there
         Assertions.assertFalse(sourceResultMap.containsKey("500"));
         // check destination list
-        ShoppingList destination = retrieveList(meUserDetails, destinationListId);
+        ShoppingList destination = retrieveList(meJwtToken, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1061,7 +1104,6 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void deleteItemOperation_Copy() throws Exception {
         Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
         Long destinationListId = 6666L;  // 501, 502, 503, 505
@@ -1076,22 +1118,24 @@ class ShoppingListRestControllerTest {
 
         String url = "/shoppinglist/" + sourceListId + "/item";
 
-        this.mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(200);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(meUserDetails, sourceListId);
+        ShoppingList source = retrieveList(meJwtToken, sourceListId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
 
         Assertions.assertEquals(4, sourceResultMap.keySet().size());
         // check destination list
-        ShoppingList destination = retrieveList(meUserDetails, destinationListId);
+        ShoppingList destination = retrieveList(meJwtToken, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1109,7 +1153,6 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void deleteItemOperation_MoveCrossedOff_New() throws Exception {
         Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
         Long destinationListId = 6666L;  // 501, 502, 503, 505, 505
@@ -1124,15 +1167,17 @@ class ShoppingListRestControllerTest {
 
         String url = "/shoppinglist/" + sourceListId + "/item";
 
-        this.mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(200);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(meUserDetails, sourceListId);
+        ShoppingList source = retrieveList(meJwtToken, sourceListId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1142,7 +1187,7 @@ class ShoppingListRestControllerTest {
         // 500 shouldn't be there
         Assertions.assertFalse(sourceResultMap.containsKey(500L));
         // check destination list
-        ShoppingList destination = retrieveList(meUserDetails, destinationListId);
+        ShoppingList destination = retrieveList(meJwtToken, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1160,7 +1205,6 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void deleteItemOperation_MoveCrossedOff_Existing() throws Exception {
         Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
         Long destinationListId = 6666L;  // 501, 502, 503, 505, 505
@@ -1175,21 +1219,17 @@ class ShoppingListRestControllerTest {
 
         String url = "/shoppinglist/" + sourceListId + "/item";
 
-        this.mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isOk());
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(200);
 
         // now, retrieve the list and check results
-        MvcResult listResultsAfter = this.mockMvc.perform(get("/shoppinglist/" + sourceListId)
-                        .with(user(meUserDetails)))
-                .andReturn();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonList = listResultsAfter.getResponse().getContentAsString();
-        ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
-        Assertions.assertNotNull(afterList);
-        ShoppingList list = afterList.getShoppingList();
+        ShoppingList list = retrieveList(meJwtToken, sourceListId);
 
         Map<String, ShoppingListItem> allSourceResultMap = list.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
@@ -1201,7 +1241,7 @@ class ShoppingListRestControllerTest {
         Assertions.assertFalse(allSourceResultMap.containsKey("505"));
 
         // check destination list
-        ShoppingList destination = retrieveList(meUserDetails, destinationListId);
+        ShoppingList destination = retrieveList(meJwtToken, destinationListId);
         Map<String, ShoppingListItem> destinationResultMap = destination.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1220,7 +1260,6 @@ class ShoppingListRestControllerTest {
 
 
     @Test
-    @WithMockUser
     void deleteItemOperation_Remove() throws Exception {
         Long sourceListId = 7777L;  // 500 (CrossedOff), 501, 502, 505 (CrossedOff)
         List<Long> tagIdsForUpdate = Arrays.asList(500L, 501L, 504L);
@@ -1234,15 +1273,17 @@ class ShoppingListRestControllerTest {
 
         String url = "/shoppinglist/" + sourceListId + "/item";
 
-        this.mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(200);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(meUserDetails, sourceListId);
+        ShoppingList source = retrieveList(meJwtToken, sourceListId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1255,7 +1296,6 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void deleteItemOperation_RemoveCrossedOff() throws Exception {
         Long sourceListId = 77777L;  // 500, 501, 502
 
@@ -1267,7 +1307,7 @@ class ShoppingListRestControllerTest {
         String jsonProperties = json(operationUpdate);
 
         // get crossed off ids before call
-        ShoppingList before = retrieveList(meUserDetails, sourceListId);
+        ShoppingList before = retrieveList(meJwtToken, sourceListId);
         List<String> crossedOffIds = before.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getRemoved() != null)
@@ -1276,15 +1316,17 @@ class ShoppingListRestControllerTest {
 
         String url = "/shoppinglist/" + sourceListId + "/item";
 
-        this.mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(200);
 
         // now, retrieve the list
-        ShoppingList source = retrieveList(meUserDetails, sourceListId);
+        ShoppingList source = retrieveList(meJwtToken, sourceListId);
         Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1299,7 +1341,6 @@ class ShoppingListRestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void deleteItemOperation_RemoveAll() throws Exception {
         Long sourceListId = 77777L;  // 500, 501, 502
 
@@ -1312,16 +1353,18 @@ class ShoppingListRestControllerTest {
 
         String url = "/shoppinglist/" + sourceListId + "/item";
 
-        this.mockMvc.perform(put(url)
-                        .with(user(meUserDetails))
-                        .contentType(contentType)
-                        .content(jsonProperties))
-                .andExpect(status().isOk())
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .contentType(ContentType.JSON)
+                .body(jsonProperties)
+                .when()
+                .put(url)
+                .then()
+                .statusCode(200);
 
         // now, retrieve the list
         // check destination list
-        ShoppingList source = retrieveList(meUserDetails, sourceListId);
+        ShoppingList source = retrieveList(meJwtToken, sourceListId);
         Map<String, ShoppingListItem> destinationResultMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
@@ -1331,9 +1374,7 @@ class ShoppingListRestControllerTest {
 
     }
 
-
     @Test
-    @WithMockUser
     void testRemoveDish_CrossedOffOk() throws Exception {
         // test for LS-883 here
 
@@ -1343,61 +1384,91 @@ class ShoppingListRestControllerTest {
         properties.setGenerateMealplan(false);
 
         String jsonProperties = json(properties);
-        String listId = createList(jsonProperties, meUserDetails);
+        String listId = createList(jsonProperties, meJwtToken);
 
         String url = "/shoppinglist";
-        MvcResult listResultBefore = this.mockMvc.perform(get(url + "/" + listId)
-                        .with(user(meUserDetails)))
-                .andReturn();
-        String jsonList = listResultBefore.getResponse().getContentAsString();
+        String jsonList = given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .get(url + "/" + listId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .asString();
         ObjectMapper objectMapper = new ObjectMapper();
         ShoppingListResource beforeList = objectMapper.readValue(jsonList, ShoppingListResource.class);
         Assertions.assertNotNull(beforeList);
 
         // add dish which contains tag carrots - 109
         String addDishOneUrl = String.format("%s/%s/dish/%s", url, listId, "109");
-        this.mockMvc.perform(post(addDishOneUrl)
-                        .with(user(meUserDetails)))
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .post(addDishOneUrl)
+                .then()
+                .statusCode(204);
+
         // add another dish containing tag carrots - 112
         String addDishTwoUrl = String.format("%s/%s/dish/%s", url, listId, "112");
-        this.mockMvc.perform(post(addDishTwoUrl)
-                        .with(user(meUserDetails)))
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .post(addDishTwoUrl)
+                .then()
+                .statusCode(204);
 
         // check results
-        MvcResult listResultsAddDishTwo = this.mockMvc.perform(get(url + "/" + listId)
-                        .with(user(meUserDetails)))
-                .andReturn();
-        jsonList = listResultsAddDishTwo.getResponse().getContentAsString();
+        jsonList = given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .get(url + "/" + listId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .asString();
         ShoppingListResource afterAddDishTwo = objectMapper.readValue(jsonList, ShoppingListResource.class);
         Assertions.assertNotNull(afterAddDishTwo);
 
         // cross off all items on list
         String crossOffItemsUrl = String.format("%s/%s/item/shop?crossOff=true", url, listId);
-        this.mockMvc.perform(post(crossOffItemsUrl)
-                        .with(user(meUserDetails)))
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .post(crossOffItemsUrl)
+                .then()
+                .statusCode(204);
+
         // check results
-        MvcResult listResultsCrossedOff = this.mockMvc.perform(get(url + "/" + listId)
-                        .with(user(meUserDetails)))
-                .andReturn();
-        jsonList = listResultsCrossedOff.getResponse().getContentAsString();
+        jsonList = given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .get(url + "/" + listId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .asString();
         ShoppingListResource afterCrossedOff = objectMapper.readValue(jsonList, ShoppingListResource.class);
         Assertions.assertNotNull(afterCrossedOff);
 
 
         // remove first dish - 109
         String deleteDishUrl = String.format("%s/%s/dish/%s", url, listId, "109");
-        this.mockMvc.perform(delete(deleteDishUrl)
-                        .with(user(meUserDetails)))
-                .andReturn();
+        given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .delete(deleteDishUrl)
+                .then()
+                .statusCode(204);
 
         // get Shopping List and confirm that carrots are still crossed off
-        MvcResult listResultsAfter = this.mockMvc.perform(get(url + "/" + listId)
-                        .with(user(meUserDetails)))
-                .andReturn();
-        jsonList = listResultsAfter.getResponse().getContentAsString();
+        jsonList = given()
+                .header(TestUtils.authToken(meJwtToken))
+                .when()
+                .get(url + "/" + listId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .asString();
         ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
         Assertions.assertNotNull(afterList);
         ShoppingList list = afterList.getShoppingList();
@@ -1415,21 +1486,24 @@ class ShoppingListRestControllerTest {
         Assertions.assertNotNull(carrot.getCrossedOff(), "carrots should be crossed off");
     }
 
-    private ShoppingList retrieveList(UserDetails userDetails, Long listId) throws Exception {
-        MvcResult listResultsAfter = this.mockMvc.perform(get("/shoppinglist/" + listId)
-                        .with(user(userDetails)))
-                .andReturn();
+    private ShoppingList retrieveList(String token, Long listId) throws Exception {
+        String jsonList = given()
+                .header(TestUtils.authToken(token))
+                .when()
+                .get("/shoppinglist/" + listId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .asString();
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonList = listResultsAfter.getResponse().getContentAsString();
         ShoppingListResource afterList = objectMapper.readValue(jsonList, ShoppingListResource.class);
         Assertions.assertNotNull(afterList);
         return afterList.getShoppingList();
     }
 
     private String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(o);
     }
 
 }

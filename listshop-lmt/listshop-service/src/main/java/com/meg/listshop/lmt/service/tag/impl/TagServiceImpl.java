@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 /**
  * Created by margaretmartin on 13/05/2017.
  */
@@ -30,7 +36,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
@@ -240,6 +245,20 @@ public class TagServiceImpl implements TagService {
         return dbTag;
     }
 
+    public TagInfoDTO getTagInfoList(Long userId, Long tagId) {
+        TagSearchCriteria criteria = new TagSearchCriteria();
+        criteria.setTagIds(Collections.singletonList(tagId));
+        criteria.setUserId(userId);
+        List<TagInfoDTO> allFound = getTagInfoList(criteria);
+        if (allFound == null || allFound.isEmpty()) {
+            criteria.setUserId(null);
+            return getTagInfoList(criteria).stream()
+                    .findFirst()
+                    .orElse(null);
+        }
+        return allFound.get(0);
+    }
+
     public List<TagInfoDTO> getTagInfoList(Long userId, List<TagType> tagTypes) {
         return tagInfoCustomRepository.retrieveTagInfoByUser(userId, tagTypes);
     }
@@ -288,8 +307,13 @@ public class TagServiceImpl implements TagService {
     }
 
     private TagEntity getExistingTag(TagEntity newtag, Long userId) {
-        Optional<TagEntity> tag = tagRepository.findTagDuplicate(newtag.getName().toLowerCase().trim(), newtag.getTagType(), newtag.getIsGroup(), userId);
-        return tag.orElse(null);
+        if (userId == null) {
+            return tagRepository.findStandardTagDuplicate(newtag.getName().toLowerCase().trim(), newtag.getTagType(), newtag.getIsGroup())
+                    .orElse(null);
+        }
+        return tagRepository.findUserTagDuplicate(newtag.getName().toLowerCase().trim(), newtag.getTagType(), newtag.getIsGroup(), userId)
+                .orElse(null);
+
     }
 
     @Override

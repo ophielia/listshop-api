@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,7 +43,7 @@ public class Tag {
 
     private Boolean isLiquid;
 
-    Tag() {
+    public Tag() {
     }
 
     public Tag(String name) {

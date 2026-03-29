@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.list.impl;
@@ -12,8 +11,8 @@ import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.list.v2.ShoppingListService;
 import com.meg.listshop.lmt.service.MergeItemCollector;
-import com.meg.listshop.lmt.list.ShoppingListService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.test.TestConstants;
 import org.junit.jupiter.api.Assertions;

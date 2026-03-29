@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.configuration;
 
 import com.meg.listshop.auth.data.repository.AuthorityRepository;
@@ -67,7 +73,9 @@ public class SecurityConfig {
                         .requestMatchers("/v2/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/tag/**").permitAll()
+                        .requestMatchers("/v2/tag/**").permitAll()
                         .requestMatchers("/listlayout/default").permitAll()
+                        .requestMatchers("/v2/layout").permitAll()
                         .requestMatchers("/layout/default").permitAll()
                         .requestMatchers("/taginfo/**").permitAll()
                 )

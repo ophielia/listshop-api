@@ -24,13 +24,13 @@ SET row_security = off;
 
 COPY public.users (user_id, email, enabled, last_password_reset_date, password, username, creation_date, last_login) FROM stdin;
 1	rufus	t	\N	$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi	rufus	\N	\N
-20	me	t	\N	$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi	me	\N	\N
+20	meg@the-list-shop.com	t	\N	$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi	meg@the-list-shop.com	\N	\N
 23	carrie	t	\N	$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi	carrie	\N	\N
 26	mom@test.com	t	\N	$2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK	mom@test.com	\N	\N
 29	michelle	t	\N	$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi	michelle	\N	\N
 2	testname	\N	\N	password	testname	\N	\N
 34	dad@userdetails.com	\N	\N	password	testname	\N	\N
-500	testuser@testuser.com	t	\N	$2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK	testuser	\N	\N
+500	testuser@testuser.com	t	\N	$2a$10$RFahccrkDPR1aUHfyS457Oc7n.2f7wU/sDUXQ.99wOvNL3xzaiPxK	testuser@testuser.com	\N	\N
 501	adduser	t	\N	password	adduser	\N	\N
 502	deleteuser	t	\N	password	deleteuser	\N	\N
 \.
@@ -42,7 +42,7 @@ COPY public.users (user_id, email, enabled, last_password_reset_date, password, 
 
 COPY public.authority (authority_id, name, user_id) FROM stdin;
 1	ROLE_USER	1
-2	ROLE_USER	20
+2	ROLE_ADMIN	20
 3	ROLE_USER	23
 4	ROLE_USER	26
 5	ROLE_USER	500
@@ -772,6 +772,7 @@ COPY public.tag (tag_id, description, name, tag_type, tag_type_default, is_verif
 181	\N	white sugar	Ingredient	\N	\N	\N	f	\N	2021-04-11 06:45:31.48136+02	\N	\N	\N	f	\N	1	\N	225108	\N
 19	\N	garlic	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:27:31.48136+02	\N	\N	\N	f	\N	1	\N	227637	\N
 33	\N	tomatoes	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:13:31.48136+02	\N	\N	\N	f	\N	1	\N	225744	\N
+333333	\N	tomato bisque	Ingredient	\N	\N	\N	f	\N	2021-04-11 09:13:31.48136+02	\N	\N	\N	f	20	1	\N	225744	\N
 \.
 
 
@@ -5443,6 +5444,7 @@ COPY public.shadow_tags (shadow_tag_id, dish_id, tag_id) FROM stdin;
 --
 
 COPY public.tag_relation (tag_relation_id, child_tag_id, parent_tag_id) FROM stdin;
+238236	333333	430
 238	126	393
 239	163	393
 240	20	393
@@ -6137,6 +6139,11 @@ COPY public.tokens (token_id, created_on, token_type, token_value, user_id) FROM
 --
 
 COPY public.user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login) FROM stdin;
+1158	500	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token123456	2026-02-27 06:04:39.119000 +00:00
+1159	26	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token56789	2026-02-27 06:04:39.119000 +00:00
+1160	502	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token502user	2026-02-27 06:04:39.119000 +00:00
+1161	20	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token20user	2026-02-27 06:04:39.119000 +00:00
+1161	34	name	model	os	osVersion	Mobile	103	randomDeviceId	2.1.9	token34user	2026-02-27 06:04:39.119000 +00:00
 \.
 
 
@@ -6414,6 +6421,13 @@ SELECT pg_catalog.setval('public.unit_sequence', 1000, false);
 --
 
 SELECT pg_catalog.setval('public.user_device_sequence', 1, false);
+
+
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
 
 
 --

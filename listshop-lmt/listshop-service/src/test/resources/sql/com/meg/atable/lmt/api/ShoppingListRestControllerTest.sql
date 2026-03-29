@@ -5,6 +5,8 @@ where user_id in (99999);
 INSERT INTO users (user_id, email, enabled, last_password_reset_date, password, username)
 VALUES (99999, 'username@testitytest.com', true, NULL, '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi',
         'email@email.com');
+insert into user_devices (user_device_id, user_id, name, model, os, os_version, client_type, build_number, client_device_id, client_version, token, last_login)
+    values (99999, 99999, 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'token99999', now());
 insert into list (created_on, list_layout_id, name, user_id, list_id)
 values (now(), 1, 'BaseList', 99999, 99999);
 INSERT INTO tag (tag_id, description, name, tag_type, tag_type_default, is_verified,
@@ -52,10 +54,32 @@ values
     (50999010, null, 'four vegetable soup', 20, '2022-03-12 10:37:26.878000 +00:00', 105,'2019-08-17 21:14:14.773362 +00:00', '17 '),
     (509990100, null, 'crispy cucumber salad', 20, '2021-05-08 09:02:13.478000 +00:00', 105,'2019-08-17 19:44:14.773362 +00:00', '30 '),
     (509990101, null, 'crockpot corn chowder', 20, '2022-03-19 09:50:06.144000 +00:00', 105,'2019-08-17 19:43:14.773362 +00:00', null);
+
+-- list 509992 - copy of list 509990 but with amount information
+insert into list (created_on, list_layout_id, list_types, user_id, list_id, name, is_starter_list)
+values (now(), 1, 'General', 20, 509992, 'list with amounts', false);
+
+INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
+                      list_sources, quantity, raw_quantity,unit_id, amount_text)
+VALUES (509992, 501, 5099920, now(), null,  1, null, null, 1.5, 1.5,1000, '1.5 cups'),
+       (509992, 502, 5099921, now(), null,  1, null, '509991', 2.0, 2.0,1011, '2 units'),
+       (509992, 503, 5099922, now(), null,  1, null, null, 1.0,1.0, 1001, '1 tablespoon'),
+       (509992, 500, 5099923, now(), null,  1, null, null, 0.5, 0.5,1008, '0.5 lb'),
+       (509992, 504, 5099924, now(), null,  1, null, '509991', 1.0, 1.0,1041, '1 package'),
+       (509992, 504, 5099925, now(), null,  1, null, '509991', 3.0,3.0, 1013, '3 grams');
+
+INSERT INTO list_item_details (item_detail_id, item_id, used_count, linked_list_id, linked_dish_id, quantity, unit_id, raw_entry)
+VALUES  (50999200, 5099920, 1, 7777, null, 1.5, 1000, '1.5 cups'),
+        (50999201, 5099921, 1, 6666, null, 2.0, 1011, '2 units'),
+        (50999202, 5099922, 1, null, 5099901, 1.0, 1001, '1 tablespoon'),
+        (50999203, 5099923, 1, null, 50999010, 0.5, 1008, '0.5 lb'),
+        (50999204, 5099924, 1, null, 509990100, 1.0, 1041, '1 package'),
+        (50999205, 5099925, 1, null, 509990101, 3.0, 1013, '3 grams');
+
 INSERT INTO list_item(list_id, tag_id, item_id, added_on, crossed_off,  used_count, dish_sources,
                       list_sources)
 VALUES (509990, 501, 509990, now(), null,  1, null, null),
-       (509990, 502, 509991, now(), null,  1, null, '509991'),
+       (509990, 502, 509991, now(), now(),  1, null, '509991'),
        (509990, 503, 509992, now(), null,  1, null, null),
        (509990, 500, 509993, now(), null,  1, null, null),
        (509990, 504, 509994, now(), null,  1, null, '509991'),
@@ -447,6 +471,12 @@ values (11000001111, 11000001, 109, 1),
        (22110012111, 22110012, 109, 1),
        (22110013111, 22110013, 109, 1);
 
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 -- my user layout list
 
 insert into list (list_id, created_on, user_id, list_types, list_layout_id, last_update, meal_plan_id, is_starter_list,
@@ -529,6 +559,12 @@ values (90909090, '2022-04-16 03:32:39.320000 +00:00', null, null,  90909090, nu
         now(),
         now())
 ;
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 --details
 insert into list_item_details
 (item_detail_id, item_id, linked_dish_id, used_count)

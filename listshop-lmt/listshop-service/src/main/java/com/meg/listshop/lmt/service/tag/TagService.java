@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.tag;
 
 import com.meg.listshop.lmt.api.exception.BadParameterException;
@@ -19,6 +25,8 @@ import java.util.Set;
 public interface TagService {
     @Value("${service.tagservice.main.dish.tagid}")
     Long MAIN_DISH_TAG_ID = 320L;
+    @Value("${service.tagservice.max.rating.value:5}")
+    Integer MAX_RATiNG_POWER = 5;
 
     TagEntity save(TagEntity tag);
 
@@ -69,6 +77,7 @@ public interface TagService {
 
     List<TagEntity> getReplacedTagsFromIds(Set<Long> tagKeys);
 
+    TagInfoDTO getTagInfoList(Long userId, Long tagId);
 
     List<TagInfoDTO> getTagInfoList(Long userId, List<TagType> tagTypes);
 

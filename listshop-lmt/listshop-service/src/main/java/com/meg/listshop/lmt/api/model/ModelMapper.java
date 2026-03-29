@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.api.model;
@@ -523,35 +522,6 @@ return returnval;
                 .toDelete(tagEntity.isToDelete());
     }
 
-    public static Ingredient toModel(DishItemDTO ingredientDto) {
-        if (ingredientDto == null) {
-            return null;
-        }
-
-        Ingredient ingredient = new Ingredient();
-        ingredient.setId(String.valueOf(ingredientDto.getDishItemId()));
-        ingredient.setTagId(String.valueOf(ingredientDto.getTagId()));
-        ingredient.setTagDisplay(ingredientDto.getTagDisplay());
-        ingredient.setWholeQuantity(ingredientDto.getWholeQuantity());
-        if (ingredientDto.getFractionalQuantity() != null) {
-            ingredient.setFractionalQuantity(ingredientDto.getFractionalQuantity().name());
-        }
-        ingredient.setUnitId(String.valueOf(ingredientDto.getUnitId()));
-        ingredient.setUnitName(ingredientDto.getUnitName());
-        ingredient.setRawModifiers(ingredientDto.getRawModifiers());
-        ingredient.setRawEntry(ingredientDto.getRawEntry());
-        ingredient.setUnitDisplay(ingredientDto.getUnitDisplay());
-        String quantityDisplay = "";
-        if (ingredientDto.getWholeQuantity() != null) {
-            quantityDisplay = quantityDisplay + ingredientDto.getWholeQuantity();
-        }
-        if (ingredientDto.getFractionalQuantity() != null) {
-            quantityDisplay = quantityDisplay + " " + ingredientDto.getFractionalQuantity().getDisplayName();
-        }
-        ingredient.setQuantityDisplay(quantityDisplay);
-        return ingredient;
-    }
-
     public static Tag itemToTagModel(DishItemEntity itemEntity) {
         if (itemEntity == null) {
             return null;
@@ -690,6 +660,17 @@ return returnval;
 
     }
 
+    public static ShoppingList toModel(ShoppingListDTO listDTO) {
+        return new ShoppingList(listDTO.getListId())
+                .createdOn(listDTO.getCreatedOn())
+                .isStarterList(listDTO.isStarterList())
+                .name(listDTO.getName())
+                .updated(listDTO.getLastUpdate())
+                .itemCount(listDTO.getItemCount())
+                .userId(listDTO.getUserId());
+
+    }
+
 
     private static void enhanceCategories(String listId, List<ShoppingListCategory> filledCategories
     ) {
@@ -823,6 +804,15 @@ return returnval;
         shoppingListEntity.setName(shoppingList.getName());
         shoppingListEntity.setIsStarterList(shoppingList.getStarterList());
         return shoppingListEntity;
+    }
+
+
+    public static ShoppingListDTO toDTO(ShoppingListPut shoppingList) {
+
+        return  new ShoppingListDTO(shoppingList.getList_id(),
+                shoppingList.getName(),
+                null, null, 0,
+                shoppingList.getStarterList(),null,0);
     }
 
     public static UserPropertyEntity toEntity(UserProperty property) {

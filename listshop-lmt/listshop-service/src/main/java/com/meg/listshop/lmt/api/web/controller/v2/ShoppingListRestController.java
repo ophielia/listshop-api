@@ -1,0 +1,535 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
+package com.meg.listshop.lmt.api.web.controller.v2;
+
+import com.github.dockerjava.api.exception.BadRequestException;
+import com.google.common.base.Enums;
+import com.meg.listshop.auth.service.CustomUserDetails;
+import com.meg.listshop.common.ControllerUtils;
+import com.meg.listshop.common.FractionUtils;
+import com.meg.listshop.common.RoundingUtils;
+import com.meg.listshop.common.StringTools;
+import com.meg.listshop.lmt.api.controller.v2.V2ShoppingListRestControllerApi;
+import com.meg.listshop.lmt.api.exception.ItemProcessingException;
+import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
+
+import com.meg.listshop.lmt.api.model.*;
+
+import com.meg.listshop.lmt.api.model.v2.*;
+import com.meg.listshop.lmt.api.model.v2.MergeRequest;
+import com.meg.listshop.lmt.api.model.v2.MergeResult;
+import com.meg.listshop.lmt.api.model.v2.ShoppingList;
+import com.meg.listshop.lmt.api.model.v2.ShoppingListPut;
+import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
+import com.meg.listshop.lmt.data.pojos.CategoryDTO;
+import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
+import com.meg.listshop.lmt.data.pojos.SimpleListItemDTO;
+import com.meg.listshop.lmt.data.pojos.SourceDTO;
+import com.meg.listshop.lmt.list.ShoppingListException;
+import com.meg.listshop.lmt.list.v2.ShoppingListService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+/**
+ * Created by margaretmartin on 20/10/2017.
+ */
+@Controller(value = "V2ShoppingListRestController")
+public class ShoppingListRestController implements V2ShoppingListRestControllerApi {
+
+
+    private static final Logger logger = LoggerFactory.getLogger(ShoppingListRestController.class);
+
+    private final ShoppingListService shoppingListService;
+
+    @Value("${conversionservice.single.unit.id:1011}")
+    private Long defaultUnitId;
+
+    @Autowired
+    public ShoppingListRestController(ShoppingListService shoppingListService) {
+        this.shoppingListService = shoppingListService;
+    }
+
+    @Override
+    public ResponseEntity<ShoppingListList> retrieveLists(HttpServletRequest request, Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        String message = String.format("Retrieving all lists for user [%S]", userDetails.getId());
+        logger.info(message);
+        List<NestedShoppingList> shoppingListList = shoppingListService
+                .getListsByUserId(userDetails.getId())
+                .stream()
+                .map(V2ModelMapper::toNestedListModel)
+                .collect(Collectors.toList());
+
+        ShoppingListList listOfLists = new ShoppingListList(shoppingListList);
+
+        return new ResponseEntity<>(listOfLists, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Object> createList(HttpServletRequest request, Authentication authentication, @RequestBody ListGenerateProperties listGenerateProperties) throws MalformedURLException {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String message = String.format("Creating list for user [%S]", authentication.getName());
+        logger.info(message);
+
+        ShoppingListEntity result = null;
+        try {
+            result = shoppingListService.generateListForUser(userDetails.getId(), listGenerateProperties);
+        } catch (ShoppingListException | ItemProcessingException e) {
+            logger.error("Exception while creating List.", e);
+        }
+        if (result != null) {
+            var location = ControllerUtils.locationURI(request, "/v2/shoppinglist", result.getId());
+            return ResponseEntity.created(location).build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+
+    @Override
+    public ResponseEntity<MergeResult> mergeList(Authentication authentication, @RequestBody MergeRequest mergeRequest) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String message = String.format("Merging list for user [%S]", userDetails.getId());
+        logger.info(message);
+
+        Long listId = mergeRequest.getListId();
+        String layoutId = mergeRequest.getLayoutId();
+
+        MergeResult mergeResult = this.shoppingListService.mergeFromClient(userDetails.getId(), mergeRequest);
+
+        // check for conflicts (won't be any until we implement this)
+        if (mergeResult.getMergeConflicts() == null) {
+            // retrieve the list, and put it into the result
+            ShoppingListDTO shoppingList = this.shoppingListService.getListDTOForUser(userDetails.getId(), listId);
+            // possibly set layout id in shopping list
+            if (layoutId != null && !layoutId.equals(shoppingList.getLayoutId())) {
+                shoppingList.setLayoutId(StringTools.stringToLong(layoutId));
+            }
+
+            Map<Long, String> unitMapping= shoppingListService.retrieveUnitMapping(shoppingList.getListId());
+            List<CategoryDTO> categories = shoppingListService.retrieveListCategories(shoppingList.getListId());
+            List<SourceDTO> sources = shoppingListService.retrieveListSources(shoppingList.getListId());
+            shoppingList.setUnitMapping(unitMapping);
+            shoppingList.setCategories(categories);
+            shoppingList.setSources(sources);
+
+            mergeResult.setShoppingList(V2ModelMapper.toModel(shoppingList));
+
+            return new ResponseEntity<>(mergeResult, HttpStatus.OK);
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+
+
+    @Override
+    public ResponseEntity<Object> updateList(HttpServletRequest request, Authentication authentication,
+                                             @PathVariable("listId") Long listId,
+                                             @RequestBody ShoppingListPut shoppingList) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        final String message = String.format("Updating list for list [%d]", listId);
+        logger.info(message);
+        ShoppingListDTO updateFrom = V2ModelMapper.toDto(shoppingList, userDetails.getId());
+
+        ShoppingListEntity result = shoppingListService.updateList(userDetails.getId(), listId, updateFrom);
+        if (result != null) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> updateItems(Authentication authentication, @PathVariable("listId") Long listId, @RequestBody ItemOperationPut itemOperation) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String message = String.format("beginning updateItems for input: %S", itemOperation);
+        logger.debug(message);
+        if (itemOperation == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        // get operation type as enum
+        String operationString = itemOperation.getOperation();
+        ItemOperationType operationType = Enums.getIfPresent(ItemOperationType.class, operationString).orNull();
+        if (operationType == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // make service call
+        Long destinationListId = itemOperation.getDestinationListId();
+        List<Long> tagIdsForUpdate = itemOperation.getTagIds();
+
+        try {
+            shoppingListService.performItemOperation(userDetails.getId(), listId, operationType, tagIdsForUpdate, destinationListId);
+        } catch (ItemProcessingException e) {
+            logger.error("Exception while performing item operations on list [{}]..", listId, e);
+            return ResponseEntity.internalServerError().build();
+        }
+
+        // return
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<ShoppingList> retrieveMostRecentList(HttpServletRequest request, Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Retrieving most recent list for user {}", userDetails.getId());
+        ShoppingListDTO result = shoppingListService.getMostRecentList(userDetails.getId());
+        if (result == null) {
+            throw new ObjectNotFoundException(String.format("No lists found for user [%s] in retrieveMostRecentList()", userDetails.getId()));
+        }
+
+        return singleResult(result);
+    }
+
+    public ResponseEntity<ShoppingList> retrieveStarterList(HttpServletRequest request, Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Retrieving starter list for user {}", userDetails.getId());
+        ShoppingListDTO result = shoppingListService.getStarterList(userDetails.getId());
+        if (result == null) {
+            throw new ObjectNotFoundException(String.format("No lists found for user [%s] in retrieveStarterList()", userDetails.getId()));
+        }
+        return singleResult(result);
+    }
+
+    @Override
+    public ResponseEntity<ShoppingList> retrieveListById(HttpServletRequest request, Authentication authentication, @PathVariable("listId") Long listId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Retrieving list [{}] by id for user [{}]", listId, userDetails.getId());
+
+        ShoppingListDTO result = shoppingListService.getListDTOForUser(userDetails.getId(), listId);
+        if (result == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return singleResult(result);
+    }
+
+
+    @Override
+    public ResponseEntity<Object> deleteList(Authentication authentication, @PathVariable("listId") Long listId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Deleting list [{}] for user [{}]", listId, userDetails.getId());
+        shoppingListService.deleteList(userDetails.getId(), listId);
+        return ResponseEntity.noContent().build();
+
+    }
+
+
+    @Override
+    public ResponseEntity<Object> updateItemCountByTag(Authentication authentication, @PathVariable("listId") Long listId,
+                                                       @PathVariable("tagId") Long tagId,
+                                                       @PathVariable("usedCount") Integer usedCount
+    ) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        final String message = String.format("Update count for tag [%d] to [%d] in list [%d]", tagId, usedCount, listId);
+        logger.info(message);
+        this.shoppingListService.updateItemCount(userDetails.getId(), listId, tagId, usedCount);
+        return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<Object> addItemToList(Authentication authentication, @PathVariable("listId") Long listId, @RequestBody PostListItem postListItem) throws ItemProcessingException {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Adding tag to list [{}] for user [{}]",  listId, userDetails.getId());
+        SimpleListItemDTO item = validateListItem(listId, postListItem);
+
+        this.shoppingListService.addItemToList(userDetails.getId(), listId, item);
+        return ResponseEntity.noContent().build();
+    }
+
+    private SimpleListItemDTO validateListItem(Long listId, PostListItem listPost) {
+        if (listPost == null) {
+            throw new BadRequestException("item post is null");
+        }
+        if (listPost.getTagId() == null) {
+            throw new BadRequestException("Tag id is null.");
+        }
+        SimpleListItemDTO itemDTO = new SimpleListItemDTO();
+        itemDTO.setListId(listId);
+        itemDTO.setTagId(ControllerUtils.stringToLongOrException(listPost.getTagId()));
+
+        if (!itemHasAmount(listPost)) {
+            return itemDTO;
+        }
+        // get unit id
+        Amount amount = listPost.getAmount();
+        Long unitId = ControllerUtils.stringToLongOrDefault(amount.getUnitId(), defaultUnitId);
+        itemDTO.setUnitId(unitId);
+
+        // convert fraction
+        if (amount.getQuantity() > 0) {
+            validateAndFillFromQuantity(itemDTO, listPost);
+        } else {
+            validateAndFillFromParts(itemDTO, listPost);
+        }
+        itemDTO.setRawModifiers(amount.getModifiers());
+        return itemDTO;
+    }
+
+    private void validateAndFillFromParts(SimpleListItemDTO itemDTO, PostListItem listItem) {
+        Amount amount = listItem.getAmount();
+        String rawEntry = listItem.getRawEntry() == null? "":listItem.getRawEntry();
+        Integer wholeQuantity = 0;
+        Double fractionQuantity = 0.0;
+        if (amount.getFractionalQuantity() != null && !amount.getFractionalQuantity().isEmpty()) {
+            FractionType fraction = FractionType.fromName(amount.getFractionalQuantity());
+            if (fraction == null) {
+                double fractionValue = RoundingUtils.doubleFromStringFraction(amount.getFractionalQuantity());
+                fraction = FractionUtils.getFractionTypeForDecimal(new BigDecimal(fractionValue));
+
+            }
+
+            fractionQuantity = FractionType.doubleValueOf(fraction);
+            // handle entry changes -- also fraction types of 0 and 1
+            rawEntry = rawEntry.replace(amount.getFractionalQuantity(), fraction.getDisplayName());
+            itemDTO.setFractionalQuantity(fraction);
+        }
+
+        if (amount.getWholeQuantity() != null) {
+            wholeQuantity = amount.getWholeQuantity();
+        }
+
+        Double quantity = wholeQuantity.doubleValue();
+        quantity += fractionQuantity;
+
+        itemDTO.setWholeQuantity(wholeQuantity);
+        itemDTO.setQuantity(quantity);
+        itemDTO.setRawEntry(rawEntry);
+
+
+    }
+
+    private void validateAndFillFromQuantity(SimpleListItemDTO itemDTO,  PostListItem listPost) {
+        Amount amount = listPost.getAmount();
+        Double quantity = 0.0;
+        Double originalQuantity = amount.getQuantity();
+        BigDecimal bigDecimal = new BigDecimal(String.valueOf(originalQuantity));
+        int wholeNumber = bigDecimal.intValue();
+        BigDecimal decimalPart = bigDecimal.subtract(new BigDecimal(wholeNumber));
+        FractionType fraction = FractionUtils.getFractionTypeForDecimal(decimalPart);
+        quantity += wholeNumber;
+        quantity += FractionType.doubleValueOf(fraction);
+
+        String rawEntry = listPost.getRawEntry();
+        if (!Objects.equals(quantity, originalQuantity)) {
+            // a change was made - replace in raw entry
+            rawEntry = rawEntry.replace(String.valueOf(originalQuantity), String.valueOf(quantity) );
+        }
+
+        itemDTO.setWholeQuantity(wholeNumber);
+        itemDTO.setFractionalQuantity(fraction);
+        itemDTO.setQuantity(quantity);
+        itemDTO.setRawEntry(rawEntry);
+    }
+
+    private boolean itemHasAmount(PostListItem listPost) {
+        return listPost.getAmount() != null
+                && listPost.getAmount().getQuantity() > 0;
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteItemFromList(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("itemId") Long itemId,
+                                                     @RequestParam(value = "removeEntireItem", required = false, defaultValue = "false") Boolean removeEntireItem,
+                                                     @RequestParam(value = "sourceId", required = false, defaultValue = "0") String sourceId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Deleting item [{}] from list [{}] for user [{}]", itemId, listId, userDetails.getId());
+        Long serviceSourceId = null;
+        if (!"0".equals(sourceId)) {
+            serviceSourceId = Long.valueOf(sourceId);
+        }
+
+        try {
+            this.shoppingListService.deleteItemFromList(userDetails.getId(), listId, itemId);
+        } catch (ItemProcessingException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<Object> setCrossedOffForItem(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("itemId") Long itemId,
+                                                       @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff
+    ) throws ItemProcessingException {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Setting crossed off for item [{}] on list [{}] for user [{}]", itemId, listId, userDetails.getId());
+        this.shoppingListService.updateItemCrossedOff(userDetails.getId(), listId, itemId, crossedOff);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<Object> crossOffAllItemsOnList(Authentication authentication, @PathVariable("listId") Long listId,
+                                                         @RequestParam(value = "crossOff", required = false, defaultValue = "false") Boolean crossedOff) throws ItemProcessingException {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Setting crossed off [{}] for all items on list [{}] for user [{}]", crossedOff, listId, userDetails.getId());
+        this.shoppingListService.crossOffAllItems(userDetails.getId(), listId, crossedOff);
+
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @Override
+    public ResponseEntity<Object> deleteAllItemsFromList(Authentication authentication, @PathVariable("listId") Long listId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Deleting all items from list [{}] for user [{}]", listId, userDetails.getId());
+        try {
+            this.shoppingListService.deleteAllItemsFromList(userDetails.getId(), listId);
+        } catch (ItemProcessingException e) {
+            logger.info("issue while removing items [{}]", e);
+            return ResponseEntity.internalServerError().build();
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @Override
+    public ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId) throws MalformedURLException {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Generating list from mealplan [{}] for user [{}]", mealPlanId, userDetails.getId());
+        ShoppingListEntity shoppingListEntity = null;
+        try {
+            shoppingListEntity = this.shoppingListService.generateListFromMealPlan(userDetails.getId(), mealPlanId);
+        } catch (ShoppingListException | ItemProcessingException e) {
+            logger.error("Exception while adding dishes to new list from mealplan [{}].", mealPlanId, e);
+            return ResponseEntity.internalServerError().build();
+        }
+        if (shoppingListEntity != null) {
+            var location = ControllerUtils.locationURI(request, "/v2/shoppinglist", shoppingListEntity.getId());
+            return ResponseEntity.created(location).build();
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> addToListFromMealPlan(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("mealPlanId") Long mealPlanId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Adding to list [{}] from meal plan [{}] for user [{}]", listId, mealPlanId, userDetails.getId());
+        try {
+            this.shoppingListService.addToListFromMealPlan(userDetails.getId(), listId, mealPlanId);
+        } catch (ShoppingListException | ItemProcessingException e) {
+            logger.error("Exception while adding mealplan [{}] to list [{}] for user [{}].", mealPlanId, listId, userDetails.getId(), e);
+            return ResponseEntity.internalServerError().build();
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/{listId}/dish", produces = "application/json")
+    public ResponseEntity<Object> addDishesToList(Authentication authentication, @PathVariable("listId") Long listId,
+                                                  @RequestBody ListAddProperties listAddProperties) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String message = String.format("Adding dishes to list for user [%S]", userDetails.getId());
+        logger.info(message);
+
+        try {
+            shoppingListService.addDishesToList(userDetails.getId(), listId, listAddProperties);
+        } catch (ShoppingListException | ItemProcessingException e) {
+            logger.error("Exception while adding dishes to list [{}].", listId, e);
+            return ResponseEntity.internalServerError().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    @Override
+    public ResponseEntity<Object> addDishToList(Authentication authentication,  Long listId,  Long dishId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Adding dish [{}] to list [{}] for user [{}]", dishId, listId, userDetails.getId());
+        try {
+            this.shoppingListService.addDishToList(userDetails.getId(), listId, dishId);
+        } catch (ShoppingListException | ItemProcessingException s) {
+            logger.error("Unable to add Dish [{}] to List [{}]", dishId, listId, s);
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> removeDishFromList(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("dishId") Long dishId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Removing dish [{}] from list [{}] for user [{}]", dishId, listId, userDetails.getId());
+
+
+        try {
+            this.shoppingListService.removeDishFromList(userDetails.getId(), listId, dishId);
+        } catch (ItemProcessingException e) {
+            logger.error("Exception while removing dish [{}] from list [{}].", dishId, listId, e);
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @Override
+    public ResponseEntity<Object> addToListFromList(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("fromListId") Long fromListId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Adding list [{}] to list [{}] for user [{}]", fromListId, listId, userDetails.getId());
+
+        try {
+            this.shoppingListService.addListToList(userDetails.getId(), listId, fromListId);
+        } catch (ItemProcessingException e) {
+            logger.error("Exception while adding dishes to list [{}] from list [{}].", listId, fromListId, e);
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> removeFromListByList(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("fromListId") Long fromListId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Removing list [{}] from list [{}] for user [{}]", fromListId, listId, userDetails.getId());
+        try {
+            this.shoppingListService.removeListItemsFromList(userDetails.getId(), listId, fromListId);
+        } catch (ItemProcessingException e) {
+            logger.error("Exception while removing list [{}] from List [{}].", listId, fromListId, e);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> changeListLayout(Authentication authentication, @PathVariable("listId") Long listId, @PathVariable("layoutId") Long layoutId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        logger.info("Chaning list layout [{}] for list [{}] for user [{}]", layoutId, listId, userDetails.getId());
+        this.shoppingListService.changeListLayout(userDetails.getId(), listId, layoutId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+
+    private ResponseEntity<ShoppingList> singleResult(ShoppingListDTO result) {
+        if (result != null) {
+            result.setUnitMapping(shoppingListService.retrieveUnitMapping(result.getListId()));
+            result.setCategories(shoppingListService.retrieveListCategories(result.getListId()));
+            result.setSources(shoppingListService.retrieveListSources(result.getListId()));
+            ShoppingList shoppingList = V2ModelMapper.toModel(result);
+            return new ResponseEntity<>(shoppingList, HttpStatus.OK);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+
+}
+

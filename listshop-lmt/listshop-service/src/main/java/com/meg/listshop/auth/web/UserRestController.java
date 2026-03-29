@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.auth.web;
@@ -143,6 +142,9 @@ public class UserRestController implements UserRestControllerApi {
 
     @Override
     public ResponseEntity<Object> deleteUser(Authentication authentication) {
+        if (authentication == null) {
+            throw new ObjectNotFoundException("User not found");
+        }
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         LOG.info("Begin delete user [{}]", userDetails.getUsername());
         this.userService.deleteUser(userDetails.getUsername());

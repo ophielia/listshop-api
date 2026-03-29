@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.test;
@@ -14,14 +13,18 @@ public final class TestConstants {
 
     public final static String USER_1_EMAIL = "testuser@testuser.com";
     public static final Long USER_1_ID = 500L;
+    public static final String USER_1_TOKEN = "token123456";
     public final static String USER_2_NAME = "adduser";
     public static final Long USER_2_ID = 501L;
-    public final static String USER_3_NAME = "me";
+    public final static String USER_3_NAME = "meg@the-list-shop.com";
+    public final static String USER_3_TOKEN = "token20user";
     public static final Long USER_3_ID = 20L;
     public final static String USER_4_NAME = "deleteuser";
     public static final Long USER_4_ID = 502L;
+    public static final String USER_4_TOKEN = "token502user";
 
     public final static String USER_5_NAME = "mom@test.com";
+    public final static String USER_5_TOKEN = "token56789";
     public static final Long USER_5_ID = 26L;
 
     public static final Long MEAL_PLAN_1_ID = 500L;
@@ -101,7 +104,8 @@ public final class TestConstants {
 
     public static final Long TARGET_3_SLOT_ID = 506L;
 
-
+    public static final Long UNIT_ID_KG = 1014L;
+    public static final Long UNIT_ID_LB = 1008L;
 
     public static final Long PROPOSAL_1_ID = 500L;  // status
     public static final Long PROPOSAL_1_SLOT_4_ID = 503L;

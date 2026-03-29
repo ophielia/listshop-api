@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 -- meal plan
 
 insert into public.meal_plan (meal_plan_id, created, meal_plan_type, name, user_id, target_id)
@@ -8,8 +14,7 @@ values (50485, '2021-04-10 12:46:34.053000', 'Manual', 'lingering hall', 20, nul
 insert into public.dish (dish_id, description, dish_name, user_id, last_added, auto_tag_status, created_on, reference)
 values (50000001, null, 'waffles', 20, '2021-04-10 12:48:42.888000', 105, '2019-07-14 04:04:14.773362', null),
        (13000011, null, 'green chili', 20, '2021-04-19 13:48:58.318000', 105, '2019-08-17 21:11:14.773362', '135'),
-       (88000011, null, 'golden chicken rice', 20, '2021-04-10 12:48:42.939000', 105, '2019-08-17 19:56:14.773362',
-        '101'),
+       (88000011, null, 'golden chicken rice', 20, '2021-04-10 12:48:42.939000', 105, '2019-08-17 19:56:14.773362','101'),
        (56705001, null, 'Gumbo', 20, '2021-04-10 12:48:42.920000', 105, '2020-04-10 17:23:24.082000', null),
        (70000121, null, 'quick chicken curry', 20, '2021-04-10 12:48:42.948000', 105, '2019-08-17 21:17:14.773362',
         null);
