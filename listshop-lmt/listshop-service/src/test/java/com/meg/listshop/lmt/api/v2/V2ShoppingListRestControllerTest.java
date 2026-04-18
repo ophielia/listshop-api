@@ -1759,6 +1759,48 @@ class V2ShoppingListRestControllerTest {
             Assertions.assertTrue(testElement.getDetails().get(0).isContainsUnspecified());
         }
 
+        @Test
+        void testAddTagLargeAmounts() throws Exception {
+            Long tagId = TestConstants.TAG_PASTA;
+            Amount amount = new Amount()
+                    .withQuantity(10.5)
+                    .withWholeQuantity(10)
+                    .withFractionalQuantity("OneHalf")
+                    .withUnitId(TestConstants.UNIT_ID_LB.toString());
+
+            Long listId = prepareListWithTagAndAmount(jwtToken, tagId.toString(), amount);
+
+            // first, add the tag again with a large amount
+            Amount anotherLargeAmount = new Amount()
+                    .withQuantity(11.25)
+                    .withWholeQuantity(11)
+                    .withFractionalQuantity("OneQuarter")
+                    .withUnitId(TestConstants.UNIT_ID_LB.toString());
+            PostListItem listPostNoAmount = new PostListItem(tagId.toString(), anotherLargeAmount);
+            String url = "/v2/shoppinglist/" + listId + "/item";
+            given()
+                    .header(TestUtils.authToken(jwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(json(listPostNoAmount))
+                    .when()
+                    .post(url)
+                    .then()
+                    .statusCode(204);
+            // retrieve list and verify
+            ShoppingList listWithNewItem = retrieveList(jwtToken, listId);
+            Map<String, ShoppingListItem> standardResultMap = listWithNewItem.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            Assertions.assertNotNull(standardResultMap);
+            Assertions.assertTrue(standardResultMap.containsKey(String.valueOf(tagId)));
+            ShoppingListItem testElement = standardResultMap.get(String.valueOf(tagId));
+            // the amount should be there now
+            Assertions.assertEquals(22, testElement.getAmount().getRoundedQuantity(), 0.001);
+            Assertions.assertEquals(21.75, testElement.getAmount().getQuantity(), 0.001);
+            Assertions.assertEquals("22 lb", testElement.getAmount().getQuantityDisplay());
+            Assertions.assertEquals("22 lb", testElement.getAmount().getDisplay());
+}
+
         private Long prepareListWithTagAndAmount(String token,  String tagId, Amount amount) throws Exception {
             Long newListId = createNewList(token);
 

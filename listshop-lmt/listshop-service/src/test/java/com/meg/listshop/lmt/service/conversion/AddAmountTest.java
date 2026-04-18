@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.service.conversion;
@@ -89,7 +88,7 @@ class AddAmountTest {
         addRequest = new AddScaleRequest(ConversionTargetType.List, largeTomato);
         added = converterService.add(mediumTomato, largeTomato, addRequest);
         assertNotNull(added);
-        Assertions.assertEquals(1.875, added.getQuantityRoundedUp(), 0.0);
+        Assertions.assertEquals(2.0, added.getQuantityRoundedUp(), 0.0);
         Assertions.assertEquals("large", added.getUnitSize());
         assertTrue(added.getUserSize());
 
@@ -100,7 +99,7 @@ class AddAmountTest {
         addRequest = new AddScaleRequest(ConversionTargetType.List, largeTomato);
         added = converterService.add(mediumTomato, largeTomato, addRequest);
         assertNotNull(added);
-        Assertions.assertEquals(2.25, added.getQuantityRoundedUp(), 0.0);
+        Assertions.assertEquals(3.0, added.getQuantityRoundedUp(), 0.0);
         Assertions.assertEquals("medium", added.getUnitSize());
     }
 

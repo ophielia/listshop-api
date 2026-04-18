@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.conversion.data.repository;
 
 
@@ -18,6 +24,7 @@ public interface ConversionFactorRepository extends JpaRepository<ConversionFact
             "and fu.type <> 'HYBRID' ", nativeQuery = true)
     List<ConversionFactorEntity> findAllByDomains(String fromDomain, String toDomain);
 
+    //MM issue here! unit id and conversion id aren't used!  breaking the list
     @Query(value = "select f.* from factors f join units u on u.unit_id = f.from_unit" +
             " and u.type = 'UNIT' and f.unit_default = true", nativeQuery = true)
     ConversionFactorEntity findUnitDefault(Long conversionId, Long unitId);

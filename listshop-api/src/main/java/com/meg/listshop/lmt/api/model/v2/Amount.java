@@ -92,6 +92,10 @@ public class Amount {
         return fractionalQuantity;
     }
 
+    public double getRoundedQuantity() {
+        return roundedQuantity;
+    }
+
     public String getQuantityDisplay() {
         return quantityDisplay;
     }

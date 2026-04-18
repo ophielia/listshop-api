@@ -1,6 +1,13 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.conversion.data.pojo;
 
 import com.meg.listshop.common.RoundingUtils;
+import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 
@@ -99,6 +106,9 @@ public class SimpleAmount  implements ConvertibleAmount {
     }
 
     public double getQuantityRoundedUp() {
+        if (unit.getType().equals(UnitType.UNIT) || quantity > 10) {
+            return RoundingUtils.roundUpToNearestWholeNumber(quantity);
+        }
         return RoundingUtils.roundUpToNearestFraction(quantity);
     }
 

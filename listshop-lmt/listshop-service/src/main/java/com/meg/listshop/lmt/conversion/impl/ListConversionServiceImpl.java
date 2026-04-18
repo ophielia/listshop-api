@@ -243,7 +243,7 @@ public class ListConversionServiceImpl implements ListConversionService {
     }
 
     private double getRoundedQuantityForUnit(double quantity, UnitEntity unit) {
-        if (unit.getType().equals(UnitType.UNIT)) {
+        if (unit.getType().equals(UnitType.UNIT) || quantity > 10) {
             return RoundingUtils.roundUpToNearestWholeNumber(quantity);
         }
         return RoundingUtils.roundUpToNearestFraction(quantity);

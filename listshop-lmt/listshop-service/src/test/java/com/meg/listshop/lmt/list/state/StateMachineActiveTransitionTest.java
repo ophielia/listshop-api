@@ -911,9 +911,9 @@ class StateMachineActiveTransitionTest {
 
         Assertions.assertNotNull(listTwoItem);
         Assertions.assertEquals(2, listTwoItem.getDetails().size());
-        Assertions.assertEquals(170.125, listTwoItem.getRoundedQuantity());
+        Assertions.assertEquals(171, listTwoItem.getRoundedQuantity());
         Assertions.assertEquals(GRAM_UNIT_ID, listTwoItem.getUnit().getId());
-        Assertions.assertEquals("170 1/8 gram", listTwoItem.getAmountText());
+        Assertions.assertEquals("171 gram", listTwoItem.getAmountText());
         ListItemDetailEntity firstDetail = listTwoItem.getDetails().stream().filter(d -> d.getLinkedDishId().equals(dishId1)).findFirst().orElse(null);
         Assertions.assertNotNull(firstDetail);
         Assertions.assertTrue(firstDetail.isUnspecified());
@@ -922,7 +922,7 @@ class StateMachineActiveTransitionTest {
         Assertions.assertNotNull(secondDetail);
         Assertions.assertFalse(secondDetail.isUnspecified());
         Assertions.assertFalse(secondDetail.isContainsUnspecified());
-        Assertions.assertEquals("170 1/8 gram", secondDetail.getRawEntry());
+        Assertions.assertEquals("171 gram", secondDetail.getRawEntry());
         Assertions.assertEquals(SpecificationType.MIXED, listTwoItem.getSpecificationType());
 
         // add list one to list two
@@ -933,9 +933,9 @@ class StateMachineActiveTransitionTest {
         // should have 3 details
         Assertions.assertNotNull(finalResult);
         Assertions.assertEquals(3, finalResult.getDetails().size());
-        Assertions.assertEquals(270.125, finalResult.getRoundedQuantity());
+        Assertions.assertEquals(271, finalResult.getRoundedQuantity());
         Assertions.assertEquals(GRAM_UNIT_ID, finalResult.getUnit().getId());
-        Assertions.assertEquals("270 1/8 gram", finalResult.getAmountText());
+        Assertions.assertEquals("271 gram", finalResult.getAmountText());
         firstDetail = finalResult.getDetails().stream().filter(d -> d.getLinkedDishId().equals(dishId1)).findFirst().orElse(null);
         Assertions.assertNotNull(firstDetail);
         Assertions.assertTrue(firstDetail.isUnspecified());
@@ -944,7 +944,7 @@ class StateMachineActiveTransitionTest {
         Assertions.assertNotNull(secondDetail);
         Assertions.assertFalse(secondDetail.isUnspecified());
         Assertions.assertFalse(secondDetail.isContainsUnspecified());
-        Assertions.assertEquals("170 1/8 gram", secondDetail.getRawEntry());
+        Assertions.assertEquals("171 gram", secondDetail.getRawEntry());
         ListItemDetailEntity thirdDetail = finalResult.getDetails().stream().filter(d -> d.getLinkedListId().equals(listOneId)).findFirst().orElse(null);
         Assertions.assertTrue(thirdDetail.isContainsUnspecified());
         Assertions.assertFalse(thirdDetail.isUnspecified());
