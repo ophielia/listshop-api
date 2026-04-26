@@ -11,54 +11,69 @@ import com.meg.listshop.common.StringTools;
 import com.meg.listshop.common.UnitSubtype;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.exceptions.ConversionAddException;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.handlers.ChainConversionHandler;
+import com.meg.listshop.conversion.service.handlers.ConversionHandler;
 import com.meg.listshop.conversion.service.handlers.FactorProvider;
 import com.meg.listshop.conversion.service.handlers.ScalingHandler;
-import com.meg.listshop.conversion.service.processors.ConverterProcessor;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+@Service("legacyConverterService")
+@Primary
+public class LegacyConverterServiceImpl implements ConverterService {
+    private static final Logger LOG = LoggerFactory.getLogger(LegacyConverterServiceImpl.class);
+    private final UnitRepository unitRepository;
+    private final List<ChainConversionHandler> handlerList;
+    private final List<ScalingHandler> scalerList;
+    private final ConversionHandler tagSpecificHandler;
+    HashMap<HandlerChainKey, HandlerChain> chainMap = new HashMap<>();
 
-@Service
-public class ConverterServiceImpl implements ConverterService {
-    private static final Logger LOG = LoggerFactory.getLogger(ConverterServiceImpl.class);
     @Value("${conversionservice.gram.unit.id:1013}")
     private Long GRAM_UNIT_ID;
 
-    private final List<ConverterProcessor> processors;
 
     @Autowired
-    public ConverterServiceImpl(List<ConverterProcessor> processors) {
-        this.processors = processors;
+    public LegacyConverterServiceImpl(List<ChainConversionHandler> handlerList,
+                                      List<ScalingHandler> scalerList,
+                                      @Qualifier("tagSpecificHandler") ConversionHandler tagSpecificHandler, UnitRepository unitRepository) {
+        this.handlerList = handlerList;
+        this.scalerList = scalerList;
+        this.tagSpecificHandler = tagSpecificHandler;
+        this.unitRepository = unitRepository;
     }
 
+    @PostConstruct
+    public void initialize() {
+        scalerList.sort(
+                (ScalingHandler h1, ScalingHandler h2) -> h1.scalarWeight().compareTo(h2.scalarWeight()));
+    }
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, DomainType domain) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for domain [{}], amount [{}]", domain, amount);
-
-        // create context
-        ConversionTarget target = new ConversionTarget(domain, null, null);
-        ProcessingContext context = new ProcessingContext(amount, target);
-        // feed to converter chain
-        for (ConverterProcessor processor : processors) {
-            if (processor.appliesTo(context)) {
-                processor.process(context);
-            }
+        if (domain == null) {
+            throw new ConversionPathException("Cannot convert, domain is null");
         }
-        return context.getCurrentAmount();
+        ConversionSpec target = ConversionSpec.specForDomain(amount.getUnit(), domain);
+
+        return doConversion(amount, target);
     }
 
     @Override
@@ -284,13 +299,13 @@ public class ConverterServiceImpl implements ConverterService {
         // so, if we wnt to convert _to_ a tag specific
 
         // preconvert - if target is unit, or target is tag specific, convert to grams
-        ConvertibleAmount preHandled = amount.copy();
+        ConvertibleAmount preHandled =  amount.copy();
         if (context.getTargetUnitType() != null &&
                 preHandled.getUnit().getSubtype().equals(UnitSubtype.WEIGHT) &&
-                (context.getTargetContextType() == ConversionTargetType.List || context.getTargetUnitType() == UnitType.UNIT)) {
+                (context.getTargetContextType() == ConversionTargetType.List || context.getTargetUnitType() == UnitType.UNIT) ) {
             UnitEntity targetUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
             Long conversionIdForPrehandle = amount.getUnit().getType() != UnitType.HYBRID ? null : amount.getConversionId();
-            ConvertibleAmount convertToGrams = copyAmountWithConversionId(amount, conversionIdForPrehandle);
+            ConvertibleAmount convertToGrams =   copyAmountWithConversionId(amount, conversionIdForPrehandle);
 
             try {
                 preHandled = convert(convertToGrams, targetUnit);
@@ -302,7 +317,7 @@ public class ConverterServiceImpl implements ConverterService {
             }
         } else if (context.getTargetSubtype().equals(UnitSubtype.VOLUME)
                 && !amount.getUnit().getType().equals(UnitType.METRIC)) {
-            preHandled = convert(amount, DomainType.METRIC);
+            preHandled =  convert(amount, DomainType.METRIC);
         }
         // result convert preconvert with tagspecific handler
         ConvertibleAmount result = tagSpecificHandler.convert(preHandled, context);
@@ -311,8 +326,8 @@ public class ConverterServiceImpl implements ConverterService {
 
     }
 
-    private ConvertibleAmount copyAmountWithConversionId(ConvertibleAmount amount, Long conversionId) {
-        return new SimpleAmount(
+    private ConvertibleAmount copyAmountWithConversionId(ConvertibleAmount amount,Long conversionId) {
+        return      new SimpleAmount(
                 amount.getQuantity(),
                 amount.getUnit(),
                 conversionId,
@@ -350,6 +365,7 @@ public class ConverterServiceImpl implements ConverterService {
     }
 
 
+
     private ConvertibleAmount convertDomain(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
         UnitType domainType = context.getTargetUnitType();
         UnitType sourceType = amount.getUnit().getType();
@@ -362,6 +378,7 @@ public class ConverterServiceImpl implements ConverterService {
         return doDomainConversion(amount, context);
 
     }
+
 
 
     private ConvertibleAmount doDomainConversion(ConvertibleAmount amount, ConversionContext context) throws ConversionFactorException, ConversionPathException {

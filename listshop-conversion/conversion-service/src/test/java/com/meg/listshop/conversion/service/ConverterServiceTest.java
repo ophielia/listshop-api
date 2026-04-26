@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.conversion.service;
 
 import com.meg.listshop.common.UnitSubtype;
@@ -80,7 +86,7 @@ class ConverterServiceTest {
                 .build();
 
         List<ChainConversionHandler> handlers = Collections.singletonList(metricToUs);
-        service = new ConverterServiceImpl(handlers, Collections.singletonList(listHandler), weightToVolume, unitRepository);
+        service = new LegacyConverterServiceImpl(handlers, Collections.singletonList(listHandler), weightToVolume, unitRepository);
     }
 
     @Test

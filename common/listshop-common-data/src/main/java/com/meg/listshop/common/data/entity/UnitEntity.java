@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.common.data.entity;
 
 import com.meg.listshop.common.UnitSubtype;
@@ -142,6 +148,8 @@ public class UnitEntity {
     public void setOneWayConversion(Boolean oneWayConversion) {
         this.oneWayConversion = oneWayConversion;
     }
+
+
 
     public boolean isAvailableForDomain(UnitType domain) {
         if (excludedDomainList == null || excludedDomainList.isEmpty()) {
