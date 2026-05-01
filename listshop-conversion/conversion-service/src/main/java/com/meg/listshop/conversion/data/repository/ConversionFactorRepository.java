@@ -11,10 +11,12 @@ import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface ConversionFactorRepository extends JpaRepository<ConversionFactorEntity, Long>, JpaSpecificationExecutor<ConversionFactorEntity> {
+@Repository
+public interface ConversionFactorRepository extends JpaRepository<ConversionFactorEntity, Long>, JpaSpecificationExecutor<ConversionFactorEntity>, CustomConversionFactorRepository {
 
     List<ConversionFactorEntity> findAllByConversionIdIs(Long tagId);
 
@@ -28,4 +30,6 @@ public interface ConversionFactorRepository extends JpaRepository<ConversionFact
     @Query(value = "select f.* from factors f join units u on u.unit_id = f.from_unit" +
             " and u.type = 'UNIT' and f.unit_default = true", nativeQuery = true)
     ConversionFactorEntity findUnitDefault(Long conversionId, Long unitId);
+
+
 }

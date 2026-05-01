@@ -8,9 +8,14 @@ package com.meg.listshop.conversion.service.processors;
 
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.exceptions.ConversionPathException;
+import com.meg.listshop.conversion.service.ConvertibleAmount;
+import com.meg.listshop.conversion.service.DeltaSpec;
 import com.meg.listshop.conversion.service.ProcessingContext;
+import com.meg.listshop.conversion.service.handlers.DomainConversionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -22,10 +27,53 @@ import static java.util.function.Predicate.not;
 @Order(2)
 public class DomainConverterProcessor extends AbstractConverterProcessor  {
         private static final Logger LOG = LoggerFactory.getLogger(DomainConverterProcessor.class);
+    private final List<DomainConversionHandler> handlerList;
+
+    @Autowired
+    public DomainConverterProcessor(List<DomainConversionHandler> handlerList) {
+        this.handlerList = handlerList;
+    }
 
     @Override
     public void process(ProcessingContext context) {
+       // find first processor for domain conversion
+        DomainConversionHandler handler = findHandlerForContext(context);
+       // convert current amount
+       if (handler != null) {
+           ConvertibleAmount amount = handler.convert(context);
+           // set result in current amount
+           context.setCurrentAmount(amount);
+       } else {
+           LOG.debug("No handler found for domain conversion from {} to {}", specFromSource(context), specFromTarget(context));
+       }
 
+    }
+
+    private DomainConversionHandler findHandlerForContext(ProcessingContext context) {
+        DeltaSpec fromSpec = specFromSource(context);
+        DeltaSpec toSpec = specFromTarget(context);
+
+        return handlerList.stream()
+                .filter(handler -> handler.appliesTo(fromSpec, toSpec))
+                .findFirst()
+                .orElse(null);
+
+    }
+
+    private DeltaSpec specFromSource(ProcessingContext context) {
+        return new DeltaSpec(
+                context.getCurrentAmount().getUnit().getType(),
+                context.getCurrentAmount().getUnit().getId(),
+                null
+        );
+    }
+
+    private DeltaSpec specFromTarget(ProcessingContext context) {
+        return new DeltaSpec(
+                context.getTarget().domainType(),
+                null,
+                null
+        );
     }
 
     @Override
@@ -66,13 +114,5 @@ public class DomainConverterProcessor extends AbstractConverterProcessor  {
         return true;
     }
 
-    protected UnitType pullCurrentDomain(ProcessingContext context) {
-        UnitEntity unit = context.getCurrentAmount().getUnit();
-        return unit == null ? null : unit.getType();
-    }
-
-    protected UnitType pullTargetDomain(ProcessingContext context) {
-        return context.getTarget().domainType();
-    }
 
 }

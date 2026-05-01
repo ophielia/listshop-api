@@ -6,26 +6,53 @@
 
 package com.meg.listshop.conversion.service.processors;
 
-import com.meg.listshop.common.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
+import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
+import com.meg.listshop.conversion.service.handlers.ScaleHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @Order(3)
-public class ContextConverterProcessor extends AbstractConverterProcessor  {
-    private static final Logger LOG = LoggerFactory.getLogger(ContextConverterProcessor.class);
+public class ScalingProcessor extends AbstractConverterProcessor  {
+    private static final Logger LOG = LoggerFactory.getLogger(ScalingProcessor.class);
+
+    private List<ScaleHandler> scaleHandlerList;
+
+    @Autowired
+    public ScalingProcessor(List<ScaleHandler> scaleHandlerList) {
+        this.scaleHandlerList = scaleHandlerList;
+    }
 
     @Override
     public void process(ProcessingContext context) {
+        ScaleHandler scaler = determineScaler(context);
+        if (scaler != null) {
+            ConvertibleAmount amount = scaler.scale(context);
+            context.setCurrentAmount(amount);
+        }
+    }
 
+    private ScaleHandler determineScaler(ProcessingContext context) {
+        return scaleHandlerList.stream()
+                .filter(scaler -> scaler.shouldScale(context))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public boolean appliesTo(ProcessingContext context) {
+        // scaling processing runs if the unit is not a single unit
+        return !currentIsSingleUnit(context);
+    }
+
+
+    public boolean legacyAppliesTo(ProcessingContext context) {
         // single unit and target unit not specified => not applicable
         if (currentIsSingleUnit(context) && targetUnitNonSpecified(context)) {
             LOG.debug("Current unit is single and target unit is not specified, skipping conversion");

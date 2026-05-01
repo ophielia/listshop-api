@@ -1,0 +1,84 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
+package com.meg.listshop.conversion.service.handlers;
+
+import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.entity.ConversionFactor;
+import com.meg.listshop.conversion.data.pojo.SimpleAmount;
+import com.meg.listshop.conversion.service.ConvertibleAmount;
+import com.meg.listshop.conversion.service.ProcessingContext;
+import com.meg.listshop.conversion.service.factors.NewFactorProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public abstract class BaseScaleHandler implements ScaleHandler, NewFactorProvider {
+    private static final Logger LOG = LoggerFactory.getLogger(BaseScaleHandler.class);
+
+    public ConvertibleAmount scale(ProcessingContext context) {
+        ConvertibleAmount toConvert = context.getCurrentAmount();
+        List<ConversionFactor> factors = findFactors(toConvert, context.getTarget());
+        if (factors == null || factors.isEmpty()) {
+            LOG.debug("No factors available for scaling to [{}] from [{}]", context.getTarget(), context.getCurrentAmount().getUnit());
+            return context.getCurrentAmount();
+        }
+
+        // convert all factors, making list
+        List<ConvertibleAmount> convertedList = factors.stream()
+                .map(f -> {
+                    double newQuantity = toConvert.getQuantity() * f.getFactor();
+                    UnitEntity newUnit = f.getToUnit();
+
+                    return new SimpleAmount(newQuantity, newUnit, f.getUnitSize());
+                }).collect(Collectors.toList());
+        // return right away if we only have one factor
+        if (convertedList.size() == 1) {
+            return convertedList.get(0);
+        }
+
+        // sort for best result, according to sort type
+        ConvertibleAmount bestResult = sortForBestResult(convertedList);
+        if (bestResult == null) {
+            bestResult = toConvert;
+        }
+
+        // return best result
+        return new SimpleAmount(bestResult.getQuantity(), bestResult.getUnit(), toConvert, bestResult.getUnitSize());
+
+    }
+
+    protected List<ConversionFactor> deduplicateFactors(List<ConversionFactor> allFactors) {
+        return allFactors.stream()
+                .collect(Collectors.toMap(factor -> factor.getToUnit().getId(),
+                        factor -> factor,
+                        (existing, replacement) -> existing))
+                .values()
+                .stream()
+                .toList();
+    }
+
+
+    private ConvertibleAmount sortForBestResult(List<ConvertibleAmount> convertedList) {
+        if (convertedList.isEmpty()) {
+            return null;
+        }
+        if (convertedList.size() == 1) {
+            return convertedList.get(0);
+        }
+        // sort for nearest unit first, then weed for range if required
+        Comparator<ConvertibleAmount> comparator = (f1, f2) -> {
+            Double f1ToOne = Math.abs(1 - (f1.getQuantity()));
+            Double f2ToOne = Math.abs(1 - (f2.getQuantity()));
+            return f1ToOne.compareTo(f2ToOne);
+        };
+        convertedList.sort(comparator);
+        return convertedList.get(0);
+    }
+}

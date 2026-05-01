@@ -9,7 +9,7 @@ package com.meg.listshop.common;
 public enum UnitType {
     US(true),
     METRIC(true),
-    SPECIAL(false),
+    ALL(false),
     UK(true),
     HYBRID(false),
     UNIT(false);

@@ -11,12 +11,14 @@ import com.meg.listshop.common.StringTools;
 import com.meg.listshop.common.UnitSubtype;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.exceptions.ConversionAddException;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.handlers.ChainConversionHandler;
+import com.meg.listshop.conversion.service.handlers.ConversionHandler;
 import com.meg.listshop.conversion.service.handlers.FactorProvider;
 import com.meg.listshop.conversion.service.handlers.ScalingHandler;
 import com.meg.listshop.conversion.service.processors.ConverterProcessor;
@@ -30,12 +32,29 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.meg.listshop.common.UnitSubtype.VOLUME;
+import static com.meg.listshop.common.UnitSubtype.WEIGHT;
+
 
 @Service
 public class ConverterServiceImpl implements ConverterService {
     private static final Logger LOG = LoggerFactory.getLogger(ConverterServiceImpl.class);
     @Value("${conversionservice.gram.unit.id:1013}")
     private Long GRAM_UNIT_ID;
+
+    @Autowired
+    private UnitRepository unitRepository;
+
+    @Autowired
+    private ConversionHandler tagSpecificHandler;
+
+    @Autowired
+    private List<ScalingHandler> scalerList;
+
+    private final java.util.Map<HandlerChainKey, HandlerChain> chainMap = new java.util.HashMap<>();
+
+    @Autowired
+    private List<ChainConversionHandler> handlerList;
 
     private final List<ConverterProcessor> processors;
 
@@ -50,7 +69,8 @@ public class ConverterServiceImpl implements ConverterService {
         LOG.debug("Beginning convert for domain [{}], amount [{}]", domain, amount);
 
         // create context
-        ConversionTarget target = new ConversionTarget(domain, null, null);
+        UnitType unitDomainType = domainToUnitType(domain);
+        ConversionTarget target = new ConversionTarget(unitDomainType, null, null);
         ProcessingContext context = new ProcessingContext(amount, target);
         // feed to converter chain
         for (ConverterProcessor processor : processors) {
@@ -60,6 +80,22 @@ public class ConverterServiceImpl implements ConverterService {
         }
         return context.getCurrentAmount();
     }
+
+
+    //MM BOOKMARK -   scaling processor done
+    //                work on domain processor
+    //                  one handler for all domain conversions
+    //                  handler returns only default (if available) because scaling will be done in the
+    //                    scaling processor
+    //                  needs a couple db things -
+    //                      default unit per domain - new column + values
+    //                      metric <=> uk dummy weight conversions - gram to gram
+    //                      uk versions of metric weights grams, kg, mg
+    //                after domain processor, tag processor
+
+//                    (later) - add caffeine to project. first implement without a cache
+
+
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest conversionRequest) throws ConversionPathException, ConversionFactorException {
@@ -215,15 +251,15 @@ public class ConverterServiceImpl implements ConverterService {
         }
         if (context.getContextType().equals(ConversionTargetType.Dish)) {
             // context dish, default is volume
-            return UnitSubtype.VOLUME;
+            return VOLUME;
         }
         // context list, is liquid - return volume
         if (context.getContextType().equals(ConversionTargetType.List) &&
                 toConvert.getUnit().isLiquid()) {
-            return UnitSubtype.VOLUME;
+            return VOLUME;
         }
         // context list, default is weight
-        return UnitSubtype.WEIGHT;
+        return WEIGHT;
 
     }
 
@@ -286,7 +322,7 @@ public class ConverterServiceImpl implements ConverterService {
         // preconvert - if target is unit, or target is tag specific, convert to grams
         ConvertibleAmount preHandled = amount.copy();
         if (context.getTargetUnitType() != null &&
-                preHandled.getUnit().getSubtype().equals(UnitSubtype.WEIGHT) &&
+                preHandled.getUnit().getSubtype().equals(WEIGHT) &&
                 (context.getTargetContextType() == ConversionTargetType.List || context.getTargetUnitType() == UnitType.UNIT)) {
             UnitEntity targetUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
             Long conversionIdForPrehandle = amount.getUnit().getType() != UnitType.HYBRID ? null : amount.getConversionId();
@@ -300,7 +336,7 @@ public class ConverterServiceImpl implements ConverterService {
                 // swallowing this error, since it's not at all a sure thing that the conversion will work
                 LOG.debug("unable to convert amount with unit [{}] to grams", amount.getUnit());
             }
-        } else if (context.getTargetSubtype().equals(UnitSubtype.VOLUME)
+        } else if (context.getTargetSubtype().equals(VOLUME)
                 && !amount.getUnit().getType().equals(UnitType.METRIC)) {
             preHandled = convert(amount, DomainType.METRIC);
         }
@@ -461,5 +497,14 @@ public class ConverterServiceImpl implements ConverterService {
                 .findFirst().orElse(null);
     }
 
+
+    private UnitType domainToUnitType(DomainType domain) {
+        return switch (domain) {
+            case US -> UnitType.US;
+            case METRIC ->  UnitType.METRIC;
+            case UK ->  UnitType.UK;
+            case ALL -> UnitType.ALL ;
+        };
+    }
 
 }
