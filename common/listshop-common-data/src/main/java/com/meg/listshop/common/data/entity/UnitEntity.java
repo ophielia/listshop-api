@@ -52,6 +52,18 @@ public class UnitEntity {
     @Column(name = "ONE_WAY_CONVERSION")
     private Boolean oneWayConversion;
 
+    @Column(name = "DOMAIN_DEFAULT")
+    private boolean domainDefault;
+
+
+    public boolean isDomainDefault() {
+        return domainDefault;
+    }
+
+    public void setDomainDefault(boolean domainDefault) {
+        this.domainDefault = domainDefault;
+    }
+
     public Long getId() {
         return id;
     }
