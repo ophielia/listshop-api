@@ -17,6 +17,7 @@ public class FactorCriteria {
     private ConversionTargetType toContext;
     private Long toUnitId;
     private Long conversionId;
+    private boolean bridgeThroughMetric;
 
     public FactorCriteria() {
     }
@@ -59,5 +60,13 @@ public class FactorCriteria {
 
     public void setConversionId(Long conversionId) {
         this.conversionId = conversionId;
+    }
+
+    public boolean bridgeThroughMetric() {
+        return bridgeThroughMetric;
+    }
+
+    public void setBridgeThroughMetric(boolean bridgeThroughMetric) {
+        this.bridgeThroughMetric = bridgeThroughMetric;
     }
 }

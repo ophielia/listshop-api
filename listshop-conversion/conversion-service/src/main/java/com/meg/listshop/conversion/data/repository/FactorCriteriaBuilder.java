@@ -46,4 +46,9 @@ public class FactorCriteriaBuilder {
         this.criteria.setToUnitId(toUnitId);
         return this;
     }
+
+    public FactorCriteriaBuilder withBridgeThroughMetric(boolean bridgeThroughMetric) {
+        this.criteria.setBridgeThroughMetric(bridgeThroughMetric);
+        return this;
+    }
 }

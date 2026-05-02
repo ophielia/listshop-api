@@ -8,6 +8,7 @@ package com.meg.listshop.conversion.data.repository.impl;
 
 
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.entity.ConversionBridgeFactorEntity;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
@@ -54,9 +55,9 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
     private List<ConversionFactor> findInvertedFactors(FactorCriteria criteria) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<SimpleConversionFactor> query = cb.createQuery(SimpleConversionFactor.class);
-        Root<ConversionFactorEntity> root = query.from(ConversionFactorEntity.class);
-        Join<ConversionFactorEntity, UnitEntity> fromUnit = root.join("fromUnit");
-        Join<ConversionFactorEntity, UnitEntity> toUnit = root.join("toUnit");
+        Root<? extends ConversionFactor> root = getRootForCriteria(query, criteria);
+        Join<? extends ConversionFactor, UnitEntity> fromUnit = root.join("fromUnit");
+        Join<? extends ConversionFactor, UnitEntity> toUnit = root.join("toUnit");
 
         Expression<Number> invertedFactor = cb.quot(cb.literal(1.0), root.get("factor"));
         query.select(cb.construct(SimpleConversionFactor.class,
@@ -99,9 +100,9 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         LOG.info("Finding conversion factors with criteria: {}", criteria);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<SimpleConversionFactor> query = cb.createQuery(SimpleConversionFactor.class);
-        Root<ConversionFactorEntity> root = query.from(ConversionFactorEntity.class);
-        Join<ConversionFactorEntity, UnitEntity> fromUnit = root.join("fromUnit");
-        Join<ConversionFactorEntity, UnitEntity> toUnit = root.join("toUnit");
+        Root<? extends ConversionFactor> root = getRootForCriteria(query, criteria);
+        Join<? extends ConversionFactor, UnitEntity> fromUnit = root.join("fromUnit");
+        Join<? extends ConversionFactor, UnitEntity> toUnit = root.join("toUnit");
 
         query.select(cb.construct(SimpleConversionFactor.class,
                 root.get("factor"),
@@ -141,5 +142,13 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         return entityManager.createQuery(query).getResultList().stream()
                 .map(f -> (ConversionFactor) f)
                 .toList();
+    }
+
+    private Root<? extends ConversionFactor> getRootForCriteria(CriteriaQuery<SimpleConversionFactor> query, FactorCriteria criteria) {
+        if (criteria.bridgeThroughMetric()) {
+            return query.from(ConversionBridgeFactorEntity.class);
+        } else {
+            return query.from(ConversionFactorEntity.class);
+        }
     }
 }
