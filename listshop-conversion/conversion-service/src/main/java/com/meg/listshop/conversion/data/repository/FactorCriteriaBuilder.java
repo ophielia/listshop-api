@@ -51,4 +51,9 @@ public class FactorCriteriaBuilder {
         this.criteria.setBridgeThroughMetric(bridgeThroughMetric);
         return this;
     }
+
+    public FactorCriteriaBuilder withTargetDefaultUnit(boolean b) {
+        this.criteria.setTargetDefaultUnit(b);
+        return this;
+    }
 }

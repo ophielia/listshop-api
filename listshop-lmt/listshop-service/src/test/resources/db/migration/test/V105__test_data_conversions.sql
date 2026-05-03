@@ -205,7 +205,8 @@ values  (1000, 113, 1013, 1049, 224636, 229563, null, null, false),
         (35, 160, 1026, 1024, null, null, null, null, null),
         (36, 1, 1013, 1013, null, null, null, null, null),
         (37, 0.001, 1014, 1013, null, null, null, null, null),
-        (38, 0.0022, 1008, 1013, null, null, null, null, null),
+        (38, 0.00220462   , 1008, 1013, null, null, null, null, null),
+        --(38, 0.0022   , 1008, 1013, null, null, null, null, null),
         (39, 0.0352733686067019, 1009, 1013, null, null, null, null, null),
         (40, 1000, 1013, 1014, null, null, null, null, null),
         (41, 1, 1014, 1014, null, null, null, null, null),
@@ -338,6 +339,12 @@ values  (1081, 182, 1013, 1011, 225744, 3891, null, 'large', false, null),
         (1086, 27, 1013, 1022, 225744, 2544, null, 'medium', false, null),
         (1087, 31, 1013, 1050, 225744, 2835, 'wedge', 'medium', false, null),
         (1088, 20, 1013, 1022, 225744, 3606, null, 'medium', false, null);
+
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
 
 -- add conversion to tomato
 update tag set conversion_id = 225744 where tag_id = 33;

@@ -25,7 +25,10 @@ import com.meg.listshop.conversion.service.processors.ConverterProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,7 +39,8 @@ import static com.meg.listshop.common.UnitSubtype.VOLUME;
 import static com.meg.listshop.common.UnitSubtype.WEIGHT;
 
 
-@Service
+@Service("converterService")
+@Primary
 public class ConverterServiceImpl implements ConverterService {
     private static final Logger LOG = LoggerFactory.getLogger(ConverterServiceImpl.class);
     @Value("${conversionservice.gram.unit.id:1013}")
@@ -82,16 +86,17 @@ public class ConverterServiceImpl implements ConverterService {
     }
 
 
-    //MM BOOKMARK -   scaling processor done
-    //                work on domain processor
-    //                  one handler for all domain conversions
-    //                  handler returns only default (if available) because scaling will be done in the
+    //MM BOOKMARK -   DONE scaling processor
+    //                DONE work on domain processor
+    //                DONE  one handler for all domain conversions
+    //                DONE  handler returns only default (if available) because scaling will be done in the
     //                    scaling processor
-    //                  needs a couple db things -
-    //                      default unit per domain - new column + values
-    //                      metric <=> uk dummy weight conversions - gram to gram
-    //                      uk versions of metric weights grams, kg, mg
-    //                after domain processor, tag processor
+    //                DONE  needs a couple db things -
+    //                DONE      default unit per domain - new column + values
+    //                DONE      metric <=> uk dummy weight conversions - gram to gram
+    //                DONE      uk versions of metric weights grams, kg, mg
+    //       =======>>>         finish checking / migrating tests
+    //                          after domain processor, tag processor
 
 //                    (later) - add caffeine to project. first implement without a cache
 
@@ -117,13 +122,20 @@ public class ConverterServiceImpl implements ConverterService {
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, UnitEntity targetUnit, String unitSize) throws ConversionPathException, ConversionFactorException {
+        //MM conversion - come back for size
         LOG.debug("Beginning convert for unit [{}], amount [{}]", targetUnit, amount);
-        if (targetUnit == null) {
-            throw new ConversionPathException("Target unit is null");
-        }
-        ConversionSpec target = createConversionSpec(targetUnit, unitSize);
 
-        return doConversion(amount, target);
+        // create context
+        UnitType unitDomainType = targetUnit.getType();
+        ConversionTarget target = new ConversionTarget(unitDomainType, targetUnit.getId(), null);
+        ProcessingContext context = new ProcessingContext(amount, target);
+        // feed to converter chain
+        for (ConverterProcessor processor : processors) {
+            if (processor.appliesTo(context)) {
+                processor.process(context);
+            }
+        }
+        return context.getCurrentAmount();
     }
 
     public ConvertibleAmount add(ConvertibleAmount amountToAdd, ConvertibleAmount addTo, AddScaleRequest request) throws ConversionPathException, ConversionFactorException, ConversionAddException {

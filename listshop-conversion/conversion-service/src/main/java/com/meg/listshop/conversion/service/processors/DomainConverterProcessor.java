@@ -8,6 +8,12 @@ package com.meg.listshop.conversion.service.processors;
 
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.entity.ConversionFactor;
+import com.meg.listshop.conversion.data.pojo.SimpleAmount;
+import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
+import com.meg.listshop.conversion.data.repository.CustomConversionFactorRepository;
+import com.meg.listshop.conversion.data.repository.FactorCriteria;
+import com.meg.listshop.conversion.data.repository.FactorCriteriaBuilder;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.DeltaSpec;
@@ -17,26 +23,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
 
 @Component
 @Order(2)
 public class DomainConverterProcessor extends AbstractConverterProcessor  {
-        private static final Logger LOG = LoggerFactory.getLogger(DomainConverterProcessor.class);
+        private static
+        final Logger LOG = LoggerFactory.getLogger(DomainConverterProcessor.class);
     private final List<DomainConversionHandler> handlerList;
-
+    private final ConversionFactorRepository factorRepository;
     @Autowired
-    public DomainConverterProcessor(List<DomainConversionHandler> handlerList) {
+    public DomainConverterProcessor(List<DomainConversionHandler> handlerList,
+                                    ConversionFactorRepository factorRepository) {
         this.handlerList = handlerList;
+        this.factorRepository = factorRepository;
     }
 
     @Override
     public void process(ProcessingContext context) {
-       // find first processor for domain conversion
+       ConvertibleAmount converted = convert(context);
+       context.setCurrentAmount(converted);
+      /*
+        // find first processor for domain conversion
         DomainConversionHandler handler = findHandlerForContext(context);
        // convert current amount
        if (handler != null) {
@@ -46,8 +60,51 @@ public class DomainConverterProcessor extends AbstractConverterProcessor  {
        } else {
            LOG.debug("No handler found for domain conversion from {} to {}", specFromSource(context), specFromTarget(context));
        }
-
+*/
     }
+
+    private ConvertibleAmount convert(@NonNull ProcessingContext context) {
+        ConvertibleAmount toConvert = context.getCurrentAmount();
+        List<ConversionFactor> factors = findFactors(toConvert, context);
+        if (factors == null || factors.isEmpty()) {
+            LOG.debug("No conversions available for domainConversion from unit [{}] to unitType: [{}].", toConvert.getUnit(), context.getTarget().domainType());
+            return toConvert;
+        }
+
+        // convert all factors, making list
+        List<ConvertibleAmount> convertedList = factors.stream()
+                .map(f -> {
+                    double newQuantity = toConvert.getQuantity() * f.getFactor();
+                    UnitEntity newUnit = f.getToUnit();
+
+                    return new SimpleAmount(newQuantity, newUnit, f.getUnitSize());
+                }).collect(Collectors.toList());
+
+
+
+        // return first result
+        if (convertedList.isEmpty()) {
+            return toConvert;
+        }
+        ConvertibleAmount converted = convertedList.get(0);
+
+        return new SimpleAmount(converted.getQuantity(), converted.getUnit(), toConvert, converted.getUnitSize());
+    }
+
+    private List<ConversionFactor> findFactors(ConvertibleAmount toConvert, ProcessingContext context) {
+        // create criteria
+        boolean containsMetric = List.of(toConvert.getUnit().getType(),
+                context.getTarget().domainType()).contains(UnitType.METRIC);
+        FactorCriteria criteria = new FactorCriteriaBuilder()
+                .withFromUnit(toConvert.getUnit())
+                .withToDomain(context.getTarget().domainType())
+                .withBridgeThroughMetric(!containsMetric)
+                .withTargetDefaultUnit(true)
+                .build();
+        // retrieve factors
+        return factorRepository.findAllFactors(criteria);
+    }
+
 
     private DomainConversionHandler findHandlerForContext(ProcessingContext context) {
         DeltaSpec fromSpec = specFromSource(context);

@@ -18,6 +18,7 @@ public class FactorCriteria {
     private Long toUnitId;
     private Long conversionId;
     private boolean bridgeThroughMetric;
+    private boolean targetDefaultUnit;
 
     public FactorCriteria() {
     }
@@ -68,5 +69,15 @@ public class FactorCriteria {
 
     public void setBridgeThroughMetric(boolean bridgeThroughMetric) {
         this.bridgeThroughMetric = bridgeThroughMetric;
+    }
+
+    public void setTargetDefaultUnit(boolean b) {
+        this.targetDefaultUnit = b;
+    }
+
+
+
+    public boolean isTargetDefaultUnit() {
+        return targetDefaultUnit;
     }
 }

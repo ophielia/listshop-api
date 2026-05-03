@@ -36,7 +36,6 @@ import java.util.HashSet;
 import java.util.List;
 
 @Service("legacyConverterService")
-@Primary
 public class LegacyConverterServiceImpl implements ConverterService {
     private static final Logger LOG = LoggerFactory.getLogger(LegacyConverterServiceImpl.class);
     private final UnitRepository unitRepository;

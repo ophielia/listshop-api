@@ -27,3 +27,12 @@ update units set domain_default = TRUE where unit_id = 1009;
 update units set domain_default = TRUE where unit_id = 1013;
 update units set domain_default = TRUE where unit_id = 1026;
 update units set domain_default = TRUE where unit_id = 1059;
+
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
+-- missing factors
+insert into factors (factor_id, from_unit, to_unit, factor) select 119, f.unit_id, t.unit_id, 40.0 as factor from units f,units t where lower(f.name) = lower('quart (UK)') and lower(t.name) = lower('fl oz (UK)');
