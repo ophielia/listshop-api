@@ -56,4 +56,9 @@ public class FactorCriteriaBuilder {
         this.criteria.setTargetDefaultUnit(b);
         return this;
     }
+
+    public FactorCriteriaBuilder withTargetVolumeOnly(boolean volumeOnly) {
+        this.criteria.setTargetVolumeOnly(volumeOnly);
+        return this;
+    }
 }

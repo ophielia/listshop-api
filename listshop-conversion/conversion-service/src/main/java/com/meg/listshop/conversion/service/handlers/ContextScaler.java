@@ -38,7 +38,7 @@ public class ContextScaler extends BaseScaleHandler {
                 .withToContext(target.conversionContext())
                 .withToDomain(target.domainType())
                 .build();
-        return deduplicateFactors(conversionFactorRepository.findAllFactors(criteria));
+        return deduplicateFactors(conversionFactorRepository.findAllFactors(criteria), toConvert);
 
     }
 

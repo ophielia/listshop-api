@@ -75,8 +75,11 @@ public class ConverterServiceImpl implements ConverterService {
         // create context
         UnitType unitDomainType = domainToUnitType(domain);
         ConversionTarget target = new ConversionTarget(unitDomainType, null, null);
-        ProcessingContext context = new ProcessingContext(amount, target);
-        // feed to converter chain
+        ProcessingContext context = new ProcessingContext(amount, target);// feed to converter chain
+        return doConversion(context);
+    }
+
+    private ConvertibleAmount doConversion(ProcessingContext context) {
         for (ConverterProcessor processor : processors) {
             if (processor.appliesTo(context)) {
                 processor.process(context);
@@ -105,13 +108,19 @@ public class ConverterServiceImpl implements ConverterService {
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest conversionRequest) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for context [{}], amount [{}, unitSize [{}]", conversionRequest, amount, conversionRequest.getUnitSize());
+
         if (conversionRequest == null) {
             throw new ConversionPathException("Cannot convert, context is null");
         }
-        UnitSubtype targetSubtype = determineSubtypeFromContext(amount, conversionRequest);
-        ConversionSpec conversionSpec = ConversionSpec.specForConversionRequest(conversionRequest, targetSubtype);
 
-        return doConversion(amount, conversionSpec);
+        UnitType unitDomainType = domainToUnitType(conversionRequest.getDomainType());
+        ConversionTargetType conversionTarget = conversionRequest.getContextType();
+
+
+        ConversionTarget target = new ConversionTarget(unitDomainType, null, conversionTarget);
+        ProcessingContext context = new ProcessingContext(amount, target);
+
+        return doConversion(context);
     }
 
 

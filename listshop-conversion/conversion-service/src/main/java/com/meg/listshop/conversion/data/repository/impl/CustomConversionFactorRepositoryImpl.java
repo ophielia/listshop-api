@@ -70,7 +70,7 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         ));
 
         List<Predicate> predicates = buildPredicatesFromCriteria(cb, root, fromUnit, toUnit,criteria);
-
+        predicates.add(cb.not(cb.isTrue(fromUnit.get("oneWayConversion"))));
         query.where(predicates.toArray(new Predicate[0]));
 
         return entityManager.createQuery(query).getResultList().stream()
@@ -134,6 +134,7 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         } else {
             predicates.add(cb.isNull(root.<String>get("conversionId")));
         }
+
         if (criteria.isTargetDefaultUnit()) {
             predicates.add(cb.isTrue(toUnit.<Boolean>get("domainDefault")));
         }

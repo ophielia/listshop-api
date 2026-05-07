@@ -19,6 +19,7 @@ public class FactorCriteria {
     private Long conversionId;
     private boolean bridgeThroughMetric;
     private boolean targetDefaultUnit;
+    private boolean targetVolumeOnly;
 
     public FactorCriteria() {
     }
@@ -79,5 +80,9 @@ public class FactorCriteria {
 
     public boolean isTargetDefaultUnit() {
         return targetDefaultUnit;
+    }
+
+    public void setTargetVolumeOnly(boolean volumeOnly) {
+        this.targetVolumeOnly = volumeOnly;
     }
 }
