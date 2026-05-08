@@ -80,7 +80,7 @@ public class TagConverterProcessor extends AbstractConverterProcessor  {
         // create criteria
         FactorCriteria criteria = new FactorCriteriaBuilder()
                 .withFromUnit(toConvert.getUnit())
-                .withToDomain(context.getTarget().domainType())
+                .withToDomain(UnitType.METRIC)
                 .withTargetDefaultUnit(true)
                 .withConversionId(context.getCurrentAmount().getConversionId())
                // .withTargetVolumeOnly(toConvert.getUnit().getSubtype() == UnitSubtype.LIQUID)

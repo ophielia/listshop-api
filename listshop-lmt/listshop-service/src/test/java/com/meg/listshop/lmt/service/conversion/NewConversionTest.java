@@ -791,17 +791,17 @@ class NewConversionTest {
     void testCupOfDicedTomatoesToList() throws ConversionPathException, ConversionFactorException {
         UnitEntity cupUnit = unitRepository.findById(CUPS_ID).orElse(null);
 
-        // Not converting diced tomatoes to us weight
-        // problem in tag specific version
-        // also - should fix this so that if tag specific conversion fails, the scaling doesn't happen -
-        // it gives really weird results like 0.000006 pounds.....
-
         // 1 cup diced tomatoes
         ConvertibleAmount amount = new SimpleAmount(1, cupUnit, TOMATO_CONVERSION_ID, false, "chopped");
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         ConvertibleAmount converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         System.out.println(converted);
+
+        //MM converts now to ounces - normal - new system won't convert to units unless we ask for it
+        // todo - split into two tests - one which asks for units, and the other which goes to the default ounces
+        // (6.3492 ounces)
+        // also - need to make sure that chopped (modifiers) is taken into account.
         assertEquals(1.216, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(UNIT_ID, converted.getUnit().getId());
     }
