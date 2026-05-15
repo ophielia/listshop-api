@@ -158,7 +158,7 @@ class NewConversionUSFactorsTest {
         UnitEntity flTspOpt = unitRepository.findById(flTeaspoonId).orElse(null);
         UnitEntity flTbOpt = unitRepository.findById(flTablespoonId).orElse(null);
 
-        ConversionRequest dishConversionContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
+        ConversionRequest dishConversionContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
 
         // teaspoon to centiliter  12 US teaspoon => 2 fl oz
         ConvertibleAmount amount = new SimpleAmount(12, flTspOpt);

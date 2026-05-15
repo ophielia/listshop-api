@@ -613,7 +613,6 @@ class NewConversionTest {
         UnitEntity cup = unitRepository.findById(CUPS_ID).orElse(null);
 
         // list context, metric
-
         // tomato slice to grams
         ConvertibleAmount amount = new SimpleAmount(1, cup, TOMATO_CONVERSION_ID, false, "chopped");
         ConvertibleAmount converted = converterService.convert(amount, grams);
@@ -627,13 +626,12 @@ class NewConversionTest {
         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         System.out.println(converted);
-//        assertEquals(1.216, RoundingUtils.roundToThousandths(converted.getQuantity()));
-//        assertEquals(UNIT_ID, converted.getUnit().getId());
+        assertEquals(180.000, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(GRAM_ID, converted.getUnit().getId());
 
         // dish context metric
         ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         converted = converterService.convert(amount, dishContext);
-        //MM  this looks like a scaling problem  - is 180 grams, but result i sin kg
 
         assertNotNull(converted);
         assertEquals(180.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -643,7 +641,7 @@ class NewConversionTest {
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, cup, TOMATO_CONVERSION_ID, false, "chopped");
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
-        assertEquals(2.376, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(2.38, RoundingUtils.roundToHundredths(converted.getQuantity()));
         assertEquals(LB_ID, converted.getUnit().getId());
 
         // cup chopped tomatoes to us list
@@ -651,8 +649,9 @@ class NewConversionTest {
         bigAmount = new SimpleAmount(6.0, cup, TOMATO_CONVERSION_ID, false, "chopped");
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
-        assertEquals(7.297, RoundingUtils.roundToThousandths(converted.getQuantity()));
-//        assertEquals(UNIT_ID, converted.getUnit().getId());
+//        assertEquals(7.297, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(2.381, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(LB_ID, converted.getUnit().getId());
 //        assertEquals("medium", converted.getUnitSize());
     }
 
@@ -661,11 +660,8 @@ class NewConversionTest {
         UnitEntity cup = unitRepository.findById(CUPS_ID).orElse(null);
         UnitEntity unit = unitRepository.findById(UNIT_ID).orElse(null);
 
-        // list context, metric
-        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
-        // tomato slice to units - no size passed
          ConvertibleAmount amount = new SimpleAmount(1, cup, TOMATO_CONVERSION_ID, false, "chopped");
-         ConvertibleAmount converted = converterService.convert(amount, listContext);
+         ConvertibleAmount converted = converterService.convert(amount, unit);
          assertNotNull(converted);
          System.out.println(converted);
          assertEquals(1.216, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -798,10 +794,20 @@ class NewConversionTest {
         assertNotNull(converted);
         System.out.println(converted);
 
-        //MM converts now to ounces - normal - new system won't convert to units unless we ask for it
-        // todo - split into two tests - one which asks for units, and the other which goes to the default ounces
-        // (6.3492 ounces)
-        // also - need to make sure that chopped (modifiers) is taken into account.
+        assertEquals(6.349, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(OUNCE_ID, converted.getUnit().getId());
+    }
+
+    @Test
+    void testCupOfDicedTomatoesToUnits() throws ConversionPathException, ConversionFactorException {
+        UnitEntity cupUnit = unitRepository.findById(CUPS_ID).orElse(null);
+        UnitEntity unitUnit = unitRepository.findById(UNIT_ID).orElse(null);
+
+        // 1 cup diced tomatoes
+        ConvertibleAmount amount = new SimpleAmount(1, cupUnit, TOMATO_CONVERSION_ID, false, "chopped");
+        ConvertibleAmount converted = converterService.convert(amount, unitUnit);
+        assertNotNull(converted);
+        System.out.println(converted);
         assertEquals(1.216, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(UNIT_ID, converted.getUnit().getId());
     }

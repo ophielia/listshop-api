@@ -18,7 +18,7 @@ public abstract class AbstractConverterProcessor implements ConverterProcessor {
     protected Long GRAM_UNIT_ID;
 
     @Value("${conversionservice.single.unit.id:1011}")
-    private Long SINGLE_UNIT_ID;
+    protected Long SINGLE_UNIT_ID;
 
     protected boolean currentIsSingleUnit(ProcessingContext context) {
         return isSingleUnit( context.getCurrentAmount().getUnit().getId());
