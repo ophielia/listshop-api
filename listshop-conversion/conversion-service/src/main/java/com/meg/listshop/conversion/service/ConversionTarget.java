@@ -13,10 +13,12 @@ import com.meg.listshop.conversion.data.pojo.DomainType;
 public record ConversionTarget(UnitType domainType,
                                Long unitId,
                                ConversionTargetType conversionContext,
-                               String unitSize) {
+                               String unitSize,
+                               String marker) {
     public ConversionTarget(UnitType domainType, Long unitId, ConversionTargetType conversionContext) {
-        this(domainType, unitId, conversionContext, null);
+        this(domainType, unitId, conversionContext, null, null);
     }
+
 
 
 }

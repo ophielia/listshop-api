@@ -28,9 +28,9 @@ FROM factors f
          JOIN units tou ON t.to_unit = tou.unit_id;
 
 create or replace view unit_factors
-            (factor, conversion_id, from_unit, from_name, from_marker, from_unit_size, from_unit_default, to_unit, to_name, to_marker, to_unit_size, to_unit_default)
+            (factor_id,factor, conversion_id, from_unit, from_name, from_marker, from_unit_size, from_unit_default, to_unit, to_name, to_marker, to_unit_size, to_unit_default)
 as
-select tou.unit_id * 1000000 + fr.unit_id AS factor_id,
+select distinct tou.unit_id * 1000000 + fr.unit_id AS factor_id,
        f.factor / b.factor                as factor,
        b.conversion_id                    AS conversion_id,
        fr.unit_id                         AS from_unit,

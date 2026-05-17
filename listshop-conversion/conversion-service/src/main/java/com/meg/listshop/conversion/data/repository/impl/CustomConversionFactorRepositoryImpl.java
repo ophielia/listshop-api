@@ -15,14 +15,10 @@ import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.repository.CustomConversionFactorRepository;
 import com.meg.listshop.conversion.data.repository.FactorCriteria;
-import com.meg.listshop.conversion.service.ConversionSpec;
-import com.meg.listshop.conversion.service.factors.AbstractConversionFactorSource;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.EntityManager;
 
@@ -36,46 +32,12 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
     @PersistenceContext
     EntityManager entityManager;
 
-    public List<ConversionFactor> findFactorsForSourceAndTarget(ConversionSpec source, ConversionSpec target) {
-        return new ArrayList<>();
-    }
-
-    public List<ConversionFactor> findFactorsForCriteria(ConversionSpec source, ConversionSpec target) {
-        return new ArrayList<>();
-    }
-
     @Override
     public List<ConversionFactor> findAllFactors(FactorCriteria criteria) {
         List<ConversionFactor> factors = findFactors(criteria);
         List<ConversionFactor> allFactors = new ArrayList<>(factors);
         allFactors.addAll(findInvertedFactors(criteria));
         return allFactors;
-    }
-
-    private List<ConversionFactor> findInvertedFactors(FactorCriteria criteria) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<SimpleConversionFactor> query = cb.createQuery(SimpleConversionFactor.class);
-        Root<? extends ConversionFactor> root = getRootForCriteria(query, criteria);
-        Join<? extends ConversionFactor, UnitEntity> fromUnit = root.join("toUnit");
-        Join<? extends ConversionFactor, UnitEntity> toUnit = root.join("fromUnit");
-
-        Expression<Number> invertedFactor = cb.quot(cb.literal(1.0), root.get("factor"));
-        query.select(cb.construct(SimpleConversionFactor.class,
-                invertedFactor,
-                root.get("fromUnit"),
-                root.get("toUnit"),
-                root.get("marker"),
-                root.get("unitSize"),
-                root.get("unitDefault")
-        ));
-
-        List<Predicate> predicates = buildPredicatesFromCriteria(cb, root, fromUnit, toUnit,criteria);
-        predicates.add(cb.not(cb.isTrue(fromUnit.get("oneWayConversion"))));
-        query.where(predicates.toArray(new Predicate[0]));
-
-        return entityManager.createQuery(query).getResultList().stream()
-                .map(f -> (ConversionFactor) f)
-                .toList();
     }
 
     @Override
@@ -98,6 +60,32 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
 
         List<Predicate> predicates = buildPredicatesFromCriteria(cb, root, fromUnit, toUnit,criteria);
 
+        query.where(predicates.toArray(new Predicate[0]));
+
+        return entityManager.createQuery(query).getResultList().stream()
+                .map(f -> (ConversionFactor) f)
+                .toList();
+    }
+
+    private List<ConversionFactor> findInvertedFactors(FactorCriteria criteria) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<SimpleConversionFactor> query = cb.createQuery(SimpleConversionFactor.class);
+        Root<? extends ConversionFactor> root = getRootForCriteria(query, criteria);
+        Join<? extends ConversionFactor, UnitEntity> fromUnit = root.join("toUnit");
+        Join<? extends ConversionFactor, UnitEntity> toUnit = root.join("fromUnit");
+
+        Expression<Number> invertedFactor = cb.quot(cb.literal(1.0), root.get("factor"));
+        query.select(cb.construct(SimpleConversionFactor.class,
+                invertedFactor,
+                root.get("fromUnit"),
+                root.get("toUnit"),
+                root.get("marker"),
+                root.get("unitSize"),
+                root.get("unitDefault")
+        ));
+
+        List<Predicate> predicates = buildPredicatesFromCriteria(cb, root, fromUnit, toUnit,criteria);
+        predicates.add(cb.not(cb.isTrue(fromUnit.get("oneWayConversion"))));
         query.where(predicates.toArray(new Predicate[0]));
 
         return entityManager.createQuery(query).getResultList().stream()
@@ -129,15 +117,24 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         if (criteria.getToDomain() != null) {
             predicates.add(cb.equal(toUnit.<String>get("type"), criteria.getToDomain()));
         }
+        if (criteria.isToDefaultSize()) {
+            predicates.add(cb.isTrue(root.<Boolean>get("unitDefault")));
+        }
+        if (criteria.getToSize() != null) {
+            predicates.add(cb.equal(root.<String>get("unitSize"), criteria.getToSize()));
+        }
         if (criteria.getConversionId() != null) {
             predicates.add(cb.equal(root.<String>get("conversionId"), criteria.getConversionId()));
         } else {
             predicates.add(cb.isNull(root.<String>get("conversionId")));
         }
 
-        if (criteria.isTargetDefaultUnit()) {
+        if (criteria.isToDefaultUnit()) {
             predicates.add(cb.isTrue(toUnit.<Boolean>get("domainDefault")));
         }
+        /*if (criteria.isTargetDefaultSize()) {
+            predicates.add(cb.isTrue(root.<Boolean>get("unitDefault")));
+        }*/
         return predicates;
     }
 

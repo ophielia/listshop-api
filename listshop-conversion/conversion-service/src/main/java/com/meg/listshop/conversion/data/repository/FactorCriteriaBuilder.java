@@ -9,7 +9,6 @@ package com.meg.listshop.conversion.data.repository;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
-import com.meg.listshop.conversion.service.ConversionContext;
 
 public class FactorCriteriaBuilder {
     private final FactorCriteria criteria;
@@ -59,7 +58,7 @@ public class FactorCriteriaBuilder {
     }
 
     public FactorCriteriaBuilder withTargetDefaultUnit(boolean b) {
-        this.criteria.setTargetDefaultUnit(b);
+        this.criteria.setToDefaultUnit(b);
         return this;
     }
 
@@ -69,7 +68,7 @@ public class FactorCriteriaBuilder {
     }
 
     public FactorCriteriaBuilder withTargetDefaultSize(boolean targetDefaultSize) {
-        this.criteria.setTargetDefaultSize(targetDefaultSize);
+        this.criteria.setToDefaultSize(targetDefaultSize);
         return this;
     }
 

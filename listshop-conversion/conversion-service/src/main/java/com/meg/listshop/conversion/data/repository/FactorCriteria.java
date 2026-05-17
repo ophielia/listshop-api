@@ -23,8 +23,8 @@ public class FactorCriteria {
     private Long conversionId;
     private boolean bridgeThroughMetric;
     private boolean bridgeToUnits;
-    private boolean targetDefaultUnit;
-    private boolean targetDefaultSize;
+    private boolean toDefaultUnit;
+    private boolean toDefaultSize;
     private boolean targetVolumeOnly;
 
     public FactorCriteria() {
@@ -38,8 +38,8 @@ public class FactorCriteria {
                 .withFromModifier(criteria.getFromModifier())
                 .withFromSize(criteria.getFromSize())
                 .withFromUnit(criteria.getFromUnit())
-                .withTargetDefaultSize(criteria.isTargetDefaultSize())
-                .withTargetDefaultUnit(criteria.isTargetDefaultUnit())
+                .withTargetDefaultSize(criteria.isToDefaultSize())
+                .withTargetDefaultUnit(criteria.isToDefaultUnit())
                 .withToModifier(criteria.getToModifier())
                 .withToSize(criteria.getToSize())
                 .withToUnit(criteria.getToUnitId());
@@ -102,21 +102,21 @@ public class FactorCriteria {
         this.bridgeToUnits = bridgeToUnits;
     }
 
-    public void setTargetDefaultUnit(boolean b) {
-        this.targetDefaultUnit = b;
+    public void setToDefaultUnit(boolean b) {
+        this.toDefaultUnit = b;
     }
-    public void setTargetDefaultSize(boolean b) {
-        this.targetDefaultSize = b;
-    }
-
-
-
-    public boolean isTargetDefaultUnit() {
-        return targetDefaultUnit;
+    public void setToDefaultSize(boolean b) {
+        this.toDefaultSize = b;
     }
 
-    public boolean isTargetDefaultSize() {
-        return targetDefaultSize;
+
+
+    public boolean isToDefaultUnit() {
+        return toDefaultUnit;
+    }
+
+    public boolean isToDefaultSize() {
+        return toDefaultSize;
     }
 
     public void setTargetVolumeOnly(boolean volumeOnly) {
