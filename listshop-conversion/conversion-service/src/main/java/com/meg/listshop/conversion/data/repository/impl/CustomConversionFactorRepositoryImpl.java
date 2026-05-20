@@ -130,6 +130,10 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         if (criteria.getToSize() != null) {
             predicates.add(cb.equal(root.<String>get("unitSize"), criteria.getToSize()));
         }
+        if (criteria.getFromSize() != null) {
+            predicates.add(cb.equal(root.<String>get("unitSize"), criteria.getFromSize()));
+        }
+
         if (criteria.getConversionId() != null) {
             predicates.add(cb.equal(root.<String>get("conversionId"), criteria.getConversionId()));
         } else {

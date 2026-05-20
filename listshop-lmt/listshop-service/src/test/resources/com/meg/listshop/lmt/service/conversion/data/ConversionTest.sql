@@ -1,6 +1,12 @@
 insert into public.factors (factor_id, factor, to_unit, from_unit,conversion_id)
 values  (1111207, 226.8, 1013, 1000, 348);
 
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 -- onions
 insert into public.factors (conversion_id, factor_id, factor, from_unit, to_unit,marker)
 values  (56630,566300, 38, 1011, 1013,  'sliced'        )    ,
@@ -39,7 +45,6 @@ insert into public.factors (factor_id, factor, to_unit, from_unit, conversion_id
 values  (1081, 182, 1013, 1011, 225744, 3891, null, 'large', false, null),
         (1082, 123, 1013, 1011, 225744, 3892, null, 'small', false, null),
         (1083, 148, 1013, 1011, 225744, 3960, null, 'medium', true, null),
-        (1084, 91, 1013, 1011, 225744, 3976, null, 'small', false, null),
         (1085, 180, 1013, 1000, 225744, 1163, 'chopped', 'medium', false, null),
         (1086, 27, 1013, 1022, 225744, 2544, null, 'medium', false, null),
         (1087, 31, 1013, 1050, 225744, 2835, 'wedge', 'medium', false, null),

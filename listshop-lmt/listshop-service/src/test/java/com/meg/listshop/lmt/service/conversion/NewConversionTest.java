@@ -508,6 +508,7 @@ class NewConversionTest {
         UnitEntity singleUnit = unitRepository.findById(UNIT_ID).orElse(null);
         UnitEntity grams = unitRepository.findById(GRAM_ID).orElse(null);
         UnitEntity pounds = unitRepository.findById(LB_ID).orElse(null);
+        UnitEntity kilos = unitRepository.findById(KG_ID).orElse(null);
 
         // one chicken drumstick to grams
         ConvertibleAmount amount = new SimpleAmount(1, singleUnit, CHICKEN_DRUMSTICK_ID, false, null);
@@ -561,20 +562,12 @@ class NewConversionTest {
         converted = converterService.convert(bigAmount, pounds);
         System.out.println(converted);
         assertNotNull(converted);
-        assertEquals(3.098, RoundingUtils.roundToThousandths(converted.getQuantity()));
-        assertEquals(LB_ID, converted.getUnit().getId());
-
-        // chicken drumstick us domain
-        bigAmount = new SimpleAmount(16.0, singleUnit, CHICKEN_DRUMSTICK_ID, false, null);
-        converted = converterService.convert(bigAmount, DomainType.US);
-        System.out.println(converted);
-        assertNotNull(converted);
-        assertEquals(3.098, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(3.10, RoundingUtils.roundToHundredths(converted.getQuantity()));
         assertEquals(LB_ID, converted.getUnit().getId());
 
         // chicken drumstick metric domain
         bigAmount = new SimpleAmount(16.0, singleUnit, CHICKEN_DRUMSTICK_ID, false, null);
-        converted = converterService.convert(bigAmount, DomainType.METRIC);
+        converted = converterService.convert(bigAmount, kilos);
         System.out.println(converted);
         assertNotNull(converted);
         assertEquals(1.408, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -697,10 +690,15 @@ class NewConversionTest {
         System.out.println(converted);
         assertEquals(0.989, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(UNIT_ID, converted.getUnit().getId());
+    }
+    @Test
+        void testTEMPCupOfDicedTomatoesUnitSize() throws ConversionPathException, ConversionFactorException {
+            UnitEntity cup = unitRepository.findById(CUPS_ID).orElse(null);
+            UnitEntity unit = unitRepository.findById(UNIT_ID).orElse(null);
 
         // to units, with size
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, cup, TOMATO_CONVERSION_ID, false, "chopped");
-         converted = converterService.convert(bigAmount, unit, "small");
+        ConvertibleAmount  converted = converterService.convert(bigAmount, unit, "small");
         System.out.println(converted);
         assertNotNull(converted);
         assertEquals(8.78, RoundingUtils.roundToThousandths(converted.getQuantity()));

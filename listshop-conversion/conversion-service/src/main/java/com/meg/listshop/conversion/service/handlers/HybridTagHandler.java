@@ -40,6 +40,7 @@ public class HybridTagHandler extends AbstractTagHandler {
                 .withFromUnit(toConvert.getUnit())
                 .withConversionId(toConvert.getConversionId())
                 .withFromModifier(toConvert.getMarker())
+                .withFromSize(toConvert.getUnitSize())
                 .withToUnit(GRAM_UNIT_ID);
         return factorRepository.findFactors(criteriaBuilder.build()).stream()
                 .map(factor -> (ConversionFactor) factor)
