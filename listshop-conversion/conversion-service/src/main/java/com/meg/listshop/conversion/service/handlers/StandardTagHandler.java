@@ -8,7 +8,6 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
-import com.meg.listshop.conversion.data.repository.FactorCriteria;
 import com.meg.listshop.conversion.data.repository.FactorCriteriaBuilder;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
@@ -28,20 +27,25 @@ public class StandardTagHandler extends AbstractTagHandler {
 
     @Override
     public ConvertibleAmount convertTag(ProcessingContext context) {
-        return standardConversion(context);
+        return convertToGrams(context);
     }
 
     @Override
-    public  List<ConversionFactor> findFactors(ConvertibleAmount toConvert, ProcessingContext context) {
+    public  List<ConversionFactor> findFactorsForGrams(ConvertibleAmount toConvert) {
         // create criteria - base criteria
+        Long conversionId = determineConversionId(toConvert);
         FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()
                 .withFromUnit(toConvert.getUnit())
-                .withConversionId(context.getCurrentAmount().getConversionId())
-                .withToDomain(UnitType.METRIC)
-                .withTargetDefaultUnit(true);
-        return tagFactorRepository.findAllFactors(criteriaBuilder.build()).stream()
+                .withConversionId(conversionId)
+                .withToUnit(GRAM_UNIT_ID);
+        return factorRepository.findFactors(criteriaBuilder.build()).stream()
                 .map(factor -> (ConversionFactor) factor)
                 .toList();
+    }
+
+    private Long determineConversionId(ConvertibleAmount toConvert) {
+        UnitType unitType = toConvert.getUnit().getType();
+        return List.of(UnitType.METRIC, UnitType.UK, UnitType.US).contains(unitType) ? null : toConvert.getConversionId();
     }
 
 }

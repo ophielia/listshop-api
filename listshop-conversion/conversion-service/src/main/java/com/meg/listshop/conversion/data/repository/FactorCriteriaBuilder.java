@@ -92,4 +92,15 @@ public class FactorCriteriaBuilder {
         this.criteria.setToSize(toSize);
         return this;
     }
+
+    public FactorCriteriaBuilder withFromModifierOrNull(String marker) {
+        this.criteria.setFromModifier(marker);
+        this.criteria.setExactModifierMatch(true);
+        return this;
+    }
+
+    public FactorCriteriaBuilder withFromDefaultSize(boolean fromDefaultSize) {
+        this.criteria.setFromDefaultSize(fromDefaultSize);
+        return this;
+    }
 }

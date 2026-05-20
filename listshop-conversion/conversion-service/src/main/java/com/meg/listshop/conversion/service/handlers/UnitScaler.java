@@ -30,7 +30,7 @@ public class UnitScaler extends BaseScaleHandler {
 
     public boolean shouldScale(ProcessingContext context) {
         // applies if the conversion is to one specific unit
-        return context.getTarget().unitId() != null;
+        return context.getTarget().unitId() != null && context.getCurrentAmount().getConversionId() == null;
     }
 
 

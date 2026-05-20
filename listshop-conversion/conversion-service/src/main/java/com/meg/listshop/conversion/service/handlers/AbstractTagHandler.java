@@ -49,9 +49,9 @@ public abstract class AbstractTagHandler implements TagHandler {
     @Autowired
     protected UnitRepository unitRepository;
 
-    protected ConvertibleAmount standardConversion(@NonNull ProcessingContext context) {
+    protected ConvertibleAmount convertToGrams(@NonNull ProcessingContext context) {
         ConvertibleAmount toConvert = context.getCurrentAmount();
-        List<ConversionFactor> factors = findFactors(toConvert, context);
+        List<ConversionFactor> factors = findFactorsForGrams(toConvert);
         if (factors == null || factors.isEmpty()) {
             LOG.debug("No conversions available for domainConversion from unit [{}] to unitType: [{}].", toConvert.getUnit(), context.getTarget().domainType());
             return toConvert;
@@ -77,7 +77,7 @@ public abstract class AbstractTagHandler implements TagHandler {
         return new SimpleAmount(converted.getQuantity(), converted.getUnit(), toConvert, converted.getUnitSize());
     }
 
-    public abstract List<ConversionFactor> findFactors(ConvertibleAmount toConvert, ProcessingContext context);
+    public abstract List<ConversionFactor> findFactorsForGrams(ConvertibleAmount toConvert);
 
     protected List<ConversionFactor> originalFindFactors(ConvertibleAmount toConvert, ProcessingContext context) {
         // create criteria - base criteria
@@ -281,6 +281,10 @@ public abstract class AbstractTagHandler implements TagHandler {
 
     protected boolean fromIsSingleUnit(ProcessingContext context) {
         return context.getTarget().unitId() != null && Objects.equals(context.getTarget().unitId(), SINGLE_UNIT_ID);
+    }
+
+    protected boolean fromIsHybrid(ProcessingContext context) {
+        return context.getCurrentAmount().getUnit().getType() == UnitType.HYBRID;
     }
 
     protected boolean toIsWeight(ProcessingContext context) {

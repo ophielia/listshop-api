@@ -25,7 +25,9 @@ public class FactorCriteria {
     private boolean bridgeToUnits;
     private boolean toDefaultUnit;
     private boolean toDefaultSize;
+    private boolean fromDefaultSize;
     private boolean targetVolumeOnly;
+    private boolean exactModifierMatch;
 
     public FactorCriteria() {
     }
@@ -108,6 +110,9 @@ public class FactorCriteria {
     public void setToDefaultSize(boolean b) {
         this.toDefaultSize = b;
     }
+    public void setFromDefaultSize(boolean b) {
+        this.fromDefaultSize = b;
+    }
 
 
 
@@ -117,6 +122,9 @@ public class FactorCriteria {
 
     public boolean isToDefaultSize() {
         return toDefaultSize;
+    }
+    public boolean isFromDefaultSize() {
+        return fromDefaultSize;
     }
 
     public void setTargetVolumeOnly(boolean volumeOnly) {
@@ -154,4 +162,13 @@ public class FactorCriteria {
     public void setToModifier(String toModifier) {
         this.toModifier = toModifier;
     }
+
+    public void setExactModifierMatch(boolean exactModifierMatch) {
+        this.exactModifierMatch = exactModifierMatch;
+    }
+
+    public boolean isExactModifierMatch() {
+        return exactModifierMatch;
+    }
+
 }

@@ -7,6 +7,7 @@
 package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
@@ -15,6 +16,8 @@ import com.meg.listshop.conversion.service.ProcessingContext;
 import com.meg.listshop.conversion.service.factors.NewFactorProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,6 +28,15 @@ public abstract class BaseScaleHandler implements ScaleHandler, NewFactorProvide
     private static final Logger LOG = LoggerFactory.getLogger(BaseScaleHandler.class);
     private static final double DEFAULT_MIN_RANGE = 0.4990;
     private static final double DEFAULT_MAX_RANGE = 500;
+
+    @Value("${listshop.single.unit.id:1011}")
+    protected Long SINGLE_UNIT_ID;
+
+    @Value("${conversionservice.gram.unit.id:1013}")
+    protected Long GRAM_UNIT_ID;
+
+    @Autowired
+    protected UnitRepository unitRepository;
 
     public ConvertibleAmount scale(ProcessingContext context) {
         ConvertibleAmount toConvert = context.getCurrentAmount();

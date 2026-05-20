@@ -6,13 +6,10 @@
 
 package com.meg.listshop.conversion.service.handlers;
 
-import com.meg.listshop.common.UnitType;
-import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.repository.FactorCriteria;
 import com.meg.listshop.conversion.data.repository.FactorCriteriaBuilder;
-import com.meg.listshop.conversion.service.ConversionTarget;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
 import com.meg.listshop.conversion.service.processors.DomainConverterProcessor;
@@ -36,45 +33,26 @@ public class WeightToUnitTagHandler extends AbstractTagHandler {
 
     @Override
     public boolean shouldConvert(ProcessingContext context) {
-        return FactorRequestUtils.isFromWeight(context) &&
-                targetIsSingleUnit(context);
-
+       // return FactorRequestUtils.isFromWeight(context) &&
+         //       targetIsSingleUnit(context);
+return false;
     }
 
     @Override
     public ConvertibleAmount convertTag(ProcessingContext context) {
-        // first convert to grams
-        preConvertToGrams(context);
-        // then run standard conversion (standard factors)
-        return standardConversion(context);
-    }
-
-    private void preConvertToGrams(ProcessingContext context) {
-        // create context copy
-        ProcessingContext gramContext = new ProcessingContext(context.getCurrentAmount(),
-                new ConversionTarget(UnitType.METRIC,GRAM_UNIT_ID,null));
-        domainConverterProcessor.process(gramContext);
-        scalingProcessor.process(gramContext);
-        ConvertibleAmount preConvertedAmount = gramContext.getCurrentAmount();
-        if (preConvertedAmount.getUnit().getId().equals(GRAM_UNIT_ID)) {
-            // preconversion successful - set in context
-            context.setCurrentAmount(preConvertedAmount);
-        }
+        //convert to grams
+        return convertToGrams(context);
     }
 
     @Override
-    public List<ConversionFactor> findFactors(ConvertibleAmount toConvert, ProcessingContext context) {
-        // create criteria - for unit to weight - and then we'll reverse them by hand afterwards
-        String targetSize = context.getTarget().unitSize();
-        boolean useDefaultUnit = targetSize == null;
-        UnitEntity fromUnit = unitRepository.findById(context.getTarget().unitId()).orElseThrow();
+    public List<ConversionFactor> findFactorsForGrams(ConvertibleAmount toConvert) {
+        // create criteria - for grams
         FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()
-                .withFromUnit(fromUnit)
-                .withConversionId(context.getCurrentAmount().getConversionId())
-                .withToUnit(toConvert.getUnit().getId())
-                .withTargetDefaultSize(useDefaultUnit);
+                .withFromUnit(toConvert.getUnit())
+                //  .withConversionId(toConvert.getConversionId())
+                .withToUnit(GRAM_UNIT_ID);
         FactorCriteria exactCriteria = criteriaBuilder.build();
-        List<ConversionFactor> foundUnits =  factorRepository.findFactors(exactCriteria).stream()
+        List<ConversionFactor> foundUnits = factorRepository.findFactors(exactCriteria).stream()
                 .toList();
 
         return invertFactors(foundUnits);

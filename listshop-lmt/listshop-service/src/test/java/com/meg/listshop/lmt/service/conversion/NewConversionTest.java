@@ -349,7 +349,8 @@ class NewConversionTest {
     void testTagSpecificConversion() throws ConversionPathException, ConversionFactorException {
         UnitEntity cup = unitRepository.findById(CUPS_ID).orElse(null);
         UnitEntity grams = unitRepository.findById(GRAM_ID).orElse(null);
-//MM why is this not working  hybrid => grams
+        UnitEntity units = unitRepository.findById(UNIT_ID).orElse(null);
+
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
         // 1/2 cup onions to unit, marker chopped
         ConvertibleAmount amount = new SimpleAmount(0.5, cup, ONION_CONVERSION_ID, false, "chopped");
@@ -359,11 +360,18 @@ class NewConversionTest {
         assertEquals(80.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(GRAM_ID, converted.getUnit().getId());
 
-        // 1/2 cup onions to unit, marker chopped
+        // 1/2 cup onions to metric list
         amount = new SimpleAmount(0.5, cup, ONION_CONVERSION_ID, false, "chopped");
         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
-        assertEquals(2.105, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(80.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(GRAM_ID, converted.getUnit().getId());
+
+        // 1/2 cup onions to units
+         amount = new SimpleAmount(0.5, cup, ONION_CONVERSION_ID, false, "chopped");
+         converted = converterService.convert(amount, units);
+        assertNotNull(converted);
+        assertEquals(0.727, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(UNIT_ID, converted.getUnit().getId());
     }
 
@@ -785,9 +793,8 @@ class NewConversionTest {
 
     @Test
     void testHalfAKiloTomatoesToUnit() throws ConversionPathException, ConversionFactorException {
-        //MM BOOKMARK!  the half a kilo of tomatoes aren't converted to _medium_ unit -
-        // default unit amount and sizes not taken into account
-        
+        //MM start here - tests failing because size (default size) not taken into account
+
         UnitEntity unit = unitRepository.findById(UNIT_ID).orElse(null);
         UnitEntity kilo = unitRepository.findById(KG_ID).orElse(null);
 
