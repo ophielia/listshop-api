@@ -10,7 +10,6 @@ import com.meg.listshop.common.UnitSubtype;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.service.ProcessingContext;
-import org.springframework.beans.factory.annotation.Value;
 
 public class FactorRequestUtils {
 
@@ -38,10 +37,16 @@ public class FactorRequestUtils {
         return context.getTarget().marker() != null;
     }
 
+    public static boolean isFromHybrid(ProcessingContext context) {
+        UnitEntity fromUnit = context.getCurrentAmount().getUnit();
+        return fromUnit != null
+                && fromUnit.getType() == UnitType.HYBRID;
+    }
+
+
     public static boolean isFromWeight(ProcessingContext context) {
         UnitEntity fromUnit = context.getCurrentAmount().getUnit();
         return fromUnit != null
                 && fromUnit.getSubtype() == UnitSubtype.WEIGHT;
     }
-
 }

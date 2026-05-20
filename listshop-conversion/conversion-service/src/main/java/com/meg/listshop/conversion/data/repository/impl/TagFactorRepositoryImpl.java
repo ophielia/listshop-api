@@ -77,7 +77,7 @@ public class TagFactorRepositoryImpl implements TagFactorRepository {
         Expression<Number> invertedFactor = cb.quot(cb.literal(1.0), root.get("factor"));
         query.select(cb.construct(ConversionUnitFactorEntity.class,
                 root.get("factorId"),
-                invertedFactor,
+                root.get("factor"),
                 root.get("toUnit"),
                 root.get("fromUnit"),
                 root.get("conversionId"),

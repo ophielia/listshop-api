@@ -132,9 +132,6 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         if (criteria.isToDefaultUnit()) {
             predicates.add(cb.isTrue(toUnit.<Boolean>get("domainDefault")));
         }
-        /*if (criteria.isTargetDefaultSize()) {
-            predicates.add(cb.isTrue(root.<Boolean>get("unitDefault")));
-        }*/
         return predicates;
     }
 

@@ -347,12 +347,12 @@ class NewConversionTest {
 
     @Test
     void testTagSpecificConversion() throws ConversionPathException, ConversionFactorException {
-        UnitEntity tablespoon = unitRepository.findById(CUPS_ID).orElse(null);
+        UnitEntity cup = unitRepository.findById(CUPS_ID).orElse(null);
         UnitEntity grams = unitRepository.findById(GRAM_ID).orElse(null);
-
+//MM why is this not working  hybrid => grams
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
         // 1/2 cup onions to unit, marker chopped
-        ConvertibleAmount amount = new SimpleAmount(0.5, tablespoon, ONION_CONVERSION_ID, false, "chopped");
+        ConvertibleAmount amount = new SimpleAmount(0.5, cup, ONION_CONVERSION_ID, false, "chopped");
         ConvertibleAmount converted = converterService.convert(amount, grams);
         assertNotNull(converted);
         System.out.println(converted);
@@ -360,7 +360,7 @@ class NewConversionTest {
         assertEquals(GRAM_ID, converted.getUnit().getId());
 
         // 1/2 cup onions to unit, marker chopped
-        amount = new SimpleAmount(0.5, tablespoon, ONION_CONVERSION_ID, false, "chopped");
+        amount = new SimpleAmount(0.5, cup, ONION_CONVERSION_ID, false, "chopped");
         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         assertEquals(2.105, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -785,6 +785,9 @@ class NewConversionTest {
 
     @Test
     void testHalfAKiloTomatoesToUnit() throws ConversionPathException, ConversionFactorException {
+        //MM BOOKMARK!  the half a kilo of tomatoes aren't converted to _medium_ unit -
+        // default unit amount and sizes not taken into account
+        
         UnitEntity unit = unitRepository.findById(UNIT_ID).orElse(null);
         UnitEntity kilo = unitRepository.findById(KG_ID).orElse(null);
 

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Order(3)
+@Order(4)
 public class StandardTagHandler extends AbstractTagHandler {
 
     @Override
@@ -39,7 +39,7 @@ public class StandardTagHandler extends AbstractTagHandler {
                 .withConversionId(context.getCurrentAmount().getConversionId())
                 .withToDomain(UnitType.METRIC)
                 .withTargetDefaultUnit(true);
-        return factorRepository.findAllFactors(criteriaBuilder.build()).stream()
+        return tagFactorRepository.findAllFactors(criteriaBuilder.build()).stream()
                 .map(factor -> (ConversionFactor) factor)
                 .toList();
     }

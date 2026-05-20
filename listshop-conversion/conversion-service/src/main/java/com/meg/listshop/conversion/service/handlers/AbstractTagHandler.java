@@ -37,6 +37,9 @@ public abstract class AbstractTagHandler implements TagHandler {
     @Value("${listshop.single.unit.id:1011}")
     protected Long SINGLE_UNIT_ID;
 
+    @Value("${conversionservice.gram.unit.id:1013}")
+    protected Long GRAM_UNIT_ID;
+
     @Autowired
     protected ConversionFactorRepository factorRepository;
 

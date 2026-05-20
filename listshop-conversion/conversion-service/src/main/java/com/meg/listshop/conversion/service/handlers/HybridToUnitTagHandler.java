@@ -23,43 +23,37 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Order(1)
-public class WeightToUnitTagHandler extends AbstractTagHandler {
+@Order(3)
+public class HybridToUnitTagHandler extends AbstractTagHandler {
+
+    //MM THIS IS NEW!!  It should handle as the name says
+    // find factors should use unit_factors - with both directions (not manual invert)
 
     private DomainConverterProcessor domainConverterProcessor;
     private ScalingProcessor scalingProcessor;
 
-    public WeightToUnitTagHandler(DomainConverterProcessor domainConverterProcessor, ScalingProcessor scalingProcessor) {
+    public HybridToUnitTagHandler(DomainConverterProcessor domainConverterProcessor, ScalingProcessor scalingProcessor) {
         this.domainConverterProcessor = domainConverterProcessor;
         this.scalingProcessor = scalingProcessor;
     }
 
     @Override
     public boolean shouldConvert(ProcessingContext context) {
-        return FactorRequestUtils.isFromWeight(context) &&
-                targetIsSingleUnit(context);
+        Long toUnitId = context.getTarget().unitId();
+        boolean toHybrid = false;
+        if (toUnitId != null) {
+            UnitEntity toUnit = unitRepository.findById(toUnitId).orElse(null);
+            toHybrid = toUnit!=null && toUnit.getType().equals(UnitType.HYBRID);
+        }
+
+        return toHybrid || FactorRequestUtils.isFromHybrid(context);
 
     }
 
     @Override
     public ConvertibleAmount convertTag(ProcessingContext context) {
-        // first convert to grams
-        preConvertToGrams(context);
         // then run standard conversion (standard factors)
         return standardConversion(context);
-    }
-
-    private void preConvertToGrams(ProcessingContext context) {
-        // create context copy
-        ProcessingContext gramContext = new ProcessingContext(context.getCurrentAmount(),
-                new ConversionTarget(UnitType.METRIC,GRAM_UNIT_ID,null));
-        domainConverterProcessor.process(gramContext);
-        scalingProcessor.process(gramContext);
-        ConvertibleAmount preConvertedAmount = gramContext.getCurrentAmount();
-        if (preConvertedAmount.getUnit().getId().equals(GRAM_UNIT_ID)) {
-            // preconversion successful - set in context
-            context.setCurrentAmount(preConvertedAmount);
-        }
     }
 
     @Override
@@ -74,17 +68,11 @@ public class WeightToUnitTagHandler extends AbstractTagHandler {
                 .withToUnit(toConvert.getUnit().getId())
                 .withTargetDefaultSize(useDefaultUnit);
         FactorCriteria exactCriteria = criteriaBuilder.build();
-        List<ConversionFactor> foundUnits =  factorRepository.findFactors(exactCriteria).stream()
+        return   tagFactorRepository.findAllFactors(exactCriteria).stream()
+                .map( f -> (ConversionFactor) f)
                 .toList();
 
-        return invertFactors(foundUnits);
-    }
 
-    private List<ConversionFactor> invertFactors(List<ConversionFactor> foundUnits) {
-        return foundUnits.stream()
-                .map(SimpleConversionFactor::reverseFactor)
-                .map(rf -> (ConversionFactor) rf)
-                .toList();
     }
 
 }
