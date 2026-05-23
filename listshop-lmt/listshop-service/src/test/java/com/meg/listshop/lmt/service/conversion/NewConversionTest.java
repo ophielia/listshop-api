@@ -667,7 +667,7 @@ class NewConversionTest {
         // dish context metric
         ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.METRIC);
         converted = converterService.convert(amount, dishContext);
-
+        System.out.println(converted);
         assertNotNull(converted);
         assertEquals(180.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(GRAM_ID, converted.getUnit().getId());
@@ -675,6 +675,7 @@ class NewConversionTest {
         dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, cup, TOMATO_CONVERSION_ID, false, "chopped");
         converted = converterService.convert(bigAmount, dishContext);
+        System.out.println("Converted amount: " + converted);
         assertNotNull(converted);
         assertEquals(2.38, RoundingUtils.roundToHundredths(converted.getQuantity()));
         assertEquals(LB_ID, converted.getUnit().getId());
@@ -768,16 +769,9 @@ class NewConversionTest {
         assertEquals(OUNCE_ID, converted.getUnit().getId());
         assertEquals(4.007, RoundingUtils.roundToThousandths(converted.getQuantity()));
 
-    }
-        @Test
-        void testTEMPTagSpecificRunThroughUS() throws ConversionPathException, ConversionFactorException {
-            UnitEntity tablespoon = unitRepository.findById(TABLESPOON_ID).orElse(null);
-            UnitEntity ounce = unitRepository.findById(OUNCE_ID).orElse(null);
-            ConvertibleAmount amount = new SimpleAmount(8.0, tablespoon, BUTTER_CONVERSION_ID, false, null);
 
-            // 8 tablespoons to list, us
+        // 8 tablespoons to list, us
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
-       ConvertibleAmount converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         System.out.println(converted);
         assertEquals(OUNCE_ID, converted.getUnit().getId());

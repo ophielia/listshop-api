@@ -50,3 +50,6 @@ from factors f
                             (b.conversion_id is null and f.conversion_id is null))
          join units tou on tou.unit_id = b.from_unit
 where b.conversion_id is not null;
+
+-- slice should not be used for dish context (scaling, anyway)
+update units set is_dish_unit = false where name ilike '%slice%';

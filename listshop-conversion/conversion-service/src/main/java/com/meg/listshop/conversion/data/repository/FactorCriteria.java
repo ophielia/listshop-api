@@ -18,6 +18,7 @@ public class FactorCriteria {
     private String fromSize;
     private String fromModifier;
     private UnitType toDomain;
+    private UnitType fromDomain;
     private ConversionTargetType toContext;
     private Long toUnitId;
     private String toSize;
@@ -53,7 +54,8 @@ public class FactorCriteria {
                 .withToModifier(criteria.getToModifier())
                 .withToSize(criteria.getToSize())
                 .withToUnit(criteria.getToUnitId())
-                .withFromExcludeDomain(criteria.getFromExcludeDomain());
+                .withFromExcludeDomain(criteria.getFromExcludeDomain())
+                .withFromDomain(criteria.getFromDomain());
         return builder.build();
     }
 
@@ -71,6 +73,14 @@ public class FactorCriteria {
 
     public void setToDomain(UnitType toDomain) {
         this.toDomain = toDomain;
+    }
+
+    public UnitType getFromDomain() {
+        return fromDomain;
+    }
+
+    public void setFromDomain(UnitType fromDomain) {
+        this.fromDomain = fromDomain;
     }
 
     public ConversionTargetType getToContext() {

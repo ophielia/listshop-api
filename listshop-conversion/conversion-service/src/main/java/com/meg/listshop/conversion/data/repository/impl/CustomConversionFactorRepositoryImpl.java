@@ -124,6 +124,9 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         if (criteria.getToDomain() != null) {
             predicates.add(cb.equal(toUnit.<String>get("type"), criteria.getToDomain()));
         }
+        if (criteria.getFromDomain() != null) {
+            predicates.add(cb.equal(fromUnit.<String>get("type"), criteria.getFromDomain()));
+        }
         if (criteria.getToUnitType() != null) {
             predicates.add(cb.equal(toUnit.<String>get("type"), criteria.getToUnitType()));
         }

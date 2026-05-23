@@ -35,6 +35,11 @@ public class FactorCriteriaBuilder {
         return this;
     }
 
+    public FactorCriteriaBuilder withFromDomain(UnitType fromDomain) {
+        this.criteria.setFromDomain(fromDomain);
+        return this;
+    }
+
     public FactorCriteriaBuilder withToContext(ConversionTargetType toContext) {
         this.criteria.setToContext(toContext);
         return this;
