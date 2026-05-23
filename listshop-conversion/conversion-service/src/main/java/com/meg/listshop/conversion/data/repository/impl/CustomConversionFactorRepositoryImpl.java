@@ -114,8 +114,18 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
                 predicates.add(cb.isTrue(toUnit.<Boolean>get("isDishUnit")));
             }
         }
+        if (criteria.getFromContext() != null) {
+            if (criteria.getFromContext() == ConversionTargetType.List ) {
+                predicates.add(cb.isTrue(fromUnit.<Boolean>get("isListUnit")));
+            } else {
+                predicates.add(cb.isTrue(fromUnit.<Boolean>get("isDishUnit")));
+            }
+        }
         if (criteria.getToDomain() != null) {
             predicates.add(cb.equal(toUnit.<String>get("type"), criteria.getToDomain()));
+        }
+        if (criteria.getToUnitType() != null) {
+            predicates.add(cb.equal(toUnit.<String>get("type"), criteria.getToUnitType()));
         }
         //MM clean this up to have only default size (not from and to)
         if (criteria.isToDefaultSize() || criteria.isFromDefaultSize()) {
@@ -124,6 +134,30 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         if (criteria.getFromModifier() != null) {
             predicates.add(cb.equal(root.<Boolean>get("marker"), criteria.getFromModifier()));
         }
+        if (criteria.getMarkerOrNull() != null) {
+            predicates.add(cb.or(
+                    cb.isNull(root.get("marker")),
+                    cb.equal(root.get("marker"), criteria.getMarkerOrNull())
+            ));
+        }
+        if (criteria.getFromUnitType() != null) {
+            predicates.add(cb.equal(fromUnit.<Boolean>get("type"), criteria.getFromUnitType()));
+        }
+        if (criteria.getFromUnitTypes() != null && !criteria.getFromUnitTypes().isEmpty()) {
+            predicates.add(fromUnit.get("type").in(criteria.getFromUnitTypes()));
+        }
+
+        if (criteria.getFromExcludeDomain() != null) {
+            String pattern = "%" + criteria.getFromExcludeDomain() + "%";
+            predicates.add(
+                    cb.or(
+                            cb.isNull(fromUnit.get("excludedDomainList")),
+                            cb.not(cb.like(fromUnit.get("excludedDomainList"), pattern))
+                    )
+            );
+        }
+
+
         if (criteria.isExactModifierMatch() && criteria.getFromModifier() == null) {
             predicates.add(cb.isNull(root.<Boolean>get("marker")));
         }

@@ -47,6 +47,36 @@ public class SingleUnitScaler extends BaseScaleHandler {
         // to request unit => grams, and invert the results
         UnitEntity singleUnit = unitRepository.findById(SINGLE_UNIT_ID).orElse(null);
 
+        //MM use fancy new "with null" method of getting factors
+        FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
+        FactorCriteria criteria = builder.withFromUnit(toConvert.getUnit())
+                .withFromUnit(singleUnit)
+                .withFromSize(target.unitSize())
+                .withFromModifierOrNull(target.marker())
+                .withToUnit(GRAM_UNIT_ID)
+                .withFromDefaultSize(target.unitSize() == null)
+                .withConversionId(toConvert.getConversionId())
+                .build();
+        List<ConversionFactor> factors = conversionFactorRepository.findFactors(criteria).stream()
+                .map(SimpleConversionFactor::reverseFactor)
+                .toList();
+        if (factors.isEmpty()) {
+            criteria.setFromDefaultSize(false);
+            return conversionFactorRepository.findFactors(criteria).stream()
+                    .map(SimpleConversionFactor::reverseFactor)
+                    .toList();
+        }
+        return factors;
+    }
+
+    public List<ConversionFactor> findFactors(ProcessingContext context) {
+        ConvertibleAmount toConvert = context.getCurrentAmount();
+        ConversionTarget target = context.getTarget();
+        // the unit factors are stored as unit => grams
+        // and we need grams => units - to we'll reverse the criteria
+        // to request unit => grams, and invert the results
+        UnitEntity singleUnit = unitRepository.findById(SINGLE_UNIT_ID).orElse(null);
+
         FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
         FactorCriteria criteria = builder.withFromUnit(toConvert.getUnit())
                 .withFromUnit(singleUnit)

@@ -11,6 +11,7 @@ import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
+import com.meg.listshop.conversion.service.ConversionTarget;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
 import com.meg.listshop.conversion.service.factors.NewFactorProvider;
@@ -40,7 +41,7 @@ public abstract class BaseScaleHandler implements ScaleHandler, NewFactorProvide
 
     public ConvertibleAmount scale(ProcessingContext context) {
         ConvertibleAmount toConvert = context.getCurrentAmount();
-        List<ConversionFactor> factors = findFactors(toConvert, context.getTarget());
+        List<ConversionFactor> factors = findFactors(context);
         if (factors == null || factors.isEmpty()) {
             LOG.debug("No factors available for scaling to [{}] from [{}]", context.getTarget(), context.getCurrentAmount().getUnit());
             return context.getCurrentAmount();
@@ -68,6 +69,11 @@ public abstract class BaseScaleHandler implements ScaleHandler, NewFactorProvide
         // return best result
         return new SimpleAmount(bestResult.getQuantity(), bestResult.getUnit(), toConvert, bestResult.getUnitSize());
 
+    }
+
+    @Override
+    public List<ConversionFactor> findFactors(ConvertibleAmount toConvert, ConversionTarget target) {
+        return findFactors(new ProcessingContext(toConvert, target));
     }
 
     protected List<ConversionFactor> deduplicateFactors(List<ConversionFactor> allFactors, ConvertibleAmount toConvert) {

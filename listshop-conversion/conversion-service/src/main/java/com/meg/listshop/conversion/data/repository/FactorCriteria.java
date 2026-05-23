@@ -11,6 +11,8 @@ import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 
+import java.util.List;
+
 public class FactorCriteria {
     private UnitEntity fromUnit;
     private String fromSize;
@@ -28,6 +30,12 @@ public class FactorCriteria {
     private boolean fromDefaultSize;
     private boolean targetVolumeOnly;
     private boolean exactModifierMatch;
+    private UnitType fromUnitType;
+    private List<UnitType> fromUnitTypes;
+    private ConversionTargetType fromContext;
+    private String markerOrNull;
+    private UnitType toUnitType;
+    private UnitType fromExcludeDomain;
 
     public FactorCriteria() {
     }
@@ -44,7 +52,8 @@ public class FactorCriteria {
                 .withTargetDefaultUnit(criteria.isToDefaultUnit())
                 .withToModifier(criteria.getToModifier())
                 .withToSize(criteria.getToSize())
-                .withToUnit(criteria.getToUnitId());
+                .withToUnit(criteria.getToUnitId())
+                .withFromExcludeDomain(criteria.getFromExcludeDomain());
         return builder.build();
     }
 
@@ -171,4 +180,51 @@ public class FactorCriteria {
         return exactModifierMatch;
     }
 
+    public void setFromType(UnitType unitType) {
+        this.fromUnitType = unitType;
+    }
+
+    public UnitType getFromUnitType() {
+        return fromUnitType;
+    }
+
+    public void setFromUnitTypes(List<UnitType> fromUnitTypes) {
+        this.fromUnitTypes = fromUnitTypes;
+    }
+
+    public List<UnitType> getFromUnitTypes() {
+        return fromUnitTypes;
+    }
+
+    public void setFromContext(ConversionTargetType context) {
+        this.fromContext =  context;
+    }
+
+    public ConversionTargetType getFromContext() {
+        return fromContext;
+    }
+
+    public void setMarkerOrNull(String marker) {
+        this.markerOrNull = marker;
+    }
+
+    public String getMarkerOrNull() {
+        return markerOrNull;
+    }
+
+    public void setToUnitType(UnitType unitType) {
+        this.toUnitType = unitType;
+    }
+
+    public UnitType getToUnitType() {
+        return toUnitType;
+    }
+
+    public void setFromExcludeDomain(UnitType domainType) {
+        this.fromExcludeDomain = domainType;
+    }
+
+    public UnitType getFromExcludeDomain() {
+        return fromExcludeDomain;
+    }
 }

@@ -46,4 +46,18 @@ public class UnitScaler extends BaseScaleHandler {
         return conversionFactorRepository.findAllFactors(criteria);
     }
 
+    public List<ConversionFactor> findFactors(ProcessingContext context) {
+        ConvertibleAmount toConvert = context.getCurrentAmount();
+        ConversionTarget target = context.getTarget();
+        // return nothing if the from unit is already the target
+        if (target.unitId().equals(toConvert.getUnit().getId())) {
+            return List.of();
+        }
+        FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
+        FactorCriteria criteria = builder.withFromUnit(toConvert.getUnit())
+                .withToUnit(target.unitId())
+                .build();
+        return conversionFactorRepository.findAllFactors(criteria);
+    }
+
 }

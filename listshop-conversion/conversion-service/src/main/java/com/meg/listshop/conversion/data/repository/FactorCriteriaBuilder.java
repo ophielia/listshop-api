@@ -10,6 +10,8 @@ import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 
+import java.util.List;
+
 public class FactorCriteriaBuilder {
     private final FactorCriteria criteria;
 
@@ -20,6 +22,11 @@ public class FactorCriteriaBuilder {
 
     public FactorCriteriaBuilder withFromUnit(UnitEntity fromUnit) {
         this.criteria.setFromUnit(fromUnit);
+        return this;
+    }
+
+    public FactorCriteriaBuilder withFromType(UnitType unitType) {
+        this.criteria.setFromType(unitType);
         return this;
     }
 
@@ -101,6 +108,31 @@ public class FactorCriteriaBuilder {
 
     public FactorCriteriaBuilder withFromDefaultSize(boolean fromDefaultSize) {
         this.criteria.setFromDefaultSize(fromDefaultSize);
+        return this;
+    }
+
+    public FactorCriteriaBuilder withFromContext(ConversionTargetType context) {
+        this.criteria.setFromContext(context);
+        return this;
+    }
+
+    public FactorCriteriaBuilder withTypeIn(List<UnitType> unitTypes) {
+        this.criteria.setFromUnitTypes(unitTypes);
+        return this;
+    }
+
+    public FactorCriteriaBuilder withMarkerOrNull(String marker) {
+        this.criteria.setMarkerOrNull(marker);
+        return this;
+    }
+
+    public FactorCriteriaBuilder withToUnitType(UnitType unitType) {
+        this.criteria.setToUnitType(unitType);
+        return this;
+    }
+
+    public FactorCriteriaBuilder withFromExcludeDomain(UnitType domainType) {
+        this.criteria.setFromExcludeDomain(domainType);
         return this;
     }
 }

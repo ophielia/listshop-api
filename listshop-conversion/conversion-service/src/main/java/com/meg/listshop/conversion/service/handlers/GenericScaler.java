@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Order(4)
+@Order(5)
 public class GenericScaler extends BaseScaleHandler {
     private static final Log LOG = LogFactory.getLog(GenericScaler.class);
 
@@ -45,4 +45,17 @@ public class GenericScaler extends BaseScaleHandler {
                 .withToDomain(target.domainType())
                 .build();
         return deduplicateFactors(conversionFactorRepository.findAllFactors(criteria), toConvert);
-    }}
+    }
+
+    public List<ConversionFactor> findFactors(ProcessingContext context) {
+        ConvertibleAmount toConvert = context.getCurrentAmount();
+        ConversionTarget target = context.getTarget();
+        FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
+        FactorCriteria criteria = builder.withFromUnit(toConvert.getUnit())
+                .withToDomain(target.domainType())
+                .build();
+        return deduplicateFactors(conversionFactorRepository.findAllFactors(criteria), toConvert);
+    }
+
+
+}

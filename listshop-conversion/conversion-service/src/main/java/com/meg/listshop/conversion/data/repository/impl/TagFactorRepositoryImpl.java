@@ -152,6 +152,9 @@ public class TagFactorRepositoryImpl implements TagFactorRepository {
         if (criteria.getToDomain() != null) {
             predicates.add(cb.equal(toUnit.<String>get("type"), criteria.getToDomain()));
         }
+        if (criteria.getFromExcludeDomain() != null) {
+            predicates.add(cb.notEqual(fromUnit.get("type"), criteria.getFromExcludeDomain()));
+        }
         return predicates;
     }
 

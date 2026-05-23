@@ -9,12 +9,11 @@ package com.meg.listshop.conversion.service.processors;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
+import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
-import com.meg.listshop.conversion.data.repository.CustomConversionFactorRepository;
 import com.meg.listshop.conversion.data.repository.FactorCriteria;
 import com.meg.listshop.conversion.data.repository.FactorCriteriaBuilder;
-import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.DeltaSpec;
 import com.meg.listshop.conversion.service.ProcessingContext;
@@ -33,11 +32,12 @@ import static java.util.function.Predicate.not;
 
 @Component
 @Order(2)
-public class DomainConverterProcessor extends AbstractConverterProcessor  {
-        private static
-        final Logger LOG = LoggerFactory.getLogger(DomainConverterProcessor.class);
+public class DomainConverterProcessor extends AbstractConverterProcessor {
+    private static
+    final Logger LOG = LoggerFactory.getLogger(DomainConverterProcessor.class);
     private final List<DomainConversionHandler> handlerList;
     private final ConversionFactorRepository factorRepository;
+
     @Autowired
     public DomainConverterProcessor(List<DomainConversionHandler> handlerList,
                                     ConversionFactorRepository factorRepository) {
@@ -47,8 +47,8 @@ public class DomainConverterProcessor extends AbstractConverterProcessor  {
 
     @Override
     public void process(ProcessingContext context) {
-       ConvertibleAmount converted = convert(context);
-       context.setCurrentAmount(converted);
+        ConvertibleAmount converted = convert(context);
+        context.setCurrentAmount(converted);
       /*
         // find first processor for domain conversion
         DomainConversionHandler handler = findHandlerForContext(context);
@@ -79,7 +79,6 @@ public class DomainConverterProcessor extends AbstractConverterProcessor  {
 
                     return new SimpleAmount(newQuantity, newUnit, f.getUnitSize());
                 }).collect(Collectors.toList());
-
 
 
         // return first result
@@ -164,6 +163,13 @@ public class DomainConverterProcessor extends AbstractConverterProcessor  {
         // target domain not excluded for current
         if (!context.getCurrentAmount().getUnit().isAvailableForDomain(targetDomain)) {
             LOG.debug("Target domain not available for current unit, no domain conversion applied");
+            return false;
+        }
+        // not tag specific dish context already converted to grams
+        if (context.getStartingAmount().getConversionId() != null &&
+                context.getTarget().conversionContext() == ConversionTargetType.Dish &&
+                context.getCurrentAmount().getUnit().getId().equals(GRAM_UNIT_ID)) {
+            LOG.debug("Tag specific, already converted to grams");
             return false;
         }
         // domains both available, different, and convertible

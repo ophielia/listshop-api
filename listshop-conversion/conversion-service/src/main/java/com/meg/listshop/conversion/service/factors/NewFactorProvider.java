@@ -16,4 +16,6 @@ import java.util.List;
 public interface NewFactorProvider {
 
     List<ConversionFactor> findFactors(ConvertibleAmount toConvert, ConversionTarget target);
+
+    List<ConversionFactor> findFactors(ProcessingContext context);
 }

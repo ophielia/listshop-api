@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Order(3)
+@Order(4)
 public class ContextScaler extends BaseScaleHandler {
 
     private ConversionFactorRepository conversionFactorRepository;
@@ -33,6 +33,18 @@ public class ContextScaler extends BaseScaleHandler {
     }
 
     public List<ConversionFactor> findFactors(ConvertibleAmount toConvert, ConversionTarget target) {
+        FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
+        FactorCriteria criteria = builder.withFromUnit(toConvert.getUnit())
+                .withToContext(target.conversionContext())
+                .withToDomain(toConvert.getUnit().getType())
+                .build();
+        return deduplicateFactors(conversionFactorRepository.findAllFactors(criteria), toConvert);
+
+    }
+
+    public List<ConversionFactor> findFactors(ProcessingContext context) {
+        ConvertibleAmount toConvert = context.getCurrentAmount();
+        ConversionTarget target = context.getTarget();
         FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
         FactorCriteria criteria = builder.withFromUnit(toConvert.getUnit())
                 .withToContext(target.conversionContext())
