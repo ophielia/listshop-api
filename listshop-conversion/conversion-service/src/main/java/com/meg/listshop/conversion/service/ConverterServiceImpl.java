@@ -88,23 +88,6 @@ public class ConverterServiceImpl implements ConverterService {
         return context.getCurrentAmount();
     }
 
-
-    //MM BOOKMARK -   DONE scaling processor
-    //                DONE work on domain processor
-    //                DONE  one handler for all domain conversions
-    //                DONE  handler returns only default (if available) because scaling will be done in the
-    //                    scaling processor
-    //                DONE  needs a couple db things -
-    //                DONE      default unit per domain - new column + values
-    //                DONE      metric <=> uk dummy weight conversions - gram to gram
-    //                DONE      uk versions of metric weights grams, kg, mg
-    //       =======>>>         finish checking / migrating tests
-    //                          after domain processor, tag processor
-
-//                    (later) - add caffeine to project. first implement without a cache
-
-
-
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest conversionRequest) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for context [{}], amount [{}, unitSize [{}]", conversionRequest, amount, conversionRequest.getUnitSize());

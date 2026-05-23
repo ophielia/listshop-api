@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Order(5)
+@Order(6)
 public class GenericScaler extends BaseScaleHandler {
     private static final Log LOG = LogFactory.getLog(GenericScaler.class);
 

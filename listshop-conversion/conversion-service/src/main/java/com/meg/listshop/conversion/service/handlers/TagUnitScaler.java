@@ -19,39 +19,59 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Order(5)
-public class ContextScaler extends BaseScaleHandler {
+@Order(3)
+public class TagUnitScaler extends BaseScaleHandler {
 
     private ConversionFactorRepository conversionFactorRepository;
 
-    public ContextScaler(ConversionFactorRepository conversionFactorRepository) {
+    public TagUnitScaler(ConversionFactorRepository conversionFactorRepository) {
         this.conversionFactorRepository = conversionFactorRepository;
     }
 
     public boolean shouldScale(ProcessingContext context) {
-        return context.getTarget().conversionContext() != null;
+        // applies if the conversion is to one specific unit, tag specific
+        return context.getTarget().unitId() != null && context.getCurrentAmount().getConversionId() != null;
     }
 
+
     public List<ConversionFactor> findFactors(ConvertibleAmount toConvert, ConversionTarget target) {
+        // return nothing if the from unit is already the target
+        if (target.unitId().equals(toConvert.getUnit().getId())) {
+            return List.of();
+        }
+        // look for
+        //  * conversion id
+        //  * to grams
+        //  * from unit
+        // invert results
+
         FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
         FactorCriteria criteria = builder.withFromUnit(toConvert.getUnit())
-                .withToContext(target.conversionContext())
-                .withToDomain(toConvert.getUnit().getType())
+                .withToUnit(GRAM_UNIT_ID)
+                .withConversionId(toConvert.getConversionId())
                 .build();
-        return deduplicateFactors(conversionFactorRepository.findAllFactors(criteria), toConvert);
-
+        return conversionFactorRepository.findAllFactors(criteria);
     }
 
     public List<ConversionFactor> findFactors(ProcessingContext context) {
         ConvertibleAmount toConvert = context.getCurrentAmount();
         ConversionTarget target = context.getTarget();
+        // return nothing if the from unit is already the target
+        if (target.unitId().equals(toConvert.getUnit().getId())) {
+            return List.of();
+        }
+        // look for
+        //  * conversion id
+        //  * to grams
+        //  * from unit
+        // invert results
+
         FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
         FactorCriteria criteria = builder.withFromUnit(toConvert.getUnit())
-                .withToContext(target.conversionContext())
-                .withToDomain(toConvert.getUnit().getType())
+                .withToUnit(target.unitId())
+                .withConversionId(context.getStartingAmount().getConversionId())
                 .build();
-        return deduplicateFactors(conversionFactorRepository.findAllFactors(criteria), toConvert);
-
+        return conversionFactorRepository.findAllFactors(criteria);
     }
 
 }

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@Order(3)
+@Order(4)
 public class TagDishContextScaler extends BaseScaleHandler {
 
     private ConversionFactorRepository conversionFactorRepository;

@@ -144,7 +144,9 @@ public abstract class AbstractTagHandler implements TagHandler {
         // finally, if size factors are found, but no matches for marker, size factors are returned.  In other words, the marker is ignored if
         // the size matches.
 
+        //MM since then, thoughts on a better way to do this - but, IIABDFI
 
+        //MM actually - not sure this is used
         List<ConversionUnitFactorEntity> fromFactors = new ArrayList<>();
         // match by size
         boolean sizeRequested = FactorRequestUtils.fromSizeRequested(context);

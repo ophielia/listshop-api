@@ -69,7 +69,6 @@ public abstract class BaseDomainConversionHandler implements DomainConversionHan
         return new SimpleAmount(bestResult.getQuantity(), bestResult.getUnit(), toConvert, bestResult.getUnitSize());
     }
 
-    //MM possibly a utility class?
     private ConvertibleAmount sortForBestResult(List<ConvertibleAmount> convertedList) {
         if (convertedList.size() == 1) {
             return convertedList.get(0);

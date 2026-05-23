@@ -407,9 +407,9 @@ class NewConversionTest {
         assertEquals(GRAM_ID, converted.getUnit().getId());
 
         // 16 tablespoons of butter to dish context - metric
-        bigAmount = new SimpleAmount(16.0, tablespoon, BUTTER_CONVERSION_ID, false, null);
-        converted = converterService.convert(bigAmount, tablespoon);
-        System.out.println("Converted amount: " + converted.getQuantity() + " " + converted.getUnit().getId());
+         bigAmount = new SimpleAmount(16.0, tablespoon, BUTTER_CONVERSION_ID, false, null);
+         converted = converterService.convert(bigAmount, tablespoon);
+        System.out.println("Converted amount: " + converted);
         assertNotNull(converted);
         assertEquals(16.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(TABLESPOON_ID, converted.getUnit().getId());
@@ -509,15 +509,20 @@ class NewConversionTest {
         dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, slice, CHEDDAR_CONVERSION_ID, false, null);
         converted = converterService.convert(bigAmount, dishContext);
+        System.out.println("Converted amount: " + converted);
         assertNotNull(converted);
         assertEquals(4.44, RoundingUtils.roundToHundredths(converted.getQuantity()));
         assertEquals(OUNCE_ID, converted.getUnit().getId());
+
+        //MM BOOKMARK - slices still open.  need to use one_way_conversion instead of dish unit for slices
+        // other issues - bad conversion for cheddar slices, chicken drumsticks
 
         // cheddar slice to us list
         dishContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         bigAmount = new SimpleAmount(16.0, slice, CHEDDAR_CONVERSION_ID, false, null);
         converted = converterService.convert(bigAmount, dishContext);
         assertNotNull(converted);
+        System.out.println("Converted amount: " + converted);
         assertEquals(0.741, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(LB_ID, converted.getUnit().getId());
     }
@@ -601,15 +606,15 @@ class NewConversionTest {
 
         // tomato slice to grams - marker sliced
         ConvertibleAmount amount = new SimpleAmount(1, slice, TOMATO_CONVERSION_ID, false, null);
-/*        ConvertibleAmount converted = converterService.convert(amount, grams);
+        ConvertibleAmount converted = converterService.convert(amount, grams);
         System.out.println(converted);
         assertNotNull(converted);
         assertEquals(27.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(GRAM_ID, converted.getUnit().getId());
-*/
+
         // list context metric
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
-        ConvertibleAmount converted = converterService.convert(amount, listContext);
+         converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         System.out.println(converted);
         assertEquals(0.135, RoundingUtils.roundToThousandths(converted.getQuantity()));
@@ -809,8 +814,6 @@ class NewConversionTest {
 
     @Test
     void testHalfAKiloTomatoesToUnit() throws ConversionPathException, ConversionFactorException {
-        //MM start here - tests failing because size (default size) not taken into account
-
         UnitEntity unit = unitRepository.findById(UNIT_ID).orElse(null);
         UnitEntity kilo = unitRepository.findById(KG_ID).orElse(null);
 

@@ -49,7 +49,7 @@ public class HybridTagHandler extends AbstractTagHandler {
         List<ConversionFactor> factors = factorRepository.findFactors(criteriaBuilder.build()).stream()
                 .map(factor -> (ConversionFactor) factor)
                 .toList();
-//MM around here  - more work for markers and such
+//MM around here  - more work for markers and such - I've got ideas on this
         if (!factors.isEmpty()) return factors;
 
         // no factors found - look for any hybrid factors available
