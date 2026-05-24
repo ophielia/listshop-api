@@ -42,7 +42,8 @@ public class TagDishContextScaler extends BaseScaleHandler {
 
     public boolean shouldScale(ProcessingContext context) {
         return context.getCurrentAmount().getConversionId() != null &&
-                context.getTarget().conversionContext() == ConversionTargetType.Dish &&
+                context.getTarget().conversionContext() != null &&
+                // context.getTarget().conversionContext() == ConversionTargetType.Dish &&
                 context.getCurrentAmount().getUnit().getId().equals(GRAM_UNIT_ID);
     }
 

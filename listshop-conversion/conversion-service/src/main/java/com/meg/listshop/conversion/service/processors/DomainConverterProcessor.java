@@ -167,11 +167,13 @@ public class DomainConverterProcessor extends AbstractConverterProcessor {
         }
         // not tag specific dish context already converted to grams
         if (context.getStartingAmount().getConversionId() != null &&
-                context.getTarget().conversionContext() == ConversionTargetType.Dish &&
+                context.getTarget().conversionContext() != null &&
                 context.getCurrentAmount().getUnit().getId().equals(GRAM_UNIT_ID)) {
             LOG.debug("Tag specific, already converted to grams");
             return false;
         }
+
+
         // domains both available, different, and convertible
         LOG.debug("Domain conversion applicable: current={}, target={}", currentDomain, targetDomain);
         return true;

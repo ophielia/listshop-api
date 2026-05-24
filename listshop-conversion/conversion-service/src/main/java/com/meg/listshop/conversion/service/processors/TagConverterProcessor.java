@@ -59,10 +59,21 @@ public class TagConverterProcessor extends AbstractConverterProcessor  {
                 return false;
             }
 
-            if (currentIsSingleUnit(context)) {
+
+            if (context.getTargetUnit() != null &&
+                    context.getStartingAmount().getUnit().getId().equals(context.getTargetUnit().getId())) {
+                return false;
+            }
+
+
+           if (currentIsSingleUnit(context)) {
                 if (targetUnitExists(context) && !targetSingleUnit(context)) {
                     // should convert if target is specific unit - not a single unit
                     LOG.debug("Target unit exists and is not single unit, applying TagConverterProcessor");
+                    return true;
+                } else if (currentHasMarker(context)) {
+                    // should convert if current has a marker - e.g. slice
+                    LOG.debug("Current unit has a marker, applying TagConverterProcessor");
                     return true;
                 } else {
                     // no conversion to be done - single unit can stay single unit

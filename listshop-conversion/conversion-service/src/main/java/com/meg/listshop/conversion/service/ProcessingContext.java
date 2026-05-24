@@ -6,6 +6,7 @@
 
 package com.meg.listshop.conversion.service;
 
+import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 
 public class ProcessingContext {
@@ -13,10 +14,16 @@ public class ProcessingContext {
     ConvertibleAmount startingAmount;
     ConvertibleAmount currentAmount;
     ConversionTarget target;
+    UnitEntity targetUnit;
 
     public ProcessingContext(ConvertibleAmount startingAmount, ConversionTarget target) {
+        this(startingAmount,target,null);
+    }
+
+    public ProcessingContext(ConvertibleAmount startingAmount, ConversionTarget target, UnitEntity targetUnit) {
         this.startingAmount = startingAmount;
         this.target = target;
+        this.targetUnit = targetUnit;
         this.currentAmount = new SimpleAmount(
                 startingAmount.getQuantity(),
                 startingAmount.getUnit(),
@@ -48,5 +55,9 @@ public class ProcessingContext {
 
     public void setTarget(ConversionTarget target) {
         this.target = target;
+    }
+
+    public UnitEntity getTargetUnit() {
+        return targetUnit;
     }
 }

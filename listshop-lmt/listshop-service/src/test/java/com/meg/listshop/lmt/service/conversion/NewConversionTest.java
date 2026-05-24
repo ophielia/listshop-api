@@ -406,8 +406,8 @@ class NewConversionTest {
         assertEquals(227.2, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(GRAM_ID, converted.getUnit().getId());
 
+
         // 16 tablespoons of butter to dish context - metric
-         bigAmount = new SimpleAmount(16.0, tablespoon, BUTTER_CONVERSION_ID, false, null);
          converted = converterService.convert(bigAmount, tablespoon);
         System.out.println("Converted amount: " + converted);
         assertNotNull(converted);
@@ -431,7 +431,8 @@ class NewConversionTest {
         // 16 tablespoons of butter to context dish - us
         ConversionRequest dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
         bigAmount = new SimpleAmount(8.0, tablespoon, BUTTER_CONVERSION_ID, false, null);
-        converted = converterService.convert(bigAmount, dishContext);
+         converted = converterService.convert(bigAmount, dishContext);
+        System.out.println("Converted amount: " + converted);
         assertNotNull(converted);
         assertEquals(1.005, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(BUTTER_STICK_ID, converted.getUnit().getId());
@@ -484,7 +485,7 @@ class NewConversionTest {
 
 
     @Test
-    void testTagSpecificIntegral() throws ConversionPathException, ConversionFactorException {
+    void testTagSpecificSlices() throws ConversionPathException, ConversionFactorException {
         UnitEntity slice = unitRepository.findById(SLICE_ID).orElse(null);
         UnitEntity grams = unitRepository.findById(GRAM_ID).orElse(null);
 
@@ -506,6 +507,9 @@ class NewConversionTest {
 
 
         // cheddar slice to us dish
+        /* LS-2411 - will be handled by this ticket - cheddar slices should be treated like
+        tomato slices - single unit plus marker "sliced"
+
         dishContext = new ConversionRequest(ConversionTargetType.Dish, DomainType.US);
         ConvertibleAmount bigAmount = new SimpleAmount(6.0, slice, CHEDDAR_CONVERSION_ID, false, null);
         converted = converterService.convert(bigAmount, dishContext);
@@ -513,9 +517,6 @@ class NewConversionTest {
         assertNotNull(converted);
         assertEquals(4.44, RoundingUtils.roundToHundredths(converted.getQuantity()));
         assertEquals(OUNCE_ID, converted.getUnit().getId());
-
-        //MM BOOKMARK - slices still open.  need to use one_way_conversion instead of dish unit for slices
-        // other issues - bad conversion for cheddar slices, chicken drumsticks
 
         // cheddar slice to us list
         dishContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
@@ -525,6 +526,8 @@ class NewConversionTest {
         System.out.println("Converted amount: " + converted);
         assertEquals(0.741, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(LB_ID, converted.getUnit().getId());
+
+         */
     }
 
     @Test
@@ -580,9 +583,17 @@ class NewConversionTest {
         assertEquals(16.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(UNIT_ID, converted.getUnit().getId());
 
+    }
+    @Test
+    void testTEMPTagSpecificUnitToGrams() throws ConversionPathException, ConversionFactorException {
+        UnitEntity singleUnit = unitRepository.findById(UNIT_ID).orElse(null);
+        UnitEntity grams = unitRepository.findById(GRAM_ID).orElse(null);
+        UnitEntity pounds = unitRepository.findById(LB_ID).orElse(null);
+        UnitEntity kilos = unitRepository.findById(KG_ID).orElse(null);
+
         // chicken drumstick us pounds
-        bigAmount = new SimpleAmount(16.0, singleUnit, CHICKEN_DRUMSTICK_ID, false, null);
-        converted = converterService.convert(bigAmount, pounds);
+        ConvertibleAmount bigAmount = new SimpleAmount(16.0, singleUnit, CHICKEN_DRUMSTICK_ID, false, null);
+        ConvertibleAmount converted = converterService.convert(bigAmount, pounds);
         System.out.println(converted);
         assertNotNull(converted);
         assertEquals(3.10, RoundingUtils.roundToHundredths(converted.getQuantity()));
@@ -611,10 +622,22 @@ class NewConversionTest {
         assertNotNull(converted);
         assertEquals(27.0, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(GRAM_ID, converted.getUnit().getId());
+    }
+
+    @Test
+    void testTagSpecificSlicePuzzle() throws ConversionPathException, ConversionFactorException {
+        UnitEntity slice = unitRepository.findById(SLICE_ID).orElse(null);
+        UnitEntity unit = unitRepository.findById(UNIT_ID).orElse(null);
+        UnitEntity grams = unitRepository.findById(GRAM_ID).orElse(null);
+
+        // list context, metric
+
+        // tomato slice to grams - marker sliced
+        ConvertibleAmount amount = new SimpleAmount(1, unit, TOMATO_CONVERSION_ID, false, "sliced");
 
         // list context metric
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
-         converted = converterService.convert(amount, listContext);
+        ConvertibleAmount converted = converterService.convert(amount, listContext);
         assertNotNull(converted);
         System.out.println(converted);
         assertEquals(0.135, RoundingUtils.roundToThousandths(converted.getQuantity()));

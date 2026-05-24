@@ -120,13 +120,9 @@ public class ConverterServiceImpl implements ConverterService {
         // create context
         UnitType unitDomainType = targetUnit.getType();
         ConversionTarget target = new ConversionTarget(unitDomainType, targetUnit.getId(), null, unitSize, null);
-        ProcessingContext context = new ProcessingContext(amount, target);
-        // feed to converter chain
-        for (ConverterProcessor processor : processors) {
-            if (processor.appliesTo(context)) {
-                processor.process(context);
-            }
-        }
+        ProcessingContext context = new ProcessingContext(amount, target, targetUnit);
+        doConversion(context);
+
         return context.getCurrentAmount();
     }
 

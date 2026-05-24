@@ -24,6 +24,10 @@ public abstract class AbstractConverterProcessor implements ConverterProcessor {
         return isSingleUnit( context.getCurrentAmount().getUnit().getId());
     }
 
+    protected boolean currentHasMarker(ProcessingContext context) {
+        return context.getCurrentAmount().getMarker() != null && context.getCurrentAmount().getMarker().trim().length() > 0;
+    }
+
     protected boolean currentHasConversionId(ProcessingContext context) {
         return context.getCurrentAmount().getConversionId() != null;
     }
