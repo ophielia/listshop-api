@@ -8,6 +8,7 @@ package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
+import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.conversion.data.repository.FactorCriteriaBuilder;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
@@ -55,13 +56,21 @@ public class StandardTagHandler extends AbstractTagHandler {
                 .withConversionId(conversionId)
                 .withToUnit(GRAM_UNIT_ID);
 
+
         if (targetSize != null) {
                 criteriaBuilder = criteriaBuilder.withFromSize(targetSize);
-        } else if (toConvert.getUnit().getId().equals(SINGLE_UNIT_ID)) {
-            criteriaBuilder = criteriaBuilder.withFromDefaultSize(true);
         }
-        return factorRepository.findFactors(criteriaBuilder.build()).stream()
+        List<ConversionFactor> factors =  factorRepository.findFactors(criteriaBuilder.build()).stream()
                 .map(factor -> (ConversionFactor) factor)
+                .toList();
+
+        if (factors.size() <= 1) {
+            return factors;
+        }
+        return factors.stream()
+                .map(f -> (ConversionFactorEntity)f)
+                .filter( f -> f.isUnitDefault())
+                .map(f -> (ConversionFactor)f)
                 .toList();
     }
 
