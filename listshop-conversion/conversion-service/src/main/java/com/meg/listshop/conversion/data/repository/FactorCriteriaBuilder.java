@@ -131,6 +131,11 @@ public class FactorCriteriaBuilder {
         return this;
     }
 
+    public FactorCriteriaBuilder withSizeOrDefault(String size) {
+        this.criteria.setSizeOrDefault(size);
+        return this;
+    }
+
     public FactorCriteriaBuilder withToUnitType(UnitType unitType) {
         this.criteria.setToUnitType(unitType);
         return this;

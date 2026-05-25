@@ -38,6 +38,28 @@ public class StandardTagHandler extends AbstractTagHandler {
                 .withFromUnit(toConvert.getUnit())
                 .withConversionId(conversionId)
                 .withToUnit(GRAM_UNIT_ID);
+
+        return factorRepository.findFactors(criteriaBuilder.build()).stream()
+                .map(factor -> (ConversionFactor) factor)
+                .toList();
+    }
+
+    @Override
+    public  List<ConversionFactor> findFactorsForGrams(ProcessingContext context) {
+        ConvertibleAmount toConvert = context.getCurrentAmount();
+        // create criteria - base criteria
+        Long conversionId = determineConversionId(toConvert);
+        String targetSize = toConvert.getUnitSize();
+        FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()
+                .withFromUnit(toConvert.getUnit())
+                .withConversionId(conversionId)
+                .withToUnit(GRAM_UNIT_ID);
+
+        if (targetSize != null) {
+                criteriaBuilder = criteriaBuilder.withFromSize(targetSize);
+        } else if (toConvert.getUnit().getId().equals(SINGLE_UNIT_ID)) {
+            criteriaBuilder = criteriaBuilder.withFromDefaultSize(true);
+        }
         return factorRepository.findFactors(criteriaBuilder.build()).stream()
                 .map(factor -> (ConversionFactor) factor)
                 .toList();

@@ -6,6 +6,7 @@
 
 package com.meg.listshop.conversion.service.processors;
 
+import com.meg.listshop.common.UnitType;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
 import com.meg.listshop.conversion.service.handlers.ScaleHandler;
@@ -50,8 +51,16 @@ public class ScalingProcessor extends AbstractConverterProcessor  {
         // scaling processing runs if the unit is not a single unit
         boolean unitsMatch = unitsMatch(context);
         return !currentIsSingleUnit(context) &&
+                !contextExistsWithDomainUnit(context) &&
                 !unitsMatch ||
                 (unitsMatch && !sizesMatch(context));
+    }
+
+    private boolean contextExistsWithDomainUnit(ProcessingContext context) {
+        if (context.getTarget() != null && context.getTarget().domainType() == null) {
+            return false;
+        }
+        return context.getTarget().domainType().equals(UnitType.UNIT);
     }
 
     private boolean unitsMatch(ProcessingContext context) {

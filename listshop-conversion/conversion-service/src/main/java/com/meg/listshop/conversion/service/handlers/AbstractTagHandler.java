@@ -51,7 +51,7 @@ public abstract class AbstractTagHandler implements TagHandler {
 
     protected ConvertibleAmount convertToGrams(@NonNull ProcessingContext context) {
         ConvertibleAmount toConvert = context.getCurrentAmount();
-        List<ConversionFactor> factors = findFactorsForGrams(toConvert);
+        List<ConversionFactor> factors = findFactorsForGrams(context);
         if (factors == null || factors.isEmpty()) {
             LOG.debug("No conversions available for domainConversion from unit [{}] to unitType: [{}].", toConvert.getUnit(), context.getTarget().domainType());
             return toConvert;
@@ -78,6 +78,8 @@ public abstract class AbstractTagHandler implements TagHandler {
     }
 
     public abstract List<ConversionFactor> findFactorsForGrams(ConvertibleAmount toConvert);
+
+    public abstract List<ConversionFactor> findFactorsForGrams(ProcessingContext context);
 
     protected List<ConversionFactor> originalFindFactors(ConvertibleAmount toConvert, ProcessingContext context) {
         // create criteria - base criteria

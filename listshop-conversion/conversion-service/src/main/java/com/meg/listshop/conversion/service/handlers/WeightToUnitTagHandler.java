@@ -58,6 +58,21 @@ return false;
         return invertFactors(foundUnits);
     }
 
+    @Override
+    public List<ConversionFactor> findFactorsForGrams(ProcessingContext context) {
+        ConvertibleAmount toConvert = context.getCurrentAmount();
+        // create criteria - for grams
+        FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()
+                .withFromUnit(toConvert.getUnit())
+                //  .withConversionId(toConvert.getConversionId())
+                .withToUnit(GRAM_UNIT_ID);
+        FactorCriteria exactCriteria = criteriaBuilder.build();
+        List<ConversionFactor> foundUnits = factorRepository.findFactors(exactCriteria).stream()
+                .toList();
+
+        return invertFactors(foundUnits);
+    }
+
     private List<ConversionFactor> invertFactors(List<ConversionFactor> foundUnits) {
         return foundUnits.stream()
                 .map(SimpleConversionFactor::reverseFactor)

@@ -65,6 +65,35 @@ public class HybridTagHandler extends AbstractTagHandler {
 
     }
 
+    @Override
+    public  List<ConversionFactor> findFactorsForGrams(ProcessingContext context) {
+        ConvertibleAmount toConvert = context.getCurrentAmount();
+        // create criteria - base criteria
+        FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()
+                .withFromUnit(toConvert.getUnit())
+                .withConversionId(toConvert.getConversionId())
+                .withFromModifier(toConvert.getMarker())
+                .withFromSize(toConvert.getUnitSize())
+                .withToUnit(GRAM_UNIT_ID);
+        List<ConversionFactor> factors = factorRepository.findFactors(criteriaBuilder.build()).stream()
+                .map(factor -> (ConversionFactor) factor)
+                .toList();
+//MM around here  - more work for markers and such - I've got ideas on this
+        if (!factors.isEmpty()) return factors;
+
+        // no factors found - look for any hybrid factors available
+        criteriaBuilder = new FactorCriteriaBuilder()
+                .withFromType(toConvert.getUnit().getType())
+                .withConversionId(toConvert.getConversionId())
+                .withFromModifier(toConvert.getMarker())
+                .withFromSize(toConvert.getUnitSize())
+                .withToUnit(GRAM_UNIT_ID);
+        List<ConversionFactor> wideFactors = factorRepository.findFactors(criteriaBuilder.build()).stream()
+                .toList();
+        return reverseEngineerFactor(wideFactors, toConvert);
+
+    }
+
     private List<ConversionFactor> reverseEngineerFactor(List<ConversionFactor> otherUnitFactors, ConvertibleAmount toConvert) {
         if (otherUnitFactors.isEmpty()) return otherUnitFactors;
         // get first factor from wide

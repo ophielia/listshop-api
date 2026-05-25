@@ -159,18 +159,6 @@ public class ConverterServiceImpl implements ConverterService {
         amountToAdd = equalizeSize(amountToAdd, addTo, baseContext);
         addTo = equalizeSize(addTo, amountToAdd, baseContext);
 
-        //MM done through here - next up - do the actual scaling
-        // do the adding
-        // create context
-        ConversionSpec spec = ConversionSpec.specForAddRequest(request);
-        ConversionContext context = new ConversionContext(amountToAdd, spec);
-        prepareContextForTagSpecificScaling(context);
-        ScalingHandler scalingHandler = getScalerForContext(context);
-
-        // scale to equalize sizes, if sizes are different
-        amountToAdd = equalizeSize(amountToAdd, context, scalingHandler);
-        addTo = equalizeSize(addTo, context, scalingHandler);
-
         double quantity = addTo.getQuantity();
         quantity += amountToAdd.getQuantity();
         boolean userSize = addTo.getUserSize() || amountToAdd.getUserSize();
@@ -183,13 +171,20 @@ public class ConverterServiceImpl implements ConverterService {
                 summedUnitSize,
                 userSize);
 
-        // do scaling
-        if (scalingHandler != null && !context.isUnitToUnit()) {
-            return scalingHandler.scale(summedAmount, context);
+        if (baseContext.getTarget().domainType().equals(UnitType.UNIT)) {
+            // scaling for units already done in equalizing sizes
+            return summedAmount;
         }
+
+        // do scaling
+        ConversionTarget scalingTarget = new ConversionTarget(request.getUnitType(),null,
+                request.getContextType(),targetUnitSize, null);
+        ProcessingContext scalingContext = new ProcessingContext(summedAmount, scalingTarget, null);
+        summedAmount = doConversion(scalingContext);
 
         // return result
         return summedAmount;
+
     }
 
 

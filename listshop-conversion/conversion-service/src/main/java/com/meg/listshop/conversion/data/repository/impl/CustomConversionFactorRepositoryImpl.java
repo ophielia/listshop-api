@@ -134,6 +134,12 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         if (criteria.isToDefaultSize() || criteria.isFromDefaultSize()) {
             predicates.add(cb.isTrue(root.<Boolean>get("unitDefault")));
         }
+        if (criteria.getSizeOrDefault() != null) {
+            predicates.add(cb.or(
+                    cb.isTrue(root.<Boolean>get("unitDefault")),
+                     cb.equal(root.<Boolean>get("unitSize"),criteria.getSizeOrDefault())
+            ));
+        }
         if (criteria.getFromModifier() != null) {
             predicates.add(cb.equal(root.<Boolean>get("marker"), criteria.getFromModifier()));
         }

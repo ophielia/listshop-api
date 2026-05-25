@@ -42,4 +42,16 @@ public class UnitToWeightTagHandler extends AbstractTagHandler {
         return factorRepository.findAllFactors(criteriaBuilder.build()).stream()
                 .toList();
     }
+
+    @Override
+    public List<ConversionFactor> findFactorsForGrams(ProcessingContext context) {
+        ConvertibleAmount toConvert = context.getCurrentAmount();
+        // create criteria - base criteria
+        FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()
+                .withFromUnit(toConvert.getUnit())
+                .withConversionId(toConvert.getConversionId())
+                .withToUnit(GRAM_UNIT_ID);
+        return factorRepository.findAllFactors(criteriaBuilder.build()).stream()
+                .toList();
+    }
 }
