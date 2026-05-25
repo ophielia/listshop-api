@@ -61,7 +61,9 @@ public class TagConverterProcessor extends AbstractConverterProcessor  {
 
 
             if (context.getTargetUnit() != null &&
-                    context.getStartingAmount().getUnit().getId().equals(context.getTargetUnit().getId())) {
+                    context.getStartingAmount().getUnit().getId().equals(context.getTargetUnit().getId())  &&
+                    sizesMatch(context))
+           {
                 return false;
             }
 
@@ -75,6 +77,10 @@ public class TagConverterProcessor extends AbstractConverterProcessor  {
                     // should convert if current has a marker - e.g. slice
                     LOG.debug("Current unit has a marker, applying TagConverterProcessor");
                     return true;
+                } else if (currentOrTargetHasSize(context)) {
+                    // should convert if current has a marker - e.g. slice
+                    LOG.debug("Current unit has a size, applying TagConverterProcessor");
+                    return true;
                 } else {
                     // no conversion to be done - single unit can stay single unit
                     LOG.debug("Current unit is single unit and target unit is single unit, skipping TagConverterProcessor");
@@ -83,6 +89,19 @@ public class TagConverterProcessor extends AbstractConverterProcessor  {
             }
             LOG.debug("TagConverterProcessor applies to context with current unit and target unit");
             return true;
+    }
+
+    private boolean sizesMatch(ProcessingContext context) {
+            if (context.getTarget().unitSize() == null &&
+                    context.getCurrentAmount().getUnitSize() == null) {
+                return true;
+            }
+            if (context.getTarget().unitSize() != null ||
+                    context.getCurrentAmount().getUnitSize() != null) {
+                return false;
+            }
+
+            return context.getTarget().unitSize().equals(context.getCurrentAmount().getUnitSize());
     }
 
     private TagHandler determineHandler(ProcessingContext context) {

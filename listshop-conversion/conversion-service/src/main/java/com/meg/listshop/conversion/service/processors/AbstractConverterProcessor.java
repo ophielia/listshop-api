@@ -27,6 +27,10 @@ public abstract class AbstractConverterProcessor implements ConverterProcessor {
     protected boolean currentHasMarker(ProcessingContext context) {
         return context.getCurrentAmount().getMarker() != null && context.getCurrentAmount().getMarker().trim().length() > 0;
     }
+    protected boolean currentOrTargetHasSize(ProcessingContext context) {
+        return context.getCurrentAmount().getUnitSize() != null ||
+                context.getTarget().unitSize() != null;
+    }
 
     protected boolean currentHasConversionId(ProcessingContext context) {
         return context.getCurrentAmount().getConversionId() != null;

@@ -24,13 +24,18 @@ public class ProcessingContext {
         this.startingAmount = startingAmount;
         this.target = target;
         this.targetUnit = targetUnit;
-        this.currentAmount = new SimpleAmount(
-                startingAmount.getQuantity(),
-                startingAmount.getUnit(),
-                startingAmount.getConversionId(),
-                startingAmount.getIsLiquid(),
-                startingAmount.getMarker()
-        );
+        if (startingAmount != null) {
+            this.currentAmount = new SimpleAmount(
+                    startingAmount.getQuantity(),
+                    startingAmount.getUnit(),
+                    startingAmount.getConversionId(),
+                    startingAmount.getIsLiquid(),
+                    startingAmount.getMarker(),
+                    startingAmount.getUnitSize(),
+                    startingAmount.getUserSize()
+            );
+
+        }
     }
 
     public ConvertibleAmount getStartingAmount() {

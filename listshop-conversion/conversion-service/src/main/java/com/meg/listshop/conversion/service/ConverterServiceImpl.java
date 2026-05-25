@@ -147,12 +147,19 @@ public class ConverterServiceImpl implements ConverterService {
             throw new ConversionAddException(message);
         }
 
+
         // check if the sizes are the same
         // we use the addTo size if it's user entered
         // otherwise we use the addFrom size, if it's user entered
         String targetUnitSize = determineUnitSizePrecedenceForAdd(amountToAdd, addTo);
-        request.setUnitSize(targetUnitSize);
+        ConversionTarget target = new ConversionTarget(request.getUnitType(),addTo.getUnit().getId(),
+                request.getContextType(),targetUnitSize, null);
+        ProcessingContext baseContext = new ProcessingContext(null, target, null);
 
+        amountToAdd = equalizeSize(amountToAdd, addTo, baseContext);
+        addTo = equalizeSize(addTo, amountToAdd, baseContext);
+
+        //MM done through here - next up - do the actual scaling
         // do the adding
         // create context
         ConversionSpec spec = ConversionSpec.specForAddRequest(request);
@@ -167,7 +174,7 @@ public class ConverterServiceImpl implements ConverterService {
         double quantity = addTo.getQuantity();
         quantity += amountToAdd.getQuantity();
         boolean userSize = addTo.getUserSize() || amountToAdd.getUserSize();
-        String summedUnitSize = targetUnitSize != null ? targetUnitSize : addTo.getUnitSize();
+        String summedUnitSize = addTo.getUnitSize();
         ConvertibleAmount summedAmount = new SimpleAmount(quantity,
                 addTo.getUnit(),
                 addTo.getConversionId(),
@@ -183,6 +190,26 @@ public class ConverterServiceImpl implements ConverterService {
 
         // return result
         return summedAmount;
+    }
+
+
+    private ConvertibleAmount equalizeSize(ConvertibleAmount amountToAdd, ConvertibleAmount addTo, ProcessingContext baseContext) {
+        String targetedSize = baseContext.getTarget().unitSize();
+        if (!sizesMatch(amountToAdd.getUnitSize(), targetedSize)) {
+            ProcessingContext equalizeContext = new ProcessingContext(amountToAdd, baseContext.getTarget(),addTo.getUnit());
+            return doConversion(equalizeContext);
+        }
+        return amountToAdd;
+    }
+
+    private boolean sizesMatch(String unitSize, String targetedSize) {
+        if (unitSize == null && targetedSize == null) {
+            return true;
+        }
+        if (unitSize == null || targetedSize == null ) {
+            return false;
+        }
+        return (unitSize.equals(targetedSize));
     }
 
     public ConvertibleAmount scale(ConvertibleAmount toScale, AddScaleRequest request) throws ConversionFactorException {
@@ -240,7 +267,7 @@ public class ConverterServiceImpl implements ConverterService {
         if (toAddIsUserEntered) {
             return amountToAdd.getUnitSize();
         }
-        return null;
+        return addTo.getUnitSize();
     }
 
     private UnitSubtype determineSubtypeFromContext(ConvertibleAmount toConvert, ConversionRequest context) {

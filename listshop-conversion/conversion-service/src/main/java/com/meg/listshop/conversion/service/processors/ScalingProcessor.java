@@ -48,9 +48,30 @@ public class ScalingProcessor extends AbstractConverterProcessor  {
     @Override
     public boolean appliesTo(ProcessingContext context) {
         // scaling processing runs if the unit is not a single unit
+        boolean unitsMatch = unitsMatch(context);
         return !currentIsSingleUnit(context) &&
-                (context.getTargetUnit() == null ||
-                        ( context.getTargetUnit() != null && !context.getStartingAmount().getUnit().getId().equals(context.getTargetUnit().getId())));
+                !unitsMatch ||
+                (unitsMatch && !sizesMatch(context));
+    }
+
+    private boolean unitsMatch(ProcessingContext context) {
+        if (context.getTargetUnit() == null) {
+            return false;
+        }
+        return context.getStartingAmount().getUnit().getId().equals(context.getTargetUnit().getId());
+    }
+
+    private boolean sizesMatch(ProcessingContext context) {
+        if (context.getTarget().unitSize() == null &&
+            context.getCurrentAmount().getUnitSize() == null) {
+            return true;
+        }
+        if (context.getTarget().unitSize() != null ||
+                context.getCurrentAmount().getUnitSize() != null) {
+            return false;
+        }
+
+        return context.getTarget().unitSize().equals(context.getCurrentAmount().getUnitSize());
     }
 
 
