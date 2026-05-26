@@ -28,25 +28,11 @@ public class StandardTagHandler extends AbstractTagHandler {
 
     @Override
     public ConvertibleAmount convertTag(ProcessingContext context) {
-        return convertToGrams(context);
+        return convertToMetric(context);
     }
 
     @Override
-    public  List<ConversionFactor> findFactorsForGrams(ConvertibleAmount toConvert) {
-        // create criteria - base criteria
-        Long conversionId = determineConversionId(toConvert);
-        FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()
-                .withFromUnit(toConvert.getUnit())
-                .withConversionId(conversionId)
-                .withToUnit(GRAM_UNIT_ID);
-
-        return factorRepository.findFactors(criteriaBuilder.build()).stream()
-                .map(factor -> (ConversionFactor) factor)
-                .toList();
-    }
-
-    @Override
-    public  List<ConversionFactor> findFactorsForGrams(ProcessingContext context) {
+    public  List<ConversionFactor> findFactorsForMetric(ProcessingContext context) {
         ConvertibleAmount toConvert = context.getCurrentAmount();
         // create criteria - base criteria
         Long conversionId = determineConversionId(toConvert);

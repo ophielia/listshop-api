@@ -41,25 +41,11 @@ return false;
     @Override
     public ConvertibleAmount convertTag(ProcessingContext context) {
         //convert to grams
-        return convertToGrams(context);
+        return convertToMetric(context);
     }
 
     @Override
-    public List<ConversionFactor> findFactorsForGrams(ConvertibleAmount toConvert) {
-        // create criteria - for grams
-        FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()
-                .withFromUnit(toConvert.getUnit())
-                //  .withConversionId(toConvert.getConversionId())
-                .withToUnit(GRAM_UNIT_ID);
-        FactorCriteria exactCriteria = criteriaBuilder.build();
-        List<ConversionFactor> foundUnits = factorRepository.findFactors(exactCriteria).stream()
-                .toList();
-
-        return invertFactors(foundUnits);
-    }
-
-    @Override
-    public List<ConversionFactor> findFactorsForGrams(ProcessingContext context) {
+    public List<ConversionFactor> findFactorsForMetric(ProcessingContext context) {
         ConvertibleAmount toConvert = context.getCurrentAmount();
         // create criteria - for grams
         FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()

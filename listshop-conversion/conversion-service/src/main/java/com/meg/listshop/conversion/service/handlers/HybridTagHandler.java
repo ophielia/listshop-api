@@ -11,7 +11,6 @@ import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.repository.FactorCriteriaBuilder;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -34,39 +33,11 @@ public class HybridTagHandler extends AbstractTagHandler {
 
     @Override
     public ConvertibleAmount convertTag(ProcessingContext context) {
-        return convertToGrams(context);
+        return convertToMetric(context);
     }
 
     @Override
-    public  List<ConversionFactor> findFactorsForGrams(ConvertibleAmount toConvert) {
-        // create criteria - base criteria
-        FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()
-                .withFromUnit(toConvert.getUnit())
-                .withConversionId(toConvert.getConversionId())
-                .withFromModifier(toConvert.getMarker())
-                .withFromSize(toConvert.getUnitSize())
-                .withToUnit(GRAM_UNIT_ID);
-        List<ConversionFactor> factors = factorRepository.findFactors(criteriaBuilder.build()).stream()
-                .map(factor -> (ConversionFactor) factor)
-                .toList();
-//MM around here  - more work for markers and such - I've got ideas on this
-        if (!factors.isEmpty()) return factors;
-
-        // no factors found - look for any hybrid factors available
-        criteriaBuilder = new FactorCriteriaBuilder()
-                .withFromType(toConvert.getUnit().getType())
-                .withConversionId(toConvert.getConversionId())
-                .withFromModifier(toConvert.getMarker())
-                .withFromSize(toConvert.getUnitSize())
-                .withToUnit(GRAM_UNIT_ID);
-        List<ConversionFactor> wideFactors = factorRepository.findFactors(criteriaBuilder.build()).stream()
-                .toList();
-        return reverseEngineerFactor(wideFactors, toConvert);
-
-    }
-
-    @Override
-    public  List<ConversionFactor> findFactorsForGrams(ProcessingContext context) {
+    public  List<ConversionFactor> findFactorsForMetric(ProcessingContext context) {
         ConvertibleAmount toConvert = context.getCurrentAmount();
         // create criteria - base criteria
         FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()
