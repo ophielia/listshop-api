@@ -89,6 +89,19 @@ public abstract class AbstractTagHandler implements TagHandler {
         };
     }
 
+    protected boolean fromIsHybrid(ProcessingContext context) {
+        return context.getCurrentAmount().getUnit().getType() == UnitType.HYBRID;
+    }
+
+
+    protected boolean targetIsSingleUnit(ProcessingContext context) {
+        return context.getTarget().unitId() != null && Objects.equals(context.getTarget().unitId(), SINGLE_UNIT_ID);
+    }
+
+    protected boolean fromIsSingleUnit(ProcessingContext context) {
+        return context.getTarget().unitId() != null && Objects.equals(context.getTarget().unitId(), SINGLE_UNIT_ID);
+    }
+
 }
 
 
