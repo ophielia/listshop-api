@@ -61,28 +61,36 @@ public class TagDishContextScaler extends BaseScaleHandler {
                 .withMarkerOrNull(originalAmount.getMarker())
                 .withFromExcludeDomain(target.domainType());
 
+        List<UnitType> typeList = new ArrayList<>();
+        typeList.addAll(List.of(target.domainType(), UnitType.UNIT));
         if (startIsHybrid) {
-            builder = builder.withTypeIn(List.of(target.domainType(), UnitType.HYBRID));
-        } else {
-            builder = builder.withToDomain(target.domainType());
+            typeList.add(UnitType.HYBRID);
         }
+        builder = builder.withTypeIn(typeList);
 
 
         List<ConversionFactor> initialFactors = conversionFactorRepository.findFactors(builder.build());
 
         // marker match? hybrid exists?
         boolean markerMatch = false;
+        boolean sizesExist= false;
+        boolean defaultSizeExists = false;
         boolean hybridExists = false;
         for (ConversionFactor factor : initialFactors) {
             markerMatch |= originalAmount.getMarker() != null &&
                     factor.getMarker() != null &&
                     factor.getMarker().equals(originalAmount.getMarker());
             hybridExists |= factor.getFromUnit().getType() == UnitType.HYBRID;
+            sizesExist |= factor.getUnitSize() != null;
+            defaultSizeExists |= factor.isUnitDefault() != null && factor.isUnitDefault();
         }
         // if marker exists, limit to marker
         List<ConversionFactor> markerFactors = limitToMarkers(initialFactors, markerMatch, originalAmount.getMarker());
+        // if sizes exist, limit to marker
+        List<ConversionFactor> sizeFactors = limitBySize(markerFactors, sizesExist, defaultSizeExists, originalAmount.getUnitSize());
+
         // explode for domain
-        List<ConversionFactor> explodedFactors = explodeFactors(markerFactors, context, hybridExists);
+        List<ConversionFactor> explodedFactors = explodeFactors(sizeFactors, context, hybridExists);
         // invert factors and return
         return explodedFactors.stream()
                 .map(SimpleConversionFactor::reverseFactor)
@@ -109,7 +117,7 @@ public class TagDishContextScaler extends BaseScaleHandler {
 
     private void fillForDomain(Map<Long, ConversionFactor> explodedFactors, UnitType unitType, UnitEntity gramUnit) {
         // pull first factor with domain
-        ConversionFactor baseFactor = getBaseFactor(explodedFactors,unitType, gramUnit);
+        ConversionFactor baseFactor = getBaseFactor(explodedFactors, unitType, gramUnit);
         // get factors by domain
         List<ConversionFactor> domainFactors = getDomainFactors(unitType, baseFactor);
 
@@ -122,8 +130,8 @@ public class TagDishContextScaler extends BaseScaleHandler {
             if (explodedFactors.containsKey(factor.getToUnit().getId())) {
                 continue;
             }
-            double explodedFactor = baseFactor.getFactor() /  factor.getFactor()  ;
-            ConversionFactor exploded = new SimpleConversionFactor(explodedFactor,gramUnit, factor.getToUnit(), baseFactor.getMarker(), null, null);
+            double explodedFactor = baseFactor.getFactor() / factor.getFactor();
+            ConversionFactor exploded = new SimpleConversionFactor(explodedFactor, gramUnit, factor.getToUnit(), baseFactor.getMarker(), null, null);
             explodedFactors.put(exploded.getFromUnit().getId(), exploded);
         }
     }
@@ -131,7 +139,7 @@ public class TagDishContextScaler extends BaseScaleHandler {
     private ConversionFactor getBaseFactor(Map<Long, ConversionFactor> explodedFactors, UnitType unitType, UnitEntity gramUnit) {
         ConversionFactor baseFactor = explodedFactors.values().stream()
                 .filter(f -> f.getFromUnit().getType() == unitType)
-                .filter( f -> !f.getFromUnit().isTagSpecific())
+                .filter(f -> !f.getFromUnit().isTagSpecific())
                 .findFirst().orElse(null);
         if (baseFactor != null) {
             return baseFactor;
@@ -149,10 +157,10 @@ public class TagDishContextScaler extends BaseScaleHandler {
                 gramsToDomain.put(unitType, null);
             }
             ConversionFactor gramFactor = gramFactors.stream()
-                    .filter(f-> !f.equals(1.0))
+                    .filter(f -> !f.equals(1.0))
                     .findFirst().orElse(null);
             double factor = 1.0 / gramFactor.getFactor();
-            ConversionFactor calculated = new SimpleConversionFactor(factor,gramUnit,gramFactor.getToUnit(), null, null, null);
+            ConversionFactor calculated = new SimpleConversionFactor(factor, gramUnit, gramFactor.getToUnit(), null, null, null);
             gramsToDomain.put(unitType, calculated);
         }
         return gramsToDomain.get(unitType);
@@ -194,12 +202,34 @@ public class TagDishContextScaler extends BaseScaleHandler {
     }
 
     private List<ConversionFactor> limitToMarkers(List<ConversionFactor> initialFactors, boolean markerMatch, String marker) {
-        if (markerMatch) {
+        if (markerMatch ) {
             return initialFactors.stream()
-                    .filter(f -> f.getMarker().equals(marker))
+                    .filter(f -> f.getMarker() != null && f.getMarker().equals(marker))
                     .toList();
         }
         return new ArrayList<>(initialFactors);
+    }
+
+    private List<ConversionFactor> limitBySize(List<ConversionFactor> initialFactors, boolean sizesExist, boolean defaultSizeExists, String size) {
+        if (sizesExist && size != null && size.trim().length() > 0) {
+            return initialFactors.stream()
+                    .filter(f -> notSingleUnit(f) || sizeMatches(f, size))
+                    .toList();
+        } else if (defaultSizeExists) {
+            return initialFactors.stream()
+                    .filter(f -> notSingleUnit(f) ||
+                            (!notSingleUnit(f) && f.isUnitDefault()))
+                    .toList();
+        }
+        return new ArrayList<>(initialFactors);
+    }
+
+    private boolean sizeMatches(ConversionFactor f, String size) {
+        return f.getUnitSize() != null && f.getUnitSize().equals(size);
+    }
+
+    private boolean notSingleUnit(ConversionFactor f) {
+        return !f.getFromUnit().getId().equals(SINGLE_UNIT_ID);
     }
 
 

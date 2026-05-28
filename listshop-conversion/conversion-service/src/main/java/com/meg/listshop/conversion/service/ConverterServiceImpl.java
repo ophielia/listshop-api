@@ -209,7 +209,7 @@ public class ConverterServiceImpl implements ConverterService {
 
     public ConvertibleAmount scale(ConvertibleAmount toScale, AddScaleRequest request) throws ConversionFactorException {
         // do the scaling
-        // create context
+        /* create context
         ConversionSpec spec = ConversionSpec.specForAddRequest(request);
         ConversionContext context = new ConversionContext(toScale, spec);
         prepareContextForTagSpecificScaling(context);
@@ -222,6 +222,12 @@ public class ConverterServiceImpl implements ConverterService {
 
         // return result
         return toScale;
+*/
+        ConversionTarget target = new ConversionTarget(request.getUnitType(),null, request.getContextType(), request.getUnitSize(), toScale.getMarker());
+        ProcessingContext pContext = new ProcessingContext(toScale, target);
+        return doConversion(pContext);
+       // new ConversionSpec(null, request.getUnitType(), request.getSubtype(),
+         //       request.getContextType(), request.getUnitSize(), null, null);
     }
 
     private ConvertibleAmount equalizeSize(ConvertibleAmount possibleScale, ConversionContext context, ScalingHandler scalingHandler) throws ConversionFactorException {
