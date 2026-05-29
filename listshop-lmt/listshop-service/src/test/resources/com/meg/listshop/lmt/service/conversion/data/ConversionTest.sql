@@ -53,3 +53,23 @@ values  (1081, 182, 1013, 1011, 225744, 3891, null, 'large', false, null),
 -- chicken drumstick
 insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default)
 values (1064222, 88, 1013, 1011, 227959, 106417, null, null, false);
+
+-- olive oil
+-- standard units to grams - olive oil
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default, tag_id) values (1153, 216, 1013, 1000, 226442, 4135, null, 'medium', false, null);
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default, tag_id) values (1152, 13.5, 1013, 1001, 226442, 4134, null, 'medium', false, null);
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default, tag_id) values (1154, 4.5, 1013, 1002, 226442, 4136, null, 'medium', false, null);
+
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
+-- grams to milliliters
+insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default, tag_id) values
+    (111111154, 0.9, 1004, 1013, 226442, 4136, null, null, false, null);
+
+-- olive oil with these factors
+insert into tag (tag_id, description, name, tag_type, tag_type_default, is_verified, power, to_delete, replacement_tag_id, created_on, updated_on, category_updated_on, removed_on, is_group, user_id, internal_status, is_liquid, conversion_id, marker) values
+(51105, null, 'Olive oil large green', 'Ingredient', null, null, 0, false, null, '2022-07-22 19:50:49.921000 +00:00', '2026-02-14 15:54:04.286000 +00:00', '2022-07-22 19:50:50.462000 +00:00', null, false, 34, 1155, false, 226442, null);

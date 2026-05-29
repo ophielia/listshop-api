@@ -13,9 +13,8 @@ import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.ConversionUnitFactorEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.data.repository.FactorCriteria;
-import com.meg.listshop.conversion.data.repository.FactorCriteriaBuilder;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
+import com.meg.listshop.conversion.data.repository.FactorCriteriaBuilder;
 import com.meg.listshop.conversion.data.repository.TagFactorRepository;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
@@ -40,6 +39,9 @@ public abstract class AbstractTagHandler implements TagHandler {
     @Value("${conversionservice.gram.unit.id:1013}")
     protected Long GRAM_UNIT_ID;
 
+    @Value("${conversionservice.milliliter.unit.id:1004}")
+    protected Long MILLILITER_UNIT_ID;
+
     @Autowired
     protected ConversionFactorRepository factorRepository;
 
@@ -51,7 +53,50 @@ public abstract class AbstractTagHandler implements TagHandler {
 
     protected ConvertibleAmount convertToMetric(@NonNull ProcessingContext context) {
         ConvertibleAmount toConvert = context.getCurrentAmount();
+        Long targetUnitId = GRAM_UNIT_ID;
         List<ConversionFactor> factors = findFactorsForMetric(context);
+        ConvertibleAmount converted = convertForFactors(context, factors);
+
+        // check liquid / grams
+        if (converted.getUnit().getSubtype() == UnitSubtype.WEIGHT &&
+            toConvert.getIsLiquid()) {
+            // need to convert grams to milliliters
+            targetUnitId = MILLILITER_UNIT_ID;
+            converted = convertGramsToMilliliters(context, converted);
+        }
+
+        // put converted into context
+        if (converted.getUnit().getId().equals(targetUnitId)) {
+            context.setMetricMeasure(converted.getQuantity());
+            context.setMetricUnit(converted.getUnit());
+        }
+
+        return new SimpleAmount(converted.getQuantity(), converted.getUnit(), toConvert, converted.getUnitSize());
+    }
+
+    private ConvertibleAmount convertGramsToMilliliters(ProcessingContext context, ConvertibleAmount converted) {
+        List<ConversionFactor> factors = findGramToMilliliterFactors(context);
+        return convertForFactors(context, factors);
+    }
+
+    private List<ConversionFactor> findGramToMilliliterFactors(ProcessingContext context) {
+        ConvertibleAmount toConvert = context.getCurrentAmount();
+        // create criteria - base criteria
+        Long conversionId = toConvert.getConversionId();
+
+        FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()
+                .withFromUnit(toConvert.getUnit())
+                .withToUnit(MILLILITER_UNIT_ID)
+                .withConversionId(conversionId);
+
+        return  factorRepository.findFactors(criteriaBuilder.build()).stream()
+                .map(factor -> (ConversionFactor) factor)
+                .toList();
+
+    }
+
+    private ConvertibleAmount convertForFactors(ProcessingContext context, List<ConversionFactor> factors) {
+        ConvertibleAmount toConvert = context.getCurrentAmount();
         if (factors == null || factors.isEmpty()) {
             LOG.debug("No conversions available for domainConversion from unit [{}] to unitType: [{}].", toConvert.getUnit(), context.getTarget().domainType());
             return toConvert;
@@ -72,13 +117,8 @@ public abstract class AbstractTagHandler implements TagHandler {
             return toConvert;
 
         }
-        ConvertibleAmount converted = convertedList.get(0);
+        return convertedList.get(0);
 
-        // put converted into context
-        context.setMetricMeasure(converted.getQuantity());
-        context.setMetricUnit(converted.getUnit());
-
-        return new SimpleAmount(converted.getQuantity(), converted.getUnit(), toConvert, converted.getUnitSize());
     }
 
     public abstract List<ConversionFactor> findFactorsForMetric(ProcessingContext context);
