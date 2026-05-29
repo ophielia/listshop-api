@@ -28,14 +28,14 @@ import java.util.Map;
 
 @Component
 @Order(4)
-public class TagDishContextScaler extends BaseScaleHandler {
+public class TagContextScaler extends BaseScaleHandler {
 
     private ConversionFactorRepository conversionFactorRepository;
     private UnitRepository unitRepository;
-    private Map<UnitType, ConversionFactor> gramsToDomain = new HashMap<>();
+    private Map<String, ConversionFactor> metricToDomain = new HashMap<>();
 
-    public TagDishContextScaler(ConversionFactorRepository conversionFactorRepository,
-                                UnitRepository unitRepository) {
+    public TagContextScaler(ConversionFactorRepository conversionFactorRepository,
+                            UnitRepository unitRepository) {
         this.conversionFactorRepository = conversionFactorRepository;
         this.unitRepository = unitRepository;
     }
@@ -43,7 +43,12 @@ public class TagDishContextScaler extends BaseScaleHandler {
     public boolean shouldScale(ProcessingContext context) {
         return context.getCurrentAmount().getConversionId() != null &&
                 context.getTarget().conversionContext() != null &&
-                context.getCurrentAmount().getUnit().getId().equals(GRAM_UNIT_ID);
+                context.getMetricMeasure() != null;
+    }
+
+@Override
+    public double getQuantity(ProcessingContext context) {
+        return context.getMetricMeasure();
     }
 
     public List<ConversionFactor> findFactors(ProcessingContext context) {
@@ -53,10 +58,11 @@ public class TagDishContextScaler extends BaseScaleHandler {
 
         // find factors with conversion id, marker match or null
         // from target domain and hybrid (if start is hybrid)
+        Long targetUnitId = context.getMetricUnit().getId();
         boolean startIsHybrid = originalAmount.getUnit().getType() == UnitType.HYBRID;
         FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
         builder.withConversionId(toConvert.getConversionId())
-                .withToUnit(GRAM_UNIT_ID)
+                .withToUnit(targetUnitId)
                 .withFromContext(target.conversionContext())
                 .withMarkerOrNull(originalAmount.getMarker())
                 .withFromExcludeDomain(target.domainType());
@@ -90,7 +96,7 @@ public class TagDishContextScaler extends BaseScaleHandler {
         List<ConversionFactor> sizeFactors = limitBySize(markerFactors, sizesExist, defaultSizeExists, originalAmount.getUnitSize());
 
         // explode for domain
-        List<ConversionFactor> explodedFactors = explodeFactors(sizeFactors, context, hybridExists);
+        List<ConversionFactor> explodedFactors = explodeFactors(sizeFactors, context, hybridExists, targetUnitId);
         // invert factors and return
         return explodedFactors.stream()
                 .map(SimpleConversionFactor::reverseFactor)
@@ -98,28 +104,28 @@ public class TagDishContextScaler extends BaseScaleHandler {
 
     }
 
-    private List<ConversionFactor> explodeFactors(List<ConversionFactor> markerFactors, ProcessingContext context, boolean hybridExists) {
+    private List<ConversionFactor> explodeFactors(List<ConversionFactor> markerFactors, ProcessingContext context, boolean hybridExists, Long targetUnitId) {
         Map<Long, ConversionFactor> explodedFactors = new HashMap<>();
-        UnitEntity gramUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
+        UnitEntity targetUnit = unitRepository.findById(targetUnitId).orElse(null);
         // fill with existing
         for (ConversionFactor factor : markerFactors) {
             explodedFactors.put(factor.getFromUnit().getId(), factor);
         }
         // add self-referencing
-        ConversionFactor selfReferencing = new SimpleConversionFactor(1.0, gramUnit, gramUnit, null, null, null);
+        ConversionFactor selfReferencing = new SimpleConversionFactor(1.0, targetUnit, targetUnit, null, null, null);
         explodedFactors.put(GRAM_UNIT_ID, selfReferencing);
         if (hybridExists) {
-            fillForDomain(explodedFactors, UnitType.HYBRID, gramUnit);
+            fillForDomain(explodedFactors, UnitType.HYBRID, targetUnit);
         }
-        fillForDomain(explodedFactors, context.getTarget().domainType(), gramUnit);
+        fillForDomain(explodedFactors, context.getTarget().domainType(), targetUnit);
         return explodedFactors.values().stream().toList();
     }
 
-    private void fillForDomain(Map<Long, ConversionFactor> explodedFactors, UnitType unitType, UnitEntity gramUnit) {
+    private void fillForDomain(Map<Long, ConversionFactor> explodedFactors, UnitType unitType, UnitEntity targetUnit) {
         // pull first factor with domain
-        ConversionFactor baseFactor = getBaseFactor(explodedFactors, unitType, gramUnit);
+        ConversionFactor baseFactor = getBaseFactor(explodedFactors, unitType, targetUnit);
         // get factors by domain
-        List<ConversionFactor> domainFactors = getDomainFactors(unitType, baseFactor);
+        List<ConversionFactor> domainFactors = getDomainFactors(unitType, baseFactor, targetUnit);
 
         // add self scaling if not already there
         if (!explodedFactors.containsKey(baseFactor.getFromUnit().getId())) {
@@ -131,12 +137,12 @@ public class TagDishContextScaler extends BaseScaleHandler {
                 continue;
             }
             double explodedFactor = baseFactor.getFactor() / factor.getFactor();
-            ConversionFactor exploded = new SimpleConversionFactor(explodedFactor, gramUnit, factor.getToUnit(), baseFactor.getMarker(), null, null);
+            ConversionFactor exploded = new SimpleConversionFactor(explodedFactor, targetUnit, factor.getToUnit(), baseFactor.getMarker(), null, null);
             explodedFactors.put(exploded.getFromUnit().getId(), exploded);
         }
     }
 
-    private ConversionFactor getBaseFactor(Map<Long, ConversionFactor> explodedFactors, UnitType unitType, UnitEntity gramUnit) {
+    private ConversionFactor getBaseFactor(Map<Long, ConversionFactor> explodedFactors, UnitType unitType, UnitEntity targetUnit) {
         ConversionFactor baseFactor = explodedFactors.values().stream()
                 .filter(f -> f.getFromUnit().getType() == unitType)
                 .filter(f -> !f.getFromUnit().isTagSpecific())
@@ -145,28 +151,29 @@ public class TagDishContextScaler extends BaseScaleHandler {
             return baseFactor;
         }
         // if the unitType is not METRIC, we won't find a base factor
-        // instead, we'll calculate from the gram factor
-        if (!gramsToDomain.containsKey(unitType)) {
+        // instead, we'll calculate from the metric factor
+        String key = targetUnit.getId().toString() + unitType.toString();
+        if (!metricToDomain.containsKey(key)) {
             FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
             builder.withConversionId(null)
-                    .withFromUnit(gramUnit)
+                    .withFromUnit(targetUnit)
                     .withToDomain(unitType)
-                    .withToContext(ConversionTargetType.Dish);
+                    .withToContext(ConversionTargetType.Dish); //MM come back and change this to dish or list
             List<ConversionFactor> gramFactors = conversionFactorRepository.findFactors(builder.build());
             if (gramFactors.isEmpty() || gramFactors.size() < 2) {
-                gramsToDomain.put(unitType, null);
+                metricToDomain.put(key, null);
             }
-            ConversionFactor gramFactor = gramFactors.stream()
+            ConversionFactor metricFactor = gramFactors.stream()
                     .filter(f -> !f.equals(1.0))
                     .findFirst().orElse(null);
-            double factor = 1.0 / gramFactor.getFactor();
-            ConversionFactor calculated = new SimpleConversionFactor(factor, gramUnit, gramFactor.getToUnit(), null, null, null);
-            gramsToDomain.put(unitType, calculated);
+            double factor = 1.0 / metricFactor.getFactor();
+            ConversionFactor calculated = new SimpleConversionFactor(factor, targetUnit, metricFactor.getToUnit(), null, null, null);
+            metricToDomain.put(key, calculated);
         }
-        return gramsToDomain.get(unitType);
+        return metricToDomain.get(key);
     }
 
-    private List<ConversionFactor> getDomainFactors(UnitType unitType, ConversionFactor baseFactor) {
+    private List<ConversionFactor> getDomainFactors(UnitType unitType, ConversionFactor baseFactor, UnitEntity targetUnit) {
         HashMap<UnitType, List<ConversionFactor>> domainFactorsByType = new HashMap<>();
         if (!domainFactorsByType.containsKey(unitType)) {
             List<ConversionFactor> conversionFactors = retrieveDomainFactorsByType(unitType);

@@ -74,6 +74,10 @@ public abstract class AbstractTagHandler implements TagHandler {
         }
         ConvertibleAmount converted = convertedList.get(0);
 
+        // put converted into context
+        context.setMetricMeasure(converted.getQuantity());
+        context.setMetricUnit(converted.getUnit());
+
         return new SimpleAmount(converted.getQuantity(), converted.getUnit(), toConvert, converted.getUnitSize());
     }
 

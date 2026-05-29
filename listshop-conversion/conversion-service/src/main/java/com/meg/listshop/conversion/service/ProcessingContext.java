@@ -15,6 +15,8 @@ public class ProcessingContext {
     ConvertibleAmount currentAmount;
     ConversionTarget target;
     UnitEntity targetUnit;
+    Double metricMeasure;
+    UnitEntity metricUnit;
 
     public ProcessingContext(ConvertibleAmount startingAmount, ConversionTarget target) {
         this(startingAmount,target,null);
@@ -64,5 +66,21 @@ public class ProcessingContext {
 
     public UnitEntity getTargetUnit() {
         return targetUnit;
+    }
+
+    public UnitEntity getMetricUnit() {
+        return metricUnit;
+    }
+
+    public void setMetricUnit(UnitEntity metricUnit) {
+        this.metricUnit = metricUnit;
+    }
+
+    public Double getMetricMeasure() {
+        return metricMeasure;
+    }
+
+    public void setMetricMeasure(Double metricMeasure) {
+        this.metricMeasure = metricMeasure;
     }
 }

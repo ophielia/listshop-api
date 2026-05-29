@@ -46,6 +46,7 @@ public abstract class BaseScaleHandler implements ScaleHandler, NewFactorProvide
             LOG.debug("No factors available for scaling to [{}] from [{}]", context.getTarget(), context.getCurrentAmount().getUnit());
             return context.getCurrentAmount();
         }
+        double quantity = getQuantity(context);
 
         // convert all factors, making list
         List<ConvertibleAmount> convertedList = factors.stream()
@@ -69,6 +70,10 @@ public abstract class BaseScaleHandler implements ScaleHandler, NewFactorProvide
         // return best result
         return new SimpleAmount(bestResult.getQuantity(), bestResult.getUnit(), toConvert, bestResult.getUnitSize());
 
+    }
+
+    public double getQuantity(ProcessingContext context) {
+        return context.getCurrentAmount().getQuantity();
     }
 
     @Override
