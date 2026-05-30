@@ -4,7 +4,7 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.conversion.service.handlers;
+package com.meg.listshop.conversion.service.scaling;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
@@ -13,30 +13,25 @@ import com.meg.listshop.conversion.data.repository.FactorCriteriaBuilder;
 import com.meg.listshop.conversion.service.ConversionTarget;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-@Order(6)
-public class GenericScaler extends BaseScaleHandler {
-    private static final Log LOG = LogFactory.getLog(GenericScaler.class);
-
-
-    public boolean shouldScale(ProcessingContext context) {
-        // this scale will apply if no others apply
-        return true;
-    }
-
+@Order(5)
+public class ContextScaler extends BaseScaleHandler {
 
     private ConversionFactorRepository conversionFactorRepository;
 
-    public GenericScaler(ConversionFactorRepository conversionFactorRepository) {
+    public ContextScaler(ConversionFactorRepository conversionFactorRepository) {
         this.conversionFactorRepository = conversionFactorRepository;
     }
+
+    public boolean shouldScale(ProcessingContext context) {
+        return context.getTarget().conversionContext() != null;
+    }
+
 
 
     public List<ConversionFactor> findFactors(ProcessingContext context) {
@@ -44,10 +39,11 @@ public class GenericScaler extends BaseScaleHandler {
         ConversionTarget target = context.getTarget();
         FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
         FactorCriteria criteria = builder.withFromUnit(toConvert.getUnit())
-                .withToDomain(target.domainType())
+                .withToContext(target.conversionContext())
+                .withToDomain(toConvert.getUnit().getType())
                 .build();
         return deduplicateFactors(conversionFactorRepository.findAllFactors(criteria), toConvert);
-    }
 
+    }
 
 }

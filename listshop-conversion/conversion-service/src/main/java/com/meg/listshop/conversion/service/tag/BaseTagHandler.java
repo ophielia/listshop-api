@@ -4,14 +4,13 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.conversion.service.handlers;
+package com.meg.listshop.conversion.service.tag;
 
 import com.meg.listshop.common.UnitSubtype;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
-import com.meg.listshop.conversion.data.entity.ConversionUnitFactorEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.data.repository.FactorCriteriaBuilder;
@@ -25,13 +24,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public abstract class AbstractTagHandler implements TagHandler {
+public abstract class BaseTagHandler implements TagHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractTagHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BaseTagHandler.class);
 
     @Value("${listshop.single.unit.id:1011}")
     protected Long SINGLE_UNIT_ID;

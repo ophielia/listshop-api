@@ -4,7 +4,7 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.conversion.service.handlers;
+package com.meg.listshop.conversion.service.scaling;
 
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.common.data.repository.UnitRepository;
@@ -14,6 +14,7 @@ import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
 import com.meg.listshop.conversion.service.factors.FactorProvider;
+import com.meg.listshop.conversion.service.ProcessingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

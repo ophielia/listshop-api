@@ -4,7 +4,7 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.conversion.service.handlers;
+package com.meg.listshop.conversion.service.tag;
 
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Component
 @Order(4)
-public class StandardTagHandler extends AbstractTagHandler {
+public class StandardTagHandler extends BaseTagHandler {
 
     @Override
     public boolean shouldConvert(ProcessingContext context) {

@@ -8,8 +8,8 @@ package com.meg.listshop.conversion.service.processors;
 
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
-import com.meg.listshop.conversion.service.handlers.ProcessingUtils;
-import com.meg.listshop.conversion.service.handlers.TagHandler;
+import com.meg.listshop.conversion.service.ProcessingUtils;
+import com.meg.listshop.conversion.service.tag.TagHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

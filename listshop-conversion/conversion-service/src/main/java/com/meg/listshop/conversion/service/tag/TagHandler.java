@@ -4,7 +4,7 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.conversion.service.handlers;
+package com.meg.listshop.conversion.service.tag;
 
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;

@@ -4,10 +4,8 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.conversion.service.handlers;
+package com.meg.listshop.conversion.service.domain;
 
-import com.meg.listshop.common.UnitType;
-import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.service.*;
 
 public interface DomainConversionHandler  {
