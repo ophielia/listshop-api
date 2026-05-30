@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.conversion.service.handlers;
 
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
@@ -17,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class AbstractConversionHandler implements ConversionHandler {
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractConversionHandler.class);
 
     private ConversionSpec source;
