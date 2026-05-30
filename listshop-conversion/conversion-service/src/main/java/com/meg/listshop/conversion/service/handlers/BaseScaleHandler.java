@@ -51,7 +51,7 @@ public abstract class BaseScaleHandler implements ScaleHandler, NewFactorProvide
         // convert all factors, making list
         List<ConvertibleAmount> convertedList = factors.stream()
                 .map(f -> {
-                    double newQuantity = toConvert.getQuantity() * f.getFactor();
+                    double newQuantity = quantity * f.getFactor();
                     UnitEntity newUnit = f.getToUnit();
 
                     return new SimpleAmount(newQuantity, newUnit, f.getUnitSize());
@@ -73,7 +73,7 @@ public abstract class BaseScaleHandler implements ScaleHandler, NewFactorProvide
     }
 
     public double getQuantity(ProcessingContext context) {
-        return context.getCurrentAmount().getQuantity();
+        return ProcessingUtils.pullCurrentQuantity(context);
     }
 
     @Override

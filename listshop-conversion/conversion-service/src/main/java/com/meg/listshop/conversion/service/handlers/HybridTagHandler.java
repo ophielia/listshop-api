@@ -28,7 +28,7 @@ public class HybridTagHandler extends AbstractTagHandler {
         // this should kick in if the from type is hybrid
         // we want the modifiers to be taken into account
         // the conversion id is used
-        return fromIsHybrid(context);
+        return ProcessingUtils.currentIsHybrid(context);
     }
 
 

@@ -9,7 +9,6 @@ package com.meg.listshop.conversion.service.processors;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
-import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.data.repository.FactorCriteria;
@@ -18,6 +17,7 @@ import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.DeltaSpec;
 import com.meg.listshop.conversion.service.ProcessingContext;
 import com.meg.listshop.conversion.service.handlers.DomainConversionHandler;
+import com.meg.listshop.conversion.service.handlers.ProcessingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,11 +134,11 @@ public class DomainConverterProcessor extends AbstractConverterProcessor {
 
     @Override
     public boolean appliesTo(ProcessingContext context) {
-        UnitType currentDomain = pullCurrentDomain(context);
-        UnitType targetDomain = pullTargetDomain(context);
+        UnitType currentDomain = ProcessingUtils.pullCurrentDomain(context);
+        UnitType targetDomain = ProcessingUtils.pullTargetDomain(context);
 
         // single unit and target unit not specified => not applicable
-        if (currentIsSingleUnit(context) && targetUnitNonSpecified(context)) {
+        if (ProcessingUtils.currentIsSingleUnit(context, SINGLE_UNIT_ID) && ProcessingUtils.targetUnitNonSpecified(context)) {
             LOG.debug("Current unit is single and target unit is not specified, skipping domain conversion");
             return false;
         }

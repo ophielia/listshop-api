@@ -9,6 +9,7 @@ package com.meg.listshop.conversion.service.processors;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
+import com.meg.listshop.conversion.service.handlers.ProcessingUtils;
 import com.meg.listshop.conversion.service.handlers.ScaleHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ public class ScalingProcessor extends AbstractConverterProcessor  {
     public boolean appliesTo(ProcessingContext context) {
         // scaling processing runs if the unit is not a single unit
         boolean unitsMatch = unitsMatch(context);
-        return !currentIsSingleUnit(context) &&
+        return !ProcessingUtils.currentIsSingleUnit(context, SINGLE_UNIT_ID) &&
                 !contextIsUnitAndAlreadyInDomain(context) &&
                 !unitsMatch ||
                 (unitsMatch && !sizesMatch(context));
@@ -88,18 +89,18 @@ public class ScalingProcessor extends AbstractConverterProcessor  {
 
     public boolean legacyAppliesTo(ProcessingContext context) {
         // single unit and target unit not specified => not applicable
-        if (currentIsSingleUnit(context) && targetUnitNonSpecified(context)) {
+        if (ProcessingUtils.currentIsSingleUnit(context, SINGLE_UNIT_ID) && ProcessingUtils.targetUnitNonSpecified(context)) {
             LOG.debug("Current unit is single and target unit is not specified, skipping conversion");
             return false;
         }
 
         //target context is not null
-        if (targetContextNonSpecified(context)) {
+        if (ProcessingUtils.targetContextNonSpecified(context)) {
             LOG.debug("Target context is not specified, skipping conversion");
             return false;
         }
         // target context is different from current
-        if (contextsAreDifferent(context))  {
+        if (ProcessingUtils.contextsAreDifferent(context))  {
            LOG.debug("Target context is different from current, applying conversion");
             return true;
         }

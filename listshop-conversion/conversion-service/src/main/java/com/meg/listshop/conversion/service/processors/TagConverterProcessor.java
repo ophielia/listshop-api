@@ -6,27 +6,17 @@
 
 package com.meg.listshop.conversion.service.processors;
 
-import com.meg.listshop.common.UnitType;
-import com.meg.listshop.common.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.entity.ConversionFactor;
-import com.meg.listshop.conversion.data.entity.ConversionUnitFactorEntity;
-import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.data.repository.*;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
+import com.meg.listshop.conversion.service.handlers.ProcessingUtils;
 import com.meg.listshop.conversion.service.handlers.TagHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Component
 @Order(1)
@@ -54,7 +44,7 @@ public class TagConverterProcessor extends AbstractConverterProcessor  {
 
             LOG.debug("Checking if TagConverterProcessor applies to context: {}", context);
 
-            if (!currentHasConversionId(context)) {
+            if (!ProcessingUtils.currentHasConversionId(context)) {
                 LOG.debug("Current amount does not have conversion ID, skipping TagConverterProcessor");
                 return false;
             }
@@ -68,16 +58,16 @@ public class TagConverterProcessor extends AbstractConverterProcessor  {
             }
 
 
-           if (currentIsSingleUnit(context)) {
-                if (targetUnitExists(context) && !targetSingleUnit(context)) {
+           if (ProcessingUtils.currentIsSingleUnit(context, SINGLE_UNIT_ID)) {
+                if (ProcessingUtils.targetUnitExists(context) && !ProcessingUtils.targetSingleUnit(context, SINGLE_UNIT_ID)) {
                     // should convert if target is specific unit - not a single unit
                     LOG.debug("Target unit exists and is not single unit, applying TagConverterProcessor");
                     return true;
-                } else if (currentHasMarker(context)) {
+                } else if (ProcessingUtils.currentHasMarker(context)) {
                     // should convert if current has a marker - e.g. slice
                     LOG.debug("Current unit has a marker, applying TagConverterProcessor");
                     return true;
-                } else if (currentOrTargetHasSize(context)) {
+                } else if (ProcessingUtils.currentOrTargetHasSize(context)) {
                     // should convert if current has a marker - e.g. slice
                     LOG.debug("Current unit has a size, applying TagConverterProcessor");
                     return true;
