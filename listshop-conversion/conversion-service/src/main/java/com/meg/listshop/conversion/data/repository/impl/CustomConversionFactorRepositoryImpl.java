@@ -117,6 +117,23 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
                 predicates.add(cb.isTrue(toUnit.<Boolean>get("isDishUnit")));
             }
         }
+        if (criteria.getToDomain() != null) {
+            predicates.add(cb.equal(toUnit.<String>get("type"), criteria.getToDomain()));
+        }
+        if (criteria.getToUnitType() != null) {
+            predicates.add(cb.equal(toUnit.<String>get("type"), criteria.getToUnitType()));
+        }
+        if (criteria.getToSize() != null) {
+            predicates.add(cb.equal(root.<String>get("unitSize"), criteria.getToSize()));
+        }
+        if (criteria.isToDefaultUnit()) {
+            predicates.add(cb.isTrue(toUnit.<Boolean>get("domainDefault")));
+        }
+
+        //MM clean this up to have only default size (not from and to)
+        if (criteria.isToDefaultSize() || criteria.isFromDefaultSize()) {
+            predicates.add(cb.isTrue(root.<Boolean>get("unitDefault")));
+        }
         if (criteria.getFromContext() != null) {
             if (criteria.getFromContext() == ConversionTargetType.List ) {
                 predicates.add(cb.isTrue(fromUnit.<Boolean>get("isListUnit")));
@@ -124,33 +141,11 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
                 predicates.add(cb.isTrue(fromUnit.<Boolean>get("isDishUnit")));
             }
         }
-        if (criteria.getToDomain() != null) {
-            predicates.add(cb.equal(toUnit.<String>get("type"), criteria.getToDomain()));
-        }
-        if (criteria.getFromDomain() != null) {
-            predicates.add(cb.equal(fromUnit.<String>get("type"), criteria.getFromDomain()));
-        }
-        if (criteria.getToUnitType() != null) {
-            predicates.add(cb.equal(toUnit.<String>get("type"), criteria.getToUnitType()));
-        }
-        //MM clean this up to have only default size (not from and to)
-        if (criteria.isToDefaultSize() || criteria.isFromDefaultSize()) {
-            predicates.add(cb.isTrue(root.<Boolean>get("unitDefault")));
-        }
-        if (criteria.getSizeOrDefault() != null) {
-            predicates.add(cb.or(
-                    cb.isTrue(root.<Boolean>get("unitDefault")),
-                     cb.equal(root.<Boolean>get("unitSize"),criteria.getSizeOrDefault())
-            ));
-        }
         if (criteria.getFromModifier() != null) {
             predicates.add(cb.equal(root.<Boolean>get("marker"), criteria.getFromModifier()));
         }
-        if (criteria.getMarkerOrNull() != null) {
-            predicates.add(cb.or(
-                    cb.isNull(root.get("marker")),
-                    cb.equal(root.get("marker"), criteria.getMarkerOrNull())
-            ));
+        if (criteria.getFromDomain() != null) {
+            predicates.add(cb.equal(fromUnit.<String>get("type"), criteria.getFromDomain()));
         }
         if (criteria.getFromUnitType() != null) {
             predicates.add(cb.equal(fromUnit.<Boolean>get("type"), criteria.getFromUnitType()));
@@ -158,7 +153,6 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         if (criteria.getFromUnitTypes() != null && !criteria.getFromUnitTypes().isEmpty()) {
             predicates.add(fromUnit.get("type").in(criteria.getFromUnitTypes()));
         }
-
         if (criteria.getFromExcludeDomain() != null) {
             String pattern = "%" + criteria.getFromExcludeDomain() + "%";
             predicates.add(
@@ -168,26 +162,29 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
                     )
             );
         }
-
-
-        if (criteria.isExactModifierMatch() && criteria.getFromModifier() == null) {
-            predicates.add(cb.isNull(root.<Boolean>get("marker")));
-        }
-        if (criteria.getToSize() != null) {
-            predicates.add(cb.equal(root.<String>get("unitSize"), criteria.getToSize()));
-        }
         if (criteria.getFromSize() != null) {
             predicates.add(cb.equal(root.<String>get("unitSize"), criteria.getFromSize()));
         }
 
+        if (criteria.getSizeOrDefault() != null) {
+            predicates.add(cb.or(
+                    cb.isTrue(root.<Boolean>get("unitDefault")),
+                     cb.equal(root.<Boolean>get("unitSize"),criteria.getSizeOrDefault())
+            ));
+        }
+        if (criteria.getMarkerOrNull() != null) {
+            predicates.add(cb.or(
+                    cb.isNull(root.get("marker")),
+                    cb.equal(root.get("marker"), criteria.getMarkerOrNull())
+            ));
+        }
+        if (criteria.isExactModifierMatch() && criteria.getFromModifier() == null) {
+            predicates.add(cb.isNull(root.<Boolean>get("marker")));
+        }
         if (criteria.getConversionId() != null) {
             predicates.add(cb.equal(root.<String>get("conversionId"), criteria.getConversionId()));
         } else {
             predicates.add(cb.isNull(root.<String>get("conversionId")));
-        }
-
-        if (criteria.isToDefaultUnit()) {
-            predicates.add(cb.isTrue(toUnit.<Boolean>get("domainDefault")));
         }
         return predicates;
     }
