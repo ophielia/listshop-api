@@ -38,7 +38,6 @@ public class FactorCriteria {
     private ConversionTargetType fromContext;
     private String markerOrNull;
     private String sizeOrDefault;
-    private UnitType toUnitType;
     private UnitType fromExcludeDomain;
 
     public FactorCriteria() {
@@ -231,14 +230,6 @@ public class FactorCriteria {
 
     public String getSizeOrDefault() {
         return sizeOrDefault;
-    }
-
-    public void setToUnitType(UnitType unitType) {
-        this.toUnitType = unitType;
-    }
-
-    public UnitType getToUnitType() {
-        return toUnitType;
     }
 
     public void setFromExcludeDomain(UnitType domainType) {

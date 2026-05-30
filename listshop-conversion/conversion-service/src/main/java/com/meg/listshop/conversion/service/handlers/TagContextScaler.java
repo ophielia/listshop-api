@@ -201,7 +201,7 @@ public class TagContextScaler extends BaseScaleHandler {
     private List<ConversionFactor> retrieveDomainFactorsByType(UnitType unitType) {
         FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
         FactorCriteria criteria = builder.withFromType(unitType)
-                .withToUnitType(unitType)
+                .withToDomain(unitType)
                 .withFromContext(ConversionTargetType.Dish)
                 .withConversionId(null)
                 .build();

@@ -144,10 +144,6 @@ public class FactorCriteriaBuilder {
         return this;
     }
 
-    public FactorCriteriaBuilder withToUnitType(UnitType unitType) {
-        this.criteria.setToUnitType(unitType);
-        return this;
-    }
 
     public FactorCriteriaBuilder withFromExcludeDomain(UnitType domainType) {
         this.criteria.setFromExcludeDomain(domainType);
