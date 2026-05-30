@@ -15,7 +15,6 @@ import com.meg.listshop.conversion.data.entity.ConversionUnitFactorEntity;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.data.repository.FactorCriteriaBuilder;
-import com.meg.listshop.conversion.data.repository.TagFactorRepository;
 import com.meg.listshop.conversion.service.ConversionTarget;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
@@ -25,13 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public abstract class AbstractTagHandler implements TagHandler {
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTagHandler.class);
 
     @Value("${listshop.single.unit.id:1011}")
@@ -47,9 +46,6 @@ public abstract class AbstractTagHandler implements TagHandler {
     protected ConversionFactorRepository factorRepository;
 
     @Autowired
-    protected TagFactorRepository tagFactorRepository;
-
-    @Autowired
     protected UnitRepository unitRepository;
 
     protected ConvertibleAmount convertToMetric(@NonNull ProcessingContext context) {
@@ -60,7 +56,7 @@ public abstract class AbstractTagHandler implements TagHandler {
 
         // check liquid / grams
         if (converted.getUnit().getSubtype() == UnitSubtype.WEIGHT &&
-            toConvert.getIsLiquid()) {
+                toConvert.getIsLiquid()) {
             // need to convert grams to milliliters
             targetUnitId = MILLILITER_UNIT_ID;
             converted = convertGramsToMilliliters(context, converted);
@@ -76,7 +72,7 @@ public abstract class AbstractTagHandler implements TagHandler {
     }
 
     private ConvertibleAmount convertGramsToMilliliters(ProcessingContext context, ConvertibleAmount converted) {
-        ConversionTarget target = new ConversionTarget(UnitType.METRIC, MILLILITER_UNIT_ID,context.getTarget().conversionContext());
+        ConversionTarget target = new ConversionTarget(UnitType.METRIC, MILLILITER_UNIT_ID, context.getTarget().conversionContext());
         ProcessingContext gramToMlContext = new ProcessingContext(converted, target, null);
         List<ConversionFactor> factors = findGramToMilliliterFactors(converted);
         return convertForFactors(gramToMlContext, factors);
@@ -91,7 +87,7 @@ public abstract class AbstractTagHandler implements TagHandler {
                 .withToUnit(MILLILITER_UNIT_ID)
                 .withConversionId(conversionId);
 
-        return  factorRepository.findFactors(criteriaBuilder.build()).stream()
+        return factorRepository.findFactors(criteriaBuilder.build()).stream()
                 .map(factor -> (ConversionFactor) factor)
                 .toList();
 
@@ -125,18 +121,6 @@ public abstract class AbstractTagHandler implements TagHandler {
     }
 
     public abstract List<ConversionFactor> findFactorsForMetric(ProcessingContext context);
-
-    private Predicate<? super ConversionUnitFactorEntity> toMarkerFilterOrNull(ProcessingContext context) {
-        String requestedMarker = context.getTarget().marker();
-        return factor -> {
-            if (factor.getToMarker() != null) {
-                return Objects.equals(factor.getToMarker(), requestedMarker) || factor.getToMarker().isEmpty();
-            }
-            return true;
-        };
-    }
-
-
 
 }
 
