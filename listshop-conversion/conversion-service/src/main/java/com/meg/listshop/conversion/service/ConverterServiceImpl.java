@@ -30,7 +30,6 @@ import java.util.List;
 @Primary
 public class ConverterServiceImpl implements ConverterService {
     private static final Logger LOG = LoggerFactory.getLogger(ConverterServiceImpl.class);
-    private final java.util.Map<HandlerChainKey, HandlerChain> chainMap = new java.util.HashMap<>();
     private final List<ConverterProcessor> processors;
 
 

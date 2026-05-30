@@ -11,10 +11,9 @@ import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
-import com.meg.listshop.conversion.service.ConversionTarget;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
-import com.meg.listshop.conversion.service.factors.NewFactorProvider;
+import com.meg.listshop.conversion.service.factors.FactorProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class BaseScaleHandler implements ScaleHandler, NewFactorProvider {
+public abstract class BaseScaleHandler implements ScaleHandler, FactorProvider {
     private static final Logger LOG = LoggerFactory.getLogger(BaseScaleHandler.class);
     private static final double DEFAULT_MIN_RANGE = 0.4990;
     private static final double DEFAULT_MAX_RANGE = 500;
@@ -76,10 +75,6 @@ public abstract class BaseScaleHandler implements ScaleHandler, NewFactorProvide
         return ProcessingUtils.pullCurrentQuantity(context);
     }
 
-    @Override
-    public List<ConversionFactor> findFactors(ConvertibleAmount toConvert, ConversionTarget target) {
-        return findFactors(new ProcessingContext(toConvert, target));
-    }
 
     protected List<ConversionFactor> deduplicateFactors(List<ConversionFactor> allFactors, ConvertibleAmount toConvert) {
         List<ConversionFactor> cleanedFactors = new ArrayList<>();

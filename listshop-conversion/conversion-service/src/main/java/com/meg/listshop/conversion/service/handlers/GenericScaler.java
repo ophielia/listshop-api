@@ -39,14 +39,6 @@ public class GenericScaler extends BaseScaleHandler {
     }
 
 
-    public List<ConversionFactor> findFactors(ConvertibleAmount toConvert, ConversionTarget target) {
-        FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
-        FactorCriteria criteria = builder.withFromUnit(toConvert.getUnit())
-                .withToDomain(target.domainType())
-                .build();
-        return deduplicateFactors(conversionFactorRepository.findAllFactors(criteria), toConvert);
-    }
-
     public List<ConversionFactor> findFactors(ProcessingContext context) {
         ConvertibleAmount toConvert = context.getCurrentAmount();
         ConversionTarget target = context.getTarget();

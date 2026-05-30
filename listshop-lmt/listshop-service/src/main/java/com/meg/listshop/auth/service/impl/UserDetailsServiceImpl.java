@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.auth.service.impl;
 
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
@@ -5,7 +11,6 @@ import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.repository.AuthorityRepository;
 import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.auth.service.CustomUserDetails;
-import com.meg.listshop.conversion.service.handlers.AbstractConversionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +44,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         LOG.debug("Entering in loadUserByUsername Method...");
         UserEntity user = userRepository.findByEmail(username);
-        if(user == null){
+        if (user == null) {
             LOG.error("Username not found: " + username);
             throw new UsernameNotFoundException("could not found user..!!");
         }
@@ -57,7 +62,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return null;
         }
         List<AuthorityEntity> authorities = authorityRepository.findByUserId(user.getId());
-        return new CustomUserDetails(user,authorities);
+        return new CustomUserDetails(user, authorities);
     }
 
 }

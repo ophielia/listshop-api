@@ -36,25 +36,6 @@ public class TagUnitScaler extends BaseScaleHandler {
     }
 
 
-    public List<ConversionFactor> findFactors(ConvertibleAmount toConvert, ConversionTarget target) {
-        // return nothing if the from unit is already the target
-        if (target.unitId().equals(toConvert.getUnit().getId())) {
-            return List.of();
-        }
-        // look for
-        //  * conversion id
-        //  * to grams
-        //  * from unit
-        // invert results
-
-        FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
-        FactorCriteria criteria = builder.withFromUnit(toConvert.getUnit())
-                .withToUnit(GRAM_UNIT_ID)
-                .withConversionId(toConvert.getConversionId())
-                .build();
-        return conversionFactorRepository.findAllFactors(criteria);
-    }
-
     public List<ConversionFactor> findFactors(ProcessingContext context) {
         ConvertibleAmount toConvert = context.getCurrentAmount();
         ConversionTarget target = context.getTarget();

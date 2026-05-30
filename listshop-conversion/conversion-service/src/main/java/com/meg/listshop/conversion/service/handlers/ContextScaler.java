@@ -32,15 +32,7 @@ public class ContextScaler extends BaseScaleHandler {
         return context.getTarget().conversionContext() != null;
     }
 
-    public List<ConversionFactor> findFactors(ConvertibleAmount toConvert, ConversionTarget target) {
-        FactorCriteriaBuilder builder = new FactorCriteriaBuilder();
-        FactorCriteria criteria = builder.withFromUnit(toConvert.getUnit())
-                .withToContext(target.conversionContext())
-                .withToDomain(toConvert.getUnit().getType())
-                .build();
-        return deduplicateFactors(conversionFactorRepository.findAllFactors(criteria), toConvert);
 
-    }
 
     public List<ConversionFactor> findFactors(ProcessingContext context) {
         ConvertibleAmount toConvert = context.getCurrentAmount();
