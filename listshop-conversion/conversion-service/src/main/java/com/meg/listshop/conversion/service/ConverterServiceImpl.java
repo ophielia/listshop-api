@@ -1,83 +1,80 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.conversion.service;
 
 
 import com.meg.listshop.common.StringTools;
-import com.meg.listshop.common.UnitSubtype;
 import com.meg.listshop.common.UnitType;
 import com.meg.listshop.common.data.entity.UnitEntity;
-import com.meg.listshop.common.data.repository.UnitRepository;
-import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.pojo.*;
 import com.meg.listshop.conversion.exceptions.ConversionAddException;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
-import com.meg.listshop.conversion.service.handlers.ChainConversionHandler;
-import com.meg.listshop.conversion.service.handlers.ConversionHandler;
-import com.meg.listshop.conversion.service.handlers.FactorProvider;
-import com.meg.listshop.conversion.service.handlers.ScalingHandler;
-import jakarta.annotation.PostConstruct;
+import com.meg.listshop.conversion.service.processors.ConverterProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
-@Service
+//import com.meg.listshop.conversion.service.handlers.ChainConversionHandler;
+
+
+@Service("converterService")
+@Primary
 public class ConverterServiceImpl implements ConverterService {
     private static final Logger LOG = LoggerFactory.getLogger(ConverterServiceImpl.class);
-    private final UnitRepository unitRepository;
-    private final List<ChainConversionHandler> handlerList;
-    private final List<ScalingHandler> scalerList;
-    private final ConversionHandler tagSpecificHandler;
-    HashMap<HandlerChainKey, HandlerChain> chainMap = new HashMap<>();
-
-    @Value("${conversionservice.gram.unit.id:1013}")
-    private Long GRAM_UNIT_ID;
+    private final List<ConverterProcessor> processors;
 
 
     @Autowired
-    public ConverterServiceImpl(List<ChainConversionHandler> handlerList,
-                                List<ScalingHandler> scalerList,
-                                @Qualifier("tagSpecificHandler") ConversionHandler tagSpecificHandler, UnitRepository unitRepository) {
-        this.handlerList = handlerList;
-        this.scalerList = scalerList;
-        this.tagSpecificHandler = tagSpecificHandler;
-        this.unitRepository = unitRepository;
+    public ConverterServiceImpl(List<ConverterProcessor> processors) {
+        this.processors = processors;
     }
 
-    @PostConstruct
-    public void initialize() {
-        scalerList.sort(
-                (ScalingHandler h1, ScalingHandler h2) -> h1.scalarWeight().compareTo(h2.scalarWeight()));
-    }
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, DomainType domain) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for domain [{}], amount [{}]", domain, amount);
-        if (domain == null) {
-            throw new ConversionPathException("Cannot convert, domain is null");
-        }
-        ConversionSpec target = ConversionSpec.specForDomain(amount.getUnit(), domain);
 
-        return doConversion(amount, target);
+        // create context
+        UnitType unitDomainType = domainToUnitType(domain);
+        ConversionTarget target = new ConversionTarget(unitDomainType, null, null);
+        ProcessingContext context = new ProcessingContext(amount, target);// feed to converter chain
+        return doConversion(context);
+    }
+
+    private ConvertibleAmount doConversion(ProcessingContext context) {
+        for (ConverterProcessor processor : processors) {
+            if (processor.appliesTo(context)) {
+                processor.process(context);
+            }
+        }
+        return context.getCurrentAmount();
     }
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, ConversionRequest conversionRequest) throws ConversionPathException, ConversionFactorException {
         LOG.debug("Beginning convert for context [{}], amount [{}, unitSize [{}]", conversionRequest, amount, conversionRequest.getUnitSize());
+
         if (conversionRequest == null) {
             throw new ConversionPathException("Cannot convert, context is null");
         }
-        UnitSubtype targetSubtype = determineSubtypeFromContext(amount, conversionRequest);
-        ConversionSpec conversionSpec = ConversionSpec.specForConversionRequest(conversionRequest, targetSubtype);
 
-        return doConversion(amount, conversionSpec);
+        UnitType unitDomainType = domainToUnitType(conversionRequest.getDomainType());
+        ConversionTargetType conversionTarget = conversionRequest.getContextType();
+
+
+        ConversionTarget target = new ConversionTarget(unitDomainType, null, conversionTarget);
+        ProcessingContext context = new ProcessingContext(amount, target);
+
+        return doConversion(context);
     }
 
 
@@ -88,13 +85,16 @@ public class ConverterServiceImpl implements ConverterService {
 
     @Override
     public ConvertibleAmount convert(ConvertibleAmount amount, UnitEntity targetUnit, String unitSize) throws ConversionPathException, ConversionFactorException {
+        //MM conversion - come back for size
         LOG.debug("Beginning convert for unit [{}], amount [{}]", targetUnit, amount);
-        if (targetUnit == null) {
-            throw new ConversionPathException("Target unit is null");
-        }
-        ConversionSpec target = createConversionSpec(targetUnit, unitSize);
 
-        return doConversion(amount, target);
+        // create context
+        UnitType unitDomainType = targetUnit.getType();
+        ConversionTarget target = new ConversionTarget(unitDomainType, targetUnit.getId(), null, unitSize, null);
+        ProcessingContext context = new ProcessingContext(amount, target, targetUnit);
+        doConversion(context);
+
+        return context.getCurrentAmount();
     }
 
     public ConvertibleAmount add(ConvertibleAmount amountToAdd, ConvertibleAmount addTo, AddScaleRequest request) throws ConversionPathException, ConversionFactorException, ConversionAddException {
@@ -118,27 +118,22 @@ public class ConverterServiceImpl implements ConverterService {
             throw new ConversionAddException(message);
         }
 
+
         // check if the sizes are the same
         // we use the addTo size if it's user entered
         // otherwise we use the addFrom size, if it's user entered
         String targetUnitSize = determineUnitSizePrecedenceForAdd(amountToAdd, addTo);
-        request.setUnitSize(targetUnitSize);
+        ConversionTarget target = new ConversionTarget(request.getUnitType(), addTo.getUnit().getId(),
+                request.getContextType(), targetUnitSize, null);
+        ProcessingContext baseContext = new ProcessingContext(null, target, null);
 
-        // do the adding
-        // create context
-        ConversionSpec spec = ConversionSpec.specForAddRequest(request);
-        ConversionContext context = new ConversionContext(amountToAdd, spec);
-        prepareContextForTagSpecificScaling(context);
-        ScalingHandler scalingHandler = getScalerForContext(context);
-
-        // scale to equalize sizes, if sizes are different
-        amountToAdd = equalizeSize(amountToAdd, context, scalingHandler);
-        addTo = equalizeSize(addTo, context, scalingHandler);
+        amountToAdd = equalizeSize(amountToAdd, addTo, baseContext);
+        addTo = equalizeSize(addTo, amountToAdd, baseContext);
 
         double quantity = addTo.getQuantity();
         quantity += amountToAdd.getQuantity();
         boolean userSize = addTo.getUserSize() || amountToAdd.getUserSize();
-        String summedUnitSize = targetUnitSize != null ? targetUnitSize : addTo.getUnitSize();
+        String summedUnitSize = addTo.getUnitSize();
         ConvertibleAmount summedAmount = new SimpleAmount(quantity,
                 addTo.getUnit(),
                 addTo.getConversionId(),
@@ -147,18 +142,45 @@ public class ConverterServiceImpl implements ConverterService {
                 summedUnitSize,
                 userSize);
 
-        // do scaling
-        if (scalingHandler != null && !context.isUnitToUnit()) {
-            return scalingHandler.scale(summedAmount, context);
+        if (baseContext.getTarget().domainType().equals(UnitType.UNIT)) {
+            // scaling for units already done in equalizing sizes
+            return summedAmount;
         }
+
+        // do scaling
+        ConversionTarget scalingTarget = new ConversionTarget(request.getUnitType(), null,
+                request.getContextType(), targetUnitSize, null);
+        ProcessingContext scalingContext = new ProcessingContext(summedAmount, scalingTarget, null);
+        summedAmount = doConversion(scalingContext);
 
         // return result
         return summedAmount;
+
+    }
+
+
+    private ConvertibleAmount equalizeSize(ConvertibleAmount amountToAdd, ConvertibleAmount addTo, ProcessingContext baseContext) {
+        String targetedSize = baseContext.getTarget().unitSize();
+        if (!sizesMatch(amountToAdd.getUnitSize(), targetedSize)) {
+            ProcessingContext equalizeContext = new ProcessingContext(amountToAdd, baseContext.getTarget(), addTo.getUnit());
+            return doConversion(equalizeContext);
+        }
+        return amountToAdd;
+    }
+
+    private boolean sizesMatch(String unitSize, String targetedSize) {
+        if (unitSize == null && targetedSize == null) {
+            return true;
+        }
+        if (unitSize == null || targetedSize == null) {
+            return false;
+        }
+        return (unitSize.equals(targetedSize));
     }
 
     public ConvertibleAmount scale(ConvertibleAmount toScale, AddScaleRequest request) throws ConversionFactorException {
         // do the scaling
-        // create context
+        /* create context
         ConversionSpec spec = ConversionSpec.specForAddRequest(request);
         ConversionContext context = new ConversionContext(toScale, spec);
         prepareContextForTagSpecificScaling(context);
@@ -171,34 +193,12 @@ public class ConverterServiceImpl implements ConverterService {
 
         // return result
         return toScale;
-    }
-
-    private ConvertibleAmount equalizeSize(ConvertibleAmount possibleScale, ConversionContext context, ScalingHandler scalingHandler) throws ConversionFactorException {
-        if (!context.isUnitToUnit() ||
-                possibleScale.getUnitSize() == null && context.getTargetUnitSize() == null ||
-                scalingHandler == null
-        ) {
-            // not unit to unit or both are empty - both go to default, no size equalization necessary
-            return possibleScale;
-        }
-
-        String targetSize = context.getTargetUnitSize() != null ? context.getTargetUnitSize() : "default";
-        String possibleScaleSize = possibleScale.getUnitSize() != null ? possibleScale.getUnitSize() : "default";
-        if (possibleScaleSize.equals(targetSize)) {
-            // null or not, the sizes are equal - no equalizing to be done
-            return possibleScale;
-        }
-
-        // convert sizes => amountToAdd to target size
-        return scalingHandler.scale(possibleScale, context);
-    }
-
-    private void prepareContextForTagSpecificScaling(ConversionContext context) {
-        if (!context.isTagSpecfic()) {
-            return;
-        }
-        List<ConversionFactor> factors = ((FactorProvider) tagSpecificHandler).provideFactors(context.getConversionId());
-        context.conversionFactorsFound(factors);
+*/
+        ConversionTarget target = new ConversionTarget(request.getUnitType(), null, request.getContextType(), request.getUnitSize(), toScale.getMarker());
+        ProcessingContext pContext = new ProcessingContext(toScale, target);
+        return doConversion(pContext);
+        // new ConversionSpec(null, request.getUnitType(), request.getSubtype(),
+        //       request.getContextType(), request.getUnitSize(), null, null);
     }
 
     private String determineUnitSizePrecedenceForAdd(ConvertibleAmount amountToAdd, ConvertibleAmount addTo) {
@@ -211,264 +211,16 @@ public class ConverterServiceImpl implements ConverterService {
         if (toAddIsUserEntered) {
             return amountToAdd.getUnitSize();
         }
-        return null;
+        return addTo.getUnitSize();
     }
 
-    private UnitSubtype determineSubtypeFromContext(ConvertibleAmount toConvert, ConversionRequest context) {
-        // context dish, toConvert hybrid - return subtype of toConvert
-        if (context.getContextType().equals(ConversionTargetType.Dish) &&
-                toConvert.getUnit().getType().equals(UnitType.HYBRID)) {
-            return toConvert.getUnit().getSubtype();
-        }
-        if (context.getContextType().equals(ConversionTargetType.Dish)) {
-            // context dish, default is volume
-            return UnitSubtype.VOLUME;
-        }
-        // context list, is liquid - return volume
-        if (context.getContextType().equals(ConversionTargetType.List) &&
-                toConvert.getUnit().isLiquid()) {
-            return UnitSubtype.VOLUME;
-        }
-        // context list, default is weight
-        return UnitSubtype.WEIGHT;
-
+    private UnitType domainToUnitType(DomainType domain) {
+        return switch (domain) {
+            case US -> UnitType.US;
+            case METRIC -> UnitType.METRIC;
+            case UK -> UnitType.UK;
+            case ALL -> UnitType.ALL;
+        };
     }
-
-
-    private ConvertibleAmount doConversion(ConvertibleAmount amount, ConversionSpec conversionSpec) throws ConversionPathException, ConversionFactorException {
-        ConvertibleAmount result = amount;
-
-        // return if no conversion necessary
-        if (noConversionNecessary(amount, conversionSpec)) {
-            LOG.info("No conversion to do for source [{}] and target [{}]. ", amount, conversionSpec);
-            return amount;
-        }
-
-        // Create ConversionContext
-        ConversionContext context = new ConversionContext(amount, conversionSpec);
-
-        // if conversion necessary, convert for tag specific
-        // required if - volume < = > weight
-        //               tag specific available (conversion id not null)
-        if (context.requiresAndCanDoTagSpecificConversion(amount)) {
-            // weight / volume requirement requires metric type
-            result = doTagSpecificConversion(result, context);
-        }
-
-
-        // continuing with result - is domain conversion necessary
-        //  DomainHandler
-        //       look for chain
-        //       rework chain to be by domain only
-        //       one handler for each domain (to metric) metric <=> us, metric <=> imperial
-        //       two way handlers
-        //       all units - volume / weight, etc.
-        if (context.requiresDomainConversion(result)) { //!result.getUnit().getType().equals(conversionSpec.getUnitType())
-            result = convertDomain(result, context); // conversionSpec.getUnitType(), conversionSpec.getUnitId()
-        }
-        // continuing with result - scaling
-        //  ScalingHandler
-        //       only used for List/Dish Context
-        //       limits to unit types for context
-        //       no cross domain conversions
-        //       no weight to volume conversion
-        context.checkUnitToUnit(result);
-        ScalingHandler scalingHandler = getScalerForContext(context);
-        if (scalingHandler != null) {
-            return scalingHandler.scale(result, context);
-        }
-
-        return result;
-
-
-    }
-
-    private ConvertibleAmount doTagSpecificConversion(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
-        // from tag specific to grams works
-        // to tag specific (for units) doesn't work.
-        //    note for above - to tag specific?? or to unit?? maybe more to unit - that's my use case
-        // tag specific keys on grams
-        // so, if we wnt to convert _to_ a tag specific
-
-        // preconvert - if target is unit, or target is tag specific, convert to grams
-        ConvertibleAmount preHandled =  amount.copy();
-        if (context.getTargetUnitType() != null &&
-                preHandled.getUnit().getSubtype().equals(UnitSubtype.WEIGHT) &&
-                (context.getTargetContextType() == ConversionTargetType.List || context.getTargetUnitType() == UnitType.UNIT) ) {
-            UnitEntity targetUnit = unitRepository.findById(GRAM_UNIT_ID).orElse(null);
-            Long conversionIdForPrehandle = amount.getUnit().getType() != UnitType.HYBRID ? null : amount.getConversionId();
-            ConvertibleAmount convertToGrams =   copyAmountWithConversionId(amount, conversionIdForPrehandle);
-
-            try {
-                preHandled = convert(convertToGrams, targetUnit);
-                // copy object with conversion id
-                preHandled = copyAmountWithConversionId(preHandled, amount.getConversionId());
-            } catch (ConversionPathException | ConversionFactorException e) {
-                // swallowing this error, since it's not at all a sure thing that the conversion will work
-                LOG.debug("unable to convert amount with unit [{}] to grams", amount.getUnit());
-            }
-        } else if (context.getTargetSubtype().equals(UnitSubtype.VOLUME)
-                && !amount.getUnit().getType().equals(UnitType.METRIC)) {
-            preHandled =  convert(amount, DomainType.METRIC);
-        }
-        // result convert preconvert with tagspecific handler
-        ConvertibleAmount result = tagSpecificHandler.convert(preHandled, context);
-
-        return result;
-
-    }
-
-    private ConvertibleAmount copyAmountWithConversionId(ConvertibleAmount amount,Long conversionId) {
-        return      new SimpleAmount(
-                amount.getQuantity(),
-                amount.getUnit(),
-                conversionId,
-                amount.getIsLiquid().booleanValue(),
-                amount.getMarker()
-        );
-    }
-
-    private boolean noConversionNecessary(ConvertibleAmount amount, ConversionSpec conversionSpec) {
-        // no conversion necessary if
-        // amount unit id = spec unit id
-        if (conversionSpec.getUnitId() != null && amount.getUnit().getId().equals(conversionSpec.getUnitId())) {
-            return true;
-        }
-        if (conversionSpec.getContextType() != null && conversionSpec.getContextType().equals(ConversionTargetType.List)) {
-            return domainMatches(amount, conversionSpec) && amount.getUnit().isListUnit();
-        }
-        if (conversionSpec.getContextType() != null && conversionSpec.getContextType().equals(ConversionTargetType.Dish)) {
-            return domainMatches(amount, conversionSpec) && amount.getUnit().isDishUnit();
-        }
-        return false;
-    }
-
-    private boolean domainMatches(ConvertibleAmount amount, ConversionSpec conversionSpec) {
-        // unit matches everything
-        if (amount.getUnit().getType().equals(UnitType.UNIT)) {
-            return true;
-        }
-        return conversionSpec.getUnitType() != null &&
-                conversionSpec.getUnitType().equals(amount.getUnit().getType());
-    }
-
-    private ScalingHandler getScalerForContext(ConversionContext context) {
-        return scalerList.stream().filter(s -> s.scalerFor(context)).findFirst().orElse(null);
-    }
-
-
-
-    private ConvertibleAmount convertDomain(ConvertibleAmount amount, ConversionContext context) throws ConversionPathException, ConversionFactorException {
-        UnitType domainType = context.getTargetUnitType();
-        UnitType sourceType = amount.getUnit().getType();
-        LOG.debug("Beginning convert for domain [{}], amount [{}]", domainType, amount);
-
-        if (sourceType.equals(domainType)) {
-            LOG.info("No conversion to do - source [{}] and target [{}] are equal. ", sourceType, domainType);
-            return amount;
-        }
-        return doDomainConversion(amount, context);
-
-    }
-
-
-
-    private ConvertibleAmount doDomainConversion(ConvertibleAmount amount, ConversionContext context) throws ConversionFactorException, ConversionPathException {
-        Long unitId = context.getTargetUnitId();
-        UnitType domainType = context.getTargetUnitType();
-        ConversionSpec source = createConversionSpec(amount.getUnit());
-        ConversionSpec target = ConversionSpec.basicSpec(unitId, domainType, null, new HashSet<>());
-
-        // find or create handler chain for source / target
-        HandlerChain chain = getOrCreateChain(source, target);
-
-        // return converted amount
-        return chain.process(amount, context);
-    }
-
-    private ConversionSpec createConversionSpec(UnitEntity unit) {
-        return ConversionSpec.basicSpec(unit.getId(), unit.getType(), unit.getSubtype(), new HashSet<>());
-    }
-
-    private ConversionSpec createConversionSpec(UnitEntity unit, String unitSize) {
-        return ConversionSpec.basicSpec(unit.getId(), unit.getType(), unit.getSubtype(), unitSize, new HashSet<>());
-    }
-
-    private HandlerChain getOrCreateChain(ConversionSpec source, ConversionSpec target) throws ConversionPathException {
-        HandlerChainKey conversionKey = new HandlerChainKey(source, target);
-
-        if (chainMap.containsKey(conversionKey)) {
-            LOG.trace("Found existing chain for key: [{}]", conversionKey);
-            return chainMap.get(conversionKey);
-        }
-
-        HandlerChain newChain = createConversionChain(source, target);
-        chainMap.put(conversionKey, newChain);
-        return newChain;
-    }
-
-    private HandlerChain createConversionChain(ConversionSpec sourceSpec, ConversionSpec targetSpec) throws ConversionPathException {
-        LOG.info("Creating chain for source: [{}], target [{}]", sourceSpec, targetSpec);
-        // assemble handler chain list
-        List<ChainConversionHandler> handlers = assembleHandlerList(sourceSpec, targetSpec, new ArrayList<>(), 0);
-
-        // convert list into handler chain
-        if (handlers.isEmpty()) {
-            String message = String.format("No handler chain can be assembled for source: %s target: %s", sourceSpec, targetSpec);
-            LOG.warn(message);
-            throw new ConversionPathException(message);
-        } else if (handlers.size() == 1) {
-            return new HandlerChain(handlers.get(0));
-        }
-
-        // we have more than one handler - we'll make a handler chain
-        return assembleHandlerChain(new HandlerChain(handlers.get(handlers.size() - 1)),
-                handlers,
-                handlers.size() - 2);
-    }
-
-    private HandlerChain assembleHandlerChain(HandlerChain handlerChain, List<ChainConversionHandler> handlers, int i) {
-        if (i < 0) {
-            return handlerChain;
-        }
-        HandlerChain linkToBefore = new HandlerChain(handlers.get(i));
-        linkToBefore.setNextLink(handlerChain);
-        return assembleHandlerChain(linkToBefore, handlers, i - 1);
-    }
-
-    private List<ChainConversionHandler> assembleHandlerList(ConversionSpec source, ConversionSpec target, List<ChainConversionHandler> handlers, int iteration) throws ConversionPathException {
-        // look for direct match
-        ChainConversionHandler directMatch = findHandlerMatch(source, target);
-        if (directMatch != null) {
-            handlers.add(0, directMatch);
-            return handlers;
-        }
-        // check for too many iterations
-        if (iteration > 10) {
-            String message = String.format("No handler chain can be assembled for fromUnit: %s toUnit: %s", source, target);
-            throw new ConversionPathException(message);
-        }
-
-        // look for step matches
-        for (ChainConversionHandler handler : handlerList) {
-            if (handler.convertsToDomain(target.getUnitType())) {
-                List<ChainConversionHandler> foundList = assembleHandlerList(source, handler.getOppositeSource(target.getUnitType()), handlers, iteration + 1);
-                if (!foundList.isEmpty()) {
-                    foundList.add(handler);
-                    return foundList;
-                }
-
-            }
-        }
-        return new ArrayList<>();
-    }
-
-
-    private ChainConversionHandler findHandlerMatch(ConversionSpec source, ConversionSpec target) {
-        return handlerList.stream()
-                .filter(h -> h.handlesDomain(source.getUnitType(), target.getUnitType()))
-                .findFirst().orElse(null);
-    }
-
 
 }

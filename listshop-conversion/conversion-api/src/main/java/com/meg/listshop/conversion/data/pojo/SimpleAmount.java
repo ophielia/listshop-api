@@ -67,6 +67,7 @@ public class SimpleAmount  implements ConvertibleAmount {
         this.unitSize = unitSize;
     }
 
+
     @Override
     public double getQuantity() {
         return quantity;

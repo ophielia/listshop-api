@@ -205,7 +205,8 @@ values  (1000, 113, 1013, 1049, 224636, 229563, null, null, false),
         (35, 160, 1026, 1024, null, null, null, null, null),
         (36, 1, 1013, 1013, null, null, null, null, null),
         (37, 0.001, 1014, 1013, null, null, null, null, null),
-        (38, 0.0022, 1008, 1013, null, null, null, null, null),
+        (38, 0.00220462   , 1008, 1013, null, null, null, null, null),
+        --(38, 0.0022   , 1008, 1013, null, null, null, null, null),
         (39, 0.0352733686067019, 1009, 1013, null, null, null, null, null),
         (40, 1000, 1013, 1014, null, null, null, null, null),
         (41, 1, 1014, 1014, null, null, null, null, null),
@@ -322,7 +323,6 @@ insert into public.food_conversions (conversion_id, food_id, fdc_id, amount, uni
 values  (225744, 105738, 170457, 1, 'unit', 182, 1011, 3891, null, null, null, 'whole 3"" dia', 'large', false),
         (225744, 105738, 170457, 1, 'unit', 123, 1011, 3892, null, null, null, '2-3/5" dia', 'small', false),
         (225744, 105738, 170457, 1, 'unit', 148, 1011, 3960, null, null, null, null, 'medium', true),
-        (225744, 105738, 170457, 1, 'unit', 91, 1011, 3976, null, null, null, '2-2/5" dia', 'small', false),
         (225744, 104748, 170457, 1, 'cup', 180, 1000, 1163, null, 'chopped', null, null, 'medium', false),
         (225744, 105738, 170457, 1, 'slice', 27, 1022, 2544, null, null, null, '1/2" thick', 'medium', false),
         (225744, 104539, 170457, 1, 'wedge', 31, 1050, 2835, null, 'wedge', null, '1/4 tomato', 'medium', false),
@@ -333,11 +333,16 @@ insert into public.factors (factor_id, factor, to_unit, from_unit, conversion_id
 values  (1081, 182, 1013, 1011, 225744, 3891, null, 'large', false, null),
         (1082, 123, 1013, 1011, 225744, 3892, null, 'small', false, null),
         (1083, 148, 1013, 1011, 225744, 3960, null, 'medium', true, null),
-        (1084, 91, 1013, 1011, 225744, 3976, null, 'small', false, null),
         (1085, 180, 1013, 1000, 225744, 1163, 'chopped', 'medium', false, null),
         (1086, 27, 1013, 1022, 225744, 2544, null, 'medium', false, null),
         (1087, 31, 1013, 1050, 225744, 2835, 'wedge', 'medium', false, null),
         (1088, 20, 1013, 1022, 225744, 3606, null, 'medium', false, null);
+
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
 
 -- add conversion to tomato
 update tag set conversion_id = 225744 where tag_id = 33;

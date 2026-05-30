@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.conversion.data.pojo;
 
 public enum DomainType {
@@ -16,4 +22,5 @@ public enum DomainType {
         }
         return result;
     }
-    }
+
+}

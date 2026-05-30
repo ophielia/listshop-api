@@ -1,10 +1,16 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication(scanBasePackages = {"com.meg.listshop", "com.meg.listshop.conversion.service"})
+@SpringBootApplication(scanBasePackages = {"com.meg.listshop", "com.meg.listshop.conversion"})
 @EnableScheduling
 public class Application {
 

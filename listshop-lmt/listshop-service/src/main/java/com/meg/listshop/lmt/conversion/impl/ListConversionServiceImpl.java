@@ -321,7 +321,7 @@ public class ListConversionServiceImpl implements ListConversionService {
     }
 
     private ConvertibleAmount convertDetail(ConvertibleAmount toConvert, ListItemDetailEntity existing, ListItemEntity item, DomainType domainType) throws ConversionPathException, ConversionFactorException {
-        UnitEntity targetUnit = determineTargetUnit(existing, item);
+        UnitEntity targetUnit = determineTargetUnit(toConvert,existing, item);
         if (targetUnit != null) {
             // convert directly to unit
             return converterService.convert(toConvert, targetUnit);
@@ -333,14 +333,20 @@ public class ListConversionServiceImpl implements ListConversionService {
     }
 
 
-    private UnitEntity determineTargetUnit(ListItemDetailEntity existing, ListItemEntity item) {
+    private UnitEntity determineTargetUnit(ConvertibleAmount toConvert, ListItemDetailEntity existing, ListItemEntity item) {
         // return unit for existing item if available
         if (existing != null && existing.getUnitId() != null) {
             return getUnit(existing.getUnitId());
         }
-        // otherwise, return unit for item
+        // or, return unit for item
         if (item != null && item.getUnit() != null) {
             return item.getUnit();
+        }
+        // or, return unit if single unit
+        if (toConvert != null &&
+                toConvert.getUnit() != null &&
+        toConvert.getUnit().getId().equals(SINGLE_UNIT_ID)) {
+            return toConvert.getUnit();
         }
 
         return null;

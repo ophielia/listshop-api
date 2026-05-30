@@ -493,7 +493,7 @@ class StateMachineActiveTransitionTest {
 
         ShoppingListEntity targetList = createShoppingList();
         Long listId = targetList.getId();
-        TagEntity tagEntity = getTag(TAG_TOMATO); // tag flour, which has conversions
+        TagEntity tagEntity = getTag(TAG_TOMATO);
         BasicAmount amount = new BasicAmount(1, null, "medium", UNIT_UNIT_ID, tagEntity);
         ItemStateContext setupContext = new ItemStateContext(null, listId);
         setupContext.setTag(tagEntity);
@@ -811,10 +811,10 @@ class StateMachineActiveTransitionTest {
 
         Assertions.assertNotNull(lessThanOneResult);
         Assertions.assertNotNull(lessThanOneResult.getAmountText());
-        Assertions.assertEquals("4 medium", lessThanOneResult.getAmountText());
+        Assertions.assertEquals("1 1/8 lb", lessThanOneResult.getAmountText());
         ListItemDetailEntity lessThanOneDetail = lessThanOneResult.getDetails().get(0);
         Assertions.assertNotNull(lessThanOneDetail.getRawEntry());
-        Assertions.assertEquals("4 medium", lessThanOneDetail.getRawEntry());
+        Assertions.assertEquals("1 1/8 lb", lessThanOneDetail.getRawEntry());
 
         ItemStateContext flourWithAmount = new ItemStateContext(null, listId); // adding to existing
         TagEntity flourTag = getTag(TAG_FLOUR);
