@@ -12,6 +12,7 @@ import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 
 import java.util.List;
+import java.util.Set;
 
 public class FactorCriteria {
     private UnitEntity fromUnit;
@@ -21,6 +22,7 @@ public class FactorCriteria {
     private UnitType fromDomain;
     private ConversionTargetType toContext;
     private Long toUnitId;
+    private Set<Long> toUnitIds;
     private String toSize;
     private String toModifier;
     private Long conversionId;
@@ -245,5 +247,13 @@ public class FactorCriteria {
 
     public UnitType getFromExcludeDomain() {
         return fromExcludeDomain;
+    }
+
+    public Set<Long> getToUnitIds() {
+        return toUnitIds;
+    }
+
+    public void setToUnitIds(Set<Long> toUnitIds) {
+        this.toUnitIds = toUnitIds;
     }
 }

@@ -11,6 +11,7 @@ import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 
 import java.util.List;
+import java.util.Set;
 
 public class FactorCriteriaBuilder {
     private final FactorCriteria criteria;
@@ -58,6 +59,13 @@ public class FactorCriteriaBuilder {
         this.criteria.setToUnitId(toUnitId);
         return this;
     }
+
+    public FactorCriteriaBuilder withToUnitList(Set<Long> toUnitIds) {
+        this.criteria.setToUnitIds(toUnitIds);
+        return this;
+    }
+
+
 
     public FactorCriteriaBuilder withBridgeThroughMetric(boolean bridgeThroughMetric) {
         this.criteria.setBridgeThroughMetric(bridgeThroughMetric);

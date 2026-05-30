@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Order(3)
+@Order(1)
 public class TagUnitScaler extends BaseScaleHandler {
 
     private ConversionFactorRepository conversionFactorRepository;

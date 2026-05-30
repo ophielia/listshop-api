@@ -16,6 +16,7 @@ import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.data.repository.FactorCriteriaBuilder;
 import com.meg.listshop.conversion.data.repository.TagFactorRepository;
+import com.meg.listshop.conversion.service.ConversionTarget;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
 import org.slf4j.Logger;
@@ -75,12 +76,13 @@ public abstract class AbstractTagHandler implements TagHandler {
     }
 
     private ConvertibleAmount convertGramsToMilliliters(ProcessingContext context, ConvertibleAmount converted) {
-        List<ConversionFactor> factors = findGramToMilliliterFactors(context);
-        return convertForFactors(context, factors);
+        ConversionTarget target = new ConversionTarget(UnitType.METRIC, MILLILITER_UNIT_ID,context.getTarget().conversionContext());
+        ProcessingContext gramToMlContext = new ProcessingContext(converted, target, null);
+        List<ConversionFactor> factors = findGramToMilliliterFactors(converted);
+        return convertForFactors(gramToMlContext, factors);
     }
 
-    private List<ConversionFactor> findGramToMilliliterFactors(ProcessingContext context) {
-        ConvertibleAmount toConvert = context.getCurrentAmount();
+    private List<ConversionFactor> findGramToMilliliterFactors(ConvertibleAmount toConvert) {
         // create criteria - base criteria
         Long conversionId = toConvert.getConversionId();
 
@@ -97,6 +99,7 @@ public abstract class AbstractTagHandler implements TagHandler {
 
     private ConvertibleAmount convertForFactors(ProcessingContext context, List<ConversionFactor> factors) {
         ConvertibleAmount toConvert = context.getCurrentAmount();
+        Long conversionId = toConvert.getConversionId();
         if (factors == null || factors.isEmpty()) {
             LOG.debug("No conversions available for domainConversion from unit [{}] to unitType: [{}].", toConvert.getUnit(), context.getTarget().domainType());
             return toConvert;
@@ -108,7 +111,7 @@ public abstract class AbstractTagHandler implements TagHandler {
                     double newQuantity = toConvert.getQuantity() * f.getFactor();
                     UnitEntity newUnit = f.getToUnit();
 
-                    return new SimpleAmount(newQuantity, newUnit, f.getUnitSize());
+                    return new SimpleAmount(newQuantity, newUnit, conversionId, toConvert.getIsLiquid(), toConvert.getMarker(), f.getUnitSize(), f.isUnitDefault());
                 }).collect(Collectors.toList());
 
 

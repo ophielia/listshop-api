@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Order(3)
@@ -45,7 +46,7 @@ public class HybridTagHandler extends AbstractTagHandler {
                 .withConversionId(toConvert.getConversionId())
                 .withFromModifier(toConvert.getMarker())
                 .withFromSize(toConvert.getUnitSize())
-                .withToUnit(GRAM_UNIT_ID);
+                .withToUnitList(Set.of(GRAM_UNIT_ID, MILLILITER_UNIT_ID));
         List<ConversionFactor> factors = factorRepository.findFactors(criteriaBuilder.build()).stream()
                 .map(factor -> (ConversionFactor) factor)
                 .toList();

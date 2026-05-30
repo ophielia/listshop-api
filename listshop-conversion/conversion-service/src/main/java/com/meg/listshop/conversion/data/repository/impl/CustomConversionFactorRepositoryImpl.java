@@ -107,6 +107,9 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         if (criteria.getToUnitId() != null) {
             predicates.add(cb.equal(toUnit.<String>get("id"), criteria.getToUnitId()));
         }
+        if (criteria.getToUnitIds() != null) {
+            predicates.add(toUnit.get("id").in(criteria.getToUnitIds()));
+        }
         if (criteria.getToContext() != null) {
             if (criteria.getToContext() == ConversionTargetType.List ) {
                 predicates.add(cb.isTrue(toUnit.<Boolean>get("isListUnit")));

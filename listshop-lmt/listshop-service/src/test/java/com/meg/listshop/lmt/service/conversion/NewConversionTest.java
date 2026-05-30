@@ -71,6 +71,8 @@ class NewConversionTest {
     private static final Long CHICKEN_DRUMSTICK_ID = 227959L;
     private static final Long ONION_CONVERSION_ID = 56630L;
     private static final Long TOMATO_CONVERSION_ID = 225744L;
+    private static final Long OLIVE_OIL_TAG_ID = 51105L;
+    private static final Long OLIVE_OIL_CONVERSION_ID = 226442L;
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
     @Autowired
@@ -899,4 +901,28 @@ class NewConversionTest {
         assertEquals(LB_ID, converted.getUnit().getId());
 
     }
+
+    @Test
+    void testOliveOilWeightToVolume() throws ConversionPathException, ConversionFactorException {
+        UnitEntity kiloUnit = unitRepository.findById(KG_ID).orElse(null);
+        UnitEntity cupUnit = unitRepository.findById(CUPS_ID).orElse(null);
+        UnitEntity milliliterUnit = unitRepository.findById(MILLILITER_ID).orElse(null);
+
+        // 1 cup olive oil
+        ConvertibleAmount amount = new SimpleAmount(1.0, cupUnit, OLIVE_OIL_CONVERSION_ID, true, null);
+        ConvertibleAmount converted = converterService.convert(amount, milliliterUnit);
+        assertNotNull(converted);
+        System.out.println(converted);
+        assertEquals(MILLILITER_ID, converted.getUnit().getId());
+        assertEquals(194.4, RoundingUtils.roundToThousandths(converted.getQuantity()));
+
+        ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.METRIC);
+         converted = converterService.convert(amount, listContext);
+        assertNotNull(converted);
+        System.out.println(converted);
+        assertEquals(CENTILETER_ID, converted.getUnit().getId());
+        assertEquals(19.44, RoundingUtils.roundToThousandths(converted.getQuantity()));
+
+    }
+
 }

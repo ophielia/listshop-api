@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Order(1)
+@Order(3)
 public class UnitScaler extends BaseScaleHandler {
 
     private ConversionFactorRepository conversionFactorRepository;
@@ -30,7 +30,8 @@ public class UnitScaler extends BaseScaleHandler {
 
     public boolean shouldScale(ProcessingContext context) {
         // applies if the conversion is to one specific unit
-        return context.getTarget().unitId() != null && context.getCurrentAmount().getConversionId() == null;
+        return context.getTargetUnit() != null &&
+                !context.getTargetUnit().isTagSpecific();
     }
 
 
