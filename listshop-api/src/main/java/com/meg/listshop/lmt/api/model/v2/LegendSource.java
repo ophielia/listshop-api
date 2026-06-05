@@ -12,8 +12,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LegendSource {
 
-    @JsonProperty("list_id")
+    @JsonProperty("related_id")
     private String referenceId;
+    @JsonProperty
     private String display;
     @JsonProperty("source_type")
     private String referenceType;

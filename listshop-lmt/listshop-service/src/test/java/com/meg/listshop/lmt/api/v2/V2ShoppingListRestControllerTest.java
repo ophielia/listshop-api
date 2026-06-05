@@ -112,13 +112,16 @@ class V2ShoppingListRestControllerTest {
 
     @Test
     void testRetrieveLists() {
-        given()
+        String response = given()
                 .header(TestUtils.authToken(jwtToken))
                 .when()
-                .get("/shoppinglist")
+                .get("/v2/shoppinglist")
                 .then()
                 .statusCode(200)
-                .contentType(ContentType.JSON);
+                .contentType(ContentType.JSON)
+                .extract().asString();
+
+        Assertions.assertNotNull(response);
     }
 
     @Test
@@ -141,15 +144,17 @@ class V2ShoppingListRestControllerTest {
                 .statusCode(200);
 
         // now, testing the most recent call
-        given()
+        String response = given()
                 .header(TestUtils.authToken(meJwtToken))
                 .when()
                 .get("/v2/shoppinglist/mostrecent")
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("list_id", Matchers.isA(String.class));
+                .body("list_id", Matchers.isA(String.class))
+                .extract().asString();
 
+        Assertions.assertNotNull(response);
     }
 
     @Test

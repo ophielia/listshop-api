@@ -95,11 +95,14 @@ public class LayoutServiceImpl implements LayoutService {
 
     @Override
     public ListLayoutEntity getFilledStandardLayout(Long userId) {
-        ListLayoutEntity standardLayout = getStandardLayout();
-
-        return listLayoutRepository.fillLayout(userId, standardLayout);
+        return getFilledStandardLayout(userId, null);
     }
 
+    private ListLayoutEntity getFilledStandardLayout(Long userId, Long tagId) {
+        ListLayoutEntity standardLayout = getStandardLayout();
+
+        return listLayoutRepository.fillLayout(userId, tagId,standardLayout);
+    }
     @Override
     public List<ListLayoutEntity> getAllLayoutsV2(Long userId) {
 
@@ -107,6 +110,18 @@ public class LayoutServiceImpl implements LayoutService {
         layouts.add(getFilledStandardLayout(userId));
         if (userId != null) {
             layouts.addAll(listLayoutRepository.getUserLayouts(userId));
+        }
+
+        return layouts;
+    }
+
+    @Override
+    public List<ListLayoutEntity> getAllLayoutsWithTag(Long userId, Long tagId) {
+
+        List<ListLayoutEntity> layouts = new ArrayList<>();
+        layouts.add(getFilledStandardLayout(userId, tagId));
+        if (userId != null) {
+            layouts.addAll(listLayoutRepository.getUserLayoutsWithTag(userId, tagId));
         }
 
         return layouts;
