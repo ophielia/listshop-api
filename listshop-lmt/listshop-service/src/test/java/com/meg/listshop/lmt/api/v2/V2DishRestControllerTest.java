@@ -8,7 +8,10 @@ package com.meg.listshop.lmt.api.v2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
+import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
+import com.meg.listshop.lmt.api.model.DishListResource;
+import com.meg.listshop.lmt.api.model.DishResource;
 import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.test.TestConstants;
 import com.meg.listshop.test.TestUtils;
@@ -25,9 +28,15 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
@@ -356,8 +365,50 @@ class V2DishRestControllerTest {
                 .as(Dish.class);
     }
 
+    @Test
+    void testFindDishes() throws Exception {
+        List<Long> excludedTags = Arrays.asList(TestConstants.TAG_3_ID);
+        List<Long> includedTags = Arrays.asList(TestConstants.TAG_PASTA);
 
-    private String json(Object o) throws IOException {
+        String includedList = FlatStringUtils.flattenListOfLongsToString(includedTags, ",");
+        String excludedList = FlatStringUtils.flattenListOfLongsToString(excludedTags, ",");
+        String url = "/v2/dish?includedTags=" + includedList + "&excludedTags=" + excludedList
+                + "&sortKey=Name" + "&sortDirection=ASC";
+        String responseBody = given()
+                .header(TestUtils.authToken(TestConstants.USER_3_TOKEN))
+                .contentType(ContentType.JSON)
+                .when()
+                .get(url)
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract()
+                .body().asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        DishList responseList = mapper.readValue(responseBody, DishList.class);
+        List<NestedDish> dishList = responseList.getDishes() != null ? responseList.getDishes() : new ArrayList<NestedDish>();
+        // sort list by name, asc
+        // list as expected
+        List<String> listAsExpected = dishList.stream()
+                .sorted(Comparator.comparing(NestedDish::getName, String.CASE_INSENSITIVE_ORDER))
+                .map(d -> d.getName())
+                .collect(Collectors.toList());
+        Assertions.assertNotNull(listAsExpected);
+
+        // list as received
+        List<String> listAsReceived = dishList
+                .stream()
+                .map(d -> d.getName())
+                .collect(Collectors.toList());
+        Assertions.assertNotNull(listAsReceived);
+
+        // order matches
+        assertThat(listAsReceived, equalTo(listAsExpected));
+
+    }
+
+        private String json(Object o) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(o);
     }
