@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -77,6 +78,7 @@ class TagRestControllerTest {
     @Autowired
     private TagRepository tagRepository;
     @Autowired
+    @Qualifier("V2LayoutService")
     private LayoutService listLayoutService;
     @Autowired
     private TagRelationRepository tagRelationRepository;

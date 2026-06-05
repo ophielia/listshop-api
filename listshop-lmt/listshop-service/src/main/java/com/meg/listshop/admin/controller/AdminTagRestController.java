@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.admin.model.PostSearchTags;
@@ -19,6 +25,7 @@ import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -50,7 +57,7 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
 
     @Autowired
     AdminTagRestController(TagService tagService, TagStructureService tagStructureService,
-                           FoodService foodService, LayoutService layoutService) {
+                           FoodService foodService,@Qualifier("V2LayoutService") LayoutService layoutService) {
         this.tagStructureService = tagStructureService;
         this.tagService = tagService;
         this.foodService = foodService;

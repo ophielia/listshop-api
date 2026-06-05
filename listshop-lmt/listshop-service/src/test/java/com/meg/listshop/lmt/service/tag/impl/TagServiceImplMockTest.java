@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -31,6 +37,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -71,6 +78,7 @@ class TagServiceImplMockTest {
     @MockBean
     ListLayoutCategoryRepository listLayoutCategoryRepository;
     @MockBean
+    @Qualifier("V2LayoutService")
     LayoutService listLayoutService;
 
 

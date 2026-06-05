@@ -30,6 +30,7 @@ import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +49,7 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
     public LegacyShoppingListServiceImpl(TagService tagService,
                                          DishService dishService,
                                          ShoppingListRepository shoppingListRepository,
-                                         LayoutService listLayoutService,
+                                         @Qualifier("LegacyLayoutService") LayoutService listLayoutService,
                                          MealPlanService mealPlanService,
                                          ItemRepository itemRepository,
                                          ItemChangeRepository itemChangeRepository,
