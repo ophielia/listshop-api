@@ -6,7 +6,6 @@
 
 package com.meg.listshop.lmt.api.web.controller.v2;
 
-import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.common.StringTools;
@@ -14,21 +13,19 @@ import com.meg.listshop.lmt.api.controller.v2.V2LayoutRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.MappingPost;
 import com.meg.listshop.lmt.api.model.v2.ListLayout;
-import com.meg.listshop.lmt.api.model.v2.ListLayoutCategory;
 import com.meg.listshop.lmt.api.model.v2.ListLayoutList;
 import com.meg.listshop.lmt.api.model.v2.V2ModelMapper;
-import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.service.LayoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,7 +41,8 @@ public class V2LayoutRestController implements V2LayoutRestControllerApi {
     private final LayoutService layoutService;
 
     @Autowired
-    public V2LayoutRestController(UserService userService, LayoutService layoutService) {
+    public V2LayoutRestController(UserService userService,
+                                  @Qualifier("V2LayoutService") LayoutService layoutService) {
         this.userService = userService;
         this.layoutService = layoutService;
     }
@@ -80,7 +78,7 @@ public class V2LayoutRestController implements V2LayoutRestControllerApi {
 
         // service call
         List<ListLayout> listLayouts;
-        listLayouts = layoutService.getAllLayoutsV2(userId)
+        listLayouts = layoutService.getAllLayouts(userId)
                 .stream()
                 .map(V2ModelMapper::toModel)
                 .collect(Collectors.toList());
@@ -98,11 +96,20 @@ public class V2LayoutRestController implements V2LayoutRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<ListLayoutCategory> getCategoryForTag(HttpServletRequest request, @PathVariable("tagId") Long tagId, Authentication authentication) {
+    public ResponseEntity<ListLayoutList> getCategoryForTag(HttpServletRequest request, @PathVariable("tagId") Long tagId, Authentication authentication) {
         CustomUserDetails userDetails = getUserDetails(authentication);
-        ListLayoutCategoryEntity categoryEntity = layoutService.getDefaultCategoryForTag(userDetails.getId(), tagId);
-        ListLayoutCategory category = V2ModelMapper.toShortModel(categoryEntity);
-        return new ResponseEntity<>(category, HttpStatus.OK);
+        Long userId = userDetails != null ? userDetails.getId() : null;
+
+        // service call
+        List<ListLayout> listLayouts;
+        listLayouts = layoutService.getAllLayoutsWithTag(userId, tagId)
+                .stream()
+                .map(V2ModelMapper::toModel)
+                .collect(Collectors.toList());
+
+
+        ListLayoutList listLayoutList = new ListLayoutList(listLayouts);
+        return new ResponseEntity<>(listLayoutList, HttpStatus.OK);
     }
 
 }

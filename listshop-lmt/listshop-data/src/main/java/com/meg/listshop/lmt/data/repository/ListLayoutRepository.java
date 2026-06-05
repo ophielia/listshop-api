@@ -40,6 +40,12 @@ public interface ListLayoutRepository extends JpaRepository<ListLayoutEntity, Lo
     @Query("select e from ListLayoutEntity e where e.userId = ?1")
     List<ListLayoutEntity> getUserLayouts(Long userId);
 
+    @Query("select e from ListLayoutEntity e " +
+            "JOIN e.categories c " +
+            "JOIN c.tags t " +
+            "where e.userId = ?1 and t.tagId = ?2 ")
+    List<ListLayoutEntity> getUserLayoutsWithTag(Long userId, Long tagId);
+
     @Query(value = """
 select distinct lc.*
 from list_category lc

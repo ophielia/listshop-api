@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.lmt.api.model.LayoutCategoryListResource;
@@ -7,6 +13,7 @@ import com.meg.listshop.lmt.service.LayoutService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -26,7 +33,7 @@ public class AdminLayoutRestController implements AdminLayoutRestControllerApi {
     private final LayoutService layoutService;
 
     @Autowired
-    AdminLayoutRestController(LayoutService layoutService) {
+    AdminLayoutRestController(@Qualifier("V2LayoutService") LayoutService layoutService) {
         this.layoutService = layoutService;
     }
 

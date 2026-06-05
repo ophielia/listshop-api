@@ -48,7 +48,8 @@ public interface LayoutService {
 
     void moveTagToDefaultCategory(Long tagId, Long categoryId);
 
-    List<ListLayoutEntity> getAllLayoutsV2(Long userId);
+    List<ListLayoutEntity> getAllLayouts(Long userId);
 
-    ListLayoutCategoryEntity getDefaultCategoryForTag(Long userDetailsId, Long tagId);
+    List<ListLayoutEntity> getAllLayoutsWithTag(Long userId, Long tagId);
+
 }

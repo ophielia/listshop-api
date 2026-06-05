@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -32,7 +38,7 @@ import static org.mockito.ArgumentMatchers.anySet;
 class LayoutServiceImplMockTest {
 
     @Mock
-    private LayoutServiceImpl listLayoutService;
+    private LegacyLayoutServiceImpl listLayoutService;
 
     @Mock
     private ListLayoutRepository listLayoutRepository;
@@ -48,7 +54,7 @@ class LayoutServiceImplMockTest {
 
     @BeforeEach
     void setUp() {
-        listLayoutService = new LayoutServiceImpl(listLayoutRepository, categoryRepositoryRepository, tagRepository, userService);
+        listLayoutService = new LegacyLayoutServiceImpl(listLayoutRepository, categoryRepositoryRepository, tagRepository, userService);
     }
 
 

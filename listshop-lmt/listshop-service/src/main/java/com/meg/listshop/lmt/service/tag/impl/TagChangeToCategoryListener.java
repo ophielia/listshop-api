@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.lmt.api.model.TagType;
@@ -7,6 +13,7 @@ import com.meg.listshop.lmt.service.tag.TagChangeListener;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
@@ -28,6 +35,7 @@ public class TagChangeToCategoryListener implements TagChangeListener {
 
 
     @Autowired
+    @Qualifier("V2LayoutService")
     private LayoutService layoutService;
 
     @PostConstruct

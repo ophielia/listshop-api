@@ -20,6 +20,7 @@ import com.meg.listshop.lmt.service.LayoutService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,41 +28,26 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by margaretmartin on 20/10/2017.
- */
 @Service
 @Transactional
-public class LayoutServiceImpl implements LayoutService {
+public class BaseLayoutServiceImpl implements LayoutService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LayoutServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BaseLayoutServiceImpl.class);
 
-    private final ListLayoutRepository listLayoutRepository;
-    private final ListLayoutCategoryRepository categoryRepository;
-    private final TagRepository tagRepository;
-    private final UserService userService;
+    protected final ListLayoutRepository listLayoutRepository;
+    protected final ListLayoutCategoryRepository categoryRepository;
+    protected final TagRepository tagRepository;
+    protected final UserService userService;
 
     @Value("${service.layoutservice.default.layout.name:Default}")
     String defaultLayoutDefaultName;
 
     @Autowired
-    public LayoutServiceImpl(ListLayoutRepository listLayoutRepository, ListLayoutCategoryRepository categoryRepository, TagRepository tagRepository, UserService userService) {
+    public BaseLayoutServiceImpl(ListLayoutRepository listLayoutRepository, ListLayoutCategoryRepository categoryRepository, TagRepository tagRepository, UserService userService) {
         this.listLayoutRepository = listLayoutRepository;
         this.categoryRepository = categoryRepository;
         this.tagRepository = tagRepository;
         this.userService = userService;
-    }
-
-    private static Map<String, ListLayoutCategoryEntity> layoutCategoriesToMap(ListLayoutEntity layout) {
-        Map<String, ListLayoutCategoryEntity> categoryMap = new HashMap<>();
-        if (layout == null) {
-            return categoryMap;
-        }
-        layout.getCategories().forEach(c -> {
-            String name = c.getName();
-            categoryMap.put(name.trim().toLowerCase(), c);
-        });
-        return categoryMap;
     }
 
     @Override
@@ -80,7 +66,6 @@ public class LayoutServiceImpl implements LayoutService {
         return listLayoutRepository.getStandardLayout();
     }
 
-
     @Override
     public void addDefaultUserMappings(Long userId, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException {
         // get default user mappings - and send to next
@@ -90,29 +75,20 @@ public class LayoutServiceImpl implements LayoutService {
 
     @Override
     public List<ListLayoutEntity> getUserLayouts(UserEntity user) {
-        return listLayoutRepository.getUserLayouts(user.getId());
+        // NO-IMPL
+        throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
     public ListLayoutEntity getFilledStandardLayout(Long userId) {
-        return getFilledStandardLayout(userId, null);
+        // NO-IMPL
+        throw new UnsupportedOperationException("Method not implemented");
     }
 
-    private ListLayoutEntity getFilledStandardLayout(Long userId, Long tagId) {
-        ListLayoutEntity standardLayout = getStandardLayout();
-
-        return listLayoutRepository.fillLayout(userId, tagId,standardLayout);
-    }
     @Override
-    public List<ListLayoutEntity> getAllLayoutsV2(Long userId) {
-
-        List<ListLayoutEntity> layouts = new ArrayList<>();
-        layouts.add(getFilledStandardLayout(userId));
-        if (userId != null) {
-            layouts.addAll(listLayoutRepository.getUserLayouts(userId));
-        }
-
-        return layouts;
+    public List<ListLayoutEntity> getAllLayouts(Long userId) {
+        // NO-IMPL
+        throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
@@ -125,19 +101,6 @@ public class LayoutServiceImpl implements LayoutService {
         }
 
         return layouts;
-    }
-
-    @Override
-    public ListLayoutCategoryEntity getDefaultCategoryForTag(Long userId, Long tagId) {
-        // retrieve user default for tag
-        if (userId != null) {
-            ListLayoutCategoryEntity userDefault = categoryRepository.getDefaultCategoryForTagAndUser(userId, tagId);
-            if (userDefault != null) {
-                return userDefault;
-            }
-        }
-        // retrieve standard default for tag
-        return categoryRepository.getStandardCategoryForTag(tagId);
     }
 
     @Override
@@ -184,16 +147,8 @@ public class LayoutServiceImpl implements LayoutService {
 
     @Override
     public List<ListLayoutCategoryEntity> getUserCategories(String userName) {
-        UserEntity user = userService.getUserByUserEmail(userName);
-        if (user == null) {
-            LOG.error("No user found for username [{}]", userName);
-            return new ArrayList<>();
-        }
-        // get default layout for user
-        ListLayoutEntity userDefaultLayout = getDefaultUserLayout(user.getId());
-
-        // return categories for this layout
-        return getAvailableCategoriesForLayout(userDefaultLayout);
+        // NO-IMPL
+        throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
@@ -209,47 +164,43 @@ public class LayoutServiceImpl implements LayoutService {
 
     @Override
     public List<LayoutCategoryDTO> getDefaultCategories() {
-
-        // get default layout for user
-        ListLayoutEntity userDefaultLayout = getStandardLayout();
-
-        // return categories for this layout
-        return getAvailableCategoriesForLayout(userDefaultLayout).stream()
-                .map(LayoutCategoryDTO::new)
-                .toList();
+        //NO-IMPL
+        throw new UnsupportedOperationException("Method not implemented");
     }
 
-    private List<ListLayoutCategoryEntity> getAvailableCategoriesForLayout(ListLayoutEntity layout) {
-        ListLayoutEntity defaultLayout = getStandardLayout();
-        Map<String, ListLayoutCategoryEntity> userCategoryMap = layoutCategoriesToMap(layout);
-        Map<String, ListLayoutCategoryEntity> defaultCategoryMap = layoutCategoriesToMap(defaultLayout);
-
-        Set<String> userSortedKeys = userCategoryMap.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
-        Set<String> defaultSortedKeys = defaultCategoryMap.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
-
-        // produce sorted list of categories
-        List<ListLayoutCategoryEntity> result = new ArrayList<>();
-        userSortedKeys.forEach(key -> result.add(userCategoryMap.get(key)));
-        defaultSortedKeys.stream()
-                .filter(key -> !userSortedKeys.contains(key))
-                .forEach(key -> result.add(defaultCategoryMap.get(key)));
-
-        return result;
-    }
-
-    private ListLayoutEntity getOrCreateDefaultUserLayout(Long userId) {
-        ListLayoutEntity defaultLayout = listLayoutRepository.getDefaultUserLayout(userId);
-        if (defaultLayout != null) {
-            return defaultLayout;
+    @Override
+    public void addTagToCategory(Long layoutCategoryId, TagEntity tag) {
+        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt = categoryRepository.findById(layoutCategoryId);
+        if (!listLayoutEntityOpt.isPresent()) {
+            return;
         }
-        ListLayoutEntity newDefault = new ListLayoutEntity();
-        newDefault.setDefault(true);
-        newDefault.setName(defaultLayoutDefaultName);
-        newDefault.setUserId(userId);
-        return listLayoutRepository.save(newDefault);
+        ListLayoutCategoryEntity categoryEntity = listLayoutEntityOpt.get();
+        Set<TagEntity> tags = categoryEntity.getTags();
+        if (tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
+            return;
+        }
+        doAddCategory(categoryEntity, tag);
+
     }
 
-    private void addMappingsToLayout(ListLayoutEntity listLayout, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException {
+    @Override
+    public void moveTagToDefaultCategory(Long tagId, Long categoryId) {
+        //NO-IMPL
+        throw new UnsupportedOperationException("Not implemented in base service");
+    }
+
+    protected void removeTagFromCategory(ListLayoutCategoryEntity categoryEntity, TagEntity tag) {
+        Set<TagEntity> tags = categoryEntity.getTags();
+        if (!tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
+            return;
+        }
+        tags.remove(tag);
+        tag.getCategories().remove(categoryEntity);
+        categoryEntity.setTags(tags);
+        categoryRepository.save(categoryEntity);
+    }
+
+    protected void addMappingsToLayout(ListLayoutEntity listLayout, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException {
         if (tagIds.isEmpty()) {
             LOG.warn("Empty tag list sent to addMappingsToLayout [{}][{}]", listLayout.getId(), categoryId);
             return;
@@ -268,10 +219,10 @@ public class LayoutServiceImpl implements LayoutService {
         // map the categories
         List<TagEntity> tagsToAssign = tagRepository.getTagsForIdList(mappingTagIds);
         tagsToAssign.forEach(tagEntity -> tagEntity.addCategory(mappingCategory));
-        String beep = "bop";
+
     }
 
-    private ListLayoutCategoryEntity createNewCategoryIfNecessary(ListLayoutCategoryEntity categoryTemplate, ListLayoutEntity layout) {
+    protected ListLayoutCategoryEntity createNewCategoryIfNecessary(ListLayoutCategoryEntity categoryTemplate, ListLayoutEntity layout) {
         if (Objects.equals(categoryTemplate.getLayoutId(), layout.getId())) {
             return categoryTemplate;
         }
@@ -289,6 +240,18 @@ public class LayoutServiceImpl implements LayoutService {
         ListLayoutCategoryEntity savedCategory = categoryRepository.save(category);
         layout.addCategory(savedCategory);
         return savedCategory;
+    }
+
+    private ListLayoutEntity getOrCreateDefaultUserLayout(Long userId) {
+        ListLayoutEntity defaultLayout = listLayoutRepository.getDefaultUserLayout(userId);
+        if (defaultLayout != null) {
+            return defaultLayout;
+        }
+        ListLayoutEntity newDefault = new ListLayoutEntity();
+        newDefault.setDefault(true);
+        newDefault.setName(defaultLayoutDefaultName);
+        newDefault.setUserId(userId);
+        return listLayoutRepository.save(newDefault);
     }
 
     private void deleteTagMappingsInLayout(Long layoutId, Set<Long> tagIds) {
@@ -312,67 +275,10 @@ public class LayoutServiceImpl implements LayoutService {
 
     }
 
-    @Override
-    public void addTagToCategory(Long layoutCategoryId, TagEntity tag) {
-        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt = categoryRepository.findById(layoutCategoryId);
-        if (!listLayoutEntityOpt.isPresent()) {
-            return;
-        }
-        ListLayoutCategoryEntity categoryEntity = listLayoutEntityOpt.get();
-        Set<TagEntity> tags = categoryEntity.getTags();
-        if (tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
-            return;
-        }
-        doAddCategory(categoryEntity, tag);
+    private ListLayoutEntity getFilledStandardLayout(Long userId, Long tagId) {
+        ListLayoutEntity standardLayout = getStandardLayout();
 
-    }
-
-    public void removeTagFromCategory(ListLayoutCategoryEntity categoryEntity, TagEntity tag) {
-        Set<TagEntity> tags = categoryEntity.getTags();
-        if (!tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
-            return;
-        }
-        tags.remove(tag);
-        tag.getCategories().remove(categoryEntity);
-        categoryEntity.setTags(tags);
-        categoryRepository.save(categoryEntity);
-    }
-
-    @Override
-    public void moveTagToDefaultCategory(Long tagId, Long categoryId) {
-        Optional<ListLayoutCategoryEntity> listLayoutEntityOpt = categoryRepository.findById(categoryId);
-        if (!listLayoutEntityOpt.isPresent()) {
-            return;
-        }
-        ListLayoutEntity listLayoutEntity = listLayoutRepository.findById(listLayoutEntityOpt.get().getLayoutId())
-                .orElse(null);
-        if (listLayoutEntity == null || listLayoutEntity.getUserId() != null
-                || (listLayoutEntity.getDefault() != null && listLayoutEntity.getDefault() != true)) {
-            // not a default category
-            return;
-        }
-
-        Optional<TagEntity> tag = tagRepository.findById(tagId);
-        if (!tag.isPresent() || tag.get().getUserId() != null) {
-            return;
-        }
-
-        // get existing standard category
-        ListLayoutCategoryEntity existing = categoryRepository.getStandardCategoryForTag(tagId);
-
-        // remove from existing category
-        if (existing != null) {
-            removeTagFromCategory(existing, tag.get());
-        }
-
-        // add to new category
-        ListLayoutCategoryEntity categoryEntity = listLayoutEntityOpt.get();
-        Set<TagEntity> tags = categoryEntity.getTags();
-        if (tags.stream().anyMatch(t -> t.getId().equals(tagId))) {
-            return;
-        }
-        doAddCategory(categoryEntity, tag.get());
-
+        return listLayoutRepository.fillLayout(userId, tagId,standardLayout);
     }
 
     private void doAddCategory(ListLayoutCategoryEntity categoryEntity, TagEntity tag) {
@@ -382,4 +288,17 @@ public class LayoutServiceImpl implements LayoutService {
 
         categoryRepository.save(categoryEntity);
     }
+
+    private static Map<String, ListLayoutCategoryEntity> layoutCategoriesToMap(ListLayoutEntity layout) {
+        Map<String, ListLayoutCategoryEntity> categoryMap = new HashMap<>();
+        if (layout == null) {
+            return categoryMap;
+        }
+        layout.getCategories().forEach(c -> {
+            String name = c.getName();
+            categoryMap.put(name.trim().toLowerCase(), c);
+        });
+        return categoryMap;
+    }
+
 }

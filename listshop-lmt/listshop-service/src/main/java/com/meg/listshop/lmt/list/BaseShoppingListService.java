@@ -27,6 +27,7 @@ import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +61,7 @@ public class BaseShoppingListService  {
     public BaseShoppingListService(TagService tagService,
                                      DishService dishService,
                                      ShoppingListRepository shoppingListRepository,
-                                     LayoutService listLayoutService,
+                                     @Qualifier("V2LayoutService") LayoutService listLayoutService,
                                      MealPlanService mealPlanService,
                                      ItemRepository itemRepository,
                                      ItemChangeRepository itemChangeRepository,

@@ -1,14 +1,18 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.repository;
 
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
 
-import java.util.List;
 import java.util.Set;
 
 public interface CustomListLayoutRepository {
 
-    ListLayoutEntity fillLayout(Long userId, ListLayoutEntity layout);
+    ListLayoutEntity fillLayout(Long userId, Long tagId, ListLayoutEntity layout);
 
     Long getDefaultCategoryForSiblings(Set<Long> siblings);
 

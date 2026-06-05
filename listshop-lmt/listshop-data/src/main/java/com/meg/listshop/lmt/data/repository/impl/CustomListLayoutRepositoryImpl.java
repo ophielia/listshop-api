@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.repository.impl;
 
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
@@ -12,7 +18,6 @@ import jakarta.persistence.criteria.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,7 +32,7 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
     private EntityManager entityManager;
 
     @Override
-    public ListLayoutEntity fillLayout(Long userId, ListLayoutEntity layout) {
+    public ListLayoutEntity fillLayout(Long userId, Long tagId, ListLayoutEntity layout) {
         logger.debug("Filling layout [{}]", layout.getId());
         // get layout
         List<Predicate> predicates = new ArrayList<Predicate>();
@@ -43,6 +48,10 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
             predicates.add(cb.or(userIdIsNull, userIdEquals));
         } else {
             predicates.add(cb.isNull(root.get("userId")));
+        }
+
+        if (tagId != null) {
+            predicates.add(cb.equal(root.get("tagId"), tagId));
         }
 
 
