@@ -32,17 +32,19 @@ public interface ItemRepository extends JpaRepository<ListItemEntity, Long> {
     List<ListItemEntity> findFilledObjectsByListId(Long listId);
 
     @Query(value = """
-                    select distinct d.linked_dish_id, '', 'DISH' 
-                        from list_item_details d 
-                            join list_item i on d.item_id = i.item_id
-                            where i.list_id = ?1 and d.linked_dish_id is not null
+                    select distinct dd.linked_dish_id, d.dish_name, 'DISH' 
+                        from list_item_details dd 
+                            join list_item i on dd.item_id = i.item_id
+                                    join dish d on dd.linked_dish_id = d.dish_id
+                            where i.list_id = ?1 and dd.linked_dish_id is not null
             """, nativeQuery = true)
     List<SourceDTO> findDishSourcesForList(Long listid);
 
     @Query(value = """
-                    select distinct d.linked_list_id, '', 'LIST' 
+                    select distinct d.linked_list_id, l.name, 'LIST' 
                         from list_item_details d 
                             join list_item i on d.item_id = i.item_id
+                                    join list l on l.list_id = d.linked_list_id
                             where i.list_id = ?1 and d.linked_list_id is not null
             """, nativeQuery = true)
     List<SourceDTO> findListSourcesForList(Long listid);
