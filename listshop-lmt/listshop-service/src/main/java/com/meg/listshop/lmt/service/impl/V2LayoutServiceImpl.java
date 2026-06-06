@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @Qualifier("V2LayoutService")
-public class V2LayoutServiceImpl extends LegacyLayoutServiceImpl implements LayoutService {
+public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements LayoutService {
     private static final Logger LOG = LoggerFactory.getLogger(V2LayoutServiceImpl.class);
 
     @Autowired
@@ -76,6 +76,13 @@ public class V2LayoutServiceImpl extends LegacyLayoutServiceImpl implements Layo
         }
 
         return layouts;
+    }
+
+    @Override
+    public ListLayoutEntity getFilledStandardLayout(Long userId) {
+        ListLayoutEntity standardLayout = getStandardLayout();
+
+        return listLayoutRepository.fillLayout(userId, null,standardLayout);
     }
 
     @Override
@@ -155,6 +162,7 @@ public class V2LayoutServiceImpl extends LegacyLayoutServiceImpl implements Layo
         doAddCategory(categoryEntity, tag.get());
 
     }
+
 
     private void doAddCategory(ListLayoutCategoryEntity categoryEntity, TagEntity tag) {
 

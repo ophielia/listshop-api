@@ -30,7 +30,6 @@ import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,11 +44,13 @@ import java.util.stream.Collectors;
 public class LegacyShoppingListServiceImpl extends BaseShoppingListService implements LegacyShoppingListService {
     private static final Logger logger = LoggerFactory.getLogger(LegacyShoppingListServiceImpl.class);
 
+    LegacyLayoutService listLayoutService;
+
     @Autowired
     public LegacyShoppingListServiceImpl(TagService tagService,
                                          DishService dishService,
                                          ShoppingListRepository shoppingListRepository,
-                                         @Qualifier("LegacyLayoutService") LayoutService listLayoutService,
+                                         LegacyLayoutService listLayoutService,
                                          MealPlanService mealPlanService,
                                          ItemRepository itemRepository,
                                          ItemChangeRepository itemChangeRepository,
@@ -58,12 +59,12 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
         super(tagService,
                 dishService,
                 shoppingListRepository,
-                listLayoutService,
                 mealPlanService,
                 itemRepository,
                 itemChangeRepository,
                 listTagStatisticService,
                 listItemStateMachine);
+        this.listLayoutService = listLayoutService;
     }
 
 
@@ -538,17 +539,6 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
         return result;
     }
 
-    protected Long determineUserLayout(Long userId, Long listLayoutId) {
-        Optional<ListLayoutEntity> layout;
-        if (listLayoutId == null) {
-            layout = Optional.ofNullable(listLayoutService.getDefaultUserLayout(userId));
-        } else {
-            layout = Optional.ofNullable(listLayoutService.getUserListLayout(userId, listLayoutId));
-        }
-
-        return layout.map(ListLayoutEntity::getId)
-                .orElse(null);
-    }
 
     private ShoppingListCategory createCategoryModelFromMapping(ItemMappingDTO itemMappingDTO) {
 
@@ -959,6 +949,23 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
             return sourceList.getItems();
         }
         return new ArrayList<>();
+    }
+
+    private Long determineUserLayout(Long userId, Long listLayoutId) {
+        Optional<ListLayoutEntity> layout;
+        if (listLayoutId == null) {
+            layout = Optional.ofNullable(listLayoutService.getDefaultUserLayout(userId));
+        } else {
+            layout = Optional.ofNullable(listLayoutService.getUserListLayout(userId, listLayoutId));
+        }
+
+        return layout.map(ListLayoutEntity::getId)
+                .orElse(null);
+    }
+
+    protected Long getDefaultListLayoutId(Long userId) {
+        ListLayoutEntity listLayout = listLayoutService.getDefaultUserLayout(userId);
+        return listLayout != null ? listLayout.getId() : null;
     }
 
 }

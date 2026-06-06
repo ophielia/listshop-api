@@ -17,6 +17,7 @@ import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
 import com.meg.listshop.lmt.service.LayoutService;
+import com.meg.listshop.lmt.service.LegacyLayoutService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +34,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Transactional
-@Qualifier("LegacyLayoutService")
-public class LegacyLayoutServiceImpl extends BaseLayoutServiceImpl implements LayoutService {
+public class LegacyLayoutServiceImpl extends BaseLayoutServiceImpl implements LegacyLayoutService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LegacyLayoutServiceImpl.class);
 
@@ -50,6 +50,14 @@ public class LegacyLayoutServiceImpl extends BaseLayoutServiceImpl implements La
     public List<ListLayoutEntity> getUserLayouts(UserEntity user) {
         return listLayoutRepository.getUserLayouts(user.getId());
     }
+
+    @Override
+    public ListLayoutEntity getFilledStandardLayout(Long userId) {
+        ListLayoutEntity standardLayout = getStandardLayout();
+
+        return listLayoutRepository.fillLayout(userId,null, standardLayout);
+    }
+
 
 
     @Override
@@ -95,4 +103,6 @@ public class LegacyLayoutServiceImpl extends BaseLayoutServiceImpl implements La
         });
         return categoryMap;
     }
+
+
 }

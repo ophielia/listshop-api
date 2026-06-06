@@ -40,13 +40,12 @@ import java.util.stream.Collectors;
  */
 @Service
 @Transactional(rollbackFor = ItemProcessingException.class)
-public class BaseShoppingListService  {
+public abstract class BaseShoppingListService  {
     private static final Logger logger = LoggerFactory.getLogger(BaseShoppingListService.class);
 
     protected final TagService tagService;
     protected final DishService dishService;
     protected final ShoppingListRepository shoppingListRepository;
-    protected final LayoutService listLayoutService;
     protected final MealPlanService mealPlanService;
     protected final ItemRepository itemRepository;
     protected final ListTagStatisticService listTagStatisticService;
@@ -61,7 +60,6 @@ public class BaseShoppingListService  {
     public BaseShoppingListService(TagService tagService,
                                      DishService dishService,
                                      ShoppingListRepository shoppingListRepository,
-                                     @Qualifier("V2LayoutService") LayoutService listLayoutService,
                                      MealPlanService mealPlanService,
                                      ItemRepository itemRepository,
                                      ItemChangeRepository itemChangeRepository,
@@ -70,7 +68,6 @@ public class BaseShoppingListService  {
         this.tagService = tagService;
         this.dishService = dishService;
         this.shoppingListRepository = shoppingListRepository;
-        this.listLayoutService = listLayoutService;
         this.mealPlanService = mealPlanService;
         this.itemRepository = itemRepository;
         this.itemChangeRepository = itemChangeRepository;
@@ -489,17 +486,7 @@ public class BaseShoppingListService  {
 
     
 
-    protected Long determineUserLayout(Long userId, Long listLayoutId) {
-        Optional<ListLayoutEntity> layout;
-        if (listLayoutId == null) {
-            layout = Optional.ofNullable(listLayoutService.getDefaultUserLayout(userId));
-        } else {
-            layout = Optional.ofNullable(listLayoutService.getUserListLayout(userId, listLayoutId));
-        }
 
-        return layout.map(ListLayoutEntity::getId)
-                .orElse(null);
-    }
 
     private ShoppingListCategory createCategoryModelFromMapping(ItemMappingDTO itemMappingDTO) {
 
@@ -871,16 +858,17 @@ public class BaseShoppingListService  {
     private ShoppingListEntity createList(Long userId, String listName) {
         ShoppingListEntity newList = new ShoppingListEntity();
 
-        ListLayoutEntity listLayout = listLayoutService.getDefaultUserLayout(userId);
-        if (listLayout != null) {
-            newList.setListLayoutId(listLayout.getId());
-        }
+        Long listLayoutId = getDefaultListLayoutId(userId);
+        newList.setListLayoutId(listLayoutId);
+
         newList.setName(listName);
         newList.setIsStarterList(false);
         newList.setCreatedOn(new Date());
         newList.setUserId(userId);
         return shoppingListRepository.save(newList);
     }
+
+    protected abstract Long getDefaultListLayoutId(Long userId);
 
     private List<ListItemEntity> getListItemsForOperationType(ItemOperationType operationType, ShoppingListEntity sourceList) {
         if (operationType.equals(ItemOperationType.RemoveCrossedOff)) {

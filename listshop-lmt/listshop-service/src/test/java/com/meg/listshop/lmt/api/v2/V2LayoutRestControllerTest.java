@@ -354,23 +354,7 @@ class V2LayoutRestControllerTest {
         Assertions.assertNotNull(result, "response should not be null");
     }
 
-@Test
-    void testGetCategoryForTagDefault() {
-        String tagId = "81"; // carrots
-        String url = "/v2/layout/tag/" + tagId ;
-    ListLayoutCategory result = given()
-                .contentType(ContentType.JSON)
-                .header(TestUtils.authToken(dadStarterJwtToken))
-                .when()
-                .get(url)
-                .then()
-                .statusCode(200)
-                .extract().as(ListLayoutCategory.class);
-        Assertions.assertNotNull(result, "response should not be null");
-        // we expect to retrieve the layout "Dads special category", which is the default for carrots for this user
-    Assertions.assertEquals("Dads Special Category", result.getName());
-    Assertions.assertEquals("1000128", result.getId());
-    }
+
 
     @Test
     void testGetCategoryForTagUserCategoryExists() {

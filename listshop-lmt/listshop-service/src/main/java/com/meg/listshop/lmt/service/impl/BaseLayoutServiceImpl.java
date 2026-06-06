@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class BaseLayoutServiceImpl implements LayoutService {
+public class BaseLayoutServiceImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseLayoutServiceImpl.class);
 
@@ -50,48 +50,35 @@ public class BaseLayoutServiceImpl implements LayoutService {
         this.userService = userService;
     }
 
-    @Override
     public ListLayoutEntity getUserListLayout(Long userId, Long listLayoutId) {
         // get user layout
         return listLayoutRepository.getUserListLayout(userId, listLayoutId);
     }
 
-    @Override
     public ListLayoutEntity getDefaultUserLayout(Long userId) {
         return listLayoutRepository.getDefaultUserLayout(userId);
     }
 
-    @Override
     public ListLayoutEntity getStandardLayout() {
         return listLayoutRepository.getStandardLayout();
     }
 
-    @Override
     public void addDefaultUserMappings(Long userId, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException {
         // get default user mappings - and send to next
         ListLayoutEntity defaultUserLayout = getOrCreateDefaultUserLayout(userId);
         addMappingsToLayout(defaultUserLayout, categoryId, tagIds);
     }
 
-    @Override
     public List<ListLayoutEntity> getUserLayouts(UserEntity user) {
         // NO-IMPL
         throw new UnsupportedOperationException("Method not implemented");
     }
 
-    @Override
-    public ListLayoutEntity getFilledStandardLayout(Long userId) {
-        // NO-IMPL
-        throw new UnsupportedOperationException("Method not implemented");
-    }
-
-    @Override
     public List<ListLayoutEntity> getAllLayouts(Long userId) {
         // NO-IMPL
         throw new UnsupportedOperationException("Method not implemented");
     }
 
-    @Override
     public List<ListLayoutEntity> getAllLayoutsWithTag(Long userId, Long tagId) {
 
         List<ListLayoutEntity> layouts = new ArrayList<>();
@@ -103,7 +90,6 @@ public class BaseLayoutServiceImpl implements LayoutService {
         return layouts;
     }
 
-    @Override
     public void assignDefaultCategoryToTag(List<TagEntity> siblings, TagEntity tagToAssign) {
         Long idToAssign = null;
         if (!siblings.isEmpty()) {
@@ -123,7 +109,6 @@ public class BaseLayoutServiceImpl implements LayoutService {
 
     }
 
-    @Override
     public void assignUserDefaultCategoriesToTag(List<TagEntity> siblings, TagEntity tagToAssign) {
         Long userId = tagToAssign.getUserId();
         if (userId == null) {
@@ -145,30 +130,25 @@ public class BaseLayoutServiceImpl implements LayoutService {
         toAssign.forEach(c -> c.addTag(tagToAssign));
     }
 
-    @Override
     public List<ListLayoutCategoryEntity> getUserCategories(String userName) {
         // NO-IMPL
         throw new UnsupportedOperationException("Method not implemented");
     }
 
-    @Override
     public List<ListLayoutCategoryEntity> getUserCategoriesForList(Long userLayoutId, Long listId) {
         return listLayoutRepository.findUserListCategoriesForList(userLayoutId, listId);
 
     }
 
-    @Override
     public List<ListLayoutCategoryEntity> getStandardCategoriesForList(Long listId) {
         return listLayoutRepository.findStandardCategoriesForList(listId);
     }
 
-    @Override
     public List<LayoutCategoryDTO> getDefaultCategories() {
         //NO-IMPL
         throw new UnsupportedOperationException("Method not implemented");
     }
 
-    @Override
     public void addTagToCategory(Long layoutCategoryId, TagEntity tag) {
         Optional<ListLayoutCategoryEntity> listLayoutEntityOpt = categoryRepository.findById(layoutCategoryId);
         if (!listLayoutEntityOpt.isPresent()) {
@@ -183,7 +163,6 @@ public class BaseLayoutServiceImpl implements LayoutService {
 
     }
 
-    @Override
     public void moveTagToDefaultCategory(Long tagId, Long categoryId) {
         //NO-IMPL
         throw new UnsupportedOperationException("Not implemented in base service");

@@ -17,10 +17,7 @@ import com.meg.listshop.lmt.api.model.v2.MergeResult;
 import com.meg.listshop.lmt.api.model.v2.SourceReferenceType;
 import com.meg.listshop.lmt.conversion.BasicAmount;
 import com.meg.listshop.lmt.data.ItemChangeRepository;
-import com.meg.listshop.lmt.data.entity.ListItemEntity;
-import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
-import com.meg.listshop.lmt.data.entity.ShoppingListEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.*;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
 import com.meg.listshop.lmt.data.repository.ShoppingListRepository;
@@ -52,6 +49,7 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = ItemProcessingException.class)
 public class ShoppingListServiceImpl extends BaseShoppingListService implements ShoppingListService {
     private static final Logger logger = LoggerFactory.getLogger(ShoppingListServiceImpl.class);
+    private final LayoutService listLayoutService;
 
     @Autowired
     public ShoppingListServiceImpl(TagService tagService,
@@ -63,8 +61,9 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
                                    ItemChangeRepository itemChangeRepository,
                                    ListTagStatisticService listTagStatisticService,
                                    ListItemStateMachine listItemStateMachine) {
-        super(tagService, dishService, shoppingListRepository, listLayoutService,
+        super(tagService, dishService, shoppingListRepository,
                 mealPlanService, itemRepository, itemChangeRepository, listTagStatisticService, listItemStateMachine);
+        this.listLayoutService = listLayoutService;
     }
 
     @Override
@@ -366,5 +365,22 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
         shoppingListRepository.clearStarterListForUser(userId);
     }
 
+    private Long determineUserLayout(Long userId, Long listLayoutId) {
+        Optional<ListLayoutEntity> layout;
+        if (listLayoutId == null) {
+            layout = Optional.ofNullable(listLayoutService.getDefaultUserLayout(userId));
+        } else {
+            layout = Optional.ofNullable(listLayoutService.getUserListLayout(userId, listLayoutId));
+        }
+
+        return layout.map(ListLayoutEntity::getId)
+                .orElse(null);
+    }
+
+
+    protected Long getDefaultListLayoutId(Long userId) {
+        ListLayoutEntity listLayout = listLayoutService.getDefaultUserLayout(userId);
+        return listLayout != null ? listLayout.getId() : null;
+    }
 
 }
