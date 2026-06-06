@@ -831,16 +831,23 @@ class ConversionTest {
     @Test
     void testHalfAKiloTomatoesToListUS() throws ConversionPathException, ConversionFactorException {
         UnitEntity kiloUnit = unitRepository.findById(KG_ID).orElse(null);
+        UnitEntity unitUnit = unitRepository.findById(UNIT_ID).orElse(null);
 
         // Not converting diced tomatoes to us weight
         // problem in tag specific version
         // also - should fix this so that if tag specific conversion fails, the scaling doesn't happen -
         // it gives really weird results like 0.000006 pounds.....
 
-        // 1 cup diced tomatoes
+        // 1 cup diced tomatoes - no specified unit
         ConvertibleAmount amount = new SimpleAmount(0.5, kiloUnit, TOMATO_CONVERSION_ID, false, null);
         ConversionRequest listContext = new ConversionRequest(ConversionTargetType.List, DomainType.US);
         ConvertibleAmount converted = converterService.convert(amount, listContext);
+        assertNotNull(converted);
+        System.out.println(converted);
+        assertEquals(1.102, RoundingUtils.roundToThousandths(converted.getQuantity()));
+        assertEquals(LB_ID, converted.getUnit().getId());
+
+        converted = converterService.convert(amount, unitUnit);
         assertNotNull(converted);
         System.out.println(converted);
         assertEquals(3.378, RoundingUtils.roundToThousandths(converted.getQuantity()));
