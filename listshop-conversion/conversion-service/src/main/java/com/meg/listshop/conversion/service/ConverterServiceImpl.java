@@ -70,7 +70,6 @@ public class ConverterServiceImpl implements ConverterService {
         UnitType unitDomainType = domainToUnitType(conversionRequest.getDomainType());
         ConversionTargetType conversionTarget = conversionRequest.getContextType();
 
-
         ConversionTarget target = new ConversionTarget(unitDomainType, null, conversionTarget);
         ProcessingContext context = new ProcessingContext(amount, target);
 

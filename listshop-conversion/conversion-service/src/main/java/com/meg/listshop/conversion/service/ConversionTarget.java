@@ -19,6 +19,4 @@ public record ConversionTarget(UnitType domainType,
         this(domainType, unitId, conversionContext, null, null);
     }
 
-
-
 }
