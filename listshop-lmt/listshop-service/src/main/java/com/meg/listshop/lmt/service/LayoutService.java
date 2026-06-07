@@ -12,6 +12,7 @@ import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 import com.meg.listshop.lmt.data.pojos.LayoutCategoryDTO;
+import com.meg.listshop.lmt.data.pojos.LayoutDTO;
 
 import java.util.List;
 
@@ -49,6 +50,8 @@ public interface LayoutService {
     void moveTagToDefaultCategory(Long tagId, Long categoryId);
 
     List<ListLayoutEntity> getAllLayouts(Long userId);
+
+    LayoutDTO getStandardLayout(Long userId);
 
     List<ListLayoutEntity> getAllLayoutsWithTag(Long userId, Long tagId);
 
