@@ -117,7 +117,7 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
 
         if (userLayout != null) {
             // get user specific mappings
-            List<CategoryTagMapping> categoryMappings = categoryRepository.getTagCategoryMappings(userId, layoutId);
+            List<CategoryTagMapping> categoryMappings = categoryRepository.getTagCategoryMappings(userId, userLayout.getId());
 
             for (CategoryTagMapping mapping : categoryMappings) {
                 tagMappingDictionary.put(mapping.tagId(), mapping);
