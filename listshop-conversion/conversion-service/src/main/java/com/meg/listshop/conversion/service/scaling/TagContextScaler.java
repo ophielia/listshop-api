@@ -111,9 +111,11 @@ public class TagContextScaler extends BaseScaleHandler {
         for (ConversionFactor factor : markerFactors) {
             explodedFactors.put(factor.getFromUnit().getId(), factor);
         }
-        // add self-referencing
-        ConversionFactor selfReferencing = new SimpleConversionFactor(1.0, targetUnit, targetUnit, null, null, null);
-        explodedFactors.put(GRAM_UNIT_ID, selfReferencing);
+        // add self-referencing - if target is metric
+        if (context.getTarget().domainType() == UnitType.METRIC) {
+            ConversionFactor selfReferencing = new SimpleConversionFactor(1.0, targetUnit, targetUnit, null, null, null);
+            explodedFactors.put(GRAM_UNIT_ID, selfReferencing);
+        }
         if (hybridExists) {
             fillForDomain(explodedFactors, UnitType.HYBRID, targetUnit);
         }
@@ -124,6 +126,9 @@ public class TagContextScaler extends BaseScaleHandler {
     private void fillForDomain(Map<Long, ConversionFactor> explodedFactors, UnitType unitType, UnitEntity targetUnit) {
         // pull first factor with domain
         ConversionFactor baseFactor = getBaseFactor(explodedFactors, unitType, targetUnit);
+        if (baseFactor == null) {
+            return;
+        }
         // get factors by domain
         List<ConversionFactor> domainFactors = getDomainFactors(unitType, baseFactor, targetUnit);
 
@@ -158,10 +163,11 @@ public class TagContextScaler extends BaseScaleHandler {
             builder.withConversionId(null)
                     .withFromUnit(targetUnit)
                     .withToDomain(unitType)
-                    .withToContext(ConversionTargetType.Dish); //MM come back and change this to dish or list
+                    .withToContext(ConversionTargetType.Dish);
             List<ConversionFactor> gramFactors = conversionFactorRepository.findFactors(builder.build());
             if (gramFactors.isEmpty() || gramFactors.size() < 2) {
                 metricToDomain.put(key, null);
+                return null;
             }
             ConversionFactor metricFactor = gramFactors.stream()
                     .filter(f -> !f.equals(1.0))
