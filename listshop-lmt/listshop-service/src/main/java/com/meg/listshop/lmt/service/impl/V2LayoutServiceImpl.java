@@ -146,6 +146,19 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
     }
 
     @Override
+    public ListLayoutCategoryEntity getCategoryForTag(Long userId, Long tagId) {
+        List<ListLayoutEntity> layouts = getAllLayoutsWithTag(userId, tagId);
+
+        return layouts.stream()
+                .filter(Objects::nonNull)
+                .map(ListLayoutEntity::getCategories)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
     public ListLayoutEntity getFilledStandardLayout(Long userId) {
         ListLayoutEntity standardLayout = getStandardLayout();
 

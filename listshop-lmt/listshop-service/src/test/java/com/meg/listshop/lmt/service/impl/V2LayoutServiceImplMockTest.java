@@ -8,6 +8,7 @@ package com.meg.listshop.lmt.service.impl;
 
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.data.CategoryTagMapping;
+import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
 import com.meg.listshop.lmt.data.pojos.LayoutCategoryDTO;
 import com.meg.listshop.lmt.data.pojos.LayoutDTO;
@@ -23,6 +24,7 @@ import org.mockito.Mockito;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Collections;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
@@ -125,6 +127,56 @@ class V2LayoutServiceImplMockTest {
                 .orElse(null);
         Assertions.assertNotNull(frozenCategoryResult, "Category 'frozen' not found");
         Assertions.assertEquals(1, frozenCategoryResult.getTags().size(), "There should be 1 tag in category 'frozen'");
+    }
+
+    @Test
+    void testGetCategoryForTagSuccess() {
+        Long userId = 1L;
+        Long tagId = 2L;
+        ListLayoutEntity layout = new ListLayoutEntity(10L);
+        ListLayoutCategoryEntity category = new ListLayoutCategoryEntity(20L);
+        category.setName("Test Category");
+        layout.setCategories(Collections.singleton(category));
+
+        Mockito.when(listLayoutRepository.getStandardLayout()).thenReturn(new ListLayoutEntity(5L));
+        Mockito.when(listLayoutRepository.fillLayout(Mockito.eq(userId), Mockito.eq(tagId), Mockito.any())).thenReturn(layout);
+        Mockito.when(listLayoutRepository.getUserLayoutsWithTag(userId, tagId)).thenReturn(Collections.emptyList());
+
+        ListLayoutCategoryEntity result = listLayoutService.getCategoryForTag(userId, tagId);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(20L, result.getId());
+        Assertions.assertEquals("Test Category", result.getName());
+    }
+
+    @Test
+    void testGetCategoryForTagNoLayouts() {
+        Long userId = 1L;
+        Long tagId = 2L;
+
+        Mockito.when(listLayoutRepository.getStandardLayout()).thenReturn(new ListLayoutEntity(5L));
+        Mockito.when(listLayoutRepository.fillLayout(Mockito.eq(userId), Mockito.eq(tagId), Mockito.any())).thenReturn(null);
+        Mockito.when(listLayoutRepository.getUserLayoutsWithTag(userId, tagId)).thenReturn(Collections.emptyList());
+
+        ListLayoutCategoryEntity result = listLayoutService.getCategoryForTag(userId, tagId);
+
+        Assertions.assertNull(result);
+    }
+
+    @Test
+    void testGetCategoryForTagEmptyCategories() {
+        Long userId = 1L;
+        Long tagId = 2L;
+        ListLayoutEntity layout = new ListLayoutEntity(10L);
+        layout.setCategories(Collections.emptySet());
+
+        Mockito.when(listLayoutRepository.getStandardLayout()).thenReturn(new ListLayoutEntity(5L));
+        Mockito.when(listLayoutRepository.fillLayout(Mockito.eq(userId), Mockito.eq(tagId), Mockito.any())).thenReturn(layout);
+        Mockito.when(listLayoutRepository.getUserLayoutsWithTag(userId, tagId)).thenReturn(Collections.emptyList());
+
+        ListLayoutCategoryEntity result = listLayoutService.getCategoryForTag(userId, tagId);
+
+        Assertions.assertNull(result);
     }
 
     private ListLayoutEntity testListLayout(Long layoutId) {

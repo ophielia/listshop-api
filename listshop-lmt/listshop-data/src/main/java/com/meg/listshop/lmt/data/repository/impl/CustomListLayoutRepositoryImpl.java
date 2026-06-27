@@ -60,21 +60,33 @@ public class CustomListLayoutRepositoryImpl implements CustomListLayoutRepositor
         TypedQuery<TagEntity> query = entityManager.createQuery(criteriaQuery);
         List<TagEntity> layoutTags = query.getResultList();
 
-        Map<Long, ListLayoutCategoryEntity> categories = new HashMap<>();
+        ListLayoutEntity resultLayout = new ListLayoutEntity(layout.getId());
+        resultLayout.setName(layout.getName());
+        resultLayout.setUserId(layout.getUserId());
+        resultLayout.setDefault(layout.getDefault());
+
+        Map<Long, ListLayoutCategoryEntity> categoriesMap = new HashMap<>();
         layoutTags.forEach(tag -> {
-            ListLayoutCategoryEntity category = tag.getCategories().get(0);
-            Long categoryId = category.getId();
-            if (!categories.containsKey(category.getId())) {
-                entityManager.detach(category);
-                category.setTags(new HashSet<>());
-                categories.put(category.getId(), category);
+            Optional<ListLayoutCategoryEntity> categoryOpt = tag.getCategories().stream()
+                    .filter(c -> Objects.equals(c.getLayoutId(), layout.getId()))
+                    .findFirst();
+            if (categoryOpt.isPresent()) {
+                ListLayoutCategoryEntity category = categoryOpt.get();
+                Long categoryId = category.getId();
+                if (!categoriesMap.containsKey(categoryId)) {
+                    ListLayoutCategoryEntity copy = new ListLayoutCategoryEntity(categoryId);
+                    copy.setName(category.getName());
+                    copy.setLayoutId(category.getLayoutId());
+                    copy.setDisplayOrder(category.getDisplayOrder());
+                    copy.setDefault(category.getDefault());
+                    copy.setTags(new HashSet<>());
+                    categoriesMap.put(categoryId, copy);
+                }
+                categoriesMap.get(categoryId).getTags().add(tag);
             }
-            category = categories.get(category.getId());
-            categories.putIfAbsent(categoryId, category);
-            categories.get(categoryId).getTags().add(tag);
         });
-        layout.setCategories(new HashSet<>(categories.values()));
-        return layout;
+        resultLayout.setCategories(new HashSet<>(categoriesMap.values()));
+        return resultLayout;
     }
 
 

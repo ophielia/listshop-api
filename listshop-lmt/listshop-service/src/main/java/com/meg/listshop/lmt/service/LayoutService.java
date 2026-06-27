@@ -55,4 +55,6 @@ public interface LayoutService {
 
     List<ListLayoutEntity> getAllLayoutsWithTag(Long userId, Long tagId);
 
+    ListLayoutCategoryEntity getCategoryForTag(Long userId, Long tagId);
+
 }

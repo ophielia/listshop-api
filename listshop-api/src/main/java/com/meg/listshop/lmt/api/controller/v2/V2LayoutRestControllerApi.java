@@ -15,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-
 /**
  * Created by margaretmartin on 13/05/2017.
  */
@@ -33,6 +31,6 @@ public interface V2LayoutRestControllerApi {
     ResponseEntity<ListLayoutList> retrieveAllLayouts(HttpServletRequest request, Authentication authentication);
 
     @GetMapping(value = "/tag/{tagId}" ,produces = "application/json")
-    ResponseEntity<ListLayoutList> getCategoryForTag(HttpServletRequest request, @PathVariable("tagId") Long tagId, Authentication authentication);
+    ResponseEntity<ListLayoutCategory> getCategoryForTag(HttpServletRequest request, @PathVariable("tagId") Long tagId, Authentication authentication);
 
 }

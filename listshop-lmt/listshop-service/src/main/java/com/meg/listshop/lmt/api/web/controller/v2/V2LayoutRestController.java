@@ -13,8 +13,10 @@ import com.meg.listshop.lmt.api.controller.v2.V2LayoutRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.MappingPost;
 import com.meg.listshop.lmt.api.model.v2.ListLayout;
+import com.meg.listshop.lmt.api.model.v2.ListLayoutCategory;
 import com.meg.listshop.lmt.api.model.v2.ListLayoutList;
 import com.meg.listshop.lmt.api.model.v2.V2ModelMapper;
+import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.service.LayoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -96,20 +98,15 @@ public class V2LayoutRestController implements V2LayoutRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<ListLayoutList> getCategoryForTag(HttpServletRequest request, @PathVariable("tagId") Long tagId, Authentication authentication) {
+    public ResponseEntity<ListLayoutCategory> getCategoryForTag(HttpServletRequest request, @PathVariable("tagId") Long tagId, Authentication authentication) {
         CustomUserDetails userDetails = getUserDetails(authentication);
         Long userId = userDetails != null ? userDetails.getId() : null;
 
         // service call
-        List<ListLayout> listLayouts;
-        listLayouts = layoutService.getAllLayoutsWithTag(userId, tagId)
-                .stream()
-                .map(V2ModelMapper::toModel)
-                .collect(Collectors.toList());
+        ListLayoutCategoryEntity categoryEntity = layoutService.getCategoryForTag(userId, tagId);
+        ListLayoutCategory category = V2ModelMapper.toModel(categoryEntity);
 
-
-        ListLayoutList listLayoutList = new ListLayoutList(listLayouts);
-        return new ResponseEntity<>(listLayoutList, HttpStatus.OK);
+        return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
 }
