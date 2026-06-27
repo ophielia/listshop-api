@@ -59,9 +59,14 @@ public class TagConverterProcessor extends AbstractConverterProcessor  {
 
 
            if (ProcessingUtils.currentIsSingleUnit(context, SINGLE_UNIT_ID)) {
-                if (ProcessingUtils.targetUnitExists(context) && !ProcessingUtils.targetSingleUnit(context, SINGLE_UNIT_ID)) {
+               boolean targetUnitExists = ProcessingUtils.targetUnitExists(context);
+                if (targetUnitExists && !ProcessingUtils.targetSingleUnit(context, SINGLE_UNIT_ID)) {
                     // should convert if target is specific unit - not a single unit
                     LOG.debug("Target unit exists and is not single unit, applying TagConverterProcessor");
+                    return true;
+                } else if (!targetUnitExists) {
+                    // should convert if target unit is not set
+                    LOG.debug("Target unit does not exist, applying TagConverterProcessor");
                     return true;
                 } else if (ProcessingUtils.currentHasMarker(context)) {
                     // should convert if current has a marker - e.g. slice
