@@ -29,7 +29,7 @@ public class HybridTagHandler extends BaseTagHandler {
         // this should kick in if the from type is hybrid
         // we want the modifiers to be taken into account
         // the conversion id is used
-        return ProcessingUtils.currentIsHybrid(context);
+        return ProcessingUtils.currentIsHybrid(context) || ProcessingUtils.currentIsSingleUnit(context, SINGLE_UNIT_ID);
     }
 
 

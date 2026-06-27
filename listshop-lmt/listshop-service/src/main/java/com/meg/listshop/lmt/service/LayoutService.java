@@ -25,19 +25,13 @@ public interface LayoutService {
 
     ListLayoutEntity getDefaultUserLayout(Long userId);
 
-    ListLayoutEntity getStandardLayout();
-
     void addDefaultUserMappings(Long id, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException;
-
-    List<ListLayoutEntity> getUserLayouts(UserEntity user);
 
     ListLayoutEntity getFilledStandardLayout(Long userId);
 
     void assignDefaultCategoryToTag(List<TagEntity> siblings, TagEntity tagToAssign);
 
     void assignUserDefaultCategoriesToTag(List<TagEntity> siblings, TagEntity tagToAssign);
-
-    List<ListLayoutCategoryEntity> getUserCategories(String userName);
 
     List<ListLayoutCategoryEntity> getUserCategoriesForList(Long userLayoutId, Long listId);
 

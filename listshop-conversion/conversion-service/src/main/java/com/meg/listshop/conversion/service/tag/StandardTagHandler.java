@@ -39,25 +39,27 @@ public class StandardTagHandler extends BaseTagHandler {
         String targetSize = toConvert.getUnitSize();
         FactorCriteriaBuilder criteriaBuilder = new FactorCriteriaBuilder()
                 .withFromUnit(toConvert.getUnit())
-                .withConversionId(conversionId)
+                //.withConversionId(conversionId)
                 .withToUnit(GRAM_UNIT_ID);
 
-
-        if (targetSize != null) {
-                criteriaBuilder = criteriaBuilder.withFromSize(targetSize);
-        }
-        List<ConversionFactor> factors =  factorRepository.findFactors(criteriaBuilder.build()).stream()
+        List<ConversionFactor> factors =  factorRepository.findAllFactors(criteriaBuilder.build()).stream()
                 .map(factor -> (ConversionFactor) factor)
                 .toList();
 
         if (factors.size() <= 1) {
             return factors;
         }
-        return factors.stream()
-                .map(f -> (ConversionFactorEntity)f)
+
+        ConversionFactor defaultFactor = factors.stream()
                 .filter( f -> f.isUnitDefault())
                 .map(f -> (ConversionFactor)f)
-                .toList();
+                .findFirst().orElse(null);
+
+        if (defaultFactor == null) {
+            return factors;
+        } else {
+            return List.of(defaultFactor);
+        }
     }
 
     private Long determineConversionId(ConvertibleAmount toConvert) {

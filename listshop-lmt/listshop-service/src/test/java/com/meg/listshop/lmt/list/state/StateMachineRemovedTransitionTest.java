@@ -1,7 +1,20 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.Application;
+import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
+import com.meg.listshop.conversion.data.pojo.SimpleAmount;
+import com.meg.listshop.conversion.exceptions.ConversionFactorException;
+import com.meg.listshop.conversion.exceptions.ConversionPathException;
+import com.meg.listshop.conversion.service.ConverterService;
+import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.api.model.v2.SpecificationType;
@@ -28,6 +41,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 @Testcontainers
 @ExtendWith(SpringExtension.class)
@@ -48,11 +63,11 @@ class StateMachineRemovedTransitionTest {
     @Autowired
     private ShoppingListRepository shoppingListRepository;
     @Autowired
-    private ListItemDetailRepository itemDetailRepository;
-    @Autowired
     private TagRepository tagRepository;
     @Autowired
-    private ListItemRepository listItemRepository;
+    UnitRepository unitRepository;
+    @Autowired
+    ConverterService converterService;
 
     private ListItemEntity createSimpleListItem(TagEntity tagEntity, double quantitv, Long unitId) throws ItemProcessingException {
         ShoppingListEntity targetList = createShoppingList();
@@ -306,6 +321,22 @@ class StateMachineRemovedTransitionTest {
         }
 
         @Test
+        void testConversion() throws ItemProcessingException, ConversionPathException, ConversionFactorException {
+            // item has specified dish, unspecified tag and list
+            //          before removal - MIXED.  after removal - NONE
+            // setup - adding a dish item from a tag
+            TagEntity tagEntity = getTag(TAG_TOMATO);
+            UnitEntity unit = unitRepository.findById(UNIT_UNIT_ID).orElse(null);
+            UnitEntity pound = unitRepository.findById(LB_ID).orElse(null);
+Long conversionId = 112225744L;
+            ConvertibleAmount amount = new SimpleAmount(1.0, pound,conversionId, false, null);
+            ConvertibleAmount converted = converterService.convert(amount, unit);
+            System.out.println("converted = " + converted);
+            assertNotNull(converted);
+
+        }
+
+        @Test
         void testRemoveByListThreeTypesTagSpecific() throws ItemProcessingException {
             // item has specified dish, unspecified tag and list
             //          before removal - MIXED.  after removal - NONE
@@ -328,7 +359,7 @@ class StateMachineRemovedTransitionTest {
             setupContext.setListItem(secondListItem);
             testItem = listItemStateMachine.handleEvent(ListItemEvent.ADD_ITEM, setupContext, targetList.getUserId());
 
-            // adding tag, 1/2 pound
+            // adding tag, 1 pound
             setupContext = new ItemStateContext(testItem, listId);
             setupContext.setTag(tagEntity);
             BasicAmount amount = new BasicAmount(1.0, null, null, LB_ID, tagEntity);

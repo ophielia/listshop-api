@@ -163,11 +163,6 @@ public class BaseLayoutServiceImpl {
 
     }
 
-    public void moveTagToDefaultCategory(Long tagId, Long categoryId) {
-        //NO-IMPL
-        throw new UnsupportedOperationException("Not implemented in base service");
-    }
-
     protected void removeTagFromCategory(ListLayoutCategoryEntity categoryEntity, TagEntity tag) {
         Set<TagEntity> tags = categoryEntity.getTags();
         if (!tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
@@ -266,18 +261,6 @@ public class BaseLayoutServiceImpl {
         tag.getCategories().add(categoryEntity);
 
         categoryRepository.save(categoryEntity);
-    }
-
-    private static Map<String, ListLayoutCategoryEntity> layoutCategoriesToMap(ListLayoutEntity layout) {
-        Map<String, ListLayoutCategoryEntity> categoryMap = new HashMap<>();
-        if (layout == null) {
-            return categoryMap;
-        }
-        layout.getCategories().forEach(c -> {
-            String name = c.getName();
-            categoryMap.put(name.trim().toLowerCase(), c);
-        });
-        return categoryMap;
     }
 
 }

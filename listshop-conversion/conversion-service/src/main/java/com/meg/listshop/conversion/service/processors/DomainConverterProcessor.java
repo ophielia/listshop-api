@@ -49,18 +49,6 @@ public class DomainConverterProcessor extends AbstractConverterProcessor {
     public void process(ProcessingContext context) {
         ConvertibleAmount converted = convert(context);
         context.setCurrentAmount(converted);
-      /*
-        // find first processor for domain conversion
-        DomainConversionHandler handler = findHandlerForContext(context);
-       // convert current amount
-       if (handler != null) {
-           ConvertibleAmount amount = handler.convert(context);
-           // set result in current amount
-           context.setCurrentAmount(amount);
-       } else {
-           LOG.debug("No handler found for domain conversion from {} to {}", specFromSource(context), specFromTarget(context));
-       }
-*/
     }
 
     private ConvertibleAmount convert(@NonNull ProcessingContext context) {

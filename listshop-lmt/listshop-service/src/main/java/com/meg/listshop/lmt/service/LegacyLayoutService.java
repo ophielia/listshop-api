@@ -24,32 +24,15 @@ public interface LegacyLayoutService {
 
     ListLayoutEntity getDefaultUserLayout(Long userId);
 
-    ListLayoutEntity getStandardLayout();
-
     void addDefaultUserMappings(Long id, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException;
 
     List<ListLayoutEntity> getUserLayouts(UserEntity user);
 
     ListLayoutEntity getFilledStandardLayout(Long userId);
 
-    void assignDefaultCategoryToTag(List<TagEntity> siblings, TagEntity tagToAssign);
-
-    void assignUserDefaultCategoriesToTag(List<TagEntity> siblings, TagEntity tagToAssign);
 
     List<ListLayoutCategoryEntity> getUserCategories(String userName);
 
-    List<ListLayoutCategoryEntity> getUserCategoriesForList(Long userLayoutId, Long listId);
 
-    List<ListLayoutCategoryEntity> getStandardCategoriesForList(Long listId);
-
-    List<LayoutCategoryDTO> getDefaultCategories();
-
-    void addTagToCategory(Long layoutCategoryId, TagEntity tag);
-
-    void moveTagToDefaultCategory(Long tagId, Long categoryId);
-
-    List<ListLayoutEntity> getAllLayouts(Long userId);
-
-    List<ListLayoutEntity> getAllLayoutsWithTag(Long userId, Long tagId);
 
 }

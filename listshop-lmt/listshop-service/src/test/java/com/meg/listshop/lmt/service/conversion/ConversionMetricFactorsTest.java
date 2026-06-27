@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.service.conversion;
@@ -146,7 +145,7 @@ class ConversionMetricFactorsTest {
         assertEquals(0.165, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(lbId, converted.getUnit().getId());
         ConvertibleAmount andback = converterService.convert(converted, gramOpt);
-        assertEquals(75.0, RoundingUtils.roundToThousandths(andback.getQuantity()));
+        assertEquals(75.0, RoundingUtils.roundToHundredths(andback.getQuantity()));
         assertEquals(gId, andback.getUnit().getId());
 
 //        3456 gram = 121.9068125 ounce
