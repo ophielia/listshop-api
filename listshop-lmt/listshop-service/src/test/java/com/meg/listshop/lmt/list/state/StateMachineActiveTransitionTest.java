@@ -214,9 +214,9 @@ class StateMachineActiveTransitionTest {
         Assertions.assertTrue(detail.getQuantity() > 5.8 && detail.getQuantity() < 5.9);
         Assertions.assertEquals(1009L, detail.getUnitId());
         Assertions.assertEquals(dishItem.getRawEntry(), detail.getRawEntry());
-        Assertions.assertEquals(6.0, result.getRoundedQuantity());
-        Assertions.assertNull(result.getFractionalQuantity());
-        Assertions.assertEquals(6, result.getWholeQuantity());
+        Assertions.assertEquals(5.875, result.getRoundedQuantity());
+        Assertions.assertEquals(FractionType.SevenEighths,result.getFractionalQuantity());
+        Assertions.assertEquals(5, result.getWholeQuantity());
 
 
         // now, add the same again, and we should have 3 cups
@@ -356,9 +356,9 @@ class StateMachineActiveTransitionTest {
         Assertions.assertNotNull(detail.getLinkedDishId());
         Assertions.assertEquals(dishId, detail.getLinkedDishId());
         // verify item quantities
-        Assertions.assertEquals(6, result.getWholeQuantity());
-        Assertions.assertNull( result.getFractionalQuantity());
-        Assertions.assertEquals(6.000, result.getRoundedQuantity());
+        Assertions.assertEquals(5, result.getWholeQuantity());
+        Assertions.assertEquals( FractionType.SevenEighths,result.getFractionalQuantity());
+        Assertions.assertEquals(5.875, result.getRoundedQuantity());
         Assertions.assertEquals(1009L, result.getUnit().getId());
         // verify quantities, detail
         Assertions.assertEquals(5.875, detail.getQuantity());
@@ -578,7 +578,7 @@ class StateMachineActiveTransitionTest {
         verifyDates(result);
         Assertions.assertTrue(ServiceTestUtils.dateInLastXSeconds(result.getUpdatedOn(), 2));
         // verify item amounts
-        Assertions.assertEquals(5.0, result.getRoundedQuantity());
+        Assertions.assertEquals(4.875, result.getRoundedQuantity());
         Assertions.assertEquals(OZ_UNIT_ID, result.getUnit().getId());
         // and that the result contains 1 detail, with dish_id null and list_id not null
         // quantity of 4.907, usedCount 2, unitId - ounce
@@ -759,7 +759,7 @@ class StateMachineActiveTransitionTest {
 
         Assertions.assertNotNull(newFlourWithAmountResult);
         Assertions.assertNotNull(newFlourWithAmountResult.getAmountText());
-        Assertions.assertEquals("6 oz", newFlourWithAmountResult.getAmountText());
+        Assertions.assertEquals("5 7/8 oz", newFlourWithAmountResult.getAmountText());
         ListItemDetailEntity givenAmountDetail = newFlourWithAmountResult.getDetails().get(0);
         Assertions.assertNotNull(givenAmountDetail.getRawEntry());
         Assertions.assertEquals("some willy wally wang", givenAmountDetail.getRawEntry());
@@ -774,7 +774,7 @@ class StateMachineActiveTransitionTest {
 
         Assertions.assertNotNull(dishItemNoRawAmountResult);
         Assertions.assertNotNull(dishItemNoRawAmountResult.getAmountText());
-        Assertions.assertEquals("6 oz", dishItemNoRawAmountResult.getAmountText());
+        Assertions.assertEquals("5 7/8 oz", dishItemNoRawAmountResult.getAmountText());
         ListItemDetailEntity datailNoGivenText = dishItemNoRawAmountResult.getDetails().get(0);
         Assertions.assertNotNull(datailNoGivenText.getRawEntry());
         Assertions.assertEquals("5 7/8 oz", datailNoGivenText.getRawEntry());

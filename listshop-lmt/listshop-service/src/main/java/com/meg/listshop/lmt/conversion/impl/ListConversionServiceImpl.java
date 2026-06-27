@@ -246,7 +246,7 @@ public class ListConversionServiceImpl implements ListConversionService {
         if (unit.getType().equals(UnitType.UNIT) || quantity > 10) {
             return RoundingUtils.roundUpToNearestWholeNumber(quantity);
         }
-        return RoundingUtils.roundUpToNearestFraction(quantity);
+        return RoundingUtils.roundUpToNearestRoundingType(quantity);
     }
 
     private void setTextInItem(ListItemEntity item, QuantityElements elements) {

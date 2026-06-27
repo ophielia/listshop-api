@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.common;
 
 public class RoundingUtils {
@@ -44,6 +50,43 @@ public class RoundingUtils {
 
         return RoundingUtils.round(roundedToEights,RoundingType.THOUSANDTH);
     }
+
+    public static double roundUpToNearestRoundingType(double value) {
+        double roundedToThousandths = roundToThousandths(value);
+        if (isRoundingType(roundedToThousandths)) {
+            return roundedToThousandths;
+        }
+
+        double nearestRoundedUp = Double.MAX_VALUE;
+        double minDistance = Double.MAX_VALUE;
+
+        for (RoundingType type : RoundingType.values()) {
+            if (type == RoundingType.HUNDREDTH || type == RoundingType.THOUSANDTH) {
+                continue;
+            }
+            double roundedUp = type.roundUp(value);
+            double distance = Math.abs(value - roundedUp);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestRoundedUp = roundedUp;
+            }
+        }
+        return roundToThousandths(nearestRoundedUp);
+    }
+
+    private static boolean isRoundingType(double value) {
+        for (RoundingType type : RoundingType.values()) {
+            if (type == RoundingType.HUNDREDTH || type == RoundingType.THOUSANDTH) {
+                continue;
+            }
+            if (roundToThousandths(type.round(value)) == value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
     public static double round(double value, RoundingType roundingType) {
         return roundingType.round(value);
