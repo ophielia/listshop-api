@@ -65,6 +65,7 @@ public class TagContextScaler extends BaseScaleHandler {
                 .withToUnit(targetUnitId)
                 .withFromContext(target.conversionContext())
                 .withMarkerOrNull(originalAmount.getMarker())
+                .withFromNotOneWay()
                 .withFromExcludeDomain(target.domainType());
 
         List<UnitType> typeList = new ArrayList<>();

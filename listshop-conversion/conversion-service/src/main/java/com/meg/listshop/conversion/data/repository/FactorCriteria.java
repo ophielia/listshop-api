@@ -39,6 +39,8 @@ public class FactorCriteria {
     private String markerOrNull;
     private String sizeOrDefault;
     private UnitType fromExcludeDomain;
+    private boolean fromNotOneWay;
+    private boolean toNotOneWay;
 
     public FactorCriteria() {
     }
@@ -58,6 +60,13 @@ public class FactorCriteria {
                 .withToUnit(criteria.getToUnitId())
                 .withFromExcludeDomain(criteria.getFromExcludeDomain())
                 .withFromDomain(criteria.getFromDomain());
+
+        if (criteria.isFromNotOneWay()) {
+            builder.withFromNotOneWay();
+        }
+        if (criteria.isToNotOneWay()) {
+            builder.withToNotOneWay();
+        }
         return builder.build();
     }
 
@@ -246,5 +255,23 @@ public class FactorCriteria {
 
     public void setToUnitIds(Set<Long> toUnitIds) {
         this.toUnitIds = toUnitIds;
+    }
+
+    public boolean toNotOneWay() {
+        this.toNotOneWay = true;
+        return this.toNotOneWay;
+    }
+
+    public boolean fromNotOneWay() {
+        this.fromNotOneWay = true;
+        return this.fromNotOneWay;
+    }
+
+    public boolean isToNotOneWay() {
+        return toNotOneWay;
+    }
+
+    public boolean isFromNotOneWay() {
+        return fromNotOneWay;
     }
 }

@@ -183,6 +183,12 @@ public class CustomConversionFactorRepositoryImpl implements CustomConversionFac
         } else {
             predicates.add(cb.isNull(root.<String>get("conversionId")));
         }
+        if (criteria.isToNotOneWay()) {
+            predicates.add(cb.not(cb.isTrue(toUnit.get("oneWayConversion"))));
+        }
+        if (criteria.isFromNotOneWay()) {
+            predicates.add(cb.not(cb.isTrue(fromUnit.get("oneWayConversion"))));
+        }
         return predicates;
     }
 

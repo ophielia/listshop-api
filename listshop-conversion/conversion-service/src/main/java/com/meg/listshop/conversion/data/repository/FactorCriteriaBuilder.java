@@ -26,6 +26,17 @@ public class FactorCriteriaBuilder {
         return this;
     }
 
+
+    public FactorCriteriaBuilder withToNotOneWay() {
+        this.criteria.toNotOneWay();
+        return this;
+    }
+
+    public FactorCriteriaBuilder withFromNotOneWay() {
+        this.criteria.fromNotOneWay();
+        return this;
+    }
+
     public FactorCriteriaBuilder withFromType(UnitType unitType) {
         this.criteria.setFromType(unitType);
         return this;

@@ -597,7 +597,6 @@ class ConversionTest {
         converted = converterService.convert(amount, dishContext);
         assertNotNull(converted);
         System.out.println(converted);
-        //MM converting to a wedge here - it shouldn't
         assertEquals(1, RoundingUtils.roundToThousandths(converted.getQuantity()));
         assertEquals(SLICE_ID, converted.getUnit().getId());
 

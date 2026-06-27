@@ -60,14 +60,14 @@ insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, refer
 insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default, tag_id) values (1152, 13.5, 1013, 1001, 226442, 4134, null, 'medium', false, null);
 insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default, tag_id) values (1154, 4.5, 1013, 1002, 226442, 4136, null, 'medium', false, null);
 
-
 /*
  * The List Shop
  *
  * Copyright (c) 2026.
  */
 
-
+-- unexplained tomato slice
+update units set is_dish_unit = true where unit_id = 1022;
 -- grams to milliliters
 insert into factors (factor_id, factor, to_unit, from_unit, conversion_id, reference_id, marker, unit_size, unit_default, tag_id) values
     (111111154, 0.9, 1004, 1013, 226442, 4136, null, null, false, null);

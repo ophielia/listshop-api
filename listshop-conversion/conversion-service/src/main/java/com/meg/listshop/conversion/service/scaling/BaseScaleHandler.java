@@ -10,6 +10,7 @@ import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.data.entity.ConversionFactor;
 import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
+import com.meg.listshop.conversion.data.pojo.ConversionTargetType;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.conversion.service.ConvertibleAmount;
 import com.meg.listshop.conversion.service.ProcessingContext;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public abstract class BaseScaleHandler implements ScaleHandler, FactorProvider {
@@ -49,13 +51,22 @@ public abstract class BaseScaleHandler implements ScaleHandler, FactorProvider {
         double quantity = getQuantity(context);
 
         // convert all factors, making list
+        AtomicBoolean containsSelfScaling = new AtomicBoolean(false);
         List<ConvertibleAmount> convertedList = factors.stream()
                 .map(f -> {
                     double newQuantity = quantity * f.getFactor();
                     UnitEntity newUnit = f.getToUnit();
 
+                    containsSelfScaling.set(containsSelfScaling.get() | f.getToUnit().getId().equals(context.getStartingAmount().getUnit().getId()));
                     return new SimpleAmount(newQuantity, newUnit, f.getUnitSize());
                 }).collect(Collectors.toList());
+        // dish scale
+        if (context.getTarget().conversionContext() == ConversionTargetType.Dish &&
+        context.getStartingAmount().getUnit().isDishUnit() && !containsSelfScaling.get()) {
+            // add selfscaling
+            convertedList.add(context.getStartingAmount());
+        }
+
         // return right away if we only have one factor
         if (convertedList.size() == 1) {
             return convertedList.get(0);
