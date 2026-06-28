@@ -4,7 +4,7 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.lmt.service.impl;
+package com.meg.listshop.lmt.service.layout.impl;
 
 import com.meg.listshop.auth.service.UserService;
 import com.meg.listshop.lmt.data.CategoryTagMapping;
@@ -16,7 +16,7 @@ import com.meg.listshop.lmt.data.pojos.LayoutDTO;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.LayoutService;
+import com.meg.listshop.lmt.service.layout.LayoutService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,6 +163,37 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
         ListLayoutEntity standardLayout = getStandardLayout();
 
         return listLayoutRepository.fillLayout(userId, null,standardLayout);
+    }
+
+    private ListLayoutEntity getLayout(Long userId) {
+        // returns a single layout - but this will be a dto
+
+        // when the feature of multiple layouts for users will be added, this will still be an active endpoint,
+        // but it will return the default
+
+        // consider renaming it to /layout/default
+
+        // we need to add link between user_layout and standard - with the standard id in the user layout -
+        // new field, something like, base_layout_id
+
+        // with no user, just returns standard layout
+
+        // with user, it will
+        // 1) find user default layout
+        // 2) initialize a tag category map
+        // 3) fill this map with tags defined in user layout
+        // 4) continue filling the map from standard layout, without overwrites
+        // 5) fill this into (new) DTO
+        // 6) return
+
+        // the standard (non-user) method will be
+        // 1) find standard layout
+        // 2) initialize a tag category map
+        // 3) fill with tags mapped in standard layout
+        // 4) fill this into (new) DTO
+        // 5) return
+
+        return null;
     }
 
     @Override

@@ -4,24 +4,19 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.lmt.service.impl;
+package com.meg.listshop.lmt.service.layout.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.pojos.LayoutCategoryDTO;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
-import com.meg.listshop.lmt.service.LayoutService;
-import com.meg.listshop.lmt.service.LegacyLayoutService;
+import com.meg.listshop.lmt.service.layout.LegacyLayoutService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

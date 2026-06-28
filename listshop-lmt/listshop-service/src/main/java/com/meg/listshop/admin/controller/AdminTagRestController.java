@@ -18,7 +18,7 @@ import com.meg.listshop.lmt.data.pojos.IncludeType;
 import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
 import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
 import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
-import com.meg.listshop.lmt.service.LayoutService;
+import com.meg.listshop.lmt.service.layout.LayoutService;
 import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;

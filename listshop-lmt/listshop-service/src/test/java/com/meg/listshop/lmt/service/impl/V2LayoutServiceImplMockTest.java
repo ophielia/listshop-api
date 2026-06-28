@@ -15,6 +15,7 @@ import com.meg.listshop.lmt.data.pojos.LayoutDTO;
 import com.meg.listshop.lmt.data.repository.ListLayoutCategoryRepository;
 import com.meg.listshop.lmt.data.repository.ListLayoutRepository;
 import com.meg.listshop.lmt.data.repository.TagRepository;
+import com.meg.listshop.lmt.service.layout.impl.V2LayoutServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

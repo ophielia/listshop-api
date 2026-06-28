@@ -4,14 +4,12 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.lmt.service;
+package com.meg.listshop.lmt.service.layout;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.pojos.LayoutCategoryDTO;
 
 import java.util.List;
 

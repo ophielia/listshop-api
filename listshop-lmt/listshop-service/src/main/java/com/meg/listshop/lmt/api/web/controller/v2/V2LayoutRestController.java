@@ -17,7 +17,7 @@ import com.meg.listshop.lmt.api.model.v2.ListLayoutCategory;
 import com.meg.listshop.lmt.api.model.v2.ListLayoutList;
 import com.meg.listshop.lmt.api.model.v2.V2ModelMapper;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
-import com.meg.listshop.lmt.service.LayoutService;
+import com.meg.listshop.lmt.service.layout.LayoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

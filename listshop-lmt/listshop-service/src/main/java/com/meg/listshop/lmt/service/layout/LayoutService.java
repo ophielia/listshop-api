@@ -4,9 +4,8 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.lmt.service;
+package com.meg.listshop.lmt.service.layout;
 
-import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;

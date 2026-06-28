@@ -26,6 +26,7 @@ import com.meg.listshop.lmt.list.state.ItemStateContext;
 import com.meg.listshop.lmt.list.state.ListItemEvent;
 import com.meg.listshop.lmt.list.state.ListItemStateMachine;
 import com.meg.listshop.lmt.service.*;
+import com.meg.listshop.lmt.service.layout.LegacyLayoutService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

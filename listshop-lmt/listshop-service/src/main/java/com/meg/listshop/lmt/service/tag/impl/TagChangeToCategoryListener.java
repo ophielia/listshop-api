@@ -8,7 +8,7 @@ package com.meg.listshop.lmt.service.tag.impl;
 
 import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.service.LayoutService;
+import com.meg.listshop.lmt.service.layout.LayoutService;
 import com.meg.listshop.lmt.service.tag.TagChangeListener;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;

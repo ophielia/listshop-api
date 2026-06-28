@@ -9,7 +9,7 @@ package com.meg.listshop.admin.controller;
 import com.meg.listshop.lmt.api.model.LayoutCategoryListResource;
 import com.meg.listshop.lmt.api.model.LayoutCategoryResource;
 import com.meg.listshop.lmt.api.model.ModelMapper;
-import com.meg.listshop.lmt.service.LayoutService;
+import com.meg.listshop.lmt.service.layout.LayoutService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
