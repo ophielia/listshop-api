@@ -61,11 +61,7 @@ public class BaseLayoutServiceImpl {
         return listLayoutRepository.getStandardLayout();
     }
 
-    public void addDefaultUserMappings(Long userId, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException {
-        // get default user mappings - and send to next
-        ListLayoutEntity defaultUserLayout = getOrCreateDefaultUserLayout(userId);
-        addMappingsToLayout(defaultUserLayout, categoryId, tagIds);
-    }
+
 
     public List<ListLayoutEntity> getUserLayouts(UserEntity user) {
         // NO-IMPL
@@ -209,22 +205,13 @@ public class BaseLayoutServiceImpl {
         category.setLayoutId(layout.getId());
         category.setName(categoryTemplate.getName());
         category.setDisplayOrder(categoryTemplate.getDisplayOrder());
+        category.setLinkedCategoryId(categoryTemplate.getId());
         ListLayoutCategoryEntity savedCategory = categoryRepository.save(category);
         layout.addCategory(savedCategory);
         return savedCategory;
     }
 
-    private ListLayoutEntity getOrCreateDefaultUserLayout(Long userId) {
-        ListLayoutEntity defaultLayout = listLayoutRepository.getDefaultUserLayout(userId);
-        if (defaultLayout != null) {
-            return defaultLayout;
-        }
-        ListLayoutEntity newDefault = new ListLayoutEntity();
-        newDefault.setDefault(true);
-        newDefault.setName(defaultLayoutDefaultName);
-        newDefault.setUserId(userId);
-        return listLayoutRepository.save(newDefault);
-    }
+
 
     private void deleteTagMappingsInLayout(Long layoutId, Set<Long> tagIds) {
         List<TagEntity> tagsToDelete = listLayoutRepository.getTagsToDeleteFromLayout(layoutId, tagIds);

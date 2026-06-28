@@ -7,6 +7,7 @@
 package com.meg.listshop.lmt.service.layout.impl;
 
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.CategoryTagMapping;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
@@ -197,6 +198,13 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
     }
 
     @Override
+    public void addDefaultUserMappings(Long userId, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException {
+        // get default user mappings - and send to next
+        ListLayoutEntity defaultUserLayout = getOrCreateDefaultUserLayout(userId);
+        addMappingsToLayout(defaultUserLayout, categoryId, tagIds);
+    }
+
+    @Override
     public List<LayoutCategoryDTO> getDefaultCategories() {
 
         // get default layout for user
@@ -289,6 +297,25 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
         ListLayoutEntity standardLayout = getStandardLayout();
 
         return listLayoutRepository.fillLayout(userId, tagId,standardLayout);
+    }
+
+    private ListLayoutEntity getOrCreateDefaultUserLayout(Long userId) {
+        ListLayoutEntity defaultLayout = listLayoutRepository.getDefaultUserLayout(userId);
+        if (defaultLayout != null) {
+            return defaultLayout;
+        }
+        ListLayoutEntity standardLayout = getStandardLayout();
+        Long linkedLayoutId = null;
+        if (standardLayout != null) {
+            linkedLayoutId = standardLayout.getId();
+        }
+
+        ListLayoutEntity newDefault = new ListLayoutEntity();
+        newDefault.setDefault(true);
+        newDefault.setName(defaultLayoutDefaultName);
+        newDefault.setUserId(userId);
+        newDefault.setLinkedLayoutId(linkedLayoutId);
+        return listLayoutRepository.save(newDefault);
     }
 
 }
