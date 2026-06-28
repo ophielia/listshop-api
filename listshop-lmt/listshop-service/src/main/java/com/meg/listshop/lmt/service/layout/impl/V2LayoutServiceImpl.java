@@ -79,7 +79,7 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
         List<LayoutCategoryDTO> categoryList = convertToCategoryList(tagMappingDictionary, userId);
 
         // create LayoutDTO and return
-        return new LayoutDTO(standardLayout.getId(), standardLayout.getName(), standardLayout.getDefault(), userId, categoryList);
+        return new LayoutDTO(standardLayout.getId(), standardLayout.getName(), standardLayout.getDefault(), userId, standardLayout.getLinkedLayoutId(), categoryList);
     }
 
     private List<LayoutCategoryDTO> convertToCategoryList(Map<Long, CategoryTagMapping> tagMappingDictionary, Long userId) {

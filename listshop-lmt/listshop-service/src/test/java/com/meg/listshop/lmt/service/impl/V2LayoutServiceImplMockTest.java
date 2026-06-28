@@ -62,9 +62,9 @@ class V2LayoutServiceImplMockTest {
         CategoryTagMapping hairbrushMapping = new CategoryTagMapping(2L, "other", 3L, "hairbrush");
         CategoryTagMapping shampooMapping = new CategoryTagMapping(2L, "other", 4L, "shampoo");
         List<CategoryTagMapping> standardMappingList = List.of(carrotMapping, hairbrushMapping, shampooMapping);
-        LayoutCategoryDTO produceCategory = new LayoutCategoryDTO("1", "produce", false, 100);
-        LayoutCategoryDTO otherCategory = new LayoutCategoryDTO("2", "other", false, 100);
-        LayoutCategoryDTO notAppearingInThisFilmCategory = new LayoutCategoryDTO("99", "not here", false, 100);
+        LayoutCategoryDTO produceCategory = new LayoutCategoryDTO("1", "produce", false, 100, null);
+        LayoutCategoryDTO otherCategory = new LayoutCategoryDTO("2", "other", false, 100, null);
+        LayoutCategoryDTO notAppearingInThisFilmCategory = new LayoutCategoryDTO("99", "not here", false, 100, null);
         List<LayoutCategoryDTO> standardCategoryList = List.of(produceCategory, otherCategory, notAppearingInThisFilmCategory);
 
         Mockito.when(listLayoutRepository.getStandardLayout()).thenReturn(listLayout);
@@ -98,10 +98,10 @@ class V2LayoutServiceImplMockTest {
         CategoryTagMapping hairbrushMapping = new CategoryTagMapping(2L, "other", 3L, "hairbrush");
         CategoryTagMapping shampooMapping = new CategoryTagMapping(2L, "other", 4L, "shampoo");
         List<CategoryTagMapping> standardMappingList = List.of(carrotMapping, hairbrushMapping, shampooMapping);
-        LayoutCategoryDTO produceCategory = new LayoutCategoryDTO("1", "produce", false, 100);
-        LayoutCategoryDTO otherCategory = new LayoutCategoryDTO("2", "other", false, 100);
-        LayoutCategoryDTO frozenCategory = new LayoutCategoryDTO("3", "frozen", false, 100);
-        LayoutCategoryDTO notAppearingInThisFilmCategory = new LayoutCategoryDTO("99", "not here", false, 100);
+        LayoutCategoryDTO produceCategory = new LayoutCategoryDTO("1", "produce", false, 100, null);
+        LayoutCategoryDTO otherCategory = new LayoutCategoryDTO("2", "other", false, 100, null);
+        LayoutCategoryDTO frozenCategory = new LayoutCategoryDTO("3", "frozen", false, 100, null);
+        LayoutCategoryDTO notAppearingInThisFilmCategory = new LayoutCategoryDTO("99", "not here", false, 100, null);
         List<LayoutCategoryDTO> standardCategoryList = List.of(produceCategory, otherCategory, notAppearingInThisFilmCategory, frozenCategory);
 
         Mockito.when(listLayoutRepository.getStandardLayout()).thenReturn(listLayout);

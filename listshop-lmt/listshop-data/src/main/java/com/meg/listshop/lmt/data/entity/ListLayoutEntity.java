@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.entity;
 
 import jakarta.persistence.*;
@@ -33,6 +39,9 @@ public class ListLayoutEntity {
 
     @Column(name = "is_default")
     private Boolean isDefault;
+
+    @Column(name = "linked_layout_id")
+    private Long linkedLayoutId;
 
     public ListLayoutEntity(Long layoutId) {
         this.layoutId = layoutId;
@@ -76,6 +85,14 @@ public class ListLayoutEntity {
 
     public void setDefault(Boolean aDefault) {
         isDefault = aDefault;
+    }
+
+    public Long getLinkedLayoutId() {
+        return linkedLayoutId;
+    }
+
+    public void setLinkedLayoutId(Long linkedLayoutId) {
+        this.linkedLayoutId = linkedLayoutId;
     }
 
     public void addCategory(ListLayoutCategoryEntity category) {

@@ -22,6 +22,8 @@ public class LayoutCategoryDTO {
 
     private Integer displayOrder;
 
+    private Long linkedCategoryId;
+
     private List<CategoryTagMapping> tags = new ArrayList<>();
 
 
@@ -30,13 +32,15 @@ public class LayoutCategoryDTO {
         this.categoryName = listLayoutCategoryEntity.getName();
         this.isDefault = listLayoutCategoryEntity.getDefault();
         this.displayOrder = listLayoutCategoryEntity.getDisplayOrder();
+        this.linkedCategoryId = listLayoutCategoryEntity.getLinkedCategoryId();
     }
 
-    public LayoutCategoryDTO(String categoryId, String categoryName, Boolean isDefault, Integer displayOrder) {
+    public LayoutCategoryDTO(String categoryId, String categoryName, Boolean isDefault, Integer displayOrder, Long linkedCategoryId) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.isDefault = isDefault;
         this.displayOrder = displayOrder;
+        this.linkedCategoryId = linkedCategoryId;
     }
 
     public String getCategoryId() {
@@ -63,6 +67,14 @@ public class LayoutCategoryDTO {
         isDefault = aDefault;
     }
 
+    public Long getLinkedCategoryId() {
+        return linkedCategoryId;
+    }
+
+    public void setLinkedCategoryId(Long linkedCategoryId) {
+        this.linkedCategoryId = linkedCategoryId;
+    }
+
     public List<CategoryTagMapping> getTags() {
         return tags;
     }
@@ -76,6 +88,7 @@ public class LayoutCategoryDTO {
         return "LayoutCategoryDTO{" +
                 ", categoryId=" + categoryId +
                 ", categoryName='" + categoryName + '\'' +
+                ", linkedCategoryId=" + linkedCategoryId +
                 '}';
     }
 

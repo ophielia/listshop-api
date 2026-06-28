@@ -17,13 +17,15 @@ private Long id;
 private String name;
 private Boolean isDefault;
 private Long userId;
+private Long linkedLayoutId;
 private List<LayoutCategoryDTO> categories = new ArrayList<>();
 
-    public LayoutDTO(Long id, String name, Boolean isDefault, Long userId, List<LayoutCategoryDTO> categories) {
+    public LayoutDTO(Long id, String name, Boolean isDefault, Long userId, Long linkedLayoutId, List<LayoutCategoryDTO> categories) {
         this.id = id;
         this.name = name;
         this.isDefault = isDefault;
         this.userId = userId;
+        this.linkedLayoutId = linkedLayoutId;
         this.categories = categories;
     }
 
@@ -43,6 +45,10 @@ private List<LayoutCategoryDTO> categories = new ArrayList<>();
         return userId;
     }
 
+    public Long getLinkedLayoutId() {
+        return linkedLayoutId;
+    }
+
     public List<LayoutCategoryDTO> getCategories() {
         return categories;
     }
@@ -54,6 +60,7 @@ private List<LayoutCategoryDTO> categories = new ArrayList<>();
                 ", name='" + name + '\'' +
                 ", isDefault=" + isDefault +
                 ", userId=" + userId +
+                ", linkedLayoutId=" + linkedLayoutId +
                 ", categories=" + categories.size() +
                 '}';
     }
