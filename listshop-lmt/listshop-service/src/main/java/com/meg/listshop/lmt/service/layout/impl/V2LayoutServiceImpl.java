@@ -66,72 +66,41 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
         return layouts;
     }
 
-    @Override
-    public LayoutDTO getStandardLayout(Long userId) {
-        // get standard layout
-        ListLayoutEntity standardLayout = listLayoutRepository.getStandardLayout();
-        // create tag mapping dictionary
-        Map<Long, CategoryTagMapping> tagMappingDictionary = new HashMap<>();
-        // do user specific mapping
-        fillUserSpecificMappings(userId, standardLayout.getId(), tagMappingDictionary);
-        // do standard mappings
-        fillStandardMappings(standardLayout.getId(), tagMappingDictionary);
-        // convert to category list
-        List<LayoutCategoryDTO> categoryList = convertToCategoryList(tagMappingDictionary, userId);
+    private List<LayoutCategoryDTO> convertMappingsToCategoryList(ListLayoutEntity standardLayout,
+                                                                  ListLayoutEntity userLayout,
+                                                                  Map<Long, CategoryTagMapping> tagMappingDictionary) {
+        //     retrieve standard categories, and make id to category dictionary
+        Map<Long, LayoutCategoryDTO> idToCategory = categoryRepository.getCategoriesForLayout(standardLayout.getId())
+                .stream()
+                .collect(Collectors.toMap(LayoutCategoryDTO::getCategoryId, category -> category));
 
-        // create LayoutDTO and return
-        return new LayoutDTO(standardLayout.getId(), standardLayout.getName(), standardLayout.getDefault(), userId, standardLayout.getLinkedLayoutId(), categoryList);
-    }
+        // if userLayout is available, overlay user categories
+        if (userLayout  != null) {
+            categoryRepository.getCategoriesForLayout(userLayout.getId())
+                    .forEach(category -> {
+                        idToCategory.put(category.getCategoryId(), category);
+                        if (category.getLinkedCategoryId() != null ) {
+                            idToCategory.put(category.getLinkedCategoryId(),category);
+                        }
+                    });
+        }
 
-    private List<LayoutCategoryDTO> convertToCategoryList(Map<Long, CategoryTagMapping> tagMappingDictionary, Long userId) {
-        //     retrieve standard categories, and make name to id dictionary
-        Map<String, LayoutCategoryDTO> nameToCategory = categoryRepository.getStandardCategories().stream()
-                .collect(Collectors.toMap(LayoutCategoryDTO::getCategoryName, category -> category));
-
-        tagMappingDictionary.entrySet().stream()
-                .forEach(entry -> {
-                    String categoryName = entry.getValue().categoryName();
-                    if (nameToCategory.containsKey(categoryName)) {
-                        nameToCategory.get(categoryName).addTagMapping(entry.getValue());
+        tagMappingDictionary.entrySet().forEach(entry -> {
+                    Long categoryId = entry.getValue().categoryId();
+                    if (idToCategory.containsKey(categoryId)) {
+                        idToCategory.get(categoryId).addTagMapping(entry.getValue());
                     }
                 });
 
-        return new ArrayList<>(nameToCategory.values().stream()
-                .filter(c -> c.getTags().size() > 0)
-                .toList());
+
+        return new ArrayList<>(idToCategory.values().stream()
+                .filter(c -> !c.getTags().isEmpty())
+                .collect(Collectors.toSet()));
     }
 
     private void fillStandardMappings(Long layoutId, Map<Long, CategoryTagMapping> tagMappingDictionary) {
         List<CategoryTagMapping> tagMappings = categoryRepository.getStandardTagMappings(layoutId);
-        tagMappings.stream()
-                .filter(t -> !tagMappingDictionary.containsKey(t.tagId()))
-                .forEach(mapping -> {
-                    tagMappingDictionary.put(mapping.tagId(), mapping);
-                });
-    }
-
-    private void fillUserSpecificMappings(Long userId, Long layoutId, Map<Long, CategoryTagMapping> tagMappingDictionary) {
-        if (userId == null) {
-            return;
-        }
-        ListLayoutEntity userLayout = listLayoutRepository.getDefaultUserLayout(userId);
-
-        if (userLayout != null) {
-            // get user specific mappings
-            List<CategoryTagMapping> categoryMappings = categoryRepository.getTagCategoryMappings(userId, userLayout.getId());
-
-            for (CategoryTagMapping mapping : categoryMappings) {
-                tagMappingDictionary.put(mapping.tagId(), mapping);
-            }
-        }
-
-        // get user tags
-        List<CategoryTagMapping> userTagMappings = categoryRepository.getUserTagMappings(userId);
-        userTagMappings.stream()
-                .filter(t -> !tagMappingDictionary.containsKey(t.tagId()))
-                .forEach(mapping -> {
-                    tagMappingDictionary.put(mapping.tagId(), mapping);
-                });
+        tagMappings.forEach(mapping -> tagMappingDictionary.putIfAbsent(mapping.tagId(), mapping));
     }
 
     @Override
@@ -159,6 +128,25 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
                 .orElse(null);
     }
 
+    private void fillUserMappings(Long userId, ListLayoutEntity userLayout, Map<Long, CategoryTagMapping> tagMappingDictionary) {
+        if (userId == null) {
+            return;
+        }
+
+        if (userLayout != null) {
+            // get user specific mappings
+            List<CategoryTagMapping> categoryMappings = categoryRepository.getTagCategoryMappings(userId, userLayout.getId());
+
+            for (CategoryTagMapping mapping : categoryMappings) {
+                tagMappingDictionary.put(mapping.tagId(), mapping);
+            }
+        }
+
+        // get user tags
+        List<CategoryTagMapping> userTagMappings = categoryRepository.getUserTagMappings(userId);
+        userTagMappings.forEach(mapping -> tagMappingDictionary.putIfAbsent(mapping.tagId(), mapping));
+    }
+
     @Override
     public ListLayoutEntity getFilledStandardLayout(Long userId) {
         ListLayoutEntity standardLayout = getStandardLayout();
@@ -166,43 +154,54 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
         return listLayoutRepository.fillLayout(userId, null,standardLayout);
     }
 
-    private ListLayoutEntity getLayout(Long userId) {
-        // returns a single layout - but this will be a dto
+    public LayoutDTO getDefaultLayout(Long userId) {
+        if (userId != null) {
+            return getUserDefaultLayout(userId);
+        }
+        // get standard layout
+        ListLayoutEntity standardLayout = listLayoutRepository.getStandardLayout();
 
-        // when the feature of multiple layouts for users will be added, this will still be an active endpoint,
-        // but it will return the default
-
-        // consider renaming it to /layout/default
-
-        // we need to add link between user_layout and standard - with the standard id in the user layout -
-        // new field, something like, base_layout_id
-
-        // with no user, just returns standard layout
-
-        // with user, it will
-        // 1) find user default layout
-        // 2) initialize a tag category map
-        // 3) fill this map with tags defined in user layout
-        // 4) continue filling the map from standard layout, without overwrites
-        // 5) fill this into (new) DTO
-        // 6) return
-
-        // the standard (non-user) method will be
-        // 1) find standard layout
-        // 2) initialize a tag category map
-        // 3) fill with tags mapped in standard layout
-        // 4) fill this into (new) DTO
-        // 5) return
-
-        return null;
+        return fillLayout(null, standardLayout, null);
     }
 
-    @Override
-    public void addDefaultUserMappings(Long userId, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException {
-        // get default user mappings - and send to next
-        ListLayoutEntity defaultUserLayout = getOrCreateDefaultUserLayout(userId);
-        addMappingsToLayout(defaultUserLayout, categoryId, tagIds);
+    private LayoutDTO getUserDefaultLayout(Long userId) {
+        // get user layout, standardLayout
+        ListLayoutEntity userDefaultLayout = listLayoutRepository.getDefaultUserLayout(userId);
+        ListLayoutEntity underlyingLayout = loadUnderlyingLayout(userDefaultLayout);
+
+        return fillLayout(userDefaultLayout, underlyingLayout, userId);
     }
+
+    private LayoutDTO fillLayout(ListLayoutEntity overlayLayout,
+                                 ListLayoutEntity underlyingLayout, Long userId) {
+        // create tag mapping dictionary
+        Map<Long, CategoryTagMapping> tagMappingDictionary = new HashMap<>();
+
+        // do mappings from user default (overlay)
+        fillUserMappings(userId, overlayLayout, tagMappingDictionary);
+        // do standard mappings
+        fillStandardMappings(underlyingLayout.getId(), tagMappingDictionary);
+        // convert to category list
+        List<LayoutCategoryDTO> categoryList = convertMappingsToCategoryList(underlyingLayout,
+                overlayLayout, tagMappingDictionary);
+
+        ListLayoutEntity layoutForDto = overlayLayout != null ? overlayLayout : underlyingLayout;
+        return new LayoutDTO(layoutForDto.getId(), layoutForDto.getName(),
+                layoutForDto.getDefault(), userId, layoutForDto.getLinkedLayoutId(), categoryList);
+
+    }
+
+    private ListLayoutEntity loadUnderlyingLayout(ListLayoutEntity userLayout) {
+        if (userLayout == null || userLayout.getLinkedLayoutId() == null) {
+            return listLayoutRepository.getStandardLayout();
+        }
+
+
+        return listLayoutRepository.findById(userLayout.getLinkedLayoutId())
+                .orElse(listLayoutRepository.getStandardLayout());
+    }
+
+
 
     @Override
     public List<LayoutCategoryDTO> getDefaultCategories() {
@@ -236,9 +235,10 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
         return result;
     }
 
+    @Override
     public void removeTagFromCategory(ListLayoutCategoryEntity categoryEntity, TagEntity tag) {
         Set<TagEntity> tags = categoryEntity.getTags();
-        if (!tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
+        if (tags.stream().noneMatch(t -> t.getId().equals(tag.getId()))) {
             return;
         }
         tags.remove(tag);
@@ -256,7 +256,7 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
         ListLayoutEntity listLayoutEntity = listLayoutRepository.findById(listLayoutEntityOpt.get().getLayoutId())
                 .orElse(null);
         if (listLayoutEntity == null || listLayoutEntity.getUserId() != null
-                || (listLayoutEntity.getDefault() != null && listLayoutEntity.getDefault() != true)) {
+                || (listLayoutEntity.getDefault() != null && !listLayoutEntity.getDefault())) {
             // not a default category
             return;
         }
@@ -299,23 +299,6 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
         return listLayoutRepository.fillLayout(userId, tagId,standardLayout);
     }
 
-    private ListLayoutEntity getOrCreateDefaultUserLayout(Long userId) {
-        ListLayoutEntity defaultLayout = listLayoutRepository.getDefaultUserLayout(userId);
-        if (defaultLayout != null) {
-            return defaultLayout;
-        }
-        ListLayoutEntity standardLayout = getStandardLayout();
-        Long linkedLayoutId = null;
-        if (standardLayout != null) {
-            linkedLayoutId = standardLayout.getId();
-        }
 
-        ListLayoutEntity newDefault = new ListLayoutEntity();
-        newDefault.setDefault(true);
-        newDefault.setName(defaultLayoutDefaultName);
-        newDefault.setUserId(userId);
-        newDefault.setLinkedLayoutId(linkedLayoutId);
-        return listLayoutRepository.save(newDefault);
-    }
 
 }

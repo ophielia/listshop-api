@@ -42,12 +42,10 @@ public interface LayoutService {
 
     void moveTagToDefaultCategory(Long tagId, Long categoryId);
 
-    List<ListLayoutEntity> getAllLayouts(Long userId);
-
-    LayoutDTO getStandardLayout(Long userId);
-
     List<ListLayoutEntity> getAllLayoutsWithTag(Long userId, Long tagId);
 
     ListLayoutCategoryEntity getCategoryForTag(Long userId, Long tagId);
+
+    LayoutDTO getDefaultLayout(Long userId);
 
 }

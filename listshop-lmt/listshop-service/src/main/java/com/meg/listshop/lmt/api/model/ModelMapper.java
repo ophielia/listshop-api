@@ -12,15 +12,15 @@ import com.meg.listshop.auth.data.entity.AdminUserDetailsEntity;
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
-import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
-import com.meg.listshop.lmt.api.model.v2.Ingredient;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.*;
 import com.meg.listshop.lmt.service.categories.ListLayoutCategoryPojo;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by margaretmartin on 15/09/2017.
@@ -40,7 +40,7 @@ public class ModelMapper {
         }
         List<ConversionSample> samples = conversionFactors.stream()
                 .map(ModelMapper::toModel)
-                .collect(Collectors.toList());
+                .toList();
         ConversionGrid grid = new ConversionGrid();
         grid.setSamples(samples);
         return grid;
@@ -49,7 +49,7 @@ public class ModelMapper {
     public static ConversionGrid toConversionGrid(List<ConversionSampleDTO> conversionSamples) {
         List<ConversionSample> samples = conversionSamples.stream()
                 .map(ModelMapper::toModel)
-                .collect(Collectors.toList());
+                .toList();
         ConversionGrid grid = new ConversionGrid();
         grid.setSamples(samples);
         return grid;
@@ -152,7 +152,7 @@ public class ModelMapper {
         if (properties != null) {
             propertyModelList = properties.stream()
                     .map(ModelMapper::toModel)
-                    .collect(Collectors.toList());
+                    .toList();
 
         }
         if (userEntity != null) {
@@ -379,8 +379,8 @@ public class ModelMapper {
     public static LayoutCategory toModel(LayoutCategoryDTO cat) {
         LayoutCategory returnval = new LayoutCategory();
         returnval.setCategoryName(cat.getCategoryName());
-        returnval.setCategoryId(cat.getCategoryId());
-return returnval;
+        returnval.setCategoryId(String.valueOf(cat.getCategoryId()));
+        return returnval;
     }
 
     public static Category toModel(ListLayoutCategoryEntity cat) {
@@ -461,7 +461,7 @@ return returnval;
         if (itemEntities == null) {
             return new ArrayList<>();
         }
-        return toModel(itemEntities.stream().map(DishItemEntity::getTag).collect(Collectors.toList()));
+        return toModel(itemEntities.stream().map(DishItemEntity::getTag).toList());
     }
 
     private static List<Tag> toModel(Set<TagEntity> tagEntities) {
@@ -615,7 +615,8 @@ return returnval;
 
     public static ShoppingList toModel(ShoppingListEntity shoppingListEntity, List<ShoppingListCategory> itemCategories) {
         List<LegendSource> legendSources = new ArrayList<>();
-        String listId = shoppingListEntity.getId().toString();
+        Long longListId = shoppingListEntity.getId();
+        String listId = longListId.toString();
         if (shoppingListEntity.getDishSources() != null &&
                 !shoppingListEntity.getDishSources().isEmpty()) {
             Set<LegendSource> dishLegends = new HashSet<>();
@@ -629,7 +630,7 @@ return returnval;
                 !shoppingListEntity.getListSources().isEmpty()) {
             Set<LegendSource> listLegends = new HashSet<>();
             shoppingListEntity.getListSources().stream()
-                    .filter(s -> !s.equals(listId))
+                    .filter(s -> !s.getId().equals(longListId))
                     .forEach(d -> {
                         String key = ModelMapper.LIST_PREFIX + d.getId();
                         listLegends.add(new LegendSource(key, d.getName()));
@@ -809,10 +810,10 @@ return returnval;
 
     public static ShoppingListDTO toDTO(ShoppingListPut shoppingList) {
 
-        return  new ShoppingListDTO(shoppingList.getList_id(),
+        return new ShoppingListDTO(shoppingList.getList_id(),
                 shoppingList.getName(),
                 null, null, 0,
-                shoppingList.getStarterList(),null,0);
+                shoppingList.getStarterList(), null, 0);
     }
 
     public static UserPropertyEntity toEntity(UserProperty property) {

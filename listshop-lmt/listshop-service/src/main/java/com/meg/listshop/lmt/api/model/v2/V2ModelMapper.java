@@ -10,6 +10,7 @@ import com.meg.listshop.common.FractionUtils;
 import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.api.model.Suggestion;
 import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.data.CategoryTagMapping;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.*;
 import org.checkerframework.checker.units.qual.N;
@@ -210,7 +211,6 @@ public class V2ModelMapper {
 
     public static ShoppingListItem toModel(ListItemDTO listItemDTO, Map<Long, String> unitMap) {
         List<ShoppingListItemDetails> itemDetails = toModelList(listItemDTO.getDetails(), unitMap);
-        String wth = listItemDTO.toString();
 
         Amount amount = extractAmount(listItemDTO, unitMap);
         NestedTag tag = new NestedTag(listItemDTO.getTag().getId(), listItemDTO.getTag().getName());
@@ -416,6 +416,20 @@ public class V2ModelMapper {
                 .withCategories(categories);
     }
 
+    public static ListLayout toModel(LayoutDTO layoutDTO) {
+        List<ListLayoutCategory> categories = new ArrayList<>();
+        if (layoutDTO.getCategories() != null) {
+            categories = layoutDTO.getCategories().stream()
+                    .map(V2ModelMapper::toModel)
+                    .toList();
+        }
+        return new ListLayout(layoutDTO.getId())
+                .withDefault(toBoolean(layoutDTO.getDefault()))
+                .withUserId(String.valueOf(layoutDTO.getUserId()))
+                .withName(layoutDTO.getName())
+                .withCategories(categories);
+    }
+
     public static ListLayoutCategory toModel(ListLayoutCategoryEntity categoryEntity) {
         List<NestedTag> tags = categoryEntity.getTags().stream()
                 .map(V2ModelMapper::toNestedTagModel)
@@ -428,6 +442,25 @@ public class V2ModelMapper {
                 return category;
     }
 
+    public static ListLayoutCategory toModel(LayoutCategoryDTO categoryDTO) {
+        List<NestedTag> tags = categoryDTO.getTags().stream()
+                .map(V2ModelMapper::toNestedTagModel)
+                .toList();
+        ListLayoutCategory category =  new ListLayoutCategory(categoryDTO.getCategoryId());
+        category.setName(categoryDTO.getCategoryName());
+        category.setDefault(toBoolean(categoryDTO.getDefault()));
+        category.setTags(tags);
+        category.setDisplayOrder(categoryDTO.getDisplayOrder());
+        return category;
+    }
+
+    public static NestedTag toNestedTagModel(CategoryTagMapping categoryTagMapping) {
+        if (categoryTagMapping == null) {
+            return null;
+        }
+
+        return new NestedTag(categoryTagMapping.tagId(), categoryTagMapping.tagName());
+    }
     public static ListLayoutCategory toShortModel(ListLayoutCategoryEntity categoryEntity) {
         ListLayoutCategory category =  new ListLayoutCategory(categoryEntity.getId());
                 category.setName(categoryEntity.getName());

@@ -17,7 +17,6 @@ import com.meg.listshop.lmt.service.layout.LegacyLayoutService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,12 +32,21 @@ public class LegacyLayoutServiceImpl extends BaseLayoutServiceImpl implements Le
 
     private static final Logger LOG = LoggerFactory.getLogger(LegacyLayoutServiceImpl.class);
 
-    @Value("${service.layoutservice.default.layout.name:Default}")
-    String defaultLayoutDefaultName;
-
     @Autowired
     public LegacyLayoutServiceImpl(ListLayoutRepository listLayoutRepository, ListLayoutCategoryRepository categoryRepository, TagRepository tagRepository, UserService userService) {
         super(listLayoutRepository, categoryRepository, tagRepository, userService);
+    }
+
+    private static Map<String, ListLayoutCategoryEntity> layoutCategoriesToMap(ListLayoutEntity layout) {
+        Map<String, ListLayoutCategoryEntity> categoryMap = new HashMap<>();
+        if (layout == null) {
+            return categoryMap;
+        }
+        layout.getCategories().forEach(c -> {
+            String name = c.getName();
+            categoryMap.put(name.trim().toLowerCase(), c);
+        });
+        return categoryMap;
     }
 
     @Override
@@ -50,10 +58,8 @@ public class LegacyLayoutServiceImpl extends BaseLayoutServiceImpl implements Le
     public ListLayoutEntity getFilledStandardLayout(Long userId) {
         ListLayoutEntity standardLayout = getStandardLayout();
 
-        return listLayoutRepository.fillLayout(userId,null, standardLayout);
+        return listLayoutRepository.fillLayout(userId, null, standardLayout);
     }
-
-
 
     @Override
     public List<ListLayoutCategoryEntity> getUserCategories(String userName) {
@@ -85,18 +91,6 @@ public class LegacyLayoutServiceImpl extends BaseLayoutServiceImpl implements Le
                 .forEach(key -> result.add(defaultCategoryMap.get(key)));
 
         return result;
-    }
-
-    private static Map<String, ListLayoutCategoryEntity> layoutCategoriesToMap(ListLayoutEntity layout) {
-        Map<String, ListLayoutCategoryEntity> categoryMap = new HashMap<>();
-        if (layout == null) {
-            return categoryMap;
-        }
-        layout.getCategories().forEach(c -> {
-            String name = c.getName();
-            categoryMap.put(name.trim().toLowerCase(), c);
-        });
-        return categoryMap;
     }
 
 

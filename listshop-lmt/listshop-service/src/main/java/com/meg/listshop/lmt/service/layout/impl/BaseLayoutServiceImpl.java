@@ -61,14 +61,13 @@ public class BaseLayoutServiceImpl {
         return listLayoutRepository.getStandardLayout();
     }
 
-
-
-    public List<ListLayoutEntity> getUserLayouts(UserEntity user) {
-        // NO-IMPL
-        throw new UnsupportedOperationException("Method not implemented");
+    public void addDefaultUserMappings(Long userId, Long categoryId, List<Long> tagIds) throws ObjectNotFoundException {
+        // get default user mappings - and send to next
+        ListLayoutEntity defaultUserLayout = getOrCreateDefaultUserLayout(userId);
+        addMappingsToLayout(defaultUserLayout, categoryId, tagIds);
     }
 
-    public List<ListLayoutEntity> getAllLayouts(Long userId) {
+    public List<ListLayoutEntity> getUserLayouts(UserEntity user) {
         // NO-IMPL
         throw new UnsupportedOperationException("Method not implemented");
     }
@@ -159,7 +158,7 @@ public class BaseLayoutServiceImpl {
 
     protected void removeTagFromCategory(ListLayoutCategoryEntity categoryEntity, TagEntity tag) {
         Set<TagEntity> tags = categoryEntity.getTags();
-        if (!tags.stream().anyMatch(t -> t.getId().equals(tag.getId()))) {
+        if (tags.stream().noneMatch(t -> t.getId().equals(tag.getId()))) {
             return;
         }
         tags.remove(tag);
@@ -211,7 +210,24 @@ public class BaseLayoutServiceImpl {
         return savedCategory;
     }
 
+    private ListLayoutEntity getOrCreateDefaultUserLayout(Long userId) {
+        ListLayoutEntity defaultLayout = listLayoutRepository.getDefaultUserLayout(userId);
+        if (defaultLayout != null) {
+            return defaultLayout;
+        }
+        ListLayoutEntity standardLayout = getStandardLayout();
+        Long linkedLayoutId = null;
+        if (standardLayout != null) {
+            linkedLayoutId = standardLayout.getId();
+        }
 
+        ListLayoutEntity newDefault = new ListLayoutEntity();
+        newDefault.setDefault(true);
+        newDefault.setName(defaultLayoutDefaultName);
+        newDefault.setUserId(userId);
+        newDefault.setLinkedLayoutId(linkedLayoutId);
+        return listLayoutRepository.save(newDefault);
+    }
 
     private void deleteTagMappingsInLayout(Long layoutId, Set<Long> tagIds) {
         List<TagEntity> tagsToDelete = listLayoutRepository.getTagsToDeleteFromLayout(layoutId, tagIds);

@@ -62,21 +62,22 @@ class V2LayoutServiceImplMockTest {
         CategoryTagMapping hairbrushMapping = new CategoryTagMapping(2L, "other", 3L, "hairbrush");
         CategoryTagMapping shampooMapping = new CategoryTagMapping(2L, "other", 4L, "shampoo");
         List<CategoryTagMapping> standardMappingList = List.of(carrotMapping, hairbrushMapping, shampooMapping);
-        LayoutCategoryDTO produceCategory = new LayoutCategoryDTO("1", "produce", false, 100, null);
-        LayoutCategoryDTO otherCategory = new LayoutCategoryDTO("2", "other", false, 100, null);
-        LayoutCategoryDTO notAppearingInThisFilmCategory = new LayoutCategoryDTO("99", "not here", false, 100, null);
+        LayoutCategoryDTO produceCategory = new LayoutCategoryDTO(1L, "produce", false, 100, null);
+        LayoutCategoryDTO otherCategory = new LayoutCategoryDTO(2L, "other", false, 100, null);
+        LayoutCategoryDTO notAppearingInThisFilmCategory = new LayoutCategoryDTO(99L, "not here", false, 100, null);
         List<LayoutCategoryDTO> standardCategoryList = List.of(produceCategory, otherCategory, notAppearingInThisFilmCategory);
 
         Mockito.when(listLayoutRepository.getStandardLayout()).thenReturn(listLayout);
         Mockito.when(categoryRepository.getStandardTagMappings(layoutId)).thenReturn(standardMappingList);
-        Mockito.when(categoryRepository.getStandardCategories()).thenReturn(standardCategoryList);
+        Mockito.when(categoryRepository.getCategoriesForLayout(layoutId)).thenReturn(standardCategoryList);
 
-        LayoutDTO testResult = listLayoutService.getStandardLayout(userId);
+
+        LayoutDTO testResult = listLayoutService.getDefaultLayout(userId);
 
         Assertions.assertNotNull(testResult);
         Assertions.assertEquals(2, testResult.getCategories().size(), "There should be 2 categories");
         LayoutCategoryDTO otherCategoryResult = testResult.getCategories().stream()
-                .filter(category -> category.getCategoryId().equals("2"))
+                .filter(category -> category.getCategoryId().equals(2L))
                 .findFirst()
                 .orElse(null);
         Assertions.assertNotNull(otherCategoryResult, "Category 'other' not found");
@@ -98,32 +99,38 @@ class V2LayoutServiceImplMockTest {
         CategoryTagMapping hairbrushMapping = new CategoryTagMapping(2L, "other", 3L, "hairbrush");
         CategoryTagMapping shampooMapping = new CategoryTagMapping(2L, "other", 4L, "shampoo");
         List<CategoryTagMapping> standardMappingList = List.of(carrotMapping, hairbrushMapping, shampooMapping);
-        LayoutCategoryDTO produceCategory = new LayoutCategoryDTO("1", "produce", false, 100, null);
-        LayoutCategoryDTO otherCategory = new LayoutCategoryDTO("2", "other", false, 100, null);
-        LayoutCategoryDTO frozenCategory = new LayoutCategoryDTO("3", "frozen", false, 100, null);
-        LayoutCategoryDTO notAppearingInThisFilmCategory = new LayoutCategoryDTO("99", "not here", false, 100, null);
+        LayoutCategoryDTO produceCategory = new LayoutCategoryDTO(1L, "produce", false, 100, null);
+        LayoutCategoryDTO otherCategory = new LayoutCategoryDTO(2L, "other", false, 100, null);
+        LayoutCategoryDTO frozenCategory = new LayoutCategoryDTO(3L, "frozen", false, 100, null);
+        LayoutCategoryDTO notAppearingInThisFilmCategory = new LayoutCategoryDTO(99L, "not here", false, 100, null);
         List<LayoutCategoryDTO> standardCategoryList = List.of(produceCategory, otherCategory, notAppearingInThisFilmCategory, frozenCategory);
+        LayoutCategoryDTO userProduceCategory = new LayoutCategoryDTO(11L, "produce", false, 100, 1L);
+        LayoutCategoryDTO userFrozenCategory = new LayoutCategoryDTO(111L, "frozen", false, 100, 3L);
+        List<LayoutCategoryDTO> userCategoryList = List.of(userProduceCategory, userFrozenCategory);
+
 
         Mockito.when(listLayoutRepository.getStandardLayout()).thenReturn(listLayout);
         Mockito.when(listLayoutRepository.getDefaultUserLayout(userId)).thenReturn(userListLayout);
+
         Mockito.when(categoryRepository.getTagCategoryMappings(userId, userLayoutId)).thenReturn(List.of(userCarrotMapping));
         Mockito.when(categoryRepository.getUserTagMappings(userId)).thenReturn(List.of(userTagMapping));
         Mockito.when(categoryRepository.getStandardTagMappings(layoutId)).thenReturn(standardMappingList);
-        Mockito.when(categoryRepository.getStandardCategories()).thenReturn(standardCategoryList);
+        Mockito.when(categoryRepository.getCategoriesForLayout(userLayoutId)).thenReturn(userCategoryList);
+        Mockito.when(categoryRepository.getCategoriesForLayout(layoutId)).thenReturn(standardCategoryList);
 
-        LayoutDTO testResult = listLayoutService.getStandardLayout(userId);
+        LayoutDTO testResult = listLayoutService.getDefaultLayout(userId);
 
         Assertions.assertNotNull(testResult);
         Assertions.assertEquals(2, testResult.getCategories().size(), "There should be 2 categories");
         LayoutCategoryDTO otherCategoryResult = testResult.getCategories().stream()
-                .filter(category -> category.getCategoryId().equals("2"))
+                .filter(category -> category.getCategoryId().equals(2L))
                 .findFirst()
                 .orElse(null);
         Assertions.assertNotNull(otherCategoryResult, "Category 'other' not found");
-        Assertions.assertEquals(3, otherCategoryResult.getTags().size(), "There should be 2 tags in category 'other'");
+        Assertions.assertEquals(3, otherCategoryResult.getTags().size(), "There should be 3 tags in category 'other'");
         Assertions.assertTrue(otherCategoryResult.getTags().stream().anyMatch(tag -> tag.tagName().equals("weed wacker")));
         LayoutCategoryDTO frozenCategoryResult = testResult.getCategories().stream()
-                .filter(category -> category.getCategoryId().equals("3"))
+                .filter(category -> category.getCategoryId().equals(111L))
                 .findFirst()
                 .orElse(null);
         Assertions.assertNotNull(frozenCategoryResult, "Category 'frozen' not found");
