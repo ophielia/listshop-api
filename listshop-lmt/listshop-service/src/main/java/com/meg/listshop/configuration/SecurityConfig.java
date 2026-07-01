@@ -76,6 +76,7 @@ public class SecurityConfig {
                         .requestMatchers("/v2/tag/**").permitAll()
                         .requestMatchers("/listlayout/default").permitAll()
                         .requestMatchers("/v2/layout").permitAll()
+                        .requestMatchers("/v2/layout/default").permitAll()
                         .requestMatchers("/layout/default").permitAll()
                         .requestMatchers("/taginfo/**").permitAll()
                 )

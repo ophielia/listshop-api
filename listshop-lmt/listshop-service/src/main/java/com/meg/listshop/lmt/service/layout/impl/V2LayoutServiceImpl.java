@@ -7,7 +7,6 @@
 package com.meg.listshop.lmt.service.layout.impl;
 
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.data.CategoryTagMapping;
 import com.meg.listshop.lmt.data.entity.ListLayoutCategoryEntity;
 import com.meg.listshop.lmt.data.entity.ListLayoutEntity;
@@ -54,17 +53,6 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
         return categoryMap;
     }
 
-    @Override
-    public List<ListLayoutEntity> getAllLayouts(Long userId) {
-
-        List<ListLayoutEntity> layouts = new ArrayList<>();
-        layouts.add(getFilledStandardLayout(userId));
-        if (userId != null) {
-            layouts.addAll(listLayoutRepository.getUserLayouts(userId));
-        }
-
-        return layouts;
-    }
 
     private List<LayoutCategoryDTO> convertMappingsToCategoryList(ListLayoutEntity standardLayout,
                                                                   ListLayoutEntity userLayout,
@@ -75,22 +63,22 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
                 .collect(Collectors.toMap(LayoutCategoryDTO::getCategoryId, category -> category));
 
         // if userLayout is available, overlay user categories
-        if (userLayout  != null) {
+        if (userLayout != null) {
             categoryRepository.getCategoriesForLayout(userLayout.getId())
                     .forEach(category -> {
                         idToCategory.put(category.getCategoryId(), category);
-                        if (category.getLinkedCategoryId() != null ) {
-                            idToCategory.put(category.getLinkedCategoryId(),category);
+                        if (category.getLinkedCategoryId() != null) {
+                            idToCategory.put(category.getLinkedCategoryId(), category);
                         }
                     });
         }
 
         tagMappingDictionary.entrySet().forEach(entry -> {
-                    Long categoryId = entry.getValue().categoryId();
-                    if (idToCategory.containsKey(categoryId)) {
-                        idToCategory.get(categoryId).addTagMapping(entry.getValue());
-                    }
-                });
+            Long categoryId = entry.getValue().categoryId();
+            if (idToCategory.containsKey(categoryId)) {
+                idToCategory.get(categoryId).addTagMapping(entry.getValue());
+            }
+        });
 
 
         return new ArrayList<>(idToCategory.values().stream()
@@ -104,18 +92,6 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
     }
 
     @Override
-    public List<ListLayoutEntity> getAllLayoutsWithTag(Long userId, Long tagId) {
-
-        List<ListLayoutEntity> layouts = new ArrayList<>();
-        layouts.add(getFilledStandardLayout(userId, tagId));
-        if (userId != null) {
-            layouts.addAll(listLayoutRepository.getUserLayoutsWithTag(userId, tagId));
-        }
-
-        return layouts;
-    }
-
-    @Override
     public ListLayoutCategoryEntity getCategoryForTag(Long userId, Long tagId) {
         List<ListLayoutEntity> layouts = getAllLayoutsWithTag(userId, tagId);
 
@@ -126,6 +102,18 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
                 .flatMap(Collection::stream)
                 .findFirst()
                 .orElse(null);
+    }
+
+
+    private List<ListLayoutEntity> getAllLayoutsWithTag(Long userId, Long tagId) {
+
+        List<ListLayoutEntity> layouts = new ArrayList<>();
+        layouts.add(getFilledStandardLayout(userId, tagId));
+        if (userId != null) {
+            layouts.addAll(listLayoutRepository.getUserLayoutsWithTag(userId, tagId));
+        }
+
+        return layouts;
     }
 
     private void fillUserMappings(Long userId, ListLayoutEntity userLayout, Map<Long, CategoryTagMapping> tagMappingDictionary) {
@@ -147,12 +135,6 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
         userTagMappings.forEach(mapping -> tagMappingDictionary.putIfAbsent(mapping.tagId(), mapping));
     }
 
-    @Override
-    public ListLayoutEntity getFilledStandardLayout(Long userId) {
-        ListLayoutEntity standardLayout = getStandardLayout();
-
-        return listLayoutRepository.fillLayout(userId, null,standardLayout);
-    }
 
     public LayoutDTO getDefaultLayout(Long userId) {
         if (userId != null) {
@@ -202,7 +184,6 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
     }
 
 
-
     @Override
     public List<LayoutCategoryDTO> getDefaultCategories() {
 
@@ -214,7 +195,6 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
                 .map(LayoutCategoryDTO::new)
                 .toList();
     }
-
 
 
     private List<ListLayoutCategoryEntity> getAvailableCategoriesForLayout(ListLayoutEntity layout) {
@@ -296,9 +276,8 @@ public class V2LayoutServiceImpl extends BaseLayoutServiceImpl implements Layout
     private ListLayoutEntity getFilledStandardLayout(Long userId, Long tagId) {
         ListLayoutEntity standardLayout = getStandardLayout();
 
-        return listLayoutRepository.fillLayout(userId, tagId,standardLayout);
+        return listLayoutRepository.fillLayout(userId, tagId, standardLayout);
     }
-
 
 
 }

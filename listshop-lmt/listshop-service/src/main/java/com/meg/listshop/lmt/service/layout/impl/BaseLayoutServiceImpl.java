@@ -72,16 +72,6 @@ public class BaseLayoutServiceImpl {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
-    public List<ListLayoutEntity> getAllLayoutsWithTag(Long userId, Long tagId) {
-
-        List<ListLayoutEntity> layouts = new ArrayList<>();
-        layouts.add(getFilledStandardLayout(userId, tagId));
-        if (userId != null) {
-            layouts.addAll(listLayoutRepository.getUserLayoutsWithTag(userId, tagId));
-        }
-
-        return layouts;
-    }
 
     public void assignDefaultCategoryToTag(List<TagEntity> siblings, TagEntity tagToAssign) {
         Long idToAssign = null;

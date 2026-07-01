@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -33,6 +34,7 @@ import static io.restassured.RestAssured.given;
 @Sql(value = {"/sql/com/meg/atable/auth/api/UserRestControllerTest-rollback.sql",
         "/sql/com/meg/atable/auth/api/UserRestControllerTest.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@DirtiesContext
 class AdminUserRestControllerTest {
 
     @Container
