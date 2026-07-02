@@ -358,6 +358,7 @@ public class V2ModelMapper {
         return new Tag(tagInfoDTO.getTagId())
                 .withUserId(String.valueOf(tagInfoDTO.getUserId()))
                 .withName(tagInfoDTO.getName())
+                .withIsGroup(tagInfoDTO.isGroup())
                 .withDescription(tagInfoDTO.getDescription())
                 .withTagType(tagInfoDTO.getTagType())
                 .withPower(tagInfoDTO.getPower())

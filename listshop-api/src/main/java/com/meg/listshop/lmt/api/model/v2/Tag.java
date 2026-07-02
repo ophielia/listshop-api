@@ -26,6 +26,9 @@ public class Tag {
     @JsonProperty("tag_type")
     private String tagType;
 
+    @JsonProperty("is_group")
+    private Boolean isGroup;
+
     private Double power;
 
     @JsonProperty("parent_id")
@@ -76,6 +79,11 @@ public class Tag {
 
     public Tag withUserId(String userId) {
         this.userId = userId;
+        return this;
+    }
+
+    public Tag withIsGroup(Boolean isGroup) {
+        this.isGroup = isGroup;
         return this;
     }
 
