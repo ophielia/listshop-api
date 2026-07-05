@@ -15,6 +15,7 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.ItemChangeRepository;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.ItemMappingDTO;
+import com.meg.listshop.lmt.data.pojos.ListItemDTO;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
@@ -796,6 +797,25 @@ public abstract class BaseShoppingListService  {
         }
         Long tagId = item.getTag().getId();
         ListItemEntity toAddTo = itemMap.get(tagId);
+        if (itemMap.containsKey(tagId)) {
+            int count = toAddTo.getUsedCount() != null ? toAddTo.getUsedCount() : 0;
+            toAddTo.setUsedCount(count + 1);
+            toAddTo.setRemovedOn(DateUtils.maxDate(toAddTo.getRemovedOn(), item.getRemovedOn()));
+            toAddTo.setCrossedOff(DateUtils.maxDate(toAddTo.getCrossedOff(), item.getCrossedOff()));
+            toAddTo.setUpdatedOn(DateUtils.maxDate(toAddTo.getUpdatedOn(), item.getUpdatedOn()));
+            toAddTo.setAddedOn(DateUtils.maxDate(toAddTo.getAddedOn(), item.getAddedOn()));
+            itemMap.put(tagId, toAddTo);
+            return;
+        }
+        itemMap.put(tagId, item);
+    }
+
+    protected void addDtoToClientMap(ListItemDTO item, Map<Long, ListItemDTO> itemMap) {
+        if (item.getTag() == null) {
+            return;
+        }
+        Long tagId = item.getTag().getId();
+        ListItemDTO toAddTo = itemMap.get(tagId);
         if (itemMap.containsKey(tagId)) {
             int count = toAddTo.getUsedCount() != null ? toAddTo.getUsedCount() : 0;
             toAddTo.setUsedCount(count + 1);

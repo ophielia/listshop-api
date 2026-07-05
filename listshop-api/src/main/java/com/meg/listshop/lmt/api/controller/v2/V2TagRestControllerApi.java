@@ -27,7 +27,7 @@ public interface V2TagRestControllerApi {
 
 
     @GetMapping()
-    ResponseEntity<TagList> retrieveUserTagList(
+    ResponseEntity<TagList> retrieveTagList(
             Authentication authentication,
             HttpServletRequest request);
 

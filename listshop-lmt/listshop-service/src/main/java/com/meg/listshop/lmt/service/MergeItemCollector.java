@@ -1,6 +1,13 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
+import com.meg.listshop.lmt.data.pojos.ListItemDTO;
 
 import java.time.Duration;
 import java.util.Date;
@@ -52,6 +59,57 @@ public class MergeItemCollector extends AbstractItemCollector {
 
         // go through unmatched merge items, adding them to the list
         for (ListItemEntity newMergeItem : mergeItems ) {
+            // create new collected item
+            CollectedItem item = new CollectedItem(newMergeItem);
+
+            // skip items created before server list was last updated
+            if (item.createdBefore(listLastUpdate)) {
+                continue;
+            }
+
+            // set added date, and changed, and null out the id
+            item.setIsAdded(true);
+            item.setId(null);
+
+
+            // add to TagCollectedMap
+            if (newMergeItem.getTag() != null) {
+                getTagCollectedMap().put(newMergeItem.getTag().getId(), item);
+            } else {
+                getFreeTextItemList().add(item);
+            }
+        }
+
+    }
+
+    public void addMergeItemsFromDtos(List<ListItemDTO> mergeItems) {
+        if (mergeItems == null || mergeItems.isEmpty()) {
+            return;
+        }
+        // go through all merge items
+        Iterator<ListItemDTO> mergeIterator = mergeItems.iterator();
+        while (mergeIterator.hasNext()) {
+            ListItemDTO mergeListItemDTO = mergeIterator.next();
+            Long tagId = mergeListItemDTO.getTagId();
+
+            if (getTagCollectedMap().containsKey(tagId)) {
+                CollectedItem serverItem = getTagCollectedMap().get(mergeListItemDTO.getTag().getId());
+                CollectedItem mergeItem = new CollectedItem(mergeListItemDTO);
+                // if merge item matches an item in the tagCollectedItems
+                //  check change
+                if (!serverItem.equalsWithWindow(2,mergeItem)) {
+                    //  if change merge
+                    CollectedItem merged = mergeChangedItems(serverItem, mergeItem);
+
+                    getTagCollectedMap().put(tagId, merged);
+                }
+                //  remove from iterator
+                mergeIterator.remove();
+            }
+        }
+
+        // go through unmatched merge items, adding them to the list
+        for (ListItemDTO newMergeItem : mergeItems ) {
             // create new collected item
             CollectedItem item = new CollectedItem(newMergeItem);
 

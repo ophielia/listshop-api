@@ -1,21 +1,37 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service;
 
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
+import com.meg.listshop.lmt.data.pojos.ListItemDTO;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by margaretmartin on 02/11/2017.
  */
 public class CollectedItem {
 
-    private ListItemEntity item;
+    private Long id;
+
+    private TagEntity tag;
+    private String rawDishSources;
+    private String rawListSources;
+    private Long listId;
+    private Integer usedCount;
+    private LocalDateTime addedOn;
+    private LocalDateTime crossedOff;
+    private LocalDateTime removedOn;
+    private LocalDateTime updatedOn;
+    private ListItemEntity itemEntity;
 
     private boolean isUpdated;
 
@@ -32,51 +48,82 @@ public class CollectedItem {
     private final static int SECOND_COMPARISON_WINDOW = 2;
 
 
-    public CollectedItem(ListItemEntity listItemEntity) {
-        item = listItemEntity;
-        isRemoved = item.getRemovedOn() != null;
+    public CollectedItem(ListItemEntity entity) {
+        if (entity == null) {
+            return;
+        }
+        this.itemEntity = entity;
+        this.id = entity.getId();
+        this.tag = entity.getTag();
+        this.rawDishSources = entity.getRawDishSources();
+        this.rawListSources = entity.getRawListSources();
+        this.listId = entity.getListId();
+        this.usedCount = entity.getUsedCount();
+        this.addedOn = toLocalDateTime(entity.getAddedOn());
+        this.crossedOff = toLocalDateTime(entity.getCrossedOff());
+        this.removedOn = toLocalDateTime(entity.getRemovedOn());
+        this.updatedOn = toLocalDateTime(entity.getUpdatedOn());
+        this.isRemoved = this.removedOn != null;
     }
+
+    public CollectedItem(ListItemDTO dto) {
+        if (dto == null) {
+            return;
+        }
+        this.id = dto.getItemId();
+        this.tag = dto.getTag();
+        this.rawDishSources = dto.getRawDishSources();
+        this.rawListSources = dto.getRawListSources();
+        this.listId = dto.getListId();
+        this.usedCount = dto.getUsedCount();
+        this.addedOn = toLocalDateTime(dto.getAddedOn());
+        this.crossedOff = toLocalDateTime(dto.getCrossedOff());
+        this.removedOn = toLocalDateTime(dto.getRemovedOn());
+        this.updatedOn = toLocalDateTime(dto.getUpdatedOn());
+        this.isRemoved = this.removedOn != null;
+    }
+
     
     //** Item Accessors **/
 
     public Long getId() {
-        return item.getId();
+        return id;
     }
 
     public void setId(Long itemId) {
-        this.item.setId(itemId);
+        this.id = itemId;
     }
 
     public TagEntity getTag() {
-        return item.getTag();
+        return tag;
     }
 
     public void setTag(TagEntity tag) {
-        this.item.setTag(tag);
+        this.tag = tag;
     }
 
     public String getRawDishSources() {
-        return item.getRawDishSources();
+        return rawDishSources;
     }
 
     public void setRawDishSources(String rawDishSources) {
-        this.item.setRawDishSources( rawDishSources);
+        this.rawDishSources = rawDishSources;
     }
 
     public String getRawListSources() {
-        return item.getRawListSources();
+        return rawListSources;
     }
 
     public void setRawListSources(String rawListSources) {
-        this.item.setRawListSources(rawListSources);
+        this.rawListSources = rawListSources;
     }
 
     public Long getListId() {
-        return item.getListId();
+        return listId;
     }
 
     public void setListId(Long listId) {
-        this.item.setListId(listId);
+        this.listId = listId;
     }
 
     public boolean isCountAdded() {
@@ -88,88 +135,48 @@ public class CollectedItem {
     }
 
     public Integer getUsedCount() {
-        return item.getUsedCount();
+        return usedCount;
     }
 
     public void setUsedCount(Integer usedCount) {
-        boolean countIncrease = this.item.getUsedCount() != null && this.item.getUsedCount() < usedCount;
-        boolean countDecrease = this.item.getUsedCount() != null && this.item.getUsedCount() > usedCount;
-        this.item.setUsedCount(usedCount);
+        boolean countIncrease = this.usedCount != null && this.usedCount < usedCount;
+        boolean countDecrease = this.usedCount != null && this.usedCount > usedCount;
+        this.usedCount = usedCount;
         this.isCountAdded = countIncrease;
         this.isCountDecreased = countDecrease;
     }
 
     public LocalDateTime getAddedOn() {
-        if (item.getAddedOn() == null) {
-            return null;
-        }
-        return new java.sql.Timestamp(
-                item.getAddedOn().getTime()).toLocalDateTime();
+        return addedOn;
     }
 
     public void setAddedOn(LocalDateTime addedOn) {
-        if (addedOn == null) {
-            this.item.setAddedOn(null);
-            return;
-        }
-        this.item.setAddedOn(java.sql.Timestamp.valueOf(addedOn));
+        this.addedOn = addedOn;
     }
 
     public LocalDateTime getCrossedOff() {
-        if (item.getCrossedOff() == null) {
-            return null;
-        }
-        return new java.sql.Timestamp(
-                item.getCrossedOff().getTime()).toLocalDateTime();
-
+        return crossedOff;
     }
 
     public void setCrossedOff(LocalDateTime crossedOff) {
-        if (crossedOff == null) {
-            this.item.setCrossedOff(null);
-            return;
-        }
-        this.item.setCrossedOff(java.sql.Timestamp.valueOf(crossedOff));
+        this.crossedOff = crossedOff;
     }
 
     public LocalDateTime getRemovedOn() {
-
-            if (item.getRemovedOn() == null) {
-                return null;
-            }
-            return new java.sql.Timestamp(
-                    item.getRemovedOn().getTime()).toLocalDateTime();
-
-
+        return removedOn;
     }
 
     public void setRemovedOn(LocalDateTime removedOn) {
-        if (removedOn == null) {
-            this.item.setRemovedOn(null);
-            return;
-        }
-        this.item.setRemovedOn(java.sql.Timestamp.valueOf(removedOn));
+        this.removedOn = removedOn;
     }
 
-    public LocalDateTime getUpdatedOn()
-        {
-
-            if ( item.getUpdatedOn() == null) {
-                return null;
-            }
-            return new java.sql.Timestamp(item.getUpdatedOn().getTime()).toLocalDateTime();
+    public LocalDateTime getUpdatedOn() {
+        return updatedOn;
+    }
 
 
-        }
-
-
-    public void setUpdatedOn(LocalDateTime updatedOn)
-    {
-        if (updatedOn == null) {
-            this.item.setUpdatedOn(null);
-            return;
-        }
-        this.item.setUpdatedOn(java.sql.Timestamp.valueOf(updatedOn));
+    public void setUpdatedOn(LocalDateTime updatedOn) {
+        this.updatedOn = updatedOn;
     }
 
 
@@ -255,7 +262,7 @@ public class CollectedItem {
     // Collector Item values
 
     public Long getTagId() {
-        return getTag().getId();
+        return tag != null ? tag.getId() : null;
     }
 
     public boolean isChanged() {
@@ -268,11 +275,38 @@ public class CollectedItem {
 
 
     public ListItemEntity getItem() {
+        ListItemEntity item = this.itemEntity;
+        if (item == null) {
+            item = new ListItemEntity();
+        }
+        item.setId(this.id);
+        item.setTag(this.tag);
+        item.setRawDishSources(this.rawDishSources);
+        item.setRawListSources(this.rawListSources);
+        item.setListId(this.listId);
+        item.setUsedCount(this.usedCount);
+        item.setAddedOn(toDate(this.addedOn));
+        item.setCrossedOff(toDate(this.crossedOff));
+        item.setRemovedOn(toDate(this.removedOn));
+        item.setUpdatedOn(toDate(this.updatedOn));
+
         return item;
     }
 
-    public void setItem(ListItemEntity item) {
-        this.item = item;
+    public void setItem(ListItemEntity entity) {
+        if (entity == null) {
+            return;
+        }
+        this.id = entity.getId();
+        this.tag = entity.getTag();
+        this.rawDishSources = entity.getRawDishSources();
+        this.rawListSources = entity.getRawListSources();
+        this.listId = entity.getListId();
+        this.usedCount = entity.getUsedCount();
+        this.addedOn = toLocalDateTime(entity.getAddedOn());
+        this.crossedOff = toLocalDateTime(entity.getCrossedOff());
+        this.removedOn = toLocalDateTime(entity.getRemovedOn());
+        this.updatedOn = toLocalDateTime(entity.getUpdatedOn());
     }
 
     // Date change methods
@@ -284,11 +318,11 @@ public class CollectedItem {
     public void setIsAdded(boolean isAdded) {
         this.isAdded = isAdded;
         if (isAdded) {
-            this.item.setAddedOn(new Date());
+            this.addedOn = LocalDateTime.now();
             // reset dates besides added on
-            this.item.setUpdatedOn(null);
-            this.item.setCrossedOff(null);
-            this.item.setRemovedOn(null);
+            this.updatedOn = null;
+            this.crossedOff = null;
+            this.removedOn = null;
             this.isChanged = true;
 
         }
@@ -319,12 +353,12 @@ public class CollectedItem {
     public void setUpdated(boolean updated, boolean keepCrossedOffStatus) {
         isUpdated = updated;
         if (isUpdated) {
-            this.item.setUpdatedOn(new Date());
+            this.updatedOn = LocalDateTime.now();
             // reset dates besides added on
             if (!keepCrossedOffStatus) {
-                this.item.setCrossedOff(null);
+                this.crossedOff = null;
             }
-            this.item.setRemovedOn(null);
+            this.removedOn = null;
             this.isChanged = true;
 
         }
@@ -333,16 +367,16 @@ public class CollectedItem {
     // convenience methods
     // get status
     private CollectedItemStatus getStatus() {
-        if (item.getRemovedOn() != null) {
+        if (this.removedOn != null) {
             return CollectedItemStatus.REMOVED;
         }
-        if (item.getAddedOn() != null &&
-                item.getRemovedOn() == null &&
-                item.getCrossedOff() == null &&
-                item.getUpdatedOn() == null) {
+        if (this.addedOn != null &&
+                this.removedOn == null &&
+                this.crossedOff == null &&
+                this.updatedOn == null) {
             return CollectedItemStatus.NEW;
         }
-        if (item.getCrossedOff() != null) {
+        if (this.crossedOff != null) {
             return CollectedItemStatus.CROSSED_OFF;
         }
         return CollectedItemStatus.UPDATED;
@@ -358,7 +392,7 @@ public class CollectedItem {
 
         return isUpdated == that.isUpdated &&
                 isRemoved == that.isRemoved &&
-                getTag().getId().equals(that.getTag().getId());
+                Objects.equals(this.getTagId(), that.getTagId());
     }
 
     public boolean equalsWithWindow(int secondCount, Object o) {
@@ -374,8 +408,8 @@ public class CollectedItem {
                 dateEquals(secondCount, getUpdatedOn(), that.getUpdatedOn()) &&
                 dateEquals(secondCount, getRemovedOn(), that.getRemovedOn()) &&
                 dateEquals(secondCount, getCrossedOff(), that.getCrossedOff()) &&
-                getUsedCount() != null && getUsedCount().equals(that.getUsedCount()) &&
-                getTag().getId().equals(that.getTag().getId());
+                Objects.equals(getUsedCount(), that.getUsedCount()) &&
+                Objects.equals(this.getTagId(), that.getTagId());
     }
 
     private boolean dateEquals(int secondCount, LocalDateTime date1, LocalDateTime date2) {
@@ -394,7 +428,7 @@ public class CollectedItem {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getTag().getId(), isUpdated, isRemoved);
+        return Objects.hash(this.getTagId(), isUpdated, isRemoved);
     }
 
 
@@ -418,8 +452,8 @@ public class CollectedItem {
         if (isRemoved()) {
             setRemoved(false);
             setUpdated(true, false);
-            item.setRawDishSources(null);
-            item.setRawListSources(null);
+            this.rawDishSources = null;
+            this.rawListSources = null;
             setUsedCount(0);
         }
 
@@ -427,14 +461,11 @@ public class CollectedItem {
 
 
     public void mergeFrom(CollectedItem clientItem) {
-        ListItemEntity nakedServer = getItem();
-        ListItemEntity nakedClient = clientItem.getItem();
-        nakedServer.setAddedOn(nakedClient.getAddedOn());
-        nakedServer.setCrossedOff(nakedClient.getCrossedOff());
-        nakedServer.setRemovedOn(nakedClient.getRemovedOn());
-        nakedServer.setUpdatedOn(nakedClient.getUpdatedOn());
-        nakedServer.setUsedCount(nakedClient.getUsedCount());
-        nakedServer.setUsedCount(nakedClient.getUsedCount());
+        this.addedOn = clientItem.getAddedOn();
+        this.crossedOff = clientItem.getCrossedOff();
+        this.removedOn = clientItem.getRemovedOn();
+        this.updatedOn = clientItem.getUpdatedOn();
+        this.usedCount = clientItem.getUsedCount();
         // copy current state
         CollectedItemStatus clientStatus = clientItem.getStatus();
         LocalDateTime statusDate = clientItem.getStatusDate();
@@ -473,5 +504,19 @@ public class CollectedItem {
         Duration period = Duration.between(date1, date2);
         long days = period.toDays();
         return days > 7; // removed items are purged after 7 days.
+    }
+
+    private LocalDateTime toLocalDateTime(Date date) {
+        if (date == null) {
+            return null;
+        }
+        return new java.sql.Timestamp(date.getTime()).toLocalDateTime();
+    }
+
+    private Date toDate(LocalDateTime localDateTime) {
+        if (localDateTime == null) {
+            return null;
+        }
+        return java.sql.Timestamp.valueOf(localDateTime);
     }
 }

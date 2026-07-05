@@ -52,7 +52,7 @@ public class TagRestController implements V2TagRestControllerApi {
     }
 
 
-    public ResponseEntity<TagList> retrieveUserTagList(
+    public ResponseEntity<TagList> retrieveTagList(
             Authentication authentication,
             HttpServletRequest request) {
         Long userId = null;

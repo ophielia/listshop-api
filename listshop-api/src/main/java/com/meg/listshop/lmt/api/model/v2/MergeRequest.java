@@ -28,7 +28,7 @@ public class MergeRequest {
     private Date lastSynced;
 
     @JsonProperty("merge_items")
-    private List<Item> mergeItems = new ArrayList<>();
+    private List<MergeItem> mergeItems = new ArrayList<>();
 
     @JsonProperty("check_tag_conflict")
     private boolean checkTagConflict;
@@ -56,11 +56,11 @@ public class MergeRequest {
         this.lastChanged = lastChanged;
     }
 
-    public List<Item> getMergeItems() {
+    public List<MergeItem> getMergeItems() {
         return mergeItems;
     }
 
-    public void setMergeItems(List<Item> mergeItems) {
+    public void setMergeItems(List<MergeItem> mergeItems) {
         this.mergeItems = mergeItems;
     }
 

@@ -13,7 +13,6 @@ import com.meg.listshop.lmt.api.model.TagType;
 import com.meg.listshop.lmt.data.CategoryTagMapping;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.*;
-import org.checkerframework.checker.units.qual.N;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +64,24 @@ public class V2ModelMapper {
                 .withDisplay(ingredientDto.getRawEntry());
     }
 
+    private static Amount extractAmount(ListItemDetailDTO detailDto, Map<Long, String> unitMap) {
+        if (detailDto.getQuantity() == null || detailDto.getQuantity() == 0) {
+            return null;
+        }
+        String unitDisplay = unitMap.get(detailDto.getUnitId());
+        String quantityDisplay = FractionUtils.getQuantityDisplay(detailDto.getWholeQuantity(), detailDto.getFractionalQuantity());
+        return new Amount()
+                .withFractionalQuantity(fractionTypeToName(detailDto.getFractionalQuantity()))
+                .withWholeQuantity(detailDto.getWholeQuantity())
+                .withQuantity(detailDto.getQuantity())
+                .withRoundedQuantity(detailDto.getQuantity())
+                .withUnitDisplay(unitDisplay)
+                .withUnitId(String.valueOf(detailDto.getUnitId()))
+                .withQuantityDisplay(quantityDisplay)
+                .withModifiers(null)
+                .withDisplay(detailDto.getRawEntry());
+    }
+
     private static Amount extractAmount(ListItemDetailEntity detailEntity, Map<Long, String> unitMap) {
         if (detailEntity.getQuantity() == null || detailEntity.getQuantity() == 0) {
             return null;
@@ -87,12 +104,13 @@ public class V2ModelMapper {
         if (itemEntity.getRawQuantity() == null || itemEntity.getRawQuantity() == 0) {
             return null;
         }
+        String quantityDisplay = FractionUtils.getQuantityDisplay(itemEntity.getWholeQuantity(), itemEntity.getFractionalQuantity());
         Amount amount = new Amount()
                 .withFractionalQuantity(fractionTypeToName(itemEntity.getFractionalQuantity()))
                 .withWholeQuantity(itemEntity.getWholeQuantity())
                 .withQuantity(itemEntity.getRawQuantity())
                 .withRoundedQuantity(itemEntity.getRoundedQuantity())
-                .withQuantityDisplay(itemEntity.getAmountText())
+                .withQuantityDisplay(quantityDisplay)
                 .withModifiers(null)
                 .withDisplay(itemEntity.getAmountText());
         if (itemEntity.getUnit() != null) {
@@ -129,6 +147,7 @@ public class V2ModelMapper {
         }
         return value;
     }
+
     public static ShoppingList toModel(ShoppingListDTO listDTO) {
         // unit map
         Map<Long, String> unitMap = listDTO.getUnitMapping();
@@ -155,7 +174,7 @@ public class V2ModelMapper {
             return listDTO.getItemCount();
         }
         if (listDTO.getCategories() != null) {
-            return (int)listDTO.getCategories().stream()
+            return (int) listDTO.getCategories().stream()
                     .filter(category -> category.getItems() != null)
                     .flatMap(category -> category.getItems().stream())
                     .filter(item -> item.getRemovedOn() == null && item.getCrossedOff() == null)
@@ -210,7 +229,7 @@ public class V2ModelMapper {
     }
 
     public static ShoppingListItem toModel(ListItemDTO listItemDTO, Map<Long, String> unitMap) {
-        List<ShoppingListItemDetails> itemDetails = toModelList(listItemDTO.getDetails(), unitMap);
+        List<ShoppingListItemDetails> itemDetails = toModelListFromDTO(listItemDTO.getDetails(), unitMap);
 
         Amount amount = extractAmount(listItemDTO, unitMap);
         NestedTag tag = new NestedTag(listItemDTO.getTag().getId(), listItemDTO.getTag().getName());
@@ -220,7 +239,7 @@ public class V2ModelMapper {
                 .withAmount(amount)
                 .withDetails(itemDetails)
                 .withAmountType(specType)
-                .withListId(listItemDTO.getListId().toString())
+                .withListId(listItemDTO.getListId() != null ? listItemDTO.getListId().toString() : null)
                 .withSources(listItemDTO.getSources())
                 .withAddedOn(listItemDTO.getAddedOn())
                 .withUpdated(listItemDTO.getUpdatedOn())
@@ -229,15 +248,26 @@ public class V2ModelMapper {
                 .withUsedCount(listItemDTO.getUsedCount());
     }
 
-    private static List<ShoppingListItemDetails> toModelList(List<ListItemDetailEntity> detailEntities, Map<Long, String> unitMap) {
+    private static List<ShoppingListItemDetails> toModelListFromDTO(List<ListItemDetailDTO> detailDtos, Map<Long, String> unitMap) {
         List<ShoppingListItemDetails> itemModels = new ArrayList<>();
-        if (detailEntities == null || detailEntities.isEmpty()) {
+        if (detailDtos == null || detailDtos.isEmpty()) {
             return itemModels;
         }
-        for (ListItemDetailEntity itemDetail : detailEntities) {
+        for (ListItemDetailDTO itemDetail : detailDtos) {
             itemModels.add(toModel(itemDetail, unitMap));
         }
         return itemModels;
+    }
+
+    public static ShoppingListItemDetails toModel(ListItemDetailDTO detailDto, Map<Long, String> unitMap) {
+        Amount amount = extractAmount(detailDto, unitMap);
+        String linkedDishId = detailDto.getLinkedDishId() != null ? String.valueOf(detailDto.getLinkedDishId()) : null;
+        String linkedListId = detailDto.getLinkedListId() != null ? String.valueOf(detailDto.getLinkedListId()) : null;
+        return new ShoppingListItemDetails()
+                .withDishId(linkedDishId)
+                .withListId(linkedListId)
+                .withContainsUnspecified(detailDto.isContainsUnspecified())
+                .withAmount(amount);
     }
 
     public static ShoppingListItemDetails toModel(ListItemDetailEntity detailEntity, Map<Long, String> unitMap) {
@@ -392,6 +422,17 @@ public class V2ModelMapper {
     }
 
 
+    public static ListItemDTO toDto(MergeItem item) {
+        Long tagId = Long.valueOf(item.getTagId());
+        ListItemDTO dto =  new ListItemDTO();
+        dto.setTagId(tagId);
+        dto.setAddedOn(item.getAddedOn());
+        dto.setRemovedOn(item.getRemoved());
+        dto.setUpdatedOn(item.getUpdated());
+        dto.setCrossedOff(item.getCrossedOff());
+        return dto;
+    }
+
     public static ShoppingListDTO toDto(ShoppingListPut shoppingList, Long userId) {
         return new ShoppingListDTO(shoppingList.getListId(),
                 shoppingList.getName(),
@@ -419,6 +460,7 @@ public class V2ModelMapper {
 
     public static ListLayout toModel(LayoutDTO layoutDTO) {
         List<ListLayoutCategory> categories = new ArrayList<>();
+        String userId = layoutDTO.getUserId() != null ? String.valueOf(layoutDTO.getUserId()) : null;
         if (layoutDTO.getCategories() != null) {
             categories = layoutDTO.getCategories().stream()
                     .map(V2ModelMapper::toModel)
@@ -426,7 +468,7 @@ public class V2ModelMapper {
         }
         return new ListLayout(layoutDTO.getId())
                 .withDefault(toBoolean(layoutDTO.getDefault()))
-                .withUserId(String.valueOf(layoutDTO.getUserId()))
+                .withUserId(userId)
                 .withName(layoutDTO.getName())
                 .withCategories(categories);
     }
@@ -435,19 +477,19 @@ public class V2ModelMapper {
         List<NestedTag> tags = categoryEntity.getTags().stream()
                 .map(V2ModelMapper::toNestedTagModel)
                 .toList();
-        ListLayoutCategory category =  new ListLayoutCategory(categoryEntity.getId());
-                category.setName(categoryEntity.getName());
-                category.setDefault(toBoolean(categoryEntity.getDefault()));
-                category.setTags(tags);
-                category.setDisplayOrder(categoryEntity.getDisplayOrder());
-                return category;
+        ListLayoutCategory category = new ListLayoutCategory(categoryEntity.getId());
+        category.setName(categoryEntity.getName());
+        category.setDefault(toBoolean(categoryEntity.getDefault()));
+        category.setTags(tags);
+        category.setDisplayOrder(categoryEntity.getDisplayOrder());
+        return category;
     }
 
     public static ListLayoutCategory toModel(LayoutCategoryDTO categoryDTO) {
         List<NestedTag> tags = categoryDTO.getTags().stream()
                 .map(V2ModelMapper::toNestedTagModel)
                 .toList();
-        ListLayoutCategory category =  new ListLayoutCategory(categoryDTO.getCategoryId());
+        ListLayoutCategory category = new ListLayoutCategory(categoryDTO.getCategoryId());
         category.setName(categoryDTO.getCategoryName());
         category.setDefault(toBoolean(categoryDTO.getDefault()));
         category.setTags(tags);
@@ -462,11 +504,12 @@ public class V2ModelMapper {
 
         return new NestedTag(categoryTagMapping.tagId(), categoryTagMapping.tagName());
     }
+
     public static ListLayoutCategory toShortModel(ListLayoutCategoryEntity categoryEntity) {
-        ListLayoutCategory category =  new ListLayoutCategory(categoryEntity.getId());
-                category.setName(categoryEntity.getName());
-                category.setDefault(toBoolean(categoryEntity.getDefault()));
-                category.setDisplayOrder(categoryEntity.getDisplayOrder());
-                return category;
+        ListLayoutCategory category = new ListLayoutCategory(categoryEntity.getId());
+        category.setName(categoryEntity.getName());
+        category.setDefault(toBoolean(categoryEntity.getDefault()));
+        category.setDisplayOrder(categoryEntity.getDisplayOrder());
+        return category;
     }
 }

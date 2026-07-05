@@ -301,6 +301,19 @@ public class ListItemEntity {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ListItemEntity)) return false;
+        ListItemEntity that = (ListItemEntity) o;
+        return itemId != null && itemId.equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
     public ListItemEntity createCopy() {
         ListItemEntity cloned = new ListItemEntity();
         cloned.setAddedOn(this.getAddedOn());

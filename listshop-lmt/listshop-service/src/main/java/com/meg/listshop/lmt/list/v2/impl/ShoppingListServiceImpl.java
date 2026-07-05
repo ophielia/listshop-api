@@ -10,9 +10,9 @@ import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.lmt.api.model.v2.MergeRequest;
 import com.meg.listshop.lmt.api.model.v2.MergeResult;
-import com.meg.listshop.lmt.api.model.v2.SourceReferenceType;
 import com.meg.listshop.lmt.conversion.BasicAmount;
 import com.meg.listshop.lmt.data.ItemChangeRepository;
 import com.meg.listshop.lmt.data.entity.*;
@@ -92,11 +92,11 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
         checkReplaceTagsInCollector(mergeCollector);
 
         // prepare items from client
-        List<ListItemEntity> mergeItems = convertClientItemsToItemEntities(userId, mergeRequest);
+        List<ListItemDTO> mergeItems = convertMergeItemsToDTOs(userId, mergeRequest);
 
         // merge from client
         logger.debug("Preparing to merge list [{}].", list.getId());
-        mergeCollector.addMergeItems(mergeItems);
+        mergeCollector.addMergeItemsFromDtos(mergeItems);
 
         // update after merge
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Merge)
@@ -109,41 +109,27 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
 
     }
 
-    private List<ListItemEntity> convertClientItemsToItemEntities(Long userId, MergeRequest mergeRequest) {
-        Map<String, ListItemEntity> mergeMap = mergeRequest.getMergeItems().stream()
+    private List<ListItemDTO> convertMergeItemsToDTOs(Long userId, MergeRequest mergeRequest) {
+        Map<String, ListItemDTO> mergeMap = mergeRequest.getMergeItems().stream()
                 .filter(i -> i.getTagId() != null)
-                .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
+                .collect(Collectors.toMap(MergeItem::getTagId, V2ModelMapper::toDto));
         Set<Long> tagKeys = mergeMap.keySet().stream().map(Long::valueOf).collect(Collectors.toSet());
 
         if (tagKeys.isEmpty()) {
             return new ArrayList<>();
         }
-        if (mergeRequest.isCheckTagConflict()) {
-            checkTagConflict(userId, tagKeys, mergeMap);
-        }
-        List<TagEntity> outdatedClientTags = tagService.getReplacedTagsFromIds(tagKeys);
-        Map<Long, TagEntity> outdatedClientDictionary = new HashMap<>();
-        if (!outdatedClientTags.isEmpty()) {
-            Set<Long> outdatedIds = outdatedClientTags.stream().map(TagEntity::getReplacementTagId).collect(Collectors.toSet());
-            outdatedClientDictionary = tagService.getDictionaryForIds(outdatedIds);
-        }
+
         Map<Long, TagEntity> tagDictionary = tagService.getDictionaryForIds(mergeMap.keySet().stream()
                 .map(Long::valueOf).collect(Collectors.toSet()));
 
-        Map<Long, ListItemEntity> itemMap = new HashMap<>();
-        for (Map.Entry<String, ListItemEntity> entry : mergeMap.entrySet()) {
+        Map<Long, ListItemDTO> itemMap = new HashMap<>();
+        for (Map.Entry<String, ListItemDTO> entry : mergeMap.entrySet()) {
             String tagIdString = entry.getKey();
-            ListItemEntity item = entry.getValue();
+            ListItemDTO item = entry.getValue();
             Long tagId = Long.valueOf(tagIdString);
             TagEntity tag = tagDictionary.get(tagId);
-            if (!outdatedClientDictionary.isEmpty() && tag.getReplacementTagId() != null) {
-                TagEntity replacementTag = outdatedClientDictionary.get(tag.getReplacementTagId());
-                item.setTag(replacementTag);
-                addItemToClientMap(item, itemMap);
-                continue;
-            }
             item.setTag(tag);
-            addItemToClientMap(item, itemMap);
+            addDtoToClientMap(item, itemMap);
         }
 
         return new ArrayList<>(itemMap.values());
