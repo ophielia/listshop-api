@@ -9,6 +9,7 @@ package com.meg.listshop.lmt.data.pojos;
 import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.api.model.v2.SpecificationType;
+import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
 
@@ -21,68 +22,19 @@ import java.util.stream.Collectors;
 
 public class ListItemDTO {
 
-    private Long itemId;
-    private List<ListItemDetailDTO> details;
-    private TagEntity tag;
-    private String rawDishSources;
-    private String rawListSources;
-    private Long listId;
-    private Integer usedCount;
-    private Set<String> handles;
-    private Date addedOn;
-    private Date crossedOff;
-    private Date removedOn;
-    private Date updatedOn;
-    private Double roundedQuantity;
-    private Double rawQuantity;
-    private Integer wholeQuantity;
-    private FractionType fractionalQuantity;
-    private UnitEntity unit;
-    private String unitSize;
-    private String amountText;
-    private SpecificationType specificationType;
-    private Long tagId;
+    private ListItemEntity entity;
     private Set<String> sources;
 
 
     public ListItemDTO(ListItemEntity entity) {
-        if (entity == null) {
-            return;
+        this.entity = entity;
         }
-        this.itemId = entity.getId();
-        this.tag = entity.getTag();
-        this.rawDishSources = entity.getRawDishSources();
-        this.rawListSources = entity.getRawListSources();
-        this.listId = entity.getListId();
-        this.usedCount = entity.getUsedCount();
-        this.handles = entity.getHandles();
-        this.addedOn = entity.getAddedOn();
-        this.crossedOff = entity.getCrossedOff();
-        this.removedOn = entity.getRemovedOn();
-        this.updatedOn = entity.getUpdatedOn();
-        this.roundedQuantity = entity.getRoundedQuantity();
-        this.rawQuantity = entity.getRawQuantity();
-        this.wholeQuantity = entity.getWholeQuantity();
-        this.fractionalQuantity = entity.getFractionalQuantity();
-        this.unit = entity.getUnit();
-        this.unitSize = entity.getUnitSize();
-        this.amountText = entity.getAmountText();
-        this.specificationType = entity.getSpecificationType();
-        this.tagId = entity.getTagId();
-        if (entity.getDetails() != null) {
-            this.details = entity.getDetails().stream()
-                    .map(ListItemDetailDTO::new)
-                    .collect(Collectors.toList());
-        }
-    }
 
     public ListItemDTO(ListItemEntity entity, Set<String> sources) {
-        this(entity);
+        this.entity = entity;
         this.sources = sources;
     }
 
-    public ListItemDTO() {
-    }
 
     public Set<String> getSources() {
         return sources;
@@ -93,177 +45,77 @@ public class ListItemDTO {
     }
 
     public Long getItemId() {
-        return itemId;
+        return entity.getId();
     }
 
-    public void setItemId(Long itemId) {
-        this.itemId = itemId;
-    }
-
-    public List<ListItemDetailDTO> getDetails() {
-        return details;
-    }
-
-    public void setDetails(List<ListItemDetailDTO> details) {
-        this.details = details;
+    public List<ListItemDetailEntity> getDetails() {
+        return entity.getDetails();
     }
 
     public TagEntity getTag() {
-        return tag;
-    }
-
-    public void setTag(TagEntity tag) {
-        this.tag = tag;
-    }
-
-    public String getRawDishSources() {
-        return rawDishSources;
-    }
-
-    public void setRawDishSources(String rawDishSources) {
-        this.rawDishSources = rawDishSources;
-    }
-
-    public String getRawListSources() {
-        return rawListSources;
-    }
-
-    public void setRawListSources(String rawListSources) {
-        this.rawListSources = rawListSources;
+        return entity.getTag();
     }
 
     public Long getListId() {
-        return listId;
-    }
-
-    public void setListId(Long listId) {
-        this.listId = listId;
+        return entity.getListId();
     }
 
     public Integer getUsedCount() {
-        return usedCount;
-    }
-
-    public void setUsedCount(Integer usedCount) {
-        this.usedCount = usedCount;
-    }
-
-    public Set<String> getHandles() {
-        return handles;
-    }
-
-    public void setHandles(Set<String> handles) {
-        this.handles = handles;
+        return entity.getUsedCount();
     }
 
     public Date getAddedOn() {
-        return addedOn;
-    }
-
-    public void setAddedOn(Date addedOn) {
-        this.addedOn = addedOn;
+        return entity.getAddedOn();
     }
 
     public Date getCrossedOff() {
-        return crossedOff;
-    }
-
-    public void setCrossedOff(Date crossedOff) {
-        this.crossedOff = crossedOff;
+        return entity.getCrossedOff();
     }
 
     public Date getRemovedOn() {
-        return removedOn;
-    }
-
-    public void setRemovedOn(Date removedOn) {
-        this.removedOn = removedOn;
+        return entity.getRemovedOn();
     }
 
     public Date getUpdatedOn() {
-        return updatedOn;
-    }
-
-    public void setUpdatedOn(Date updatedOn) {
-        this.updatedOn = updatedOn;
+        return entity.getUpdatedOn();
     }
 
     public Double getRoundedQuantity() {
-        return roundedQuantity;
-    }
-
-    public void setRoundedQuantity(Double roundedQuantity) {
-        this.roundedQuantity = roundedQuantity;
+        return entity.getRoundedQuantity();
     }
 
     public Double getRawQuantity() {
-        return rawQuantity;
-    }
-
-    public void setRawQuantity(Double rawQuantity) {
-        this.rawQuantity = rawQuantity;
+        return entity.getRawQuantity();
     }
 
     public Integer getWholeQuantity() {
-        return wholeQuantity;
-    }
-
-    public void setWholeQuantity(Integer wholeQuantity) {
-        this.wholeQuantity = wholeQuantity;
+        return entity.getWholeQuantity();
     }
 
     public FractionType getFractionalQuantity() {
-        return fractionalQuantity;
-    }
-
-    public void setFractionalQuantity(FractionType fractionalQuantity) {
-        this.fractionalQuantity = fractionalQuantity;
+        return entity.getFractionalQuantity();
     }
 
     public UnitEntity getUnit() {
-        return unit;
-    }
-
-    public void setUnit(UnitEntity unit) {
-        this.unit = unit;
+        return entity.getUnit();
     }
 
     public String getUnitSize() {
-        return unitSize;
-    }
-
-    public void setUnitSize(String unitSize) {
-        this.unitSize = unitSize;
+        return entity.getUnitSize();
     }
 
     public String getAmountText() {
-        return amountText;
-    }
-
-    public void setAmountText(String amountText) {
-        this.amountText = amountText;
+        return entity.getAmountText();
     }
 
     public SpecificationType getSpecificationType() {
-        return specificationType;
-    }
-
-    public void setSpecificationType(SpecificationType specificationType) {
-        this.specificationType = specificationType;
-    }
-
-    public Long getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(Long tagId) {
-        this.tagId = tagId;
+        return entity.getSpecificationType();
     }
 
     @Override
     public String toString() {
         return "ListItemDTO{" +
-                "itemId=" + itemId +
+                "entityId=" + (entity != null ? entity.getId() : null) +
                 ", sources=" + sources +
                 '}';
     }

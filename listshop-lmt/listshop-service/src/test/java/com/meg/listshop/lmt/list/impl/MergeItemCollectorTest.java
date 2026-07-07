@@ -82,12 +82,12 @@ class MergeItemCollectorTest {
         ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
-        ListItemDTO updated = createDTOForTagId(501L, listEntity.getItems());
+        ListItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
         updated.setUpdatedOn(new Date());
-        List<ListItemDTO> mergeItems = new ArrayList<>();
+        List<ListItemEntity> mergeItems = new ArrayList<>();
         mergeItems.add(updated);
 
-        collector.addMergeItemsFromDtos(mergeItems);
+        collector.addMergeItems(mergeItems);
 
         Assertions.assertTrue(collector.hasChanges());
         Assertions.assertEquals(1, collector.getChangedItems().size());
@@ -99,13 +99,13 @@ class MergeItemCollectorTest {
         ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
-        ListItemDTO updated = createDTOForTagId(501L, listEntity.getItems());
+        ListItemEntity updated = copyItemForTagId(501L, listEntity.getItems());
         LocalDateTime dateTime = LocalDateTime.now().minusDays(22L);
         updated.setUpdatedOn(java.sql.Timestamp.valueOf(dateTime));
-        List<ListItemDTO> mergeItems = new ArrayList<>();
+        List<ListItemEntity> mergeItems = new ArrayList<>();
         mergeItems.add(updated);
 
-        collector.addMergeItemsFromDtos(mergeItems);
+        collector.addMergeItems(mergeItems);
 
         Assertions.assertFalse(collector.hasChanges());
         Assertions.assertEquals(0, collector.getChangedItems().size());
@@ -117,11 +117,11 @@ class MergeItemCollectorTest {
         ShoppingListEntity listEntity = shoppingListService.getListForUserById(TestConstants.USER_1_ID, 5000L);
 
         MergeItemCollector collector = new MergeItemCollector(5000L, listEntity.getItems(), new Date());
-        ListItemDTO updated = createDTOForTagId(45L);
-        List<ListItemDTO> mergeItems = new ArrayList<>();
+        ListItemEntity updated = createItemForTagId(45L);
+        List<ListItemEntity> mergeItems = new ArrayList<>();
         mergeItems.add(updated);
 
-        collector.addMergeItemsFromDtos(mergeItems);
+        collector.addMergeItems(mergeItems);
 
         Assertions.assertTrue(collector.hasChanges());
         Assertions.assertEquals(1, collector.getChangedItems().size());
@@ -135,12 +135,6 @@ class MergeItemCollectorTest {
         return updated;
     }
 
-    private ListItemDTO createDTOForTagId(long tagId) {
-        TagEntity tagEntity = tagService.getTagById(tagId);
-        ListItemDTO updated = new ListItemDTO();
-        updated.setTag(tagEntity);
-        return updated;
-    }
 
     private ListItemEntity copyItemForTagId(long tagId, List<ListItemEntity> items) {
         ListItemEntity copyFrom = items.stream().filter(i -> i.getTag().getId().equals(tagId)).findFirst().get();
@@ -156,17 +150,4 @@ class MergeItemCollectorTest {
         return returnItem;
     }
 
-    private ListItemDTO createDTOForTagId(long tagId, List<ListItemEntity> items) {
-        ListItemEntity copyFrom = items.stream().filter(i -> i.getTag().getId().equals(tagId)).findFirst().get();
-        ListItemDTO returnItem = new ListItemDTO();
-        returnItem.setItemId(copyFrom.getId());
-        returnItem.setListId(copyFrom.getListId());
-        returnItem.setAddedOn(copyFrom.getAddedOn());
-        returnItem.setUpdatedOn(copyFrom.getUpdatedOn());
-        returnItem.setCrossedOff(copyFrom.getCrossedOff());
-        returnItem.setRemovedOn(copyFrom.getRemovedOn());
-        returnItem.setUsedCount(copyFrom.getUsedCount());
-        returnItem.setTag(copyFrom.getTag());
-        return returnItem;
-    }
 }

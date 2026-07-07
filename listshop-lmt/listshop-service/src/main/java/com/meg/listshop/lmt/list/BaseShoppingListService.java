@@ -810,24 +810,6 @@ public abstract class BaseShoppingListService  {
         itemMap.put(tagId, item);
     }
 
-    protected void addDtoToClientMap(ListItemDTO item, Map<Long, ListItemDTO> itemMap) {
-        if (item.getTag() == null) {
-            return;
-        }
-        Long tagId = item.getTag().getId();
-        ListItemDTO toAddTo = itemMap.get(tagId);
-        if (itemMap.containsKey(tagId)) {
-            int count = toAddTo.getUsedCount() != null ? toAddTo.getUsedCount() : 0;
-            toAddTo.setUsedCount(count + 1);
-            toAddTo.setRemovedOn(DateUtils.maxDate(toAddTo.getRemovedOn(), item.getRemovedOn()));
-            toAddTo.setCrossedOff(DateUtils.maxDate(toAddTo.getCrossedOff(), item.getCrossedOff()));
-            toAddTo.setUpdatedOn(DateUtils.maxDate(toAddTo.getUpdatedOn(), item.getUpdatedOn()));
-            toAddTo.setAddedOn(DateUtils.maxDate(toAddTo.getAddedOn(), item.getAddedOn()));
-            itemMap.put(tagId, toAddTo);
-            return;
-        }
-        itemMap.put(tagId, item);
-    }
 
     private List<ListItemEntity> addDishItemsToList(ShoppingListEntity shoppingList, List<DishItemEntity> dishItems) throws ShoppingListException, ItemProcessingException {
         List<TagType> tagTypesToExclude = Arrays.asList(TagType.DishType, TagType.Rating);

@@ -90,7 +90,7 @@ public class MergeItemCollector extends AbstractItemCollector {
         Iterator<ListItemDTO> mergeIterator = mergeItems.iterator();
         while (mergeIterator.hasNext()) {
             ListItemDTO mergeListItemDTO = mergeIterator.next();
-            Long tagId = mergeListItemDTO.getTagId();
+            Long tagId = mergeListItemDTO.getTag().getId();
 
             if (getTagCollectedMap().containsKey(tagId)) {
                 CollectedItem serverItem = getTagCollectedMap().get(mergeListItemDTO.getTag().getId());

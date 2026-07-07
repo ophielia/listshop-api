@@ -92,11 +92,11 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
         checkReplaceTagsInCollector(mergeCollector);
 
         // prepare items from client
-        List<ListItemDTO> mergeItems = convertMergeItemsToDTOs(userId, mergeRequest);
+        List<ListItemEntity> mergeItems = convertClientItemsToItemEntities(userId, mergeRequest);
 
         // merge from client
         logger.debug("Preparing to merge list [{}].", list.getId());
-        mergeCollector.addMergeItemsFromDtos(mergeItems);
+        mergeCollector.addMergeItems(mergeItems);
 
         // update after merge
         CollectorContext context = new CollectorContextBuilder().create(ContextType.Merge)
@@ -109,27 +109,42 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
 
     }
 
-    private List<ListItemDTO> convertMergeItemsToDTOs(Long userId, MergeRequest mergeRequest) {
-        Map<String, ListItemDTO> mergeMap = mergeRequest.getMergeItems().stream()
+    private List<ListItemEntity> convertClientItemsToItemEntities(Long userId, MergeRequest mergeRequest) {
+        Map<String, ListItemEntity> mergeMap = mergeRequest.getMergeItems().stream()
                 .filter(i -> i.getTagId() != null)
-                .collect(Collectors.toMap(MergeItem::getTagId, V2ModelMapper::toDto));
+                .collect(Collectors.toMap(Item::getTagId, ModelMapper::toEntity));
         Set<Long> tagKeys = mergeMap.keySet().stream().map(Long::valueOf).collect(Collectors.toSet());
 
         if (tagKeys.isEmpty()) {
             return new ArrayList<>();
         }
 
+        if (mergeRequest.isCheckTagConflict()) {
+            checkTagConflict(userId, tagKeys, mergeMap);
+        }
+        List<TagEntity> outdatedClientTags = tagService.getReplacedTagsFromIds(tagKeys);
+        Map<Long, TagEntity> outdatedClientDictionary = new HashMap<>();
+        if (!outdatedClientTags.isEmpty()) {
+            Set<Long> outdatedIds = outdatedClientTags.stream().map(TagEntity::getReplacementTagId).collect(Collectors.toSet());
+            outdatedClientDictionary = tagService.getDictionaryForIds(outdatedIds);
+        }
         Map<Long, TagEntity> tagDictionary = tagService.getDictionaryForIds(mergeMap.keySet().stream()
                 .map(Long::valueOf).collect(Collectors.toSet()));
 
-        Map<Long, ListItemDTO> itemMap = new HashMap<>();
-        for (Map.Entry<String, ListItemDTO> entry : mergeMap.entrySet()) {
+        Map<Long, ListItemEntity> itemMap = new HashMap<>();
+        for (Map.Entry<String, ListItemEntity> entry : mergeMap.entrySet()) {
             String tagIdString = entry.getKey();
-            ListItemDTO item = entry.getValue();
+            ListItemEntity item = entry.getValue();
             Long tagId = Long.valueOf(tagIdString);
             TagEntity tag = tagDictionary.get(tagId);
+            if (!outdatedClientDictionary.isEmpty() && tag.getReplacementTagId() != null) {
+                TagEntity replacementTag = outdatedClientDictionary.get(tag.getReplacementTagId());
+                item.setTag(replacementTag);
+                addItemToClientMap(item, itemMap);
+                continue;
+            }
             item.setTag(tag);
-            addDtoToClientMap(item, itemMap);
+            addItemToClientMap(item, itemMap);
         }
 
         return new ArrayList<>(itemMap.values());
