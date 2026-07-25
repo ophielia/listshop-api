@@ -427,7 +427,8 @@ public class V2ModelMapper {
 
 
     public static ShoppingListDTO toDto(ShoppingListPut shoppingList, Long userId) {
-        return new ShoppingListDTO(shoppingList.getListId(),
+        Long listId = shoppingList.getListId() != null ? Long.valueOf(shoppingList.getListId()) : null;
+        return new ShoppingListDTO(listId,
                 shoppingList.getName(),
                 null,
                 null,

@@ -125,7 +125,7 @@ class ShoppingListRestControllerTest {
         Long testId = 509990L;
 
         // updating list, so that it _is_ the most recent
-        ShoppingListPut shoppingList = new ShoppingListPut(testId)
+        ShoppingListPut shoppingList = new ShoppingListPut(String.valueOf(testId))
                 .name("updated list most recent")
                 .isStarterList(false);
         String payload = json(shoppingList);
@@ -272,7 +272,7 @@ class ShoppingListRestControllerTest {
     void testUpdateList() throws Exception {
         Long testId = 509991L;
 
-        ShoppingListPut shoppingList = new ShoppingListPut(testId)
+        ShoppingListPut shoppingList = new ShoppingListPut(String.valueOf(testId))
                 .name("updated list")
                 .isStarterList(false);
 
@@ -294,7 +294,7 @@ class ShoppingListRestControllerTest {
         Long testId = 509990L;
         Long oldStarterId = 509991L;
 
-        ShoppingListPut shoppingList = new ShoppingListPut(testId)
+        ShoppingListPut shoppingList = new ShoppingListPut(String.valueOf(testId))
                 .name("now is starter list")
                 .isStarterList(true);
 

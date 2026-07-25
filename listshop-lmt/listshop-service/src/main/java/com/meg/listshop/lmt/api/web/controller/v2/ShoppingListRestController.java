@@ -144,8 +144,6 @@ public class ShoppingListRestController implements V2ShoppingListRestControllerA
         return ResponseEntity.badRequest().build();
     }
 
-
-
     @Override
     public ResponseEntity<Object> updateList(HttpServletRequest request, Authentication authentication,
                                              @PathVariable("listId") Long listId,
@@ -225,7 +223,6 @@ public class ShoppingListRestController implements V2ShoppingListRestControllerA
         return singleResult(result);
     }
 
-
     @Override
     public ResponseEntity<Object> deleteList(Authentication authentication, @PathVariable("listId") Long listId) throws ItemProcessingException, BadParameterException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -234,7 +231,6 @@ public class ShoppingListRestController implements V2ShoppingListRestControllerA
         return ResponseEntity.noContent().build();
 
     }
-
 
     @Override
     public ResponseEntity<Object> updateItemCountByTag(Authentication authentication, @PathVariable("listId") Long listId,
@@ -400,7 +396,6 @@ public class ShoppingListRestController implements V2ShoppingListRestControllerA
 
         return ResponseEntity.noContent().build();
     }
-
 
     @Override
     public ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId) throws MalformedURLException {

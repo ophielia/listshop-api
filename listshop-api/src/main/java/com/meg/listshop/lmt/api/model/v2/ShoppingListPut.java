@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ShoppingListPut {
 
     @JsonProperty("list_id")
-    private Long listId;
+    private String listId;
 
     @JsonProperty("is_starter_list")
     private Boolean isStarterList;
@@ -24,11 +24,11 @@ public class ShoppingListPut {
     }
 
 
-    public ShoppingListPut(Long id) {
+    public ShoppingListPut(String id) {
         this.listId = id;
     }
 
-    public Long getListId() {
+    public String getListId() {
         return listId;
     }
 
