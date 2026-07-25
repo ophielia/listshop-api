@@ -320,7 +320,7 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
 
     @Override
     @Transactional
-    public void deleteList(Long userId, Long listId) {
+    public void legacyDeleteList(Long userId, Long listId) {
         List<ShoppingListEntity> allLists = getShoppingListsByUserId(userId);
         if (allLists == null || allLists.isEmpty()) {
             throw new ActionInvalidException(String.format("No lists found for user [%s]", userId));
@@ -387,6 +387,7 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
         // set fields in item
         item.setUsedCount(usedCount);
         item.setUpdatedOn(new Date());
+        item.setLastChanged(new Date());
         item.setRemovedOn(null);
         item.setCrossedOff(null);
 

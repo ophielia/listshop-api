@@ -8,16 +8,17 @@ package com.meg.listshop.lmt.api.model.v2;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meg.listshop.lmt.api.model.Tag;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 public class MergeItem implements Comparable {
 
     @JsonProperty("item_id")
-    private Long item_id;
+    private String itemId;
+
+    @JsonProperty("tag_id")
+    private String tagId;
+
 
     @JsonProperty("added")
     private Date addedOn;
@@ -31,25 +32,28 @@ public class MergeItem implements Comparable {
     @JsonProperty("crossed_off")
     private Date crossedOff;
 
+
+    @JsonProperty("last_changed")
+    private Date lastChanged;
+
     @JsonProperty("list_id")
     private String listId;
 
-    @JsonProperty("tag_id")
-    private String tagId;
-
     @JsonProperty("used_count")
     private Integer usedCount;
-    public MergeItem(Long id) {
-        this.item_id = id;
-    }
+
 
     public MergeItem() {
         // necessary for json construction
     }
 
     @JsonIgnore
-    public Long getId() {
-        return item_id;
+    public String getId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 
     public Date getAddedOn() {
@@ -90,6 +94,14 @@ public class MergeItem implements Comparable {
     public MergeItem tagId(String tagId) {
         this.tagId = tagId;
         return this;
+    }
+
+    public Date getLastChanged() {
+        return lastChanged;
+    }
+
+    public void setLastChanged(Date lastChanged) {
+        this.lastChanged = lastChanged;
     }
 
     public Integer getUsedCount() {

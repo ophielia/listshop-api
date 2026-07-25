@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.controller;
 
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
@@ -17,7 +23,7 @@ import jakarta.validation.constraints.NotNull;
 @RestController
 @RequestMapping("/shoppinglist")
 @CrossOrigin
-public interface ShoppingListRestControllerApi {
+public interface LegacyShoppingListRestControllerApi {
 
 
     @GetMapping(produces = "application/json")

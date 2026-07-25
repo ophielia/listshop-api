@@ -14,6 +14,7 @@ import com.meg.listshop.common.FractionUtils;
 import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.common.StringTools;
 import com.meg.listshop.lmt.api.controller.v2.V2ShoppingListRestControllerApi;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 
@@ -32,7 +33,6 @@ import com.meg.listshop.lmt.data.pojos.SourceDTO;
 import com.meg.listshop.lmt.list.ShoppingListException;
 import com.meg.listshop.lmt.list.v2.ShoppingListService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +110,7 @@ public class ShoppingListRestController implements V2ShoppingListRestControllerA
 
 
     @Override
-    public ResponseEntity<MergeResult> mergeList(Authentication authentication, @RequestBody MergeRequest mergeRequest) {
+    public ResponseEntity<MergeResult> mergeList(Authentication authentication, @RequestBody MergeRequest mergeRequest) throws ItemProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String message = String.format("Merging list for user [%S]", userDetails.getId());
         logger.info(message);
@@ -227,7 +227,7 @@ public class ShoppingListRestController implements V2ShoppingListRestControllerA
 
 
     @Override
-    public ResponseEntity<Object> deleteList(Authentication authentication, @PathVariable("listId") Long listId) {
+    public ResponseEntity<Object> deleteList(Authentication authentication, @PathVariable("listId") Long listId) throws ItemProcessingException, BadParameterException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Deleting list [{}] for user [{}]", listId, userDetails.getId());
         shoppingListService.deleteList(userDetails.getId(), listId);

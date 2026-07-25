@@ -24,6 +24,7 @@ public class ItemStateContext {
     private BasicAmount tagAmount;
     private DomainType userDomain;
     private String tagEntry;
+    private Long removeListLinkId;
 
     public ItemStateContext(ListItemEntity targetItem, Long targetListId) {
         this.targetItem = targetItem;
@@ -125,5 +126,13 @@ public class ItemStateContext {
 
     public void setTagRawEntry(String tagEntry) {
         this.tagEntry = tagEntry;
+    }
+
+    public Long getRemoveLinkId() {
+        return removeListLinkId;
+    }
+
+    public void setRemoveListLinkId(Long removeListLinkId) {
+        this.removeListLinkId = removeListLinkId;
     }
 }

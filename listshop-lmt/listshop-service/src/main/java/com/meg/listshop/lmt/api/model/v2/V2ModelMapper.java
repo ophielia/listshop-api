@@ -17,6 +17,7 @@ import com.meg.listshop.lmt.data.pojos.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class V2ModelMapper {
@@ -229,7 +230,7 @@ public class V2ModelMapper {
     }
 
     public static ShoppingListItem toModel(ListItemDTO listItemDTO, Map<Long, String> unitMap) {
-        List<ShoppingListItemDetails> itemDetails = toModelListFromDTO(listItemDTO.getDetails(), unitMap);
+        List<ShoppingListItemDetails> itemDetails = toModelList(listItemDTO.getDetails(), unitMap);
 
         Amount amount = extractAmount(listItemDTO, unitMap);
         NestedTag tag = new NestedTag(listItemDTO.getTag().getId(), listItemDTO.getTag().getName());
@@ -243,17 +244,19 @@ public class V2ModelMapper {
                 .withSources(listItemDTO.getSources())
                 .withAddedOn(listItemDTO.getAddedOn())
                 .withUpdated(listItemDTO.getUpdatedOn())
+                .withCrossedOff(listItemDTO.getCrossedOff())
+                .withLastChanged(listItemDTO.getLastChanged())
                 .withRemoved(listItemDTO.getRemovedOn())
                 .withCrossedOff(listItemDTO.getCrossedOff())
                 .withUsedCount(listItemDTO.getUsedCount());
     }
 
-    private static List<ShoppingListItemDetails> toModelListFromDTO(List<ListItemDetailDTO> detailDtos, Map<Long, String> unitMap) {
+    private static List<ShoppingListItemDetails> toModelList(List<ListItemDetailEntity> detailEntities, Map<Long, String> unitMap) {
         List<ShoppingListItemDetails> itemModels = new ArrayList<>();
-        if (detailDtos == null || detailDtos.isEmpty()) {
+        if (detailEntities == null || detailEntities.isEmpty()) {
             return itemModels;
         }
-        for (ListItemDetailDTO itemDetail : detailDtos) {
+        for (ListItemDetailEntity itemDetail : detailEntities) {
             itemModels.add(toModel(itemDetail, unitMap));
         }
         return itemModels;
@@ -422,16 +425,6 @@ public class V2ModelMapper {
     }
 
 
-    public static ListItemDTO toDto(MergeItem item) {
-        Long tagId = Long.valueOf(item.getTagId());
-        ListItemDTO dto =  new ListItemDTO();
-        dto.setTagId(tagId);
-        dto.setAddedOn(item.getAddedOn());
-        dto.setRemovedOn(item.getRemoved());
-        dto.setUpdatedOn(item.getUpdated());
-        dto.setCrossedOff(item.getCrossedOff());
-        return dto;
-    }
 
     public static ShoppingListDTO toDto(ShoppingListPut shoppingList, Long userId) {
         return new ShoppingListDTO(shoppingList.getListId(),
@@ -511,5 +504,12 @@ public class V2ModelMapper {
         category.setDefault(toBoolean(categoryEntity.getDefault()));
         category.setDisplayOrder(categoryEntity.getDisplayOrder());
         return category;
+    }
+
+    public static List<ItemMergeDTO> toMergeItemDtoList(List<MergeItem> mergeItems) {
+        if (mergeItems == null) {
+            return new ArrayList<>();
+        }
+        return mergeItems.stream().map(ItemMergeDTO::new).collect(Collectors.toList());
     }
 }

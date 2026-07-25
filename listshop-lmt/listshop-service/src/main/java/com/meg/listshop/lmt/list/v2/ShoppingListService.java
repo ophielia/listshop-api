@@ -6,6 +6,7 @@
 
 package com.meg.listshop.lmt.list.v2;
 
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 
 import com.meg.listshop.lmt.api.model.ItemOperationType;
@@ -46,7 +47,7 @@ public interface ShoppingListService {
 
     ShoppingListEntity getSimpleListForUserById(Long userId, Long listId);
 
-    void deleteList(Long userId, Long listId);
+    void deleteList(Long userId, Long listId) throws ItemProcessingException, BadParameterException;
 
     ShoppingListEntity updateList(Long userId, Long listId, ShoppingListDTO updateFrom);
 
@@ -72,7 +73,7 @@ public interface ShoppingListService {
 
     void deleteAllItemsFromList(Long userId, Long listId) throws ItemProcessingException;
 
-    MergeResult mergeFromClient(Long userId, MergeRequest mergeRequest);
+    MergeResult mergeFromClient(Long userId, MergeRequest mergeRequest) throws ItemProcessingException;
 
     void addListToList(Long userId, Long listId, Long fromListId) throws ItemProcessingException;
 

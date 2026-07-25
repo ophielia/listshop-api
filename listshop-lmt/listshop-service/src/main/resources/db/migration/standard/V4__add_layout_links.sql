@@ -22,3 +22,6 @@ update list_category lc
 set linked_category_id = um.category_id
 from update_mapping um
 where um.to_update = lc.category_id;
+
+
+ALTER TABLE list_item ADD COLUMN IF NOT EXISTS last_changed timestamp with time zone;

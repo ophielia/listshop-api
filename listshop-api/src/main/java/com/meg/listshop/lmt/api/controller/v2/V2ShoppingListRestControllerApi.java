@@ -6,6 +6,7 @@
 
 package com.meg.listshop.lmt.api.controller.v2;
 
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.model.ItemOperationPut;
 import com.meg.listshop.lmt.api.model.ListAddProperties;
@@ -37,7 +38,7 @@ public interface V2ShoppingListRestControllerApi {
     ResponseEntity<Object> createList(HttpServletRequest request, Authentication principal, @RequestBody ListGenerateProperties listGenerateProperties) throws MalformedURLException;
 
     @PutMapping(value = "/shared", produces = "application/json")
-    ResponseEntity<MergeResult> mergeList(Authentication authentication, @RequestBody MergeRequest mergeRequest);
+    ResponseEntity<MergeResult> mergeList(Authentication authentication, @RequestBody MergeRequest mergeRequest) throws ItemProcessingException;
 
     @PutMapping(value = "/{listId}", produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> updateList(HttpServletRequest request, Authentication principal, @PathVariable("listId") Long listId, @RequestBody ShoppingListPut shoppingList);
@@ -56,7 +57,7 @@ public interface V2ShoppingListRestControllerApi {
 
 
     @DeleteMapping(value = "/{listId}", produces = "application/json")
-    ResponseEntity<Object> deleteList(Authentication principal, @PathVariable("listId") Long listId);
+    ResponseEntity<Object> deleteList(Authentication principal, @PathVariable("listId") Long listId) throws ItemProcessingException, BadParameterException;
 
     @PostMapping(value = "/{listId}/item", produces = "application/json")
     ResponseEntity<Object> addItemToList(Authentication principal, @PathVariable("listId") Long listId,

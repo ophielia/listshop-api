@@ -72,6 +72,11 @@ public class ListItemDTO {
         return entity.getCrossedOff();
     }
 
+
+    public Date getLastChanged() {
+        return entity.getLastChanged();
+    }
+
     public Date getRemovedOn() {
         return entity.getRemovedOn();
     }

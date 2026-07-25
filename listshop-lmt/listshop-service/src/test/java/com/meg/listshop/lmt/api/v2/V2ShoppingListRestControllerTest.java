@@ -8,6 +8,7 @@ package com.meg.listshop.lmt.api.v2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meg.listshop.Application;
+import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.common.RoundingUtils;
 import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.ItemOperationPut;
@@ -15,8 +16,10 @@ import com.meg.listshop.lmt.api.model.ItemOperationType;
 import com.meg.listshop.lmt.api.model.ListAddProperties;
 import com.meg.listshop.lmt.api.model.ListGenerateProperties;
 import com.meg.listshop.lmt.api.model.v2.*;
+import com.meg.listshop.lmt.data.entity.ListItemDetailEntity;
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
+import com.meg.listshop.lmt.data.repository.ListItemDetailRepository;
 import com.meg.listshop.test.TestConstants;
 import com.meg.listshop.test.TestUtils;
 import io.restassured.RestAssured;
@@ -42,6 +45,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -70,17 +74,16 @@ class V2ShoppingListRestControllerTest {
     public int serverPort;
     @Autowired
     ItemRepository itemRepository;
-    @Value("classpath:/data/shoppingListRestControllerTest_mergeList.json")
+    @Value("classpath:/data/v2shoppingListRestControllerTest_mergeList.json")
     Resource resourceFile;
     @Value("classpath:/data/shoppingListRestControllerTest_noMergeList.json")
     Resource resourceFileNoMerge;
-    @Value("classpath:/data/shoppingListRestControllerTest_mergeListStale.json")
+    @Value("classpath:/data/v2shoppingListRestControllerTest_mergeListStale.json")
     Resource resourceFileStale;
     @Value("classpath:/data/shoppingListRestControllerTest_mergeListEmpty.json")
     Resource resourceFileEmpty;
-    @Value("classpath:/data/shoppingListRestControllerTest_mergeListWithConflicts.json")
-    Resource mergeConflictFileSource;
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
+    @Autowired
+    private ListItemDetailRepository listItemDetailRepository;
 
     @PostConstruct
     public void initRestAssured() {
@@ -91,12 +94,6 @@ class V2ShoppingListRestControllerTest {
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter = Arrays.stream(converters)
-
-                .filter(MappingJackson2HttpMessageConverter.class::isInstance)
-                .findAny()
-                .orElse(null);
-
         Assertions.assertNotNull("the JSON message converter must not be null");
     }
 
@@ -144,7 +141,7 @@ class V2ShoppingListRestControllerTest {
                 .statusCode(200);
 
         // now, testing the most recent call
-        String response = given()
+        ShoppingList list = given()
                 .header(TestUtils.authToken(meJwtToken))
                 .when()
                 .get("/v2/shoppinglist/mostrecent")
@@ -152,9 +149,17 @@ class V2ShoppingListRestControllerTest {
                 .statusCode(200)
                 .contentType(ContentType.JSON)
                 .body("list_id", Matchers.isA(String.class))
-                .extract().asString();
+                .extract()
+                .as(ShoppingList.class);
 
-        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(list);
+        // assert all items have "last_changed" filled in
+        List<Date> itemsWithoutLastChanged = list.getCategories().stream()
+                .flatMap(category -> category.getItems().stream())
+                .map(ShoppingListItem::getLastChanged)
+                .filter(Objects::isNull)
+                .toList();
+        Assertions.assertTrue(itemsWithoutLastChanged.isEmpty(), "all items should have last_changed");
     }
 
     @Test
@@ -195,14 +200,15 @@ class V2ShoppingListRestControllerTest {
                 .contentType(ContentType.JSON)
                 .body("list_id", Matchers.isA(String.class))
                 .body("list_id", Matchers.equalTo(String.valueOf(testId)))
-                .body("categories", Matchers.hasSize(1))
+                .body("categories", Matchers.hasSize(2))
                 .body("categories.name", Matchers.hasItems("Produce"))
-                .body("categories[0].items", Matchers.hasSize(6))
+                .body("categories[0].items", Matchers.hasSize(5))
                 .body("categories[0].items[0].tag.tag_id", Matchers.equalTo("500"))
                 .body("categories[0].items[0].tag.name", Matchers.equalTo("tag1"))
                 .body("categories[0].items[0].amount.quantity", Matchers.equalTo(0.5F))
                 .body("categories[0].items[0].amount.rounded_quantity", Matchers.equalTo(0.5F))
-                .body("categories[0].items[0].amount.quantity_display", Matchers.equalTo("0.5 lb"))
+                .body("categories[0].items[0].amount.quantity_display", Matchers.equalTo("1/2"))
+                .body("categories[0].items[0].amount.display", Matchers.equalTo("0.5 lb"))
                 .body("categories[0].items[0].amount.unit_id", Matchers.equalTo("1008"))
                 .body("categories[0].items[0].amount.unit_display", Matchers.equalTo("lb"))
                 .body("categories[0].items[0].amount.display", Matchers.equalTo("0.5 lb"))
@@ -327,32 +333,6 @@ class V2ShoppingListRestControllerTest {
                 .body("list_id", Matchers.equalTo(String.valueOf(oldStarterId)))
                 .body("is_starter_list", Matchers.equalTo(false));
 
-
-    }
-
-    @Test
-    void testDeleteList() {
-        Long testId = TestConstants.LIST_2_ID;
-
-        given()
-                .header(TestUtils.authToken(meJwtToken))
-                .when()
-                .delete("/v2/shoppinglist/" + testId)
-                .then()
-                .statusCode(204);
-
-    }
-
-    @Test
-    void testDeleteList_LastList() {
-        Long testId = 99999L;
-
-        given()
-                .header(TestUtils.authToken(lastListJwtToken))
-                .when()
-                .delete("/v2/shoppinglist/" + testId)
-                .then()
-                .statusCode(400);
 
     }
 
@@ -725,195 +705,6 @@ class V2ShoppingListRestControllerTest {
         // 436 - 1
         Assertions.assertNotNull(sourceResultMap.get("436"));
         Assertions.assertEquals(Integer.valueOf(1), sourceResultMap.get("436").getDetails().size());
-
-    }
-
-    @Test
-    void testMergeList() throws Exception {
-        String testMergeList = StreamUtils.copyToString(resourceFile.getInputStream(), StandardCharsets.UTF_8);
-
-        Long listId = 110000L;
-
-        String url = "/v2/shoppinglist/shared";
-        given()
-                .header(TestUtils.authToken(meJwtToken))
-                .contentType(ContentType.JSON)
-                .body(testMergeList)
-                .when()
-                .put(url)
-                .then()
-                .statusCode(200);
-
-        // now, retrieve the list
-        ShoppingList source = retrieveList(meJwtToken, listId);
-        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
-                .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
-        Assertions.assertNotNull(sourceResultMap);
-
-        // check result
-        // should have 9 items
-        Assertions.assertEquals(15, sourceResultMap.keySet().size(), "should have 15 items");
-        // should not contain tag 32 (which was removed)
-        Assertions.assertFalse(sourceResultMap.containsKey("32"), "shouldn't contain tag 32");
-        // not crossed off - 33, 16
-        Map<String, ShoppingListItem> activeMap = source.getCategories().stream()
-                .flatMap(c -> c.getItems().stream())
-                .filter(i -> i.getCrossedOff() == null)
-                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
-        Assertions.assertEquals(10, activeMap.keySet().size(), "10 active items");
-        Assertions.assertTrue(activeMap.containsKey("33"), "33 should be actice");
-        Assertions.assertTrue(activeMap.containsKey("16"), "16 should be actice");
-
-        //  crossed off - 19, 34
-        Map<String, ShoppingListItem> crossedOffMap = source.getCategories().stream()
-                .flatMap(c -> c.getItems().stream())
-                .filter(i -> i.getCrossedOff() != null)
-                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
-        Assertions.assertEquals(5, crossedOffMap.keySet().size(), "5 crossed off items");
-        Assertions.assertTrue(crossedOffMap.containsKey("19"), "33 should be crossed off");
-        Assertions.assertTrue(crossedOffMap.containsKey("34"), "16 should be crossed off");
-    }
-
-    @Test
-    void testMergeList_SkipMerge() throws Exception {
-        String testMergeList = StreamUtils.copyToString(resourceFileNoMerge.getInputStream(), StandardCharsets.UTF_8);
-
-        Long listId = 110099L;
-
-        String url = "/v2/shoppinglist/shared";
-        given()
-                .header(TestUtils.authToken(meJwtToken))
-                .contentType(ContentType.JSON)
-                .body(testMergeList)
-                .when()
-                .put(url)
-                .then()
-                .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(200)).and(Matchers.lessThan(300))));
-
-        // now, retrieve the list
-        ShoppingList source = retrieveList(meJwtToken, listId);
-        Map<String, ShoppingListItem> crossedOffItems = source.getCategories().stream()
-                .flatMap(c -> c.getItems().stream())
-                .filter(c -> c.getCrossedOff() != null)
-                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
-        Assertions.assertNotNull(crossedOffItems);
-
-        // check result
-        // the merged list had crossed off items. The db list didn't have any crossed off items
-        // the merged list had an offline change date older than the last sync, so no merge should have been done
-        // we cann check this by ensuring that no items are crossed off
-        Assertions.assertEquals(0, crossedOffItems.keySet().size(), "should have 0 items");
-    }
-
-    @Test
-    void testMergeList_Stale() throws Exception {
-        String testMergeList = StreamUtils.copyToString(resourceFileStale.getInputStream(), StandardCharsets.UTF_8);
-
-        Long listId = 11000001L;
-
-        String url = "/v2/shoppinglist/shared";
-        given()
-                .header(TestUtils.authToken(meJwtToken))
-                .contentType(ContentType.JSON)
-                .body(testMergeList)
-                .when()
-                .put(url)
-                .then()
-                .statusCode(200);
-
-        // now, retrieve the list
-        ShoppingList source = retrieveList(meJwtToken, listId);
-        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
-                .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
-        Assertions.assertNotNull(sourceResultMap);
-
-        // check result
-        // should have 12 items
-        Assertions.assertEquals(13, sourceResultMap.keySet().size(), "should have 13 items");
-        // should not contain tag 32 (which was removed)
-        Assertions.assertFalse(sourceResultMap.containsKey("32"), "shouldn't contain tag 32");
-        // not crossed off - 16
-        Map<String, ShoppingListItem> activeMap = source.getCategories().stream()
-                .flatMap(c -> c.getItems().stream())
-                .filter(i -> i.getCrossedOff() == null)
-                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
-        Assertions.assertEquals(9, activeMap.keySet().size(), "9 active items");
-        Assertions.assertTrue(activeMap.containsKey("16"), "16 should be actice");
-
-        //  crossed off - 19
-        Map<String, ShoppingListItem> crossedOffMap = source.getCategories().stream()
-                .flatMap(c -> c.getItems().stream())
-                .filter(i -> i.getCrossedOff() != null)
-                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
-        Assertions.assertEquals(4, crossedOffMap.keySet().size(), "4 crossed off items");
-        Assertions.assertTrue(crossedOffMap.containsKey("19"), "19 should be crossed off");
-    }
-
-    @Test
-    void testMergeList_Empty() throws Exception {
-        // load statistics into file
-        String testMergeList = StreamUtils.copyToString(resourceFileEmpty.getInputStream(), StandardCharsets.UTF_8);
-
-        Long listId = 130000L;
-
-        String url = "/v2/shoppinglist/shared";
-        given()
-                .header(TestUtils.authToken(meJwtToken))
-                .contentType(ContentType.JSON)
-                .body(testMergeList)
-                .when()
-                .put(url)
-                .then()
-                .statusCode(200);
-
-        // now, retrieve the list
-        ShoppingList source = retrieveList(meJwtToken, listId);
-        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
-                .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
-        Assertions.assertNotNull(sourceResultMap);
-
-        // check result
-        // should have 9 items
-        Assertions.assertTrue(sourceResultMap.isEmpty(), "should be empty - empty list - empty merge request");
-    }
-
-    @Test
-    void testMergeList_TagConflict() throws Exception {
-        String testMergeList = StreamUtils.copyToString(mergeConflictFileSource.getInputStream(), StandardCharsets.UTF_8);
-
-        Long listId = 120000L;
-
-        String url = "/v2/shoppinglist/shared";
-        given()
-                .header(TestUtils.authToken(meJwtToken))
-                .contentType(ContentType.JSON)
-                .body(testMergeList)
-                .when()
-                .put(url)
-                .then()
-                .statusCode(200);
-
-        // now, retrieve the list
-        ShoppingList source = retrieveList(meJwtToken, listId);
-        Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
-                .flatMap(c -> c.getItems().stream())
-                .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
-        Assertions.assertNotNull(sourceResultMap);
-
-        // check result
-        // should have 9 items
-        Assertions.assertEquals(3, sourceResultMap.keySet().size(), "should have 9 items");
-        // should not contain tag 12001 or 12002 (standard)
-        Assertions.assertFalse(sourceResultMap.containsKey("12001"), "shouldn't contain tag 12001");
-        Assertions.assertFalse(sourceResultMap.containsKey("12002"), "shouldn't contain tag 12002");
-        // should  contain tag 13001 or 13002 (standard)
-        Assertions.assertTrue(sourceResultMap.containsKey("13001"), "shouldn't contain tag 13001");
-        Assertions.assertTrue(sourceResultMap.containsKey("13002"), "shouldn't contain tag 13002");
-        // should contain 21 - no conflict
-        Assertions.assertTrue(sourceResultMap.containsKey("21"), "shouldn't contain tag 21");
 
     }
 
@@ -1342,6 +1133,8 @@ class V2ShoppingListRestControllerTest {
         operationUpdate.setTagIds(new ArrayList<>());
 
         String jsonProperties = json(operationUpdate);
+
+        ShoppingList before = retrieveList(meJwtToken, sourceListId);
 
         String url = "/v2/shoppinglist/" + sourceListId + "/item";
 
@@ -1802,7 +1595,7 @@ class V2ShoppingListRestControllerTest {
             // the amount should be there now
             Assertions.assertEquals(22, testElement.getAmount().getRoundedQuantity(), 0.001);
             Assertions.assertEquals(21.75, testElement.getAmount().getQuantity(), 0.001);
-            Assertions.assertEquals("22 lb", testElement.getAmount().getQuantityDisplay());
+            Assertions.assertEquals("22", testElement.getAmount().getQuantityDisplay());
             Assertions.assertEquals("22 lb", testElement.getAmount().getDisplay());
 }
 
@@ -1848,4 +1641,400 @@ class V2ShoppingListRestControllerTest {
         }
     }
 
+
+    @Nested
+    class DeleteListTests {
+        @Test
+        void testDeleteList() throws Exception {
+            // generic list properties
+            ListGenerateProperties properties = new ListGenerateProperties();
+            properties.setAddFromStarter(false);
+            properties.setGenerateMealplan(false);
+            String jsonProperties = json(properties);
+
+            // create list to be added to  list to test
+            String addedListId = createList(jsonProperties, meJwtToken);
+            // create list for test
+            String testListId = createList(jsonProperties, meJwtToken);
+
+            String addedDishId1 = "104"; // schnitzel
+            String addedDishId2 = "105"; // chicken flautas
+            Long tagId = TestConstants.TAG_PASTA;
+            String url = "/v2/shoppinglist/" + testListId + "/dish/" + addedDishId1;
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .contentType(ContentType.JSON)
+                    .when()
+                    .post(url)
+                    .then()
+                    .statusCode(204);
+            PostListItem listPost = new PostListItem(tagId.toString(), null);
+            url = "/v2/shoppinglist/" + testListId + "/item";
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(json(listPost))
+                    .when()
+                    .post(url)
+                    .then()
+                    .statusCode(204);
+
+            // addedListId - add dish2 , flour and test list
+            url = "/v2/shoppinglist/" + addedListId + "/dish/" + addedDishId2;
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .contentType(ContentType.JSON)
+                    .when()
+                    .post(url)
+                    .then()
+                    .statusCode(204);
+
+            url = "/v2/shoppinglist/" + addedListId + "/list/" + testListId;
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .contentType(ContentType.JSON)
+                    .when()
+                    .post(url)
+                    .then()
+                    .statusCode(204);
+
+            tagId = TestConstants.TAG_FLOUR;
+            url = "/v2/shoppinglist/" + addedListId + "/dish/" + addedDishId1;
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .contentType(ContentType.JSON)
+                    .when()
+                    .post(url)
+                    .then()
+                    .statusCode(204);
+
+            // verify start state
+            ShoppingList tested = retrieveList(meJwtToken, Long.valueOf(testListId));
+            ShoppingList addedToList = retrieveList(meJwtToken, Long.valueOf(addedListId));
+
+            List<Long> itemIdList = tested.getCategories().stream()
+                    .flatMap(category -> category.getItems().stream())
+                    .map(ShoppingListItem::getItemId)
+                    .map(Long::valueOf)
+                    .toList();
+            long addedListItemCount = addedToList.getCategories().stream()
+                    .flatMap(category -> category.getItems().stream())
+                    .count();
+
+            // delete the tested list
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .when()
+                    .delete("/v2/shoppinglist/" + testListId)
+                    .then()
+                    .statusCode(204);
+
+            // reretrieve the added list
+            // number of items should be the same
+            addedToList = retrieveList(meJwtToken, Long.valueOf(addedListId));
+            long afterAddedListItemCount = addedToList.getCategories().stream()
+                    .flatMap(category -> category.getItems().stream())
+                    .count();
+            Assertions.assertEquals(addedListItemCount, afterAddedListItemCount);
+            String linkedToDeleted = addedToList.getCategories().stream()
+                    .flatMap(category -> category.getItems().stream())
+                    .flatMap(item -> item.getDetails().stream())
+                    .map(ShoppingListItemDetails::getListId)
+                    .filter( id -> testListId.equals(id))
+                    .findFirst()
+                    .orElse(null);
+            Assertions.assertNull(linkedToDeleted);
+
+
+            List<ListItemDetailEntity> deletedDetails = listItemDetailRepository.findDetailsByItemIds(itemIdList);
+            Assertions.assertTrue(deletedDetails.isEmpty());
+
+
+
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .when()
+                    .delete("/v2/shoppinglist/" + testListId)
+                    .then()
+                    .statusCode(204);
+
+        }
+
+        @Test
+        void testDeleteList_LastList() {
+            Long testId = 99999L;
+
+            given()
+                    .header(TestUtils.authToken(lastListJwtToken))
+                    .when()
+                    .delete("/v2/shoppinglist/" + testId)
+                    .then()
+                    .statusCode(400);
+
+        }
+
+    }
+
+    @Nested
+    class MergeTests {
+
+        @Test
+        void testMergeListSingleOperation() throws Exception {
+            String testMergeList = StreamUtils.copyToString(resourceFile.getInputStream(), StandardCharsets.UTF_8);
+            ObjectMapper objectMapper = new ObjectMapper();
+            MergeRequest massage = objectMapper.readValue(testMergeList, MergeRequest.class);
+            Date yesterday = DateUtils.asDate(LocalDate.now().minusDays(1));
+            Map<String, MergeItem> dictionary = massage.getMergeItems().stream()
+                    .collect(Collectors.toMap(MergeItem::getTagId, Function.identity()));
+            // cross off  21, 81,  34, 212, 19
+            List.of( "21", "81",  "34", "212", "19").forEach(id -> {
+                dictionary.get(id).crossedOff(yesterday);
+                dictionary.get(id).setLastChanged(yesterday);
+            });
+            // add (new) - 15, 32
+            List.of("15", "32").forEach(id -> {
+                dictionary.get(id).setItemId(null);
+                dictionary.get(id).addedOn(yesterday);
+                dictionary.get(id).setLastChanged(yesterday);
+            });
+            // removed
+            dictionary.get("443").crossedOff(null);
+            dictionary.get("443").removed(yesterday);
+            dictionary.get("443").setLastChanged(yesterday);
+
+
+            String payload = objectMapper.writeValueAsString(massage);
+            Long listId = 110000L;
+
+            ShoppingList before = retrieveList(meJwtToken, listId);
+            List<ShoppingListItem> items = before.getCategories().stream().flatMap(c -> c.getItems().stream()).toList();
+
+            String url = "/v2/shoppinglist/shared";
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(payload)
+                    .when()
+                    .put(url)
+                    .then()
+                    .statusCode(200);
+
+            // now, retrieve the list
+            ShoppingList source = retrieveList(meJwtToken, listId);
+            List<ShoppingListItem> afteritems = before.getCategories().stream().flatMap(c -> c.getItems().stream()).toList();
+            Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            Assertions.assertNotNull(sourceResultMap);
+
+            // check result
+            // should have 16 items
+            Assertions.assertEquals(16, sourceResultMap.keySet().size(), "should have 16 items");
+            // should not contain tag 443 (which was removed)
+            Assertions.assertFalse(sourceResultMap.containsKey("443"), "shouldn't contain tag 443");
+            // not crossed off - 33, 16
+            Map<String, ShoppingListItem> activeMap = source.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .filter(i -> i.getCrossedOff() == null)
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            System.out.println(activeMap.keySet());
+            Assertions.assertEquals(11, activeMap.keySet().size(), "11 active items");
+            Assertions.assertTrue(activeMap.containsKey("33"), "33 should be active");
+            Assertions.assertTrue(activeMap.containsKey("16"), "16 should be active");
+
+            //  crossed off - 21,81,34,212,19
+            List.of("21", "81", "34", "212", "19").forEach(id -> {
+                Assertions.assertNotNull(sourceResultMap.get(id), id + " should be present");
+                Assertions.assertNotNull(sourceResultMap.get(id).getCrossedOff(), id + " should be crossedOff");
+                Assertions.assertTrue(sourceResultMap.get(id).getLastChanged().after(yesterday), id + " should be crossedOff");
+            });
+
+            // added - 32, 15
+            List.of("15","32").forEach(id -> {
+                Assertions.assertNotNull(sourceResultMap.get(id), id + " should be present");
+                Assertions.assertNull(sourceResultMap.get(id).getCrossedOff(), id + " should be crossedOff");
+                Assertions.assertTrue(sourceResultMap.get(id).getLastChanged().after(yesterday), id + " should be crossedOff");
+            });
+            //MM this test passing - each of the items only had one operation - added, crossed off, removed
+            // next test - multiple operations (dates) - added and crossed off, added and removed, crossed off and removed
+        }
+
+        @Test
+        void testMergeListDoubleOperation() throws Exception {
+            // such as - added _and_ crossed off
+            String testMergeList = StreamUtils.copyToString(resourceFile.getInputStream(), StandardCharsets.UTF_8);
+            ObjectMapper objectMapper = new ObjectMapper();
+            MergeRequest massage = objectMapper.readValue(testMergeList, MergeRequest.class);
+            Date yesterday = DateUtils.asDate(LocalDate.now().minusDays(1));
+            Map<String, MergeItem> dictionary = massage.getMergeItems().stream()
+                    .collect(Collectors.toMap(MergeItem::getTagId, Function.identity()));
+            // cross off  21, 81,  34, 212, 19
+            List.of( "21", "81",  "34", "212", "19").forEach(id -> {
+                dictionary.get(id).crossedOff(yesterday);
+                dictionary.get(id).setLastChanged(yesterday);
+            });
+            // add (new) - 15, 32
+            List.of("15", "32").forEach(id -> {
+                dictionary.get(id).setItemId(null);
+                dictionary.get(id).addedOn(yesterday);
+                dictionary.get(id).setLastChanged(yesterday);
+                dictionary.get(id).crossedOff(yesterday);
+            });
+            // removed
+            dictionary.get("443").crossedOff(null);
+            dictionary.get("443").removed(yesterday);
+            dictionary.get("443").setLastChanged(yesterday);
+
+
+            String payload = objectMapper.writeValueAsString(massage);
+            Long listId = 110000L;
+
+            ShoppingList before = retrieveList(meJwtToken, listId);
+            List<ShoppingListItem> items = before.getCategories().stream().flatMap(c -> c.getItems().stream()).toList();
+
+            String url = "/v2/shoppinglist/shared";
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(payload)
+                    .when()
+                    .put(url)
+                    .then()
+                    .statusCode(200);
+
+            // now, retrieve the list
+            ShoppingList source = retrieveList(meJwtToken, listId);
+            List<ShoppingListItem> afteritems = before.getCategories().stream().flatMap(c -> c.getItems().stream()).toList();
+            Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            Assertions.assertNotNull(sourceResultMap);
+
+            // added  and crossed off - 32, 15
+            List.of("15","32").forEach(id -> {
+                Assertions.assertNotNull(sourceResultMap.get(id), id + " should be present");
+                Assertions.assertNotNull(sourceResultMap.get(id).getCrossedOff(), id + " should be crossedOff");
+                Assertions.assertTrue(sourceResultMap.get(id).getLastChanged().after(yesterday), id + " should be crossedOff");
+            });
+            //MM this test passing - each of the items only had one operation - added, crossed off, removed
+            // next test - multiple operations (dates) - added and crossed off, added and removed, crossed off and removed
+        }
+
+
+        @Test
+        void testMergeList_SkipMerge() throws Exception {
+            String testMergeList = StreamUtils.copyToString(resourceFileNoMerge.getInputStream(), StandardCharsets.UTF_8);
+
+            Long listId = 110099L;
+
+            String url = "/v2/shoppinglist/shared";
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(testMergeList)
+                    .when()
+                    .put(url)
+                    .then()
+                    .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(200)).and(Matchers.lessThan(300))));
+
+            // now, retrieve the list
+            ShoppingList source = retrieveList(meJwtToken, listId);
+            Map<String, ShoppingListItem> crossedOffItems = source.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .filter(c -> c.getCrossedOff() != null)
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            Assertions.assertNotNull(crossedOffItems);
+
+            // check result
+            // the merged list had crossed off items. The db list didn't have any crossed off items
+            // the merged list had an offline change date older than the last sync, so no merge should have been done
+            // we cann check this by ensuring that no items are crossed off
+            Assertions.assertEquals(0, crossedOffItems.keySet().size(), "should have 0 items");
+        }
+
+        @Test
+        void testMergeList_Stale() throws Exception {
+            String testMergeList = StreamUtils.copyToString(resourceFileStale.getInputStream(), StandardCharsets.UTF_8);
+
+            Long listId = 11000001L;
+
+            // get before counts
+            ShoppingList beforeSource = retrieveList(meJwtToken, listId);
+            Map<String, ShoppingListItem> beforeSourceResultMap = beforeSource.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            Map<String, ShoppingListItem> beforeActiveMap = beforeSource.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .filter(i -> i.getCrossedOff() == null)
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            int beforeCount = beforeSourceResultMap.keySet().size();
+            int beforeActiveCount = beforeActiveMap.keySet().size();
+
+
+
+            String url = "/v2/shoppinglist/shared";
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(testMergeList)
+                    .when()
+                    .put(url)
+                    .then()
+                    .statusCode(200);
+
+            // now, retrieve the list
+            ShoppingList source = retrieveList(meJwtToken, listId);
+            Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            Assertions.assertNotNull(sourceResultMap);
+            Map<String, ShoppingListItem> activeMap = source.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .filter(i -> i.getCrossedOff() == null)
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+
+            // check result
+            // should have 12 items
+            Assertions.assertEquals(beforeCount, sourceResultMap.keySet().size(), "should have 13 items");
+            Assertions.assertEquals(beforeActiveCount, activeMap.keySet().size(), "should have 13 items");
+            for (String tagId : sourceResultMap.keySet()) {
+                ShoppingListItem beforeItem = beforeSourceResultMap.get(tagId);
+                ShoppingListItem afterItem = sourceResultMap.get(tagId);
+                Assertions.assertNotNull(beforeItem, "tag " + tagId + " should exist");
+                Assertions.assertEquals(beforeItem.getLastChanged(),
+                        afterItem.getLastChanged(),"tag " + tagId + " should be active");
+            }
+
+        }
+
+        @Test
+        void testMergeList_Empty() throws Exception {
+            // load statistics into file
+            String testMergeList = StreamUtils.copyToString(resourceFileEmpty.getInputStream(), StandardCharsets.UTF_8);
+
+            Long listId = 130000L;
+
+            String url = "/v2/shoppinglist/shared";
+            given()
+                    .header(TestUtils.authToken(meJwtToken))
+                    .contentType(ContentType.JSON)
+                    .body(testMergeList)
+                    .when()
+                    .put(url)
+                    .then()
+                    .statusCode(200);
+
+            // now, retrieve the list
+            ShoppingList source = retrieveList(meJwtToken, listId);
+            Map<String, ShoppingListItem> sourceResultMap = source.getCategories().stream()
+                    .flatMap(c -> c.getItems().stream())
+                    .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
+            Assertions.assertNotNull(sourceResultMap);
+
+            // check result
+            // should have 9 items
+            Assertions.assertTrue(sourceResultMap.isEmpty(), "should be empty - empty list - empty merge request");
+        }
+
+    }
 }

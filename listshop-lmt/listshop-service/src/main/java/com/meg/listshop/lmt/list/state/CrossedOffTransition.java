@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list.state;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +36,7 @@ public class CrossedOffTransition  extends AbstractTransition {
 
         // set update date
         item.setUpdatedOn(new Date());
+        item.setLastChanged(new Date());
         listItemRepository.save(item);
         return item;
     }

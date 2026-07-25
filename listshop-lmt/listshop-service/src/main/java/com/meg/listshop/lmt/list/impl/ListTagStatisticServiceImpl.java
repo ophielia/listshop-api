@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list.impl;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
@@ -85,6 +91,11 @@ public class ListTagStatisticServiceImpl implements ListTagStatisticService {
 
     @Override
     public void processStatistics(Long userId, List<ListItemEntity> items,List<Long> removedTagIds, ListOperationType operationType) {
+        if (removedTagIds == null) {
+            removedTagIds = new ArrayList<>();
+        }
+
+
         List<Long> tagIds = items.stream()
                 .map(ListItemEntity::getTag)
                 .map(TagEntity::getId)

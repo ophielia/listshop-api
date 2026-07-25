@@ -75,7 +75,8 @@ public class ActiveTransition extends AbstractTransition {
         DishItemEntity dishItem = itemStateContext.getDishItem();
         Long listSearchId = CommonUtils.elvis(itemStateContext.getListId(), item.getListId());
         // find existing
-        ListItemDetailEntity existing = item.getDetails().stream().filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedListId(), listSearchId)).filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedDishId(), dishItem.getDish().getId())).findFirst().orElse(null);
+        ListItemDetailEntity existing = item.getDetails().stream().filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedListId(), listSearchId))
+                .filter(detail -> DetailFilter.bothNullOrMatch(detail.getLinkedDishId(), dishItem.getDish().getId())).findFirst().orElse(null);
         // convert dish item to list context or unit, if available
         ConvertibleAmount converted = null;
         try {
@@ -97,6 +98,7 @@ public class ActiveTransition extends AbstractTransition {
         conversionService.sumItemDetails(item, itemStateContext);
         // save changes to item
         item.setUpdatedOn(new Date());
+        item.setLastChanged(new Date());
         listItemRepository.save(item);
     }
 
@@ -114,6 +116,7 @@ public class ActiveTransition extends AbstractTransition {
         conversionService.sumItemDetails(item, itemStateContext);
         // save changes to item
         item.setUpdatedOn(new Date());
+        item.setLastChanged(new Date());
         listItemRepository.save(item);
     }
 
@@ -175,6 +178,7 @@ Result is scaled, summed and saved.
         conversionService.sumItemDetails(item, itemStateContext);
         // save changes to item
         item.setUpdatedOn(new Date());
+        item.setLastChanged(new Date());
         listItemRepository.save(item);
 
     }
@@ -203,7 +207,7 @@ Result is scaled, summed and saved.
         newDetail.setCount(1);
         // add to list item
         newDetail.setItem(item);
-        item.addDetailToItem(listItemDetailRepository.save(newDetail));
+        item.addDetailToItem(newDetail);
     }
 
     private void addSpecifiedAmountForListItem(ConvertibleAmount converted, ListItemEntity item, ListItemDetailEntity existing, ListItemDetailEntity addFrom, @NotNull ItemStateContext context) {
@@ -249,7 +253,7 @@ Result is scaled, summed and saved.
         newDetail.setContainsUnspecified(containsUnspecified);
         // add to list item
         newDetail.setItem(item);
-        item.addDetailToItem(listItemDetailRepository.save(newDetail));
+        item.addDetailToItem(newDetail);
 
 
     }

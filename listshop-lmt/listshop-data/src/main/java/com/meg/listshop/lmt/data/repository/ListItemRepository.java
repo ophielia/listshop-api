@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.data.repository;
 
 import com.meg.listshop.lmt.data.entity.ListItemEntity;
@@ -16,6 +22,10 @@ import java.util.Optional;
 public interface ListItemRepository extends JpaRepository<ListItemEntity, Long>, CustomStatisticRepository {
 
 
-    @EntityGraph(attributePaths = {"details"})
+    @EntityGraph(value = "filledItem")
     Optional<ListItemEntity> findWithDetailsById(Long id);
+
+    @EntityGraph(value = "filledItem")
+    @Query("SELECT li FROM ListItemEntity li WHERE li.listId = :listId")
+    List<ListItemEntity> findWithDetailsByListId(@Param("listId") Long id);
 }

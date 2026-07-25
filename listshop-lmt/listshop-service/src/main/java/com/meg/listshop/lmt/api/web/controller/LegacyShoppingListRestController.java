@@ -8,7 +8,7 @@ package com.meg.listshop.lmt.api.web.controller;
 
 import com.google.common.base.Enums;
 import com.meg.listshop.auth.service.CustomUserDetails;
-import com.meg.listshop.lmt.api.controller.ShoppingListRestControllerApi;
+import com.meg.listshop.lmt.api.controller.LegacyShoppingListRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.model.*;
@@ -37,14 +37,14 @@ import java.util.stream.Collectors;
  * Created by margaretmartin on 20/10/2017.
  */
 @Controller
-public class ShoppingListRestController implements ShoppingListRestControllerApi {
+public class LegacyShoppingListRestController implements LegacyShoppingListRestControllerApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(ShoppingListRestController.class);
+    private static final Logger logger = LoggerFactory.getLogger(LegacyShoppingListRestController.class);
 
     private final LegacyShoppingListService legacyShoppingListService;
 
     @Autowired
-    public ShoppingListRestController(LegacyShoppingListService legacyShoppingListService) {
+    public LegacyShoppingListRestController(LegacyShoppingListService legacyShoppingListService) {
         this.legacyShoppingListService = legacyShoppingListService;
     }
 
@@ -205,7 +205,7 @@ public class ShoppingListRestController implements ShoppingListRestControllerApi
     public ResponseEntity<ShoppingList> deleteList(Authentication authentication, @PathVariable("listId") Long listId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Deleting list [{}] for user [{}]", listId, userDetails.getId());
-        legacyShoppingListService.deleteList(userDetails.getId(), listId);
+        legacyShoppingListService.legacyDeleteList(userDetails.getId(), listId);
         return ResponseEntity.noContent().build();
 
     }

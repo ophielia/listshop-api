@@ -36,7 +36,7 @@ public interface LegacyShoppingListService {
 
     ShoppingListEntity getSimpleListForUserById(Long userId, Long listId);
 
-    void deleteList(Long userId, Long listId);
+    void legacyDeleteList(Long userId, Long listId);
 
     ShoppingListEntity updateList(Long userId, Long listId, ShoppingListDTO updateFrom);
 

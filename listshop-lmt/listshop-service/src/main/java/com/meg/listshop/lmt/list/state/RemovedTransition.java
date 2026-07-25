@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
@@ -81,15 +87,14 @@ public class RemovedTransition extends AbstractTransition {
         // save changes to item and return
         // save changes to item
         item.setUpdatedOn(new Date());
+        item.setLastChanged(new Date());
         return listItemRepository.save(item);
     }
 
     private void removeDetails(ListItemEntity item, List<ListItemDetailEntity> listToRemove) {
         for (ListItemDetailEntity detail : listToRemove) {
             item.getDetails().remove(detail);
-            detail.setItem(null);
         }
-        listItemDetailRepository.deleteAll(listToRemove);
     }
 
     private ListItemEntity processRemoveDishItem(ListItemEntity item, ItemStateContext context) throws ItemProcessingException {
@@ -117,12 +122,11 @@ public class RemovedTransition extends AbstractTransition {
         // save changes to item and return
         // save changes to item
         item.setUpdatedOn(new Date());
+        item.setLastChanged(new Date());
         return listItemRepository.save(item);
     }
 
     private ListItemEntity removeItemPhysically(ListItemEntity itemToRemove) {
-        listItemDetailRepository.deleteAll(itemToRemove.getDetails());
-        listItemRepository.delete(itemToRemove);
         return null;
     }
 

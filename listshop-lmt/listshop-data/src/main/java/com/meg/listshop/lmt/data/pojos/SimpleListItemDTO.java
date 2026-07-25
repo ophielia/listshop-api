@@ -27,6 +27,15 @@ public class SimpleListItemDTO {
     private String unitSize;
     private String rawEntry;
 
+
+
+    public static SimpleListItemDTO from(Long tagId, Long listId) {
+        SimpleListItemDTO newDto = new SimpleListItemDTO();
+        newDto.listId = listId;
+        newDto.tagId = tagId;
+        return newDto;
+    }
+
     public Long getListId() {
         return listId;
     }

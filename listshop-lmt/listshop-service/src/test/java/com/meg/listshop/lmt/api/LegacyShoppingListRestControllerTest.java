@@ -58,7 +58,7 @@ import static io.restassured.RestAssured.given;
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sql/com/meg/atable/lmt/api/ShoppingListRestControllerTest_rollback.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-class ShoppingListRestControllerTest {
+class LegacyShoppingListRestControllerTest {
 
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
@@ -768,16 +768,17 @@ class ShoppingListRestControllerTest {
         // check result
         // should have 9 items
         Assertions.assertEquals(15, sourceResultMap.keySet().size(), "should have 15 items");
-        // should not contain tag 32 (which was removed)
-        Assertions.assertFalse(sourceResultMap.containsKey("32"), "shouldn't contain tag 32");
+        // should not contain tag 256 (which was removed)
+        Assertions.assertFalse(sourceResultMap.containsKey("256"), "shouldn't contain tag 256");
+        Assertions.assertFalse(sourceResultMap.containsKey("41"), "shouldn't contain tag 41");
         // not crossed off - 33, 16
         Map<String, ShoppingListItem> activeMap = source.getCategories().stream()
                 .flatMap(c -> c.getItems().stream())
                 .filter(i -> i.getCrossedOff() == null)
                 .collect(Collectors.toMap(item -> item.getTag().getId(), Function.identity()));
         Assertions.assertEquals(10, activeMap.keySet().size(), "10 active items");
-        Assertions.assertTrue(activeMap.containsKey("33"), "33 should be actice");
-        Assertions.assertTrue(activeMap.containsKey("16"), "16 should be actice");
+        Assertions.assertTrue(activeMap.containsKey("33"), "33 should be active");
+        Assertions.assertTrue(activeMap.containsKey("16"), "16 should be active");
 
         //  crossed off - 19, 34
         Map<String, ShoppingListItem> crossedOffMap = source.getCategories().stream()

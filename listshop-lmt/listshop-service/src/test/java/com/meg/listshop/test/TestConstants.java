@@ -80,6 +80,7 @@ public final class TestConstants {
     public static final Long TAG_YUMMY = 321L;
     public static final Long TAG_CARROTS = 81L;
     public static final Long TAG_PASTA = 24L;
+    public static final Long TAG_FLOUR = 24L;
     public static final Long TAG_CROCKPOT = 323L;
     public static final Long TAG_MEAT = 346L;
     public static final Long TAG_SOUP = 301L;

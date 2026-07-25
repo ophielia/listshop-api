@@ -1,212 +1,120 @@
 {
   "list_id": 110000,
   "last_changed": "2022-04-16T05:26:57.353+00:00",
-  "layout_id": 5,
+  "last_offline_change": null,
+  "last_synced": null,
+  "check_tag_conflict": false,
+  "layout_id": "5",
   "merge_items": [
     {
-      "handles": [],
-      "item_id": 110012,
+      "item_id": "110012",
       "tag_id": "443",
-      "name": "chicken thighs",
       "added": "2022-04-16T05:26:30.166+00:00",
       "removed": null,
       "updated": null,
-      "free_text": null,
       "crossed_off": "2022-04-16T05:26:49.549+00:00",
       "last_changed": "2022-04-16T05:26:57.353+00:00",
       "list_id": "110000",
-      "used_count": 1,
-      "source_keys": [
-        "d109"
-      ]
+      "used_count": 1
     },
     {
-      "handles": [],
-      "item_id": 110009,
+      "item_id": "110009",
       "tag_id": "21",
-      "name": "broccoli",
       "added": "2022-04-16T05:26:30.166+00:00",
       "removed": null,
       "updated": null,
-      "free_text": null,
       "crossed_off": "2022-04-16T05:26:49.549+00:00",
       "last_changed": "2022-04-16T05:26:57.353+00:00",
       "list_id": "110000",
-      "used_count": 1,
-      "source_keys": [
-        "d109"
-      ]
+      "used_count": 1
     },
     {
-      "handles": [],
-      "item_id": 110006,
+      "item_id": "110006",
       "tag_id": "81",
-      "name": "carrots",
       "added": "2022-04-16T05:26:30.166+00:00",
       "removed": null,
       "updated": "2022-04-16T05:26:30.420+00:00",
-      "free_text": null,
       "crossed_off": "2022-04-16T05:26:49.549+00:00",
       "last_changed": "2022-04-16T05:26:57.353+00:00",
       "list_id": "110000",
-      "used_count": 2,
-      "source_keys": [
-        "d112",
-        "d109"
-      ]
+      "used_count": 2
     },
     {
-      "handles": [],
-      "item_id": 110004,
+      "item_id": "110004",
       "tag_id": "15",
-      "name": "celery",
       "added": "2022-04-16T05:26:30.166+00:00",
       "removed": null,
       "updated": null,
-      "free_text": null,
       "crossed_off": "2022-04-16T05:26:49.549+00:00",
       "last_changed": "2022-04-16T05:26:57.353+00:00",
       "list_id": "110000",
-      "used_count": 1,
-      "source_keys": [
-        "d109"
-      ]
+      "used_count": 1
     },
     {
-      "handles": [],
-      "item_id": 110016,
+      "item_id": "110016",
       "tag_id": "34",
-      "name": "cucumber",
       "added": "2022-04-16T05:26:30.418+00:00",
       "removed": null,
       "updated": null,
-      "free_text": null,
       "crossed_off": "2022-04-16T05:26:49.549+00:00",
       "last_changed": "2022-04-16T05:26:57.353+00:00",
       "list_id": "110000",
-      "used_count": 1,
-      "source_keys": [
-        "d112"
-      ]
+      "used_count": 1
     },
     {
-      "handles": [],
-      "item_id": 110008,
+      "item_id": "110008",
       "tag_id": "212",
-      "name": "fresh ginger",
       "added": "2022-04-16T05:26:30.166+00:00",
       "removed": null,
       "updated": null,
-      "free_text": null,
       "crossed_off": "2022-04-16T05:26:49.549+00:00",
       "last_changed": "2022-04-16T05:26:57.353+00:00",
       "list_id": "110000",
-      "used_count": 1,
-      "source_keys": [
-        "d109"
-      ]
+      "used_count": 1
     },
     {
-      "handles": [],
-      "item_id": 110007,
+      "item_id": "110007",
       "tag_id": "19",
-      "name": "garlic",
       "added": "2022-04-16T05:26:30.166+00:00",
       "removed": null,
       "updated": null,
-      "free_text": null,
       "crossed_off": "2022-04-16T05:26:49.549+00:00",
       "last_changed": "2022-04-16T05:26:57.353+00:00",
       "list_id": "110000",
-      "used_count": 1,
-      "source_keys": [
-        "d109"
-      ]
+      "used_count": 1
     },
     {
-      "handles": [],
-      "item_id": 110014,
+      "item_id": "110014",
       "tag_id": "32",
-      "name": "lettuce",
       "added": "2022-04-16T05:26:30.418+00:00",
       "removed": null,
       "updated": null,
-      "free_text": null,
       "crossed_off": null,
       "last_changed": "2022-04-16T05:26:57.353+00:00",
       "list_id": "110000",
-      "used_count": 1,
-      "source_keys": [
-        "d112"
-      ]
+      "used_count": 1
     },
     {
-      "handles": [],
-      "item_id": 110005,
+      "item_id": "110005",
       "tag_id": "16",
-      "name": "onion",
       "added": "2022-04-16T05:26:30.166+00:00",
       "removed": null,
       "updated": null,
-      "free_text": null,
       "crossed_off": null,
       "last_changed": "2022-04-16T05:26:57.353+00:00",
       "list_id": "110000",
-      "used_count": 1,
-      "source_keys": [
-        "d109"
-      ]
+      "used_count": 1
     },
     {
-      "handles": [],
-      "item_id": 110015,
+      "item_id": "110015",
       "tag_id": "33",
-      "name": "tomatoes",
       "added": "2022-04-16T05:26:30.418+00:00",
       "removed": null,
       "updated": null,
-      "free_text": null,
       "crossed_off": null,
       "last_changed": "2022-04-16T05:26:57.353+00:00",
       "list_id": "110000",
-      "used_count": 1,
-      "source_keys": [
-        "d112"
-      ]
-    },
-    {
-      "handles": [],
-      "item_id": 110015,
-      "tag_id": "256",
-      "name": "soy sauce",
-      "added": "2022-04-16T05:26:30.418+00:00",
-      "removed": "2022-05-16T05:26:30.418+00:00",
-      "updated": null,
-      "free_text": null,
-      "crossed_off": null,
-      "last_changed": "2022-05-16T05:26:57.353+00:00",
-      "list_id": "110000",
-      "used_count": 1,
-      "source_keys": [
-        "d112"
-      ]
-    },
-    {
-      "handles": [],
-      "item_id": 110015,
-      "tag_id": "41",
-      "name": "peanuts",
-      "added": "2022-04-16T05:26:30.418+00:00",
-      "removed": "2022-05-16T05:26:30.418+00:00",
-      "updated": null,
-      "free_text": null,
-      "crossed_off": null,
-      "last_changed": "2022-05-16T05:26:57.353+00:00",
-      "list_id": "110000",
-      "used_count": 1,
-      "source_keys": [
-        "d112"
-      ]
+      "used_count": 1
     }
   ]
 }

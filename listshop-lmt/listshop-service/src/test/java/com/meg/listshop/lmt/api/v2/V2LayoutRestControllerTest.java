@@ -11,7 +11,6 @@ import com.meg.listshop.configuration.ListShopPostgresqlContainer;
 import com.meg.listshop.lmt.api.model.MappingPost;
 import com.meg.listshop.lmt.api.model.v2.ListLayout;
 import com.meg.listshop.lmt.api.model.v2.ListLayoutCategory;
-import com.meg.listshop.lmt.api.model.v2.ListLayoutList;
 import com.meg.listshop.lmt.api.model.v2.NestedTag;
 import com.meg.listshop.test.TestUtils;
 import io.restassured.RestAssured;
@@ -289,14 +288,14 @@ class V2LayoutRestControllerTest {
                 .get(url)
                 .then()
                 .statusCode(200)
-        //        .body("list_layouts[0].name", Matchers.equalTo("RoughGrained"))
-        //        .body("list_layouts[0].categories", Matchers.hasSize(7))
-        //        .body("list_layouts[0].layout_id", Matchers.equalTo("5"))
-        //        .body("list_layouts[0].is_default", Matchers.equalTo(true))
-        //        .body("list_layouts[0].user_id", Matchers.equalTo("null"))
-        //        .body("list_layouts[0].categories.name", Matchers.hasItem("Dry"))
-        //        .body("list_layouts[0].categories.is_default", Matchers.hasItem(false))
-        //        .body("list_layouts[0].categories.category_id", Matchers.hasItem("8"))
+                //        .body("list_layouts[0].name", Matchers.equalTo("RoughGrained"))
+                //        .body("list_layouts[0].categories", Matchers.hasSize(7))
+                //        .body("list_layouts[0].layout_id", Matchers.equalTo("5"))
+                //        .body("list_layouts[0].is_default", Matchers.equalTo(true))
+                //        .body("list_layouts[0].user_id", Matchers.equalTo("null"))
+                //        .body("list_layouts[0].categories.name", Matchers.hasItem("Dry"))
+                //        .body("list_layouts[0].categories.is_default", Matchers.hasItem(false))
+                //        .body("list_layouts[0].categories.category_id", Matchers.hasItem("8"))
                 .extract().as(ListLayout.class);
         Assertions.assertNotNull(result, "response should not be null");
     }
@@ -332,11 +331,10 @@ class V2LayoutRestControllerTest {
     }
 
 
-
     @Test
     void testGetCategoryForTagUserCategoryExists() {
         String tagId = "1000128"; // carrots
-        String url = "/v2/layout/tag/" + tagId ;
+        String url = "/v2/layout/tag/" + tagId;
         ListLayoutCategory result = given()
                 .contentType(ContentType.JSON)
                 .header(TestUtils.authToken(dadStarterJwtToken))
@@ -354,7 +352,7 @@ class V2LayoutRestControllerTest {
     @Test
     void testGetCategoryForTagUserNoUser() {
         String tagId = "81"; // carrots
-        String url = "/v2/layout/tag/" + tagId ;
+        String url = "/v2/layout/tag/" + tagId;
         ListLayoutCategory result = given()
                 .contentType(ContentType.JSON)
                 .header(TestUtils.authToken(baseUserToken))

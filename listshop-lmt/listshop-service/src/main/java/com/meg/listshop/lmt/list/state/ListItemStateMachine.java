@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.list.state;
 
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
@@ -23,11 +29,12 @@ public class ListItemStateMachine {
     public ListItemStateMachine(ActiveTransition activeTransition,
                                 CrossedOffTransition crossedOffTransition,
                                 RemovedTransition removedTransition,
+                                RemoveLinkTransition removeLinkTransition,
                                 UserPropertyService userPropertyService) {
         stateTransitionMap = new EnumMap<>(ListItemEvent.class);
         stateTransitionMap.put(ListItemEvent.ADD_ITEM, activeTransition);
         stateTransitionMap.put(ListItemEvent.CROSS_OFF_ITEM, crossedOffTransition);
-        stateTransitionMap.put(ListItemEvent.REACTIVATE_ITEM, activeTransition);
+        stateTransitionMap.put(ListItemEvent.REMOVE_LINK, removeLinkTransition);
         stateTransitionMap.put(ListItemEvent.REMOVE_ITEM, removedTransition);
         this.userPropertyService = userPropertyService;
     }

@@ -32,6 +32,9 @@ public class ShoppingListItem {
     @JsonProperty("updated")
     private Date updated;
 
+    @JsonProperty("last_changed")
+    private Date lastChanged;
+
     @JsonProperty("crossed_off")
     private Date crossedOff;
 
@@ -84,6 +87,12 @@ public class ShoppingListItem {
 
     public ShoppingListItem withUpdated(Date updated) {
         this.updated = updated;
+        return this;
+    }
+
+
+    public ShoppingListItem withLastChanged(Date last_changed) {
+        this.lastChanged = last_changed;
         return this;
     }
 
@@ -150,6 +159,10 @@ public class ShoppingListItem {
 
     public Integer getUsedCount() {
         return usedCount;
+    }
+
+    public Date getLastChanged() {
+        return lastChanged;
     }
 
     public Set<String> getSources() {

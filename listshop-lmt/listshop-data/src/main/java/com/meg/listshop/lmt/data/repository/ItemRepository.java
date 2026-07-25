@@ -77,6 +77,11 @@ public interface ItemRepository extends JpaRepository<ListItemEntity, Long> {
     @EntityGraph(value = "filledItem")
     ListItemEntity getFilledItemByListAndTag(@Param("listId") Long listId, @Param("tagId") Long tagId);
 
+    @Query(value = "select i from ListItemEntity i where i.itemId in (:itemIds)")
+    @EntityGraph(value = "filledItem")
+    List<ListItemEntity> getFilledItemsByItemIds(@Param("itemIds") List<Long> itemIds);
+
+
     @Query(value = """
             select distinct tag_id from list_item i join list_item_details id using (item_id)
             where i.list_id = :listId and linked_dish_id = :dishId
@@ -131,4 +136,11 @@ public interface ItemRepository extends JpaRepository<ListItemEntity, Long> {
                      where i.list_id = ?1
             """, nativeQuery = true)
     List<UnitEntity> findUnitsForItemDetails(Long listId);
+
+    @Query(value = """
+            select distinct li.item_id
+            from list_item_details li
+                     where li.linked_list_id = ?1
+            """, nativeQuery = true)
+    List<Long> findItemIdsForLinkedList(Long listId);
 }

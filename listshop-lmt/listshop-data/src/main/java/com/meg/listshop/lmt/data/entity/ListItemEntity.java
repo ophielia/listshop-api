@@ -35,7 +35,10 @@ public class ListItemEntity {
     @Column(name = "item_id")
     private Long itemId;
 
-    @OneToMany(mappedBy = "item")
+    @OneToMany(mappedBy = "item",
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            cascade = CascadeType.ALL)
     private List<ListItemDetailEntity> details = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.MERGE)
@@ -65,6 +68,9 @@ public class ListItemEntity {
     private Date removedOn;
 
     private Date updatedOn;
+
+    @Column(name = "last_changed")
+    private Date lastChanged;
 
     @Column(name = "quantity")
     private Double roundedQuantity;
@@ -186,6 +192,13 @@ public class ListItemEntity {
         this.tagId = tagId;
     }
 
+    public Date getLastChanged() {
+        return lastChanged;
+    }
+
+    public void setLastChanged(Date lastChanged) {
+        this.lastChanged = lastChanged;
+    }
 
     public String getRawListSources() {
         return rawListSources != null ? rawListSources : "";
@@ -320,6 +333,7 @@ public class ListItemEntity {
         cloned.setCrossedOff(this.getCrossedOff());
         cloned.setRemovedOn(this.getRemovedOn());
         cloned.setUpdatedOn(this.getUpdatedOn());
+        cloned.setLastChanged(this.getLastChanged());
         cloned.setUsedCount(this.getUsedCount());
         cloned.setListId(this.getListId());
         cloned.setRawDishSources(this.getRawDishSources());

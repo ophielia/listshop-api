@@ -15,7 +15,6 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.ItemChangeRepository;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.ItemMappingDTO;
-import com.meg.listshop.lmt.data.pojos.ListItemDTO;
 import com.meg.listshop.lmt.data.pojos.LongTagIdPairDTO;
 import com.meg.listshop.lmt.data.pojos.ShoppingListDTO;
 import com.meg.listshop.lmt.data.repository.ItemRepository;
@@ -28,7 +27,6 @@ import com.meg.listshop.lmt.service.*;
 import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -322,27 +320,7 @@ public abstract class BaseShoppingListService  {
     public List<ShoppingListDTO> getListsByUserId(Long userId) {
         return shoppingListRepository.findByUserId(userId);
     }
-    @Transactional
-    public void deleteList(Long userId, Long listId) {
-        List<ShoppingListDTO> allLists = getListsByUserId(userId);
-        if (allLists == null || allLists.isEmpty()) {
-            throw new ActionInvalidException(String.format("No lists found for user [%s]", userId));
-        }
-        if (allLists.size() < 2) {
-            throw new ActionInvalidException(String.format("Can't delete the last list for user [%s]", userId));
-        }
-        Optional<ShoppingListDTO> toDeleteOpt = allLists.stream()
-                .filter(l -> l.getListId().equals(listId)).findFirst();
-        if (toDeleteOpt.isEmpty()) {
-            throw new ObjectNotFoundException(String.format("Can't find list [%s] for userName [%s] to delete.", listId, userId));
-        }
 
-        ShoppingListDTO toDelete = toDeleteOpt.get();
-
-        shoppingListRepository.delete(toDelete.getListId());
-    }
-
-    
     public void addItemToListByTag(Long userId, Long listId, Long tagId) throws ItemProcessingException {
         ShoppingListEntity shoppingListEntity = getListForUserById(userId, listId);
         if (shoppingListEntity == null) {
@@ -389,6 +367,7 @@ public abstract class BaseShoppingListService  {
         // set fields in item
         item.setUsedCount(usedCount);
         item.setUpdatedOn(new Date());
+        item.setLastChanged(new Date());
         item.setRemovedOn(null);
         item.setCrossedOff(null);
 
@@ -803,6 +782,7 @@ public abstract class BaseShoppingListService  {
             toAddTo.setRemovedOn(DateUtils.maxDate(toAddTo.getRemovedOn(), item.getRemovedOn()));
             toAddTo.setCrossedOff(DateUtils.maxDate(toAddTo.getCrossedOff(), item.getCrossedOff()));
             toAddTo.setUpdatedOn(DateUtils.maxDate(toAddTo.getUpdatedOn(), item.getUpdatedOn()));
+            toAddTo.setLastChanged(new Date());
             toAddTo.setAddedOn(DateUtils.maxDate(toAddTo.getAddedOn(), item.getAddedOn()));
             itemMap.put(tagId, toAddTo);
             return;
