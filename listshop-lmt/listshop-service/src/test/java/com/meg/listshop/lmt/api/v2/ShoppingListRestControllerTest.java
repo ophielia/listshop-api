@@ -35,7 +35,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.Resource;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -61,7 +60,7 @@ import static io.restassured.RestAssured.given;
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sql/com/meg/atable/lmt/api/ShoppingListRestControllerTest_rollback.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-class V2ShoppingListRestControllerTest {
+class ShoppingListRestControllerTest {
 
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
@@ -1750,14 +1749,6 @@ class V2ShoppingListRestControllerTest {
             Assertions.assertTrue(deletedDetails.isEmpty());
 
 
-
-            given()
-                    .header(TestUtils.authToken(meJwtToken))
-                    .when()
-                    .delete("/v2/shoppinglist/" + testListId)
-                    .then()
-                    .statusCode(204);
-
         }
 
         @Test
@@ -1838,7 +1829,7 @@ class V2ShoppingListRestControllerTest {
                     .filter(i -> i.getCrossedOff() == null)
                     .collect(Collectors.toMap(item -> item.getTag().getTagId(), Function.identity()));
             System.out.println(activeMap.keySet());
-            Assertions.assertEquals(11, activeMap.keySet().size(), "11 active items");
+            Assertions.assertEquals(10, activeMap.keySet().size(), "10 active items");
             Assertions.assertTrue(activeMap.containsKey("33"), "33 should be active");
             Assertions.assertTrue(activeMap.containsKey("16"), "16 should be active");
 
@@ -1852,7 +1843,12 @@ class V2ShoppingListRestControllerTest {
             // added - 32, 15
             List.of("15","32").forEach(id -> {
                 Assertions.assertNotNull(sourceResultMap.get(id), id + " should be present");
-                Assertions.assertNull(sourceResultMap.get(id).getCrossedOff(), id + " should be crossedOff");
+                if (id.equals("15")) {
+                    // 15 is added and crossed off in one blow
+                    Assertions.assertNotNull(sourceResultMap.get(id).getCrossedOff(), id + " should be crossedOff");
+                } else {
+                    Assertions.assertNull(sourceResultMap.get(id).getCrossedOff(), id + " should be crossedOff");
+                }
                 Assertions.assertTrue(sourceResultMap.get(id).getLastChanged().after(yesterday), id + " should be crossedOff");
             });
             //MM this test passing - each of the items only had one operation - added, crossed off, removed

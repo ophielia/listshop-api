@@ -8,6 +8,7 @@ package com.meg.listshop.lmt.list.v2.impl;
 
 import com.meg.listshop.common.DateUtils;
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.lmt.api.exception.ActionInvalidException;
 import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ItemProcessingException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
@@ -121,7 +122,7 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
             if (itemId == null) {
                 // no item from client - added on client side
                 addedListItems.add(mergeItem);
-                if (mergeItem.getCrossedOff()!=null) {
+                if (mergeItem.getCrossedOff() != null) {
                     addedAdditionalChanges.add(Long.valueOf(mergeItem.getTagId()));
                 }
                 continue;
@@ -623,15 +624,17 @@ public class ShoppingListServiceImpl extends BaseShoppingListService implements 
 
     @Override
     public void deleteList(Long userId, Long listId) throws ItemProcessingException, BadParameterException {
-        ShoppingListEntity shoppingList = getListForUserById(userId, listId);
-        if (shoppingList == null) {
-            return;
+        List<ShoppingListDTO> allLists = shoppingListRepository.findByUserId(userId);
+        if (allLists == null || allLists.isEmpty()) {
+            throw new ActionInvalidException(String.format("No lists found for user [%s]", userId));
         }
+        if (allLists.size() < 2) {
+            throw new ActionInvalidException(String.format("Can't delete the last list for user [%s]", userId));
+        }
+        ShoppingListEntity shoppingList = getListForUserById(userId, listId);
 
-        // Check that this is not the last list
-        List<ShoppingListDTO> foundLists = shoppingListRepository.findByUserId(userId);
-        if (foundLists.size() == 1) {
-            throw new BadParameterException("Cannot delete last list");
+        if (shoppingList == null) {
+            throw new ObjectNotFoundException(String.format("Can't find list [%s] for userName [%s] to delete.", listId, userId));
         }
 
         // remove links to other lists
