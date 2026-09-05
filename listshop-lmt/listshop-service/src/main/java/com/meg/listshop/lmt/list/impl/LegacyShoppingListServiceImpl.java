@@ -930,6 +930,7 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
 
     private ShoppingListEntity createList(Long userId, String listName) {
         ShoppingListEntity newList = new ShoppingListEntity();
+        Date now = new Date();
 
         ListLayoutEntity listLayout = listLayoutService.getDefaultUserLayout(userId);
         if (listLayout != null) {
@@ -937,7 +938,8 @@ public class LegacyShoppingListServiceImpl extends BaseShoppingListService imple
         }
         newList.setName(listName);
         newList.setIsStarterList(false);
-        newList.setCreatedOn(new Date());
+        newList.setCreatedOn(now);
+        newList.setLastUpdate(now);
         newList.setUserId(userId);
         return shoppingListRepository.save(newList);
     }

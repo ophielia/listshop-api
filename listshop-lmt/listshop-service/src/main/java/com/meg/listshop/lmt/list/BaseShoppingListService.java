@@ -839,13 +839,15 @@ public abstract class BaseShoppingListService  {
 
     private ShoppingListEntity createList(Long userId, String listName) {
         ShoppingListEntity newList = new ShoppingListEntity();
+        Date now = new Date();
 
         Long listLayoutId = getDefaultListLayoutId(userId);
         newList.setListLayoutId(listLayoutId);
 
         newList.setName(listName);
         newList.setIsStarterList(false);
-        newList.setCreatedOn(new Date());
+        newList.setCreatedOn(now);
+        newList.setLastUpdate(now);
         newList.setUserId(userId);
         return shoppingListRepository.save(newList);
     }
