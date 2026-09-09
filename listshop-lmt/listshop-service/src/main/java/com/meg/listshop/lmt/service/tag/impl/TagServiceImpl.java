@@ -90,7 +90,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public int deleteTagFromDish(Long userId, Long dishId, Long tagId, boolean excludeIngredients) {
-        return removeTagsFromDish(userId, dishId, Collections.singleton(tagId), excludeIngredients);
+        return doRemoveTagsFromDish(userId, dishId, Collections.singleton(tagId), true);
     }
 
     @Override
@@ -645,19 +645,24 @@ public class TagServiceImpl implements TagService {
 
 
     private Set<Long> determineValidTagsToRemove(Long dishId, Set<Long> tagIds, boolean excludeIngredients) {
+        List<TagType> typesToExclude = new ArrayList<>();
+        if (excludeIngredients) {
+            typesToExclude.add(TagType.Ingredient);
+        }
         boolean excludeDishType = false;
         List<ICountResult> remainingCounts = tagRepository.countRemainingDishTypeTags(dishId, tagIds);
-        if (remainingCounts == null || remainingCounts.isEmpty()) {
-            return tagIds;
-        }
+
         int remainingCount = remainingCounts.get(0).getCountResult();
-        excludeDishType = remainingCount < 1;
+        if (remainingCount < 1) {
+            typesToExclude.add(TagType.DishType);
+        }
+
 
         // deleting this set would result in a dish without any dish tag. We'll remove
         // all dish type tags, so that the algorithm won't "decide" which tag stays
         List<TagEntity> tagsToBeDeleted = tagRepository.findAllById(tagIds);
         return tagsToBeDeleted.stream()
-                .filter(t -> !t.getTagType().equals(TagType.DishType))
+                .filter(t -> !typesToExclude.contains(t.getTagType()))
                 .map(TagEntity::getId)
                 .collect(Collectors.toSet());
     }

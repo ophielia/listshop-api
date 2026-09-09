@@ -8,7 +8,6 @@ package com.meg.listshop.lmt.api.web.controller.v2;
 
 import com.github.dockerjava.api.exception.BadRequestException;
 import com.google.common.base.Enums;
-
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.common.ControllerUtils;
 import com.meg.listshop.common.FlatStringUtils;
@@ -19,15 +18,14 @@ import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.model.DishSortDirection;
 import com.meg.listshop.lmt.api.model.DishSortKey;
 import com.meg.listshop.lmt.api.model.FractionType;
-import com.meg.listshop.lmt.api.model.v2.V2ModelMapper;
 import com.meg.listshop.lmt.api.model.v2.*;
-import com.meg.listshop.lmt.api.model.v2.DishList;
 import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 import com.meg.listshop.lmt.dish.DishSearchCriteria;
 import com.meg.listshop.lmt.dish.DishSearchService;
 import com.meg.listshop.lmt.dish.DishService;
 import com.meg.listshop.lmt.service.tag.TagService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +40,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Controller(value="V2DishRestController")
+@Controller(value = "V2DishRestController")
 @CrossOrigin
 public class DishRestController implements V2DishRestControllerApi {
 
@@ -81,7 +78,7 @@ public class DishRestController implements V2DishRestControllerApi {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Entered retrieveDishes user: [{}], includedTags: [{}], excludedTags: [{}], sortKey: [{}], sortDirection: [{}]", userDetails.getId(), includedTags, excludedTags, sortKey, sortDirection);
         DishSearchCriteria criteria = criteriaForParameters(userDetails.getId(), includedTags, excludedTags, searchFragment, sortKey, sortDirection);
-        List<NestedDish> dishList =  dishSearchService.findDishes(criteria).stream()
+        List<NestedDish> dishList = dishSearchService.findDishes(criteria).stream()
                 .map(V2ModelMapper::toV2NestedDishModel)
                 .collect(Collectors.toList());
 
@@ -148,6 +145,17 @@ public class DishRestController implements V2DishRestControllerApi {
         } else {
             return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).build();
         }
+    }
+
+    @Override
+    public ResponseEntity<Object> setRatingForDish(Authentication authentication, @PathVariable("dishId") Long dishId,
+                                                   @PathVariable("ratingId") Long ratingId,
+                                                   @PathVariable("step") Integer step) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String message = String.format("set rating for dish [%S] for user [%S]", dishId, userDetails.getId());
+        logger.info(message);
+        tagService.setDishRating(userDetails.getId(), dishId, ratingId, step);
+        return ResponseEntity.noContent().build();
     }
 
     @Override
@@ -229,7 +237,7 @@ public class DishRestController implements V2DishRestControllerApi {
     }
 
     private void validateAndFillFromParts(DishItemDTO dishItemDTO, IngredientPut ingredient) {
-        String rawEntry = ingredient.getRawEntry() == null? "":ingredient.getRawEntry();
+        String rawEntry = ingredient.getRawEntry() == null ? "" : ingredient.getRawEntry();
         Integer wholeQuantity = 0;
         Double fractionQuantity = 0.0;
         if (ingredient.getAmount().getFractionalQuantity() != null && !ingredient.getAmount().getFractionalQuantity().isEmpty()) {
@@ -272,7 +280,7 @@ public class DishRestController implements V2DishRestControllerApi {
         String rawEntry = ingredient.getRawEntry();
         if (!Objects.equals(quantity, originalQuantity)) {
             // a change was made - replace in raw entry
-            rawEntry = rawEntry.replace(String.valueOf(originalQuantity), String.valueOf(quantity) );
+            rawEntry = rawEntry.replace(String.valueOf(originalQuantity), String.valueOf(quantity));
         }
 
         dishItemDTO.setWholeQuantity(wholeNumber);
@@ -288,9 +296,6 @@ public class DishRestController implements V2DishRestControllerApi {
     }
 
 
-
-
-
     private Long longValueOf(String longValueAsString) {
         Long longValue = null;
         try {
@@ -302,16 +307,16 @@ public class DishRestController implements V2DishRestControllerApi {
     }
 
     private DishSearchCriteria criteriaForParameters(Long userId, String includedTags, String excludedTags,
-                                      String searchFragment, String sortKey, String sortDirection) {
+                                                     String searchFragment, String sortKey, String sortDirection) {
 
 
         var criteria = new DishSearchCriteria(userId);
         if (includedTags != null) {
-            List<Long> tagIdList = FlatStringUtils.inflateStringToLongList(includedTags,",");
+            List<Long> tagIdList = FlatStringUtils.inflateStringToLongList(includedTags, ",");
             criteria.setIncludedTagIds(tagIdList);
         }
         if (excludedTags != null) {
-            List<Long> tagIdList = FlatStringUtils.inflateStringToLongList(excludedTags,",");
+            List<Long> tagIdList = FlatStringUtils.inflateStringToLongList(excludedTags, ",");
             criteria.setExcludedTagIds(tagIdList);
         }
         if (!ObjectUtils.isEmpty(sortKey)) {

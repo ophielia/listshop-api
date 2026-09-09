@@ -43,6 +43,12 @@ public interface V2DishRestControllerApi {
     @DeleteMapping(value = "/{dishId}/tag/{tagId}", produces = "application/json")
     ResponseEntity<Object> deleteTagFromDish(Authentication authentication, @PathVariable("dishId") Long dishId, @PathVariable("tagId") Long tagId);
 
+    @PutMapping(value = "/{dishId}/rating/{ratingId}/{step}", produces = "application/json")
+    ResponseEntity<Object> setRatingForDish(Authentication authentication, @PathVariable("dishId") Long dishId,
+                                            @PathVariable("ratingId") Long ratingId,
+                                            @PathVariable("step") Integer step);
+
+
     @PostMapping(value = "/{dishId}/ingredients", produces = "application/json")
     ResponseEntity<Object> addIngredientToDish(Authentication authentication, @PathVariable("dishId") Long dishId, @RequestBody IngredientPut ingredient);
 
