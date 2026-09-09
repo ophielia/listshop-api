@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.web.controller;
 
 import com.google.common.base.Enums;
@@ -206,7 +212,7 @@ public class DishRestController implements DishRestControllerApi {
         String message = String.format("deleting tag [%S] from dish [%S] for user [%S]", tagId, dishId, userDetails.getId());
         logger.info(message);
 
-        int updated = this.tagService.deleteTagFromDish(userDetails.getId(), dishId, tagId);
+        int updated = this.tagService.deleteTagFromDish(userDetails.getId(), dishId, tagId, false);
 
         if (updated == 1) {
             return ResponseEntity.noContent().build();

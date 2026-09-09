@@ -27,6 +27,7 @@ import com.meg.listshop.lmt.data.pojos.DishItemDTO;
 import com.meg.listshop.lmt.dish.DishSearchCriteria;
 import com.meg.listshop.lmt.dish.DishSearchService;
 import com.meg.listshop.lmt.dish.DishService;
+import com.meg.listshop.lmt.service.tag.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,15 +56,18 @@ public class DishRestController implements V2DishRestControllerApi {
 
     private final DishService dishService;
     private final DishSearchService dishSearchService;
+    private final TagService tagService;
 
     @Value("${conversionservice.single.unit.id:1011}")
     private Long defaultUnitId;
 
     @Autowired
     DishRestController(DishService dishService,
-                       DishSearchService dishSearchService) {
+                       DishSearchService dishSearchService,
+                       TagService tagService) {
         this.dishService = dishService;
         this.dishSearchService = dishSearchService;
+        this.tagService = tagService;
     }
 
     public ResponseEntity<DishList> retrieveDishes(HttpServletRequest request,
@@ -100,6 +106,20 @@ public class DishRestController implements V2DishRestControllerApi {
     }
 
     @Override
+    public ResponseEntity<Object> updateDish(Authentication authentication, @PathVariable("dishId") Long dishId, @RequestBody PutDish dishUpdateInfo) throws BadParameterException {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String message = String.format("updating dish [%S] for user [%S]", dishId, userDetails.getId());
+        logger.info(message);
+
+
+        this.dishService
+                .updateDishInfo(userDetails.getId(), dishUpdateInfo);
+
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
     public ResponseEntity<IngredientList> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, Long dishId) throws BadParameterException {
         //@GetMapping(value = "/{dishId}/ingredients", produces = "application/json")
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -113,6 +133,21 @@ public class DishRestController implements V2DishRestControllerApi {
                 .toList();
         var returnValue = new IngredientList(ingredients);
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteTagFromDish(Authentication authentication, @PathVariable("dishId") Long dishId, @PathVariable("tagId") Long tagId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String message = String.format("deleting tag [%S] from dish [%S] for user [%S]", tagId, dishId, userDetails.getId());
+        logger.info(message);
+
+        int updated = this.tagService.deleteTagFromDish(userDetails.getId(), dishId, tagId, true);
+
+        if (updated == 1) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).build();
+        }
     }
 
     @Override

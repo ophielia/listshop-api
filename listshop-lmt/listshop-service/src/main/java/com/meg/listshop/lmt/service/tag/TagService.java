@@ -55,7 +55,7 @@ public interface TagService {
 
     List<TagEntity> getIngredientTagsForDishes(List<Long> dishIdList);
 
-    int deleteTagFromDish(Long userId, Long dishId, Long tagId);
+    int deleteTagFromDish(Long userId, Long dishId, Long tagId, boolean excludeIngredients);
 
     Map<Long, TagEntity> getDictionaryForIds(Set<Long> tagIds);
 

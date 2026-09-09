@@ -33,8 +33,15 @@ public interface V2DishRestControllerApi {
     @GetMapping(value = "/{dishId}", produces = "application/json")
     ResponseEntity<Dish> retrieveDish(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);
 
+    @PutMapping(value = "/{dishId}", consumes = "application/json")
+    ResponseEntity<Object> updateDish(Authentication authentication, @PathVariable("dishId") Long dishId, @RequestBody PutDish dishUpdateInfo) throws BadParameterException;
+
+
     @GetMapping(value = "/{dishId}/ingredients", produces = "application/json")
     ResponseEntity<IngredientList> getIngredientsByDishId(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId) throws BadParameterException;
+
+    @DeleteMapping(value = "/{dishId}/tag/{tagId}", produces = "application/json")
+    ResponseEntity<Object> deleteTagFromDish(Authentication authentication, @PathVariable("dishId") Long dishId, @PathVariable("tagId") Long tagId);
 
     @PostMapping(value = "/{dishId}/ingredients", produces = "application/json")
     ResponseEntity<Object> addIngredientToDish(Authentication authentication, @PathVariable("dishId") Long dishId, @RequestBody IngredientPut ingredient);

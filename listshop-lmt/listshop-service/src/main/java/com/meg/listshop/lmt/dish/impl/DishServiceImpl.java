@@ -11,10 +11,12 @@ import com.meg.listshop.auth.data.repository.UserRepository;
 import com.meg.listshop.common.FlatStringUtils;
 import com.meg.listshop.common.StringTools;
 import com.meg.listshop.conversion.service.ConversionService;
+import com.meg.listshop.lmt.api.exception.BadParameterException;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.UserNotFoundException;
 import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.api.model.TagType;
+import com.meg.listshop.lmt.api.model.v2.PutDish;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.entity.TagEntity;
@@ -374,6 +376,25 @@ public class DishServiceImpl implements DishService {
         });
         ingredients.sort(Comparator.comparing(DishItemDTO::getTagDisplay));
         return ingredients;
+    }
+
+    @Override
+    public void updateDishInfo(Long userId, PutDish dishUpdateInfo) throws BadParameterException {
+        if (dishUpdateInfo == null || dishUpdateInfo.getDishId() == null) {
+            throw new BadParameterException("no dish information in request");
+        }
+        Long dishId = StringTools.stringToLong(dishUpdateInfo.getDishId());
+        Optional<DishEntity> dishOpt = dishRepository.findByDishIdForUser(userId, dishId);
+        if (!dishOpt.isPresent()) {
+            String message = String.format("no dish found for id [%s]", dishUpdateInfo.getDishId());
+            throw new ObjectNotFoundException(message);
+        }
+        DishEntity dish = dishOpt.get();
+        dish.setDescription(dishUpdateInfo.getDescription());
+        dish.setDishName(dishUpdateInfo.getDishName());
+        dish.setReference(dishUpdateInfo.getReference());
+        save(dish, true);
+
     }
 
     public void doAddOrUpdateIngredient(DishEntity dish, DishItemEntity dishItemEntity, DishItemDTO dishItemDTO, boolean updateStatistics) {

@@ -89,8 +89,8 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public int deleteTagFromDish(Long userId, Long dishId, Long tagId) {
-        return removeTagsFromDish(userId, dishId, Collections.singleton(tagId));
+    public int deleteTagFromDish(Long userId, Long dishId, Long tagId, boolean excludeIngredients) {
+        return removeTagsFromDish(userId, dishId, Collections.singleton(tagId), excludeIngredients);
     }
 
     @Override
@@ -541,12 +541,16 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public int removeTagsFromDish(Long userId, Long dishId, Set<Long> tagIds) {
+        return doRemoveTagsFromDish(userId, dishId, tagIds, false);
+    }
+
+    public int doRemoveTagsFromDish(Long userId, Long dishId, Set<Long> tagIds, boolean excludeIngredients) {
         // get dish
         DishEntity dish = dishService.getDishForUserById(userId, dishId);
         if (dish == null) {
             return 0;
         }
-        Set<Long> validatedRemovals = determineValidTagsToRemove(dishId, tagIds);
+        Set<Long> validatedRemovals = determineValidTagsToRemove(dishId, tagIds, excludeIngredients);
 
         // if nothing is validated - we return
         if (validatedRemovals.isEmpty()) {
@@ -640,16 +644,14 @@ public class TagServiceImpl implements TagService {
     }
 
 
-    private Set<Long> determineValidTagsToRemove(Long dishId, Set<Long> tagIds) {
+    private Set<Long> determineValidTagsToRemove(Long dishId, Set<Long> tagIds, boolean excludeIngredients) {
+        boolean excludeDishType = false;
         List<ICountResult> remainingCounts = tagRepository.countRemainingDishTypeTags(dishId, tagIds);
         if (remainingCounts == null || remainingCounts.isEmpty()) {
             return tagIds;
         }
         int remainingCount = remainingCounts.get(0).getCountResult();
-        if (remainingCount >= 1) {
-            // last dish type tag not removed in this set
-            return tagIds;
-        }
+        excludeDishType = remainingCount < 1;
 
         // deleting this set would result in a dish without any dish tag. We'll remove
         // all dish type tags, so that the algorithm won't "decide" which tag stays

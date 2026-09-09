@@ -1,5 +1,13 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.dish;
 
+import com.meg.listshop.lmt.api.exception.BadParameterException;
+import com.meg.listshop.lmt.api.model.v2.PutDish;
 import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.data.entity.DishItemEntity;
 import com.meg.listshop.lmt.data.pojos.DishDTO;
@@ -50,4 +58,6 @@ public interface DishService {
     void deleteIngredientFromDish(Long userId, Long dishId, Long ingredientId);
 
     List<DishItemDTO> getDishIngredients(Long userId, Long dishId);
+
+    void updateDishInfo(Long id, PutDish dishUpdateInfo) throws BadParameterException;
 }
