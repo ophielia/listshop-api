@@ -378,7 +378,7 @@ public class TagServiceImpl implements TagService {
             nextTag = tagRepository.getNextRatingDown(ratingId, currentTagId);
         }
         // assign new tag
-        addTagToDish(dish, nextTag);
+        addTagToDish(dish, nextTag, false);
 
     }
 
@@ -399,7 +399,7 @@ public class TagServiceImpl implements TagService {
             throw new ObjectNotFoundException("Shouldn't happen: Can't retrieve tag for tag_id [" + newTagId + "]");
         }
         // assign new tag
-        addTagToDish(dish, tag.get());
+        addTagToDish(dish, tag.get(), false);
     }
 
 
@@ -451,7 +451,7 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public void addTagToDish(Long userId, Long dishId, Long tagId) {
+    public void addTagToDish(Long userId, Long dishId, Long tagId, boolean excludeIngredients) {
         TagEntity tag = getTagById(tagId);
         if (dishId == null || tagId == null) {
             return;
@@ -460,7 +460,7 @@ public class TagServiceImpl implements TagService {
         // get dish
         DishEntity dish = dishService.getDishForUserById(userId, dishId);
 
-        addTagToDish(dish, tag);
+        addTagToDish(dish, tag, excludeIngredients);
     }
 
     @Override
@@ -918,7 +918,7 @@ public class TagServiceImpl implements TagService {
     }
 
 
-    private void addTagToDish(DishEntity dish, TagEntity tag) {
+    private void addTagToDish(DishEntity dish, TagEntity tag, boolean excludeIngredients) {
         if (dish == null || tag == null) {
             return;
         }
@@ -929,6 +929,7 @@ public class TagServiceImpl implements TagService {
         TagEntity existingTag = dishItems.stream()
                 .map(DishItemEntity::getTag)
                 .filter(t -> t.getId().equals(tag.getId()))
+                .filter(t -> !excludeIngredients || !t.getTagType().equals(TagType.Ingredient))
                 .findFirst()
                 .orElse(null);
 

@@ -169,6 +169,17 @@ public class DishRestController implements V2DishRestControllerApi {
         return ResponseEntity.noContent().build();
     }
 
+    @Override
+    public ResponseEntity<Object> addTagToDish(Authentication authentication, @PathVariable("dishId") Long dishId,
+                                        @PathVariable("tagId") Long tagId) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String message = String.format("adding tag [%S] dish [%S] for user [%S]", tagId, dishId, userDetails.getId());
+        logger.info(message);
+
+        this.tagService.addTagToDish(userDetails.getId(), dishId, tagId, true);
+
+        return ResponseEntity.noContent().build();
+    }
 
     @Override
     public ResponseEntity<Object> updateIngredientInDish(Authentication authentication, Long dishId, IngredientPut ingredient) {

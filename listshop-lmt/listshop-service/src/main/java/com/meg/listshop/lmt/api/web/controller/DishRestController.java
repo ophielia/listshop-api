@@ -200,7 +200,7 @@ public class DishRestController implements DishRestControllerApi {
         String message = String.format("adding tag [%S] dish [%S] for user [%S]", tagId, dishId, userDetails.getId());
         logger.info(message);
 
-        this.tagService.addTagToDish(userDetails.getId(), dishId, tagId);
+        this.tagService.addTagToDish(userDetails.getId(), dishId, tagId, false);
 
         return ResponseEntity.noContent().build();
 

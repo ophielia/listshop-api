@@ -382,7 +382,7 @@ class TagServiceImplMockTest {
         Mockito.when(tagRepository.findById(tagId)).thenReturn(Optional.of(newTag));
 
         // tested call
-        tagService.addTagToDish(userId, dishId, tagId);
+        tagService.addTagToDish(userId, dishId, tagId, false);
 
         Mockito.verify(dishService, times(1)).save(argumentCaptor.capture(), anyBoolean());
         Mockito.verify(tagStatisticService, times(1)).countTagAddedToDish(userId, tagId);

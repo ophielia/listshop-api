@@ -47,7 +47,7 @@ public interface TagService {
 
     List<DishItemEntity> getItemsForDish(Long userId, Long dishId, List<TagType> tagtypes);
 
-    void addTagToDish(Long userId, Long dishId, Long tagId);
+    void addTagToDish(Long userId, Long dishId, Long tagId, boolean excludeIngredients);
 
     void addTagsToDish(Long userId, Long id, Set<Long> tagIds);
 

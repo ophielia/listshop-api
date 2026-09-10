@@ -52,6 +52,10 @@ public interface V2DishRestControllerApi {
     @PostMapping(value = "/{dishId}/ingredients", produces = "application/json")
     ResponseEntity<Object> addIngredientToDish(Authentication authentication, @PathVariable("dishId") Long dishId, @RequestBody IngredientPut ingredient);
 
+    @PostMapping(value = "/{dishId}/tag/{tagId}", produces = "application/json")
+    ResponseEntity<Object> addTagToDish(Authentication authentication, @PathVariable("dishId") Long dishId,
+                                        @PathVariable("tagId") Long tagId);
+
     @PutMapping(value = "/{dishId}/ingredients", produces = "application/json")
     ResponseEntity<Object> updateIngredientInDish(Authentication authentication, @PathVariable("dishId") Long dishId, @RequestBody IngredientPut ingredient);
 
