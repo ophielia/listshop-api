@@ -374,7 +374,7 @@ public class V2ModelMapper {
             return null;
         }
 
-        return new NestedTag(tagEntity.getId(), tagEntity.getName());
+        return new NestedTag(tagEntity.getId(), tagEntity.getName(), tagEntity.getTagType());
     }
 
     public static Suggestion toModel(SuggestionDTO suggestionDTO) {
