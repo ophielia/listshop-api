@@ -8,12 +8,15 @@ package com.meg.listshop.lmt.api.controller;
 
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
-import com.meg.listshop.lmt.api.model.*;
+import com.meg.listshop.lmt.api.model.MealPlan;
+import com.meg.listshop.lmt.api.model.MealPlanListResource;
+import com.meg.listshop.lmt.api.model.MealPlanResource;
+import com.meg.listshop.lmt.api.model.RatingUpdateInfoResource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 /**
@@ -23,11 +26,11 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/mealplan")
 @CrossOrigin
-public interface MealPlanRestControllerApi {
+public interface LegacyMealPlanRestControllerApi {
 
 
     @GetMapping(produces = "application/json")
-    ResponseEntity<MealPlanList> retrieveMealPlans(HttpServletRequest request, Authentication authentication) throws ObjectNotFoundException, ObjectNotYoursException;
+    ResponseEntity<MealPlanListResource> retrieveMealPlans(HttpServletRequest request, Authentication authentication) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @PostMapping(produces = "application/json", consumes = "application/json")
     ResponseEntity<Object> createMealPlan(HttpServletRequest request, Authentication authentication, @RequestBody MealPlan input);
@@ -36,7 +39,7 @@ public interface MealPlanRestControllerApi {
     ResponseEntity<Object> createMealPlanFromTargetProposal(HttpServletRequest request, Authentication authentication, @PathVariable("proposalId") Long proposalId) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @GetMapping(value = "/{mealPlanId}", produces = "application/json")
-    ResponseEntity<MealPlan> readMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException;
+    ResponseEntity<MealPlanResource> readMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException;
 
     @PostMapping(value = "/{mealPlanId}", produces = "application/json")
     ResponseEntity<Object> copyMealPlan(HttpServletRequest request, Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId) throws ObjectNotYoursException, ObjectNotFoundException;
@@ -54,7 +57,7 @@ public interface MealPlanRestControllerApi {
     ResponseEntity<Object> deleteDishFromMealPlan(Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId, @PathVariable("dishId") Long dishId) throws ObjectNotFoundException, ObjectNotYoursException;
 
     @GetMapping(value = "/{mealPlanId}/ratings", produces = "application/json")
-    ResponseEntity<RatingUpdateInfo> getRatingUpdateInfo(Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId);
+    ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId);
 
 
 }

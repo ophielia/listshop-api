@@ -9,13 +9,13 @@ package com.meg.listshop.lmt.api.web.controller;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
+import com.meg.listshop.lmt.api.controller.LegacyMealPlanRestControllerApi;
 import com.meg.listshop.lmt.api.controller.MealPlanRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.MealPlanEntity;
 import com.meg.listshop.lmt.service.MealPlanService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -37,9 +38,9 @@ import java.util.stream.Collectors;
  * Created by margaretmartin on 20/10/2017.
  */
 @Controller
-public class MealPlanRestController implements MealPlanRestControllerApi {
+public class LegacyMealPlanRestController implements LegacyMealPlanRestControllerApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(MealPlanRestController.class);
+    private static final Logger  logger = LoggerFactory.getLogger(LegacyMealPlanRestController.class);
 
 
     private final MealPlanService mealPlanService;
@@ -47,22 +48,24 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     private final UserService userService;
 
     @Autowired
-    public MealPlanRestController(MealPlanService mealPlanService, UserService userService) {
+    public LegacyMealPlanRestController(MealPlanService mealPlanService, UserService userService) {
         this.mealPlanService = mealPlanService;
         this.userService = userService;
     }
 
     @Override
-    public ResponseEntity<MealPlanList> retrieveMealPlans(HttpServletRequest request, Authentication authentication) {
+    public ResponseEntity<MealPlanListResource> retrieveMealPlans(HttpServletRequest request, Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        List<MealPlan> mealPlanList = mealPlanService
+        List<MealPlanResource> mealPlanList = mealPlanService
                 .getMealPlansForUserName(userDetails.getUsername())
                 .stream()
                 .map(mealPlanEntity -> ModelMapper.toModel(mealPlanEntity, false))
+                .map(MealPlanResource::new)
                 .collect(Collectors.toList());
 
-        MealPlanList list = new MealPlanList(mealPlanList);
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        MealPlanListResource resource = new MealPlanListResource(mealPlanList);
+        resource.fillLinks(request, resource);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
 
 
     }
@@ -108,11 +111,11 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<MealPlan> readMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) {
+    public ResponseEntity<MealPlanResource> readMealPlan(Principal principal, @PathVariable("mealPlanId") Long mealPlanId) {
         MealPlanEntity result = this.mealPlanService
                 .getMealPlanById(principal.getName(), mealPlanId);
 
-        MealPlan mealPlanResource = ModelMapper.toModel(result, true);
+        MealPlanResource mealPlanResource = new MealPlanResource(ModelMapper.toModel(result, true));
         return new ResponseEntity<>(mealPlanResource, HttpStatus.OK);
     }
 
@@ -169,13 +172,14 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<RatingUpdateInfo> getRatingUpdateInfo(Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId) {
+    public ResponseEntity<RatingUpdateInfoResource> getRatingUpdateInfo(Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         UserEntity user = userService.getUserById(userDetails.getId());
 
         RatingUpdateInfo ratingInfo = this.mealPlanService.getRatingsForMealPlan(user.getEmail(), mealPlanId);
+        RatingUpdateInfoResource ratingResource = new RatingUpdateInfoResource(ratingInfo);
 
-        return new ResponseEntity<>(ratingInfo, HttpStatus.OK);
+        return new ResponseEntity<>(ratingResource, HttpStatus.OK);
     }
 
 }
