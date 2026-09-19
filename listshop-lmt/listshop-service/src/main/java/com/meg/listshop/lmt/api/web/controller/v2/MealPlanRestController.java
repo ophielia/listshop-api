@@ -4,12 +4,12 @@
  * Copyright (c) 2026.
  */
 
-package com.meg.listshop.lmt.api.web.controller;
+package com.meg.listshop.lmt.api.web.controller.v2;
 
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.service.CustomUserDetails;
 import com.meg.listshop.auth.service.UserService;
-import com.meg.listshop.lmt.api.controller.MealPlanRestControllerApi;
+import com.meg.listshop.lmt.api.controller.v2.MealPlanRestControllerApi;
 import com.meg.listshop.lmt.api.exception.ObjectNotFoundException;
 import com.meg.listshop.lmt.api.exception.ObjectNotYoursException;
 import com.meg.listshop.lmt.api.model.*;
