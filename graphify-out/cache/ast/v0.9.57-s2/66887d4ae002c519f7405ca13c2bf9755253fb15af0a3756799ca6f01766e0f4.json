@@ -1,0 +1,1 @@
+{"nodes": [{"id": "pkg_com_meg_listshop_conversion_common", "label": "com.meg.listshop:conversion-common", "file_type": "code", "type": "package", "ecosystem": "maven", "source_file": "listshop-conversion/conversion-common/pom.xml", "source_location": "L1", "version": "1.21.0-SNAPSHOT"}], "edges": []}
