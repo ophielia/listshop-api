@@ -21,6 +21,7 @@ import com.meg.listshop.lmt.api.model.FractionType;
 import com.meg.listshop.lmt.api.model.v2.*;
 import com.meg.listshop.lmt.data.pojos.DishDTO;
 import com.meg.listshop.lmt.data.pojos.DishItemDTO;
+import com.meg.listshop.lmt.data.entity.DishEntity;
 import com.meg.listshop.lmt.dish.DishSearchCriteria;
 import com.meg.listshop.lmt.dish.DishSearchService;
 import com.meg.listshop.lmt.dish.DishService;
@@ -41,8 +42,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller(value = "V2DishRestController")
@@ -85,6 +88,27 @@ public class DishRestController implements V2DishRestControllerApi {
         DishList resource = new DishList(dishList);
         return new ResponseEntity<>(resource, HttpStatus.OK);
 
+    }
+
+    @Override
+    public ResponseEntity<Object> createDish(HttpServletRequest request, Authentication authentication, @RequestBody Dish input) throws MalformedURLException {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String message = String.format("create new dish for user [%S]", userDetails.getId());
+        logger.info(message);
+        DishEntity inputDish = V2ModelMapper.toEntity(input);
+        inputDish.setUserId(userDetails.getId());
+        DishEntity result = dishService.createDish(userDetails.getId(), inputDish);
+        List<NestedTag> tagInputs = input.getTags();
+        if (tagInputs != null && !tagInputs.isEmpty()) {
+            Set<Long> tagIds = tagInputs.stream()
+                    .filter(t -> t.getTagId() != null)
+                    .map(t -> Long.valueOf(t.getTagId()))
+                    .collect(Collectors.toSet());
+            tagService.addTagsToDish(userDetails.getId(), result.getId(), tagIds);
+        }
+
+        var location = ControllerUtils.locationURI(request, "/v2/dish", result.getId());
+        return ResponseEntity.created(location).build();
     }
 
     @Override

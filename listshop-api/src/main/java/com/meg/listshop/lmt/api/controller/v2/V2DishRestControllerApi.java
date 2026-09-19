@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
 
 
 @RestController
@@ -29,6 +30,9 @@ public interface V2DishRestControllerApi {
                                             @RequestParam(value = "sortKey", required = false) String sortKey,
                                             @RequestParam(value = "sortDirection", required = false) String sortDirection
     );
+
+    @PostMapping(produces = "application/json", consumes = "application/json")
+    ResponseEntity<Object> createDish(HttpServletRequest request, Authentication authentication, @RequestBody Dish input) throws MalformedURLException;
 
     @GetMapping(value = "/{dishId}", produces = "application/json")
     ResponseEntity<Dish> retrieveDish(HttpServletRequest request, Authentication authentication, @PathVariable("dishId") Long dishId);

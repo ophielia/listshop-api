@@ -10,8 +10,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.util.List;
-
 @JsonPropertyOrder({ "item_id", "display", "tag", "amount"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Ingredient {
@@ -21,6 +19,8 @@ public class Ingredient {
     private NestedTag tag;
     private Amount amount;
     private String display;
+    @JsonProperty("raw_entry")
+    private String rawEntry;
 
     public Ingredient() {
     // empty constructor for Jackson
@@ -46,6 +46,11 @@ public class Ingredient {
         return this;
     }
 
+    public Ingredient withRawEntry(String rawDisplay) {
+        this.rawEntry = rawDisplay;
+        return this;
+    }
+
     public String getItemId() {
         return itemId;
     }
@@ -62,6 +67,10 @@ public class Ingredient {
         return display;
     }
 
+    public String getRawEntry() {
+        return rawEntry;
+    }
+
     @Override
     public String toString() {
         return "Ingredient{" +
@@ -69,6 +78,7 @@ public class Ingredient {
                 ", tag=" + tag +
                 ", amount=" + amount +
                 ", display='" + display + '\'' +
+                ", rawDisplay='" + rawEntry + '\'' +
                 '}';
     }
 }
