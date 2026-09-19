@@ -21,7 +21,7 @@ import java.security.Principal;
  */
 
 @RestController
-@RequestMapping("/mealplan")
+@RequestMapping("/v2/mealplan")
 @CrossOrigin
 public interface MealPlanRestControllerApi {
 

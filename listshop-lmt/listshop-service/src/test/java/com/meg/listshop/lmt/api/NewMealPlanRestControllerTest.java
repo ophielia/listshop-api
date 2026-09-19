@@ -44,11 +44,11 @@ import static io.restassured.RestAssured.given;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
-@Sql(value = "/sql/com/meg/atable/lmt/api/MealPlanRestControllerTest.sql")
-@Sql(value = "/sql/com/meg/atable/lmt/api/MealPlanRestControllerTest_rollback.sql",
+@Sql(value = "/sql/com/meg/atable/lmt/api/NewMealPlanRestControllerTest.sql")
+@Sql(value = "/sql/com/meg/atable/lmt/api/NewMealPlanRestControllerTest_rollback.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @ActiveProfiles("test")
-class MealPlanRestControllerTest {
+class NewMealPlanRestControllerTest {
 
     @Container
     public static ListShopPostgresqlContainer postgreSQLContainer = ListShopPostgresqlContainer.getInstance();
@@ -75,28 +75,28 @@ class MealPlanRestControllerTest {
         given()
                 .header(TestUtils.authToken(user3Token))
                 .when()
-                .get("/mealplan/" + testId)
+                .get("/v2/mealplan/" + testId)
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("meal_plan.meal_plan_id", Matchers.isA(Number.class))
-                .body("meal_plan.meal_plan_id", Matchers.equalTo(testId.intValue()));
+                .body("meal_plan_id", Matchers.isA(Number.class))
+                .body("meal_plan_id", Matchers.equalTo(testId.intValue()));
     }
 
     @Test
-    @Sql(value = "/sql/com/meg/atable/lmt/api/MealPlanRestControllerTest.sql")
-    @Sql(value = "/sql/com/meg/atable/lmt/api/MealPlanRestControllerTest_rollback.sql",
+    @Sql(value = "/sql/com/meg/atable/lmt/api/NewMealPlanRestControllerTest.sql")
+    @Sql(value = "/sql/com/meg/atable/lmt/api/NewMealPlanRestControllerTest_rollback.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void readMealPlanRatings() throws Exception {
         Long testId = 50485L;
         given()
                 .header(TestUtils.authToken(user3Token))
                 .when()
-                .get("/mealplan/" + testId + "/ratings")
+                .get("/v2/mealplan/" + testId + "/ratings")
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("ratingUpdateInfo.dish_ratings", Matchers.hasSize(5));
+                .body("dish_ratings", Matchers.hasSize(5));
     }
 
     @Test
@@ -104,11 +104,11 @@ class MealPlanRestControllerTest {
         given()
                 .header(TestUtils.authToken(user3Token))
                 .when()
-                .get("/mealplan")
+                .get("/v2/mealplan")
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("_embedded.mealPlanResourceList", Matchers.hasSize(Matchers.greaterThan(2)));
+                .body("meal_plan_list", Matchers.hasSize(Matchers.greaterThan(2)));
     }
 
     @Test
@@ -117,7 +117,7 @@ class MealPlanRestControllerTest {
         given()
                 .header(TestUtils.authToken(user2Token))
                 .when()
-                .get("/mealplan/" + testId)
+                .get("/v2/mealplan/" + testId)
                 .then()
                 .statusCode(Matchers.is(Matchers.both(Matchers.greaterThanOrEqualTo(400)).and(Matchers.lessThan(500))));
     }
@@ -128,7 +128,7 @@ class MealPlanRestControllerTest {
         given()
                 .header(TestUtils.authToken(user3Token))
                 .when()
-                .delete("/mealplan/" + testId)
+                .delete("/v2/mealplan/" + testId)
                 .then()
                 .statusCode(204);
     }
@@ -148,7 +148,7 @@ class MealPlanRestControllerTest {
                 .contentType(ContentType.JSON)
                 .body(mealPlanJson)
                 .when()
-                .post("/mealplan")
+                .post("/v2/mealplan")
                 .then()
                 .statusCode(201);
     }
@@ -167,15 +167,15 @@ class MealPlanRestControllerTest {
                 .contentType(ContentType.JSON)
                 .body(mealPlanJson)
                 .when()
-                .post("/mealplan")
+                .post("/v2/mealplan")
                 .then()
                 .statusCode(201)
-                .body("meal_plan.name", Matchers.isA(String.class));
+                .body("name", Matchers.isA(String.class));
     }
 
     @Test
     void testAddDishToMealPlan() throws Exception {
-        String url = "/mealplan/" + TestConstants.MENU_PLAN_3_ID
+        String url = "/v2/mealplan/" + TestConstants.MENU_PLAN_3_ID
                 + "/dish/" + TestConstants.DISH_1_ID;
         given()
                 .header(TestUtils.authToken(user3Token))
@@ -190,7 +190,7 @@ class MealPlanRestControllerTest {
     void testAddDishToMealPlan_DishExistsKO() throws Exception {
         var dishId = "500";
         var mealPlanId = "503";
-        String url = "/mealplan/" + mealPlanId
+        String url = "/v2/mealplan/" + mealPlanId
                 + "/dish/" + dishId;
         given()
                 .header(TestUtils.authToken(user3Token))
@@ -203,7 +203,7 @@ class MealPlanRestControllerTest {
 
     @Test
     void testRemoveDishFromMealPlan() throws Exception {
-        String url = "/mealplan/" + TestConstants.MENU_PLAN_3_ID
+        String url = "/v2/mealplan/" + TestConstants.MENU_PLAN_3_ID
                 + "/dish/" + 501L;
         given()
                 .header(TestUtils.authToken(user3Token))
@@ -216,7 +216,7 @@ class MealPlanRestControllerTest {
 
     @Test
     void testCreateMealPlanFromTargetProposal() throws Exception {
-        String url = "/mealplan/proposal/" + TestConstants.PROPOSAL_3_ID;
+        String url = "/v2/mealplan/proposal/" + TestConstants.PROPOSAL_3_ID;
 
         given()
                 .header(TestUtils.authToken(user3Token))
@@ -229,7 +229,7 @@ class MealPlanRestControllerTest {
 
     @Test
     void testRenameMealPlan() throws Exception {
-        String url = "/mealplan/" + TestConstants.MENU_PLAN_3_ID + "/name/george";
+        String url = "/v2/mealplan/" + TestConstants.MENU_PLAN_3_ID + "/name/george";
 
         given()
                 .header(TestUtils.authToken(user3Token))
@@ -243,7 +243,7 @@ class MealPlanRestControllerTest {
     @Test
     void testCopyMealPlan() throws Exception {
         Long copyMealPlan = 504L;
-        String url = "/mealplan/" + copyMealPlan;
+        String url = "/v2/mealplan/" + copyMealPlan;
         Long startTime = new Date().getTime();
 
         Response response = given()
@@ -274,17 +274,14 @@ class MealPlanRestControllerTest {
                 .header(TestUtils.authToken(user3Token))
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/mealplan/" + newId)
+                .get("/v2/mealplan/" + newId)
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
 
-        MealPlanResource sourceResource = toMealPlanResource(sourceResponse.asString());
-        MealPlanResource copiedResource = toMealPlanResource(copiedResponse.asString());
-
-        MealPlan source = sourceResource.getMealPlan();
-        MealPlan copied = copiedResource.getMealPlan();
+        MealPlan source = toMealPlan(sourceResponse.asString());
+        MealPlan copied = toMealPlan(copiedResponse.asString());
         
         Assertions.assertNotNull(copied.getName(), "copied name should not be null");
         Assertions.assertNotEquals(copied.getName(), source.getName(), "copied name should not equal source");
@@ -308,7 +305,7 @@ class MealPlanRestControllerTest {
     @Test
     void testCopyMealPlan_BadUserKO() throws Exception {
         Long copyMealPlan = 504L;
-        String url = "/mealplan/" + copyMealPlan;
+        String url = "/v2/mealplan/" + copyMealPlan;
 
         given()
                 .header(TestUtils.authToken(user2Token))
@@ -322,7 +319,7 @@ class MealPlanRestControllerTest {
     @Test
     void testCopyMealPlan_BadMealPlanKO() throws Exception {
         Long copyMealPlan = 555504L;
-        String url = "/mealplan/" + copyMealPlan;
+        String url = "/v2/mealplan/" + copyMealPlan;
 
         given()
                 .header(TestUtils.authToken(user3Token))
@@ -338,9 +335,9 @@ class MealPlanRestControllerTest {
         return mapper.writeValueAsString(o);
     }
 
-    private MealPlanResource toMealPlanResource(String input) throws IOException {
+    private MealPlan toMealPlan(String input) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(input, MealPlanResource.class);
+        return mapper.readValue(input, MealPlan.class);
     }
 
 }

@@ -16,19 +16,16 @@ import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.MealPlanEntity;
 import com.meg.listshop.lmt.service.MealPlanService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,9 +35,6 @@ import java.util.stream.Collectors;
  */
 @Controller
 public class MealPlanRestController implements MealPlanRestControllerApi {
-
-    private static final Logger logger = LoggerFactory.getLogger(MealPlanRestController.class);
-
 
     private final MealPlanService mealPlanService;
 
@@ -75,22 +69,14 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity result = mealPlanService.createMealPlan(userDetails.getUsername(), mealPlanEntity);
 
         if (result != null) {
-            MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(result, false));
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/{mealPlanId}")
+                    .buildAndExpand(result.getId())
+                    .toUri();
 
-            HttpHeaders headers = new HttpHeaders();
-            try {
-                String link = resource.selfLink(request, resource).toString();
-                headers.setLocation(new URI(link));
-            } catch (URISyntaxException e) {
-                logger.error("Can't parse meal plan link");
-                return ResponseEntity.badRequest().build();
-            }
-
-
-            return new ResponseEntity<>(resource, headers, HttpStatus.CREATED);
+            return ResponseEntity.created(location).body(ModelMapper.toModel(result, false));
         }
         return ResponseEntity.badRequest().build();
-
     }
 
     @Override
@@ -99,10 +85,12 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity result = mealPlanService.createMealPlanFromProposal(userDetails.getUsername(), proposalId);
 
         if (result != null) {
-            MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(result, false));
-            String link = resource.selfLink(request, resource).toString();
+            URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/v2/mealplan/{mealPlanId}")
+                    .buildAndExpand(result.getId())
+                    .toUri();
 
-            return ResponseEntity.created(URI.create(link)).build();
+            return ResponseEntity.created(location).build();
         }
         return ResponseEntity.badRequest().build();
     }
@@ -112,8 +100,8 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity result = this.mealPlanService
                 .getMealPlanById(principal.getName(), mealPlanId);
 
-        MealPlan mealPlanResource = ModelMapper.toModel(result, true);
-        return new ResponseEntity<>(mealPlanResource, HttpStatus.OK);
+        MealPlan mealPlan = ModelMapper.toModel(result, true);
+        return new ResponseEntity<>(mealPlan, HttpStatus.OK);
     }
 
     @Override
@@ -122,10 +110,12 @@ public class MealPlanRestController implements MealPlanRestControllerApi {
         MealPlanEntity mealPlan = this.mealPlanService.copyMealPlan(userDetails.getUsername(), mealPlanId);
 
         if (mealPlan != null) {
-            MealPlanResource resource = new MealPlanResource(ModelMapper.toModel(mealPlan, false));
-            String link = resource.selfLink(request, resource).toString();
+            URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/v2/mealplan/{mealPlanId}")
+                    .buildAndExpand(mealPlan.getId())
+                    .toUri();
 
-            return ResponseEntity.created(URI.create(link)).build();
+            return ResponseEntity.created(location).build();
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
