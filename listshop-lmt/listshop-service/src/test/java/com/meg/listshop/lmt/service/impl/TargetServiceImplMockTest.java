@@ -1,8 +1,7 @@
 /*
  * The List Shop
  *
- * Copyright (c) 2022.
- *
+ * Copyright (c) 2022-2026.
  */
 
 package com.meg.listshop.lmt.service.impl;
@@ -21,10 +20,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,23 +31,23 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 class TargetServiceImplMockTest {
 
-    @MockBean
+    @Mock
     private UserService userService;
 
-    @MockBean
+    @Mock
     private TagService tagService;
 
-    @MockBean
+    @Mock
     private TargetService targetService;
 
-    @MockBean
+    @Mock
     private TargetRepository targetRepository;
 
-    @MockBean
+    @Mock
     private TargetSlotRepository targetSlotRepository;
 
     @BeforeEach
@@ -468,8 +467,6 @@ class TargetServiceImplMockTest {
 
         ArgumentCaptor<TargetSlotEntity> slotCapture = ArgumentCaptor.forClass(TargetSlotEntity.class);
         ArgumentCaptor<TargetEntity> targetCapture = ArgumentCaptor.forClass(TargetEntity.class);
-        Mockito.when(userService.getUserByUserEmail(userName)).thenReturn(user);
-        Mockito.when(targetRepository.findTargetByUserIdAndTargetId(userId, targetId)).thenReturn(target);
         Mockito.when(targetSlotRepository.save(slotCapture.capture())).thenReturn(null);
         Mockito.when(targetRepository.save(targetCapture.capture())).thenReturn(null);
 

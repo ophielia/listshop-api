@@ -46,6 +46,7 @@ public class V2ModelMapper {
                 .withItemId(String.valueOf(ingredientDto.getDishItemId()))
                 .withTag(tag)
                 .withAmount(amount)
+                .withRawEntry(ingredientDto.getRawEntry())
                 .withDisplay(display);
     }
 
@@ -374,7 +375,7 @@ public class V2ModelMapper {
             return null;
         }
 
-        return new NestedTag(tagEntity.getId(), tagEntity.getName());
+        return new NestedTag(tagEntity.getId(), tagEntity.getName(), tagEntity.getTagType());
     }
 
     public static Suggestion toModel(SuggestionDTO suggestionDTO) {
@@ -405,6 +406,20 @@ public class V2ModelMapper {
                 .withDescription(entity.getDescription())
                 .withTagType(entity.getTagType().name())
                 .withPower(entity.getPower());
+    }
+
+    public static DishEntity toEntity(Dish dish) {
+        if (dish == null) {
+            return null;
+        }
+        DishEntity dishEntity = new DishEntity();
+        if (dish.getDishId() != null) {
+            dishEntity.setId(Long.valueOf(dish.getDishId()));
+        }
+        dishEntity.setDishName(dish.getDishName());
+        dishEntity.setDescription(dish.getDescription());
+        dishEntity.setReference(dish.getReference());
+        return dishEntity;
     }
 
     public static TagEntity toEntity(Tag tag) {

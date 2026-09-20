@@ -9,6 +9,7 @@ package com.meg.listshop.lmt.api.model.v2;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.meg.listshop.lmt.api.model.TagType;
 
 import java.util.Objects;
 
@@ -21,18 +22,25 @@ public class NestedTag {
 
     private String name;
 
+    @JsonProperty("tag_type")
+    private String tagType;
+
     NestedTag() {
     }
 
     public NestedTag(Long tagId, String name) {
-        this.tagId = String.valueOf(tagId);
-        this.name = name;
+        this(tagId, name, null);
     }
 
-    public NestedTag(String tagId, String name) {
-        this.tagId = tagId;
+    public NestedTag(Long tagId, String name, TagType tagType) {
+        this.tagId = String.valueOf(tagId);
         this.name = name;
+        if (tagType != null) {
+            this.tagType = tagType.getDisplayName();
+        }
     }
+
+
 
     public String getTagId() {
         return tagId;
@@ -42,6 +50,10 @@ public class NestedTag {
         return name;
     }
 
+    public String getTagType() {
+        return tagType;
+    }
+
     public NestedTag withTagId(String tagId) {
         this.tagId = tagId;
         return this;
@@ -49,6 +61,11 @@ public class NestedTag {
 
     public NestedTag withName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public NestedTag withTagType(String tagType) {
+        this.tagType = tagType;
         return this;
     }
 
