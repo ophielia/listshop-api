@@ -652,12 +652,16 @@ public class TagServiceImpl implements TagService {
         boolean excludeDishType = false;
         List<ICountResult> remainingCounts = tagRepository.countRemainingDishTypeTags(dishId, tagIds);
 
-        int remainingCount = remainingCounts.get(0).getCountResult();
+        int remainingCount = !remainingCounts.isEmpty()  ? remainingCounts.get(0).getCountResult() : 0;
         if (remainingCount < 1) {
             typesToExclude.add(TagType.DishType);
         }
 
 
+
+        if (typesToExclude.isEmpty()) {
+            return tagIds;
+        }
         // deleting this set would result in a dish without any dish tag. We'll remove
         // all dish type tags, so that the algorithm won't "decide" which tag stays
         List<TagEntity> tagsToBeDeleted = tagRepository.findAllById(tagIds);
