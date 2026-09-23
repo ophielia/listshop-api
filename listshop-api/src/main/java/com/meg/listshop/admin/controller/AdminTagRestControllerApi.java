@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.admin.controller;
 
 import com.meg.listshop.admin.model.PostSearchTags;
@@ -21,21 +27,12 @@ public interface AdminTagRestControllerApi {
     ResponseEntity<FoodListResource> getFoodSuggestionsForTag(@PathVariable("tagId") Long tagId,
                                                               @RequestParam(value = "searchTerm", required = false) String searchTerm);
 
-    @GetMapping(value = "/food/suggestions")
-    ResponseEntity<FoodListResource> getFoodSuggestionsForTerm(@RequestParam(value = "searchTerm", required = true) String searchTerm);
 
     @PostMapping(value = "/{tagId}/food/{foodId}")
     ResponseEntity<Object> assignFoodToTag(@PathVariable("tagId") Long tagId, @PathVariable("foodId") Long foodId);
 
     @PostMapping(value = "/{tagId}/liquid/{isLiquid}")
     ResponseEntity<Object> assignLiquidProperty(@PathVariable("tagId") Long tagId, @PathVariable("isLiquid") Boolean foodId);
-
-    @GetMapping(value = "/food/category/mappings")
-    ResponseEntity<CategoryMappingListResource> getFoodCategoryMappings();
-
-    @GetMapping(value = "/food/category")
-    ResponseEntity<FoodCategoryListResource> getFoodCategories();
-
 
     @PostMapping(value = "/{tagId}/food/category/{categoryId}")
     ResponseEntity<Object> assignFoodCategory(@PathVariable("tagId") Long tagId, @PathVariable("categoryId") Long categoryId);

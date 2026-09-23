@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 /**
  * Created by margaretmartin on 13/05/2017.
  */
@@ -213,6 +219,10 @@ public class FoodServiceImpl implements FoodService {
             tag.setInternalStatus(TagInternalStatus.FOOD_VERIFIED);
             tagService.updateTag(tag.getId(), tag);
         }
+    }
+
+    public List<UnitEntity> getUnits() {
+        return unitRepository.findAll();
     }
 
 

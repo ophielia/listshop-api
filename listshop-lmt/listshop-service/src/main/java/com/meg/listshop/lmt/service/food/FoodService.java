@@ -1,5 +1,12 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.service.food;
 
+import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.api.model.AdminTagFullInfo;
 import com.meg.listshop.lmt.data.entity.FoodCategoryEntity;
@@ -42,4 +49,6 @@ public interface FoodService {
     void addOrUpdateFoodForTags(List<Long> tagIds, Long foodIdToAssign);
 
     void copyFoodFromTag(List<Long> tagIds, Long fromTagId);
+
+    List<UnitEntity> getUnits();
 }

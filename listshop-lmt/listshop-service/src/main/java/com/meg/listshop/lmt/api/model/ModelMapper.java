@@ -12,6 +12,7 @@ import com.meg.listshop.auth.data.entity.AdminUserDetailsEntity;
 import com.meg.listshop.auth.data.entity.AuthorityEntity;
 import com.meg.listshop.auth.data.entity.UserEntity;
 import com.meg.listshop.auth.data.entity.UserPropertyEntity;
+import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.data.entity.*;
 import com.meg.listshop.lmt.data.pojos.*;
@@ -839,5 +840,12 @@ public class ModelMapper {
             suggestion.setModifierType(suggestionDTO.getModifierType().name());
         }
         return suggestion;
+    }
+
+    public static FoodUnit toModel(UnitEntity unitEntity) {
+        FoodUnit food = new FoodUnit();
+        food.setName(unitEntity.getName());
+        food.setUnitId(String.valueOf(unitEntity.getId()));
+        return food;
     }
 }

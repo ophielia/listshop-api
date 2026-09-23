@@ -165,27 +165,6 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
     }
 
 
-    public ResponseEntity<CategoryMappingListResource> getFoodCategoryMappings() {
-
-        List<FoodCategoryMappingResource> resourceList = foodService.getFoodCategoryMappings().stream()
-                .map(ModelMapper::toModel)
-                .map(FoodCategoryMappingResource::new)
-                .collect(Collectors.toList());
-
-        var returnValue = new CategoryMappingListResource(resourceList);
-        return new ResponseEntity<>(returnValue, HttpStatus.OK);
-    }
-
-
-    public ResponseEntity<FoodCategoryListResource> getFoodCategories() {
-        // @GetMapping(value = "/food/category")
-        List<FoodCategoryResource> resourceList = foodService.getFoodCategories().stream()
-                .map(ModelMapper::toModel)
-                .map(FoodCategoryResource::new)
-                .collect(Collectors.toList());
-        var returnValue = new FoodCategoryListResource(resourceList);
-        return new ResponseEntity<>(returnValue, HttpStatus.OK);
-    }
 
     @Override
     public ResponseEntity<Object> assignFoodCategory(Long tagId, Long categoryId) {
