@@ -1,3 +1,9 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.lmt.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,6 +27,9 @@ public class ConversionSample {
 
     @JsonProperty("to_modifier")
     private String toModifier;
+
+    @JsonProperty("user_defined")
+    private boolean userDefined;
 
     public ConversionSample() {
         // empty impl for jackson
@@ -74,6 +83,14 @@ public class ConversionSample {
         this.toModifier = toModifier;
     }
 
+    public boolean isUserDefined() {
+        return userDefined;
+    }
+
+    public void setUserDefined(boolean userDefined) {
+        this.userDefined = userDefined;
+    }
+
     @Override
     public String toString() {
         return "ConversionSample{" +
@@ -83,6 +100,7 @@ public class ConversionSample {
                 ", toUnit='" + toUnit + '\'' +
                 ", fromModifier='" + fromModifier + '\'' +
                 ", toModifier='" + toModifier + '\'' +
+                ", userDefined='" + userDefined + '\'' +
                 '}';
     }
 }

@@ -60,5 +60,17 @@ public class ControllerUtils {
         }
         return defaultValue;
     }
+    public static  Double stringToDoubleOrDefault(String toConvert, Double defaultValue) {
+        if (toConvert == null) {
+            return defaultValue;
+        }
+        try {
+            return Double.parseDouble(toConvert);
+        } catch (NumberFormatException e) {
+            String message = String.format("Id [%s] cannot be converted to Double.", toConvert);
+            logger.info(message);
+        }
+        return defaultValue;
+    }
 }
 

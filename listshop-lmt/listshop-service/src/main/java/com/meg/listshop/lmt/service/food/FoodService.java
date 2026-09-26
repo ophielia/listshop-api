@@ -51,4 +51,9 @@ public interface FoodService {
     void copyFoodFromTag(List<Long> tagIds, Long fromTagId);
 
     List<UnitEntity> getUnits();
+
+
+    void assignFactorToTag(Long tagId, Long fromUnitId, Double fromQuantity, Long toUnitId, Double toQuantity);
+
+    void removeManualFactors(Long tagId);
 }

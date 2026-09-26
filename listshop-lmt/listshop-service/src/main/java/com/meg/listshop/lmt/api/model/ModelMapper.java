@@ -80,6 +80,7 @@ public class ModelMapper {
         sample.setToAmount(String.valueOf(conversionSampleDTO.getToAmount().getQuantity()));
         sample.setToUnit(toUnit);
         sample.setFromUnit(fromUnit);
+        sample.setUserDefined(conversionSampleDTO.isManual());
         return sample;
     }
 

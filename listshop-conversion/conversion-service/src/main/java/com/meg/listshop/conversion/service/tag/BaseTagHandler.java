@@ -84,7 +84,7 @@ public abstract class BaseTagHandler implements TagHandler {
                 .withToUnit(MILLILITER_UNIT_ID)
                 .withConversionId(conversionId);
 
-        return factorRepository.findFactors(criteriaBuilder.build()).stream()
+        return factorRepository.findAllFactors(criteriaBuilder.build()).stream()
                 .map(factor -> (ConversionFactor) factor)
                 .toList();
 

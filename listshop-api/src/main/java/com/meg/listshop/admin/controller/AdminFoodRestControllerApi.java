@@ -6,12 +6,8 @@
 
 package com.meg.listshop.admin.controller;
 
-import com.meg.listshop.admin.model.PostSearchTags;
-import com.meg.listshop.admin.model.PostUpdateTags;
 import com.meg.listshop.lmt.api.model.*;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -34,5 +30,11 @@ public interface AdminFoodRestControllerApi {
 
     @GetMapping(value = "/category")
     ResponseEntity<FoodCategoryListResource> getFoodCategories();
+
+    @PostMapping(value = "/{tagId}/manual/factor")
+    ResponseEntity<Object> assignManualFactorToTag(@PathVariable("tagId") Long tagId, @RequestBody PostFoodFactor factor);
+
+    @DeleteMapping(value = "/{tagId}/manual/factor")
+    ResponseEntity<Object> removeManualFactorFromTag(@PathVariable("tagId") Long tagId);
 
 }

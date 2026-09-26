@@ -1,8 +1,15 @@
+/*
+ * The List Shop
+ *
+ * Copyright (c) 2026.
+ */
+
 package com.meg.listshop.conversion.service;
 
 
 import com.meg.listshop.conversion.data.entity.ConversionFactorEntity;
 import com.meg.listshop.common.data.entity.UnitEntity;
+import com.meg.listshop.conversion.data.entity.SimpleConversionFactor;
 import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.common.data.repository.UnitRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
@@ -24,6 +31,8 @@ public class ConversionServiceImpl implements ConversionService {
     private final ConversionFactorRepository conversionFactorRepository;
     private final UnitRepository unitRepository;
     private final ConverterService converterService;
+
+    public final static Long MANUAL_FACTOR_REFERENCE = 999L;
 
     @Value("${conversionservice.gram.unit.id:1013}")
     private Long GRAM_UNIT_ID;
@@ -68,6 +77,32 @@ public class ConversionServiceImpl implements ConversionService {
         }
 
 
+    }
+
+    @Override
+    public void addManualConversionFactor(Long conversionId, SimpleConversionFactor conversionFactor) {
+            ConversionFactorEntity toAdd = new ConversionFactorEntity();
+            toAdd.setConversionId(conversionId);
+            toAdd.setReferenceId(MANUAL_FACTOR_REFERENCE);
+            toAdd.setFromUnit(conversionFactor.getFromUnit());
+            toAdd.setToUnit(conversionFactor.getToUnit());
+            toAdd.setFactor(conversionFactor.getFactor());
+            conversionFactorRepository.save(toAdd);
+    }
+
+    @Override
+    public void removeManualConversionFactors(Long conversionId) {
+            List<ConversionFactorEntity> manuals = conversionFactorRepository.findAllByConversionIdIs(conversionId).stream()
+                    .filter(f -> f.getReferenceId().equals(MANUAL_FACTOR_REFERENCE))
+                    .toList();
+            conversionFactorRepository.deleteAll(manuals);
+    }
+
+    @Override
+    public List<ConversionFactorEntity> manualConversionFactorsForConversionId(Long conversionId) {
+            return conversionFactorRepository.findAllByConversionIdIs(conversionId).stream()
+                    .filter(f -> f.getReferenceId().equals(MANUAL_FACTOR_REFERENCE))
+                    .toList();
     }
 
     @Override

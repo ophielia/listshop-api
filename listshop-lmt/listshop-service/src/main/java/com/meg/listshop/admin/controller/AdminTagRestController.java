@@ -134,20 +134,6 @@ public class AdminTagRestController implements AdminTagRestControllerApi {
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
-    public ResponseEntity<FoodListResource> getFoodSuggestionsForTerm(@RequestParam(value = "searchTerm", required = true) String searchTerm) {
-        List<FoodEntity> foodEntities = foodService.getSuggestedFoods(searchTerm);
-        Map<Long, List<FoodConversionEntity>> conversionFactors = foodService.getFoodFactors(foodEntities);
-        List<FoodResource> resourceList = new ArrayList<>();
-        for (FoodEntity foodEntity : foodEntities) {
-            List<FoodConversionEntity> factors = conversionFactors.get(foodEntity.getFoodId());
-            Food food = ModelMapper.toModel(foodEntity, factors);
-            resourceList.add(new FoodResource(food));
-        }
-
-        var returnValue = new FoodListResource(resourceList);
-        return new ResponseEntity<>(returnValue, HttpStatus.OK);
-    }
-
 
     public ResponseEntity<Object> assignFoodToTag(@PathVariable("tagId") Long tagId,
                                                   @PathVariable("foodId") Long foodId) {

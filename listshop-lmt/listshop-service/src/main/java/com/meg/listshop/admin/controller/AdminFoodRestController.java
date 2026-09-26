@@ -6,38 +6,27 @@
 
 package com.meg.listshop.admin.controller;
 
-import com.meg.listshop.admin.model.PostSearchTags;
-import com.meg.listshop.admin.model.PostUpdateTags;
-import com.meg.listshop.auth.service.CustomUserDetails;
+import com.meg.listshop.common.ControllerUtils;
 import com.meg.listshop.common.data.entity.UnitEntity;
-import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.lmt.api.model.*;
 import com.meg.listshop.lmt.data.entity.FoodConversionEntity;
 import com.meg.listshop.lmt.data.entity.FoodEntity;
-import com.meg.listshop.lmt.data.entity.TagEntity;
-import com.meg.listshop.lmt.data.pojos.IncludeType;
-import com.meg.listshop.lmt.data.pojos.TagInfoDTO;
-import com.meg.listshop.lmt.data.pojos.TagInternalStatus;
-import com.meg.listshop.lmt.data.pojos.TagSearchCriteria;
 import com.meg.listshop.lmt.service.food.FoodService;
 import com.meg.listshop.lmt.service.layout.LayoutService;
 import com.meg.listshop.lmt.service.tag.TagService;
 import com.meg.listshop.lmt.service.tag.TagStructureService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -114,5 +103,30 @@ public class AdminFoodRestController implements AdminFoodRestControllerApi {
         var returnValue = new FoodCategoryListResource(resourceList);
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
+
+    public ResponseEntity<Object> assignManualFactorToTag( Long tagId, @RequestBody PostFoodFactor factor) {
+        if (factor == null) {
+            throw new IllegalArgumentException("No factor provided");
+        }
+        Long fromUnitId = ControllerUtils.stringToLongOrDefault(factor.getFromUnitId(), null);
+        Long toUnitId = ControllerUtils.stringToLongOrDefault(factor.getToUnitId(), null);
+        Double fromQuantity = ControllerUtils.stringToDoubleOrDefault(factor.getFromQuantity(), null);
+        Double toQuantity = ControllerUtils.stringToDoubleOrDefault(factor.getToQuantity(), null);
+        if (fromQuantity == null || toQuantity == null
+        || fromUnitId == null || toUnitId == null) {
+            throw new IllegalArgumentException("No quantity or unit provided");
+        }
+          if (fromQuantity == 0) {
+              throw new IllegalArgumentException("From Quantity cannot be zero");
+          }
+        foodService.assignFactorToTag(tagId,fromUnitId, fromQuantity, toUnitId, toQuantity);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public ResponseEntity<Object> removeManualFactorFromTag( Long tagId) {
+        foodService.removeManualFactors(tagId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 }
