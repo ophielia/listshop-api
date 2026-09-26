@@ -478,7 +478,7 @@ public class DishServiceImpl implements DishService {
         if (rawModifiers == null || rawModifiers.isEmpty()) {
             dishItemEntity.setRawModifiers(null);
             dishItemEntity.setMarker(null);
-            dishItemEntity.setUnitSize(DEFAULT_UNIT_SIZE);
+            //all other code underneath doesn't run because of this - dishItemEntity.setUnitSize(DEFAULT_UNIT_SIZE);
             dishItemEntity.setModifiersProcessed(true);
             return;
         }
