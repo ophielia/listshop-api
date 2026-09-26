@@ -276,7 +276,7 @@ public class FoodServiceImpl implements FoodService {
     @Override
     public List<ConversionSampleDTO> samplesForConversionId(Long conversionId, Boolean isLiquid) {
         List<ConversionSampleDTO> result = new ArrayList<>();
-        if (conversionId == null || (isLiquid != null && isLiquid)) {
+        if (conversionId == null) {
             return result;
         }
 
