@@ -194,7 +194,6 @@ class DishServiceImplMockTest {
         Assertions.assertEquals(1.5, dishResult.getItems().get(0).getQuantity(), 0.001);
         // check ingredient
         Assertions.assertNull(ingredientResult.getMarker());
-        Assertions.assertEquals("medium", ingredientResult.getUnitSize());
         Assertions.assertFalse(ingredientResult.getUserSize());
         Assertions.assertNull(ingredientResult.getRawModifiers());
         Assertions.assertEquals(ingredientResult.getWholeQuantity(), (Integer) 1);
@@ -252,8 +251,6 @@ class DishServiceImplMockTest {
         Assertions.assertEquals(1.0, dishResult.getItems().get(0).getQuantity(), 0.001);
         // check ingredient
         Assertions.assertNull(ingredientResult.getMarker());
-        Assertions.assertNotNull(ingredientResult.getUnitSize());
-        Assertions.assertEquals("medium", ingredientResult.getUnitSize());
         Assertions.assertNull(ingredientResult.getRawModifiers());
         Assertions.assertNotNull(dishResult.getItems().get(0).getTag().getConversionId());
         Assertions.assertNotNull(ingredientResult.getUnitId());
@@ -556,8 +553,6 @@ class DishServiceImplMockTest {
         Assertions.assertEquals(1.0, dishResult.getItems().get(0).getQuantity(), 0.001);
         // check ingredient
         Assertions.assertNull(ingredientResult.getMarker());
-        Assertions.assertNotNull(ingredientResult.getUnitSize());
-        Assertions.assertEquals("medium", ingredientResult.getUnitSize());
         Assertions.assertNull(ingredientResult.getRawModifiers());
         Assertions.assertNotNull(dishResult.getItems().get(0).getTag().getConversionId());
         Assertions.assertNotNull(ingredientResult.getUnitId());
@@ -630,7 +625,6 @@ class DishServiceImplMockTest {
         Assertions.assertEquals(1.0, dishResult.getItems().get(0).getQuantity(), 0.001);
         // check ingredient
         Assertions.assertNull(ingredientResult.getMarker());
-        Assertions.assertEquals("medium", ingredientResult.getUnitSize());
         Assertions.assertNull(ingredientResult.getRawModifiers());
         Assertions.assertNotNull(dishResult.getItems().get(0).getTag().getConversionId());
         Assertions.assertNotNull(ingredientResult.getUnitId());

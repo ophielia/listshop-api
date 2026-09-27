@@ -101,7 +101,7 @@ public class ConversionServiceImpl implements ConversionService {
     @Override
     public List<ConversionFactorEntity> manualConversionFactorsForConversionId(Long conversionId) {
             return conversionFactorRepository.findAllByConversionIdIs(conversionId).stream()
-                    .filter(f -> f.getReferenceId().equals(MANUAL_FACTOR_REFERENCE))
+                    .filter(f -> f.getReferenceId() != null && f.getReferenceId().equals(MANUAL_FACTOR_REFERENCE))
                     .toList();
     }
 

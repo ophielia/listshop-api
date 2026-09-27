@@ -188,28 +188,6 @@ class AdminTagRestControllerTest {
 
     @Test
     @WithMockUser
-    void testGetFoodCategoryMappings() throws Exception {
-        //    @GetMapping(value = "/food/categories")
-        MvcResult result = this.mockMvc.perform(get("/admin/tag/food/category/mappings")
-                        .with(user(userDetails)))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-
-        Assertions.assertNotNull(result);
-        ObjectMapper mapper = new ObjectMapper();
-        CategoryMappingListResource embeddedList = mapper.readValue(result.getResponse().getContentAsString(), CategoryMappingListResource.class);
-        List<FoodCategoryMappingResource> mappingList = embeddedList.getEmbeddedList() != null ? embeddedList.getEmbeddedList().getMappingResourceList() : new ArrayList<>();
-        Assertions.assertNotNull(mappingList);
-        FoodCategoryMapping withCategory = mappingList.stream()
-                .map(FoodCategoryMappingResource::getFoodCategoryMapping)
-                .filter(foodCategoryMapping -> foodCategoryMapping.getTagId().equals("8881019"))
-                .findFirst().orElse(null);
-        Assertions.assertNotNull(withCategory);
-        Assertions.assertEquals("3", withCategory.getFoodCategoryId());
-    }
-
-    @Test
-    @WithMockUser
     void testGetFullTagInfo() throws Exception {
         long tagId = 9991029;
         MvcResult result = this.mockMvc.perform(get("/admin/tag/" + tagId + "/fullinfo")

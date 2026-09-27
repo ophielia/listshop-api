@@ -349,7 +349,10 @@ class ShoppingListRestControllerTest {
 
     @Test
     void testGenerateFromMealPlan() throws Exception {
-
+        ListGenerateProperties listGenerateProperties = new ListGenerateProperties();
+        listGenerateProperties.setAddFromStarter(false);
+        listGenerateProperties.setListName("GEORGE");
+        String payload = json(listGenerateProperties);
 
         Long mealPlanId = 65505L;
 
@@ -357,6 +360,7 @@ class ShoppingListRestControllerTest {
         String location = given()
                 .header(TestUtils.authToken(jwtToken))
                 .contentType(ContentType.JSON)
+                .body(payload)
                 .when()
                 .post(url)
                 .then()
