@@ -11,7 +11,7 @@
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>listshop-lmt</artifactId>
-    <version>1.21.0-RC2</version>
+    <version>1.21.0</version>
     <packaging>pom</packaging>
 
     <name>listshop-lmt</name>
@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>listshop-parent</artifactId>
-        <version>1.21.0-RC2</version>
+        <version>1.21.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
