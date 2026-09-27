@@ -11,7 +11,7 @@
 
     <groupId>com.meg.listshop</groupId>
     <artifactId>listshop-common-data</artifactId>
-    <version>1.21.0</version>
+    <version>1.21.0-RC2</version>
     <packaging>jar</packaging>
 
     <name>listshop-common-data</name>
@@ -20,7 +20,7 @@
     <parent>
         <groupId>com.meg.listshop</groupId>
         <artifactId>common</artifactId>
-        <version>1.21.0</version>
+        <version>1.21.0-RC2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
