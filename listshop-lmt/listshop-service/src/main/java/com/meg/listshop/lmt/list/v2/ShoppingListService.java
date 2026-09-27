@@ -55,7 +55,7 @@ public interface ShoppingListService {
 
     void deleteItemFromList(Long userId, Long listId, Long itemId) throws ItemProcessingException;
 
-    ShoppingListEntity generateListFromMealPlan(Long userId, Long mealPlanId) throws ShoppingListException, ItemProcessingException;
+    ShoppingListEntity generateListFromMealPlan(Long userId, Long mealPlanId, String listName, boolean addStarter) throws ShoppingListException, ItemProcessingException;
 
     void addDishToList(Long userId, Long listId, Long dishId) throws ShoppingListException, ItemProcessingException;
 

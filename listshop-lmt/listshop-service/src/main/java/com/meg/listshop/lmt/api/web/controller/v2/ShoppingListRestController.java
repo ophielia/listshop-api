@@ -398,12 +398,20 @@ public class ShoppingListRestController implements V2ShoppingListRestControllerA
     }
 
     @Override
-    public ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication authentication, @PathVariable("mealPlanId") Long mealPlanId) throws MalformedURLException {
+    public ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication authentication,
+                                                           @PathVariable("mealPlanId") Long mealPlanId,
+                                                           @RequestBody ListGenerateProperties listGenerateProperties) throws MalformedURLException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         logger.info("Generating list from mealplan [{}] for user [{}]", mealPlanId, userDetails.getId());
+        String listName = null;
+        boolean addStarter = false;
+        if (listGenerateProperties != null) {
+            listName = listGenerateProperties.getListName();
+            addStarter = listGenerateProperties.getAddFromStarter();
+        }
         ShoppingListEntity shoppingListEntity = null;
         try {
-            shoppingListEntity = this.shoppingListService.generateListFromMealPlan(userDetails.getId(), mealPlanId);
+            shoppingListEntity = this.shoppingListService.generateListFromMealPlan(userDetails.getId(), mealPlanId, listName, addStarter);
         } catch (ShoppingListException | ItemProcessingException e) {
             logger.error("Exception while adding dishes to new list from mealplan [{}].", mealPlanId, e);
             return ResponseEntity.internalServerError().build();

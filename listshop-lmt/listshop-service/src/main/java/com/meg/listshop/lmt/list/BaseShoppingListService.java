@@ -425,16 +425,21 @@ public abstract class BaseShoppingListService  {
     }
 
     
-    public ShoppingListEntity generateListFromMealPlan(Long userId, Long mealPlanId) throws ShoppingListException, ItemProcessingException {
+    public ShoppingListEntity generateListFromMealPlan(Long userId, Long mealPlanId, String listName, boolean addStarter) throws ShoppingListException, ItemProcessingException {
+        String newListName = listName == null ? defaultShoppingListName : listName;
+
         // get the mealplan
         MealPlanEntity mealPlan = mealPlanService.getMealPlanForUserById(userId, mealPlanId);
 
-        // create new inprocess list
-        ShoppingListEntity savedNewList = createList(userId, defaultShoppingListName);
+        // create new  list
+        ShoppingListEntity savedNewList = createList(userId, newListName);
 
         // add to the new list
+        if (addStarter) {
+            ShoppingListEntity baseList = getStarterList(userId);
+            addListToList(userId, savedNewList.getId(), baseList.getId());
+        }
         return addToListFromMealPlan(userId, savedNewList, mealPlan);
-
     }
 
     

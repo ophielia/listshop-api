@@ -82,7 +82,9 @@ public interface V2ShoppingListRestControllerApi {
     ResponseEntity<Object> deleteAllItemsFromList(Authentication principal, @PathVariable("listId") Long listId);
 
     @PostMapping(value = "/mealplan/{mealPlanId}", produces = "application/json")
-    ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication principal, @PathVariable("mealPlanId") Long mealPlanId) throws MalformedURLException;
+    ResponseEntity<Object> generateListFromMealPlan(HttpServletRequest request, Authentication principal,
+                                                    @PathVariable("mealPlanId") Long mealPlanId,
+                                                    @RequestBody ListGenerateProperties listGenerateProperties) throws MalformedURLException;
 
     @PutMapping(value = "/{listId}/mealplan/{mealPlanId}", produces = "application/json")
     ResponseEntity<Object> addToListFromMealPlan(Authentication principal, @PathVariable("listId") Long listId, @PathVariable("mealPlanId") Long mealPlanId);
