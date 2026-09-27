@@ -1,0 +1,31 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "develop"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "develop"
+
+  - package-ecosystem: "docker"
+    directory: "/listshop-lmt/listshop-service"
+    schedule:
+      interval: "daily"
+    target-branch: "develop"
+
+  - package-ecosystem: "docker"
+    directory: "/listshop-lmt/listshop-service/src/main/docker/initStaticFiles"
+    schedule:
+      interval: "daily"
+    target-branch: "develop"
+
+  - package-ecosystem: "helm"
+    directory: "/listshop-lmt/listshop-service/src/main/helm/listshop-api"
+    schedule:
+      interval: "daily"
+    target-branch: "develop"
