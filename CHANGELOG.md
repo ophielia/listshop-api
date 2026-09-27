@@ -2,8 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.21.0]  - September 2026
+### Added
+- New conversion framework including manual factors and liquid sample support
+- Admin console enhancements for unit and conversion management
+- New V2 endpoints for dish, list, tag, and layout management
+- Support for linked IDs in layouts and layout categories
+
+### Changed
+- Major refactoring of layout services into a dedicated package
+- Shopping List IDs changed from Long to String for V2 compatibility
+- Improved list merging logic and last update timestamps
+- Reworked V2 models for better client integration
+
+### Fixed
+- Bug creating shopping lists from meal plans
+- Issues with unit size conversions and qualifiers
+- Cascade deletion of item details when deleting lists
+- Reduced excessive logging across the application
+
+
 ## [1.20.1]  - February 2026
 ### Fixed
+- lotsa stuff
 
 
 ## [1.20.0]  - February 2026

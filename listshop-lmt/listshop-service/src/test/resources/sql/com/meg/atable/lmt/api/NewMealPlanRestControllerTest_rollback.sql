@@ -9,6 +9,11 @@ delete
 from meal_plan_slot
 where meal_plan_id = 50485;
 
+
+delete
+from meal_plan_slot
+where dish_dish_id = 56705001;
+
 --dish_tags
 delete from dish_tags where dish_id in (select dish_dish_id from meal_plan_slot where meal_plan_id = 50485);
 delete from dish_tags where dish_id in (50000001,13000011,88000011,56705001,70000121);

@@ -124,11 +124,44 @@ class NewMealPlanRestControllerTest {
 
     @Test
     void testDeleteMealPlan() throws Exception {
-        Long testId = 506L; 
+        UserEntity userAccount = userService.getUserByUserEmail(TestConstants.USER_3_NAME);
+        MealPlanEntity mealPlanEntity = new MealPlanEntity();
+        mealPlanEntity.setName("mealPlanDelete");
+        mealPlanEntity.setMealPlanType(MealPlanType.Manual);
+        mealPlanEntity.setUserId(userAccount.getId());
+        MealPlan mealPlan = ModelMapper.toModel(mealPlanEntity, true);
+        String mealPlanJson = json(mealPlan);
+
+        Response response = given()
+                .header(TestUtils.authToken(user3Token))
+                .contentType(ContentType.JSON)
+                .body(mealPlanJson)
+                .when()
+                .post("/v2/mealplan")
+                .then()
+                .statusCode(201)
+                .extract()
+                .response();
+
+        String locationHeader = response.getHeader("Location");
+        String mealPlanId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1);
+
+        // add dish to meal plan
+        String dishId = "56705001";
+        String addDishUrl = "/v2/mealplan/" + mealPlanId
+                + "/dish/" + dishId;
+        given()
+                .header(TestUtils.authToken(user3Token))
+                .contentType(ContentType.JSON)
+                .when()
+                .post(addDishUrl)
+                .then()
+                .statusCode(204);
+
         given()
                 .header(TestUtils.authToken(user3Token))
                 .when()
-                .delete("/v2/mealplan/" + testId)
+                .delete("/v2/mealplan/" + mealPlanId)
                 .then()
                 .statusCode(204);
     }
@@ -175,8 +208,9 @@ class NewMealPlanRestControllerTest {
 
     @Test
     void testAddDishToMealPlan() throws Exception {
+        String dishId = "56705001";
         String url = "/v2/mealplan/" + TestConstants.MENU_PLAN_3_ID
-                + "/dish/" + TestConstants.DISH_1_ID;
+                + "/dish/" + dishId;
         given()
                 .header(TestUtils.authToken(user3Token))
                 .contentType(ContentType.JSON)
