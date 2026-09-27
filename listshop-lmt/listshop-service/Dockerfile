@@ -1,4 +1,4 @@
-FROM amazoncorretto:17-alpine-jdk
+FROM amazoncorretto:27-alpine-jdk
 RUN addgroup --system listshop && adduser --system listshop --ingroup listshop
 USER listshop:listshop
 ARG DEPENDENCY=target/dependency
