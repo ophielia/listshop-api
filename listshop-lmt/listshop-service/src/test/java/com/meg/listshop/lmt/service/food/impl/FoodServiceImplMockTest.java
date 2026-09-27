@@ -11,6 +11,7 @@ import com.meg.listshop.common.data.entity.UnitEntity;
 import com.meg.listshop.conversion.data.pojo.ConversionSampleDTO;
 import com.meg.listshop.conversion.data.pojo.SimpleAmount;
 import com.meg.listshop.common.data.repository.UnitRepository;
+import com.meg.listshop.conversion.data.repository.ConversionFactorRepository;
 import com.meg.listshop.conversion.exceptions.ConversionFactorException;
 import com.meg.listshop.conversion.exceptions.ConversionPathException;
 import com.meg.listshop.conversion.service.ConversionService;
@@ -68,6 +69,9 @@ class FoodServiceImplMockTest {
     @MockBean
     UnitRepository unitRepository;
 
+    @MockBean
+    ConversionFactorRepository conversionFactorRepository;
+
     List<FoodCategoryMappingEntity> allMappedCategories;
     List<FoodCategoryEntity> allCategories;
 
@@ -87,7 +91,7 @@ class FoodServiceImplMockTest {
                 foodCategoryMappingRepo, foodRepository, foodCategoryRepository,
                 tagService, tagStructureService,
                 foodConversionRepository, conversionService,
-                unitRepository
+                unitRepository, conversionFactorRepository
         );
 
         // set single unit id
