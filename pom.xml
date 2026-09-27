@@ -377,6 +377,15 @@
             <plugins>
 
                 <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.18.0</version>
+                    <configuration>
+                        <processProperties>false</processProperties>
+                    </configuration>
+                </plugin>
+
+                <plugin>
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-maven-plugin</artifactId>
                     <version>${flyway.version}</version>
@@ -467,6 +476,11 @@
             </snapshots>
         </repository>
 
+
+        <repository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/release</url>
+        </repository>
 
         <repository>
             <id>spring-milestones</id>
